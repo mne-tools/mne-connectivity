@@ -1,28 +1,21 @@
 :orphan:
 
 ################
-mne-realtime API
+mne-connectivity API
 ################
 
-:py:mod:`mne_realtime`:
+:py:mod:`mne_connectivity`:
 
-.. automodule:: mne_realtime
+.. automodule:: mne_connectivity
    :no-members:
    :no-inherited-members:
 
-MNE-Realtime
-============
+MNE-Connectivity
+================
 
-.. currentmodule:: mne_realtime
+.. currentmodule:: mne_connectivity
 
 .. autosummary::
    :toctree: generated/
 
    FieldTripClient
-   LSLClient
-   MockLSLStream
-   MockRtClient
-   RtEpochs
-   RtClient
-   StimServer
-   StimClient

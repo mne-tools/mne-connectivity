@@ -26,7 +26,7 @@ import sphinx_gallery  # noqa
 from sphinx_gallery.sorting import FileNameSortKey
 from numpydoc import docscrape
 import mne  # noqa
-from mne_realtime import __version__
+from mne_connectivity import __version__
 
 # -- General configuration ------------------------------------------------
 
@@ -76,9 +76,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MNE-Realtime'
+project = u'MNE-Connectivity'
 td = date.today()
-copyright = u'2012-%s, MNE Developers. Last updated on %s' % (td.year,
+copyright = u'2021-%s, MNE Developers. Last updated on %s' % (td.year,
                                                               td.isoformat())
 
 nitpicky = True
@@ -129,7 +129,7 @@ pygments_style = 'sphinx'
 html_style = 'css/project-template.css'
 
 # A list of ignored prefixes for module index sorting.
-modindex_common_prefix = ['mne_realtime.']
+modindex_common_prefix = ['mne_connectivity.']
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
@@ -218,7 +218,7 @@ html_show_sphinx = False
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'mne-realtime-doc'
+htmlhelp_basename = 'mne-connectivity-doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -411,7 +411,7 @@ numpydoc_xref_aliases = {
     'Montage': 'mne.channels.Montage', 'Forward': 'mne.Forward',
     'DigMontage': 'mne.channels.DigMontage',
     # mne_realtime
-    'RtEpochs': 'mne_realtime.RtEpochs',
+    # 'RtEpochs': 'mne_realtime.RtEpochs',
 }
 numpydoc_xref_ignore = {
     # words
