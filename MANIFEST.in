@@ -1,0 +1,34 @@
+include *.rst
+include LICENSE.txt
+include requirements.txt
+
+recursive-include examples *.py
+recursive-include examples *.txt
+
+recursive-include mne *.py
+
+### Exclude
+
+exclude Makefile
+exclude .coveragerc
+exclude *.yml
+exclude ignore_words.txt
+exclude .mailmap
+recursive-exclude mne *.pyc
+
+recursive-exclude doc *
+recursive-exclude logo *
+
+exclude CODE_OF_CONDUCT.md
+exclude .github
+exclude .github/CONTRIBUTING.md
+exclude .github/ISSUE_TEMPLATE
+exclude .github/ISSUE_TEMPLATE/blank.md
+exclude .github/ISSUE_TEMPLATE/bug_report.md
+exclude .github/ISSUE_TEMPLATE/feature_request.md
+exclude .github/PULL_REQUEST_TEMPLATE.md
+
+# Test files
+
+exclude mne_realtime/tests/data
+recursive-exclude mne_realtime/tests/data *
