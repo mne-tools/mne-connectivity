@@ -9,16 +9,16 @@ from inspect import getmembers
 import numpy as np
 
 from .utils import check_indices
-from ..utils import _check_option
-from ..fixes import _get_args, _import_fft
-from ..parallel import parallel_func
-from ..source_estimate import _BaseSourceEstimate
-from ..epochs import BaseEpochs
-from ..time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
+from mne.utils import _check_option
+from mne.fixes import _get_args, _import_fft
+from mne.parallel import parallel_func
+from mne.source_estimate import _BaseSourceEstimate
+from mne.epochs import BaseEpochs
+from mne.time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
                                          _psd_from_mt, _csd_from_mt,
                                          _psd_from_mt_adaptive)
-from ..time_frequency.tfr import morlet, cwt
-from ..utils import logger, verbose, _time_mask, warn, _arange_div
+from mne.time_frequency.tfr import morlet, cwt
+from mne.utils import logger, verbose, _time_mask, warn, _arange_div
 
 ########################################################################
 # Various connectivity estimators

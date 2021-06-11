@@ -6,9 +6,9 @@
 
 import numpy as np
 
-from ..filter import next_fast_len
-from ..source_estimate import _BaseSourceEstimate
-from ..utils import verbose, _check_combine, _check_option
+from mne.filter import next_fast_len
+from mne.source_estimate import _BaseSourceEstimate
+from mne.utils import verbose, _check_combine, _check_option
 
 
 @verbose

@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from mne.connectivity import phase_slope_index
+from mne_connectivity.effective import phase_slope_index
 
 
 def test_psi():

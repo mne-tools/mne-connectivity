@@ -3,8 +3,8 @@ from numpy.testing import assert_array_almost_equal, assert_allclose
 import pytest
 
 from mne import EpochsArray, SourceEstimate, create_info
-from mne.connectivity import spectral_connectivity
-from mne.connectivity.spectral import _CohEst, _get_n_epochs
+from mne_connectivity import spectral_connectivity
+from mne_connectivity.spectral import _CohEst, _get_n_epochs
 from mne.filter import filter_data
 
 

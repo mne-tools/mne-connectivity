@@ -6,7 +6,7 @@ import copy
 
 import numpy as np
 
-from ..utils import logger, verbose
+from mne.utils import logger, verbose
 from .spectral import spectral_connectivity
 
 

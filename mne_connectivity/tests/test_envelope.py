@@ -9,7 +9,7 @@ from numpy.testing import assert_allclose
 import pytest
 from scipy.signal import hilbert
 
-from mne.connectivity import envelope_correlation
+from mne_connectivity.envelope import envelope_correlation
 
 
 def _compute_corrs_orig(data):

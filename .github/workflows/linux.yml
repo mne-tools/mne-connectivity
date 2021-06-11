@@ -21,16 +21,8 @@ jobs:
           python-version: '3.9'
         name: 'Setup python'
       - shell: bash -el {0}
-        run: |
-          wget -q -O tools/get_minimal_commands.sh https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh
-          source ./tools/get_minimal_commands.sh
-        name: 'Install neuromag2ft'
-      - shell: bash -el {0}
-        run: neuromag2ft --version
-        name: 'Test neuromag2ft'
-      - shell: bash -el {0}
-        run: ./tools/pip_dependencies.sh
-        name: 'Install MNE-Realtime'
+        run: pip install -r requirements.txt
+        name: 'Install MNE-Connectivity'
       - shell: bash -el {0}
         run: mne sys_info
         name: Print config
@@ -38,7 +30,7 @@ jobs:
         run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
         name: 'Get test data'
       - shell: bash -el {0}
-        run: pytest mne_realtime
+        run: pytest mne_connectivity
         name: 'Run tests'
       - uses: codecov/codecov-action@v1
         if: success()
