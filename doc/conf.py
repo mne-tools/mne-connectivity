@@ -26,6 +26,8 @@ import sphinx_gallery  # noqa
 from sphinx_gallery.sorting import FileNameSortKey
 from numpydoc import docscrape
 import mne  # noqa
+
+sys.path.append('../')
 from mne_connectivity import __version__
 
 # -- General configuration ------------------------------------------------

@@ -1,8 +1,8 @@
 :orphan:
 
-################
+####################
 mne-connectivity API
-################
+####################
 
 :py:mod:`mne_connectivity`:
 
