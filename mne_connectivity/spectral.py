@@ -15,8 +15,8 @@ from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.epochs import BaseEpochs
 from mne.time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
-                                         _psd_from_mt, _csd_from_mt,
-                                         _psd_from_mt_adaptive)
+                                           _psd_from_mt, _csd_from_mt,
+                                           _psd_from_mt_adaptive)
 from mne.time_frequency.tfr import morlet, cwt
 from mne.utils import logger, verbose, _time_mask, warn, _arange_div
 

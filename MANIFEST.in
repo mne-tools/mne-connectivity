@@ -1,6 +1,7 @@
 include *.rst
 include LICENSE.txt
 include requirements.txt
+include test_requirements.txt
 
 recursive-include examples *.py
 recursive-include examples *.txt
@@ -8,6 +9,9 @@ recursive-include examples *.txt
 recursive-include mne *.py
 
 ### Exclude
+
+exclude .circleci/config.yml
+exclude .vscode/settings.json
 
 exclude Makefile
 exclude .coveragerc
@@ -30,5 +34,5 @@ exclude .github/PULL_REQUEST_TEMPLATE.md
 
 # Test files
 
-exclude mne_realtime/tests/data
-recursive-exclude mne_realtime/tests/data *
+exclude mne_connectivity/tests/data
+recursive-exclude mne_connectivity/tests/data *

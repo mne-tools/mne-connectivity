@@ -7,9 +7,15 @@ import os
 from setuptools import find_packages, setup
 
 # get __version__ from _version.py
-ver_file = os.path.join('mne_connectivity', '_version.py')
-with open(ver_file) as f:
-    exec(f.read())
+# get the version from __init__.py
+version = None
+with open(os.path.join('mne_connectivity', '__init__.py'), 'r') as fid:
+    for line in (line.strip() for line in fid):
+        if line.startswith('__version__'):
+            version = line.split('=')[1].strip().strip('\'')
+            break
+if version is None:
+    raise RuntimeError('Could not determine version')
 
 DISTNAME = 'mne-connectivity'
 DESCRIPTION = 'A module for connectivity data analysis with MNE.'
@@ -20,8 +26,8 @@ MAINTAINER_EMAIL = 'ali39@jhu.edu'
 URL = 'https://github.com/mne-tools/mne-connectivity'
 LICENSE = 'BSD-3'
 DOWNLOAD_URL = 'https://github.com/mne-tools/mne-connectivity'
-VERSION = __version__
-INSTALL_REQUIRES = ['numpy', 'scipy', 'mne']
+VERSION = version
+INSTALL_REQUIRES = ['numpy', 'scipy', 'mne', 'scikit-learn']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
