@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|GH-Linux|_ |GH-macOS|_ |Azure|_ |Circle|_ |Codecov|_ |PyPI|_ |conda-forge|_ |Zenodo|_
+|GH-Linux|_ |GH-macOS|_ |Azure|_ |Circle|_ |Codecov|_ |PyPI|_ |Zenodo|_
 
 |MNE|_
 
@@ -9,9 +9,6 @@
 
 .. |GH-macOS| image:: https://github.com/mne-tools/mne-connectivity/workflows/macos%20/%20conda/badge.svg?branch=main
 .. _GH-macOS: https://github.com/mne-tools/mne-connectivity/actions?query=branch:main+event:push
-
-.. |Azure| image:: https://dev.azure.com/mne-tools/mne-connectivity/_apis/build/status/mne-tools.mne-connectivity?branchName=main
-.. _Azure: https://dev.azure.com/mne-tools/mne-connectivity/_build/latest?definitionId=1&branchName=main
 
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity

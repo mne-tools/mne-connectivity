@@ -18,4 +18,6 @@ MNE-Connectivity
 .. autosummary::
    :toctree: generated/
 
-   FieldTripClient
+   envelope_correlation
+   phase_slope_index
+   spectral_connectivity
