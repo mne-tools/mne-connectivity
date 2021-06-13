@@ -6,7 +6,6 @@ import os
 
 from setuptools import find_packages, setup
 
-# get __version__ from _version.py
 # get the version from __init__.py
 version = None
 with open(os.path.join('mne_connectivity', '__init__.py'), 'r') as fid:
@@ -46,7 +45,9 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
 EXTRAS_REQUIRE = {
     'tests': [
         'pytest',
-        'pytest-cov'],
+        'pytest-cov',
+        'flake8',
+        'pydocstyle'],
     'docs': [
         'sphinx',
         'sphinx-gallery',

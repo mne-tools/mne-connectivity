@@ -16,7 +16,7 @@ import numpy as np
 
 import mne
 from mne import io
-from mne.connectivity import spectral_connectivity, seed_target_indices
+from mne_connectivity import spectral_connectivity, seed_target_indices
 from mne.datasets import sample
 from mne.time_frequency import AverageTFR
 

@@ -17,7 +17,7 @@ import mne
 from mne.datasets import sample
 from mne.minimum_norm import (apply_inverse, apply_inverse_epochs,
                               read_inverse_operator)
-from mne.connectivity import seed_target_indices, spectral_connectivity
+from mne_connectivity import seed_target_indices, spectral_connectivity
 
 print(__doc__)
 

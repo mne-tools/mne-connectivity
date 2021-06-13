@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import mne
-from mne.connectivity import envelope_correlation
+from mne_connectivity import envelope_correlation
 from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
 

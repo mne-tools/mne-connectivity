@@ -24,7 +24,7 @@ import numpy as np
 import mne
 from mne.datasets import sample
 from mne.minimum_norm import read_inverse_operator, apply_inverse_epochs
-from mne.connectivity import seed_target_indices, phase_slope_index
+from mne_connectivity import seed_target_indices, phase_slope_index
 
 print(__doc__)
 

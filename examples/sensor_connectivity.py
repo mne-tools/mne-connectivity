@@ -13,9 +13,9 @@ are used which produces strong connectvitiy in the right occipital sensors.
 # License: BSD (3-clause)
 
 import mne
-from mne.connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity
 from mne.datasets import sample
-from mne.viz import plot_sensors_connectivity
+from mne_connectivity.viz import plot_sensors_connectivity
 
 print(__doc__)
 
