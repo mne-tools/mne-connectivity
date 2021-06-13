@@ -340,6 +340,6 @@ numpydoc_xref_ignore = {
 
 ##############################################################################
 
-def setup(app):
-    # a copy button to copy snippet of code from the documentation
-    app.add_js_file('js/copybutton.js')
+# def setup(app):
+#     # a copy button to copy snippet of code from the documentation
+#     app.add_js_file('js/copybutton.js')
