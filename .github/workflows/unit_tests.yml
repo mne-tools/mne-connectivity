@@ -22,6 +22,11 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install pip
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r test_requirements.txt
       - name: Run style & documentation tests
         run: make pep
 
@@ -39,12 +44,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Update pip and wheel
-        run: python -m pip install --upgrade pip wheel
+        run: pip install --upgrade pip wheel
       # install via reqs.txt
       - shell: bash -el {0}
         run: |
-          python -m pip install -r requirements.txt
-          python -m pip install -r test_requirements.txt
+          pip install -r requirements.txt
+          pip install -r test_requirements.txt
         name: 'Install MNE-Connectivity'
       - shell: bash -el {0}
         run: mne sys_info
