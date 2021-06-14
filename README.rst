@@ -1,14 +1,9 @@
 .. -*- mode: rst -*-
 
-|GH-Linux|_ |GH-macOS|_ |Circle|_ |Codecov|_ |PyPI|_ |Zenodo|_
+|GH|_ |Circle|_ |Codecov|_ |PyPI|_ |Zenodo|_ |MNE|_
 
-|MNE|_
-
-.. |GH-Linux| image:: https://github.com/mne-tools/mne-connectivity/workflows/linux%20/%20conda/badge.svg?branch=main
-.. _GH-Linux: https://github.com/mne-tools/mne-connectivity/actions?query=branch:main+event:push
-
-.. |GH-macOS| image:: https://github.com/mne-tools/mne-connectivity/workflows/macos%20/%20conda/badge.svg?branch=main
-.. _GH-macOS: https://github.com/mne-tools/mne-connectivity/actions?query=branch:main+event:push
+.. |GH| image:: https://github.com/mne-tools/mne-connectivity/workflows/gh_actions%20/badge.svg?branch=main
+.. _GH: https://github.com/mne-tools/mne-connectivity/actions?query=branch:main+event:push
 
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity
