@@ -45,6 +45,10 @@ jobs:
                 git pull --ff-only upstream "refs/pull/$(cat merge.txt)/merge";
               fi
 
+        - run:
+            <<: *xvfb
+            
+        # Load pip cache
         - restore_cache:
             keys:
               - pip-cache
