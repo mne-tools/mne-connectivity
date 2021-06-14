@@ -40,14 +40,17 @@ jobs:
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
     steps:
       - uses: actions/checkout@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install -r test_requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r test_requirements.txt
         name: 'Install MNE-Connectivity'
       - shell: bash -el {0}
         run: mne sys_info
@@ -99,24 +102,20 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-      - uses: actions/checkout@v2
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - id: cache-pipenv
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: ~/.local/share/virtualenvs
-      #     key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+      - uses: actions/checkout@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
-        # if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
-          pip install -r requirements.txt
-          pip install -r test_requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r test_requirements.txt
 
       - name: Display versions and environment information
         run: |
