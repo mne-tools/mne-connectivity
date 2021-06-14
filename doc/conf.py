@@ -140,7 +140,11 @@ intersphinx_mapping = {
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
     'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
-    'sklearn': ('http://scikit-learn.org/stable', None)
+    'sklearn': ('http://scikit-learn.org/stable', None),
+    'pyvista': ('https://docs.pyvista.org', None),
+    'joblib': ('https://joblib.readthedocs.io/en/latest', None),
+    'nibabel': ('https://nipy.org/nibabel', None),
+    'nilearn': ('http://nilearn.github.io', None),
 }
 intersphinx_timeout = 5
 
@@ -155,16 +159,43 @@ if 'dev' in version:
 else:
     filepath_prefix = 'v{}'.format(version)
 
+os.environ['_MNE_BUILDING_DOC'] = 'true'
+scrapers = ('matplotlib',)
+try:
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        import pyvista
+    pyvista.OFF_SCREEN = False
+except Exception:
+    pass
+else:
+    scrapers += ('pyvista',)
+if any(x in scrapers for x in ('pyvista', 'mayavi')):
+    from traits.api import push_exception_handler
+    push_exception_handler(reraise_exceptions=True)
+    report_scraper = mne.report._ReportScraper()
+    scrapers += (report_scraper,)
+else:
+    report_scraper = None
+if 'pyvista' in scrapers:
+    brain_scraper = mne.viz._brain._BrainScraper()
+    scrapers = list(scrapers)
+    scrapers.insert(scrapers.index('pyvista'), brain_scraper)
+    scrapers = tuple(scrapers)
+
 sphinx_gallery_conf = {
     'doc_module': 'mne_connectivity',
     'reference_url': {
         'mne_connectivity': None,
     },
     'backreferences_dir': 'generated',
-    'examples_dirs': '../examples',
+    'plot_gallery': 'True',  # Avoid annoying Unicode/bool default warning
     'within_subsection_order': ExampleTitleSortKey,
+    'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
+    'matplotlib_animations': True,
+    'compress_images': ('images', 'thumbnails'),
 }
 
 # sphinxcontrib-bibtex
