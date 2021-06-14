@@ -3,7 +3,6 @@ import os
 import sys
 from datetime import date
 
-import sphinx_bootstrap_theme
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
 
