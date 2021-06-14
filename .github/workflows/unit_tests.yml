@@ -26,7 +26,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -r test_requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
       - name: Run style & documentation tests
         run: make pep
 
@@ -50,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
-          pip install --upgrade --upgrade-strategy eager -r test_requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
         name: 'Install MNE-Connectivity'
       - shell: bash -el {0}
         run: mne sys_info
@@ -115,7 +115,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
-          pip install --upgrade --upgrade-strategy eager -r test_requirements.txt
+          pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
 
       - name: Display versions and environment information
         run: |
