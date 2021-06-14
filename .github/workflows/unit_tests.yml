@@ -40,9 +40,9 @@ jobs:
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
+        # with:
+        #   path: ~/.cache/pip
+        #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -107,9 +107,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: actions/checkout@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
+        # with:
+        #   path: ~/.cache/pip
+        #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
         run: |
