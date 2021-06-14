@@ -167,6 +167,12 @@ sphinx_gallery_conf = {
     'filename_pattern': '^((?!sgskip).)*$',
 }
 
+# sphinxcontrib-bibtex
+bibtex_bibfiles = ['./references.bib']
+bibtex_style = 'unsrt'
+bibtex_footbibliography_header = ''
+
+
 # Enable nitpicky mode - which ensures that all references in the docs
 # resolve.
 
