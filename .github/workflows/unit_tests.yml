@@ -1,4 +1,4 @@
-name: 'macos'
+name: 'GH Actions'
 on:
   push:
     branches:
@@ -39,14 +39,12 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Update pip and wheel
-        run: pip install --upgrade pip wheel
-      # install via reqs.txt
-      - shell: bash -el {0}
+      - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install -r test_requirements.txt
