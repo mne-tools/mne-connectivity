@@ -2,8 +2,8 @@
 
 |GH|_ |Circle|_ |Codecov|_ |PyPI|_ |Zenodo|_ |MNE|_
 
-.. |GH| image:: https://github.com/mne-tools/mne-connectivity/workflows/gh_actions%20/badge.svg?branch=main
-.. _GH: https://github.com/mne-tools/mne-connectivity/actions?query=branch:main+event:push
+.. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
+.. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
 
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity
@@ -14,8 +14,6 @@
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
 
-.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.592483.svg
-.. _Zenodo: https://doi.org/10.5281/zenodo.592483
 
 .. |MNE| image:: https://mne.tools/stable/_static/mne_logo.svg
 .. _MNE: https://mne.tools/dev/
