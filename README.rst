@@ -1,6 +1,8 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Codecov|_ |PyPI|_ |Zenodo|_ |MNE|_
+|GH|_ |Circle|_ |Codecov|_ |PyPI|_ 
+
+|MNE|_
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
@@ -13,7 +15,6 @@
 
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
-
 
 .. |MNE| image:: https://mne.tools/stable/_static/mne_logo.svg
 .. _MNE: https://mne.tools/dev/
