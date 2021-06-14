@@ -27,15 +27,15 @@ needs_sphinx = '4.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
-    'sphinx_autodoc_typehints',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
+    'sphinx_autodoc_typehints',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.viewcode',    
     'sphinx_gallery.gen_gallery',
+    'sphinxcontrib.bibtex',
     'numpydoc',
     # 'nbsphinx',  # to render jupyter notebooks
     'sphinx_copybutton',
