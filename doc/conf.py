@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
-    'nbsphinx',  # to render jupyter notebooks
+    # 'nbsphinx',  # to render jupyter notebooks
     'sphinx_copybutton',
     # 'gen_cli',  # custom extension, see ./sphinxext/gen_cli.py
     'gh_substitutions',  # custom extension, see ./sphinxext/gh_substitutions.py
@@ -56,7 +56,7 @@ autodoc_typehints = 'signature'
 
 # prevent jupyter notebooks from being run even if empty cell
 # nbsphinx_execute = 'never'
-nbsphinx_allow_errors = True
+# nbsphinx_allow_errors = True
 
 # -- numpydoc
 # Below is needed to prevent errors
