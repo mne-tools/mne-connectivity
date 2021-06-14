@@ -11,5 +11,6 @@ __version__ = "0.1.dev0"
 from .envelope import envelope_correlation
 from .effective import phase_slope_index
 from .spectral import spectral_connectivity
+from .utils import seed_target_indices, degree, check_indices
 
 __all__ = ['__version__']

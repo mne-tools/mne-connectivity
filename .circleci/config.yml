@@ -6,7 +6,7 @@ jobs:
       steps:
         - restore_cache:
             keys:
-              - source-cache-realtime
+              - source-cache-connectivity
         - checkout
         - run:
             name: Complete checkout
@@ -16,23 +16,23 @@ jobs:
               fi
               git fetch upstream
         - save_cache:
-            key: source-cache-realtime
+            key: source-cache-connectivity
             paths:
               - ".git"
-        - run:
-            name: Set BASH_ENV
-            command: |
-              set -e
-              echo "set -e" >> $BASH_ENV
-              echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
-              echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" >> $BASH_ENV
-              wget -q -O tools/get_minimal_commands.sh https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh
-              source tools/get_minimal_commands.sh
-              echo "source ${PWD}/tools/get_minimal_commands.sh" >> $BASH_ENV
-              echo "export PATH=~/.local/bin/:$PATH" >> $BASH_ENV
-              echo "BASH_ENV:"
-              cat $BASH_ENV
-              mkdir -p ~/mne_data
+        # - run:
+        #     name: Set BASH_ENV
+        #     command: |
+        #       set -e
+        #       echo "set -e" >> $BASH_ENV
+        #       echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
+        #       echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" >> $BASH_ENV
+        #       wget -q -O tools/get_minimal_commands.sh https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh
+        #       source tools/get_minimal_commands.sh
+        #       echo "source ${PWD}/tools/get_minimal_commands.sh" >> $BASH_ENV
+        #       echo "export PATH=~/.local/bin/:$PATH" >> $BASH_ENV
+        #       echo "BASH_ENV:"
+        #       cat $BASH_ENV
+        #       mkdir -p ~/mne_data
 
         - run:
             name: Merge with upstream
@@ -145,10 +145,10 @@ jobs:
                 git reset --hard origin/master
                 git clean -xdf
                 echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
-                rm -Rf mne-realtime;
-                cp -a /tmp/build/html mne-realtime;
+                rm -Rf mne-connectivity;
+                cp -a /tmp/build/html mne-connectivity;
                 git add -A;
-                git commit -m "CircleCI update of mne-realtime docs (${CIRCLE_BUILD_NUM}).";
+                git commit -m "CircleCI update of mne-connectivity docs (${CIRCLE_BUILD_NUM}).";
                 git push origin master;
               else
                 echo "No deployment (build: ${CIRCLE_BRANCH}).";
