@@ -53,9 +53,10 @@ jobs:
         run: |
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
           pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
-      - shell: bash -el {0}
-        run: mne sys_info
-        name: Print config
+      # TODO: doesn't work segfault cuz of pyvista?
+      # - shell: bash -el {0}
+      #   run: mne sys_info
+      #   name: Print config
       - shell: bash -el {0}
         run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
         name: 'Get test data'
