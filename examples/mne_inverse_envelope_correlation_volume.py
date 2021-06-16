@@ -18,8 +18,8 @@ import os.path as op
 
 import mne
 from mne.beamformer import make_lcmv, apply_lcmv_epochs
-from mne_connectivity import envelope_correlation
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
+from mne_connectivity import envelope_correlation
 
 data_path = mne.datasets.brainstorm.bst_resting.data_path()
 subjects_dir = op.join(data_path, 'subjects')
