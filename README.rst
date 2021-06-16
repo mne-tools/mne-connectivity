@@ -1,8 +1,6 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Codecov|_ |PyPI|_ 
-
-|MNE|_
+|GH|_ |Circle|_ |Codecov|_ |PyPI|_
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
@@ -16,23 +14,27 @@
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
 
-.. |MNE| image:: https://mne.tools/stable/_static/mne_logo.svg
-.. _MNE: https://mne.tools/dev/
+.. _MNE-Connectivity: https://mne.tools/mne-connectivity/dev/
+.. _MNE-Python: https://mne.tools/stable
+.. _MNE-Connectivity documentation: https://mne.tools/mne-connectivity/dev/overview/index.html
+.. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
+.. _pip: https://pip.pypa.io/en/stable/
 
 MNE-Connectivity
 ================
 
-`MNE-Connectivity`_ is an open-source Python package for connectivity analysis 
-of MEG, EEG, or iEEG data built on top of the ``MNE-Python`` API. 
-It includes modules for data input/output, visualization, common connectivity analysis, 
+`MNE-Connectivity`_ is an open-source Python package for connectivity analysis
+of MEG, EEG, or iEEG data built on top of the `MNE-Python`_ API.
+It includes modules for data input/output, visualization, common connectivity analysis,
 and post-hoc statistics and processing.
 
+
+.. target for :end-before: title-end-content
 
 Documentation
 ^^^^^^^^^^^^^
 
-`MNE documentation`_ for MNE-Connectivity is available online.
-
+`MNE-Connectivity documentation`_ is available online.
 
 Installing MNE-Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -78,9 +80,3 @@ Forum
 ^^^^^^
 
 https://mne.discourse.group
-
-
-.. _MNE-Connectivity: https://mne.tools/mne-connectivity/dev/
-.. _MNE documentation: https://mne.tools/mne-connectivity/dev/overview/index.html
-.. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
-.. _pip: https://pip.pypa.io/en/stable/

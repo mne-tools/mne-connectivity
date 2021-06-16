@@ -34,7 +34,7 @@ Changes when mne-connectivity was part of MNE-Python
 Changelog
 ~~~~~~~~~
 
-- 
+-
 
 Bug
 ~~~
@@ -51,4 +51,4 @@ Authors
 
 * Adam Li
 
-.. include:: authors.rst
+.. include:: authors.inc
