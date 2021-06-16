@@ -45,6 +45,7 @@ jobs:
         #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
       - run: ./tools/setup_xvfb.sh
         name: 'Setup xvfb'
+        if: runner.os == 'Linux'
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
