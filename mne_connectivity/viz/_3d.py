@@ -12,7 +12,6 @@
 
 import numpy as np
 
-from mne.defaults import DEFAULTS
 from mne.io.pick import _picks_to_idx
 from mne.io.constants import FIFF
 from mne.utils import (verbose, fill_doc, _validate_type)
@@ -21,6 +20,7 @@ from mne.utils import (verbose, fill_doc, _validate_type)
 verbose_dec = verbose
 FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
                   FIFF.FIFFV_POINT_RPA)
+
 
 @fill_doc
 def plot_sensors_connectivity(info, con, picks=None,
