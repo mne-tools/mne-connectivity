@@ -58,9 +58,10 @@ jobs:
       # - shell: bash -el {0}
       #   run: mne sys_info
       #   name: Print config
-      - shell: bash -el {0}
-        run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
-        name: 'Get test data'
+      # TODO: why doesn't this work on mac?
+      # - shell: bash -el {0}
+      #   run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
+      #   name: 'Get test data'
       # build with sdist directly
       - uses: actions/checkout@v2
       - name: Build sdist
