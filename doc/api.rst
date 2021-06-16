@@ -1,17 +1,12 @@
-:orphan:
-
-####################
-mne-connectivity API
-####################
+###
+API
+###
 
 :py:mod:`mne_connectivity`:
 
 .. automodule:: mne_connectivity
    :no-members:
    :no-inherited-members:
-
-MNE-Connectivity
-================
 
 .. currentmodule:: mne_connectivity
 

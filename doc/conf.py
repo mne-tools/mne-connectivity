@@ -33,14 +33,12 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_autodoc_typehints',
     'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',    
+    'sphinx.ext.viewcode',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
     'numpydoc',
-    # 'nbsphinx',  # to render jupyter notebooks
     'sphinx_copybutton',
-    # 'gen_cli',  # custom extension, see ./sphinxext/gen_cli.py
-    'gh_substitutions',  # custom extension, see ./sphinxext/gh_substitutions.py
+    'gh_substitutions',  # custom extension, see sphinxext/gh_substitutions.py
 ]
 
 # configure sphinx-copybutton
@@ -95,8 +93,7 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['auto_examples/index.rst', '_build', 'Thumbs.db',
-                    '.DS_Store', "**.ipynb_checkpoints", 'auto_examples/*.rst']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**.ipynb_checkpoints"]
 
 # HTML options (e.g., theme)
 # see: https://sphinx-bootstrap-theme.readthedocs.io/en/latest/README.html
@@ -120,6 +117,12 @@ html_theme_options = {
              url='https://github.com/mne-tools/mne-connectivity',
              icon='fab fa-github-square'),
     ],
+    'use_edit_page_button': False,
+    'navigation_with_keys': False,
+    'show_toc_level': 1,
+}
+html_sidebars = {
+    'index': ['search-field.html'],
 }
 
 html_context = {
@@ -170,13 +173,6 @@ except Exception:
     pass
 else:
     scrapers += ('pyvista',)
-if any(x in scrapers for x in ('pyvista', 'mayavi')):
-    from traits.api import push_exception_handler
-    push_exception_handler(reraise_exceptions=True)
-    report_scraper = mne.report._ReportScraper()
-    scrapers += (report_scraper,)
-else:
-    report_scraper = None
 if 'pyvista' in scrapers:
     brain_scraper = mne.viz._brain._BrainScraper()
     scrapers = list(scrapers)
@@ -191,8 +187,8 @@ sphinx_gallery_conf = {
     'backreferences_dir': 'generated',
     'plot_gallery': 'True',  # Avoid annoying Unicode/bool default warning
     'within_subsection_order': ExampleTitleSortKey,
-    'examples_dirs': '../examples',
-    'gallery_dirs': 'auto_examples',
+    'examples_dirs': ['../examples'],
+    'gallery_dirs': ['auto_examples'],
     'filename_pattern': '^((?!sgskip).)*$',
     'matplotlib_animations': True,
     'compress_images': ('images', 'thumbnails'),
@@ -208,5 +204,4 @@ bibtex_footbibliography_header = ''
 # resolve.
 
 nitpicky = True
-nitpick_ignore = [('py:class:', 'type'),
-                  ('py:class', 'pandas.core.frame.DataFrame')]
+nitpick_ignore = []
