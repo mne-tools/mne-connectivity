@@ -37,7 +37,7 @@ Changes when mne-connectivity was part of MNE-Python
 
 In July, 2021, ``mne.connectivity`` submodule was ported over from the MNE-Python 
 repo into this repository, ``mne-connectivity``. Starting v0.24 of MNE-Python, that sub-module 
-will be deprecated and development will move over into this repository.
+will be deprecated and development will move over into this repository. 
 
 Changelog
 ~~~~~~~~~

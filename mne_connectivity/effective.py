@@ -8,7 +8,7 @@ import numpy as np
 
 from mne.utils import logger, verbose
 from .spectral import spectral_connectivity
-
+from .base import SpectralConnectivity, SpectroTemporalConnectivity
 
 @verbose
 def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
@@ -94,6 +94,8 @@ def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
         (n_con, n_bands) mode: 'multitaper' or 'fourier'
         (n_con, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
+
+        Either a `SpectralConnnectivity`, or `SpectroTemporalConnectivity` container.
     freqs : array
         Frequency points at which the connectivity was computed.
     times : array
@@ -156,5 +158,21 @@ def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
         idx_fi[freq_dim] = band_idx
         psi[tuple(idx_fi)] = np.imag(acc)
     logger.info('[PSI Estimation Done]')
+
+    # create a connectivity container
+    if mode in ['multitaper', 'fourier']:
+        # spectral only
+        conn = SpectralConnectivity(
+            data=psi,
+            names=indices,
+            freqs=freqs,
+        )
+    elif mode == 'cwt_morlet':
+        # spectrotemporal
+        conn = SpectoTemporalConnectivity(
+            data=psi,
+            names=indices,
+            freqs=freqs,
+        )
 
     return psi, freqs, times, n_epochs, n_tapers
