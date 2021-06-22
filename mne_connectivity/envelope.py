@@ -10,9 +10,11 @@ from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import verbose, _check_combine, _check_option
 
+from .base import TemporalConnectivity, SpectroTemporalConnectivity
+
 
 @verbose
-def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
+def envelope_correlation(data, names, combine='mean', orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
 
@@ -25,6 +27,8 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
         object (and ``stc.data`` will be used). If it's float data,
         the Hilbert transform will be applied; if it's complex data,
         it's assumed the Hilbert has already been applied.
+    names : list | array-like
+        A list of names associated with the signals in ``data``. 
     combine : 'mean' | callable | None
         How to combine correlation estimates across epochs.
         Default is 'mean'. Can be None to return without combining.
@@ -82,7 +86,16 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
     else:  # None
         fun = np.array
 
-    corrs = list()
+    n_epochs, n_nodes, n_times = data.shape
+
+    if n_nodes != len(names):
+        raise ValueError(f'The number of names should match the '
+                         f'number of signals inside `data`. '
+                         f'You passed in {len(names)} names, when '
+                         f'there are {n_nodes}.')
+
+    corrs = np.zeros((n_nodes, n_nodes, n_epochs))
+    
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
     # using multiple CPUs. And we require too much GIL for prefer='threading'
@@ -145,8 +158,22 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
             if absolute:
                 corr = np.abs(corr)
             corr = (corr.T + corr) / 2.
-        corrs.append(corr)
+
+        corrs[ei, :, :] = corr
         del corr
 
     corr = fun(corrs)
-    return corr
+
+    # create the connectivity container
+    if combine is None:
+        times = np.arange(len(corr))
+    else:
+        times = None
+    conn = TemporalConnectivity(
+            data=corr,
+            names=names,
+            times=times,
+            method='envelope-correlation',
+        )
+
+    return conn

@@ -22,7 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
-- Adding a :class:`mne_connectivity.Connectivity` data structure to hold connectivity data, by `Adam Li`_ (:gh:`6`)
+- Adding :class:`mne_connectivity.TemporalConnectivity`, :class:`mne_connectivity.SpectralConnectivity` and :class:`mne_connectivity.SpectroTemporalConnectivity` as a data structure to hold connectivity data, by `Adam Li`_ (:gh:`6`)
 
 Bug
 ~~~
@@ -30,7 +30,8 @@ Bug
 API
 ~~~
 
-
+- :func:`mne_connectivity.envelope_correlation` has a new required parameter, ``names``, which specifies the name of the signals passed in, by `Adam Li`_ (:gh:`6`)
+- :func:`envelope_correlation`, :func:`spectral_connectivity`, and :func:`phase_slope_index` all return ``Connectivity`` containers now, by `Adam Li`_ (:gh:`6`)
 
 Changes when mne-connectivity was part of MNE-Python
 ----------------------------------------------------
