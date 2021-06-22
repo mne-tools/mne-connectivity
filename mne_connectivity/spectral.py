@@ -20,6 +20,9 @@ from mne.time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
 from mne.time_frequency.tfr import morlet, cwt
 from mne.utils import logger, verbose, _time_mask, warn, _arange_div
 
+from .base import SpectralConnectivity, SpectroTemporalConnectivity
+
+
 ########################################################################
 # Various connectivity estimators
 
@@ -928,7 +931,28 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
         # for each band we return the frequencies that were averaged
         freqs = freqs_bands
 
-    return con, freqs, times, n_epochs, n_tapers
+    # create the connectivity container
+    if mode in ['multitaper', 'fourier']:
+        # spectral only
+        conn = SpectralConnectivity(
+            data=con,
+            names=indices,
+            freqs=freqs,
+            method=method,
+            spec_method=mode
+        )
+    elif mode == 'cwt_morlet':
+        # spectrotemporal
+        conn = SpectroTemporalConnectivity(
+            data=con,
+            names=indices,
+            freqs=freqs,
+            times=times,
+            method=method,
+            spec_method=mode
+        )
+
+    return conn, n_tapers
 
 
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
