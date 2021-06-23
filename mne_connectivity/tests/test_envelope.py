@@ -38,44 +38,49 @@ def _compute_corrs_orig(data):
 def test_envelope_correlation():
     """Test the envelope correlation function."""
     rng = np.random.RandomState(0)
-    data = rng.randn(2, 4, 64)
+    n_epochs, n_signals, n_times = 2, 4, 64
+    data = rng.randn(n_epochs, n_signals, n_times)
+    names = np.arange(n_signals)
     data_hilbert = hilbert(data, axis=-1)
     corr_orig = _compute_corrs_orig(data_hilbert)
     assert (0 <= corr_orig).all()
     assert (corr_orig < 1).all()
+
     # using complex data
-    corr = envelope_correlation(data_hilbert)
-    assert_allclose(corr, corr_orig)
+    corr = envelope_correlation(data_hilbert, names=names)
+    assert_allclose(corr.get_data(), corr_orig)
+
     # using callable
-    corr = envelope_correlation(data_hilbert,
+    corr = envelope_correlation(data_hilbert, names=names,
                                 combine=lambda data: np.mean(data, axis=0))
-    assert_allclose(corr, corr_orig)
+    assert_allclose(corr.get_data(), corr_orig)
+
     # do Hilbert internally, and don't combine
-    corr = envelope_correlation(data, combine=None)
+    corr = envelope_correlation(data, names=names, combine=None)
     assert corr.shape == (data.shape[0],) + corr_orig.shape
-    corr = np.mean(corr, axis=0)
+    corr = np.mean(corr.get_data(), axis=0)
     assert_allclose(corr, corr_orig)
+
     # degenerate
     with pytest.raises(ValueError, match='float'):
-        envelope_correlation(data.astype(int))
-    with pytest.raises(ValueError, match='entry in data must be 2D'):
-        envelope_correlation(data[np.newaxis])
-    with pytest.raises(ValueError, match='n_nodes mismatch'):
-        envelope_correlation([rng.randn(2, 8), rng.randn(3, 8)])
+        envelope_correlation(data.astype(int), names=names)
+    with pytest.raises(ValueError, match='Data must be 3D'):
+        envelope_correlation(data[np.newaxis], names=names)
     with pytest.raises(ValueError, match='mean or callable'):
-        envelope_correlation(data, 1.)
+        envelope_correlation(data, combine=1., names=names)
     with pytest.raises(ValueError, match='Combine option'):
-        envelope_correlation(data, 'foo')
+        envelope_correlation(data, combine='foo', names=names)
     with pytest.raises(ValueError, match='Invalid value.*orthogonalize.*'):
-        envelope_correlation(data, orthogonalize='foo')
+        envelope_correlation(data, orthogonalize='foo', names=names)
 
-    corr_plain = envelope_correlation(data, combine=None, orthogonalize=False)
+    corr_plain = envelope_correlation(data, names=names,
+                                      combine=None, orthogonalize=False)
     assert corr_plain.shape == (data.shape[0],) + corr_orig.shape
-    assert np.min(corr_plain) < 0
-    corr_plain_mean = np.mean(corr_plain, axis=0)
+    assert np.min(corr_plain.get_data()) < 0
+    corr_plain_mean = np.mean(corr_plain.get_data(), axis=0)
     assert_allclose(np.diag(corr_plain_mean), 1)
     np_corr = np.array([np.corrcoef(np.abs(x)) for x in data_hilbert])
-    assert_allclose(corr_plain, np_corr)
+    assert_allclose(corr_plain.get_data(), np_corr)
 
     # check against FieldTrip, which uses the square-log-norm version
     # from scipy.io import savemat
@@ -96,5 +101,5 @@ def test_envelope_correlation():
     ], float)
     ft_vals[np.isnan(ft_vals)] = 0
     corr_log = envelope_correlation(
-        data, combine=None, log=True, absolute=False)
-    assert_allclose(corr_log, ft_vals)
+        data, names=names, combine=None, log=True, absolute=False)
+    assert_allclose(corr_log.get_data(), ft_vals)

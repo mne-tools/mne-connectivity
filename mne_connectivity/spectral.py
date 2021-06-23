@@ -560,7 +560,8 @@ def _check_estimators(method, mode):
 
 
 @verbose
-def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
+def spectral_connectivity(data, names, method='coh', indices=None,
+                          sfreq=2 * np.pi,
                           mode='multitaper', fmin=None, fmax=np.inf,
                           fskip=0, faverage=False, tmin=None, tmax=None,
                           mt_bandwidth=None, mt_adaptive=False,
@@ -760,6 +761,7 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
     if np.any(fmin > fmax):
         raise ValueError('fmax must be larger than fmin')
 
+    n_epochs, n_nodes, n_times = data.shape
     n_bands = len(fmin)
 
     # assign names to connectivity methods
@@ -931,25 +933,48 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
         # for each band we return the frequencies that were averaged
         freqs = freqs_bands
 
+    if indices is not None:
+        if mode in ['multitaper', 'fourier']:
+            subset_con = np.empty((n_nodes, n_nodes, len(freqs)),
+                                  dtype=np.complex128)
+        elif mode == 'cwt_morlet':
+            subset_con = np.empty((n_nodes, n_nodes, len(freqs), n_times),
+                                  dtype=np.complex128)
+        subset_con[:] = np.nan
+        row_idx, col_idx = indices
+        # print('inside spectral')
+        # print(indices)
+        # print(indices_use)
+        subset_con[row_idx, col_idx, ...] = con
+        # nan_idx = np.argwhere(np.isnan(subset_con))
+        # print(nan_idx)
+        # print(np.unique(nan_idx[:, 0]))
+        # print(np.unique(nan_idx[:, 1]))
+        # print(np.unique(nan_idx[:, 2]))
+    else:
+        subset_con = con
+
     # create the connectivity container
     if mode in ['multitaper', 'fourier']:
         # spectral only
         conn = SpectralConnectivity(
-            data=con,
-            names=indices,
+            data=subset_con,
+            names=names,
             freqs=freqs,
             method=method,
-            spec_method=mode
+            spec_method=mode,
+            indices=indices
         )
     elif mode == 'cwt_morlet':
         # spectrotemporal
         conn = SpectroTemporalConnectivity(
-            data=con,
-            names=indices,
+            data=subset_con,
+            names=names,
             freqs=freqs,
             times=times,
             method=method,
-            spec_method=mode
+            spec_method=mode,
+            indices=indices
         )
 
     return conn, n_tapers

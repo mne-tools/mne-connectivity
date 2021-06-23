@@ -12,7 +12,7 @@ from .base import SpectralConnectivity, SpectroTemporalConnectivity
 
 
 @verbose
-def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
+def phase_slope_index(data, names, indices=None, sfreq=2 * np.pi,
                       mode='multitaper', fmin=None, fmax=np.inf,
                       tmin=None, tmax=None, mt_bandwidth=None,
                       mt_adaptive=False, mt_low_bias=True,
@@ -95,7 +95,8 @@ def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
         (n_con, n_bands) mode: 'multitaper' or 'fourier'
         (n_con, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
-        Either a `SpectralConnnectivity`, or `SpectroTemporalConnectivity` container.
+        Either a `SpectralConnnectivity`, or `SpectroTemporalConnectivity`
+        container.
     freqs : array
         Frequency points at which the connectivity was computed.
     times : array
@@ -115,14 +116,19 @@ def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
     logger.info('Estimating phase slope index (PSI)')
     # estimate the coherency
     cohy, n_tapers = spectral_connectivity(
-        data, method='cohy', indices=indices, sfreq=sfreq, mode=mode,
+        data, names, method='cohy', indices=indices, sfreq=sfreq, mode=mode,
         fmin=fmin, fmax=fmax, fskip=0, faverage=False, tmin=tmin, tmax=tmax,
         mt_bandwidth=mt_bandwidth, mt_adaptive=mt_adaptive,
         mt_low_bias=mt_low_bias, cwt_freqs=cwt_freqs,
         cwt_n_cycles=cwt_n_cycles, block_size=block_size, n_jobs=n_jobs,
         verbose=verbose)
-    times = cohy.times
-    
+
+    if isinstance(cohy, SpectroTemporalConnectivity):
+        times = cohy.times
+    else:
+        times = None
+    freqs_ = cohy.freqs
+
     logger.info('Computing PSI from estimated Coherency')
     # compute PSI in the requested bands
     if fmin is None:
@@ -165,20 +171,22 @@ def phase_slope_index(data, indices=None, sfreq=2 * np.pi,
         # spectral only
         conn = SpectralConnectivity(
             data=psi,
-            names=indices,
+            names=names,
             freqs=freqs,
             method='phase-slope-index',
-            spec_method=mode
+            spec_method=mode,
+            indices=indices
         )
     elif mode == 'cwt_morlet':
         # spectrotemporal
         conn = SpectroTemporalConnectivity(
             data=psi,
-            names=indices,
+            names=names,
             freqs=freqs,
             times=times,
             method='phase-slope-index',
-            spec_method=mode
+            spec_method=mode,
+            indices=indices
         )
 
     return conn, n_tapers
