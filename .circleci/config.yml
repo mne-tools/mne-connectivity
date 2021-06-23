@@ -55,7 +55,7 @@ jobs:
 
         - run:
             <<: *xvfb
-            
+
         # Load pip cache
         - restore_cache:
             keys:
@@ -92,7 +92,7 @@ jobs:
         - restore_cache:
             keys:
               - data-cache
-        
+
         - run:
             name: Check PyQt5
             command: LD_DEBUG=libs python -c "from PyQt5.QtWidgets import QApplication, QWidget; app = QApplication([])"

@@ -1,13 +1,15 @@
 """Configure details for documentation with sphinx."""
+from datetime import date
 import os
 import sys
-from datetime import date
+import warnings
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
 
+import mne
 sys.path.insert(0, os.path.abspath(".."))
-import mne_connectivity
+import mne_connectivity  # noqa: E402
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -62,7 +64,7 @@ numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_use_blockquotes = True
 
-default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
+default_role = 'py:obj'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -142,8 +144,8 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
-    'sklearn': ('http://scikit-learn.org/stable', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
     'pyvista': ('https://docs.pyvista.org', None),
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
     'nibabel': ('https://nipy.org/nibabel', None),
@@ -192,6 +194,7 @@ sphinx_gallery_conf = {
     'filename_pattern': '^((?!sgskip).)*$',
     'matplotlib_animations': True,
     'compress_images': ('images', 'thumbnails'),
+    'image_scrapers': scrapers,
 }
 
 # sphinxcontrib-bibtex
