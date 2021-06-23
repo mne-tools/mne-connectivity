@@ -194,6 +194,7 @@ sphinx_gallery_conf = {
     'filename_pattern': '^((?!sgskip).)*$',
     'matplotlib_animations': True,
     'compress_images': ('images', 'thumbnails'),
+    'image_scrapers': scrapers,
 }
 
 # sphinxcontrib-bibtex
