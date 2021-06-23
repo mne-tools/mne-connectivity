@@ -10,11 +10,11 @@ from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import verbose, _check_combine, _check_option
 
-from .base import EpochTemporalConnectivity
+from .base import EpochTemporalConnectivity, TemporalConnectivity
 
 
 @verbose
-def envelope_correlation(data, names, indices=None, combine='mean',
+def envelope_correlation(data, indices=None, names=None, combine='mean',
                          orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
@@ -28,11 +28,12 @@ def envelope_correlation(data, names, indices=None, combine='mean',
         object (and ``stc.data`` will be used). If it's float data,
         the Hilbert transform will be applied; if it's complex data,
         it's assumed the Hilbert has already been applied.
-    names : list | array-like
-        A list of names associated with the signals in ``data``.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
+    names : list | array-like | None
+        A list of names associated with the signals in ``data``.
+        If None, will be a list of indices of the number of nodes.
     combine : 'mean' | callable | None
         How to combine correlation estimates across epochs.
         Default is 'mean'. Can be None to return without combining.
@@ -89,7 +90,7 @@ def envelope_correlation(data, names, indices=None, combine='mean',
         fun = _check_combine(combine, valid=('mean',))
     else:  # None
         fun = np.array
-   
+
     corrs = list()
 
     # Note: This is embarassingly parallel, but the overhead of sending
@@ -107,7 +108,7 @@ def envelope_correlation(data, names, indices=None, combine='mean',
             raise ValueError('n_nodes mismatch between data[0] and data[%d], '
                              'got %s and %s'
                              % (ei, n_nodes, corrs[0].shape[0]))
-        
+
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
         if epoch_data.dtype in (np.float32, np.float64):
@@ -161,17 +162,27 @@ def envelope_correlation(data, names, indices=None, combine='mean',
 
     n_epochs = len(corrs)
     corr = fun(corrs)
-    
+
     # create the connectivity container
     times = None
 
-    conn = EpochTemporalConnectivity(
-        data=corr,
-        names=names,
-        n_epochs=n_epochs,
-        times=times,
-        method='envelope-correlation',
-        indices=indices
-    )
+    if combine is None:
+        conn = EpochTemporalConnectivity(
+            data=corr,
+            names=names,
+            n_epochs=n_epochs,
+            times=times,
+            method='envelope-correlation',
+            indices=indices
+        )
+    else:
+        conn = TemporalConnectivity(
+            data=corr,
+            names=names,
+            n_epochs=n_epochs,
+            times=times,
+            method='envelope-correlation',
+            indices=indices
+        )
 
     return conn

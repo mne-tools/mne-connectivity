@@ -12,7 +12,6 @@ def test_psi():
     n_times = 500
     rng = np.random.RandomState(42)
     data = rng.randn(n_epochs, n_signals, n_times)
-    names = np.arange(n_signals)
 
     # simulate time shifts
     for i in range(n_epochs):
@@ -20,7 +19,7 @@ def test_psi():
         data[i, 2, :-10] = data[i, 0, 10:]  # signal 2 is ahead
 
     conn, n_tapers = phase_slope_index(
-        data, names, mode='fourier', sfreq=sfreq)
+        data, mode='fourier', sfreq=sfreq)
 
     assert conn.data[1, 0, 0] < 0
     assert conn.data[2, 0, 0] > 0
@@ -28,7 +27,7 @@ def test_psi():
     # only compute for a subset of the indices
     indices = (np.array([0]), np.array([1]))
     conn_2, n_tapers = phase_slope_index(
-        data, names, mode='fourier', sfreq=sfreq, indices=indices)
+        data, mode='fourier', sfreq=sfreq, indices=indices)
 
     # the measure is symmetric (sign flip)
     assert_array_almost_equal(conn_2.get_data()[0, 0],
@@ -36,7 +35,7 @@ def test_psi():
 
     cwt_freqs = np.arange(5., 20, 0.5)
     conn_cwt, n_tapers = phase_slope_index(
-        data, names, mode='cwt_morlet', sfreq=sfreq, cwt_freqs=cwt_freqs,
+        data, mode='cwt_morlet', sfreq=sfreq, cwt_freqs=cwt_freqs,
         indices=indices)
 
     assert np.all(conn_cwt.get_data() > 0)

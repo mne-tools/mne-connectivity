@@ -12,7 +12,7 @@ from .base import SpectralConnectivity, SpectroTemporalConnectivity
 
 
 @verbose
-def phase_slope_index(data, names, indices=None, sfreq=2 * np.pi,
+def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
                       mode='multitaper', fmin=None, fmax=np.inf,
                       tmin=None, tmax=None, mt_bandwidth=None,
                       mt_adaptive=False, mt_low_bias=True,
