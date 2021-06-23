@@ -1,13 +1,15 @@
 """Configure details for documentation with sphinx."""
+from datetime import date
 import os
 import sys
-from datetime import date
+import warnings
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
 
+import mne
 sys.path.insert(0, os.path.abspath(".."))
-import mne_connectivity
+import mne_connectivity  # noqa: E402
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
