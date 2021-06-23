@@ -170,7 +170,6 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         conn = EpochTemporalConnectivity(
             data=corr,
             names=names,
-            n_epochs=n_epochs,
             times=times,
             method='envelope-correlation',
             indices=indices
@@ -179,10 +178,10 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         conn = TemporalConnectivity(
             data=corr,
             names=names,
-            n_epochs=n_epochs,
             times=times,
             method='envelope-correlation',
-            indices=indices
+            indices=indices,
+            n_epochs=n_epochs
         )
 
     return conn
