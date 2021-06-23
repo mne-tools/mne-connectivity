@@ -7,6 +7,7 @@
 import numpy as np
 
 from mne.filter import next_fast_len
+from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import verbose, _check_combine, _check_option
 
 from .base import EpochTemporalConnectivity
@@ -88,23 +89,25 @@ def envelope_correlation(data, names, indices=None, combine='mean',
         fun = _check_combine(combine, valid=('mean',))
     else:  # None
         fun = np.array
-
-    if data.ndim != 3:
-        raise ValueError(f'Data must be 3D, got shape {data.shape}')
-
-    n_epochs, n_nodes, n_times = data.shape
-    if n_nodes != len(names):
-        raise ValueError(f'The number of names should match the '
-                         f'number of signals inside `data`. '
-                         f'You passed in {len(names)} names, when '
-                         f'there are {n_nodes}.')
-    corrs = np.zeros((n_epochs, n_nodes, n_nodes))
+   
+    corrs = list()
 
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
     # using multiple CPUs. And we require too much GIL for prefer='threading'
     # to help.
     for ei, epoch_data in enumerate(data):
+        if isinstance(epoch_data, _BaseSourceEstimate):
+            epoch_data = epoch_data.data
+        if epoch_data.ndim != 2:
+            raise ValueError('Each entry in data must be 2D, got shape %s'
+                             % (epoch_data.shape,))
+        n_nodes, n_times = epoch_data.shape
+        if ei > 0 and n_nodes != corrs[0].shape[0]:
+            raise ValueError('n_nodes mismatch between data[0] and data[%d], '
+                             'got %s and %s'
+                             % (ei, n_nodes, corrs[0].shape[0]))
+        
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
         if epoch_data.dtype in (np.float32, np.float64):
@@ -153,11 +156,12 @@ def envelope_correlation(data, names, indices=None, combine='mean',
                 corr = np.abs(corr)
             corr = (corr.T + corr) / 2.
 
-        corrs[ei, :, :] = corr
+        corrs.append(corr)
         del corr
 
+    n_epochs = len(corrs)
     corr = fun(corrs)
-
+    
     # create the connectivity container
     times = None
 

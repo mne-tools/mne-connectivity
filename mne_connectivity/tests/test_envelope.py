@@ -64,8 +64,10 @@ def test_envelope_correlation():
     # degenerate
     with pytest.raises(ValueError, match='float'):
         envelope_correlation(data.astype(int), names=names)
-    with pytest.raises(ValueError, match='Data must be 3D'):
+    with pytest.raises(ValueError, match='entry in data must be 2D'):
         envelope_correlation(data[np.newaxis], names=names)
+    with pytest.raises(ValueError, match='n_nodes mismatch'):
+        envelope_correlation([rng.randn(2, 8), rng.randn(3, 8)])
     with pytest.raises(ValueError, match='mean or callable'):
         envelope_correlation(data, combine=1., names=names)
     with pytest.raises(ValueError, match='Combine option'):
