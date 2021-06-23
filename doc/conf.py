@@ -64,7 +64,7 @@ numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_use_blockquotes = True
 
-default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
+default_role = 'py:obj'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
