@@ -177,9 +177,9 @@ jobs:
               git config --global user.email "circle@mne.com";
               git config --global user.name "Circle CI";
               cd ~/mne-connectivity;
-              git checkout gh-pages
               git remote -v
               git fetch origin
+              git checkout gh-pages
               git reset --hard origin/gh-pages
               git clean -xdf
               if [ "${CIRCLE_BRANCH}" == "main" ]; then
