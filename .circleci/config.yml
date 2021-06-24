@@ -177,16 +177,6 @@ jobs:
                 - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
 
           - run:
-              name: Fetch docs
-              command: |
-                set -e
-                mkdir -p ~/.ssh
-                echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
-                chmod og= ~/.ssh/config
-                if [ ! -d ~/mne-connectivity ]; then
-                  git clone git@github.com:/mne-tools/mne-connectivity.git ~/mne-connectivity --depth=1
-                fi
-          - run:
               # push built docs into the `dev` directory on the `gh-pages` branch
               name: Deploy docs to gh-pages branch
               command: |
