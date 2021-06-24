@@ -55,7 +55,7 @@ jobs:
 
         - run:
             <<: *xvfb
-            
+
         # Load pip cache
         - restore_cache:
             keys:
@@ -92,7 +92,7 @@ jobs:
         - restore_cache:
             keys:
               - data-cache
-        
+
         - run:
             name: Check PyQt5
             command: LD_DEBUG=libs python -c "from PyQt5.QtWidgets import QApplication, QWidget; app = QApplication([])"
@@ -177,10 +177,10 @@ jobs:
               git config --global user.email "circle@mne.com";
               git config --global user.name "Circle CI";
               cd ~/mne-connectivity;
-              git checkout main
+              git checkout gh-pages
               git remote -v
               git fetch origin
-              git reset --hard origin/main
+              git reset --hard origin/gh-pages
               git clean -xdf
               if [ "${CIRCLE_BRANCH}" == "main" ]; then
                 echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
@@ -190,7 +190,6 @@ jobs:
                 git commit -m "CircleCI update of mne-connectivity docs (${CIRCLE_BUILD_NUM}).";
               else
                 echo "No deployment (build: ${CIRCLE_BRANCH}).";
-                            else
                 echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
                 rm -Rf stable;
                 cp -a /tmp/build/html_stable stable;

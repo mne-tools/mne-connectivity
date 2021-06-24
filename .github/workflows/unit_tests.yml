@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python-version: [ 3.6 ]
+        os: [ ubuntu-latest ]
+        python-version: [ 3.9 ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -141,4 +141,3 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           file: ./coverage.xml
-
