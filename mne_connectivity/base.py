@@ -95,6 +95,10 @@ class _Connectivity():
         else:
             return self.data
 
+    def rename_nodes(self, from_mapping, to_mapping='auto', 
+                     allow_duplicates=False):
+        pass
+
     def plot_circle(self):
         pass
 
