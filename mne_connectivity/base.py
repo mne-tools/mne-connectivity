@@ -187,9 +187,12 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     def dims(self):
         return ('epochs', 'node_in', 'node_out', 'freqs')
 
+    def __len__(self):
+        return len(self.data)
+
     @property
     def n_epochs(self):
-        return len(self.data)
+        return len(self)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
