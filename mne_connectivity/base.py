@@ -7,7 +7,7 @@ class _Connectivity():
     def __init__(self, data, names, method, indices):
         """Base class container for connectivity data.
 
-        Connectivity data is anything represents "connections"
+        Connectivity data is anything that represents "connections"
         between nodes as a (N, N) array. It can be symmetric, or
         asymmetric (if it is symmetric, storage optimization will
         occur). In addition,
