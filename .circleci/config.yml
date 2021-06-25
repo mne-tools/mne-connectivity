@@ -151,56 +151,96 @@ jobs:
               - ~/.mne
               - ~/mne_data/MNE-sample-data
 
-    deploy:
-      docker:
-        - image: circleci/python:3.6-jessie
-      steps:
-        - attach_workspace:
-            at: /tmp/build
-        - restore_cache:
-            keys:
-              - website-cache
-        - run:
-            name: Fetch docs
-            command: |
-              set -e
-              mkdir -p ~/.ssh
-              echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
-              chmod og= ~/.ssh/config
-              if [ ! -d ~/mne-connectivity ]; then
-                git clone git@github.com:/mne-tools/mne-connectivity.git ~/mne-connectivity --depth=1
-              fi
-        - run:
-            name: Deploy docs
-            command: |
-              set -e;
-              git config --global user.email "circle@mne.com";
-              git config --global user.name "Circle CI";
-              cd ~/mne-connectivity;
-              git remote -v
-              git fetch origin
-              git checkout gh-pages
-              git reset --hard origin/gh-pages
-              git clean -xdf
-              if [ "${CIRCLE_BRANCH}" == "main" ]; then
-                echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
-                rm -Rf dev;  # remove the dev folder
-                cp -a /tmp/build/html dev;
-                git add -A;
-                git commit -m "CircleCI update of mne-connectivity docs (${CIRCLE_BUILD_NUM}).";
-              else
-                echo "No deployment (build: ${CIRCLE_BRANCH}).";
-                echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
-                rm -Rf stable;
-                cp -a /tmp/build/html_stable stable;
-                git add -A;
-                git commit -m "CircleCI update of stable docs (${CIRCLE_BUILD_NUM}).";
-              fi;
-              git push origin gh-pages;
-        - save_cache:
-            key: website-cache
-            paths:
-              - ~/mne-connectivity
+    docs-deploy:
+        docker:
+          - image: node:8
+        steps:
+          - checkout
+
+          - attach_workspace:
+              at: doc/_build
+
+          - restore_cache:
+              keys:
+                - website-cache
+
+          - run:
+              name: Install and configure dependencies
+              command: |
+                npm install --global gh-pages@3.0
+                git config --global user.email "circle@mne.com"
+                git config --global user.name "Circle Ci"
+                
+          - add_ssh_keys:
+              fingerprints:
+                - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
+
+          - run:
+              # push built docs into the `dev` directory on the `gh-pages` branch
+              name: Deploy docs to gh-pages branch
+              command: |
+                if [ "${CIRCLE_BRANCH}" == "main" ]; then
+                  echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
+                  gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./dev
+                else
+                  echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
+                  gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./stable
+                fi;
+          
+          - save_cache:
+              key: website-cache
+              paths:
+                - ~/mne-connectivity
+    # deploy:
+    #   docker:
+    #     - image: circleci/python:3.6-jessie
+    #   steps:
+    #     - attach_workspace:
+    #         at: /tmp/build
+    #     - restore_cache:
+    #         keys:
+    #           - website-cache
+    #     - run:
+    #         name: Fetch docs
+    #         command: |
+    #           set -e
+    #           mkdir -p ~/.ssh
+    #           echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
+    #           chmod og= ~/.ssh/config
+    #           if [ ! -d ~/mne-connectivity ]; then
+    #             git clone git@github.com:/mne-tools/mne-connectivity.git ~/mne-connectivity --depth=1
+    #           fi
+    #     - run:
+    #         name: Deploy docs
+    #         command: |
+    #           set -e;
+    #           git config --global user.email "circle@mne.com";
+    #           git config --global user.name "Circle CI";
+    #           cd ~/mne-connectivity;
+    #           git remote -v
+    #           git fetch origin
+    #           git checkout gh-pages
+    #           git reset --hard origin/gh-pages
+    #           git clean -xdf
+    #           if [ "${CIRCLE_BRANCH}" == "main" ]; then
+    #             echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
+    #             rm -Rf dev;  # remove the dev folder
+    #             cp -a /tmp/build/html dev;
+    #             git add -A;
+    #             git commit -m "CircleCI update of mne-connectivity docs (${CIRCLE_BUILD_NUM}).";
+    #           else
+    #             echo "No deployment (build: ${CIRCLE_BRANCH}).";
+    #             echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
+    #             rm -Rf stable;
+    #             cp -a /tmp/build/html_stable stable;
+    #             git add -A;
+    #             git commit -m "CircleCI update of stable docs (${CIRCLE_BUILD_NUM}).";
+    #           fi;
+    #           git push origin gh-pages;
+    #     - save_cache:
+    #         key: website-cache
+    #         paths:
+              # - ~/mne-connectivity
 
 workflows:
   version: 2
@@ -208,7 +248,7 @@ workflows:
   default:
     jobs:
       - build_docs
-      - deploy:
+      - docs-deploy:
           requires:
             - build_docs
           filters:
