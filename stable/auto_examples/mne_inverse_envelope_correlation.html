@@ -1,0 +1,980 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.1 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compute envelope correlations in volume source space" href="mne_inverse_envelope_correlation_volume.html" />
+    <link rel="prev" title="Compute coherence in source space using a MNE inverse solution" href="mne_inverse_coherence_epochs.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-Connectivity</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Examples
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Compute envelope correlations in source space</a><ul>
+<li><a class="reference internal" href="#compute-the-forward-and-inverse">Compute the forward and inverse</a></li>
+<li><a class="reference internal" href="#compute-label-time-series-and-do-envelope-correlation">Compute label time series and do envelope correlation</a></li>
+<li><a class="reference internal" href="#compute-the-degree-and-plot-it">Compute the degree and plot it</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compute-the-forward-and-inverse">
+   Compute the forward and inverse
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compute-label-time-series-and-do-envelope-correlation">
+   Compute label time series and do envelope correlation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compute-the-degree-and-plot-it">
+   Compute the degree and plot it
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="compute-envelope-correlations-in-source-space">
+<span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this headline">¶</a></h1>
+<p>Compute envelope correlations of orthogonalized activity
+<a class="footnote-reference brackets" href="#hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#khanetal2018" id="id2">2</a> in source space using resting state
+CTF data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Eric Larson &lt;larson.eric.d@gmail.com&gt;</span>
+<span class="c1">#          Sheraz Khan &lt;sheraz@khansheraz.com&gt;</span>
+<span class="c1">#          Denis Engemann &lt;denis.engemann@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.envelope_correlation.html#mne_connectivity.envelope_correlation" title="mne_connectivity.envelope_correlation" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">envelope_correlation</span></a>
+<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.make_inverse_operator.html#mne.minimum_norm.make_inverse_operator" title="mne.minimum_norm.make_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">make_inverse_operator</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_ecg.html#mne.preprocessing.compute_proj_ecg" title="mne.preprocessing.compute_proj_ecg" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_ecg</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_eog.html#mne.preprocessing.compute_proj_eog" title="mne.preprocessing.compute_proj_eog" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_eog</span></a>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.brainstorm.bst_resting.data_path.html#mne.datasets.brainstorm.bst_resting.data_path" title="mne.datasets.brainstorm.bst_resting.data_path" class="sphx-glr-backref-module-mne-datasets-brainstorm-bst_resting sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">brainstorm</span><span class="o">.</span><span class="n">bst_resting</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;subjects&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s1">&#39;bst_resting&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;bst_resting&#39;</span><span class="p">,</span> <span class="s1">&#39;bst_resting-trans.fif&#39;</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;bem&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">+</span> <span class="s1">&#39;-oct-6-src.fif&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bem</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;bem&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">+</span> <span class="s1">&#39;-5120-bem-sol.fif&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;bst_resting&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;subj002_spontaneous_20111102_01_AUX.ds&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>License
+-------
+This tutorial dataset (EEG and MRI data) remains a property of the MEG Lab,
+McConnell Brain Imaging Center, Montreal Neurological Institute,
+McGill University, Canada. Its use and transfer outside the Brainstorm
+tutorial, e.g. for research purposes, is prohibited without written consent
+from the MEG Lab.
+
+If you reference this dataset in your publications, please:
+
+    1) acknowledge its authors: Elizabeth Bock, Esther Florin, Francois Tadel
+       and Sylvain Baillet, and
+    2) cite Brainstorm as indicated on the website:
+       http://neuroimage.usc.edu/brainstorm
+
+For questions, please contact Francois Tadel (francois.tadel@mcgill.ca).
+Agree (y/[n])? Downloading archive bst_resting.tar.gz to /home/circleci/mne_data
+Downloading https://files.osf.io/v1/resources/rxvq7/providers/osfstorage/59c13240b83f6902528ca2c6?version=3&amp;action=download&amp;direct (2.40 GB)
+
+  0%|          | Downloading : 0.00/2.40G [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 1.99M/2.40G [00:00&lt;00:30,    84.8MB/s]
+  0%|          | Downloading : 4.99M/2.40G [00:00&lt;00:29,    86.4MB/s]
+  0%|          | Downloading : 8.99M/2.40G [00:00&lt;00:25,     102MB/s]
+  0%|          | Downloading : 11.0M/2.40G [00:00&lt;00:24,     105MB/s]
+  1%|          | Downloading : 13.0M/2.40G [00:00&lt;00:24,     106MB/s]
+  1%|          | Downloading : 15.0M/2.40G [00:00&lt;00:24,     106MB/s]
+  1%|          | Downloading : 17.0M/2.40G [00:00&lt;00:24,     106MB/s]
+  1%|          | Downloading : 19.0M/2.40G [00:00&lt;00:23,     107MB/s]
+  1%|          | Downloading : 21.0M/2.40G [00:00&lt;00:23,     108MB/s]
+  1%|          | Downloading : 23.0M/2.40G [00:00&lt;00:23,     108MB/s]
+  1%|1         | Downloading : 27.0M/2.40G [00:00&lt;00:23,     109MB/s]
+  1%|1         | Downloading : 31.0M/2.40G [00:00&lt;00:22,     112MB/s]
+  1%|1         | Downloading : 35.0M/2.40G [00:00&lt;00:22,     114MB/s]
+  2%|1         | Downloading : 39.0M/2.40G [00:00&lt;00:21,     116MB/s]
+  2%|1         | Downloading : 41.0M/2.40G [00:00&lt;00:23,     110MB/s]
+  2%|1         | Downloading : 43.0M/2.40G [00:00&lt;00:23,     109MB/s]
+  2%|1         | Downloading : 47.0M/2.40G [00:00&lt;00:22,     111MB/s]
+  2%|2         | Downloading : 51.0M/2.40G [00:00&lt;00:22,     112MB/s]
+  2%|2         | Downloading : 53.0M/2.40G [00:00&lt;00:23,     107MB/s]
+  2%|2         | Downloading : 55.0M/2.40G [00:00&lt;00:24,     103MB/s]
+  2%|2         | Downloading : 57.0M/2.40G [00:00&lt;00:24,     102MB/s]
+  2%|2         | Downloading : 59.0M/2.40G [00:00&lt;00:25,     100MB/s]
+  2%|2         | Downloading : 61.0M/2.40G [00:00&lt;00:25,    98.8MB/s]
+  3%|2         | Downloading : 63.0M/2.40G [00:00&lt;00:25,    99.0MB/s]
+  3%|2         | Downloading : 65.0M/2.40G [00:00&lt;00:25,     100MB/s]
+  3%|2         | Downloading : 71.0M/2.40G [00:00&lt;00:23,     107MB/s]
+  3%|3         | Downloading : 75.0M/2.40G [00:00&lt;00:25,    99.8MB/s]
+  3%|3         | Downloading : 79.0M/2.40G [00:00&lt;00:25,    99.3MB/s]
+  3%|3         | Downloading : 83.0M/2.40G [00:00&lt;00:25,    98.5MB/s]
+  4%|3         | Downloading : 87.0M/2.40G [00:00&lt;00:24,     101MB/s]
+  4%|3         | Downloading : 91.0M/2.40G [00:00&lt;00:23,     104MB/s]
+  4%|3         | Downloading : 95.0M/2.40G [00:00&lt;00:23,     106MB/s]
+  4%|4         | Downloading : 99.0M/2.40G [00:00&lt;00:22,     108MB/s]
+  4%|4         | Downloading : 103M/2.40G [00:01&lt;00:22,     111MB/s]
+  4%|4         | Downloading : 107M/2.40G [00:01&lt;00:22,     111MB/s]
+  5%|4         | Downloading : 111M/2.40G [00:01&lt;00:22,     111MB/s]
+  5%|4         | Downloading : 115M/2.40G [00:01&lt;00:21,     112MB/s]
+  5%|4         | Downloading : 119M/2.40G [00:01&lt;00:21,     113MB/s]
+  5%|4         | Downloading : 123M/2.40G [00:01&lt;00:21,     113MB/s]
+  5%|5         | Downloading : 127M/2.40G [00:01&lt;00:21,     114MB/s]
+  5%|5         | Downloading : 131M/2.40G [00:01&lt;00:21,     115MB/s]
+  5%|5         | Downloading : 135M/2.40G [00:01&lt;00:20,     117MB/s]
+  6%|5         | Downloading : 139M/2.40G [00:01&lt;00:20,     120MB/s]
+  6%|5         | Downloading : 143M/2.40G [00:01&lt;00:19,     122MB/s]
+  6%|5         | Downloading : 147M/2.40G [00:01&lt;00:19,     125MB/s]
+  6%|6         | Downloading : 151M/2.40G [00:01&lt;00:19,     127MB/s]
+  6%|6         | Downloading : 155M/2.40G [00:01&lt;00:18,     129MB/s]
+  6%|6         | Downloading : 159M/2.40G [00:01&lt;00:18,     133MB/s]
+  7%|6         | Downloading : 163M/2.40G [00:01&lt;00:17,     135MB/s]
+  7%|6         | Downloading : 167M/2.40G [00:01&lt;00:17,     138MB/s]
+  7%|6         | Downloading : 171M/2.40G [00:01&lt;00:17,     138MB/s]
+  7%|7         | Downloading : 175M/2.40G [00:01&lt;00:17,     135MB/s]
+  7%|7         | Downloading : 179M/2.40G [00:01&lt;00:17,     138MB/s]
+  7%|7         | Downloading : 183M/2.40G [00:01&lt;00:17,     138MB/s]
+  8%|7         | Downloading : 187M/2.40G [00:01&lt;00:16,     141MB/s]
+  8%|7         | Downloading : 191M/2.40G [00:01&lt;00:16,     142MB/s]
+  8%|7         | Downloading : 195M/2.40G [00:01&lt;00:16,     143MB/s]
+  8%|8         | Downloading : 199M/2.40G [00:01&lt;00:16,     143MB/s]
+  8%|8         | Downloading : 203M/2.40G [00:01&lt;00:16,     145MB/s]
+  8%|8         | Downloading : 207M/2.40G [00:01&lt;00:16,     145MB/s]
+  9%|8         | Downloading : 211M/2.40G [00:01&lt;00:16,     147MB/s]
+  9%|8         | Downloading : 215M/2.40G [00:01&lt;00:16,     147MB/s]
+  9%|8         | Downloading : 219M/2.40G [00:01&lt;00:15,     148MB/s]
+  9%|9         | Downloading : 223M/2.40G [00:01&lt;00:15,     147MB/s]
+  9%|9         | Downloading : 227M/2.40G [00:01&lt;00:15,     148MB/s]
+  9%|9         | Downloading : 231M/2.40G [00:01&lt;00:16,     145MB/s]
+ 10%|9         | Downloading : 235M/2.40G [00:01&lt;00:15,     147MB/s]
+ 10%|9         | Downloading : 239M/2.40G [00:01&lt;00:15,     147MB/s]
+ 10%|9         | Downloading : 243M/2.40G [00:01&lt;00:16,     144MB/s]
+ 10%|#         | Downloading : 247M/2.40G [00:02&lt;00:16,     145MB/s]
+ 10%|#         | Downloading : 251M/2.40G [00:02&lt;00:15,     147MB/s]
+ 10%|#         | Downloading : 255M/2.40G [00:02&lt;00:16,     141MB/s]
+ 11%|#         | Downloading : 259M/2.40G [00:02&lt;00:16,     142MB/s]
+ 11%|#         | Downloading : 263M/2.40G [00:02&lt;00:15,     145MB/s]
+ 11%|#         | Downloading : 267M/2.40G [00:02&lt;00:15,     147MB/s]
+ 11%|#1        | Downloading : 271M/2.40G [00:02&lt;00:16,     143MB/s]
+ 11%|#1        | Downloading : 275M/2.40G [00:02&lt;00:15,     145MB/s]
+ 12%|#1        | Downloading : 287M/2.40G [00:02&lt;00:16,     142MB/s]
+ 12%|#1        | Downloading : 295M/2.40G [00:02&lt;00:15,     147MB/s]
+ 12%|#2        | Downloading : 303M/2.40G [00:02&lt;00:15,     146MB/s]
+ 13%|#2        | Downloading : 311M/2.40G [00:02&lt;00:15,     142MB/s]
+ 13%|#2        | Downloading : 319M/2.40G [00:02&lt;00:15,     146MB/s]
+ 13%|#3        | Downloading : 327M/2.40G [00:02&lt;00:15,     147MB/s]
+ 14%|#3        | Downloading : 335M/2.40G [00:02&lt;00:14,     149MB/s]
+ 14%|#3        | Downloading : 343M/2.40G [00:02&lt;00:15,     146MB/s]
+ 14%|#4        | Downloading : 351M/2.40G [00:02&lt;00:14,     149MB/s]
+ 15%|#4        | Downloading : 359M/2.40G [00:02&lt;00:14,     148MB/s]
+ 15%|#4        | Downloading : 367M/2.40G [00:02&lt;00:14,     152MB/s]
+ 15%|#5        | Downloading : 375M/2.40G [00:02&lt;00:14,     151MB/s]
+ 16%|#5        | Downloading : 383M/2.40G [00:02&lt;00:14,     155MB/s]
+ 16%|#5        | Downloading : 391M/2.40G [00:02&lt;00:14,     153MB/s]
+ 16%|#6        | Downloading : 399M/2.40G [00:03&lt;00:13,     156MB/s]
+ 17%|#6        | Downloading : 407M/2.40G [00:03&lt;00:13,     154MB/s]
+ 17%|#6        | Downloading : 415M/2.40G [00:03&lt;00:13,     158MB/s]
+ 17%|#7        | Downloading : 423M/2.40G [00:03&lt;00:13,     155MB/s]
+ 18%|#7        | Downloading : 431M/2.40G [00:03&lt;00:13,     158MB/s]
+ 18%|#7        | Downloading : 439M/2.40G [00:03&lt;00:13,     156MB/s]
+ 18%|#8        | Downloading : 447M/2.40G [00:03&lt;00:13,     158MB/s]
+ 18%|#8        | Downloading : 455M/2.40G [00:03&lt;00:13,     156MB/s]
+ 19%|#8        | Downloading : 463M/2.40G [00:03&lt;00:13,     160MB/s]
+ 19%|#9        | Downloading : 471M/2.40G [00:03&lt;00:13,     159MB/s]
+ 19%|#9        | Downloading : 479M/2.40G [00:03&lt;00:12,     163MB/s]
+ 20%|#9        | Downloading : 487M/2.40G [00:03&lt;00:12,     160MB/s]
+ 20%|##        | Downloading : 495M/2.40G [00:03&lt;00:12,     163MB/s]
+ 20%|##        | Downloading : 503M/2.40G [00:03&lt;00:12,     161MB/s]
+ 21%|##        | Downloading : 511M/2.40G [00:03&lt;00:12,     161MB/s]
+ 21%|##1       | Downloading : 519M/2.40G [00:03&lt;00:12,     161MB/s]
+ 21%|##1       | Downloading : 527M/2.40G [00:03&lt;00:12,     163MB/s]
+ 22%|##1       | Downloading : 535M/2.40G [00:03&lt;00:12,     162MB/s]
+ 22%|##2       | Downloading : 543M/2.40G [00:03&lt;00:12,     162MB/s]
+ 22%|##2       | Downloading : 551M/2.40G [00:04&lt;00:12,     161MB/s]
+ 23%|##2       | Downloading : 559M/2.40G [00:04&lt;00:12,     156MB/s]
+ 23%|##3       | Downloading : 567M/2.40G [00:04&lt;00:12,     158MB/s]
+ 23%|##3       | Downloading : 575M/2.40G [00:04&lt;00:12,     154MB/s]
+ 24%|##3       | Downloading : 583M/2.40G [00:04&lt;00:12,     154MB/s]
+ 24%|##4       | Downloading : 591M/2.40G [00:04&lt;00:12,     155MB/s]
+ 24%|##4       | Downloading : 599M/2.40G [00:04&lt;00:12,     152MB/s]
+ 25%|##4       | Downloading : 607M/2.40G [00:04&lt;00:12,     155MB/s]
+ 25%|##4       | Downloading : 615M/2.40G [00:04&lt;00:12,     158MB/s]
+ 25%|##5       | Downloading : 623M/2.40G [00:04&lt;00:12,     155MB/s]
+ 26%|##5       | Downloading : 631M/2.40G [00:04&lt;00:12,     151MB/s]
+ 26%|##5       | Downloading : 639M/2.40G [00:04&lt;00:12,     148MB/s]
+ 26%|##6       | Downloading : 647M/2.40G [00:04&lt;00:13,     140MB/s]
+ 27%|##6       | Downloading : 655M/2.40G [00:04&lt;00:13,     143MB/s]
+ 27%|##6       | Downloading : 663M/2.40G [00:04&lt;00:13,     143MB/s]
+ 27%|##7       | Downloading : 671M/2.40G [00:04&lt;00:12,     146MB/s]
+ 28%|##7       | Downloading : 679M/2.40G [00:05&lt;00:12,     145MB/s]
+ 28%|##7       | Downloading : 687M/2.40G [00:05&lt;00:12,     146MB/s]
+ 28%|##8       | Downloading : 695M/2.40G [00:05&lt;00:13,     134MB/s]
+ 28%|##8       | Downloading : 699M/2.40G [00:05&lt;00:13,     135MB/s]
+ 29%|##8       | Downloading : 703M/2.40G [00:05&lt;00:14,     131MB/s]
+ 29%|##8       | Downloading : 707M/2.40G [00:05&lt;00:13,     132MB/s]
+ 29%|##8       | Downloading : 711M/2.40G [00:05&lt;00:13,     133MB/s]
+ 29%|##9       | Downloading : 715M/2.40G [00:05&lt;00:14,     131MB/s]
+ 29%|##9       | Downloading : 719M/2.40G [00:05&lt;00:13,     132MB/s]
+ 29%|##9       | Downloading : 723M/2.40G [00:05&lt;00:13,     133MB/s]
+ 30%|##9       | Downloading : 727M/2.40G [00:05&lt;00:13,     132MB/s]
+ 30%|##9       | Downloading : 731M/2.40G [00:05&lt;00:13,     133MB/s]
+ 30%|##9       | Downloading : 735M/2.40G [00:05&lt;00:13,     135MB/s]
+ 30%|###       | Downloading : 739M/2.40G [00:05&lt;00:13,     136MB/s]
+ 30%|###       | Downloading : 743M/2.40G [00:05&lt;00:13,     134MB/s]
+ 30%|###       | Downloading : 747M/2.40G [00:05&lt;00:13,     136MB/s]
+ 31%|###       | Downloading : 755M/2.40G [00:05&lt;00:13,     132MB/s]
+ 31%|###1      | Downloading : 763M/2.40G [00:05&lt;00:13,     136MB/s]
+ 31%|###1      | Downloading : 771M/2.40G [00:05&lt;00:13,     134MB/s]
+ 32%|###1      | Downloading : 779M/2.40G [00:05&lt;00:13,     131MB/s]
+ 32%|###1      | Downloading : 787M/2.40G [00:05&lt;00:13,     134MB/s]
+ 32%|###2      | Downloading : 795M/2.40G [00:05&lt;00:13,     134MB/s]
+ 33%|###2      | Downloading : 803M/2.40G [00:06&lt;00:12,     136MB/s]
+ 33%|###2      | Downloading : 811M/2.40G [00:06&lt;00:12,     136MB/s]
+ 33%|###3      | Downloading : 819M/2.40G [00:06&lt;00:12,     133MB/s]
+ 34%|###3      | Downloading : 827M/2.40G [00:06&lt;00:12,     134MB/s]
+ 34%|###3      | Downloading : 835M/2.40G [00:06&lt;00:13,     131MB/s]
+ 34%|###4      | Downloading : 843M/2.40G [00:06&lt;00:13,     127MB/s]
+ 35%|###4      | Downloading : 851M/2.40G [00:06&lt;00:13,     126MB/s]
+ 35%|###4      | Downloading : 859M/2.40G [00:06&lt;00:13,     128MB/s]
+ 35%|###5      | Downloading : 867M/2.40G [00:06&lt;00:13,     127MB/s]
+ 36%|###5      | Downloading : 875M/2.40G [00:06&lt;00:13,     126MB/s]
+ 36%|###5      | Downloading : 883M/2.40G [00:06&lt;00:13,     126MB/s]
+ 36%|###6      | Downloading : 891M/2.40G [00:06&lt;00:12,     128MB/s]
+ 37%|###6      | Downloading : 899M/2.40G [00:06&lt;00:12,     127MB/s]
+ 37%|###6      | Downloading : 907M/2.40G [00:06&lt;00:12,     130MB/s]
+ 37%|###7      | Downloading : 915M/2.40G [00:06&lt;00:12,     133MB/s]
+ 38%|###7      | Downloading : 923M/2.40G [00:07&lt;00:11,     135MB/s]
+ 38%|###7      | Downloading : 931M/2.40G [00:07&lt;00:11,     138MB/s]
+ 38%|###8      | Downloading : 939M/2.40G [00:07&lt;00:11,     138MB/s]
+ 38%|###8      | Downloading : 947M/2.40G [00:07&lt;00:11,     135MB/s]
+ 39%|###8      | Downloading : 955M/2.40G [00:07&lt;00:11,     138MB/s]
+ 39%|###9      | Downloading : 963M/2.40G [00:07&lt;00:11,     137MB/s]
+ 39%|###9      | Downloading : 971M/2.40G [00:07&lt;00:11,     136MB/s]
+ 40%|###9      | Downloading : 979M/2.40G [00:07&lt;00:11,     138MB/s]
+ 40%|####      | Downloading : 987M/2.40G [00:07&lt;00:11,     136MB/s]
+ 40%|####      | Downloading : 995M/2.40G [00:07&lt;00:11,     138MB/s]
+ 41%|####      | Downloading : 0.98G/2.40G [00:07&lt;00:11,     138MB/s]
+ 41%|####1     | Downloading : 0.99G/2.40G [00:07&lt;00:10,     141MB/s]
+ 41%|####1     | Downloading : 1.00G/2.40G [00:07&lt;00:10,     140MB/s]
+ 42%|####1     | Downloading : 1.00G/2.40G [00:07&lt;00:10,     138MB/s]
+ 42%|####2     | Downloading : 1.01G/2.40G [00:07&lt;00:10,     140MB/s]
+ 42%|####2     | Downloading : 1.02G/2.40G [00:07&lt;00:10,     139MB/s]
+ 43%|####2     | Downloading : 1.03G/2.40G [00:07&lt;00:10,     136MB/s]
+ 43%|####3     | Downloading : 1.03G/2.40G [00:08&lt;00:10,     138MB/s]
+ 43%|####3     | Downloading : 1.04G/2.40G [00:08&lt;00:10,     136MB/s]
+ 44%|####3     | Downloading : 1.05G/2.40G [00:08&lt;00:10,     139MB/s]
+ 44%|####4     | Downloading : 1.06G/2.40G [00:08&lt;00:10,     139MB/s]
+ 44%|####4     | Downloading : 1.07G/2.40G [00:08&lt;00:10,     141MB/s]
+ 45%|####4     | Downloading : 1.07G/2.40G [00:08&lt;00:10,     140MB/s]
+ 45%|####4     | Downloading : 1.08G/2.40G [00:08&lt;00:10,     139MB/s]
+ 45%|####5     | Downloading : 1.09G/2.40G [00:08&lt;00:10,     138MB/s]
+ 46%|####5     | Downloading : 1.10G/2.40G [00:08&lt;00:10,     139MB/s]
+ 46%|####5     | Downloading : 1.10G/2.40G [00:08&lt;00:09,     142MB/s]
+ 46%|####6     | Downloading : 1.11G/2.40G [00:08&lt;00:09,     144MB/s]
+ 47%|####6     | Downloading : 1.12G/2.40G [00:08&lt;00:09,     146MB/s]
+ 47%|####6     | Downloading : 1.13G/2.40G [00:08&lt;00:09,     143MB/s]
+ 47%|####7     | Downloading : 1.14G/2.40G [00:08&lt;00:09,     145MB/s]
+ 48%|####7     | Downloading : 1.14G/2.40G [00:08&lt;00:09,     145MB/s]
+ 48%|####7     | Downloading : 1.15G/2.40G [00:08&lt;00:09,     148MB/s]
+ 48%|####8     | Downloading : 1.16G/2.40G [00:08&lt;00:09,     147MB/s]
+ 49%|####8     | Downloading : 1.17G/2.40G [00:08&lt;00:08,     151MB/s]
+ 49%|####8     | Downloading : 1.17G/2.40G [00:09&lt;00:08,     148MB/s]
+ 49%|####9     | Downloading : 1.18G/2.40G [00:09&lt;00:09,     143MB/s]
+ 50%|####9     | Downloading : 1.19G/2.40G [00:09&lt;00:09,     141MB/s]
+ 50%|####9     | Downloading : 1.20G/2.40G [00:09&lt;00:09,     141MB/s]
+ 50%|#####     | Downloading : 1.21G/2.40G [00:09&lt;00:09,     141MB/s]
+ 51%|#####     | Downloading : 1.21G/2.40G [00:09&lt;00:09,     136MB/s]
+ 51%|#####     | Downloading : 1.22G/2.40G [00:09&lt;00:09,     133MB/s]
+ 51%|#####1    | Downloading : 1.23G/2.40G [00:09&lt;00:09,     135MB/s]
+ 52%|#####1    | Downloading : 1.24G/2.40G [00:09&lt;00:09,     134MB/s]
+ 52%|#####1    | Downloading : 1.25G/2.40G [00:09&lt;00:09,     131MB/s]
+ 52%|#####2    | Downloading : 1.25G/2.40G [00:09&lt;00:09,     132MB/s]
+ 52%|#####2    | Downloading : 1.26G/2.40G [00:09&lt;00:09,     133MB/s]
+ 53%|#####2    | Downloading : 1.27G/2.40G [00:09&lt;00:09,     134MB/s]
+ 53%|#####3    | Downloading : 1.28G/2.40G [00:09&lt;00:08,     135MB/s]
+ 53%|#####3    | Downloading : 1.28G/2.40G [00:09&lt;00:09,     132MB/s]
+ 54%|#####3    | Downloading : 1.29G/2.40G [00:10&lt;00:09,     129MB/s]
+ 54%|#####4    | Downloading : 1.30G/2.40G [00:10&lt;00:10,     108MB/s]
+ 54%|#####4    | Downloading : 1.30G/2.40G [00:10&lt;00:10,     108MB/s]
+ 54%|#####4    | Downloading : 1.31G/2.40G [00:10&lt;00:10,     107MB/s]
+ 55%|#####4    | Downloading : 1.31G/2.40G [00:10&lt;00:10,     108MB/s]
+ 55%|#####4    | Downloading : 1.32G/2.40G [00:10&lt;00:10,     107MB/s]
+ 55%|#####4    | Downloading : 1.32G/2.40G [00:10&lt;00:10,     108MB/s]
+ 55%|#####5    | Downloading : 1.32G/2.40G [00:10&lt;00:10,     108MB/s]
+ 55%|#####5    | Downloading : 1.33G/2.40G [00:10&lt;00:10,     107MB/s]
+ 55%|#####5    | Downloading : 1.33G/2.40G [00:10&lt;00:10,     108MB/s]
+ 56%|#####5    | Downloading : 1.33G/2.40G [00:10&lt;00:10,     106MB/s]
+ 56%|#####5    | Downloading : 1.34G/2.40G [00:10&lt;00:10,     107MB/s]
+ 56%|#####5    | Downloading : 1.34G/2.40G [00:10&lt;00:10,     109MB/s]
+ 56%|#####6    | Downloading : 1.35G/2.40G [00:10&lt;00:10,     107MB/s]
+ 56%|#####6    | Downloading : 1.35G/2.40G [00:10&lt;00:10,     107MB/s]
+ 56%|#####6    | Downloading : 1.35G/2.40G [00:10&lt;00:10,     108MB/s]
+ 57%|#####6    | Downloading : 1.36G/2.40G [00:10&lt;00:10,     108MB/s]
+ 57%|#####6    | Downloading : 1.36G/2.40G [00:11&lt;00:10,     110MB/s]
+ 57%|#####6    | Downloading : 1.37G/2.40G [00:11&lt;00:09,     112MB/s]
+ 57%|#####7    | Downloading : 1.37G/2.40G [00:11&lt;00:09,     112MB/s]
+ 58%|#####7    | Downloading : 1.38G/2.40G [00:11&lt;00:10,     109MB/s]
+ 58%|#####7    | Downloading : 1.39G/2.40G [00:11&lt;00:10,     108MB/s]
+ 58%|#####8    | Downloading : 1.40G/2.40G [00:11&lt;00:10,     107MB/s]
+ 58%|#####8    | Downloading : 1.41G/2.40G [00:11&lt;00:09,     108MB/s]
+ 59%|#####8    | Downloading : 1.41G/2.40G [00:11&lt;00:09,     108MB/s]
+ 59%|#####9    | Downloading : 1.42G/2.40G [00:11&lt;00:09,     108MB/s]
+ 59%|#####9    | Downloading : 1.43G/2.40G [00:11&lt;00:09,     113MB/s]
+ 60%|#####9    | Downloading : 1.44G/2.40G [00:11&lt;00:09,     114MB/s]
+ 60%|######    | Downloading : 1.44G/2.40G [00:11&lt;00:08,     116MB/s]
+ 60%|######    | Downloading : 1.45G/2.40G [00:11&lt;00:08,     117MB/s]
+ 61%|######    | Downloading : 1.46G/2.40G [00:11&lt;00:08,     115MB/s]
+ 61%|######1   | Downloading : 1.47G/2.40G [00:11&lt;00:08,     118MB/s]
+ 61%|######1   | Downloading : 1.48G/2.40G [00:12&lt;00:08,     118MB/s]
+ 62%|######1   | Downloading : 1.48G/2.40G [00:12&lt;00:08,     117MB/s]
+ 62%|######2   | Downloading : 1.49G/2.40G [00:12&lt;00:08,     120MB/s]
+ 62%|######2   | Downloading : 1.50G/2.40G [00:12&lt;00:08,     121MB/s]
+ 63%|######2   | Downloading : 1.51G/2.40G [00:12&lt;00:08,     120MB/s]
+ 63%|######3   | Downloading : 1.51G/2.40G [00:12&lt;00:07,     122MB/s]
+ 63%|######3   | Downloading : 1.52G/2.40G [00:12&lt;00:07,     125MB/s]
+ 64%|######3   | Downloading : 1.53G/2.40G [00:12&lt;00:07,     127MB/s]
+ 64%|######4   | Downloading : 1.54G/2.40G [00:12&lt;00:07,     125MB/s]
+ 64%|######4   | Downloading : 1.55G/2.40G [00:12&lt;00:07,     122MB/s]
+ 65%|######4   | Downloading : 1.55G/2.40G [00:12&lt;00:07,     124MB/s]
+ 65%|######4   | Downloading : 1.56G/2.40G [00:12&lt;00:07,     121MB/s]
+ 65%|######5   | Downloading : 1.57G/2.40G [00:12&lt;00:07,     119MB/s]
+ 66%|######5   | Downloading : 1.58G/2.40G [00:12&lt;00:07,     119MB/s]
+ 66%|######5   | Downloading : 1.58G/2.40G [00:12&lt;00:07,     122MB/s]
+ 66%|######6   | Downloading : 1.59G/2.40G [00:13&lt;00:07,     123MB/s]
+ 67%|######6   | Downloading : 1.60G/2.40G [00:13&lt;00:07,     121MB/s]
+ 67%|######6   | Downloading : 1.61G/2.40G [00:13&lt;00:06,     124MB/s]
+ 67%|######7   | Downloading : 1.62G/2.40G [00:13&lt;00:06,     124MB/s]
+ 68%|######7   | Downloading : 1.62G/2.40G [00:13&lt;00:06,     126MB/s]
+ 68%|######7   | Downloading : 1.63G/2.40G [00:13&lt;00:06,     126MB/s]
+ 68%|######8   | Downloading : 1.64G/2.40G [00:13&lt;00:06,     125MB/s]
+ 69%|######8   | Downloading : 1.65G/2.40G [00:13&lt;00:06,     127MB/s]
+ 69%|######8   | Downloading : 1.66G/2.40G [00:13&lt;00:06,     127MB/s]
+ 69%|######9   | Downloading : 1.66G/2.40G [00:13&lt;00:06,     125MB/s]
+ 70%|######9   | Downloading : 1.67G/2.40G [00:13&lt;00:06,     127MB/s]
+ 70%|######9   | Downloading : 1.68G/2.40G [00:13&lt;00:06,     127MB/s]
+ 70%|#######   | Downloading : 1.69G/2.40G [00:13&lt;00:05,     129MB/s]
+ 71%|#######   | Downloading : 1.69G/2.40G [00:13&lt;00:05,     130MB/s]
+ 71%|#######   | Downloading : 1.70G/2.40G [00:13&lt;00:05,     133MB/s]
+ 71%|#######1  | Downloading : 1.71G/2.40G [00:13&lt;00:05,     133MB/s]
+ 72%|#######1  | Downloading : 1.72G/2.40G [00:13&lt;00:05,     136MB/s]
+ 72%|#######1  | Downloading : 1.73G/2.40G [00:14&lt;00:05,     136MB/s]
+ 72%|#######2  | Downloading : 1.73G/2.40G [00:14&lt;00:05,     133MB/s]
+ 72%|#######2  | Downloading : 1.74G/2.40G [00:14&lt;00:05,     136MB/s]
+ 73%|#######2  | Downloading : 1.75G/2.40G [00:14&lt;00:05,     135MB/s]
+ 73%|#######3  | Downloading : 1.76G/2.40G [00:14&lt;00:05,     131MB/s]
+ 73%|#######3  | Downloading : 1.76G/2.40G [00:14&lt;00:05,     134MB/s]
+ 74%|#######3  | Downloading : 1.77G/2.40G [00:14&lt;00:05,     133MB/s]
+ 74%|#######4  | Downloading : 1.78G/2.40G [00:14&lt;00:04,     136MB/s]
+ 74%|#######4  | Downloading : 1.79G/2.40G [00:14&lt;00:04,     138MB/s]
+ 75%|#######4  | Downloading : 1.80G/2.40G [00:14&lt;00:04,     140MB/s]
+ 75%|#######5  | Downloading : 1.80G/2.40G [00:14&lt;00:04,     137MB/s]
+ 75%|#######5  | Downloading : 1.81G/2.40G [00:14&lt;00:04,     135MB/s]
+ 76%|#######5  | Downloading : 1.82G/2.40G [00:14&lt;00:04,     138MB/s]
+ 76%|#######6  | Downloading : 1.83G/2.40G [00:14&lt;00:04,     137MB/s]
+ 76%|#######6  | Downloading : 1.83G/2.40G [00:14&lt;00:04,     140MB/s]
+ 77%|#######6  | Downloading : 1.84G/2.40G [00:14&lt;00:04,     139MB/s]
+ 77%|#######7  | Downloading : 1.85G/2.40G [00:14&lt;00:04,     135MB/s]
+ 77%|#######7  | Downloading : 1.86G/2.40G [00:15&lt;00:04,     138MB/s]
+ 78%|#######7  | Downloading : 1.87G/2.40G [00:15&lt;00:04,     138MB/s]
+ 78%|#######8  | Downloading : 1.87G/2.40G [00:15&lt;00:04,     134MB/s]
+ 78%|#######8  | Downloading : 1.88G/2.40G [00:15&lt;00:04,     137MB/s]
+ 79%|#######8  | Downloading : 1.89G/2.40G [00:15&lt;00:04,     132MB/s]
+ 79%|#######8  | Downloading : 1.90G/2.40G [00:15&lt;00:04,     131MB/s]
+ 79%|#######9  | Downloading : 1.91G/2.40G [00:15&lt;00:04,     119MB/s]
+ 79%|#######9  | Downloading : 1.91G/2.40G [00:15&lt;00:04,     119MB/s]
+ 80%|#######9  | Downloading : 1.91G/2.40G [00:15&lt;00:04,     117MB/s]
+ 80%|#######9  | Downloading : 1.92G/2.40G [00:15&lt;00:04,     119MB/s]
+ 80%|#######9  | Downloading : 1.92G/2.40G [00:15&lt;00:04,     120MB/s]
+ 80%|########  | Downloading : 1.92G/2.40G [00:15&lt;00:04,     119MB/s]
+ 80%|########  | Downloading : 1.93G/2.40G [00:15&lt;00:04,     120MB/s]
+ 80%|########  | Downloading : 1.93G/2.40G [00:15&lt;00:04,     120MB/s]
+ 81%|########  | Downloading : 1.94G/2.40G [00:15&lt;00:04,     118MB/s]
+ 81%|########  | Downloading : 1.94G/2.40G [00:15&lt;00:04,     120MB/s]
+ 81%|########1 | Downloading : 1.95G/2.40G [00:15&lt;00:04,     117MB/s]
+ 81%|########1 | Downloading : 1.96G/2.40G [00:16&lt;00:03,     120MB/s]
+ 82%|########1 | Downloading : 1.96G/2.40G [00:16&lt;00:03,     121MB/s]
+ 82%|########2 | Downloading : 1.97G/2.40G [00:16&lt;00:03,     120MB/s]
+ 82%|########2 | Downloading : 1.98G/2.40G [00:16&lt;00:03,     122MB/s]
+ 83%|########2 | Downloading : 1.99G/2.40G [00:16&lt;00:03,     122MB/s]
+ 83%|########3 | Downloading : 2.00G/2.40G [00:16&lt;00:03,     125MB/s]
+ 83%|########3 | Downloading : 2.00G/2.40G [00:16&lt;00:03,     126MB/s]
+ 84%|########3 | Downloading : 2.01G/2.40G [00:16&lt;00:03,     128MB/s]
+ 84%|########4 | Downloading : 2.02G/2.40G [00:16&lt;00:03,     129MB/s]
+ 84%|########4 | Downloading : 2.03G/2.40G [00:16&lt;00:03,     126MB/s]
+ 85%|########4 | Downloading : 2.03G/2.40G [00:16&lt;00:03,     129MB/s]
+ 85%|########4 | Downloading : 2.04G/2.40G [00:16&lt;00:03,     128MB/s]
+ 85%|########5 | Downloading : 2.05G/2.40G [00:16&lt;00:02,     126MB/s]
+ 86%|########5 | Downloading : 2.06G/2.40G [00:16&lt;00:02,     130MB/s]
+ 86%|########5 | Downloading : 2.07G/2.40G [00:16&lt;00:02,     130MB/s]
+ 86%|########6 | Downloading : 2.07G/2.40G [00:16&lt;00:02,     133MB/s]
+ 87%|########6 | Downloading : 2.08G/2.40G [00:16&lt;00:02,     132MB/s]
+ 87%|########6 | Downloading : 2.09G/2.40G [00:17&lt;00:02,     134MB/s]
+ 87%|########7 | Downloading : 2.10G/2.40G [00:17&lt;00:02,     135MB/s]
+ 88%|########7 | Downloading : 2.10G/2.40G [00:17&lt;00:02,     136MB/s]
+ 88%|########7 | Downloading : 2.11G/2.40G [00:17&lt;00:02,     135MB/s]
+ 88%|########8 | Downloading : 2.12G/2.40G [00:17&lt;00:02,     134MB/s]
+ 89%|########8 | Downloading : 2.13G/2.40G [00:17&lt;00:02,     137MB/s]
+ 89%|########8 | Downloading : 2.14G/2.40G [00:17&lt;00:02,     136MB/s]
+ 89%|########9 | Downloading : 2.14G/2.40G [00:17&lt;00:01,     140MB/s]
+ 90%|########9 | Downloading : 2.15G/2.40G [00:17&lt;00:01,     141MB/s]
+ 90%|########9 | Downloading : 2.16G/2.40G [00:17&lt;00:01,     144MB/s]
+ 90%|######### | Downloading : 2.17G/2.40G [00:17&lt;00:01,     148MB/s]
+ 91%|######### | Downloading : 2.17G/2.40G [00:17&lt;00:01,     148MB/s]
+ 91%|######### | Downloading : 2.18G/2.40G [00:17&lt;00:01,     149MB/s]
+ 91%|#########1| Downloading : 2.19G/2.40G [00:17&lt;00:01,     149MB/s]
+ 92%|#########1| Downloading : 2.20G/2.40G [00:17&lt;00:01,     144MB/s]
+ 92%|#########1| Downloading : 2.21G/2.40G [00:17&lt;00:01,     148MB/s]
+ 92%|#########2| Downloading : 2.21G/2.40G [00:17&lt;00:01,     149MB/s]
+ 92%|#########2| Downloading : 2.22G/2.40G [00:17&lt;00:01,     151MB/s]
+ 93%|#########2| Downloading : 2.23G/2.40G [00:17&lt;00:01,     155MB/s]
+ 93%|#########3| Downloading : 2.24G/2.40G [00:18&lt;00:01,     154MB/s]
+ 93%|#########3| Downloading : 2.25G/2.40G [00:18&lt;00:01,     158MB/s]
+ 94%|#########3| Downloading : 2.25G/2.40G [00:18&lt;00:01,     157MB/s]
+ 94%|#########4| Downloading : 2.26G/2.40G [00:18&lt;00:00,     161MB/s]
+ 94%|#########4| Downloading : 2.27G/2.40G [00:18&lt;00:00,     158MB/s]
+ 95%|#########4| Downloading : 2.28G/2.40G [00:18&lt;00:00,     160MB/s]
+ 95%|#########5| Downloading : 2.28G/2.40G [00:18&lt;00:00,     157MB/s]
+ 95%|#########5| Downloading : 2.29G/2.40G [00:18&lt;00:00,     156MB/s]
+ 96%|#########5| Downloading : 2.30G/2.40G [00:18&lt;00:00,     158MB/s]
+ 96%|#########6| Downloading : 2.31G/2.40G [00:18&lt;00:00,     161MB/s]
+ 96%|#########6| Downloading : 2.32G/2.40G [00:18&lt;00:00,     159MB/s]
+ 97%|#########6| Downloading : 2.32G/2.40G [00:18&lt;00:00,     162MB/s]
+ 97%|#########7| Downloading : 2.33G/2.40G [00:18&lt;00:00,     162MB/s]
+ 97%|#########7| Downloading : 2.34G/2.40G [00:18&lt;00:00,     165MB/s]
+ 98%|#########7| Downloading : 2.35G/2.40G [00:18&lt;00:00,     164MB/s]
+ 98%|#########8| Downloading : 2.35G/2.40G [00:18&lt;00:00,     166MB/s]
+ 98%|#########8| Downloading : 2.36G/2.40G [00:18&lt;00:00,     164MB/s]
+ 99%|#########8| Downloading : 2.37G/2.40G [00:18&lt;00:00,     166MB/s]
+ 99%|#########8| Downloading : 2.38G/2.40G [00:18&lt;00:00,     167MB/s]
+ 99%|#########9| Downloading : 2.39G/2.40G [00:18&lt;00:00,     167MB/s]
+100%|#########9| Downloading : 2.39G/2.40G [00:18&lt;00:00,     162MB/s]
+100%|#########9| Downloading : 2.40G/2.40G [00:19&lt;00:00,     165MB/s]
+100%|##########| Downloading : 2.40G/2.40G [00:19&lt;00:00,     135MB/s]
+Verifying hash 70fc7bf9c3b97c4f2eab6260ee4a0430.
+Decompressing the archive: /home/circleci/mne_data/bst_resting.tar.gz
+(please be patient, this can take some time)
+Successfully extracted to: [&#39;/home/circleci/mne_data/MNE-brainstorm-data/bst_resting&#39;]
+</pre></div>
+</div>
+<p>Here we do some things in the name of speed, such as crop (which will
+hurt SNR) and downsample. Then we compute SSP projectors and apply them.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">apply_gradient_compensation</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">projs_ecg</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_ecg.html#mne.preprocessing.compute_proj_ecg" title="mne.preprocessing.compute_proj_ecg" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_ecg</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">n_grad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_mag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">projs_eog</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_eog.html#mne.preprocessing.compute_proj_eog" title="mne.preprocessing.compute_proj_eog" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_eog</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">n_grad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_mag</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ch_name</span><span class="o">=</span><span class="s1">&#39;MLT31-4407&#39;</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;projs&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">projs_ecg</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;projs&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">projs_eog</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">apply_proj</span><span class="p">()</span>
+<a href="https://mne.tools/dev/generated/mne.Covariance.html#mne.Covariance" title="mne.Covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cov</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.compute_raw_covariance.html#mne.compute_raw_covariance" title="mne.compute_raw_covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">compute_raw_covariance</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>  <span class="c1"># compute before band-pass of interest</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Including 0 SSP projectors from raw file
+Running ECG SSP computation
+Reconstructing ECG signal from Magnetometers
+Setting up band-pass filter from 5 - 35 Hz
+
+FIR filter parameters
+---------------------
+Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter:
+- Windowed frequency-domain design (firwin2) method
+- Hann window
+- Lower passband edge: 5.00
+- Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 4.75 Hz)
+- Upper passband edge: 35.00 Hz
+- Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 35.25 Hz)
+- Filter length: 800 samples (10.000 sec)
+
+Number of ECG events detected : 88 (average pulse 88 / min.)
+Computing projector
+Not setting metadata
+Not setting metadata
+88 matching events found
+No baseline correction applied
+0 projection items activated
+Loading data for 88 events and 49 original time points ...
+    Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MRT31-4407&#39;]
+    Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
+    Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
+4 bad epochs dropped
+No gradiometers found. Forcing n_grad to 0
+No EEG channels found. Forcing n_eeg to 0
+Adding projection: axial--0.200-0.400-PCA-01
+Adding projection: axial--0.200-0.400-PCA-02
+Done.
+Including 0 SSP projectors from raw file
+Running EOG SSP computation
+Using EOG channel: MLT31-4407
+EOG channel index for this subject is: [137]
+Filtering the data to remove DC offset to help distinguish blinks from saccades
+Setting up band-pass filter from 1 - 10 Hz
+
+FIR filter parameters
+---------------------
+Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter:
+- Windowed frequency-domain design (firwin2) method
+- Hann window
+- Lower passband edge: 1.00
+- Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 0.75 Hz)
+- Upper passband edge: 10.00 Hz
+- Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 10.25 Hz)
+- Filter length: 800 samples (10.000 sec)
+
+Now detecting blinks and generating corresponding events
+Found 12 significant peaks
+Number of EOG events detected: 12
+Computing projector
+Not setting metadata
+Not setting metadata
+12 matching events found
+No baseline correction applied
+0 projection items activated
+Loading data for 12 events and 33 original time points ...
+    Rejecting  epoch based on MAG : [&#39;MRT41-4407&#39;]
+1 bad epochs dropped
+No gradiometers found. Forcing n_grad to 0
+No EEG channels found. Forcing n_eeg to 0
+Adding projection: axial--0.200-0.200-PCA-01
+Adding projection: axial--0.200-0.200-PCA-02
+Done.
+Using up to 300 segments
+Number of samples used : 4800
+[done]
+</pre></div>
+</div>
+<div class="section" id="compute-the-forward-and-inverse">
+<h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_source_spaces.html#mne.read_source_spaces" title="mne.read_source_spaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_source_spaces</span></a><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="n">fwd</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_forward_solution</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bem</span></a><span class="p">)</span>
+<span class="k">del</span> <span class="n">src</span>
+<a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.make_inverse_operator.html#mne.minimum_norm.make_inverse_operator" title="mne.minimum_norm.make_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">make_inverse_operator</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">fwd</span><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.Covariance.html#mne.Covariance" title="mne.Covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cov</span></a><span class="p">)</span>
+<span class="k">del</span> <span class="n">fwd</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    2 source spaces read
+Source space          : &lt;SourceSpaces: [&lt;surface (lh), n_vertices=156869, n_used=4098&gt;, &lt;surface (rh), n_vertices=155654, n_used=4098&gt;] MRI (surface RAS) coords, subject &#39;bst_resting&#39;, ~27.4 MB&gt;
+MRI -&gt; head transform : /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/MEG/bst_resting/bst_resting-trans.fif
+Measurement data      : instance of Info
+Conductor model   : /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/bem/bst_resting-5120-bem-sol.fif
+Accurate field computations
+Do computations in head coordinates
+Free source orientations
+
+Read 2 source spaces a total of 8196 active source locations
+
+Coordinate transformation: MRI (surface RAS) -&gt; head
+     0.999797 -0.005775 -0.019288       2.71 mm
+     0.011390  0.952195  0.305279      16.66 mm
+     0.016602 -0.305437  0.952068      28.47 mm
+     0.000000  0.000000  0.000000       1.00
+
+Read 272 MEG channels from info
+Read  26 MEG compensation channels from info
+105 coil definitions read
+Coordinate transformation: MEG device -&gt; head
+     0.998490 -0.050225 -0.022235       1.90 mm
+     0.052235  0.993447  0.101656      13.13 mm
+     0.016984 -0.102664  0.994571      66.69 mm
+     0.000000  0.000000  0.000000       1.00
+5 compensation data sets in info
+MEG coil definitions created in head coordinates.
+Removing 5 compensators from info because not all compensation channels were picked.
+Source spaces are now in head coordinates.
+
+Setting up the BEM model using /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/bem/bst_resting-5120-bem-sol.fif...
+
+Loading surfaces...
+
+Loading the solution matrix...
+
+Homogeneous model surface loaded.
+Loaded linear_collocation BEM solution from /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/bem/bst_resting-5120-bem-sol.fif
+Employing the head-&gt;MRI coordinate transform with the BEM model.
+BEM model bst_resting-5120-bem-sol.fif is now set up
+
+Source spaces are in head coordinates.
+Checking that the sources are inside the surface (will take a few...)
+    Skipping interior check for 1239 sources that fit inside a sphere of radius   49.6 mm
+    Skipping solid angle check for 0 points using Qhull
+    Skipping interior check for 1235 sources that fit inside a sphere of radius   49.6 mm
+    Skipping solid angle check for 0 points using Qhull
+
+Setting up compensation data...
+    272 out of 272 channels have the compensation set.
+    Desired compensation data (3) found.
+    All compensation channels found.
+    Preselector created.
+    Compensation data matrix created.
+    Postselector created.
+
+Composing the field computation matrix...
+Composing the field computation matrix (compensation coils)...
+Computing MEG at 8196 source locations (free orientations)...
+
+Finished.
+Converting forward solution to surface orientation
+    Average patch normals will be employed in the rotation to the local surface coordinates....
+    Converting to surface-based source orientations...
+    [done]
+Computing inverse operator with 272 channels.
+    272 out of 272 channels remain after picking
+Removing 5 compensators from info because not all compensation channels were picked.
+Selected 272 channels
+Creating the depth weighting matrix...
+    272 magnetometer or axial gradiometer channels
+    limit = 8074/8196 = 10.006553
+    scale = 5.92189e-11 exp = 0.8
+Applying loose dipole orientations to surface source spaces: 0.2
+Whitening the forward solution.
+Removing 5 compensators from info because not all compensation channels were picked.
+    Created an SSP operator (subspace dimension = 4)
+Computing rank from covariance with rank=None
+    Using tolerance 5.5e-14 (2.2e-16 eps * 272 dim * 0.92  max singular value)
+    Estimated rank (mag): 268
+    MAG: rank 268 computed from 272 data channels with 4 projectors
+    Setting small MAG eigenvalues to zero (without PCA)
+Creating the source covariance matrix
+Adjusting source covariance matrix.
+Computing SVD of whitened and weighted lead field matrix.
+    largest singular value = 3.42374
+    scaling factor to adjust the trace = 1.2238e+19 (nchan = 272 nzero = 4)
+</pre></div>
+</div>
+<p>Now we band-pass filter our data and create epochs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_events.html#mne.make_fixed_length_events" title="mne.make_fixed_length_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_fixed_length_events</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
+                    <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mag</span><span class="o">=</span><span class="mf">8e-13</span><span class="p">),</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">projs_ecg</span><span class="p">,</span> <span class="n">projs_eog</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
+Not setting metadata
+12 matching events found
+No baseline correction applied
+Created an SSP operator (subspace dimension = 4)
+4 projection items activated
+Loading data for 12 events and 401 original time points ...
+    Rejecting  epoch based on MAG : [&#39;MRC42-4407&#39;, &#39;MRC54-4407&#39;, &#39;MRP12-4407&#39;, &#39;MRP22-4407&#39;, &#39;MRP23-4407&#39;]
+2 bad epochs dropped
+</pre></div>
+</div>
+</div>
+<div class="section" id="compute-label-time-series-and-do-envelope-correlation">
+<h2>Compute label time series and do envelope correlation<a class="headerlink" href="#compute-label-time-series-and-do-envelope-correlation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_labels_from_annot.html#mne.read_labels_from_annot" title="mne.read_labels_from_annot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;aparc_sub&#39;</span><span class="p">,</span>
+                                    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
+<span class="n">epochs</span><span class="o">.</span><span class="n">apply_hilbert</span><span class="p">()</span>  <span class="c1"># faster to apply in sensor space</span>
+<span class="n">stcs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv</span></a><span class="p">,</span> <span class="n">lambda2</span><span class="o">=</span><span class="mf">1.</span> <span class="o">/</span> <span class="mf">9.</span><span class="p">,</span> <span class="n">pick_ori</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+                            <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">label_ts</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.extract_label_time_course.html#mne.extract_label_time_course" title="mne.extract_label_time_course" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">extract_label_time_course</span></a><span class="p">(</span>
+    <span class="n">stcs</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv</span></a><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">],</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.envelope_correlation.html#mne_connectivity.envelope_correlation" title="mne_connectivity.envelope_correlation" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">envelope_correlation</span></a><span class="p">(</span><span class="n">label_ts</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># let&#39;s plot this matrix</span>
+<a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.imshow.html#matplotlib.axes.Axes.imshow" title="matplotlib.axes.Axes.imshow" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">clim</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.percentile.html#numpy.percentile" title="numpy.percentile" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">percentile</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">]))</span>
+<a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<span class="k">del</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">stcs</span><span class="p">,</span> <span class="n">label_ts</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_mne_inverse_envelope_correlation_001.png" srcset="../_images/sphx_glr_mne_inverse_envelope_correlation_001.png" alt="mne inverse envelope correlation" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading labels from parcellation...
+   read 226 labels from /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/label/lh.aparc_sub.annot
+   read 224 labels from /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/label/rh.aparc_sub.annot
+Preparing the inverse operator for use...
+    Scaled noise and source covariance from nave = 1 to nave = 1
+    Created the regularized inverter
+    Created an SSP operator (subspace dimension = 4)
+    Created the whitener using a noise covariance matrix with rank 268 (4 small eigenvalues omitted)
+    Computing noise-normalization factors (dSPM)...
+[done]
+Picked 272 channels from the data
+Computing inverse...
+    Eigenleads need to be weighted ...
+Processing epoch : 1 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 2 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 3 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 4 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 5 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 6 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 7 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 8 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 9 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+Processing epoch : 10 / 10
+Extracting time courses for 450 labels (mode: mean_flip)
+[done]
+</pre></div>
+</div>
+</div>
+<div class="section" id="compute-the-degree-and-plot-it">
+<h2>Compute the degree and plot it<a class="headerlink" href="#compute-the-degree-and-plot-it" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">threshold_prop</span></a> <span class="o">=</span> <span class="mf">0.15</span>  <span class="c1"># percentage of strongest edges to keep in the graph</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.connectivity.degree.html#mne.connectivity.degree" title="mne.connectivity.degree" class="sphx-glr-backref-module-mne-connectivity sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">connectivity</span><span class="o">.</span><span class="n">degree</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">threshold_prop</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">threshold_prop</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.labels_to_stc.html#mne.labels_to_stc" title="mne.labels_to_stc" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">labels_to_stc</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.in_label" title="mne.SourceEstimate.in_label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">in_label</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Label.html#mne.Label" title="mne.Label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Label</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv</span></a><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;vertno&#39;</span><span class="p">],</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">)</span> <span class="o">+</span>
+                   <a href="https://mne.tools/dev/generated/mne.Label.html#mne.Label" title="mne.Label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Label</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv</span></a><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;vertno&#39;</span><span class="p">],</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">))</span>
+<a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain" title="mne.viz.Brain" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.plot" title="mne.SourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <span class="n">clim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;percent&#39;</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">95</span><span class="p">]),</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;gnuplot&#39;</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="s1">&#39;dorsal&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span>
+    <span class="n">smoothing_steps</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">time_label</span><span class="o">=</span><span class="s1">&#39;Beta band&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_mne_inverse_envelope_correlation_002.png" srcset="../_images/sphx_glr_mne_inverse_envelope_correlation_002.png" alt="mne inverse envelope correlation" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using control points [75. 78. 85.]
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p><dl class="footnote brackets">
+<dt class="label" id="hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
+</dd>
+<dt class="label" id="khanetal2018"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
+</dd>
+</dl>
+</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  52.238 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/bd11eaca1da460c062c1190f891509a7/mne_inverse_envelope_correlation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="mne_inverse_coherence_epochs.html" title="previous page">Compute coherence in source space using a MNE inverse solution</a>
+    <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation_volume.html" title="next page">Compute envelope correlations in volume source space</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-06-25.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
