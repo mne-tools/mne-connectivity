@@ -83,6 +83,11 @@ class _Connectivity():
             coords['times'] = list(times)
             dims.append('times')
 
+        # convert all numpy arrays to lists
+        for key, val in kwargs.items():
+            if isinstance(val, np.ndarray):
+                kwargs[key] = val.tolist()
+
         # create xarray object
         xarray_obj = xr.DataArray(
             data=data,

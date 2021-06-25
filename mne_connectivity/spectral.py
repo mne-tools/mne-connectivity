@@ -914,6 +914,7 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     if faverage:
         # for each band we return the frequencies that were averaged
         freqs = [np.mean(x) for x in freqs_bands]
+        freqs_used = freqs_bands
 
     if indices is None:
         # return all-to-all connectivity matrices

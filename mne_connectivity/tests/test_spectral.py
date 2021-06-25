@@ -98,11 +98,11 @@ def test_spectral_connectivity(method, mode):
             cwt_n_cycles=cwt_n_cycles)
 
         if isinstance(method, list):
-            freqs = con[0].freqs
+            freqs = con[0].attrs.get('freqs_used')
             n = con[0].n_epochs
             times = con[0].times
         else:
-            freqs = con.freqs
+            freqs = con.attrs.get('freqs_used')
             n = con.n_epochs
             times = con.times
 
@@ -162,7 +162,7 @@ def test_spectral_connectivity(method, mode):
 
         assert isinstance(con2, list)
         assert len(con2) == len(test_methods)
-        freqs2 = con2[0].freqs
+        freqs2 = con2[0].attrs.get('freqs_used')
         # times2 = con2[0].times
         n2 = con2[0].n_epochs
 
@@ -197,9 +197,9 @@ def test_spectral_connectivity(method, mode):
             cwt_n_cycles=cwt_n_cycles)
 
         if isinstance(method, list):
-            freqs3 = con3[0].freqs
+            freqs3 = con3[0].attrs.get('freqs_used')
         else:
-            freqs3 = con3.freqs
+            freqs3 = con3.attrs.get('freqs_used')
 
         assert (isinstance(freqs3, list))
         assert (len(freqs3) == len(fmin))
