@@ -10,7 +10,7 @@ class _Connectivity():
         Connectivity data is anything represents "connections"
         between nodes as a (N, N) array. It can be symmetric, or
         asymmetric (if it is symmetric, storage optimization will
-        occur). In addition,
+        occur).
 
         TODO: account for symmetric connectivity structures
 
@@ -95,7 +95,7 @@ class _Connectivity():
         else:
             return self.data
 
-    def rename_nodes(self, from_mapping, to_mapping='auto', 
+    def rename_nodes(self, from_mapping, to_mapping='auto',
                      allow_duplicates=False):
         pass
 
@@ -187,6 +187,18 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     def dims(self):
         return ('epochs', 'node_in', 'node_out', 'freqs')
 
+    @property
+    def n_epochs(self):
+        return len(self.data)
+
+    def __repr__(self):  # noqa: D105
+        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
+        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
+        s += ", n_epochs : %d" % self.n_epochs
+        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ', ~%s' % (sizeof_fmt(self._size),)
+        return "<EpochSpectralConnectivity | %s>" % s
+
 
 class EpochTemporalConnectivity(TemporalConnectivity):
     def __init__(self, data, times, names=None, indices=None,
@@ -198,10 +210,22 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     def dims(self):
         return ('epochs', 'node_in', 'node_out', 'times')
 
+    @property
+    def n_epochs(self):
+        return len(self.data)
+
+    def __repr__(self):  # noqa: D105
+        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
+        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
+        s += ", n_epochs : %d" % self.n_epochs
+        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ', ~%s' % (sizeof_fmt(self._size),)
+        return "<EpochTemporalConnectivity | %s>" % s
+
 
 class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     def __init__(self, data, names, freqs, times, indices,
-                 method, spec_method, n_epochs):
+                 method, spec_method):
         super().__init__(
             data, names, freqs, times, indices=indices,
             method=method, spec_method=spec_method)
@@ -209,3 +233,15 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     @property
     def dims(self):
         return ('epochs', 'node_in', 'node_out', 'freqs', 'times')
+
+    @property
+    def n_epochs(self):
+        return len(self.data)
+
+    def __repr__(self):  # noqa: D105
+        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
+        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
+        s += ", n_epochs : %d" % self.n_epochs
+        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ', ~%s' % (sizeof_fmt(self._size),)
+        return "<EpochSpectroTemporalConnectivity | %s>" % s

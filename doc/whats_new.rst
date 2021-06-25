@@ -30,7 +30,6 @@ Bug
 API
 ~~~
 
-- :func:`mne_connectivity.envelope_correlation` has a new required parameter, ``names``, which specifies the name of the signals passed in, by `Adam Li`_ (:gh:`6`)
 - :func:`envelope_correlation`, :func:`spectral_connectivity`, and :func:`phase_slope_index` all return ``Connectivity`` containers now, by `Adam Li`_ (:gh:`6`)
 
 Changes when mne-connectivity was part of MNE-Python
