@@ -166,22 +166,19 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     # create the connectivity container
     times = None
 
-    if combine is None:
-        conn = EpochTemporalConnectivity(
-            data=corr,
-            names=names,
-            times=times,
-            method='envelope-correlation',
-            indices=indices
-        )
-    else:
-        conn = TemporalConnectivity(
-            data=corr,
-            names=names,
-            times=times,
-            method='envelope-correlation',
-            indices=indices,
-            n_epochs=n_epochs
-        )
+    # create epochs axis
+    if combine is not None:
+        corr = corr[np.newaxis, ...]
 
+    # create time axis
+    corr = corr[..., np.newaxis]
+
+    conn = EpochTemporalConnectivity(
+        data=corr,
+        names=names,
+        times=times,
+        method='envelope-correlation',
+        indices=indices,
+        n_epochs_used=n_epochs
+    )
     return conn

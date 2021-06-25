@@ -216,6 +216,9 @@ def test_spectral_connectivity(method, mode):
                 for i in range(len(freqs3)):
                     freq_idx = np.searchsorted(freqs2, freqs3[i])
                     con2_avg = np.mean(con2[j].get_data()[:, freq_idx], axis=1)
+                    print(con2[j].shape)
+                    print(con2_avg.shape)
+                    print(con3[j].shape)
                     assert_array_almost_equal(
                         con2_avg, con3[j].get_data()[:, i])
     # test _get_n_epochs

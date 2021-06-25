@@ -40,6 +40,3 @@ def test_psi():
 
     assert np.all(conn_cwt.get_data() > 0)
     assert conn_cwt.shape[-1] == n_times
-
-
-# def test_psi(mode, )

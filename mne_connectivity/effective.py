@@ -128,8 +128,10 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     else:
         times = None
     freqs_ = cohy.freqs
+    names = cohy.names
+    n_epochs_used = cohy.n_epochs
 
-    logger.info('Computing PSI from estimated Coherency')
+    logger.info(f'Computing PSI from estimated Coherency: {cohy}')
     # compute PSI in the requested bands
     if fmin is None:
         fmin = -np.inf  # set it to -inf, so we can adjust it later
@@ -150,11 +152,13 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     acc = np.empty(acc_shape, dtype=np.complex128)
 
     freqs = list()
-    idx_fi = [slice(None)] * cohy.data.ndim
-    idx_fj = [slice(None)] * cohy.data.ndim
+    freq_bands = list()
+    idx_fi = [slice(None)] * cohy.xarray.ndim
+    idx_fj = [slice(None)] * cohy.xarray.ndim
     for band_idx, band in enumerate(bands):
         freq_idx = np.where((freqs_ > band[0]) & (freqs_ < band[1]))[0]
         freqs.append(freqs_[freq_idx])
+        freq_bands.append(np.mean(freqs_[freq_idx]))
 
         acc.fill(0.)
         for fi, fj in zip(freq_idx, freq_idx[1:]):
@@ -172,21 +176,25 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         conn = SpectralConnectivity(
             data=psi,
             names=names,
-            freqs=freqs,
+            freqs=freq_bands,
             method='phase-slope-index',
             spec_method=mode,
-            indices=indices
+            indices=indices,
+            freqs_computed=freqs,
+            n_epochs_used=n_epochs_used
         )
     elif mode == 'cwt_morlet':
         # spectrotemporal
         conn = SpectroTemporalConnectivity(
             data=psi,
             names=names,
-            freqs=freqs,
+            freqs=freq_bands,
             times=times,
             method='phase-slope-index',
             spec_method=mode,
-            indices=indices
+            indices=indices,
+            freqs_computed=freqs,
+            n_epochs_used=n_epochs_used
         )
 
     return conn, n_tapers

@@ -57,7 +57,7 @@ def test_envelope_correlation():
 
     # do Hilbert internally, and don't combine
     corr = envelope_correlation(data, names=names, combine=None)
-    assert corr.shape == (data.shape[0],) + corr_orig.shape
+    assert corr.shape == (data.shape[0],) + corr_orig.shape + (1,)
     corr = np.mean(corr.get_data(), axis=0)
     assert_allclose(corr, corr_orig)
 
@@ -77,7 +77,7 @@ def test_envelope_correlation():
 
     corr_plain = envelope_correlation(data, names=names,
                                       combine=None, orthogonalize=False)
-    assert corr_plain.shape == (data.shape[0],) + corr_orig.shape
+    assert corr_plain.shape == (data.shape[0],) + corr_orig.shape + (1,)
     assert np.min(corr_plain.get_data()) < 0
     corr_plain_mean = np.mean(corr_plain.get_data(), axis=0)
     assert_allclose(np.diag(corr_plain_mean), 1)

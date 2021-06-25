@@ -1,16 +1,35 @@
 import numpy as np
+import xarray as xr
 
 from mne.utils import sizeof_fmt, object_size
 
 
+class SpectralMixin:
+    @property
+    def freqs(self):
+        return self.xarray.coords.get('freqs').values.squeeze().tolist()
+
+
+class TimeMixin:
+    @property
+    def times(self):
+        return self.xarray.coords.get('times').values.squeeze().tolist()
+
+
 class _Connectivity():
-    def __init__(self, data, names, method, indices):
+    # whether or not the connectivity occurs over epochs
+    is_epoched = False
+
+    def __init__(self, data, names, method, indices, **kwargs):
         """Base class container for connectivity data.
 
         Connectivity data is anything that represents "connections"
         between nodes as a (N, N) array. It can be symmetric, or
         asymmetric (if it is symmetric, storage optimization will
         occur).
+
+        The underlying data is stored as an ``xarray.DataArray``,
+        with a similar API.
 
         TODO: account for symmetric connectivity structures
 
@@ -25,23 +44,63 @@ class _Connectivity():
             The method name used to compute connectivity.
         indices : tuple of list | None
             The list of indices with relevant data.
+        kwargs : dict
+            Extra connectivity parameters. These may include 
+            ``freqs`` for spectral connectivity, and/or 
+            ``times`` for connectivity over time. In addition,
+            these may include extra parameters that are stored 
+            as xarray ``attrs``.
         """
+        # check the incoming data structure
+        data, names = self._check_data_consistency(data, names)
+        self.names = names
         self.method = method
         self.indices = indices
+        self._prepare_xarray(data, names, **kwargs)
 
-        # check the incoming data structure
-        data = self._check_data_consistency(data, names)
+    def _prepare_xarray(self, data, names, **kwargs):
+        # the names of each dimension of the data
+        if self.is_epoched:
+            dims = ['epochs']
+        else:
+            dims = []
+        dims.extend(['node_in', 'node_out'])
 
-        self.names = names
-        self.data = data
+        # the coordinates of each dimension
+        coords = {
+            "node_in": names,
+            "node_out": names,
+        }
+        if self.is_epoched:
+            coords['epochs'] = list(map(str, range(data.shape[0])))
+        if 'freqs' in kwargs:
+            coords['freqs'] = kwargs.pop('freqs')
+            dims.append('freqs')
+        if 'times' in kwargs:
+            times = kwargs.pop('times')
+            if times is None:
+                times = list(range(data.shape[-1]))
+            coords['times'] = list(times)
+            dims.append('times')
+
+        # create xarray object
+        xarray_obj = xr.DataArray(
+            data=data,
+            coords=coords,
+            dims=dims,
+            attrs=kwargs
+        )
+
+        self._obj = xarray_obj
 
     def _check_data_consistency(self, data, names):
-        if self.dims[0] != 'epochs':
-            node_in_shape = data.shape[0]
-            node_out_shape = data.shape[1]
-        else:
+        if self.is_epoched:
             node_in_shape = data.shape[1]
             node_out_shape = data.shape[2]
+        else:
+            node_in_shape = data.shape[0]
+            node_out_shape = data.shape[1]
+
         self.n_nodes_in = node_in_shape
         self.n_nodes_out = node_out_shape
         if node_in_shape != node_out_shape:
@@ -67,33 +126,53 @@ class _Connectivity():
             raise ValueError(f'The number of names passed in ({len(names)}) '
                              f'must match the number of nodes in the '
                              f'connectivity data ({node_in_shape}).')
-        return data
+        return data, names
 
     @property
     def dims(self):
-        return ('node_in', 'node_out')
+        return self.xarray.dims
+
+    @property
+    def attrs(self):
+        return self.xarray.attrs
 
     @property
     def shape(self):
-        return self.data.shape
+        return self.xarray.shape
+
+    @property
+    def data(self):
+        return self.xarray.values
+
+    @property
+    def xarray(self):
+        return self._obj
+
+    @property
+    def n_epochs(self):
+        return self.attrs.get('n_epochs_used')
 
     @property
     def _size(self):
         """Estimate the object size."""
         size = 0
-        if hasattr(self, 'data'):
-            size += object_size(self.data)
+        size += object_size(self.data)
+        size += object_size(self.attrs)
         return size
 
-    def get_data(self, return_nans=False):
+    def get_data(self, return_nans=False, squeeze=True):
         if return_nans:
-            return self.data
+            data = self.data
 
         if self.indices is not None:
             row_idx, col_idx = self.indices
-            return self.data[row_idx, col_idx, ...]
+            data = self.data[row_idx, col_idx, ...]
         else:
-            return self.data
+            data = self.data
+
+        if squeeze:
+            return data.squeeze()
+        return data
 
     def rename_nodes(self, from_mapping, to_mapping='auto',
                      allow_duplicates=False):
@@ -112,18 +191,12 @@ class _Connectivity():
         pass
 
 
-class SpectralConnectivity(_Connectivity):
+class SpectralConnectivity(_Connectivity, SpectralMixin):
     def __init__(self, data, freqs, names=None, indices=None, method=None,
-                 spec_method=None, n_epochs=None):
-        super().__init__(data, names, method, indices)
-
-        self.freqs = freqs
-        self.spec_method = spec_method
-        self.n_epochs = n_epochs
-
-    @property
-    def dims(self):
-        return ('node_in', 'node_out', 'freqs')
+                 spec_method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method, indices=indices,
+                         freqs=freqs, spec_method=spec_method,
+                         n_epochs_used=n_epochs_used, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
@@ -133,17 +206,12 @@ class SpectralConnectivity(_Connectivity):
         return "<SpectralConnectivity | %s>" % s
 
 
-class TemporalConnectivity(_Connectivity):
+class TemporalConnectivity(_Connectivity, TimeMixin):
     def __init__(self, data, times, names=None, indices=None,
-                 method=None, n_epochs=None):
-        super().__init__(data, names, method, indices)
-
-        self.times = times
-        self.n_epochs = n_epochs
-
-    @property
-    def dims(self):
-        return ('node_in', 'node_out', 'times')
+                 method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method, indices=indices,
+                         times=times, n_epochs_used=n_epochs_used,
+                         **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
@@ -153,19 +221,12 @@ class TemporalConnectivity(_Connectivity):
         return "<TemporalConnectivity | %s>" % s
 
 
-class SpectroTemporalConnectivity(_Connectivity):
+class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     def __init__(self, data, freqs, times, names=None, indices=None,
-                 method=None, spec_method=None, n_epochs=None):
-        super().__init__(data, names, method, indices)
-
-        self.freqs = freqs
-        self.spec_method = spec_method
-        self.times = times
-        self.n_epochs = n_epochs
-
-    @property
-    def dims(self):
-        return ('node_in', 'node_out', 'freqs', 'times')
+                 method=None, spec_method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method, indices=indices,
+                         freqs=freqs, spec_method=spec_method,
+                         times=times, n_epochs_used=n_epochs_used, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
@@ -177,22 +238,14 @@ class SpectroTemporalConnectivity(_Connectivity):
 
 
 class EpochSpectralConnectivity(SpectralConnectivity):
+    # whether or not the connectivity occurs over epochs
+    is_epoched = True
+
     def __init__(self, data, freqs, names=None, indices=None, method=None,
-                 spec_method=None):
+                 spec_method=None, **kwargs):
         super().__init__(
-            data, names, freqs, indices=indices, method=method,
-            spec_method=spec_method)
-
-    @property
-    def dims(self):
-        return ('epochs', 'node_in', 'node_out', 'freqs')
-
-    def __len__(self):
-        return len(self.data)
-
-    @property
-    def n_epochs(self):
-        return len(self)
+            data, freqs=freqs, names=names, indices=indices, method=method,
+            spec_method=spec_method, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
@@ -204,18 +257,12 @@ class EpochSpectralConnectivity(SpectralConnectivity):
 
 
 class EpochTemporalConnectivity(TemporalConnectivity):
-    def __init__(self, data, times, names=None, indices=None,
-                 method=None):
-        super().__init__(data, names, times, indices=indices,
-                         method=method)
+    # whether or not the connectivity occurs over epochs
+    is_epoched = True
 
-    @property
-    def dims(self):
-        return ('epochs', 'node_in', 'node_out', 'times')
-
-    @property
-    def n_epochs(self):
-        return len(self.data)
+    def __init__(self, data, times, names=None, indices=None, method=None, **kwargs):
+        super().__init__(data, times=times, names=names, indices=indices,
+                         method=method, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
@@ -227,19 +274,14 @@ class EpochTemporalConnectivity(TemporalConnectivity):
 
 
 class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
+    # whether or not the connectivity occurs over epochs
+    is_epoched = True
+
     def __init__(self, data, names, freqs, times, indices,
-                 method, spec_method):
+                 method, spec_method, **kwargs):
         super().__init__(
-            data, names, freqs, times, indices=indices,
-            method=method, spec_method=spec_method)
-
-    @property
-    def dims(self):
-        return ('epochs', 'node_in', 'node_out', 'freqs', 'times')
-
-    @property
-    def n_epochs(self):
-        return len(self.data)
+            data, names=names, freqs=freqs, times=times, indices=indices,
+            method=method, spec_method=spec_method, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])

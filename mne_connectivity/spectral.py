@@ -910,9 +910,10 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
         con.append(this_con)
 
+    freqs_used = freqs
     if faverage:
         # for each band we return the frequencies that were averaged
-        freqs = freqs_bands
+        freqs = [np.mean(x) for x in freqs_bands]
 
     if indices is None:
         # return all-to-all connectivity matrices
@@ -943,6 +944,11 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     # create a list of connectivity containers
     conn_list = []
     for _con in con:
+        # print(_con.shape, names, len(freqs))
+        # print(freqs)
+        # print(freqs_bands)
+        # print(freqs_used)
+        # print(faverage)
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
             # spectral only
@@ -953,7 +959,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                 method=method,
                 spec_method=mode,
                 indices=indices,
-                n_epochs=n_epochs
+                n_epochs_used=n_epochs,
+                freqs_used=freqs_used
             )
         elif mode == 'cwt_morlet':
             # spectrotemporal
@@ -965,7 +972,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                 method=method,
                 spec_method=mode,
                 indices=indices,
-                n_epochs=n_epochs
+                n_epochs_used=n_epochs,
+                freqs_used=freqs_used
             )
         conn_list.append(conn)
 
