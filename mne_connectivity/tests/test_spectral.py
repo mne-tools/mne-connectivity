@@ -43,7 +43,7 @@ def test_spectral_connectivity(method, mode):
     tmin = 0.
     tmax = (n_times - 1) / sfreq
     data = rng.randn(n_signals, n_epochs * n_times)
-    # times_data = np.linspace(tmin, tmax, n_times)
+    times_data = np.linspace(tmin, tmax, n_times)
     # simulate connectivity from 5Hz..15Hz
     fstart, fend = 5.0, 15.0
     data[1, :] = filter_data(data[0, :], sfreq, fstart, fend,
@@ -100,12 +100,14 @@ def test_spectral_connectivity(method, mode):
         if isinstance(method, list):
             freqs = con[0].freqs
             n = con[0].n_epochs
+            times = con[0].times
         else:
             freqs = con.freqs
             n = con.n_epochs
+            times = con.times
 
         assert (n == n_epochs)
-        # assert_array_almost_equal(times_data, times)
+        assert_array_almost_equal(times_data, times)
 
         if mode == 'multitaper':
             upper_t = 0.95
@@ -215,12 +217,16 @@ def test_spectral_connectivity(method, mode):
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
                     freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx], axis=1)
-                    print(con2[j].shape)
+                    print(freq_idx, len(freqs3), len(freqs2))
+                    print(con2[j].shape, con2[j].get_data().shape)
+                    print(con3[j].shape, con3[j].get_data().shape)
+                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx, :], 
+                                        axis=1)
+                    print(con2[j].get_data()[:, freq_idx, :].shape)
                     print(con2_avg.shape)
-                    print(con3[j].shape)
                     assert_array_almost_equal(
-                        con2_avg, con3[j].get_data()[:, i])
+                        con2_avg, con3[j].get_data()[:, i, :])
+
     # test _get_n_epochs
     full_list = list(range(10))
     out_lens = np.array([len(x) for x in _get_n_epochs(full_list, 4)])

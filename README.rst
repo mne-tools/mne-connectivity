@@ -16,7 +16,7 @@
 
 .. _MNE-Connectivity: https://mne.tools/mne-connectivity/dev/
 .. _MNE-Python: https://mne.tools/stable
-.. _MNE-Connectivity documentation: https://mne.tools/mne-connectivity/dev/overview/index.html
+.. _MNE-Connectivity documentation: https://mne.tools/mne-connectivity/stable/index.html
 .. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
 .. _pip: https://pip.pypa.io/en/stable/
 
@@ -34,7 +34,7 @@ and post-hoc statistics and processing.
 Documentation
 ^^^^^^^^^^^^^
 
-`MNE-Connectivity documentation`_ is available online.
+Stable `MNE-Connectivity documentation`_ is available online.
 
 Installing MNE-Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
