@@ -15,7 +15,9 @@ jobs:
         - restore_cache:
             keys:
               - source-cache-connectivity
+
         - checkout
+
         - run:
             name: Complete checkout
             command: |
@@ -23,10 +25,16 @@ jobs:
                 git remote add upstream git://github.com/mne-tools/mne-connectivity.git
               fi
               git fetch upstream
+
         - save_cache:
             key: source-cache-connectivity
             paths:
               - ".git"
+
+        - add_ssh_keys:
+            fingerprints:
+              - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
+
         - run:
             name: Set BASH_ENV
             command: |
