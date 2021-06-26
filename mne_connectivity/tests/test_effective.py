@@ -30,8 +30,8 @@ def test_psi():
         data, mode='fourier', sfreq=sfreq, indices=indices)
 
     # the measure is symmetric (sign flip)
-    assert_array_almost_equal(conn_2.get_data()[0, 0],
-                              -conn.get_data()[1, 0, 0])
+    assert_array_almost_equal(conn_2.get_data(squeeze=False)[0, 0],
+                              -conn.get_data(squeeze=False)[1, 0, 0])
 
     cwt_freqs = np.arange(5., 20, 0.5)
     conn_cwt, n_tapers = phase_slope_index(

@@ -3,7 +3,7 @@ from numpy.testing import assert_array_almost_equal
 import pytest
 
 from mne import EpochsArray, SourceEstimate, create_info
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity, SpectralConnectivity
 from mne_connectivity.spectral import _CohEst, _get_n_epochs
 from mne.filter import filter_data
 
@@ -98,13 +98,15 @@ def test_spectral_connectivity(method, mode):
             cwt_n_cycles=cwt_n_cycles)
 
         if isinstance(method, list):
-            freqs = con[0].attrs.get('freqs_used')
-            n = con[0].n_epochs
-            times = con[0].times
+            this_con = con[0]
         else:
-            freqs = con.attrs.get('freqs_used')
-            n = con.n_epochs
-            times = con.times
+            this_con = con
+        freqs = this_con.attrs.get('freqs_used')
+        n = this_con.n_epochs
+        if isinstance(this_con, SpectralConnectivity):
+            times = this_con.attrs.get('times_used')
+        else:
+            times = this_con.times
 
         assert (n == n_epochs)
         assert_array_almost_equal(times_data, times)
@@ -217,15 +219,10 @@ def test_spectral_connectivity(method, mode):
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
                     freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    print(freq_idx, len(freqs3), len(freqs2))
-                    print(con2[j].shape, con2[j].get_data().shape)
-                    print(con3[j].shape, con3[j].get_data().shape)
-                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx, :], 
-                                        axis=1)
-                    print(con2[j].get_data()[:, freq_idx, :].shape)
-                    print(con2_avg.shape)
+                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx],
+                                       axis=1)
                     assert_array_almost_equal(
-                        con2_avg, con3[j].get_data()[:, i, :])
+                        con2_avg, con3[j].get_data()[:, i])
 
     # test _get_n_epochs
     full_list = list(range(10))

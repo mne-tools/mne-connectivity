@@ -127,7 +127,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         times = cohy.times
     else:
         times = None
-    freqs_ = cohy.freqs
+    freqs_ = np.array(cohy.freqs)
     names = cohy.names
     n_epochs_used = cohy.n_epochs
 

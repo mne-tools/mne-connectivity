@@ -45,10 +45,10 @@ class _Connectivity():
         indices : tuple of list | None
             The list of indices with relevant data.
         kwargs : dict
-            Extra connectivity parameters. These may include 
-            ``freqs`` for spectral connectivity, and/or 
+            Extra connectivity parameters. These may include
+            ``freqs`` for spectral connectivity, and/or
             ``times`` for connectivity over time. In addition,
-            these may include extra parameters that are stored 
+            these may include extra parameters that are stored
             as xarray ``attrs``.
         """
         # check the incoming data structure
@@ -171,7 +171,11 @@ class _Connectivity():
 
         if self.indices is not None:
             row_idx, col_idx = self.indices
-            data = self.data[row_idx, col_idx, ...]
+            if self.is_epoched:
+                epoch_idx = range(self.n_epochs)
+                data = self.data[[epoch_idx], [row_idx], [col_idx], ...]
+            else:
+                data = self.data[[row_idx], [col_idx], ...]
         else:
             data = self.data
 
@@ -265,7 +269,8 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, times, names=None, indices=None, method=None, **kwargs):
+    def __init__(self, data, times, names=None, indices=None,
+                 method=None, **kwargs):
         super().__init__(data, times=times, names=names, indices=indices,
                          method=method, **kwargs)
 

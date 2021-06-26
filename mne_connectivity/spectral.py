@@ -961,7 +961,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                 spec_method=mode,
                 indices=indices,
                 n_epochs_used=n_epochs,
-                freqs_used=freqs_used
+                freqs_used=freqs_used,
+                times_used=times
             )
         elif mode == 'cwt_morlet':
             # spectrotemporal

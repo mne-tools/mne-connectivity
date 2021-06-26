@@ -31,6 +31,8 @@ API
 ~~~
 
 - :func:`envelope_correlation`, :func:`spectral_connectivity`, and :func:`phase_slope_index` all return ``Connectivity`` containers now, by `Adam Li`_ (:gh:`6`)
+- Added ``xarray`` as a dependency where all connectivity containers are now underlying xarrays, by `Adam Li`_ (:gh:`6`)
+
 
 Changes when mne-connectivity was part of MNE-Python
 ----------------------------------------------------

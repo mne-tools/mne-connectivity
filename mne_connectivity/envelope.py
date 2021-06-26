@@ -10,7 +10,7 @@ from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import verbose, _check_combine, _check_option
 
-from .base import EpochTemporalConnectivity, TemporalConnectivity
+from .base import EpochTemporalConnectivity
 
 
 @verbose
