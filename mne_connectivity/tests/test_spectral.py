@@ -91,7 +91,7 @@ def test_spectral_connectivity(method, mode):
         else:
             mt_bandwidth = None
 
-        con, _ = spectral_connectivity(
+        con = spectral_connectivity(
             data, method=method, mode=mode, indices=None, sfreq=sfreq,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
@@ -156,7 +156,7 @@ def test_spectral_connectivity(method, mode):
             test_methods = method
 
         stc_data = _stc_gen(data, sfreq, tmin)
-        con2, _ = spectral_connectivity(
+        con2 = spectral_connectivity(
             stc_data, method=test_methods, mode=mode, indices=indices,
             sfreq=sfreq, mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, tmin=tmin, tmax=tmax,
@@ -191,7 +191,7 @@ def test_spectral_connectivity(method, mode):
         # compute same connections for two bands, fskip=1, and f. avg.
         fmin = (5., 15.)
         fmax = (15., 30.)
-        con3, _ = spectral_connectivity(
+        con3 = spectral_connectivity(
             data, method=method, mode=mode, indices=indices,
             sfreq=sfreq, fmin=fmin, fmax=fmax, fskip=1, faverage=True,
             mt_adaptive=adaptive, mt_low_bias=True,
@@ -265,19 +265,19 @@ def test_epochs_tmin_tmax(kind):
               'mt_adaptive': False, 'n_jobs': 1}
 
     # Check the entire interval
-    conn, n_tapers = spectral_connectivity(X, **kwargs)
+    conn = spectral_connectivity(X, **kwargs)
     assert 0.89 < conn.get_data()[1, 0] < 0.91
     # TODO: is this necessary?
     # assert_allclose(conn.times, want_times)
     # Check a time interval before the sinusoid
-    conn, n_tapers = spectral_connectivity(X, tmax=tmin + 0.5, **kwargs)
+    conn = spectral_connectivity(X, tmax=tmin + 0.5, **kwargs)
     assert 0 < conn.get_data()[1, 0] < 0.15
     # Check a time during the sinusoid
-    conn, n_tapers = spectral_connectivity(
+    conn = spectral_connectivity(
         X, tmin=tmin + 0.5, tmax=tmin + 1.5, **kwargs)
     assert 0.93 < conn.get_data()[1, 0] <= 0.94
     # Check a time interval after the sinusoid
-    conn, n_tapers = spectral_connectivity(
+    conn = spectral_connectivity(
         X, tmin=tmin + 1.5, tmax=tmin + 1.9, **kwargs)
     assert 0 < conn.get_data()[1, 0] < 0.15
 

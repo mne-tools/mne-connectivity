@@ -118,7 +118,7 @@ label_ts = mne.extract_label_time_course(
 fmin = 8.
 fmax = 13.
 sfreq = epochs.info['sfreq']  # the sampling frequency
-con, freqs, times, n_epochs, n_tapers = spectral_connectivity(
+con = spectral_connectivity(
     label_ts, method='pli', mode='multitaper', sfreq=sfreq, fmin=fmin,
     fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
 

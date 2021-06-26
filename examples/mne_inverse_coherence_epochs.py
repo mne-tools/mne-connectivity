@@ -111,9 +111,10 @@ fmin = (8., 13.)
 fmax = (13., 30.)
 sfreq = raw.info['sfreq']  # the sampling frequency
 
-coh, freqs, times, n_epochs, n_tapers = spectral_connectivity(
+coh = spectral_connectivity(
     stcs, method='coh', mode='fourier', indices=indices,
     sfreq=sfreq, fmin=fmin, fmax=fmax, faverage=True, n_jobs=1)
+freqs = coh.freqs
 
 print('Frequencies in Hz over which coherence was averaged for alpha: ')
 print(freqs[0])

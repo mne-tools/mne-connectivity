@@ -115,7 +115,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     """
     logger.info('Estimating phase slope index (PSI)')
     # estimate the coherency
-    cohy, n_tapers = spectral_connectivity(
+    cohy = spectral_connectivity(
         data, names, method='cohy', indices=indices, sfreq=sfreq, mode=mode,
         fmin=fmin, fmax=fmax, fskip=0, faverage=False, tmin=tmin, tmax=tmax,
         mt_bandwidth=mt_bandwidth, mt_adaptive=mt_adaptive,
@@ -129,6 +129,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         times = None
     freqs_ = np.array(cohy.freqs)
     names = cohy.names
+    n_tapers = cohy.attrs.get('n_tapers')
     n_epochs_used = cohy.n_epochs
 
     logger.info(f'Computing PSI from estimated Coherency: {cohy}')
@@ -181,7 +182,8 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs,
-            n_epochs_used=n_epochs_used
+            n_epochs_used=n_epochs_used,
+            n_tapers=n_tapers
         )
     elif mode == 'cwt_morlet':
         # spectrotemporal
@@ -194,7 +196,8 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs,
-            n_epochs_used=n_epochs_used
+            n_epochs_used=n_epochs_used,
+            n_tapers=n_tapers
         )
 
-    return conn, n_tapers
+    return conn

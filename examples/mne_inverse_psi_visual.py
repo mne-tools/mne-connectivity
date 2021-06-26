@@ -90,7 +90,7 @@ fmax = 20.
 tmin_con = 0.
 sfreq = epochs.info['sfreq']  # the sampling frequency
 
-psi, _, _, _, _ = phase_slope_index(
+psi = phase_slope_index(
     comb_ts, mode='multitaper', indices=indices, sfreq=sfreq,
     fmin=fmin, fmax=fmax, tmin=tmin_con)
 

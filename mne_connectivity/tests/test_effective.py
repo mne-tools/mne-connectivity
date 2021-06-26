@@ -18,7 +18,7 @@ def test_psi():
         data[i, 1, 10:] = data[i, 0, :-10]  # signal 0 is ahead
         data[i, 2, :-10] = data[i, 0, 10:]  # signal 2 is ahead
 
-    conn, n_tapers = phase_slope_index(
+    conn = phase_slope_index(
         data, mode='fourier', sfreq=sfreq)
 
     assert conn.data[1, 0, 0] < 0
@@ -26,7 +26,7 @@ def test_psi():
 
     # only compute for a subset of the indices
     indices = (np.array([0]), np.array([1]))
-    conn_2, n_tapers = phase_slope_index(
+    conn_2 = phase_slope_index(
         data, mode='fourier', sfreq=sfreq, indices=indices)
 
     # the measure is symmetric (sign flip)
@@ -34,7 +34,7 @@ def test_psi():
                               -conn.get_data(squeeze=False)[1, 0, 0])
 
     cwt_freqs = np.arange(5., 20, 0.5)
-    conn_cwt, n_tapers = phase_slope_index(
+    conn_cwt = phase_slope_index(
         data, mode='cwt_morlet', sfreq=sfreq, cwt_freqs=cwt_freqs,
         indices=indices)
 

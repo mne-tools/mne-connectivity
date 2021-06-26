@@ -101,7 +101,7 @@ fmin = 8.
 fmax = 13.
 sfreq = raw.info['sfreq']  # the sampling frequency
 con_methods = ['pli', 'wpli2_debiased', 'ciplv']
-con, freqs, times, n_epochs, n_tapers = spectral_connectivity(
+con = spectral_connectivity(
     label_ts, method=con_methods, mode='multitaper', sfreq=sfreq, fmin=fmin,
     fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
 
@@ -109,7 +109,7 @@ con, freqs, times, n_epochs, n_tapers = spectral_connectivity(
 # for each method
 con_res = dict()
 for method, c in zip(con_methods, con):
-    con_res[method] = c[:, :, 0]
+    con_res[method] = c.get_data()[:, :, 0]
 
 ###############################################################################
 # Make a connectivity plot

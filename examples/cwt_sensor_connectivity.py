@@ -60,10 +60,12 @@ cwt_n_cycles = cwt_freqs / 7.
 
 # Run the connectivity analysis using 2 parallel jobs
 sfreq = raw.info['sfreq']  # the sampling frequency
-con, freqs, times, _, _ = spectral_connectivity(
+con = spectral_connectivity(
     epochs, indices=indices,
     method='wpli2_debiased', mode='cwt_morlet', sfreq=sfreq,
     cwt_freqs=cwt_freqs, cwt_n_cycles=cwt_n_cycles, n_jobs=1)
+times = con.times
+freqs = con.freqs
 
 # Mark the seed channel with a value of 1.0, so we can see it in the plot
 con[np.where(indices[1] == seed)] = 1.0
