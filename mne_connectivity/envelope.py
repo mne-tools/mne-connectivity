@@ -1,6 +1,7 @@
 # Authors: Eric Larson <larson.eric.d@gmail.com>
 #          Sheraz Khan <sheraz@khansheraz.com>
 #          Denis Engemann <denis.engemann@gmail.com>
+#          Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
 

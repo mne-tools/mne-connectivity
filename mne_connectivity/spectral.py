@@ -928,19 +928,26 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
             this_con[indices_use] = this_con_flat
 
             con.append(this_con)
-    else:
-        # keep all arrays as all-to-all connectivity with nans
-        logger.info('    assembling connectivity matrix for subset')
-        con_flat = con
-        con = list()
-        for this_con_flat in con_flat:
-            this_con = np.zeros((n_signals, n_signals) +
-                                this_con_flat.shape[1:],
-                                dtype=this_con_flat.dtype)
-            this_con[:] = np.nan
-            this_con[indices_use] = this_con_flat
-
-            con.append(this_con)
+    # else:
+    #     # keep all arrays as all-to-all connectivity with nans
+    #     logger.info('    assembling connectivity matrix for subset')
+    #     from scipy.sparse import csgraph
+    #     print('inside indices...')
+    #     print([x.shape for x in con])
+    #     print(n_signals)
+    #     print(indices)
+    #     # assert False
+    #     con_flat = con
+    #     con = list()
+    #     for this_con_flat in con_flat:
+    #         this_con = np.zeros((n_signals, n_signals) +
+    #                             this_con_flat.shape[1:],
+    #                             dtype=this_con_flat.dtype)
+    #         this_con[:] = np.nan
+    #         this_con[indices_use] = this_con_flat
+    #         this_con = csgraph.csgraph_from_dense(this_con,
+    #                             null_value=np.nan)
+    #         con.append(this_con)
 
     # create a list of connectivity containers
     conn_list = []

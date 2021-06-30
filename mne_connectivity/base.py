@@ -1,26 +1,27 @@
 import numpy as np
 import xarray as xr
 
-from mne.utils import sizeof_fmt, object_size
+from mne.utils import sizeof_fmt, object_size, _validate_type
 
 
 class SpectralMixin:
     @property
     def freqs(self):
-        return self.xarray.coords.get('freqs').values.squeeze().tolist()
+        return self.xarray.coords.get('freqs').values.tolist()
 
 
 class TimeMixin:
     @property
     def times(self):
-        return self.xarray.coords.get('times').values.squeeze().tolist()
+        return self.xarray.coords.get('times').values.tolist()
 
 
 class _Connectivity():
     # whether or not the connectivity occurs over epochs
     is_epoched = False
 
-    def __init__(self, data, names, method, indices, **kwargs):
+    def __init__(self, data, names, indices, method,
+                 n_nodes=None, **kwargs):
         """Base class container for connectivity data.
 
         Connectivity data is anything that represents "connections"
@@ -28,48 +29,115 @@ class _Connectivity():
         asymmetric (if it is symmetric, storage optimization will
         occur).
 
-        The underlying data is stored as an ``xarray.DataArray``,
-        with a similar API.
-
-        TODO: account for symmetric connectivity structures
+        The underlying data structure is an ``xarray.DataArray``,
+        with a similar API. We provide support for storing
+        connectivity data in a subset of nodes. Thus the underlying
+        data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D array
+        would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This
+        allows us to optimize storage also for symmetric connectivity.
 
         Parameters
         ----------
         data : np.ndarray
-            The connectivity data. The first two axes should
-            have matching dimensions.
+            The connectivity data that can either be a full array of
+            ``(n_nodes_in, n_nodes_out, ...)``, or a raveled array of
+            ``(n_estimated_nodes, ...)`` shape.
         names : list | np.ndarray | None
-            The names of the nodes in the connectivity data.
+            The names of the nodes that we would consider in the
+            connectivity data.
+        indices : tuple of arrays | str | None
+            The indices of relevant connectivity data. If ``'all'`` (default),
+            then data is connectivity between all nodes. If ``'symmetric'``,
+            then data is symmetric connectivity between all nodes. If a tuple,
+            then the first list represents the "in nodes", and the second list
+            represents the "out nodes". See "Notes" for more information.
         method : str
             The method name used to compute connectivity.
-        indices : tuple of list | None
-            The list of indices with relevant data.
         kwargs : dict
             Extra connectivity parameters. These may include
             ``freqs`` for spectral connectivity, and/or
             ``times`` for connectivity over time. In addition,
             these may include extra parameters that are stored
             as xarray ``attrs``.
+
+        Notes
+        -----
+        Connectivity data can be generally represented as a square matrix
+        with values intending the connectivity function value between two
+        nodes. We optimize storage of symmetric connectivity data
+        and allow support for computing connectivity data on a subset of nodes.
+        We store connectivity data as a raveled ``(n_estimated_nodes, ...)``
+        where ``n_estimated_nodes`` can be ``n_nodes_in * n_nodes_out`` if a
+        full connectivity structure is computed, or a subset of the nodes
+        (equal to the length of the indices passed in).
         """
+        if isinstance(indices, str) and \
+                indices not in ['all', 'symmetric']:
+            raise ValueError(f'Indices {indices} can only be '
+                             f'"all", or "symmetric", otherwise '
+                             f'should be a list of tuples.')
+
         # check the incoming data structure
-        data, names = self._check_data_consistency(data, names)
-        self.names = names
         self.method = method
         self.indices = indices
-        self._prepare_xarray(data, names, **kwargs)
+        self.n_nodes = n_nodes
+        self._check_data_consistency(data)
+        self._prepare_xarray(data, names=names, **kwargs)
+        self._check()
+
+    def _get_n_estimated_nodes(self, data):
+        # account for epoch data structures
+        if self.is_epoched:
+            start_idx = 1
+            self.n_epochs = data.shape[0]
+            new_shape = [data.shape[0]]
+        else:
+            self.n_epochs = None
+            start_idx = 0
+            new_shape = []
+
+        # look at the next two axes to get the remaining axes shape
+        if data.shape[start_idx] == data.shape[start_idx + 1]:
+            n_estimated_nodes = data.shape[start_idx] * \
+                data.shape[start_idx + 1]
+            remaining_shape = list(data.shape[start_idx + 2:])
+            self.n_nodes = data.shape[start_idx]
+        else:
+            n_estimated_nodes = data.shape[start_idx]
+            remaining_shape = list(data.shape[start_idx + 1:])
+            if self.n_nodes is None:
+                raise ValueError('The number of nodes should be passed in '
+                                 'which represents the number of nodes in '
+                                 'the original dataset. It cannot be '
+                                 'inferred if the data is passed in with '
+                                 'node axes raveled.')
+
+        # reshape the data, so "estimated nodes" data is raveled
+        new_shape.append(n_estimated_nodes)
+        new_shape.extend(remaining_shape)
+        data = np.reshape(data, newshape=new_shape, order='C')
+        self.n_estimated_nodes = n_estimated_nodes
+        return data
 
     def _prepare_xarray(self, data, names, **kwargs):
-        # the names of each dimension of the data
+        # get the number of estimated nodes
+        data = self._get_n_estimated_nodes(data)
+
+        # set node names
+        if names is None:
+            names = list(map(str, range(self.n_nodes)))
+
+        # the names of each first few dimensions of
+        # the data depending if data is epoched or not
         if self.is_epoched:
-            dims = ['epochs']
+            dims = ['epochs', 'node_in -> node_out']
         else:
-            dims = []
-        dims.extend(['node_in', 'node_out'])
+            dims = ['node_in -> node_out']
 
         # the coordinates of each dimension
+        n_estimated_list = list(map(str, range(self.n_estimated_nodes)))
         coords = {
-            "node_in": names,
-            "node_out": names,
+            "node_in -> node_out": n_estimated_list
         }
         if self.is_epoched:
             coords['epochs'] = list(map(str, range(data.shape[0])))
@@ -87,6 +155,7 @@ class _Connectivity():
         for key, val in kwargs.items():
             if isinstance(val, np.ndarray):
                 kwargs[key] = val.tolist()
+        kwargs['node_names'] = names
 
         # create xarray object
         xarray_obj = xr.DataArray(
@@ -95,47 +164,40 @@ class _Connectivity():
             dims=dims,
             attrs=kwargs
         )
-
         self._obj = xarray_obj
 
-    def _check_data_consistency(self, data, names):
-        if self.is_epoched:
-            node_in_shape = data.shape[1]
-            node_out_shape = data.shape[2]
-        else:
-            node_in_shape = data.shape[0]
-            node_out_shape = data.shape[1]
+    def _check(self):
+        if len(self.names) != self.n_nodes:
+            raise ValueError(f'The number of names passed in '
+                             f'({len(self.names)}) '
+                             f'must match the number of nodes in the '
+                             f'original data ({self.n_nodes}).')
 
-        self.n_nodes_in = node_in_shape
-        self.n_nodes_out = node_out_shape
-        if node_in_shape != node_out_shape:
-            raise RuntimeError(f'The data shape should have '
-                               f'matching first two axes. '
-                               f'The current shape is {data.shape}.')
+    def _check_data_consistency(self, data):
+        # check that the indices passed in are of the same length
+        if isinstance(self.indices, tuple):
+            if len(self.indices[0]) != len(self.indices[1]):
+                raise ValueError(f'If indices are passed in '
+                                 f'then they must be the same '
+                                 f'length. They are right now '
+                                 f'{len(self.indices[0])} and '
+                                 f'{len(self.indices[1])}.')
 
         if not isinstance(data, np.ndarray):
-            raise TypeError('Connectivity data must be stored as a '
+            raise TypeError('Connectivity data must be passed in as a '
                             'numpy array.')
 
-        if np.ndim(data) < 2 or np.ndim(data) > 4:
-            raise ValueError(f'Connectivity data that is passed '
-                             f'must be either 2D, 3D, or 4D, where the '
-                             f'last axis is time if 3D or 4D and the '
-                             f'3rd axis is frequency if 4D. The shape '
-                             f'passed was {data.shape}.')
-
-        if names is None:
-            names = list(map(str, range(node_in_shape)))
-
-        if len(names) != node_in_shape:
-            raise ValueError(f'The number of names passed in ({len(names)}) '
-                             f'must match the number of nodes in the '
-                             f'connectivity data ({node_in_shape}).')
-        return data, names
+    @property
+    def _data(self):
+        return self.xarray.values
 
     @property
     def dims(self):
         return self.xarray.dims
+
+    @property
+    def coords(self):
+        return self.xarray.coords
 
     @property
     def attrs(self):
@@ -146,46 +208,123 @@ class _Connectivity():
         return self.xarray.shape
 
     @property
-    def data(self):
-        return self.xarray.values
+    def names(self):
+        return self.attrs['node_names']
 
     @property
     def xarray(self):
         return self._obj
 
     @property
-    def n_epochs(self):
+    def n_epochs_used(self):
         return self.attrs.get('n_epochs_used')
 
     @property
     def _size(self):
         """Estimate the object size."""
         size = 0
-        size += object_size(self.data)
+        size += object_size(self.get_data())
         size += object_size(self.attrs)
         return size
 
-    def get_data(self, return_nans=False, squeeze=True):
-        if return_nans:
-            data = self.data
+    def get_data(self, output='raveled', squeeze=True):
+        """Get connectivity data as a numpy array.
 
-        if self.indices is not None:
-            row_idx, col_idx = self.indices
-            if self.is_epoched:
-                epoch_idx = range(self.n_epochs)
-                data = self.data[[epoch_idx], [row_idx], [col_idx], ...]
-            else:
-                data = self.data[[row_idx], [col_idx], ...]
+        Parameters
+        ----------
+        output : str, optional
+            How to format the output, by default 'raveled', which
+            will represent each connectivity matrix as a
+            ``(n_nodes_in * n_nodes_out, 1)`` list. If 'full', then
+            will return each connectivity matrix as a 2D array.
+        squeeze : bool, optional
+            Whether to squeeze the array or not, by default True.
+
+        Returns
+        -------
+        data : np.ndarray
+        """
+        if output not in ['raveled', 'full']:
+            raise ValueError(f'Output of data can only be one of '
+                             f'"raveled, "full", not {output}.')
+
+        if output == 'raveled':
+            data = self._data
         else:
-            data = self.data
+            # get the new shape of the data array
+            if self.is_epoched:
+                new_shape = [self.n_epochs]
+            else:
+                new_shape = []
+            new_shape.extend([self.n_nodes, self.n_nodes])
+            if 'freqs' in self.dims:
+                new_shape.append(len(self.coords['freqs']))
+            if 'times' in self.dims:
+                new_shape.append(len(self.coords['times']))
+
+            # handle things differently if indices is defined
+            if isinstance(self.indices, tuple):
+                # TODO: improve this to be more memory efficient
+                # form all-to-all connectivity structure
+                data = np.zeros(new_shape)
+                data[:] = np.nan
+
+                row_idx, col_idx = self.indices
+                if self.is_epoched:
+                    epoch_idx = range(self.n_epochs)
+                    data = self._data[[epoch_idx], [row_idx], [col_idx], ...]
+                else:
+                    data = self._data[[row_idx], [col_idx], ...]
+            else:
+                data = self._data.reshape(new_shape)
 
         if squeeze:
             return data.squeeze()
+
         return data
 
-    def rename_nodes(self, from_mapping, to_mapping='auto',
-                     allow_duplicates=False):
-        pass
+    def rename_nodes(self, mapping):
+        """Rename nodes.
+
+        Parameters
+        ----------
+        mapping : dict
+            Mapping from original node names (keys) to new node names (values).
+        """
+        names = self.names
+
+        # first check and assemble clean mappings of index and name
+        if isinstance(mapping, dict):
+            orig_names = sorted(list(mapping.keys()))
+            missing = [orig_name not in names for orig_name in orig_names]
+            if any(missing):
+                raise ValueError(
+                    "Name(s) in mapping missing from info: "
+                    "%s" % np.array(orig_names)[np.array(missing)])
+            new_names = [(names.index(name), new_name)
+                         for name, new_name in mapping.items()]
+        elif callable(mapping):
+            new_names = [(ci, mapping(name))
+                         for ci, name in enumerate(names)]
+        else:
+            raise ValueError('mapping must be callable or dict, not %s'
+                             % (type(mapping),))
+
+        # check we got all strings out of the mapping
+        for new_name in new_names:
+            _validate_type(new_name[1], 'str', 'New name mappings')
+
+        # do the remapping locally
+        for c_ind, new_name in new_names:
+            names[c_ind] = new_name
+
+        # check that all the channel names are unique
+        if len(names) != len(np.unique(names)):
+            raise ValueError(
+                'New channel names are not unique, renaming failed')
+
+        # rename the new names
+        self._obj.attrs['node_names'] = names
 
     def plot_circle(self):
         pass

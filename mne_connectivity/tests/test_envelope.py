@@ -1,6 +1,7 @@
 # Authors: Eric Larson <larson.eric.d@gmail.com>
 #          Sheraz Khan <sheraz@khansheraz.com>
 #          Denis Engemann <denis.engemann@gmail.com>
+#          Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -48,17 +49,18 @@ def test_envelope_correlation():
 
     # using complex data
     corr = envelope_correlation(data_hilbert, names=names)
-    assert_allclose(corr.get_data(), corr_orig)
+    assert_allclose(corr.get_data(), corr_orig.flatten())
 
     # using callable
     corr = envelope_correlation(data_hilbert, names=names,
                                 combine=lambda data: np.mean(data, axis=0))
-    assert_allclose(corr.get_data(), corr_orig)
+    assert_allclose(corr.get_data(output='full'), corr_orig)
 
     # do Hilbert internally, and don't combine
     corr = envelope_correlation(data, names=names, combine=None)
-    assert corr.shape == (data.shape[0],) + corr_orig.shape + (1,)
-    corr = np.mean(corr.get_data(), axis=0)
+    assert corr.shape == (data.shape[0],) + \
+        (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
+    corr = np.mean(corr.get_data(output='full'), axis=0)
     assert_allclose(corr, corr_orig)
 
     # degenerate
@@ -77,12 +79,13 @@ def test_envelope_correlation():
 
     corr_plain = envelope_correlation(data, names=names,
                                       combine=None, orthogonalize=False)
-    assert corr_plain.shape == (data.shape[0],) + corr_orig.shape + (1,)
+    assert corr_plain.shape == (data.shape[0],) + \
+        (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
     assert np.min(corr_plain.get_data()) < 0
-    corr_plain_mean = np.mean(corr_plain.get_data(), axis=0)
+    corr_plain_mean = np.mean(corr_plain.get_data(output='full'), axis=0)
     assert_allclose(np.diag(corr_plain_mean), 1)
     np_corr = np.array([np.corrcoef(np.abs(x)) for x in data_hilbert])
-    assert_allclose(corr_plain.get_data(), np_corr)
+    assert_allclose(corr_plain.get_data(output='full'), np_corr)
 
     # check against FieldTrip, which uses the square-log-norm version
     # from scipy.io import savemat
@@ -104,4 +107,4 @@ def test_envelope_correlation():
     ft_vals[np.isnan(ft_vals)] = 0
     corr_log = envelope_correlation(
         data, names=names, combine=None, log=True, absolute=False)
-    assert_allclose(corr_log.get_data(), ft_vals)
+    assert_allclose(corr_log.get_data(output='full'), ft_vals)
