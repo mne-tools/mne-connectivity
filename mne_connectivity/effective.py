@@ -131,6 +131,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     names = cohy.names
     n_tapers = cohy.attrs.get('n_tapers')
     n_epochs_used = cohy.n_epochs
+    n_nodes = cohy.n_nodes
 
     logger.info(f'Computing PSI from estimated Coherency: {cohy}')
     # compute PSI in the requested bands
@@ -178,6 +179,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
             data=psi,
             names=names,
             freqs=freq_bands,
+            n_nodes=n_nodes,
             method='phase-slope-index',
             spec_method=mode,
             indices=indices,
@@ -192,6 +194,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
             names=names,
             freqs=freq_bands,
             times=times,
+            n_nodes=n_nodes,
             method='phase-slope-index',
             spec_method=mode,
             indices=indices,

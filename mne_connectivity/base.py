@@ -340,9 +340,11 @@ class _Connectivity():
 
 
 class SpectralConnectivity(_Connectivity, SpectralMixin):
-    def __init__(self, data, freqs, names=None, indices=None, method=None,
-                 spec_method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method, indices=indices,
+    def __init__(self, data, freqs, names=None, n_nodes=None,
+                 indices=None, method=None, spec_method=None,
+                 n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method,
+                         indices=indices, n_nodes=n_nodes,
                          freqs=freqs, spec_method=spec_method,
                          n_epochs_used=n_epochs_used, **kwargs)
 
@@ -356,8 +358,9 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
 class TemporalConnectivity(_Connectivity, TimeMixin):
     def __init__(self, data, times, names=None, indices=None,
-                 method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method, indices=indices,
+                 n_nodes=None, method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method,
+                         n_nodes=n_nodes, indices=indices,
                          times=times, n_epochs_used=n_epochs_used,
                          **kwargs)
 
@@ -371,10 +374,12 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     def __init__(self, data, freqs, times, names=None, indices=None,
-                 method=None, spec_method=None, n_epochs_used=None, **kwargs):
+                 n_nodes=None, method=None,
+                 spec_method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method, indices=indices,
-                         freqs=freqs, spec_method=spec_method,
-                         times=times, n_epochs_used=n_epochs_used, **kwargs)
+                         n_nodes=n_nodes, freqs=freqs,
+                         spec_method=spec_method, times=times,
+                         n_epochs_used=n_epochs_used, **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
@@ -389,10 +394,12 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, freqs, names=None, indices=None, method=None,
+    def __init__(self, data, freqs, names=None, indices=None,
+                 n_nodes=None, method=None,
                  spec_method=None, **kwargs):
         super().__init__(
-            data, freqs=freqs, names=names, indices=indices, method=method,
+            data, freqs=freqs, names=names, indices=indices,
+            n_nodes=n_nodes, method=method,
             spec_method=spec_method, **kwargs)
 
     def __repr__(self):  # noqa: D105
@@ -409,8 +416,9 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     is_epoched = True
 
     def __init__(self, data, times, names=None, indices=None,
-                 method=None, **kwargs):
-        super().__init__(data, times=times, names=names, indices=indices,
+                 n_nodes=None, method=None, **kwargs):
+        super().__init__(data, times=times, names=names,
+                         indices=indices, n_nodes=n_nodes,
                          method=method, **kwargs)
 
     def __repr__(self):  # noqa: D105
@@ -427,10 +435,11 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     is_epoched = True
 
     def __init__(self, data, names, freqs, times, indices,
-                 method, spec_method, **kwargs):
+                 method, spec_method, n_nodes=None, **kwargs):
         super().__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
-            method=method, spec_method=spec_method, **kwargs)
+            n_nodes=n_nodes, method=method, spec_method=spec_method,
+            **kwargs)
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])

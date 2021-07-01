@@ -928,26 +928,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
             this_con[indices_use] = this_con_flat
 
             con.append(this_con)
-    # else:
-    #     # keep all arrays as all-to-all connectivity with nans
-    #     logger.info('    assembling connectivity matrix for subset')
-    #     from scipy.sparse import csgraph
-    #     print('inside indices...')
-    #     print([x.shape for x in con])
-    #     print(n_signals)
-    #     print(indices)
-    #     # assert False
-    #     con_flat = con
-    #     con = list()
-    #     for this_con_flat in con_flat:
-    #         this_con = np.zeros((n_signals, n_signals) +
-    #                             this_con_flat.shape[1:],
-    #                             dtype=this_con_flat.dtype)
-    #         this_con[:] = np.nan
-    #         this_con[indices_use] = this_con_flat
-    #         this_con = csgraph.csgraph_from_dense(this_con,
-    #                             null_value=np.nan)
-    #         con.append(this_con)
+    # number of nodes in the original data,
+    n_nodes = n_signals
 
     # create a list of connectivity containers
     conn_list = []
@@ -960,12 +942,13 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                 names=names,
                 freqs=freqs,
                 method=method,
+                n_nodes=n_nodes,
                 spec_method=mode,
                 indices=indices,
                 n_epochs_used=n_epochs,
                 freqs_used=freqs_used,
                 times_used=times,
-                n_tapers=n_tapers
+                n_tapers=n_tapers,
             )
         elif mode == 'cwt_morlet':
             # spectrotemporal
@@ -974,6 +957,7 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                 names=names,
                 freqs=freqs,
                 times=times,
+                n_nodes=n_nodes,
                 method=method,
                 spec_method=mode,
                 indices=indices,
