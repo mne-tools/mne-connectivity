@@ -68,14 +68,14 @@ times = con.times
 freqs = con.freqs
 
 # Mark the seed channel with a value of 1.0, so we can see it in the plot
-con[np.where(indices[1] == seed)] = 1.0
+con.get_data()[np.where(indices[1] == seed)] = 1.0
 
 # Show topography of connectivity from seed
 title = 'WPLI2 - Visual - Seed %s' % seed_ch
 
 layout = mne.find_layout(epochs.info, 'meg')  # use full layout
 
-tfr = AverageTFR(epochs.info, con, times, freqs, len(epochs))
+tfr = AverageTFR(epochs.info, con.get_data(), times, freqs, len(epochs))
 tfr.plot_topo(fig_facecolor='w', font_color='k', border='k')
 
 

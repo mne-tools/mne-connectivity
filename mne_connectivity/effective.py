@@ -153,10 +153,12 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     acc_shape.pop(freq_dim)
     acc = np.empty(acc_shape, dtype=np.complex128)
 
+    # create list for frequencies used and frequency bands
+    # of resulting connectivity data
     freqs = list()
     freq_bands = list()
-    idx_fi = [slice(None)] * cohy.xarray.ndim
-    idx_fj = [slice(None)] * cohy.xarray.ndim
+    idx_fi = [slice(None)] * len(out_shape)
+    idx_fj = [slice(None)] * len(out_shape)
     for band_idx, band in enumerate(bands):
         freq_idx = np.where((freqs_ > band[0]) & (freqs_ < band[1]))[0]
         freqs.append(freqs_[freq_idx])
@@ -166,7 +168,9 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         for fi, fj in zip(freq_idx, freq_idx[1:]):
             idx_fi[freq_dim] = fi
             idx_fj[freq_dim] = fj
-            acc += np.conj(cohy.data[tuple(idx_fi)]) * cohy.data[tuple(idx_fj)]
+            acc += np.conj(
+                cohy.get_data(squeeze=False)[tuple(idx_fi)]) * \
+                cohy.get_data(squeeze=False)[tuple(idx_fj)]
 
         idx_fi[freq_dim] = band_idx
         psi[tuple(idx_fi)] = np.imag(acc)

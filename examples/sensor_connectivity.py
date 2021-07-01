@@ -52,4 +52,6 @@ con = spectral_connectivity(
     faverage=True, tmin=tmin, mt_adaptive=False, n_jobs=1)
 
 # Now, visualize the connectivity in 3D:
-plot_sensors_connectivity(epochs.info, con.get_data()[:, :, 0])
+plot_sensors_connectivity(
+    epochs.info,
+    con.get_data(output='full', squeeze=False)[:, :, 0])

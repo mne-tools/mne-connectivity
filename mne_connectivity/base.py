@@ -21,7 +21,7 @@ class _Connectivity():
     is_epoched = False
 
     def __init__(self, data, names, indices, method,
-                 n_nodes=None, **kwargs):
+                 n_nodes, **kwargs):
         """Base class container for connectivity data.
 
         Connectivity data is anything that represents "connections"
@@ -38,10 +38,13 @@ class _Connectivity():
 
         Parameters
         ----------
-        data : np.ndarray
-            The connectivity data that can either be a full array of
-            ``(n_nodes_in, n_nodes_out, ...)``, or a raveled array of
-            ``(n_estimated_nodes, ...)`` shape.
+        data : np.ndarray ([epochs], n_estimated_nodes, [freqs], [times])
+            The connectivity data that is a raveled array of
+            ``(n_estimated_nodes, ...)`` shape. The
+            ``n_estimated_nodes`` is equal to
+            ``n_nodes_in * n_nodes_out`` if one is computing
+            the full connectivity, or a subset of nodes
+            equal to the length of ``indices`` passed in.
         names : list | np.ndarray | None
             The names of the nodes that we would consider in the
             connectivity data.
@@ -90,33 +93,11 @@ class _Connectivity():
         if self.is_epoched:
             start_idx = 1
             self.n_epochs = data.shape[0]
-            new_shape = [data.shape[0]]
         else:
             self.n_epochs = None
             start_idx = 0
-            new_shape = []
+        self.n_estimated_nodes = data.shape[start_idx]
 
-        # look at the next two axes to get the remaining axes shape
-        if data.shape[start_idx] == data.shape[start_idx + 1]:
-            n_estimated_nodes = data.shape[start_idx] * \
-                data.shape[start_idx + 1]
-            remaining_shape = list(data.shape[start_idx + 2:])
-            self.n_nodes = data.shape[start_idx]
-        else:
-            n_estimated_nodes = data.shape[start_idx]
-            remaining_shape = list(data.shape[start_idx + 1:])
-            if self.n_nodes is None:
-                raise ValueError('The number of nodes should be passed in '
-                                 'which represents the number of nodes in '
-                                 'the original dataset. It cannot be '
-                                 'inferred if the data is passed in with '
-                                 'node axes raveled.')
-
-        # reshape the data, so "estimated nodes" data is raveled
-        new_shape.append(n_estimated_nodes)
-        new_shape.extend(remaining_shape)
-        data = np.reshape(data, newshape=new_shape, order='C')
-        self.n_estimated_nodes = n_estimated_nodes
         return data
 
     def _prepare_xarray(self, data, names, **kwargs):
@@ -136,11 +117,10 @@ class _Connectivity():
 
         # the coordinates of each dimension
         n_estimated_list = list(map(str, range(self.n_estimated_nodes)))
-        coords = {
-            "node_in -> node_out": n_estimated_list
-        }
+        coords = dict()
         if self.is_epoched:
             coords['epochs'] = list(map(str, range(data.shape[0])))
+        coords["node_in -> node_out"] = n_estimated_list
         if 'freqs' in kwargs:
             coords['freqs'] = kwargs.pop('freqs')
             dims.append('freqs')
@@ -174,6 +154,21 @@ class _Connectivity():
                              f'original data ({self.n_nodes}).')
 
     def _check_data_consistency(self, data):
+        if self.is_epoched:
+            if data.ndim < 2 or data.ndim > 4:
+                raise RuntimeError(f'Data using an Epoched data '
+                                   f'structure should have at least '
+                                   f'2 dimensions and at most 4 '
+                                   f'dimensions. Your data was '
+                                   f'{data.shape} shape.')
+        else:
+            if data.ndim > 3:
+                raise RuntimeError(f'Data not using an Epoched data '
+                                   f'structure should have at least '
+                                   f'1 dimensions and at most 3 '
+                                   f'dimensions. Your data was '
+                                   f'{data.shape} shape.')
+
         # check that the indices passed in are of the same length
         if isinstance(self.indices, tuple):
             if len(self.indices[0]) != len(self.indices[1]):
@@ -271,10 +266,9 @@ class _Connectivity():
 
                 row_idx, col_idx = self.indices
                 if self.is_epoched:
-                    epoch_idx = range(self.n_epochs)
-                    data = self._data[[epoch_idx], [row_idx], [col_idx], ...]
+                    data[:, row_idx, col_idx, ...] = self._data
                 else:
-                    data = self._data[[row_idx], [col_idx], ...]
+                    data[row_idx, col_idx, ...] = self._data
             else:
                 data = self._data.reshape(new_shape)
 
@@ -340,7 +334,7 @@ class _Connectivity():
 
 
 class SpectralConnectivity(_Connectivity, SpectralMixin):
-    def __init__(self, data, freqs, names=None, n_nodes=None,
+    def __init__(self, data, freqs, n_nodes, names=None,
                  indices=None, method=None, spec_method=None,
                  n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
@@ -350,15 +344,16 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
     def __repr__(self):  # noqa: D105
         s = ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", nave : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", nave : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<SpectralConnectivity | %s>" % s
 
 
 class TemporalConnectivity(_Connectivity, TimeMixin):
-    def __init__(self, data, times, names=None, indices=None,
-                 n_nodes=None, method=None, n_epochs_used=None, **kwargs):
+    def __init__(self, data, times, n_nodes, names=None, indices=None,
+                 method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
                          n_nodes=n_nodes, indices=indices,
                          times=times, n_epochs_used=n_epochs_used,
@@ -366,15 +361,16 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", nave : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", nave : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<TemporalConnectivity | %s>" % s
 
 
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
-    def __init__(self, data, freqs, times, names=None, indices=None,
-                 n_nodes=None, method=None,
+    def __init__(self, data, freqs, times, n_nodes, names=None,
+                 indices=None, method=None,
                  spec_method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method, indices=indices,
                          n_nodes=n_nodes, freqs=freqs,
@@ -384,8 +380,9 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
         s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", nave : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", nave : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<SpectroTemporalConnectivity | %s>" % s
 
@@ -394,8 +391,8 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, freqs, names=None, indices=None,
-                 n_nodes=None, method=None,
+    def __init__(self, data, freqs, n_nodes, names=None,
+                 indices=None, method=None,
                  spec_method=None, **kwargs):
         super().__init__(
             data, freqs=freqs, names=names, indices=indices,
@@ -405,8 +402,9 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
         s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", n_epochs : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<EpochSpectralConnectivity | %s>" % s
 
@@ -415,8 +413,8 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, times, names=None, indices=None,
-                 n_nodes=None, method=None, **kwargs):
+    def __init__(self, data, times, n_nodes, names=None,
+                 indices=None, method=None, **kwargs):
         super().__init__(data, times=times, names=names,
                          indices=indices, n_nodes=n_nodes,
                          method=method, **kwargs)
@@ -424,8 +422,9 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
         s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", n_epochs : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<EpochTemporalConnectivity | %s>" % s
 
@@ -434,8 +433,9 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, names, freqs, times, indices,
-                 method, spec_method, n_nodes=None, **kwargs):
+    def __init__(self, data, freqs, times, n_nodes,
+                 method, spec_method, names=None,
+                 indices=None, **kwargs):
         super().__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
@@ -444,7 +444,8 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     def __repr__(self):  # noqa: D105
         s = "time : [%f, %f]" % (self.times[0], self.times[-1])
         s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs
-        s += ', nodes : %d, %d' % (self.n_nodes_in, self.n_nodes_out)
+        s += ", n_epochs : %d" % self.n_epochs_used
+        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
         s += ', ~%s' % (sizeof_fmt(self._size),)
         return "<EpochSpectroTemporalConnectivity | %s>" % s

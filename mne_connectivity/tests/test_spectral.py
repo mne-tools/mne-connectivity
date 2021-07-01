@@ -102,7 +102,7 @@ def test_spectral_connectivity(method, mode):
         else:
             this_con = con
         freqs = this_con.attrs.get('freqs_used')
-        n = this_con.n_epochs
+        n = this_con.n_epochs_used
         if isinstance(this_con, SpectralConnectivity):
             times = this_con.attrs.get('times_used')
         else:
@@ -125,26 +125,39 @@ def test_spectral_connectivity(method, mode):
                                (fstart - trans_bandwidth * 2,
                                 fend + trans_bandwidth * 2))
         if method == 'coh':
-            assert np.all(con.get_data()[1, 0, gidx[0]:gidx[1]] > upper_t), \
-                con.get_data()[1, 0, gidx[0]:gidx[1]].min()
+            assert np.all(
+                con.get_data(output='full')[
+                    1, 0, gidx[0]:gidx[1]
+                ] > upper_t), \
+                con.get_data()[
+                    1, 0, gidx[0]:gidx[1]].min()
             # we see something for zero-lag
-            assert (np.all(con.get_data()[1, 0, :bidx[0]] < lower_t))
-            assert np.all(con.get_data()[1, 0, bidx[1]:] < lower_t), \
+            assert (np.all(con.get_data(output='full')
+                    [1, 0, :bidx[0]] < lower_t))
+            assert np.all(
+                con.get_data(output='full')[1, 0, bidx[1]:] < lower_t), \
                 con.get_data()[1, 0, bidx[1:]].max()
         elif method == 'cohy':
             # imaginary coh will be zero
-            check = np.imag(con.get_data()[1, 0, gidx[0]:gidx[1]])
+            check = np.imag(con.get_data(output='full')[1, 0, gidx[0]:gidx[1]])
             assert np.all(check < lower_t), check.max()
             # we see something for zero-lag
             assert np.all(
-                np.abs(con.get_data()[1, 0, gidx[0]:gidx[1]]) > upper_t)
-            assert np.all(np.abs(con.get_data()[1, 0, :bidx[0]]) < lower_t)
-            assert np.all(np.abs(con.get_data()[1, 0, bidx[1]:]) < lower_t)
+                np.abs(con.get_data(output='full')[
+                    1, 0, gidx[0]:gidx[1]
+                ]) > upper_t)
+            assert np.all(np.abs(con.get_data(output='full')
+                          [1, 0, :bidx[0]]) < lower_t)
+            assert np.all(np.abs(con.get_data(output='full')
+                          [1, 0, bidx[1]:]) < lower_t)
         elif method == 'imcoh':
             # imaginary coh will be zero
-            assert np.all(con.get_data()[1, 0, gidx[0]:gidx[1]] < lower_t)
-            assert np.all(con.get_data()[1, 0, :bidx[0]] < lower_t)
-            assert np.all(con.get_data()[1, 0, bidx[1]:] < lower_t), \
+            assert np.all(con.get_data(output='full')[
+                          1, 0, gidx[0]:gidx[1]] < lower_t)
+            assert np.all(con.get_data(output='full')
+                          [1, 0, :bidx[0]] < lower_t)
+            assert np.all(
+                con.get_data(output='full')[1, 0, bidx[1]:] < lower_t), \
                 con.get_data()[1, 0, bidx[1]:].max()
 
         # compute a subset of connections using indices and 2 jobs
@@ -165,8 +178,11 @@ def test_spectral_connectivity(method, mode):
         assert isinstance(con2, list)
         assert len(con2) == len(test_methods)
         freqs2 = con2[0].attrs.get('freqs_used')
-        # times2 = con2[0].times
-        n2 = con2[0].n_epochs
+        if 'times' in con2[0].dims:
+            times2 = con2[0].times
+        else:
+            times2 = con2[0].attrs.get('times_used')
+        n2 = con2[0].n_epochs_used
 
         if method == 'coh':
             assert_array_almost_equal(con2[0].get_data(), con2[1].get_data())
@@ -176,17 +192,22 @@ def test_spectral_connectivity(method, mode):
 
             # we get the same result for the probed connections
             assert_array_almost_equal(freqs, freqs2)
-            assert_array_almost_equal(con.get_data()[indices], con2.get_data())
+
+            # "con2" is a raveled array already, so
+            # simulate setting indices on the full output in "con"
+            assert_array_almost_equal(con.get_data(output='full')[indices],
+                                      con2.get_data())
             assert (n == n2)
-            # assert_array_almost_equal(times_data, times2)
+            assert_array_almost_equal(times_data, times2)
         else:
             # we get the same result for the probed connections
             assert (len(con) == len(con2))
             for c, c2 in zip(con, con2):
                 assert_array_almost_equal(freqs, freqs2)
-                assert_array_almost_equal(c.get_data()[indices], c2.get_data())
+                assert_array_almost_equal(c.get_data(output='full')[indices],
+                                          c2.get_data())
                 assert (n == n2)
-                # assert_array_almost_equal(times_data, times2)
+                assert_array_almost_equal(times_data, times2)
 
         # compute same connections for two bands, fskip=1, and f. avg.
         fmin = (5., 15.)
@@ -266,20 +287,20 @@ def test_epochs_tmin_tmax(kind):
 
     # Check the entire interval
     conn = spectral_connectivity(X, **kwargs)
-    assert 0.89 < conn.get_data()[1, 0] < 0.91
+    assert 0.89 < conn.get_data(output='full')[1, 0] < 0.91
     # TODO: is this necessary?
     # assert_allclose(conn.times, want_times)
     # Check a time interval before the sinusoid
     conn = spectral_connectivity(X, tmax=tmin + 0.5, **kwargs)
-    assert 0 < conn.get_data()[1, 0] < 0.15
+    assert 0 < conn.get_data(output='full')[1, 0] < 0.15
     # Check a time during the sinusoid
     conn = spectral_connectivity(
         X, tmin=tmin + 0.5, tmax=tmin + 1.5, **kwargs)
-    assert 0.93 < conn.get_data()[1, 0] <= 0.94
+    assert 0.93 < conn.get_data(output='full')[1, 0] <= 0.94
     # Check a time interval after the sinusoid
     conn = spectral_connectivity(
         X, tmin=tmin + 1.5, tmax=tmin + 1.9, **kwargs)
-    assert 0 < conn.get_data()[1, 0] < 0.15
+    assert 0 < conn.get_data(output='full')[1, 0] < 0.15
 
     # Check for warning if tmin, tmax is outside of the time limits of data
     with pytest.warns(RuntimeWarning, match='start time tmin'):

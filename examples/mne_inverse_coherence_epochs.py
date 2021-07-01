@@ -135,8 +135,9 @@ print(freqs[1])
 
 tmin = np.mean(freqs[0])
 tstep = np.mean(freqs[1]) - tmin
-coh_stc = mne.SourceEstimate(coh, vertices=stc.vertices, tmin=1e-3 * tmin,
-                             tstep=1e-3 * tstep, subject='sample')
+coh_stc = mne.SourceEstimate(
+    coh.get_data(), vertices=stc.vertices, tmin=1e-3 * tmin,
+    tstep=1e-3 * tstep, subject='sample')
 
 # Now we can visualize the coherence using the plot method.
 brain = coh_stc.plot('sample', 'inflated', 'both',

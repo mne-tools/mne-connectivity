@@ -86,7 +86,6 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     """
     _check_option('orthogonalize', orthogonalize, (False, 'pairwise'))
     from scipy.signal import hilbert
-    n_nodes = None
     if combine is not None:
         fun = _check_combine(combine, valid=('mean',))
     else:  # None
@@ -106,6 +105,8 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
                              % (epoch_data.shape,))
         n_nodes, n_times = epoch_data.shape
         if ei > 0 and n_nodes != corrs[0].shape[0]:
+            print(ei)
+            print(n_nodes, corrs[0].shape)
             raise ValueError('n_nodes mismatch between data[0] and data[%d], '
                              'got %s and %s'
                              % (ei, n_nodes, corrs[0].shape[0]))
@@ -161,6 +162,9 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         corrs.append(corr)
         del corr
 
+    # ravel from 2D connectivity into 1D array
+    corrs = [corr.flatten() for corr in corrs]
+
     n_epochs = len(corrs)
     corr = fun(corrs)
 
@@ -180,6 +184,7 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         times=times,
         method='envelope-correlation',
         indices=indices,
-        n_epochs_used=n_epochs
+        n_epochs_used=n_epochs,
+        n_nodes=n_nodes,
     )
     return conn

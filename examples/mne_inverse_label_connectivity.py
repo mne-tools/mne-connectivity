@@ -109,7 +109,7 @@ con = spectral_connectivity(
 # for each method
 con_res = dict()
 for method, c in zip(con_methods, con):
-    con_res[method] = c.get_data()[:, :, 0]
+    con_res[method] = c.get_data(output='full', squeeze=False)[:, :, 0]
 
 ###############################################################################
 # Make a connectivity plot

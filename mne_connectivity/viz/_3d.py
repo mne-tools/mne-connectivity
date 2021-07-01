@@ -16,6 +16,7 @@ from mne.io.pick import _picks_to_idx
 from mne.io.constants import FIFF
 from mne.utils import (verbose, fill_doc, _validate_type)
 
+from mne_connectivity.base import _Connectivity
 
 verbose_dec = verbose
 FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
@@ -31,7 +32,7 @@ def plot_sensors_connectivity(info, con, picks=None,
     ----------
     info : dict | None
         The measurement info.
-    con : array, shape (n_channels, n_channels)
+    con : array, shape (n_channels, n_channels) | Connectivity
         The computed connectivity measure(s).
     %(picks_good_data)s
         Indices of selected channels.
@@ -46,6 +47,9 @@ def plot_sensors_connectivity(info, con, picks=None,
     _validate_type(info, "info")
 
     from mne.viz.backends.renderer import _get_renderer
+
+    if isinstance(con, _Connectivity):
+        con = con.get_data()
 
     renderer = _get_renderer(size=(600, 600), bgcolor=(0.5, 0.5, 0.5))
 
