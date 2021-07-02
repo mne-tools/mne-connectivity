@@ -923,8 +923,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
             # ravel 2D connectivity into a 1D array
             # while keeping other dimensions
-            this_con = this_con.reshape((n_signals ** 2 +
-                                        this_con_flat.shape[1:]))
+            this_con = this_con.reshape((n_signals ** 2,) +
+                                        this_con_flat.shape[1:])
             con.append(this_con)
     # number of nodes in the original data,
     n_nodes = n_signals

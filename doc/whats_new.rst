@@ -23,6 +23,7 @@ Changelog
 ~~~~~~~~~
 
 - Adding :class:`mne_connectivity.TemporalConnectivity`, :class:`mne_connectivity.SpectralConnectivity` and :class:`mne_connectivity.SpectroTemporalConnectivity` as a data structure to hold connectivity data, by `Adam Li`_ (:gh:`6`)
+- Adding :class:`mne_connectivity.EpochTemporalConnectivity`, :class:`mne_connectivity.EpochSpectralConnectivity` and :class:`mne_connectivity.EpochSpectroTemporalConnectivity` as a data structure to hold connectivity data over Epochs, by `Adam Li`_ (:gh:`6`)
 
 Bug
 ~~~
@@ -39,22 +40,8 @@ Changes when mne-connectivity was part of MNE-Python
 
 In July, 2021, ``mne.connectivity`` submodule was ported over from the MNE-Python 
 repo into this repository, ``mne-connectivity``. Starting v0.24 of MNE-Python, that sub-module 
-will be deprecated and development will move over into this repository. 
-
-Changelog
-~~~~~~~~~
-
--
-
-Bug
-~~~
-
--
-
-API
-~~~
-
--
+will be deprecated and development will move over into this repository. Starting v0.25 of MNE-Python,
+that sub-module will completely be removed.
 
 Authors
 ~~~~~~~
