@@ -643,22 +643,15 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     Returns
     -------
     con : array | list of array
-        Computed connectivity measure(s). The shape of each array is either
-        (n_signals, n_signals, n_freqs) mode: 'multitaper' or 'fourier'
-        (n_signals, n_signals, n_freqs, n_times) mode: 'cwt_morlet'
+        Computed connectivity measure(s). Either an instance of
+        ``SpectralConnectivity``, or ``SpectroTemporalConnectivity``.
+        The shape of each connectivity dataset is either
+        (n_signals ** 2, n_freqs) mode: 'multitaper' or 'fourier'
+        (n_signals ** 2, n_freqs, n_times) mode: 'cwt_morlet'
         when "indices" is None, or
         (n_con, n_freqs) mode: 'multitaper' or 'fourier'
         (n_con, n_freqs, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
-    freqs : array
-        Frequency points at which the connectivity was computed.
-    times : array
-        Time points for which the connectivity was computed.
-    n_epochs : int
-        Number of epochs used for computation.
-    n_tapers : int
-        The number of DPSS tapers used. Only defined in 'multitaper' mode.
-        Otherwise None is returned.
 
     Notes
     -----
@@ -930,8 +923,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
             # ravel 2D connectivity into a 1D array
             # while keeping other dimensions
-            this_con = this_con.reshape((n_signals ** 2,) +
-                                        this_con_flat.shape[1:])
+            this_con = this_con.reshape((n_signals ** 2 +
+                                        this_con_flat.shape[1:]))
             con.append(this_con)
     # number of nodes in the original data,
     n_nodes = n_signals

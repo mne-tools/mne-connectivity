@@ -87,25 +87,16 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
 
     Returns
     -------
-    psi : array
-        Computed connectivity measure(s). The shape of each array is either
-        (n_signals, n_signals, n_bands) mode: 'multitaper' or 'fourier'
-        (n_signals, n_signals, n_bands, n_times) mode: 'cwt_morlet'
+    conn : instance of Connectivity
+        Computed connectivity measure(s). Either a
+        ``SpectralConnnectivity``, or ``SpectroTemporalConnectivity``
+        container.The shape of each array is either
+        (n_signals ** 2, n_bands) mode: 'multitaper' or 'fourier'
+        (n_signals ** 2, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is None, or
         (n_con, n_bands) mode: 'multitaper' or 'fourier'
         (n_con, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
-        Either a `SpectralConnnectivity`, or `SpectroTemporalConnectivity`
-        container.
-    freqs : array
-        Frequency points at which the connectivity was computed.
-    times : array
-        Time points for which the connectivity was computed.
-    n_epochs : int
-        Number of epochs used for computation.
-    n_tapers : int
-        The number of DPSS tapers used. Only defined in 'multitaper' mode.
-        Otherwise None is returned.
 
     References
     ----------

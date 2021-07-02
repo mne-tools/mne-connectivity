@@ -66,19 +66,16 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
 
     Returns
     -------
-    corr : ndarray, shape ([n_epochs, ]n_nodes, n_nodes)
+    corr : instance of Connectivity
         The pairwise orthogonal envelope correlations.
         This matrix is symmetric. If combine is None, the array
         with have three dimensions, the first of which is ``n_epochs``.
+        The data shape would be ``([n_epochs, ]n_nodes ** 2)``
 
     Notes
     -----
     This function computes the power envelope correlation between
     orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
-
-    .. versionchanged:: 0.22
-      Computations fixed for ``orthogonalize=True`` and diagonal entries are
-      set explicitly to zero.
 
     References
     ----------
