@@ -1,7 +1,8 @@
 import numpy as np
 import xarray as xr
 
-from mne.utils import sizeof_fmt, object_size, _validate_type
+from mne.utils import sizeof_fmt, object_size, _validate_type, verbose
+from mne_connectivity.utils import fill_doc
 
 
 class SpectralMixin:
@@ -16,6 +17,8 @@ class TimeMixin:
         return self.xarray.coords.get('times').values.tolist()
 
 
+@verbose
+@fill_doc
 class _Connectivity():
     # whether or not the connectivity occurs over epochs
     is_epoched = False
@@ -38,24 +41,11 @@ class _Connectivity():
 
         Parameters
         ----------
-        data : np.ndarray ([epochs], n_estimated_nodes, [freqs], [times])
-            The connectivity data that is a raveled array of
-            ``(n_estimated_nodes, ...)`` shape. The
-            ``n_estimated_nodes`` is equal to
-            ``n_nodes_in * n_nodes_out`` if one is computing
-            the full connectivity, or a subset of nodes
-            equal to the length of ``indices`` passed in.
-        names : list | np.ndarray | None
-            The names of the nodes that we would consider in the
-            connectivity data.
-        indices : tuple of arrays | str | None
-            The indices of relevant connectivity data. If ``'all'`` (default),
-            then data is connectivity between all nodes. If ``'symmetric'``,
-            then data is symmetric connectivity between all nodes. If a tuple,
-            then the first list represents the "in nodes", and the second list
-            represents the "out nodes". See "Notes" for more information.
-        method : str
-            The method name used to compute connectivity.
+        %(data)s
+        %(names)s
+        %(indices)s
+        %(method)s
+        %(n_nodes)s
         kwargs : dict
             Extra connectivity parameters. These may include
             ``freqs`` for spectral connectivity, and/or
@@ -176,6 +166,7 @@ class _Connectivity():
 
     @property
     def _data(self):
+        """Numpy array of connectivity data."""
         return self.xarray.values
 
     @property
@@ -188,18 +179,25 @@ class _Connectivity():
 
     @property
     def attrs(self):
+        """Attributes of connectivity dataset.
+
+        See ``xarray``'s ``attrs``.
+        """
         return self.xarray.attrs
 
     @property
     def shape(self):
+        """Shape of raveled connectivity."""
         return self.xarray.shape
 
     @property
     def names(self):
+        """Node names."""
         return self.attrs['node_names']
 
     @property
     def xarray(self):
+        """Xarray of the connectivity data."""
         return self._obj
 
     @property
@@ -230,6 +228,7 @@ class _Connectivity():
         Returns
         -------
         data : np.ndarray
+            The output connectivity data.
         """
         if output not in ['raveled', 'full']:
             raise ValueError(f'Output of data can only be one of '
@@ -325,7 +324,23 @@ class _Connectivity():
         pass
 
 
+@verbose
+@fill_doc
 class SpectralConnectivity(_Connectivity, SpectralMixin):
+    """Spectral connectivity container.
+
+    Parameters
+    ----------
+    %(data)s
+    %(freqs)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(spec_method)s
+    %(n_epochs_used)s
+    """
+
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices=None, method=None, spec_method=None,
                  n_epochs_used=None, **kwargs):
@@ -343,7 +358,22 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
         return "<SpectralConnectivity | %s>" % s
 
 
+@verbose
+@fill_doc
 class TemporalConnectivity(_Connectivity, TimeMixin):
+    """Temporal connectivity container.
+
+    Parameters
+    ----------
+    %(data)s
+    %(times)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    """
+
     def __init__(self, data, times, n_nodes, names=None, indices=None,
                  method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
@@ -360,7 +390,24 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
         return "<TemporalConnectivity | %s>" % s
 
 
+@verbose
+@fill_doc
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
+    """Spectrotemporal connectivity container.
+
+    Parameters
+    ----------
+    %(data)s
+    %(freqs)s
+    %(times)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(spec_method)s
+    %(n_epochs_used)s
+    """
+
     def __init__(self, data, freqs, times, n_nodes, names=None,
                  indices=None, method=None,
                  spec_method=None, n_epochs_used=None, **kwargs):
@@ -379,7 +426,21 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
         return "<SpectroTemporalConnectivity | %s>" % s
 
 
+@verbose
+@fill_doc
 class EpochSpectralConnectivity(SpectralConnectivity):
+    """Spectral connectivity container over Epochs.
+
+    Parameters
+    ----------
+    %(data)s
+    %(freqs)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(spec_method)s
+    """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
@@ -401,7 +462,20 @@ class EpochSpectralConnectivity(SpectralConnectivity):
         return "<EpochSpectralConnectivity | %s>" % s
 
 
+@verbose
+@fill_doc
 class EpochTemporalConnectivity(TemporalConnectivity):
+    """Temporal connectivity container over Epochs.
+
+    Parameters
+    ----------
+    %(data)s
+    %(times)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
@@ -421,13 +495,28 @@ class EpochTemporalConnectivity(TemporalConnectivity):
         return "<EpochTemporalConnectivity | %s>" % s
 
 
+@verbose
+@fill_doc
 class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
+    """Spectrotemporal connectivity container over Epochs.
+
+    Parameters
+    ----------
+    %(data)s
+    %(freqs)s
+    %(times)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(spec_method)s
+    """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
     def __init__(self, data, freqs, times, n_nodes,
-                 method=None, spec_method=None, names=None,
-                 indices=None, **kwargs):
+                 names=None, indices=None, method=None,
+                 spec_method=None, **kwargs):
         super().__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
