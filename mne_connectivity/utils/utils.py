@@ -3,7 +3,7 @@
 # License: BSD (3-clause)
 import numpy as np
 
-from .base import _Connectivity
+from ..base import _Connectivity
 
 
 def check_indices(indices):
