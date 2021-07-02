@@ -644,7 +644,7 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     -------
     con : array | list of array
         Computed connectivity measure(s). Either an instance of
-        ``SpectralConnectivity``, or ``SpectroTemporalConnectivity``.
+        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
         The shape of each connectivity dataset is either
         (n_signals ** 2, n_freqs) mode: 'multitaper' or 'fourier'
         (n_signals ** 2, n_freqs, n_times) mode: 'cwt_morlet'

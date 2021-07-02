@@ -90,7 +90,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     conn : instance of Connectivity
         Computed connectivity measure(s). Either a
         ``SpectralConnnectivity``, or ``SpectroTemporalConnectivity``
-        container.The shape of each array is either
+        container. The shape of each array is either
         (n_signals ** 2, n_bands) mode: 'multitaper' or 'fourier'
         (n_signals ** 2, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is None, or
