@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from mne.utils import sizeof_fmt, object_size, _validate_type, verbose
+from mne.utils import sizeof_fmt, object_size, _validate_type
 from mne_connectivity.utils import fill_doc
 
 
@@ -17,7 +17,6 @@ class TimeMixin:
         return self.xarray.coords.get('times').values.tolist()
 
 
-@verbose
 @fill_doc
 class _Connectivity():
     # whether or not the connectivity occurs over epochs
@@ -324,7 +323,6 @@ class _Connectivity():
         pass
 
 
-@verbose
 @fill_doc
 class SpectralConnectivity(_Connectivity, SpectralMixin):
     """Spectral connectivity container.
@@ -358,7 +356,6 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
         return "<SpectralConnectivity | %s>" % s
 
 
-@verbose
 @fill_doc
 class TemporalConnectivity(_Connectivity, TimeMixin):
     """Temporal connectivity container.
@@ -390,7 +387,6 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
         return "<TemporalConnectivity | %s>" % s
 
 
-@verbose
 @fill_doc
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     """Spectrotemporal connectivity container.
@@ -426,7 +422,6 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
         return "<SpectroTemporalConnectivity | %s>" % s
 
 
-@verbose
 @fill_doc
 class EpochSpectralConnectivity(SpectralConnectivity):
     """Spectral connectivity container over Epochs.
@@ -462,7 +457,6 @@ class EpochSpectralConnectivity(SpectralConnectivity):
         return "<EpochSpectralConnectivity | %s>" % s
 
 
-@verbose
 @fill_doc
 class EpochTemporalConnectivity(TemporalConnectivity):
     """Temporal connectivity container over Epochs.
@@ -495,7 +489,6 @@ class EpochTemporalConnectivity(TemporalConnectivity):
         return "<EpochTemporalConnectivity | %s>" % s
 
 
-@verbose
 @fill_doc
 class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     """Spectrotemporal connectivity container over Epochs.
