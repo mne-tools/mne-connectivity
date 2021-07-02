@@ -86,7 +86,6 @@ class _Connectivity():
         self.n_nodes = n_nodes
         self._check_data_consistency(data)
         self._prepare_xarray(data, names=names, **kwargs)
-        self._check()
 
     def _get_n_estimated_nodes(self, data):
         # account for epoch data structures
@@ -146,24 +145,21 @@ class _Connectivity():
         )
         self._obj = xarray_obj
 
-    def _check(self):
-        if len(self.names) != self.n_nodes:
-            raise ValueError(f'The number of names passed in '
-                             f'({len(self.names)}) '
-                             f'must match the number of nodes in the '
-                             f'original data ({self.n_nodes}).')
-
     def _check_data_consistency(self, data):
+        if not isinstance(data, np.ndarray):
+            raise TypeError('Connectivity data must be passed in as a '
+                            'numpy array.')
+
         if self.is_epoched:
             if data.ndim < 2 or data.ndim > 4:
-                raise RuntimeError(f'Data using an Epoched data '
+                raise RuntimeError(f'Data using an epoched data '
                                    f'structure should have at least '
                                    f'2 dimensions and at most 4 '
                                    f'dimensions. Your data was '
                                    f'{data.shape} shape.')
         else:
             if data.ndim > 3:
-                raise RuntimeError(f'Data not using an Epoched data '
+                raise RuntimeError(f'Data not using an epoched data '
                                    f'structure should have at least '
                                    f'1 dimensions and at most 3 '
                                    f'dimensions. Your data was '
@@ -177,10 +173,6 @@ class _Connectivity():
                                  f'length. They are right now '
                                  f'{len(self.indices[0])} and '
                                  f'{len(self.indices[1])}.')
-
-        if not isinstance(data, np.ndarray):
-            raise TypeError('Connectivity data must be passed in as a '
-                            'numpy array.')
 
     @property
     def _data(self):
@@ -434,7 +426,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     is_epoched = True
 
     def __init__(self, data, freqs, times, n_nodes,
-                 method, spec_method, names=None,
+                 method=None, spec_method=None, names=None,
                  indices=None, **kwargs):
         super().__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,

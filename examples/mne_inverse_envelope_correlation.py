@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import mne
+import mne_connectivity
 from mne_connectivity import envelope_correlation
 from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
@@ -94,7 +95,7 @@ del epochs, stcs, label_ts
 
 # sphinx_gallery_thumbnail_number = 2
 threshold_prop = 0.15  # percentage of strongest edges to keep in the graph
-degree = mne.connectivity.degree(corr, threshold_prop=threshold_prop)
+degree = mne_connectivity.degree(corr, threshold_prop=threshold_prop)
 stc = mne.labels_to_stc(labels, degree)
 stc = stc.in_label(mne.Label(inv['src'][0]['vertno'], hemi='lh') +
                    mne.Label(inv['src'][1]['vertno'], hemi='rh'))
