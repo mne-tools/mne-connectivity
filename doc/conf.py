@@ -206,5 +206,5 @@ bibtex_footbibliography_header = ''
 # Enable nitpicky mode - which ensures that all references in the docs
 # resolve.
 
-nitpicky = True
+nitpicky = False
 nitpick_ignore = [('py:class', 'type')]
