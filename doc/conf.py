@@ -207,4 +207,4 @@ bibtex_footbibliography_header = ''
 # resolve.
 
 nitpicky = True
-nitpick_ignore = []
+nitpick_ignore = [('py:class', 'type')]
