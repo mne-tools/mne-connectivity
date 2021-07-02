@@ -29,6 +29,13 @@ Most-used classes
    EpochSpectralConnectivity
    EpochSpectroTemporalConnectivity
 
+Connectivity functions
+======================
+
+These functions compute connectivity and return
+one of the Connectivity data structure classes
+listed above.
+
 .. currentmodule:: mne_connectivity
 
 .. autosummary::
@@ -38,4 +45,14 @@ Most-used classes
    phase_slope_index
    spectral_connectivity
 
-   
+Post-processing on connectivity
+===============================
+
+.. currentmodule:: mne_connectivity
+
+.. autosummary::
+   :toctree: generated/
+
+   degree
+   seed_target_indices
+   check_indices
