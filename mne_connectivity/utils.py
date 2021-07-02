@@ -3,6 +3,8 @@
 # License: BSD (3-clause)
 import numpy as np
 
+from .base import _Connectivity
+
 
 def check_indices(indices):
     """Check indices parameter."""
@@ -66,6 +68,9 @@ def degree(connectivity, threshold_prop=0.2):
     During thresholding, the symmetry of the connectivity matrix is
     auto-detected based on :func:`numpy.allclose` of it with its transpose.
     """
+    if isinstance(connectivity, _Connectivity):
+        connectivity = connectivity.get_data(output='full')
+
     connectivity = np.array(connectivity)
     if connectivity.ndim != 2 or \
             connectivity.shape[0] != connectivity.shape[1]:
