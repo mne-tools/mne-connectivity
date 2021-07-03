@@ -320,7 +320,21 @@ class _Connectivity():
         pass
 
     def save(self, fname):
-        pass
+        method = self.method
+        indices = self.indices
+        n_nodes = self.n_nodes
+
+        # assign these to xarray's attrs
+        self.attrs['method'] = method
+        self.attrs['indices'] = indices
+        self.attrs['n_nodes'] = n_nodes
+
+        # save the name of the connectivity structure
+        self.attrs['data_structure'] = self.__class__.__name__
+
+        # save as a netCDF file
+        self.xarray.to_netcdf(fname)
+
 
 
 @fill_doc
