@@ -4,9 +4,8 @@ API
 
 This is the reference for classes (``CamelCase`` names) and functions
 (``underscore_case`` names) of MNE-Connectivity, grouped thematically by analysis
-stage. MNE-Connectivity also provides connectivity data structure
-containers for different types of connectivity data, which are
-described below.
+stage. The data structure classes contain different types of connectivity data
+and are described below.
 
 :py:mod:`mne_connectivity`:
 

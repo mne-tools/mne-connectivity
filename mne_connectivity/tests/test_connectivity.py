@@ -58,9 +58,17 @@ def test_connectivity_containers(conn_cls):
     with pytest.raises(ValueError, match='If indices are passed*.'):
         conn_cls(data=correct_numpy_input, indices=bad_indices,
                  n_nodes=2, **extra_kwargs)
+    with pytest.raises(ValueError, match='Indices can only be*.'):
+        conn_cls(data=correct_numpy_input, indices='square',
+                 n_nodes=2, **extra_kwargs)
 
     indices = ([0, 1], [1, 0])
     conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+
+    # test that get_data works as intended
+    with pytest.raises(ValueError, match='Output of data*.'):
+        conn.get_data(output='blah')
+
     assert conn.shape == tuple(correct_numpy_shape)
     assert conn.get_data().shape == tuple(correct_numpy_shape)
     assert conn.get_data(output='full').ndim == len(correct_numpy_shape) + 1

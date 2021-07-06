@@ -3,6 +3,7 @@ import xarray as xr
 
 from mne.utils import sizeof_fmt, object_size, _validate_type
 from mne_connectivity.utils import fill_doc
+from mne_connectivity.viz import (plot_connectivity_circle)
 
 
 class SpectralMixin:
@@ -19,55 +20,57 @@ class TimeMixin:
 
 @fill_doc
 class _Connectivity():
+    """Base class for connectivity data.
+
+    Connectivity data is anything that represents "connections"
+    between nodes as a (N, N) array. It can be symmetric, or
+    asymmetric (if it is symmetric, storage optimization will
+    occur).
+
+    Parameters
+    ----------
+    %(data)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_nodes)s
+    kwargs : dict
+        Extra connectivity parameters. These may include
+        ``freqs`` for spectral connectivity, and/or
+        ``times`` for connectivity over time. In addition,
+        these may include extra parameters that are stored
+        as xarray ``attrs``.
+
+    Notes
+    -----
+    Connectivity data can be generally represented as a square matrix
+    with values intending the connectivity function value between two
+    nodes. We optimize storage of symmetric connectivity data
+    and allow support for computing connectivity data on a subset of nodes.
+    We store connectivity data as a raveled ``(n_estimated_nodes, ...)``
+    where ``n_estimated_nodes`` can be ``n_nodes_in * n_nodes_out`` if a
+    full connectivity structure is computed, or a subset of the nodes
+    (equal to the length of the indices passed in).
+
+    The underlying data structure is an ``xarray.DataArray``,
+    with a similar API to ``xarray``. We provide support for storing
+    connectivity data in a subset of nodes. Thus the underlying
+    data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D array
+    would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This
+    allows us to optimize storage also for symmetric connectivity.
+    """
     # whether or not the connectivity occurs over epochs
     is_epoched = False
 
     def __init__(self, data, names, indices, method,
                  n_nodes, **kwargs):
-        """Base class container for connectivity data.
 
-        Connectivity data is anything that represents "connections"
-        between nodes as a (N, N) array. It can be symmetric, or
-        asymmetric (if it is symmetric, storage optimization will
-        occur).
-
-        The underlying data structure is an ``xarray.DataArray``,
-        with a similar API. We provide support for storing
-        connectivity data in a subset of nodes. Thus the underlying
-        data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D array
-        would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This
-        allows us to optimize storage also for symmetric connectivity.
-
-        Parameters
-        ----------
-        %(data)s
-        %(names)s
-        %(indices)s
-        %(method)s
-        %(n_nodes)s
-        kwargs : dict
-            Extra connectivity parameters. These may include
-            ``freqs`` for spectral connectivity, and/or
-            ``times`` for connectivity over time. In addition,
-            these may include extra parameters that are stored
-            as xarray ``attrs``.
-
-        Notes
-        -----
-        Connectivity data can be generally represented as a square matrix
-        with values intending the connectivity function value between two
-        nodes. We optimize storage of symmetric connectivity data
-        and allow support for computing connectivity data on a subset of nodes.
-        We store connectivity data as a raveled ``(n_estimated_nodes, ...)``
-        where ``n_estimated_nodes`` can be ``n_nodes_in * n_nodes_out`` if a
-        full connectivity structure is computed, or a subset of the nodes
-        (equal to the length of the indices passed in).
-        """
         if isinstance(indices, str) and \
-                indices not in ['all', 'symmetric']:
-            raise ValueError(f'Indices {indices} can only be '
-                             f'"all", or "symmetric", otherwise '
-                             f'should be a list of tuples.')
+                indices not in ['all']:
+            raise ValueError(f'Indices can only be '
+                             f'"all", otherwise '
+                             f'should be a list of tuples. '
+                             f'It cannot be {indices}.')
 
         # check the incoming data structure
         self.method = method
@@ -77,6 +80,7 @@ class _Connectivity():
         self._prepare_xarray(data, names=names, **kwargs)
 
     def _get_n_estimated_nodes(self, data):
+        """Compute the number of estimated nodes' connectivity."""
         # account for epoch data structures
         if self.is_epoched:
             start_idx = 1
@@ -89,6 +93,15 @@ class _Connectivity():
         return data
 
     def _prepare_xarray(self, data, names, **kwargs):
+        """Prepare xarray data structure.
+
+        Parameters
+        ----------
+        data : [type]
+            [description]
+        names : [type]
+            [description]
+        """
         # get the number of estimated nodes
         data = self._get_n_estimated_nodes(data)
 
@@ -135,6 +148,7 @@ class _Connectivity():
         self._obj = xarray_obj
 
     def _check_data_consistency(self, data):
+        """Perform data input checks."""
         if not isinstance(data, np.ndarray):
             raise TypeError('Connectivity data must be passed in as a '
                             'numpy array.')
@@ -170,10 +184,12 @@ class _Connectivity():
 
     @property
     def dims(self):
+        """The dimensions of the xarray data."""
         return self.xarray.dims
 
     @property
     def coords(self):
+        """The coordinates of the xarray data."""
         return self.xarray.coords
 
     @property
@@ -201,6 +217,10 @@ class _Connectivity():
 
     @property
     def n_epochs_used(self):
+        """Number of epochs used in computation of connectivity.
+
+        Can be 'None', if there was no epochs used.
+        """
         return self.attrs.get('n_epochs_used')
 
     @property
@@ -310,8 +330,11 @@ class _Connectivity():
         # rename the new names
         self._obj.attrs['node_names'] = names
 
-    def plot_circle(self):
-        pass
+    def plot_circle(self, **kwargs):
+        plot_connectivity_circle(
+            self.get_data(),
+            node_names=self.names,
+            indices=self.indices, **kwargs)
 
     def plot_matrix(self):
         pass
