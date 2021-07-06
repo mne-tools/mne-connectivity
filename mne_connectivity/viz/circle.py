@@ -14,8 +14,6 @@ import numpy as np
 
 from mne.viz.utils import plt_show
 
-from mne_connectivity.base import _Connectivity
-
 
 def circular_layout(node_names, node_order, start_pos=90, start_between=True,
                     group_boundaries=None, group_sep=10):
@@ -225,6 +223,8 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     import matplotlib.pyplot as plt
     import matplotlib.path as m_path
     import matplotlib.patches as m_patches
+
+    from mne_connectivity.base import _Connectivity
 
     if isinstance(con, _Connectivity):
         con = con.get_data()
