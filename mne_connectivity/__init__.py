@@ -13,8 +13,9 @@ from .effective import phase_slope_index
 from .spectral import spectral_connectivity
 from .utils import seed_target_indices, degree, check_indices
 from .base import (
+    Connectivity,
     TemporalConnectivity, SpectralConnectivity,
-    SpectroTemporalConnectivity,
+    SpectroTemporalConnectivity, EpochConnectivity,
     EpochTemporalConnectivity, EpochSpectralConnectivity,
     EpochSpectroTemporalConnectivity
 )

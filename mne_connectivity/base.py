@@ -506,3 +506,50 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
+
+
+@fill_doc
+class Connectivity(_Connectivity):
+    """Connectivity container without frequency or time component.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    """
+
+    def __init__(self, data, n_nodes, names=None, indices=None,
+                 method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method,
+                         n_nodes=n_nodes, indices=indices,
+                         n_epochs_used=n_epochs_used,
+                         **kwargs)
+
+
+@fill_doc
+class EpochConnectivity(_Connectivity):
+    """Epoch connectivity container.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    """
+
+    # whether or not the connectivity occurs over epochs
+    is_epoched = True
+
+    def __init__(self, data, n_nodes, names=None, indices=None,
+                 method=None, n_epochs_used=None, **kwargs):
+        super().__init__(data, names=names, method=method,
+                         n_nodes=n_nodes, indices=indices,
+                         n_epochs_used=n_epochs_used,
+                         **kwargs)

@@ -22,9 +22,11 @@ Most-used classes
 .. autosummary::
    :toctree: generated/
 
+   Connectivity
    TemporalConnectivity
    SpectralConnectivity
    SpectroTemporalConnectivity
+   EpochConnectivity
    EpochTemporalConnectivity
    EpochSpectralConnectivity
    EpochSpectroTemporalConnectivity

@@ -7,13 +7,15 @@ import pytest
 import numpy as np
 
 from mne_connectivity import (
+    Connectivity, EpochConnectivity,
     SpectralConnectivity, TemporalConnectivity,
     SpectroTemporalConnectivity, EpochTemporalConnectivity,
     EpochSpectralConnectivity, EpochSpectroTemporalConnectivity)
 
 
 @pytest.mark.parametrize(
-    'conn_cls', [SpectralConnectivity,
+    'conn_cls', [Connectivity, EpochConnectivity,
+                 SpectralConnectivity,
                  TemporalConnectivity,
                  SpectroTemporalConnectivity,
                  EpochTemporalConnectivity,
