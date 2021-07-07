@@ -71,7 +71,7 @@ def test_connectivity_containers(conn_cls):
 
     assert conn.shape == tuple(correct_numpy_shape)
     assert conn.get_data().shape == tuple(correct_numpy_shape)
-    assert conn.get_data(output='full').ndim == len(correct_numpy_shape) + 1
+    assert conn.get_data(output='dense').ndim == len(correct_numpy_shape) + 1
     orig_names = conn.names
     conn.rename_nodes({'0': 'new_name'})
     new_names = conn.names

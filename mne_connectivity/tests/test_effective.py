@@ -21,8 +21,8 @@ def test_psi():
     conn = phase_slope_index(
         data, mode='fourier', sfreq=sfreq)
 
-    assert conn.get_data(output='full', squeeze=False)[1, 0, 0] < 0
-    assert conn.get_data(output='full', squeeze=False)[2, 0, 0] > 0
+    assert conn.get_data(output='dense')[1, 0, 0] < 0
+    assert conn.get_data(output='dense')[2, 0, 0] > 0
 
     # only compute for a subset of the indices
     indices = (np.array([0]), np.array([1]))
@@ -31,8 +31,8 @@ def test_psi():
 
     # the measure is symmetric (sign flip)
     assert_array_almost_equal(
-        conn_2.get_data(squeeze=False)[0, 0],
-        -conn.get_data(output='full', squeeze=False)[1, 0, 0])
+        conn_2.get_data()[0, 0],
+        -conn.get_data(output='dense')[1, 0, 0])
 
     cwt_freqs = np.arange(5., 20, 0.5)
     conn_cwt = phase_slope_index(

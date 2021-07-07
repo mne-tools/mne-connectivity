@@ -160,8 +160,8 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
             idx_fi[freq_dim] = fi
             idx_fj[freq_dim] = fj
             acc += np.conj(
-                cohy.get_data(squeeze=False)[tuple(idx_fi)]) * \
-                cohy.get_data(squeeze=False)[tuple(idx_fj)]
+                cohy.get_data()[tuple(idx_fi)]) * \
+                cohy.get_data()[tuple(idx_fj)]
 
         idx_fi[freq_dim] = band_idx
         psi[tuple(idx_fi)] = np.imag(acc)

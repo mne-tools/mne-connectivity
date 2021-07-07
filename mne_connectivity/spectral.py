@@ -932,38 +932,26 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     # create a list of connectivity containers
     conn_list = []
     for _con in con:
+        kwargs = dict(data=_con,
+                      names=names,
+                      freqs=freqs,
+                      method=method,
+                      n_nodes=n_nodes,
+                      spec_method=mode,
+                      indices=indices,
+                      n_epochs_used=n_epochs,
+                      freqs_used=freqs_used,
+                      times_used=times,
+                      n_tapers=n_tapers,
+                      )
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
-            # spectral only
-            conn = SpectralConnectivity(
-                data=_con,
-                names=names,
-                freqs=freqs,
-                method=method,
-                n_nodes=n_nodes,
-                spec_method=mode,
-                indices=indices,
-                n_epochs_used=n_epochs,
-                freqs_used=freqs_used,
-                times_used=times,
-                n_tapers=n_tapers,
-            )
-        elif mode == 'cwt_morlet':
-            # spectrotemporal
-            conn = SpectroTemporalConnectivity(
-                data=_con,
-                names=names,
-                freqs=freqs,
-                times=times,
-                n_nodes=n_nodes,
-                method=method,
-                spec_method=mode,
-                indices=indices,
-                n_epochs_used=n_epochs,
-                freqs_used=freqs_used,
-                n_tapers=n_tapers
-            )
-        conn_list.append(conn)
+            klass = SpectralConnectivity
+        else:
+            assert mode == 'cwt_morlet'
+            klass = SpectroTemporalConnectivity
+            kwargs.update(times=times)
+        conn_list.append(klass(**kwargs))
 
     logger.info('[Connectivity computation done]')
 
