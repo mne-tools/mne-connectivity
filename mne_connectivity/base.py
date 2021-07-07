@@ -2,7 +2,8 @@ import numpy as np
 import xarray as xr
 
 from mne.utils import (sizeof_fmt, object_size,
-                       _validate_type, _check_option)
+                       _validate_type, _check_option,
+                       copy_function_doc_to_method_doc)
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import (plot_connectivity_circle)
 
@@ -79,6 +80,20 @@ class _Connectivity():
         self.n_nodes = n_nodes
         self._check_data_consistency(data)
         self._prepare_xarray(data, names=names, **kwargs)
+
+    def __repr__(self) -> str:
+        r = f'<{self.__class__.__name__} | '
+
+        if 'freqs' in self.dims:
+            r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])
+        if 'times' in self.dims:
+            r += "time : [%f, %f], " % (self.times[0], self.times[-1])
+        r += ", nave : %d" % self.n_epochs_used
+        r += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
+                                                self.n_estimated_nodes)
+        r += ', ~%s' % (sizeof_fmt(self._size),)
+        r += '>'
+        return r
 
     def _get_n_estimated_nodes(self, data):
         """Compute the number of estimated nodes' connectivity."""
@@ -326,6 +341,7 @@ class _Connectivity():
         # rename the new names
         self._obj.attrs['node_names'] = names
 
+    @copy_function_doc_to_method_doc(plot_connectivity_circle)
     def plot_circle(self, **kwargs):
         plot_connectivity_circle(
             self.get_data(),
@@ -366,14 +382,6 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
                          freqs=freqs, spec_method=spec_method,
                          n_epochs_used=n_epochs_used, **kwargs)
 
-    def __repr__(self):  # noqa: D105
-        s = ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", nave : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<SpectralConnectivity | %s>" % s
-
 
 @fill_doc
 class TemporalConnectivity(_Connectivity, TimeMixin):
@@ -396,14 +404,6 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
                          n_nodes=n_nodes, indices=indices,
                          times=times, n_epochs_used=n_epochs_used,
                          **kwargs)
-
-    def __repr__(self):  # noqa: D105
-        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", nave : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<TemporalConnectivity | %s>" % s
 
 
 @fill_doc
@@ -431,15 +431,6 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
                          spec_method=spec_method, times=times,
                          n_epochs_used=n_epochs_used, **kwargs)
 
-    def __repr__(self):  # noqa: D105
-        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", nave : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<SpectroTemporalConnectivity | %s>" % s
-
 
 @fill_doc
 class EpochSpectralConnectivity(SpectralConnectivity):
@@ -466,15 +457,6 @@ class EpochSpectralConnectivity(SpectralConnectivity):
             n_nodes=n_nodes, method=method,
             spec_method=spec_method, **kwargs)
 
-    def __repr__(self):  # noqa: D105
-        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<EpochSpectralConnectivity | %s>" % s
-
 
 @fill_doc
 class EpochTemporalConnectivity(TemporalConnectivity):
@@ -497,15 +479,6 @@ class EpochTemporalConnectivity(TemporalConnectivity):
         super().__init__(data, times=times, names=names,
                          indices=indices, n_nodes=n_nodes,
                          method=method, **kwargs)
-
-    def __repr__(self):  # noqa: D105
-        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<EpochTemporalConnectivity | %s>" % s
 
 
 @fill_doc
@@ -533,12 +506,3 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
-
-    def __repr__(self):  # noqa: D105
-        s = "time : [%f, %f]" % (self.times[0], self.times[-1])
-        s += ", freq : [%f, %f]" % (self.freqs[0], self.freqs[-1])
-        s += ", n_epochs : %d" % self.n_epochs_used
-        s += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
-        s += ', ~%s' % (sizeof_fmt(self._size),)
-        return "<EpochSpectroTemporalConnectivity | %s>" % s

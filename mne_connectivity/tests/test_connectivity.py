@@ -66,7 +66,8 @@ def test_connectivity_containers(conn_cls):
     conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
 
     # test that get_data works as intended
-    with pytest.raises(ValueError, match='Output of data*.'):
+    with pytest.raises(ValueError, match="Invalid value for the "
+                                         "'output' parameter*."):
         conn.get_data(output='blah')
 
     assert conn.shape == tuple(correct_numpy_shape)

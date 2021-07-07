@@ -48,19 +48,20 @@ def test_envelope_correlation():
 
     # using complex data
     corr = envelope_correlation(data_hilbert)
-    assert_allclose(corr.get_data(), corr_orig.flatten())
+    assert_allclose(corr.get_data().squeeze(), corr_orig.flatten())
 
     # using callable
     corr = envelope_correlation(data_hilbert,
                                 combine=lambda data: np.mean(data, axis=0))
-    assert_allclose(corr.get_data(output='dense'), corr_orig)
+    assert_allclose(corr.get_data(output='dense').squeeze(),
+                    corr_orig)
 
     # do Hilbert internally, and don't combine
     corr = envelope_correlation(data, combine=None)
     assert corr.shape == (data.shape[0],) + \
         (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
     corr = np.mean(corr.get_data(output='dense'), axis=0)
-    assert_allclose(corr, corr_orig)
+    assert_allclose(corr.squeeze(), corr_orig)
 
     # degenerate
     with pytest.raises(ValueError, match='float'):
@@ -82,9 +83,9 @@ def test_envelope_correlation():
         (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
     assert np.min(corr_plain.get_data()) < 0
     corr_plain_mean = np.mean(corr_plain.get_data(output='dense'), axis=0)
-    assert_allclose(np.diag(corr_plain_mean), 1)
+    assert_allclose(np.diag(corr_plain_mean.squeeze()), 1)
     np_corr = np.array([np.corrcoef(np.abs(x)) for x in data_hilbert])
-    assert_allclose(corr_plain.get_data(output='dense'), np_corr)
+    assert_allclose(corr_plain.get_data(output='dense').squeeze(), np_corr)
 
     # check against FieldTrip, which uses the square-log-norm version
     # from scipy.io import savemat
@@ -106,4 +107,4 @@ def test_envelope_correlation():
     ft_vals[np.isnan(ft_vals)] = 0
     corr_log = envelope_correlation(
         data, combine=None, log=True, absolute=False)
-    assert_allclose(corr_log.get_data(output='dense'), ft_vals)
+    assert_allclose(corr_log.get_data(output='dense').squeeze(), ft_vals)
