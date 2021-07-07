@@ -10,9 +10,6 @@ and are described below.
 
 :py:mod:`mne_connectivity`:
 
-.. automodule:: mne_connectivity
-   :no-members:
-   :no-inherited-members:
 
 Most-used classes
 =================
