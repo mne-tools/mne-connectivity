@@ -71,7 +71,7 @@ con = spectral_connectivity(
     fmin=fmin, fmax=fmax, mt_adaptive=True, n_jobs=1)
 freqs = con.freqs
 
-n_rows, n_cols = con.get_data(output='full').shape[:2]
+n_rows, n_cols = con.get_data(output='dense').shape[:2]
 fig, axes = plt.subplots(n_rows, n_cols, sharex=True, sharey=True)
 for i in range(n_rows):
     for j in range(i + 1):
@@ -79,8 +79,8 @@ for i in range(n_rows):
             axes[i, j].set_axis_off()
             continue
 
-        axes[i, j].plot(freqs, con.get_data(output='full')[i, j, :])
-        axes[j, i].plot(freqs, con.get_data(output='full')[i, j, :])
+        axes[i, j].plot(freqs, con.get_data(output='dense')[i, j, :])
+        axes[j, i].plot(freqs, con.get_data(output='dense')[i, j, :])
 
         if j == 0:
             axes[i, j].set_ylabel(names[i])
