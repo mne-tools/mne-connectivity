@@ -84,7 +84,7 @@ corr = envelope_correlation(label_ts, verbose=True)
 
 # let's plot this matrix
 fig, ax = plt.subplots(figsize=(4, 4))
-ax.imshow(corr.get_data(output='dense'), cmap='viridis',
+ax.imshow(corr.get_data(output='dense').squeeze(), cmap='viridis',
           clim=np.percentile(corr.get_data(), [5, 95]))
 fig.tight_layout()
 del epochs, stcs, label_ts

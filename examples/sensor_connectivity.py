@@ -54,4 +54,4 @@ con = spectral_connectivity(
 # Now, visualize the connectivity in 3D:
 plot_sensors_connectivity(
     epochs.info,
-    con.get_data(output='full')[:, :, 0])
+    con.get_data(output='dense')[:, :, 0])
