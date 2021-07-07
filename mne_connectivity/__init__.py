@@ -6,7 +6,7 @@
 #
 # License: BSD (3-clause)
 
-__version__ = '0.2dev'
+__version__ = '0.2.dev0'
 
 from .envelope import envelope_correlation
 from .effective import phase_slope_index
