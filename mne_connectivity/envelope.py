@@ -157,11 +157,17 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         corrs.append(corr)
         del corr
 
-    # ravel from 2D connectivity into 1D array
-    corrs = [corr.flatten() for corr in corrs]
-
+    # apply function on correlation structure
     n_epochs = len(corrs)
     corr = fun(corrs)
+
+    if combine is None:
+        # ravel from 2D connectivity into 1D array
+        # over all epochs
+        corr = np.array([_corr.flatten() for _corr in corr])
+    else:
+        # ravel N x N array into 1D array
+        corr = corr.flatten()
 
     # create the connectivity container
     times = None
@@ -173,6 +179,7 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     # create time axis
     corr = corr[..., np.newaxis]
 
+    print(corr.shape)
     conn = EpochTemporalConnectivity(
         data=corr,
         names=names,
