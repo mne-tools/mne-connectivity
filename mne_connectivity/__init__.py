@@ -1,4 +1,4 @@
-"""Connectivity MEG, EEG, iEEG data processing."""
+"""Connectivity for MEG, EEG and iEEG data."""
 
 # Authors: Adam Li <ali39@jhu.edu>
 #          Eric Larson <larson.eric.d@gmail.com>

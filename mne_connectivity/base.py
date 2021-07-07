@@ -1,7 +1,8 @@
 import numpy as np
 import xarray as xr
 
-from mne.utils import sizeof_fmt, object_size, _validate_type
+from mne.utils import (sizeof_fmt, object_size,
+                       _validate_type, _check_option)
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import (plot_connectivity_circle)
 
@@ -231,7 +232,7 @@ class _Connectivity():
         size += object_size(self.attrs)
         return size
 
-    def get_data(self, output='raveled', squeeze=True):
+    def get_data(self, output='raveled'):
         """Get connectivity data as a numpy array.
 
         Parameters
@@ -239,7 +240,7 @@ class _Connectivity():
         output : str, optional
             How to format the output, by default 'raveled', which
             will represent each connectivity matrix as a
-            ``(n_nodes_in * n_nodes_out, 1)`` list. If 'full', then
+            ``(n_nodes_in * n_nodes_out, 1)`` list. If 'dense', then
             will return each connectivity matrix as a 2D array.
         squeeze : bool, optional
             Whether to squeeze the array or not, by default True.
@@ -281,9 +282,6 @@ class _Connectivity():
                     data[row_idx, col_idx, ...] = self._data
             else:
                 data = self._data.reshape(new_shape)
-
-        if squeeze:
-            return data.squeeze()
 
         return data
 
@@ -336,14 +334,14 @@ class _Connectivity():
             node_names=self.names,
             indices=self.indices, **kwargs)
 
-    def plot_matrix(self):
-        pass
+    # def plot_matrix(self):
+    #     pass
 
-    def plot_3d(self):
-        pass
+    # def plot_3d(self):
+    #     pass
 
-    def save(self, fname):
-        pass
+    # def save(self, fname):
+    #     pass
 
 
 @fill_doc
