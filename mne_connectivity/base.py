@@ -240,7 +240,7 @@ class _Connectivity():
         output : str, optional
             How to format the output, by default 'raveled', which
             will represent each connectivity matrix as a
-            ``(n_nodes_in * n_nodes_out, 1)`` list. If 'dense', then
+            ``(n_nodes_in * n_nodes_out,)`` list. If 'dense', then
             will return each connectivity matrix as a 2D array.
         squeeze : bool, optional
             Whether to squeeze the array or not, by default True.
@@ -250,9 +250,7 @@ class _Connectivity():
         data : np.ndarray
             The output connectivity data.
         """
-        if output not in ['raveled', 'full']:
-            raise ValueError(f'Output of data can only be one of '
-                             f'"raveled, "full", not {output}.')
+        _check_option('output', output, ['raveled', 'dense'])
 
         if output == 'raveled':
             data = self._data
@@ -271,7 +269,7 @@ class _Connectivity():
             # handle things differently if indices is defined
             if isinstance(self.indices, tuple):
                 # TODO: improve this to be more memory efficient
-                # form all-to-all connectivity structure
+                # from all-to-all connectivity structure
                 data = np.zeros(new_shape)
                 data[:] = np.nan
 
