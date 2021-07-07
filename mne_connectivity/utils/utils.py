@@ -69,7 +69,7 @@ def degree(connectivity, threshold_prop=0.2):
     from mne_connectivity.base import _Connectivity
 
     if isinstance(connectivity, _Connectivity):
-        connectivity = connectivity.get_data(output='full')
+        connectivity = connectivity.get_data(output='dense').squeeze()
 
     connectivity = np.array(connectivity)
     if connectivity.ndim != 2 or \
