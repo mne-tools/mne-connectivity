@@ -102,8 +102,6 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
                              % (epoch_data.shape,))
         n_nodes, n_times = epoch_data.shape
         if ei > 0 and n_nodes != corrs[0].shape[0]:
-            print(ei)
-            print(n_nodes, corrs[0].shape)
             raise ValueError('n_nodes mismatch between data[0] and data[%d], '
                              'got %s and %s'
                              % (ei, n_nodes, corrs[0].shape[0]))
