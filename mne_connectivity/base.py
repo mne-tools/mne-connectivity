@@ -200,6 +200,9 @@ class _Connectivity():
         kwargs['node_names'] = names
 
         # set method, indices and n_nodes
+        if isinstance(indices, tuple):
+            indices[0] = list(indices[0])
+            indices[1] = list(indices[1])
         kwargs['method'] = method
         kwargs['indices'] = indices
         kwargs['n_nodes'] = n_nodes
@@ -445,6 +448,14 @@ class _Connectivity():
     #     pass
 
     def save(self, fname):
+        """Save connectivity data to disk.
+
+        Parameters
+        ----------
+        fname : str | pathlib.Path
+            The filepath to save the data. Data is saved
+            as netCDF files (``.nc`` extension).
+        """
         method = self.method
         indices = self.indices
         n_nodes = self.n_nodes
