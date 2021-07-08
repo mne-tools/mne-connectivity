@@ -17,6 +17,7 @@ CTF data in a volume source space.
 import os.path as op
 
 import mne
+import mne_connectivity
 from mne.beamformer import make_lcmv, apply_lcmv_epochs
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
 from mne_connectivity import envelope_correlation
@@ -81,7 +82,7 @@ del stcs, epochs, filters
 # Compute the degree and plot it
 # ------------------------------
 
-degree = mne.connectivity.degree(corr, 0.15)
+degree = mne_connectivity.degree(corr, 0.15)
 stc = mne.VolSourceEstimate(degree, [src[0]['vertno']], 0, 1, 'bst_resting')
 brain = stc.plot(
     src, clim=dict(kind='percent', lims=[75, 85, 95]), colormap='gnuplot',

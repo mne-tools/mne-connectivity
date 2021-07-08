@@ -90,19 +90,19 @@ fmax = 20.
 tmin_con = 0.
 sfreq = epochs.info['sfreq']  # the sampling frequency
 
-psi, _, _, _, _ = phase_slope_index(
+psi = phase_slope_index(
     comb_ts, mode='multitaper', indices=indices, sfreq=sfreq,
     fmin=fmin, fmax=fmax, tmin=tmin_con)
 
 # Generate a SourceEstimate with the PSI. This is simple since we used a single
 # seed (inspect the indices variable to see how the PSI scores are arranged in
 # the output)
-psi_stc = mne.SourceEstimate(psi, vertices=vertices, tmin=0, tstep=1,
-                             subject='sample')
+psi_stc = mne.SourceEstimate(
+    psi.get_data(), vertices=vertices, tmin=0, tstep=1, subject='sample')
 
 # Now we can visualize the PSI using the :meth:`~mne.SourceEstimate.plot`
 # method. We use a custom colormap to show signed values
-v_max = np.max(np.abs(psi))
+v_max = np.max(np.abs(psi.get_data()))
 brain = psi_stc.plot(surface='inflated', hemi='lh',
                      time_label='Phase Slope Index (PSI)',
                      subjects_dir=subjects_dir,

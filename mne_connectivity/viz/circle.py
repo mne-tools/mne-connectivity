@@ -133,7 +133,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
 
     Parameters
     ----------
-    con : array
+    con : array | Connectivity
         Connectivity scores. Can be a square matrix, or a 1D array. If a 1D
         array is provided, "indices" has to be used to define the connection
         indices.
@@ -224,6 +224,10 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     import matplotlib.path as m_path
     import matplotlib.patches as m_patches
 
+    from mne_connectivity.base import _Connectivity
+
+    if isinstance(con, _Connectivity):
+        con = con.get_data()
     n_nodes = len(node_names)
 
     if node_angles is not None:

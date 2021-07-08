@@ -1,6 +1,7 @@
 # Authors: Eric Larson <larson.eric.d@gmail.com>
 #          Sheraz Khan <sheraz@khansheraz.com>
 #          Denis Engemann <denis.engemann@gmail.com>
+#          Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -10,9 +11,12 @@ from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import verbose, _check_combine, _check_option
 
+from .base import EpochTemporalConnectivity
+
 
 @verbose
-def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
+def envelope_correlation(data, indices=None, names=None, combine='mean',
+                         orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
 
@@ -25,6 +29,12 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
         object (and ``stc.data`` will be used). If it's float data,
         the Hilbert transform will be applied; if it's complex data,
         it's assumed the Hilbert has already been applied.
+    indices : tuple of array | None
+        Two arrays with indices of connections for which to compute
+        connectivity. If None, all connections are computed.
+    names : list | array-like | None
+        A list of names associated with the signals in ``data``.
+        If None, will be a list of indices of the number of nodes.
     combine : 'mean' | callable | None
         How to combine correlation estimates across epochs.
         Default is 'mean'. Can be None to return without combining.
@@ -56,19 +66,16 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
 
     Returns
     -------
-    corr : ndarray, shape ([n_epochs, ]n_nodes, n_nodes)
+    corr : instance of Connectivity
         The pairwise orthogonal envelope correlations.
         This matrix is symmetric. If combine is None, the array
         with have three dimensions, the first of which is ``n_epochs``.
+        The data shape would be ``([n_epochs, ]n_nodes ** 2)``
 
     Notes
     -----
     This function computes the power envelope correlation between
     orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
-
-    .. versionchanged:: 0.22
-      Computations fixed for ``orthogonalize=True`` and diagonal entries are
-      set explicitly to zero.
 
     References
     ----------
@@ -76,13 +83,13 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
     """
     _check_option('orthogonalize', orthogonalize, (False, 'pairwise'))
     from scipy.signal import hilbert
-    n_nodes = None
     if combine is not None:
         fun = _check_combine(combine, valid=('mean',))
     else:  # None
         fun = np.array
 
     corrs = list()
+
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
     # using multiple CPUs. And we require too much GIL for prefer='threading'
@@ -98,6 +105,7 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
             raise ValueError('n_nodes mismatch between data[0] and data[%d], '
                              'got %s and %s'
                              % (ei, n_nodes, corrs[0].shape[0]))
+
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
         if epoch_data.dtype in (np.float32, np.float64):
@@ -145,8 +153,40 @@ def envelope_correlation(data, combine='mean', orthogonalize="pairwise",
             if absolute:
                 corr = np.abs(corr)
             corr = (corr.T + corr) / 2.
+
         corrs.append(corr)
         del corr
 
+    # apply function on correlation structure
+    n_epochs = len(corrs)
     corr = fun(corrs)
-    return corr
+
+    if combine is None:
+        # ravel from 2D connectivity into 1D array
+        # over all epochs
+        corr = np.array([_corr.flatten() for _corr in corr])
+    else:
+        # ravel N x N array into 1D array
+        corr = corr.flatten()
+
+    # create the connectivity container
+    times = None
+
+    # create epochs axis
+    if combine is not None:
+        corr = corr[np.newaxis, ...]
+
+    # create time axis
+    corr = corr[..., np.newaxis]
+
+    print(corr.shape)
+    conn = EpochTemporalConnectivity(
+        data=corr,
+        names=names,
+        times=times,
+        method='envelope correlation',
+        indices=indices,
+        n_epochs_used=n_epochs,
+        n_nodes=n_nodes,
+    )
+    return conn

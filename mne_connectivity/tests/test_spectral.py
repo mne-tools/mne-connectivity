@@ -1,9 +1,12 @@
 import numpy as np
-from numpy.testing import assert_array_almost_equal, assert_allclose
+from numpy.testing import (
+    assert_array_almost_equal, assert_array_less,
+    assert_allclose
+)
 import pytest
 
 from mne import EpochsArray, SourceEstimate, create_info
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity, SpectralConnectivity
 from mne_connectivity.spectral import _CohEst, _get_n_epochs
 from mne.filter import filter_data
 
@@ -91,11 +94,22 @@ def test_spectral_connectivity(method, mode):
         else:
             mt_bandwidth = None
 
-        con, freqs, times, n, _ = spectral_connectivity(
+        con = spectral_connectivity(
             data, method=method, mode=mode, indices=None, sfreq=sfreq,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles)
+
+        if isinstance(method, list):
+            this_con = con[0]
+        else:
+            this_con = con
+        freqs = this_con.attrs.get('freqs_used')
+        n = this_con.n_epochs_used
+        if isinstance(this_con, SpectralConnectivity):
+            times = this_con.attrs.get('times_used')
+        else:
+            times = this_con.times
 
         assert (n == n_epochs)
         assert_array_almost_equal(times_data, times)
@@ -114,26 +128,50 @@ def test_spectral_connectivity(method, mode):
                                (fstart - trans_bandwidth * 2,
                                 fend + trans_bandwidth * 2))
         if method == 'coh':
-            assert np.all(con[1, 0, gidx[0]:gidx[1]] > upper_t), \
-                con[1, 0, gidx[0]:gidx[1]].min()
+            assert np.all(
+                con.get_data(output='dense')[
+                    1, 0, gidx[0]:gidx[1]
+                ] > upper_t), \
+                con.get_data()[
+                    1, 0, gidx[0]:gidx[1]].min()
             # we see something for zero-lag
-            assert (np.all(con[1, 0, :bidx[0]] < lower_t))
-            assert np.all(con[1, 0, bidx[1]:] < lower_t), \
-                con[1, 0, bidx[1:]].max()
+            assert_array_less(
+                con.get_data(output='dense')
+                [1, 0, :bidx[0]],
+                lower_t)
+            assert np.all(
+                con.get_data(output='dense')[1, 0, bidx[1]:] < lower_t), \
+                con.get_data()[1, 0, bidx[1:]].max()
         elif method == 'cohy':
             # imaginary coh will be zero
-            check = np.imag(con[1, 0, gidx[0]:gidx[1]])
+            check = np.imag(con.get_data(output='dense')
+                            [1, 0, gidx[0]:gidx[1]])
             assert np.all(check < lower_t), check.max()
             # we see something for zero-lag
-            assert np.all(np.abs(con[1, 0, gidx[0]:gidx[1]]) > upper_t)
-            assert np.all(np.abs(con[1, 0, :bidx[0]]) < lower_t)
-            assert np.all(np.abs(con[1, 0, bidx[1]:]) < lower_t)
+            assert_array_less(
+                upper_t,
+                np.abs(con.get_data(output='dense')[
+                    1, 0, gidx[0]:gidx[1]
+                ]))
+            assert_array_less(
+                np.abs(con.get_data(output='dense')[1, 0, :bidx[0]]),
+                lower_t)
+            assert_array_less(
+                np.abs(con.get_data(output='dense')[1, 0, bidx[1]:]),
+                lower_t)
         elif method == 'imcoh':
             # imaginary coh will be zero
-            assert np.all(con[1, 0, gidx[0]:gidx[1]] < lower_t)
-            assert np.all(con[1, 0, :bidx[0]] < lower_t)
-            assert np.all(con[1, 0, bidx[1]:] < lower_t), \
-                con[1, 0, bidx[1]:].max()
+            assert_array_less(
+                con.get_data(output='dense')[1, 0, gidx[0]:gidx[1]],
+                lower_t)
+            assert_array_less(
+                con.get_data(output='dense')[1, 0, :bidx[0]],
+                lower_t)
+            assert_array_less(
+                con.get_data(output='dense')[1, 0, bidx[1]:], lower_t),
+            assert np.all(
+                con.get_data(output='dense')[1, 0, bidx[1]:] < lower_t), \
+                con.get_data()[1, 0, bidx[1]:].max()
 
         # compute a subset of connections using indices and 2 jobs
         indices = (np.array([2, 1]), np.array([0, 0]))
@@ -144,7 +182,7 @@ def test_spectral_connectivity(method, mode):
             test_methods = method
 
         stc_data = _stc_gen(data, sfreq, tmin)
-        con2, freqs2, times2, n2, _ = spectral_connectivity(
+        con2 = spectral_connectivity(
             stc_data, method=test_methods, mode=mode, indices=indices,
             sfreq=sfreq, mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, tmin=tmin, tmax=tmax,
@@ -152,16 +190,26 @@ def test_spectral_connectivity(method, mode):
 
         assert isinstance(con2, list)
         assert len(con2) == len(test_methods)
+        freqs2 = con2[0].attrs.get('freqs_used')
+        if 'times' in con2[0].dims:
+            times2 = con2[0].times
+        else:
+            times2 = con2[0].attrs.get('times_used')
+        n2 = con2[0].n_epochs_used
 
         if method == 'coh':
-            assert_array_almost_equal(con2[0], con2[1])
+            assert_array_almost_equal(con2[0].get_data(), con2[1].get_data())
 
         if not isinstance(method, list):
             con2 = con2[0]  # only keep the first method
 
             # we get the same result for the probed connections
             assert_array_almost_equal(freqs, freqs2)
-            assert_array_almost_equal(con[indices], con2)
+
+            # "con2" is a raveled array already, so
+            # simulate setting indices on the full output in "con"
+            assert_array_almost_equal(con.get_data(output='dense')[indices],
+                                      con2.get_data())
             assert (n == n2)
             assert_array_almost_equal(times_data, times2)
         else:
@@ -169,19 +217,25 @@ def test_spectral_connectivity(method, mode):
             assert (len(con) == len(con2))
             for c, c2 in zip(con, con2):
                 assert_array_almost_equal(freqs, freqs2)
-                assert_array_almost_equal(c[indices], c2)
+                assert_array_almost_equal(c.get_data(output='dense')[indices],
+                                          c2.get_data())
                 assert (n == n2)
                 assert_array_almost_equal(times_data, times2)
 
         # compute same connections for two bands, fskip=1, and f. avg.
         fmin = (5., 15.)
         fmax = (15., 30.)
-        con3, freqs3, times3, n3, _ = spectral_connectivity(
+        con3 = spectral_connectivity(
             data, method=method, mode=mode, indices=indices,
             sfreq=sfreq, fmin=fmin, fmax=fmax, fskip=1, faverage=True,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles)
+
+        if isinstance(method, list):
+            freqs3 = con3[0].attrs.get('freqs_used')
+        else:
+            freqs3 = con3.attrs.get('freqs_used')
 
         assert (isinstance(freqs3, list))
         assert (len(freqs3) == len(fmin))
@@ -193,14 +247,17 @@ def test_spectral_connectivity(method, mode):
         if not isinstance(method, list):
             for i in range(len(freqs3)):
                 freq_idx = np.searchsorted(freqs2, freqs3[i])
-                con2_avg = np.mean(con2[:, freq_idx], axis=1)
-                assert_array_almost_equal(con2_avg, con3[:, i])
+                con2_avg = np.mean(con2.get_data()[:, freq_idx], axis=1)
+                assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
         else:
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
                     freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    con2_avg = np.mean(con2[j][:, freq_idx], axis=1)
-                    assert_array_almost_equal(con2_avg, con3[j][:, i])
+                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx],
+                                       axis=1)
+                    assert_array_almost_equal(
+                        con2_avg, con3[j].get_data()[:, i])
+
     # test _get_n_epochs
     full_list = list(range(10))
     out_lens = np.array([len(x) for x in _get_n_epochs(full_list, 4)])
@@ -210,7 +267,7 @@ def test_spectral_connectivity(method, mode):
     assert (out_lens[0] == 10)
 
 
-@pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
+@ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
 def test_epochs_tmin_tmax(kind):
     """Test spectral.spectral_connectivity with epochs and arrays."""
     rng = np.random.RandomState(0)
@@ -243,17 +300,19 @@ def test_epochs_tmin_tmax(kind):
 
     # Check the entire interval
     conn = spectral_connectivity(X, **kwargs)
-    assert 0.89 < conn[0][1, 0] < 0.91
-    assert_allclose(conn[2], want_times)
+    assert 0.89 < conn.get_data(output='dense')[1, 0] < 0.91
+    assert_allclose(conn.attrs.get('times_used'), want_times)
     # Check a time interval before the sinusoid
     conn = spectral_connectivity(X, tmax=tmin + 0.5, **kwargs)
-    assert 0 < conn[0][1, 0] < 0.15
+    assert 0 < conn.get_data(output='dense')[1, 0] < 0.15
     # Check a time during the sinusoid
-    conn = spectral_connectivity(X, tmin=tmin + 0.5, tmax=tmin + 1.5, **kwargs)
-    assert 0.93 < conn[0][1, 0] <= 0.94
+    conn = spectral_connectivity(
+        X, tmin=tmin + 0.5, tmax=tmin + 1.5, **kwargs)
+    assert 0.93 < conn.get_data(output='dense')[1, 0] <= 0.94
     # Check a time interval after the sinusoid
-    conn = spectral_connectivity(X, tmin=tmin + 1.5, tmax=tmin + 1.9, **kwargs)
-    assert 0 < conn[0][1, 0] < 0.15
+    conn = spectral_connectivity(
+        X, tmin=tmin + 1.5, tmax=tmin + 1.9, **kwargs)
+    assert 0 < conn.get_data(output='dense')[1, 0] < 0.15
 
     # Check for warning if tmin, tmax is outside of the time limits of data
     with pytest.warns(RuntimeWarning, match='start time tmin'):

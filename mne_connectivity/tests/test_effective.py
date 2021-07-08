@@ -18,22 +18,26 @@ def test_psi():
         data[i, 1, 10:] = data[i, 0, :-10]  # signal 0 is ahead
         data[i, 2, :-10] = data[i, 0, 10:]  # signal 2 is ahead
 
-    psi, freqs, times, n_epochs, n_tapers = phase_slope_index(
+    conn = phase_slope_index(
         data, mode='fourier', sfreq=sfreq)
-    assert psi[1, 0, 0] < 0
-    assert psi[2, 0, 0] > 0
 
+    assert conn.get_data(output='dense')[1, 0, 0] < 0
+    assert conn.get_data(output='dense')[2, 0, 0] > 0
+
+    # only compute for a subset of the indices
     indices = (np.array([0]), np.array([1]))
-    psi_2, freqs, times, n_epochs, n_tapers = phase_slope_index(
+    conn_2 = phase_slope_index(
         data, mode='fourier', sfreq=sfreq, indices=indices)
 
     # the measure is symmetric (sign flip)
-    assert_array_almost_equal(psi_2[0, 0], -psi[1, 0, 0])
+    assert_array_almost_equal(
+        conn_2.get_data()[0, 0],
+        -conn.get_data(output='dense')[1, 0, 0])
 
     cwt_freqs = np.arange(5., 20, 0.5)
-    psi_cwt, freqs, times, n_epochs, n_tapers = phase_slope_index(
+    conn_cwt = phase_slope_index(
         data, mode='cwt_morlet', sfreq=sfreq, cwt_freqs=cwt_freqs,
         indices=indices)
 
-    assert np.all(psi_cwt > 0)
-    assert psi_cwt.shape[-1] == n_times
+    assert np.all(conn_cwt.get_data() > 0)
+    assert conn_cwt.shape[-1] == n_times

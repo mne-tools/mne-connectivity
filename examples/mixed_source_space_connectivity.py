@@ -118,7 +118,7 @@ label_ts = mne.extract_label_time_course(
 fmin = 8.
 fmax = 13.
 sfreq = epochs.info['sfreq']  # the sampling frequency
-con, freqs, times, n_epochs, n_tapers = spectral_connectivity(
+con = spectral_connectivity(
     label_ts, method='pli', mode='multitaper', sfreq=sfreq, fmin=fmin,
     fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
 
@@ -166,7 +166,7 @@ node_angles = circular_layout(label_names, node_order, start_pos=90,
 
 # Plot the graph using node colors from the FreeSurfer parcellation. We only
 # show the 300 strongest connections.
-conmat = con[:, :, 0]
+conmat = con.get_data(output='dense')[:, :, 0]
 fig = plt.figure(num=None, figsize=(8, 8), facecolor='black')
 plot_connectivity_circle(conmat, label_names, n_lines=300,
                          node_angles=node_angles, node_colors=node_colors,

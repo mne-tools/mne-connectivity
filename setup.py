@@ -26,7 +26,7 @@ URL = 'https://github.com/mne-tools/mne-connectivity'
 LICENSE = 'BSD-3'
 DOWNLOAD_URL = 'https://github.com/mne-tools/mne-connectivity'
 VERSION = version
-INSTALL_REQUIRES = ['numpy', 'scipy', 'mne', 'scikit-learn']
+INSTALL_REQUIRES = ['numpy', 'scipy', 'mne', 'scikit-learn', 'xarray']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',

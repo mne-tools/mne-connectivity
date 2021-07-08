@@ -20,6 +20,9 @@ from mne.time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
 from mne.time_frequency.tfr import morlet, cwt
 from mne.utils import logger, verbose, _time_mask, warn, _arange_div
 
+from .base import SpectralConnectivity, SpectroTemporalConnectivity
+
+
 ########################################################################
 # Various connectivity estimators
 
@@ -557,7 +560,8 @@ def _check_estimators(method, mode):
 
 
 @verbose
-def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
+def spectral_connectivity(data, names=None, method='coh', indices=None,
+                          sfreq=2 * np.pi,
                           mode='multitaper', fmin=None, fmax=np.inf,
                           fskip=0, faverage=False, tmin=None, tmax=None,
                           mt_bandwidth=None, mt_adaptive=False,
@@ -639,22 +643,15 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
     Returns
     -------
     con : array | list of array
-        Computed connectivity measure(s). The shape of each array is either
-        (n_signals, n_signals, n_freqs) mode: 'multitaper' or 'fourier'
-        (n_signals, n_signals, n_freqs, n_times) mode: 'cwt_morlet'
+        Computed connectivity measure(s). Either an instance of
+        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
+        The shape of each connectivity dataset is either
+        (n_signals ** 2, n_freqs) mode: 'multitaper' or 'fourier'
+        (n_signals ** 2, n_freqs, n_times) mode: 'cwt_morlet'
         when "indices" is None, or
         (n_con, n_freqs) mode: 'multitaper' or 'fourier'
         (n_con, n_freqs, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
-    freqs : array
-        Frequency points at which the connectivity was computed.
-    times : array
-        Time points for which the connectivity was computed.
-    n_epochs : int
-        Number of epochs used for computation.
-    n_tapers : int
-        The number of DPSS tapers used. Only defined in 'multitaper' mode.
-        Otherwise None is returned.
 
     Notes
     -----
@@ -906,8 +903,15 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
 
         con.append(this_con)
 
+    freqs_used = freqs
+    if faverage:
+        # for each band we return the frequencies that were averaged
+        freqs = [np.mean(x) for x in freqs_bands]
+        freqs_used = freqs_bands
+
     if indices is None:
         # return all-to-all connectivity matrices
+        # raveled into a 1D array
         logger.info('    assembling connectivity matrix')
         con_flat = con
         con = list()
@@ -916,19 +920,46 @@ def spectral_connectivity(data, method='coh', indices=None, sfreq=2 * np.pi,
                                 this_con_flat.shape[1:],
                                 dtype=this_con_flat.dtype)
             this_con[indices_use] = this_con_flat
+
+            # ravel 2D connectivity into a 1D array
+            # while keeping other dimensions
+            this_con = this_con.reshape((n_signals ** 2,) +
+                                        this_con_flat.shape[1:])
             con.append(this_con)
+    # number of nodes in the original data,
+    n_nodes = n_signals
+
+    # create a list of connectivity containers
+    conn_list = []
+    for _con in con:
+        kwargs = dict(data=_con,
+                      names=names,
+                      freqs=freqs,
+                      method=method,
+                      n_nodes=n_nodes,
+                      spec_method=mode,
+                      indices=indices,
+                      n_epochs_used=n_epochs,
+                      freqs_used=freqs_used,
+                      times_used=times,
+                      n_tapers=n_tapers,
+                      )
+        # create the connectivity container
+        if mode in ['multitaper', 'fourier']:
+            klass = SpectralConnectivity
+        else:
+            assert mode == 'cwt_morlet'
+            klass = SpectroTemporalConnectivity
+            kwargs.update(times=times)
+        conn_list.append(klass(**kwargs))
 
     logger.info('[Connectivity computation done]')
 
     if n_methods == 1:
         # for a single method return connectivity directly
-        con = con[0]
+        conn_list = conn_list[0]
 
-    if faverage:
-        # for each band we return the frequencies that were averaged
-        freqs = freqs_bands
-
-    return con, freqs, times, n_epochs, n_tapers
+    return conn_list
 
 
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,

@@ -9,6 +9,7 @@ Dependencies
 * ``mne`` (>=0.23)
 * ``numpy`` (>=1.14)
 * ``scipy`` (>=1.5.0 for certain operations with EEGLAB data)
+* ``xarray`` (>=0.18)
 * ``joblib`` (>=1.0.0)
 * ``scikit-learn`` (>=0.24.2)
 * ``pandas`` (>=0.23.4, optional, for generating event statistics)
