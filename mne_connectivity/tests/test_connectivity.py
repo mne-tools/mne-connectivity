@@ -16,30 +16,19 @@ from mne_connectivity import (
 from mne_connectivity.io import read_connectivity
 
 
-@pytest.mark.parametrize(
-    'conn_cls', [Connectivity, EpochConnectivity,
-                 SpectralConnectivity,
-                 TemporalConnectivity,
-                 SpectroTemporalConnectivity,
-                 EpochTemporalConnectivity,
-                 EpochSpectralConnectivity,
-                 EpochSpectroTemporalConnectivity],
-)
-def test_connectivity_containers(conn_cls):
-    data = [
-        [1, 0, 0],
-        [3, 4, 5],
-        [0, 1, 2],
-    ]
-    bad_numpy_input = np.zeros((3, 3, 4, 5))
+def _prep_correct_connectivity_input(conn_cls, n_nodes=3, symmetric=False,
+                                     n_epochs=4):
     correct_numpy_shape = []
-    bad_indices = ([1, 0], [2])
 
     extra_kwargs = dict()
     if conn_cls.is_epoched:
-        correct_numpy_shape.append(4)
-        bad_numpy_input = np.zeros((3, 3, 3, 4, 5))
-    correct_numpy_shape.append(4)
+        correct_numpy_shape.append(n_epochs)
+
+    if symmetric:
+        correct_numpy_shape.append((n_nodes + 1) * n_nodes // 2)
+    else:
+        correct_numpy_shape.append(n_nodes**2)
+
     if conn_cls in (SpectralConnectivity, SpectroTemporalConnectivity,
                     EpochSpectralConnectivity,
                     EpochSpectroTemporalConnectivity):
@@ -50,6 +39,37 @@ def test_connectivity_containers(conn_cls):
                     EpochSpectroTemporalConnectivity):
         extra_kwargs['times'] = np.arange(3)
         correct_numpy_shape.append(3)
+
+    return correct_numpy_shape, extra_kwargs
+
+
+@pytest.mark.parametrize(
+    'conn_cls', [Connectivity, EpochConnectivity,
+                 SpectralConnectivity,
+                 TemporalConnectivity,
+                 SpectroTemporalConnectivity,
+                 EpochTemporalConnectivity,
+                 EpochSpectralConnectivity,
+                 EpochSpectroTemporalConnectivity],
+)
+def test_connectivity_containers(conn_cls):
+    """Test connectivity classes."""
+    n_epochs = 4
+    n_nodes = 3
+    data = [
+        [1, 0, 0],
+        [3, 4, 5],
+        [0, 1, 2],
+    ]
+    bad_numpy_input = np.zeros((3, 3, 4, 5))
+    bad_indices = ([1, 0], [2])
+
+    if conn_cls.is_epoched:
+        bad_numpy_input = np.zeros((3, 3, 3, 4, 5))
+
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, symmetric=False, n_epochs=n_epochs
+    )
 
     correct_numpy_input = np.ones(correct_numpy_shape)
 
@@ -68,7 +88,7 @@ def test_connectivity_containers(conn_cls):
                  n_nodes=2, **extra_kwargs)
 
     indices = ([0, 1], [1, 0])
-    conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+    conn = conn_cls(data=correct_numpy_input, n_nodes=3, **extra_kwargs)
 
     # test that get_data works as intended
     with pytest.raises(ValueError, match="Invalid value for the "
@@ -85,11 +105,38 @@ def test_connectivity_containers(conn_cls):
                 zip(orig_names, new_names)
                 if name_2 != 'new_name'])
 
-    conn2 = conn_cls(data=correct_numpy_input, n_nodes=2, indices=indices,
+    conn2 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
                      **extra_kwargs)
     conn3 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
                      **extra_kwargs)
     np.testing.assert_array_equal(conn2.get_data(), conn3.get_data())
+
+    # test symmetric input
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=3, symmetric=True
+    )
+    correct_numpy_input = np.ones(correct_numpy_shape)
+
+    with pytest.raises(ValueError, match='If "indices" is "symmetric"'):
+        conn_cls(data=correct_numpy_input, n_nodes=2,
+                 indices='symmetric',
+                 **extra_kwargs)
+    symm_conn = conn_cls(data=correct_numpy_input, n_nodes=n_nodes,
+                         indices='symmetric',
+                         **extra_kwargs)
+    assert symm_conn.n_nodes == n_nodes
+
+    # raveled shape should be the same
+    assert_array_equal(symm_conn.get_data().shape, correct_numpy_shape)
+
+    # should be ([n_epochs], n_nodes, n_nodes, ...) dense shape
+    dense_shape = []
+    if conn_cls.is_epoched:
+        dense_shape.append(n_epochs)
+    dense_shape.extend([n_nodes, n_nodes])
+    assert all([symm_conn.get_data(
+        output='dense').shape[idx] == dense_shape[idx]
+        for idx in range(len(dense_shape))])
 
 
 @pytest.mark.parametrize(
@@ -102,6 +149,7 @@ def test_connectivity_containers(conn_cls):
                  EpochSpectroTemporalConnectivity],
 )
 def test_io(conn_cls, tmpdir):
+    """Test writing and reading connectivity data."""
     correct_numpy_shape = []
     extra_kwargs = dict()
     if conn_cls.is_epoched:

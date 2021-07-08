@@ -8,6 +8,43 @@ from .base import (
 )
 
 
+def _xarray_to_conn(array, cls_func):
+    """Create connectivity class from xarray.
+
+    Parameters
+    ----------
+    array : xarray.DataArray
+        Xarray containing the connectivity data.
+    cls_func : Connectivity class
+        The function of the connectivity class to use.
+
+    Returns
+    -------
+    conn : instance of Connectivity class
+        An instantiated connectivity class.
+    """
+    # get the data
+    data = array.values
+
+    # get the dimensions
+    coords = array.coords
+
+    # attach times and frequencies
+    if 'times' in coords:
+        array.attrs['times'] = coords.get('times')
+    if 'freqs' in coords:
+        array.attrs['freqs'] = coords.get('freqs')
+
+    # get the names
+    names = array.attrs['node_names']
+
+    # create the connectivity class
+    conn = cls_func(
+        data=data, names=names, **array.attrs
+    )
+    return conn
+
+
 def read_connectivity(fname):
     """Read connectivity data from netCDF file.
     Parameters
@@ -27,25 +64,10 @@ def read_connectivity(fname):
         if not isinstance(val, list):
             if val == 'n/a':
                 conn_da.attrs[key] = None
-
-    # get the data
-    data = conn_da.values
-
-    # get the dimensions
-    coords = conn_da.coords
-
-    # attach times and frequencies
-    if 'times' in coords:
-        conn_da.attrs['times'] = coords.get('times')
-    if 'freqs' in coords:
-        conn_da.attrs['freqs'] = coords.get('freqs')
-
-    # get the names
-    names = conn_da.attrs['node_names']
-
     # get the name of the class
     data_structure_name = conn_da.attrs.pop('data_structure')
 
+    # map class name to its actual class
     conn_cls = {
         'Connectivity': Connectivity,
         'TemporalConnectivity': TemporalConnectivity,
@@ -56,10 +78,8 @@ def read_connectivity(fname):
         'EpochSpectralConnectivity': EpochSpectralConnectivity,
         'EpochSpectroTemporalConnectivity': EpochSpectroTemporalConnectivity
     }
-
     cls_func = conn_cls[data_structure_name]
 
-    conn = cls_func(
-        data=data, names=names, **conn_da.attrs
-    )
+    # get the data as a new connectivity container
+    conn = _xarray_to_conn(conn_da, cls_func)
     return conn

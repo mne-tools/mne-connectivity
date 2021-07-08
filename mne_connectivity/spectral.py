@@ -869,23 +869,23 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
     # compute final connectivity scores
     con = list()
-    for method, n_args in zip(con_methods, n_comp_args):
+    for conn_method, n_args in zip(con_methods, n_comp_args):
         # future estimators will need to be handled here
         if n_args == 3:
             # compute all scores at once
-            method.compute_con(slice(0, n_cons), n_epochs)
+            conn_method.compute_con(slice(0, n_cons), n_epochs)
         elif n_args == 5:
             # compute scores block-wise to save memory
             for i in range(0, n_cons, block_size):
                 con_idx = slice(i, i + block_size)
                 psd_xx = psd[idx_map[0][con_idx]]
                 psd_yy = psd[idx_map[1][con_idx]]
-                method.compute_con(con_idx, n_epochs, psd_xx, psd_yy)
+                conn_method.compute_con(con_idx, n_epochs, psd_xx, psd_yy)
         else:
             raise RuntimeError('This should never happen.')
 
         # get the connectivity scores
-        this_con = method.con_scores
+        this_con = conn_method.con_scores
 
         if this_con.shape[0] != n_cons:
             raise ValueError('First dimension of connectivity scores must be '

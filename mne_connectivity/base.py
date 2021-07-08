@@ -4,7 +4,8 @@ from copy import copy
 
 from mne.utils import (sizeof_fmt, object_size,
                        _validate_type, _check_option,
-                       copy_function_doc_to_method_doc)
+                       copy_function_doc_to_method_doc,
+                       _check_combine)
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import (plot_connectivity_circle)
 
@@ -19,6 +20,49 @@ class TimeMixin:
     @property
     def times(self):
         return self.xarray.coords.get('times').values.tolist()
+
+
+class EpochMixin:
+    def combine(self, combine='mean'):
+        """[summary]
+
+        Parameters
+        ----------
+        combine : 'mean' | 'median' | callable
+            How to combine correlation estimates across epochs.
+            Default is 'mean'. If callable, it must accept one
+            positional input. For example::
+
+                combine = lambda data: np.median(data, axis=0)
+
+        Returns
+        -------
+        conn : instance of Connectivity
+            The non-epoched connectivity data structure.
+        """
+        from mne_connectivity.io import _xarray_to_conn
+
+        fun = _check_combine(combine, valid=('mean', 'median'))
+
+        # apply function over the dataset
+        # apply function over the
+        new_xr = xr.apply_ufunc(fun, self.xarray,
+                                input_core_dims=[['epochs']],
+                                vectorize=True)
+        new_xr.attrs = self.xarray.attrs
+
+        # map class name to its actual class
+        conn_cls = {
+            'EpochConnectivity': Connectivity,
+            'EpochTemporalConnectivity': TemporalConnectivity,
+            'EpochSpectralConnectivity': SpectralConnectivity,
+            'EpochSpectroTemporalConnectivity': SpectroTemporalConnectivity
+        }
+        cls_func = conn_cls[self.__class__.__name__]
+
+        # convert new xarray to non-Epoch data structure
+        conn = _xarray_to_conn(new_xr, cls_func)
+        return conn
 
 
 @fill_doc
@@ -55,6 +99,12 @@ class _Connectivity():
     full connectivity structure is computed, or a subset of the nodes
     (equal to the length of the indices passed in).
 
+    Since we store connectivity data as a raveled array, one can
+    easily optimize the storage of a "symmetric" connectivity data.
+    One can use numpy to convert a full all-to-all connectivity
+    into a upper triangular portion, and set ``indices='symmetric'``.
+    This would reduce the RAM needed in half.
+
     The underlying data structure is an ``xarray.DataArray``,
     with a similar API to ``xarray``. We provide support for storing
     connectivity data in a subset of nodes. Thus the underlying
@@ -69,18 +119,16 @@ class _Connectivity():
                  n_nodes, **kwargs):
 
         if isinstance(indices, str) and \
-                indices not in ['all']:
+                indices not in ['all', 'symmetric']:
             raise ValueError(f'Indices can only be '
                              f'"all", otherwise '
                              f'should be a list of tuples. '
                              f'It cannot be {indices}.')
 
         # check the incoming data structure
-        self.method = method
-        self.indices = indices
-        self.n_nodes = n_nodes
-        self._check_data_consistency(data)
-        self._prepare_xarray(data, names=names, **kwargs)
+        self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
+        self._prepare_xarray(data, names=names, indices=indices,
+                             n_nodes=n_nodes, method=method, **kwargs)
 
     def __repr__(self) -> str:
         r = f'<{self.__class__.__name__} | '
@@ -107,9 +155,8 @@ class _Connectivity():
             start_idx = 0
         self.n_estimated_nodes = data.shape[start_idx]
 
-        return data
-
-    def _prepare_xarray(self, data, names, **kwargs):
+    def _prepare_xarray(self, data, names, indices, n_nodes, method,
+                        **kwargs):
         """Prepare xarray data structure.
 
         Parameters
@@ -119,12 +166,9 @@ class _Connectivity():
         names : [type]
             [description]
         """
-        # get the number of estimated nodes
-        data = self._get_n_estimated_nodes(data)
-
         # set node names
         if names is None:
-            names = list(map(str, range(self.n_nodes)))
+            names = list(map(str, range(n_nodes)))
 
         # the names of each first few dimensions of
         # the data depending if data is epoched or not
@@ -155,6 +199,11 @@ class _Connectivity():
                 kwargs[key] = val.tolist()
         kwargs['node_names'] = names
 
+        # set method, indices and n_nodes
+        kwargs['method'] = method
+        kwargs['indices'] = indices
+        kwargs['n_nodes'] = n_nodes
+
         # create xarray object
         xarray_obj = xr.DataArray(
             data=data,
@@ -164,7 +213,7 @@ class _Connectivity():
         )
         self._obj = xarray_obj
 
-    def _check_data_consistency(self, data):
+    def _check_data_consistency(self, data, indices, n_nodes):
         """Perform data input checks."""
         if not isinstance(data, np.ndarray):
             raise TypeError('Connectivity data must be passed in as a '
@@ -185,14 +234,30 @@ class _Connectivity():
                                    f'dimensions. Your data was '
                                    f'{data.shape} shape.')
 
+        # get the number of estimated nodes
+        self._get_n_estimated_nodes(data)
+        if self.is_epoched:
+            data_len = data.shape[1]
+        else:
+            data_len = data.shape[0]
+
         # check that the indices passed in are of the same length
-        if isinstance(self.indices, tuple):
-            if len(self.indices[0]) != len(self.indices[1]):
+        if isinstance(indices, tuple):
+            if len(indices[0]) != len(indices[1]):
                 raise ValueError(f'If indices are passed in '
                                  f'then they must be the same '
                                  f'length. They are right now '
-                                 f'{len(self.indices[0])} and '
-                                 f'{len(self.indices[1])}.')
+                                 f'{len(indices[0])} and '
+                                 f'{len(indices[1])}.')
+        elif indices == 'symmetric':
+            expected_len = ((n_nodes + 1) * n_nodes) // 2
+            if data_len != expected_len:
+                raise ValueError(f'If "indices" is "symmetric", then '
+                                 f'connectivity data should be the '
+                                 f'upper-triangular portion. There '
+                                 f'are {data_len} estimated connections. '
+                                 f'But there should be {expected_len} '
+                                 f'estimated connections.')
 
     @property
     def _data(self):
@@ -221,6 +286,18 @@ class _Connectivity():
     def shape(self):
         """Shape of raveled connectivity."""
         return self.xarray.shape
+
+    @property
+    def n_nodes(self):
+        return self.attrs['n_nodes']
+
+    @property
+    def method(self):
+        return self.attrs['method']
+
+    @property
+    def indices(self):
+        return self.attrs['indices']
 
     @property
     def names(self):
@@ -294,6 +371,18 @@ class _Connectivity():
                     data[:, row_idx, col_idx, ...] = self._data
                 else:
                     data[row_idx, col_idx, ...] = self._data
+            elif self.indices == 'symmetric':
+                data = np.zeros(new_shape)
+
+                # get the upper/lower triangular indices
+                row_triu_inds, col_triu_inds = np.triu_indices(
+                    self.n_nodes, k=0)
+                if self.is_epoched:
+                    data[:, row_triu_inds, col_triu_inds, ...] = self._data
+                    data[:, col_triu_inds, row_triu_inds, ...] = self._data
+                else:
+                    data[row_triu_inds, col_triu_inds, ...] = self._data
+                    data[col_triu_inds, row_triu_inds, ...] = self._data
             else:
                 data = self._data.reshape(new_shape)
 
@@ -401,7 +490,7 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     """
 
     def __init__(self, data, freqs, n_nodes, names=None,
-                 indices=None, method=None, spec_method=None,
+                 indices='all', method=None, spec_method=None,
                  n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
                          indices=indices, n_nodes=n_nodes,
@@ -424,7 +513,7 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     %(n_epochs_used)s
     """
 
-    def __init__(self, data, times, n_nodes, names=None, indices=None,
+    def __init__(self, data, times, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
                          n_nodes=n_nodes, indices=indices,
@@ -450,7 +539,7 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     """
 
     def __init__(self, data, freqs, times, n_nodes, names=None,
-                 indices=None, method=None,
+                 indices='all', method=None,
                  spec_method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method, indices=indices,
                          n_nodes=n_nodes, freqs=freqs,
@@ -459,7 +548,7 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
 
 
 @fill_doc
-class EpochSpectralConnectivity(SpectralConnectivity):
+class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
     """Spectral connectivity container over Epochs.
 
     Parameters
@@ -476,7 +565,7 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     is_epoched = True
 
     def __init__(self, data, freqs, n_nodes, names=None,
-                 indices=None, method=None,
+                 indices='all', method=None,
                  spec_method=None, **kwargs):
         super().__init__(
             data, freqs=freqs, names=names, indices=indices,
@@ -485,7 +574,7 @@ class EpochSpectralConnectivity(SpectralConnectivity):
 
 
 @fill_doc
-class EpochTemporalConnectivity(TemporalConnectivity):
+class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     """Temporal connectivity container over Epochs.
 
     Parameters
@@ -501,14 +590,16 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     is_epoched = True
 
     def __init__(self, data, times, n_nodes, names=None,
-                 indices=None, method=None, **kwargs):
+                 indices='all', method=None, **kwargs):
         super().__init__(data, times=times, names=names,
                          indices=indices, n_nodes=n_nodes,
                          method=method, **kwargs)
 
 
 @fill_doc
-class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
+class EpochSpectroTemporalConnectivity(
+    SpectroTemporalConnectivity, EpochMixin
+):
     """Spectrotemporal connectivity container over Epochs.
 
     Parameters
@@ -526,7 +617,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     is_epoched = True
 
     def __init__(self, data, freqs, times, n_nodes,
-                 names=None, indices=None, method=None,
+                 names=None, indices='all', method=None,
                  spec_method=None, **kwargs):
         super().__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
@@ -535,7 +626,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
 
 
 @fill_doc
-class Connectivity(_Connectivity):
+class Connectivity(_Connectivity, EpochMixin):
     """Connectivity container without frequency or time component.
 
     Parameters
@@ -548,7 +639,7 @@ class Connectivity(_Connectivity):
     %(n_epochs_used)s
     """
 
-    def __init__(self, data, n_nodes, names=None, indices=None,
+    def __init__(self, data, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
                          n_nodes=n_nodes, indices=indices,
@@ -557,7 +648,7 @@ class Connectivity(_Connectivity):
 
 
 @fill_doc
-class EpochConnectivity(_Connectivity):
+class EpochConnectivity(_Connectivity, EpochMixin):
     """Epoch connectivity container.
 
     Parameters
@@ -573,7 +664,7 @@ class EpochConnectivity(_Connectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, n_nodes, names=None, indices=None,
+    def __init__(self, data, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
         super().__init__(data, names=names, method=method,
                          n_nodes=n_nodes, indices=indices,

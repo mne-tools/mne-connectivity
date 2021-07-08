@@ -9,13 +9,13 @@ import numpy as np
 
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
-from mne.utils import verbose, _check_combine, _check_option
+from mne.utils import verbose, _check_option
 
 from .base import EpochTemporalConnectivity
 
 
 @verbose
-def envelope_correlation(data, indices=None, names=None, combine='mean',
+def envelope_correlation(data, indices=None, names=None,
                          orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
@@ -31,18 +31,11 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         it's assumed the Hilbert has already been applied.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed.
+        connectivity. If None, all connections are computed, which
+        results in 'symmetric' Connectivity data.
     names : list | array-like | None
         A list of names associated with the signals in ``data``.
         If None, will be a list of indices of the number of nodes.
-    combine : 'mean' | callable | None
-        How to combine correlation estimates across epochs.
-        Default is 'mean'. Can be None to return without combining.
-        If callable, it must accept one positional input.
-        For example::
-
-            combine = lambda data: np.median(data, axis=0)
-
     orthogonalize : 'pairwise' | False
         Whether to orthogonalize with the pairwise method or not.
         Defaults to 'pairwise'. Note that when False,
@@ -68,14 +61,18 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     -------
     corr : instance of Connectivity
         The pairwise orthogonal envelope correlations.
-        This matrix is symmetric. If combine is None, the array
+        This matrix is symmetric. The array
         with have three dimensions, the first of which is ``n_epochs``.
-        The data shape would be ``([n_epochs, ]n_nodes ** 2)``
+        The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``
 
     Notes
     -----
     This function computes the power envelope correlation between
     orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
+
+    If you would like to combine Epochs after the fact using some
+    function over the Epochs axis, see the ``combine`` function from
+    Epoch Connectivity classes.
 
     References
     ----------
@@ -83,10 +80,6 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     """
     _check_option('orthogonalize', orthogonalize, (False, 'pairwise'))
     from scipy.signal import hilbert
-    if combine is not None:
-        fun = _check_combine(combine, valid=('mean',))
-    else:  # None
-        fun = np.array
 
     corrs = list()
 
@@ -159,33 +152,32 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
 
     # apply function on correlation structure
     n_epochs = len(corrs)
-    corr = fun(corrs)
 
-    if combine is None:
-        # ravel from 2D connectivity into 1D array
-        # over all epochs
-        corr = np.array([_corr.flatten() for _corr in corr])
-    else:
-        # ravel N x N array into 1D array
-        corr = corr.flatten()
+    # ravel from 2D connectivity into 1D array
+    # over all epochs
+    corr = np.array([_corr.flatten() for _corr in corrs])
 
     # create the connectivity container
     times = None
 
-    # create epochs axis
-    if combine is not None:
-        corr = corr[np.newaxis, ...]
-
     # create time axis
     corr = corr[..., np.newaxis]
 
-    print(corr.shape)
+    if indices is None:
+        indices = 'symmetric'
+
+    # only get the upper-triu indices
+    triu_inds = np.triu_indices(n_nodes, k=0)
+    raveled_triu_inds = np.ravel_multi_index(
+        triu_inds, dims=(n_nodes, n_nodes))
+    corr = corr[:, raveled_triu_inds, ...]
+
     conn = EpochTemporalConnectivity(
         data=corr,
         names=names,
         times=times,
         method='envelope correlation',
-        indices=indices,
+        indices='symmetric',
         n_epochs_used=n_epochs,
         n_nodes=n_nodes,
     )
