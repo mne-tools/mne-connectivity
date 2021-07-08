@@ -201,8 +201,8 @@ class _Connectivity():
 
         # set method, indices and n_nodes
         if isinstance(indices, tuple):
-            indices[0] = list(indices[0])
-            indices[1] = list(indices[1])
+            new_indices = (list(indices[0]), list(indices[1]))
+            indices = new_indices
         kwargs['method'] = method
         kwargs['indices'] = indices
         kwargs['n_nodes'] = n_nodes
