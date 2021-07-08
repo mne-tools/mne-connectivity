@@ -1,11 +1,9 @@
 import xarray as xr
 
-from .base import (
-    EpochConnectivity, Connectivity,
-    TemporalConnectivity, SpectralConnectivity,
-    SpectroTemporalConnectivity, EpochTemporalConnectivity,
-    EpochSpectralConnectivity, EpochSpectroTemporalConnectivity
-)
+from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
+                   EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
+                   SpectralConnectivity, SpectroTemporalConnectivity,
+                   TemporalConnectivity)
 
 
 def _xarray_to_conn(array, cls_func):

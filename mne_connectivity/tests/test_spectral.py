@@ -1,14 +1,12 @@
 import numpy as np
-from numpy.testing import (
-    assert_array_almost_equal, assert_array_less,
-    assert_allclose
-)
+from numpy.testing import (assert_allclose, assert_array_almost_equal,
+                           assert_array_less)
 import pytest
-
 from mne import EpochsArray, SourceEstimate, create_info
-from mne_connectivity import spectral_connectivity, SpectralConnectivity
-from mne_connectivity.spectral import _CohEst, _get_n_epochs
 from mne.filter import filter_data
+
+from mne_connectivity import SpectralConnectivity, spectral_connectivity
+from mne_connectivity.spectral import _CohEst, _get_n_epochs
 
 
 def _stc_gen(data, sfreq, tmin, combo=False):

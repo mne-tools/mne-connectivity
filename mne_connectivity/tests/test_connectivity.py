@@ -2,17 +2,18 @@
 #
 # License: BSD (3-clause)
 
-import pytest
 import os
 
 import numpy as np
+import pytest
 from numpy.testing import assert_array_equal
 
-from mne_connectivity import (
-    Connectivity, EpochConnectivity,
-    SpectralConnectivity, TemporalConnectivity,
-    SpectroTemporalConnectivity, EpochTemporalConnectivity,
-    EpochSpectralConnectivity, EpochSpectroTemporalConnectivity)
+from mne_connectivity import (Connectivity, EpochConnectivity,
+                              EpochSpectralConnectivity,
+                              EpochSpectroTemporalConnectivity,
+                              EpochTemporalConnectivity, SpectralConnectivity,
+                              SpectroTemporalConnectivity,
+                              TemporalConnectivity)
 from mne_connectivity.io import read_connectivity
 
 

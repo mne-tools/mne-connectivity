@@ -11,10 +11,9 @@
 # License: Simplified BSD
 
 import numpy as np
-
-from mne.io.pick import _picks_to_idx
 from mne.io.constants import FIFF
-from mne.utils import (verbose, fill_doc, _validate_type)
+from mne.io.pick import _picks_to_idx
+from mne.utils import _validate_type, fill_doc, verbose
 
 verbose_dec = verbose
 FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
@@ -45,7 +44,6 @@ def plot_sensors_connectivity(info, con, picks=None,
     _validate_type(info, "info")
 
     from mne.viz.backends.renderer import _get_renderer
-
     from mne_connectivity.base import _Connectivity
 
     if isinstance(con, _Connectivity):

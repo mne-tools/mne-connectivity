@@ -8,14 +8,12 @@
 
 __version__ = '0.2.dev0'
 
-from .envelope import envelope_correlation
+from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
+                   EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
+                   SpectralConnectivity, SpectroTemporalConnectivity,
+                   TemporalConnectivity)
 from .effective import phase_slope_index
+from .envelope import envelope_correlation
+from .io import read_connectivity
 from .spectral import spectral_connectivity
-from .utils import seed_target_indices, degree, check_indices
-from .base import (
-    Connectivity,
-    TemporalConnectivity, SpectralConnectivity,
-    SpectroTemporalConnectivity, EpochConnectivity,
-    EpochTemporalConnectivity, EpochSpectralConnectivity,
-    EpochSpectroTemporalConnectivity
-)
+from .utils import check_indices, degree, seed_target_indices

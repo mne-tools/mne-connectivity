@@ -7,11 +7,10 @@
 # License: Simplified BSD
 
 
-from itertools import cycle
 from functools import partial
+from itertools import cycle
 
 import numpy as np
-
 from mne.viz.utils import plt_show
 
 
@@ -220,10 +219,9 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the
     figure labels, title, and legend may be cut off in the output figure.
     """
-    import matplotlib.pyplot as plt
-    import matplotlib.path as m_path
     import matplotlib.patches as m_patches
-
+    import matplotlib.path as m_path
+    import matplotlib.pyplot as plt
     from mne_connectivity.base import _Connectivity
 
     if isinstance(con, _Connectivity):

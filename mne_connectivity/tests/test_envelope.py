@@ -6,8 +6,8 @@
 # License: BSD (3-clause)
 
 import numpy as np
-from numpy.testing import assert_allclose
 import pytest
+from numpy.testing import assert_allclose
 from scipy.signal import hilbert
 
 from mne_connectivity.envelope import envelope_correlation

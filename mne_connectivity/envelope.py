@@ -6,10 +6,9 @@
 # License: BSD (3-clause)
 
 import numpy as np
-
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
-from mne.utils import verbose, _check_option
+from mne.utils import _check_option, verbose
 
 from .base import EpochTemporalConnectivity
 

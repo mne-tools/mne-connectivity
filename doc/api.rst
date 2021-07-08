@@ -47,6 +47,16 @@ listed above.
    phase_slope_index
    spectral_connectivity
 
+Other functions
+===============
+
+.. currentmodule:: mne_connectivity
+
+   .. autosummary::
+      :toctree: generated/
+   
+      read_connectivity
+
 Post-processing on connectivity
 ===============================
 

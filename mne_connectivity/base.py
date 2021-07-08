@@ -1,13 +1,13 @@
-import numpy as np
-import xarray as xr
 from copy import copy
 
-from mne.utils import (sizeof_fmt, object_size,
-                       _validate_type, _check_option,
-                       copy_function_doc_to_method_doc,
-                       _check_combine)
+import numpy as np
+import xarray as xr
+from mne.utils import (_check_combine, _check_option, _validate_type,
+                       copy_function_doc_to_method_doc, object_size,
+                       sizeof_fmt)
+
 from mne_connectivity.utils import fill_doc
-from mne_connectivity.viz import (plot_connectivity_circle)
+from mne_connectivity.viz import plot_connectivity_circle
 
 
 class SpectralMixin:
