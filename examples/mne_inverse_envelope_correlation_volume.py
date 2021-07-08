@@ -78,6 +78,9 @@ stcs = apply_lcmv_epochs(epochs, filters, return_generator=True)
 corr = envelope_correlation(stcs, verbose=True)
 del stcs, epochs, filters
 
+# average over epochs
+corr = corr.combine(combine='mean')
+
 ##############################################################################
 # Compute the degree and plot it
 # ------------------------------
