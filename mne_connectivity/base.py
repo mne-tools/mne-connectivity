@@ -1,5 +1,6 @@
 import numpy as np
 import xarray as xr
+from copy import copy
 
 from mne.utils import (sizeof_fmt, object_size,
                        _validate_type, _check_option,
@@ -88,9 +89,9 @@ class _Connectivity():
             r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])
         if 'times' in self.dims:
             r += "time : [%f, %f], " % (self.times[0], self.times[-1])
-        r += ", nave : %d" % self.n_epochs_used
-        r += ', nodes, n_estimated : %d, %d' % (self.n_nodes,
-                                                self.n_estimated_nodes)
+        r += f", nave : {self.n_epochs_used}"
+        r += f', nodes, n_estimated : {self.n_nodes}, ' \
+             f'{self.n_estimated_nodes}'
         r += ', ~%s' % (sizeof_fmt(self._size),)
         r += '>'
         return r
@@ -359,6 +360,9 @@ class _Connectivity():
         indices = self.indices
         n_nodes = self.n_nodes
 
+        # create a copy of the old attributes
+        old_attrs = copy(self.attrs)
+
         # assign these to xarray's attrs
         self.attrs['method'] = method
         self.attrs['indices'] = indices
@@ -367,8 +371,17 @@ class _Connectivity():
         # save the name of the connectivity structure
         self.attrs['data_structure'] = self.__class__.__name__
 
+        # netCDF does not support 'None'
+        # so map these to 'n/a'
+        for key, val in self.attrs.items():
+            if val is None:
+                self.attrs[key] = 'n/a'
+
         # save as a netCDF file
-        self.xarray.to_netcdf(fname)
+        self.xarray.to_netcdf(fname, mode='w')
+
+        # re-set old attributes
+        self.xarray.attrs = old_attrs
 
 
 @fill_doc

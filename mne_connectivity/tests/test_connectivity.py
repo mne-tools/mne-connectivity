@@ -3,14 +3,17 @@
 # License: BSD (3-clause)
 
 import pytest
+import os
 
 import numpy as np
+from numpy.testing import assert_array_equal
 
 from mne_connectivity import (
     Connectivity, EpochConnectivity,
     SpectralConnectivity, TemporalConnectivity,
     SpectroTemporalConnectivity, EpochTemporalConnectivity,
     EpochSpectralConnectivity, EpochSpectroTemporalConnectivity)
+from mne_connectivity.io import read_connectivity
 
 
 @pytest.mark.parametrize(
@@ -87,3 +90,49 @@ def test_connectivity_containers(conn_cls):
     conn3 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
                      **extra_kwargs)
     np.testing.assert_array_equal(conn2.get_data(), conn3.get_data())
+
+
+@pytest.mark.parametrize(
+    'conn_cls', [Connectivity, EpochConnectivity,
+                 SpectralConnectivity,
+                 TemporalConnectivity,
+                 SpectroTemporalConnectivity,
+                 EpochTemporalConnectivity,
+                 EpochSpectralConnectivity,
+                 EpochSpectroTemporalConnectivity],
+)
+def test_io(conn_cls, tmpdir):
+    correct_numpy_shape = []
+    extra_kwargs = dict()
+    if conn_cls.is_epoched:
+        correct_numpy_shape.append(4)
+    correct_numpy_shape.append(4)
+    if conn_cls in (SpectralConnectivity, SpectroTemporalConnectivity,
+                    EpochSpectralConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['freqs'] = np.arange(4)
+        correct_numpy_shape.append(4)
+    if conn_cls in (TemporalConnectivity, SpectroTemporalConnectivity,
+                    EpochTemporalConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['times'] = np.arange(3)
+        correct_numpy_shape.append(3)
+
+    correct_numpy_input = np.ones(correct_numpy_shape)
+
+    # create the connectivity data structure
+    conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+
+    # temporary conn save
+    fname = os.path.join(tmpdir, 'connectivity.nc')
+    conn.save(fname)
+
+    # re-read the file in
+    new_conn = read_connectivity(fname)
+
+    # assert these two objects are the same
+    assert conn.names == new_conn.names
+    assert conn.dims == new_conn.dims
+    for key, val in conn.coords.items():
+        assert_array_equal(val, new_conn.coords[key])
+    assert_array_equal(conn.get_data(), new_conn.get_data())
