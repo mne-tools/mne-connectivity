@@ -13,18 +13,24 @@ from mne_connectivity.viz import plot_connectivity_circle
 class SpectralMixin:
     @property
     def freqs(self):
+        """The frequency points of the connectivity data.
+
+        If these are computed over a frequency band, it will
+        be the median frequency of the frequency band.
+        """
         return self.xarray.coords.get('freqs').values.tolist()
 
 
 class TimeMixin:
     @property
     def times(self):
+        """The time points of the connectivity data."""
         return self.xarray.coords.get('times').values.tolist()
 
 
 class EpochMixin:
     def combine(self, combine='mean'):
-        """[summary]
+        """Combine connectivity data over epochs.
 
         Parameters
         ----------
@@ -45,7 +51,6 @@ class EpochMixin:
         fun = _check_combine(combine, valid=('mean', 'median'))
 
         # apply function over the dataset
-        # apply function over the
         new_xr = xr.apply_ufunc(fun, self.xarray,
                                 input_core_dims=[['epochs']],
                                 vectorize=True)
@@ -292,14 +297,31 @@ class _Connectivity():
 
     @property
     def n_nodes(self):
+        """The number of nodes in the dataset.
+
+        Even if ``indices`` defines a subset of nodes that
+        were computed, this should be the total number of
+        nodes in the original dataset.
+        """
         return self.attrs['n_nodes']
 
     @property
     def method(self):
+        """The method used to compute connectivity."""
         return self.attrs['method']
 
     @property
     def indices(self):
+        """Indices of connectivity data.
+
+        Returns
+        -------
+        indices : str | tuple of lists
+            Either 'all' for all-to-all connectivity,
+            'symmetric' for symmetric all-to-all connectivity,
+            or a tuple of lists representing the node-to-nodes
+            that connectivity was computed.
+        """
         return self.attrs['indices']
 
     @property
@@ -469,7 +491,7 @@ class _Connectivity():
         self.attrs['n_nodes'] = n_nodes
 
         # save the name of the connectivity structure
-        self.attrs['data_structure'] = self.__class__.__name__
+        self.attrs['data_structure'] = str(self.__class__.__name__)
 
         # netCDF does not support 'None'
         # so map these to 'n/a'
