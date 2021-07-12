@@ -61,7 +61,7 @@ def envelope_correlation(data, indices=None, names=None,
     corr : instance of Connectivity
         The pairwise orthogonal envelope correlations.
         This matrix is symmetric. The array
-        with have three dimensions, the first of which is ``n_epochs``.
+        will have three dimensions, the first of which is ``n_epochs``.
         The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``
 
     Notes
