@@ -500,9 +500,9 @@ class _Connectivity():
                 self.attrs[key] = 'n/a'
 
         # save as a netCDF file
-        print(fname)
-        print(self.xarray.attrs)
-        self.xarray.to_netcdf(fname, mode='w')
+        # note this requires the netcdf4 python library
+        self.xarray.to_netcdf(fname, mode='w', format='NETCDF4',
+                              engine='netcdf4')
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
