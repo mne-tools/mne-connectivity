@@ -14,7 +14,7 @@ from .base import EpochTemporalConnectivity
 
 
 @verbose
-def envelope_correlation(data, indices=None, names=None,
+def envelope_correlation(data, names=None,
                          orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
@@ -28,10 +28,6 @@ def envelope_correlation(data, indices=None, names=None,
         object (and ``stc.data`` will be used). If it's float data,
         the Hilbert transform will be applied; if it's complex data,
         it's assumed the Hilbert has already been applied.
-    indices : tuple of array | None
-        Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed, which
-        results in 'symmetric' Connectivity data.
     names : list | array-like | None
         A list of names associated with the signals in ``data``.
         If None, will be a list of indices of the number of nodes.
@@ -113,12 +109,17 @@ def envelope_correlation(data, indices=None, names=None,
         if log:
             data_mag *= data_mag
             np.log(data_mag, out=data_mag)
+
         # subtract means
         data_mag_nomean = data_mag - np.mean(data_mag, axis=-1, keepdims=True)
+
         # compute variances using linalg.norm (square, sum, sqrt) since mean=0
         data_mag_std = np.linalg.norm(data_mag_nomean, axis=-1)
         data_mag_std[data_mag_std == 0] = 1
         corr = np.empty((n_nodes, n_nodes))
+
+        # loop over each signal in this specific epoch
+        # which is now (n_signals, n_times) and compute envelope
         for li, label_data in enumerate(epoch_data):
             if orthogonalize is False:  # the new code
                 label_data_orth = data_mag[li]
@@ -136,6 +137,7 @@ def envelope_correlation(data, indices=None, names=None,
                                            keepdims=True)
                 label_data_orth_std = np.linalg.norm(label_data_orth, axis=-1)
                 label_data_orth_std[label_data_orth_std == 0] = 1
+
             # correlation is dot product divided by variances
             corr[li] = np.sum(label_data_orth * data_mag_nomean, axis=1)
             corr[li] /= data_mag_std
@@ -161,9 +163,6 @@ def envelope_correlation(data, indices=None, names=None,
 
     # create time axis
     corr = corr[..., np.newaxis]
-
-    if indices is None:
-        indices = 'symmetric'
 
     # only get the upper-triu indices
     triu_inds = np.triu_indices(n_nodes, k=0)
