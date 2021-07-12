@@ -45,10 +45,12 @@ def _xarray_to_conn(array, cls_func):
 
 def read_connectivity(fname):
     """Read connectivity data from netCDF file.
+
     Parameters
     ----------
     fname : str | pathlib.Path
         The filepath.
+
     Returns
     -------
     conn : instance of Connectivity
