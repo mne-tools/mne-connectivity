@@ -38,9 +38,9 @@ class EpochMixin:
         Returns
         -------
         conn : instance of Connectivity
-            The non-epoched connectivity data structure.
+            The combined connectivity data structure.
         """
-        from mne_connectivity.io import _xarray_to_conn
+        from .io import _xarray_to_conn
 
         fun = _check_combine(combine, valid=('mean', 'median'))
 
@@ -100,9 +100,9 @@ class _Connectivity():
     (equal to the length of the indices passed in).
 
     Since we store connectivity data as a raveled array, one can
-    easily optimize the storage of a "symmetric" connectivity data.
+    easily optimize the storage of "symmetric" connectivity data.
     One can use numpy to convert a full all-to-all connectivity
-    into a upper triangular portion, and set ``indices='symmetric'``.
+    into an upper triangular portion, and set ``indices='symmetric'``.
     This would reduce the RAM needed in half.
 
     The underlying data structure is an ``xarray.DataArray``,
@@ -257,7 +257,7 @@ class _Connectivity():
             if data_len != expected_len:
                 raise ValueError(f'If "indices" is "symmetric", then '
                                  f'connectivity data should be the '
-                                 f'upper-triangular portion. There '
+                                 f'upper-triangular part of the matrix. There '
                                  f'are {data_len} estimated connections. '
                                  f'But there should be {expected_len} '
                                  f'estimated connections.')

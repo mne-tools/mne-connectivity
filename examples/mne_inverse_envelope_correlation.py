@@ -83,7 +83,7 @@ label_ts = mne.extract_label_time_course(
 corr = envelope_correlation(label_ts, verbose=True)
 
 # average over epochs
-corr = corr.combine(combine='mean')
+corr = corr.combine()
 
 # let's plot this matrix
 fig, ax = plt.subplots(figsize=(4, 4))
