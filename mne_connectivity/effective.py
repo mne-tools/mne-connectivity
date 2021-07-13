@@ -5,10 +5,10 @@
 import copy
 
 import numpy as np
-
 from mne.utils import logger, verbose
-from .spectral import spectral_connectivity
+
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
+from .spectral import spectral_connectivity
 
 
 @verbose

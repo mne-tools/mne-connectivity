@@ -6,16 +6,15 @@
 # License: BSD (3-clause)
 
 import numpy as np
-
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
-from mne.utils import verbose, _check_combine, _check_option
+from mne.utils import _check_option, verbose
 
 from .base import EpochTemporalConnectivity
 
 
 @verbose
-def envelope_correlation(data, indices=None, names=None, combine='mean',
+def envelope_correlation(data, names=None,
                          orthogonalize="pairwise",
                          log=False, absolute=True, verbose=None):
     """Compute the envelope correlation.
@@ -29,20 +28,9 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         object (and ``stc.data`` will be used). If it's float data,
         the Hilbert transform will be applied; if it's complex data,
         it's assumed the Hilbert has already been applied.
-    indices : tuple of array | None
-        Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed.
     names : list | array-like | None
         A list of names associated with the signals in ``data``.
         If None, will be a list of indices of the number of nodes.
-    combine : 'mean' | callable | None
-        How to combine correlation estimates across epochs.
-        Default is 'mean'. Can be None to return without combining.
-        If callable, it must accept one positional input.
-        For example::
-
-            combine = lambda data: np.median(data, axis=0)
-
     orthogonalize : 'pairwise' | False
         Whether to orthogonalize with the pairwise method or not.
         Defaults to 'pairwise'. Note that when False,
@@ -68,14 +56,18 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     -------
     corr : instance of Connectivity
         The pairwise orthogonal envelope correlations.
-        This matrix is symmetric. If combine is None, the array
-        with have three dimensions, the first of which is ``n_epochs``.
-        The data shape would be ``([n_epochs, ]n_nodes ** 2)``
+        This matrix is symmetric. The array
+        will have three dimensions, the first of which is ``n_epochs``.
+        The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``
 
     Notes
     -----
     This function computes the power envelope correlation between
     orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
+
+    If you would like to combine Epochs after the fact using some
+    function over the Epochs axis, see the ``combine`` function from
+    Epoch Connectivity classes.
 
     References
     ----------
@@ -83,10 +75,6 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
     """
     _check_option('orthogonalize', orthogonalize, (False, 'pairwise'))
     from scipy.signal import hilbert
-    if combine is not None:
-        fun = _check_combine(combine, valid=('mean',))
-    else:  # None
-        fun = np.array
 
     corrs = list()
 
@@ -121,12 +109,17 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
         if log:
             data_mag *= data_mag
             np.log(data_mag, out=data_mag)
+
         # subtract means
         data_mag_nomean = data_mag - np.mean(data_mag, axis=-1, keepdims=True)
+
         # compute variances using linalg.norm (square, sum, sqrt) since mean=0
         data_mag_std = np.linalg.norm(data_mag_nomean, axis=-1)
         data_mag_std[data_mag_std == 0] = 1
         corr = np.empty((n_nodes, n_nodes))
+
+        # loop over each signal in this specific epoch
+        # which is now (n_signals, n_times) and compute envelope
         for li, label_data in enumerate(epoch_data):
             if orthogonalize is False:  # the new code
                 label_data_orth = data_mag[li]
@@ -144,6 +137,7 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
                                            keepdims=True)
                 label_data_orth_std = np.linalg.norm(label_data_orth, axis=-1)
                 label_data_orth_std[label_data_orth_std == 0] = 1
+
             # correlation is dot product divided by variances
             corr[li] = np.sum(label_data_orth * data_mag_nomean, axis=1)
             corr[li] /= data_mag_std
@@ -159,33 +153,29 @@ def envelope_correlation(data, indices=None, names=None, combine='mean',
 
     # apply function on correlation structure
     n_epochs = len(corrs)
-    corr = fun(corrs)
 
-    if combine is None:
-        # ravel from 2D connectivity into 1D array
-        # over all epochs
-        corr = np.array([_corr.flatten() for _corr in corr])
-    else:
-        # ravel N x N array into 1D array
-        corr = corr.flatten()
+    # ravel from 2D connectivity into 1D array
+    # over all epochs
+    corr = np.array([_corr.flatten() for _corr in corrs])
 
     # create the connectivity container
     times = None
 
-    # create epochs axis
-    if combine is not None:
-        corr = corr[np.newaxis, ...]
-
     # create time axis
     corr = corr[..., np.newaxis]
 
-    print(corr.shape)
+    # only get the upper-triu indices
+    triu_inds = np.triu_indices(n_nodes, k=0)
+    raveled_triu_inds = np.ravel_multi_index(
+        triu_inds, dims=(n_nodes, n_nodes))
+    corr = corr[:, raveled_triu_inds, ...]
+
     conn = EpochTemporalConnectivity(
         data=corr,
         names=names,
         times=times,
         method='envelope correlation',
-        indices=indices,
+        indices='symmetric',
         n_epochs_used=n_epochs,
         n_nodes=n_nodes,
     )

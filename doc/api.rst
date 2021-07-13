@@ -38,8 +38,6 @@ These functions compute connectivity and return
 one of the Connectivity data structure classes
 listed above.
 
-.. currentmodule:: mne_connectivity
-
 .. autosummary::
    :toctree: generated/
 
@@ -47,10 +45,16 @@ listed above.
    phase_slope_index
    spectral_connectivity
 
+Other functions
+===============
+
+.. autosummary::
+   :toctree: generated/
+
+   read_connectivity
+
 Post-processing on connectivity
 ===============================
-
-.. currentmodule:: mne_connectivity
 
 .. autosummary::
    :toctree: generated/

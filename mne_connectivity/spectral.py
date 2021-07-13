@@ -7,21 +7,19 @@ from functools import partial
 from inspect import getmembers
 
 import numpy as np
-
-from .utils import check_indices
-from mne.utils import _check_option
+from mne.epochs import BaseEpochs
 from mne.fixes import _get_args, _import_fft
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
-from mne.epochs import BaseEpochs
-from mne.time_frequency.multitaper import (_mt_spectra, _compute_mt_params,
-                                           _psd_from_mt, _csd_from_mt,
+from mne.time_frequency.multitaper import (_compute_mt_params, _csd_from_mt,
+                                           _mt_spectra, _psd_from_mt,
                                            _psd_from_mt_adaptive)
-from mne.time_frequency.tfr import morlet, cwt
-from mne.utils import logger, verbose, _time_mask, warn, _arange_div
+from mne.time_frequency.tfr import cwt, morlet
+from mne.utils import (_arange_div, _check_option, _time_mask, logger, verbose,
+                       warn)
 
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
-
+from .utils import check_indices
 
 ########################################################################
 # Various connectivity estimators
@@ -869,23 +867,23 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
     # compute final connectivity scores
     con = list()
-    for method, n_args in zip(con_methods, n_comp_args):
+    for conn_method, n_args in zip(con_methods, n_comp_args):
         # future estimators will need to be handled here
         if n_args == 3:
             # compute all scores at once
-            method.compute_con(slice(0, n_cons), n_epochs)
+            conn_method.compute_con(slice(0, n_cons), n_epochs)
         elif n_args == 5:
             # compute scores block-wise to save memory
             for i in range(0, n_cons, block_size):
                 con_idx = slice(i, i + block_size)
                 psd_xx = psd[idx_map[0][con_idx]]
                 psd_yy = psd[idx_map[1][con_idx]]
-                method.compute_con(con_idx, n_epochs, psd_xx, psd_yy)
+                conn_method.compute_con(con_idx, n_epochs, psd_xx, psd_yy)
         else:
             raise RuntimeError('This should never happen.')
 
         # get the connectivity scores
-        this_con = method.con_scores
+        this_con = conn_method.con_scores
 
         if this_con.shape[0] != n_cons:
             raise ValueError('First dimension of connectivity scores must be '

@@ -6,8 +6,8 @@
 # License: BSD (3-clause)
 
 import numpy as np
-from numpy.testing import assert_allclose
 import pytest
+from numpy.testing import assert_allclose
 from scipy.signal import hilbert
 
 from mne_connectivity.envelope import envelope_correlation
@@ -46,20 +46,22 @@ def test_envelope_correlation():
     assert (0 <= corr_orig).all()
     assert (corr_orig < 1).all()
 
+    # upper triangular indices to access the "corr_orig"
+    triu_inds = np.triu_indices(n_signals, k=0)
+    raveled_triu_inds = np.ravel_multi_index(
+        triu_inds, dims=(n_signals, n_signals))
+    condensed_n_estimates = len(raveled_triu_inds)
+
     # using complex data
     corr = envelope_correlation(data_hilbert)
-    assert_allclose(corr.get_data().squeeze(), corr_orig.flatten())
-
-    # using callable
-    corr = envelope_correlation(data_hilbert,
-                                combine=lambda data: np.mean(data, axis=0))
-    assert_allclose(corr.get_data(output='dense').squeeze(),
-                    corr_orig)
+    assert_allclose(
+        np.mean(corr.get_data(), axis=0).squeeze(),
+        corr_orig.flatten()[raveled_triu_inds])
 
     # do Hilbert internally, and don't combine
-    corr = envelope_correlation(data, combine=None)
+    corr = envelope_correlation(data)
     assert corr.shape == (data.shape[0],) + \
-        (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
+        (condensed_n_estimates,) + (1,)
     corr = np.mean(corr.get_data(output='dense'), axis=0)
     assert_allclose(corr.squeeze(), corr_orig)
 
@@ -70,22 +72,32 @@ def test_envelope_correlation():
         envelope_correlation(data[np.newaxis])
     with pytest.raises(ValueError, match='n_nodes mismatch'):
         envelope_correlation([rng.randn(2, 8), rng.randn(3, 8)])
-    with pytest.raises(ValueError, match='mean or callable'):
-        envelope_correlation(data, combine=1.)
-    with pytest.raises(ValueError, match='Combine option'):
-        envelope_correlation(data, combine='foo')
     with pytest.raises(ValueError, match='Invalid value.*orthogonalize.*'):
         envelope_correlation(data, orthogonalize='foo')
 
-    corr_plain = envelope_correlation(data, combine=None,
-                                      orthogonalize=False)
+    # test non-orthogonal computation
+    corr_plain = envelope_correlation(data, orthogonalize=False)
     assert corr_plain.shape == (data.shape[0],) + \
-        (corr_orig.shape[0] * corr_orig.shape[1],) + (1,)
+        (condensed_n_estimates,) + (1,)
+    assert corr_plain.get_data(output='dense').shape == \
+        (data.shape[0],) + \
+        (corr_orig.shape[0], corr_orig.shape[1],) + (1,)
     assert np.min(corr_plain.get_data()) < 0
     corr_plain_mean = np.mean(corr_plain.get_data(output='dense'), axis=0)
     assert_allclose(np.diag(corr_plain_mean.squeeze()), 1)
     np_corr = np.array([np.corrcoef(np.abs(x)) for x in data_hilbert])
     assert_allclose(corr_plain.get_data(output='dense').squeeze(), np_corr)
+
+    # test resulting Epoch -> non-Epoch data structure
+    # using callable
+    corr = envelope_correlation(data_hilbert)
+    corr_combine = corr.combine(combine=lambda data: np.mean(data, axis=0))
+    assert_allclose(corr_combine.get_data(output='dense').squeeze(),
+                    corr_orig)
+    with pytest.raises(ValueError, match='Combine option'):
+        corr.combine(combine=1.)
+    with pytest.raises(ValueError, match='Combine option'):
+        corr.combine(combine='foo')
 
     # check against FieldTrip, which uses the square-log-norm version
     # from scipy.io import savemat
@@ -106,5 +118,5 @@ def test_envelope_correlation():
     ], float)
     ft_vals[np.isnan(ft_vals)] = 0
     corr_log = envelope_correlation(
-        data, combine=None, log=True, absolute=False)
+        data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output='dense').squeeze(), ft_vals)
