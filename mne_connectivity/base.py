@@ -1,6 +1,8 @@
 from copy import copy
 
 import numpy as np
+import scipy
+from sklearn.utils.extmath import _safe_accumulator_op
 import xarray as xr
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
@@ -68,6 +70,147 @@ class EpochMixin:
         # convert new xarray to non-Epoch data structure
         conn = _xarray_to_conn(new_xr, cls_func)
         return conn
+
+
+class DynamicMixin:
+    def residual(self, data, model_order):
+        # predict data and obtain residuals
+        residuals = data - self.predict(data)
+
+        # compute the covariance of the residuals
+        # row are observations, columns are variables
+
+        t = residuals.shape[0]
+        sampled_residuals = np.concatenate(
+            np.split(residuals[:, :, model_order:], t, 0), axis=2).squeeze(0)
+
+        rescov = np.cov(sampled_residuals)
+        return sampled_residuals, rescov
+
+    def predict(self, data):
+        """Predict samples on actual data.
+
+        The result of this function is used for calculating the residuals.
+
+        Parameters
+        ----------
+        data : array, shape (trials, channels, samples) or (channels, samples)
+            Epoched or continuous data set.
+
+        Returns
+        -------
+        predicted : array, shape `data`.shape
+            Data as predicted by the VAR model.
+
+        Notes
+        -----
+        Residuals are obtained by r = x - var.predict(x)
+        """
+        data = atleast_3d(data)
+        t, m, l = data.shape
+
+        p = int(np.shape(self.coef)[1] / m)
+
+        y = np.zeros(data.shape)
+        if t > l - p:  # which takes less loop iterations
+            for k in range(1, p + 1):
+                bp = self.coef[:, (k - 1)::p]
+                for n in range(p, l):
+                    y[:, :, n] += np.dot(data[:, :, n - k], bp.T)
+        else:
+            for k in range(1, p + 1):
+                bp = self.coef[:, (k - 1)::p]
+                for s in range(t):
+                    y[s, :, p:] += np.dot(bp, data[s, :, (p - k):(l - k)])
+
+        return y
+
+    def simulate(self, n_samples, noise_func=None, random_state=None):
+        """Simulate vector autoregressive (VAR) model.
+
+        This function generates data from the VAR model.
+
+        Parameters
+        ----------
+        l : int or [int, int]
+            Number of samples to generate. Can be a tuple or list, where l[0]
+            is the number of samples and l[1] is the number of trials.
+        noisefunc : func, optional
+            This function is used to create the generating noise process. If
+            set to None, Gaussian white noise with zero mean and unit variance
+            is used.
+
+        Returns
+        -------
+        data : array, shape (n_trials, n_samples, n_channels)
+            Generated data.
+        """
+        m, n = np.shape(self.coef)
+        p = n // m
+
+        try:
+            l, t = l
+        except TypeError:
+            t = 1
+
+        if noisefunc is None:
+            rng = check_random_state(random_state)
+            def noisefunc(): return rng.normal(size=(1, m))
+
+        n = l + 10 * p
+
+        y = np.zeros((n, m, t))
+        res = np.zeros((n, m, t))
+
+        for s in range(t):
+            for i in range(p):
+                e = noisefunc()
+                res[i, :, s] = e
+                y[i, :, s] = e
+            for i in range(p, n):
+                e = noisefunc()
+                res[i, :, s] = e
+                y[i, :, s] = e
+                for k in range(1, p + 1):
+                    y[i, :, s] += self.coef[:, (k - 1)::p].dot(y[i - k, :, s])
+
+        self.residuals = res[10 * p:, :, :].T
+        self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
+
+        return y[10 * p:, :, :].transpose([2, 1, 0])
+
+    def is_stable(self):
+        """Test if VAR model is stable.
+
+        This function tests stability of the VAR model as described in [1]_.
+
+        Returns
+        -------
+        out : bool
+            True if the model is stable.
+
+        References
+        ----------
+        .. [1] H. Lütkepohl, "New Introduction to Multiple Time Series
+               Analysis", 2005, Springer, Berlin, Germany.
+        """
+        m, mp = self.coef.shape
+        p = mp // m
+        assert(mp == m * p)  # TODO: replace with raise?
+
+        top_block = []
+        for i in range(p):
+            top_block.append(self.coef[:, i::p])
+        top_block = np.hstack(top_block)
+
+        im = np.eye(m)
+        eye_block = im
+        for i in range(p - 2):
+            eye_block = scipy.linalg.block_diag(im, eye_block)
+        eye_block = np.hstack([eye_block, np.zeros((m * (p - 1), m))])
+
+        tmp = np.vstack([top_block, eye_block])
+        return np.all(np.abs(np.linalg.eig(tmp)[0]) < 1)
 
 
 @fill_doc

@@ -44,14 +44,24 @@ listed above.
    envelope_correlation
    phase_slope_index
    spectral_connectivity
+   var
 
-Other functions
-===============
+Reading functions
+=================
 
 .. autosummary::
    :toctree: generated/
 
    read_connectivity
+
+
+Statistics
+==========
+
+.. autosummary::
+   :toctree: generated/
+
+   stats.portmanteau
 
 Post-processing on connectivity
 ===============================
