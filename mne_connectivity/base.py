@@ -292,7 +292,7 @@ class _Connectivity():
         r += '>'
         return r
 
-    def _get_n_estimated_nodes(self, data):
+    def _get_num_connections(self, data):
         """Compute the number of estimated nodes' connectivity."""
         # account for epoch data structures
         if self.is_epoched:
@@ -386,7 +386,7 @@ class _Connectivity():
                                    f'{data.shape} shape.')
 
         # get the number of estimated nodes
-        self._get_n_estimated_nodes(data)
+        self._get_num_connections(data)
         if self.is_epoched:
             data_len = data.shape[1]
         else:
@@ -655,6 +655,10 @@ class _Connectivity():
 class SpectralConnectivity(_Connectivity, SpectralMixin):
     """Spectral connectivity container.
 
+    This is a dataset of shape (n_connections, n_freqs),
+    or (n_nodes, n_nodes, n_freqs). This describes how connectivity
+    varies over frequencies. 
+
     Parameters
     ----------
     %(data)s
@@ -666,6 +670,7 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     %(spec_method)s
     %(n_epochs_used)s
     """
+    expected_n_dim = 2
 
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices='all', method=None, spec_method=None,
@@ -680,6 +685,12 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 class TemporalConnectivity(_Connectivity, TimeMixin):
     """Temporal connectivity container.
 
+    This is a dataset of shape (n_connections, n_times),
+    or (n_nodes, n_nodes, n_times). This describes how connectivity
+    varies over time. It describes sample-by-sample time-varying
+    connectivity (usually on the order of milliseconds). Here
+    time (t=0) is the same for all connectivity measures.
+
     Parameters
     ----------
     %(data)s
@@ -689,7 +700,17 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    Notes
+    -----
+    `mne_connectivity.EpochConnectivity` is a similar connectivity
+    container. However, that describes one connectivity snapshot for
+    each epoch. These epochs might be chunks of time that have
+    different meaning for time ``t=0``. Epochs can mean separate trials,
+    where the beginning of the trial implies t=0. These Epochs may
+    also be discontiguous.
     """
+    expected_n_dim = 2
 
     def __init__(self, data, times, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
@@ -702,6 +723,13 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 @fill_doc
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     """Spectrotemporal connectivity container.
+
+    This is a dataset of shape (n_connections, n_freqs, n_times),
+    or (n_nodes, n_nodes, n_freqs, n_times). This describes how
+    connectivity varies over frequency and time. It describes
+    sample-by-sample time-varying connectivity (usually on
+    the order of milliseconds), while also describing differences
+    relative to frequency.
 
     Parameters
     ----------
@@ -729,6 +757,10 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
 class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
     """Spectral connectivity container over Epochs.
 
+    This is a dataset of shape (n_epochs, n_connections, n_freqs),
+    or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how
+    connectivity varies over frequencies for different epochs. 
+
     Parameters
     ----------
     %(data)s
@@ -755,6 +787,10 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     """Temporal connectivity container over Epochs.
 
+    This is a dataset of shape (n_epochs, n_connections, n_times),
+    or (n_epochs, n_nodes, n_nodes, n_times). This describes how
+    connectivity varies over time for different epochs. 
+
     Parameters
     ----------
     %(data)s
@@ -779,6 +815,10 @@ class EpochSpectroTemporalConnectivity(
     SpectroTemporalConnectivity, EpochMixin
 ):
     """Spectrotemporal connectivity container over Epochs.
+
+    This is a dataset of shape (n_epochs, n_connections, n_freqs, n_times),
+    or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
+    connectivity varies over frequencies and time for different epochs. 
 
     Parameters
     ----------
@@ -807,6 +847,10 @@ class EpochSpectroTemporalConnectivity(
 class Connectivity(_Connectivity, EpochMixin):
     """Connectivity container without frequency or time component.
 
+    This is a dataset of shape (n_connections,),
+    or (n_nodes, n_nodes). This describes a connectivity matrix/graph
+    that does not vary over time, frequency, or epochs.
+
     Parameters
     ----------
     %(data)s
@@ -828,6 +872,11 @@ class Connectivity(_Connectivity, EpochMixin):
 @fill_doc
 class EpochConnectivity(_Connectivity, EpochMixin):
     """Epoch connectivity container.
+
+    This is a dataset of shape (n_epochs, n_connections),
+    or (n_epochs, n_nodes, n_nodes). This describes how
+    connectivity varies for different epochs. 
+
 
     Parameters
     ----------

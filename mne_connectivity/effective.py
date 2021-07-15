@@ -98,6 +98,11 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         (n_con, n_bands, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
 
+    See Also
+    --------
+    mne_connectivity.SpectralConnectivity
+    mne_connectivity.SpectroTemporalConnectivity
+
     References
     ----------
     [1] Nolte et al. "Robustly Estimating the Flow Direction of Information in

@@ -651,6 +651,11 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
         (n_con, n_freqs, n_times) mode: 'cwt_morlet'
         when "indices" is specified and "n_con = len(indices[0])".
 
+    See Also
+    --------
+    mne_connectivity.SpectralConnectivity
+    mne_connectivity.SpectroTemporalConnectivity
+
     Notes
     -----
     The spectral densities can be estimated using a multitaper method with

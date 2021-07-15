@@ -189,7 +189,8 @@ def var(data, times=None, names=None, model_order=1, delta=0.0,
         Parameters
     ----------
     data : array-like, shape=(n_epochs, n_signals, n_times) | generator
-        The data from which to compute connectivity.
+        The data from which to compute connectivity. The epochs dimension
+        is interpreted differently, depending on ``'output'`` argument.
     names : list | array-like | None
         A list of names associated with the signals in ``data``.
         If None, will be a list of indices of the number of nodes.
@@ -213,8 +214,14 @@ def var(data, times=None, names=None, model_order=1, delta=0.0,
 
     Returns
     -------
-    conn : Connectivity | TemporalConnectivity
+    conn : Connectivity | TemporalConnectivity | EpochConnectivity
         The connectivity data estimated.
+
+    See Also
+    --------
+    Connectivity
+    TemporalConnectivity
+    EpochConnectivity
 
     Notes
     -----
