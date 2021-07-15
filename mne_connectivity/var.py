@@ -1,4 +1,4 @@
-from mne_connectivity.base import Connectivity, EpochConnectivity, TemporalConnectivity
+from mne_connectivity.base import Connectivity, EpochConnectivity
 import os
 from pathlib import Path
 import shutil
@@ -8,8 +8,152 @@ from scipy.linalg import sqrtm
 from tqdm import tqdm
 from sklearn.linear_model import Ridge
 
-from mne.utils import verbose, warn
-from .utils import parallel_loop
+from mne.utils import verbose
+
+
+@verbose
+def var(data, times=None, names=None, model_order=1, delta=0.0,
+        memmap=True, compute_fb_operator=False,
+        n_jobs=-1, model='dynamic', verbose=None):
+    """Compute vector-autoregresssive (VAR) model.
+
+    Parameters
+    ----------
+        Parameters
+    ----------
+    data : array-like, shape=(n_epochs, n_signals, n_times) | generator
+        The data from which to compute connectivity. The epochs dimension
+        is interpreted differently, depending on ``'output'`` argument.
+    names : list | array-like | None
+        A list of names associated with the signals in ``data``.
+        If None, will be a list of indices of the number of nodes.
+    model_order : int | str, optional
+        Autoregressive model order, by default 1. If 'auto', then
+        will use Bayesian Information Criterion to estimate the
+        model order.
+    delta : float, optional
+        Ridge penalty parameter, by default 0.0
+    memmap : bool
+        Whether or not to memory map the epoch data on disk during
+        joblib parallelization.
+    compute_fb_operator : bool
+        Whether to compute the backwards operator and average with
+        the forward operator. Addresses bias in the least-square
+        estimation [1].
+    model : str
+        Whether to compute one VAR model using all epochs as multiple
+        samples of the same VAR model ('avg-epochs'), or to compute
+        a separate VAR model for each epoch ('dynamic'), which results
+        in a time-varying VAR model. See Notes.
+    %(n_jobs)s
+    %(verbose)s
+
+    Returns
+    -------
+    conn : Connectivity | TemporalConnectivity | EpochConnectivity
+        The connectivity data estimated.
+
+    See Also
+    --------
+    Connectivity
+    EpochConnectivity
+
+    Notes
+    -----
+    When computing a VAR model (i.e. linear dynamical system), we require
+    the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There
+    are two ways one can interpret the data in the model.
+
+    First, epochs can be treated as multiple samples observed for a single
+    VAR model. That is, we have $X_1, X_2, ..., X_n$, where each $X_i$
+    is a ``(n_signals, n_times)`` data array, with n epochs. We are
+    interested in estimating the parameters, $(A_1, A_2, ..., A_{order})$
+    from the following model over **all** epochs:
+
+    .. math::
+        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
+
+    This results in one VAR model over all the epochs.
+
+    The second approach would treat each epoch as a different VAR model.
+    That is we would estimate a time-varying VAR model. We have the same
+    data as earlier, but now we are interested in estimating the
+    parameters, $(A_1, A_2, ..., A_{order})$ for **each** epoch. The model
+    would be the following for **each** epoch.
+
+    .. math::
+        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
+
+    This results in one VAR model for each epoch. This is done according
+    to the model in :footcite:`li_linear_2017`.
+
+    *b* is of shape [m, m*p], with sub matrices arranged as follows:
+
+    +------+------+------+------+
+    | b_00 | b_01 | ...  | b_0m |
+    +------+------+------+------+
+    | b_10 | b_11 | ...  | b_1m |
+    +------+------+------+------+
+    | ...  | ...  | ...  | ...  |
+    +------+------+------+------+
+    | b_m0 | b_m1 | ...  | b_mm |
+    +------+------+------+------+
+
+    Each sub matrix b_ij is a column vector of length p that contains the
+    filter coefficients from channel j (source) to channel i (sink).
+
+    References
+    ----------
+    .. footbibliography::
+    .. [1] Characterizing and correcting for the effect of sensor noise in the
+        dynamic mode decomposition. https://arxiv.org/pdf/1507.02264.pdf
+    """
+    if model not in ['avg-epochs', 'dynamic']:
+        raise ValueError(f'"model" parameter must be one of '
+                         f'(avg-epochs, dynamic), not {model}.')
+
+    # 1. determine shape of the window of data
+    n_epochs, n_nodes, n_times = data.shape
+
+    model_params = {
+        'model_order': model_order,
+        'delta': delta
+    }
+    if model == 'avg-epochs':
+        # compute VAR model where each epoch is a
+        # sample of the multivariate time-series of interest
+        # ordinary least squares or regularized least squares
+        # (ridge regression)
+        X, Y = _construct_var_eqns(data, **model_params)
+
+        b, res, rank, s = scipy.linalg.lstsq(X, Y)
+
+        # get the coefficients
+        coef = b.transpose()
+
+        # create connectivity
+        coef = coef.flatten()
+        conn = Connectivity(data=coef, n_nodes=n_nodes, names=names,
+                            n_epochs_used=n_epochs,
+                            times_used=times,
+                            method='VAR', **model_params)
+    else:
+        assert model == 'dynamic'
+        if times is None:
+            raise RuntimeError('If computing time (epoch) varying VAR model, '
+                               'then "times" must be passed in. From '
+                               'MNE epochs, one can extract using '
+                               '"epochs.times".')
+
+        # compute time-varying VAR model where each epoch
+        # is one sample of a time-varying multivariate time-series
+        # linear system
+        conn = _system_identification(
+            data=data, times=times, names=names, model_order=model_order,
+            delta=delta, memmap=memmap, n_jobs=n_jobs,
+            compute_fb_operator=compute_fb_operator,
+            verbose=verbose)
+    return conn
 
 
 def _construct_var_eqns(data, model_order, delta=None):
@@ -25,7 +169,7 @@ def _construct_var_eqns(data, model_order, delta=None):
         The order of the VAR model.
     delta : float, optional
         The l2 penalty term for ridge regression, by default None, which
-        will result in ordinary VAR equation. 
+        will result in ordinary VAR equation.
 
     Returns
     -------
@@ -69,58 +213,6 @@ def _construct_var_eqns(data, model_order, delta=None):
     return X, Y
 
 
-def estimate_model_order(data, min_p=1, max_p=None):
-    """Determine optimal model order.
-
-    This will estimate model order by minimizing the mean squared
-    generalization error.
-
-    Parameters
-    ----------
-    data : array, shape (n_trials, n_channels, n_samples)
-        Epoched data set on which to optimize the model order. At least two
-        trials are required.
-    min_p : int
-        Minimal model order to check.
-    max_p : int
-        Maximum model order to check
-    """
-    data = np.asarray(data)
-    if data.shape[0] < 2:
-        raise ValueError("At least two trials are required.")
-
-    msge, prange = [], []
-
-    par, func = parallel_loop(_get_msge_with_gradient, n_jobs=self.n_jobs,
-                              verbose=self.verbose)
-    if self.n_jobs is None:
-        npar = 1
-    elif self.n_jobs < 0:
-        npar = 4  # is this a sane default?
-    else:
-        npar = self.n_jobs
-
-    p = min_p
-    while True:
-        result = par(func(data, self.delta, self.xvschema, 1, p_)
-                     for p_ in range(p, p + npar))
-        j, k = zip(*result)
-        prange.extend(range(p, p + npar))
-        msge.extend(j)
-        p += npar
-        if max_p is None:
-            if len(msge) >= 2 and msge[-1] > msge[-2]:
-                break
-        else:
-            if prange[-1] >= max_p:
-                i = prange.index(max_p) + 1
-                prange = prange[:i]
-                msge = msge[:i]
-                break
-    self.p = prange[np.argmin(msge)]
-    return zip(prange, msge)
-
-
 def _construct_snapshots(snapshots, order, n_times):
     """Construct snapshots matrix.
 
@@ -144,7 +236,7 @@ def _construct_snapshots(snapshots, order, n_times):
 
     Notes
     -----
-    Say ``snapshots`` is an array with shape (N, T) with 
+    Say ``snapshots`` is an array with shape (N, T) with
     order ``M``. We will abbreviate this matrix and call it ``X``.
     ``X_ij`` is the ith signal at time point j.
 
@@ -178,104 +270,7 @@ def _construct_snapshots(snapshots, order, n_times):
     return snaps
 
 
-@verbose
-def var(data, times=None, names=None, model_order=1, delta=0.0,
-        memmap=True, compute_fb_operator=False,
-        n_jobs=-1, avg_epochs=False, verbose=None):
-    """[summary]
-
-    Parameters
-    ----------
-        Parameters
-    ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | generator
-        The data from which to compute connectivity. The epochs dimension
-        is interpreted differently, depending on ``'output'`` argument.
-    names : list | array-like | None
-        A list of names associated with the signals in ``data``.
-        If None, will be a list of indices of the number of nodes.
-    model_order : int | str, optional
-        Autoregressive model order, by default 1. If 'auto', then
-        will use Bayesian Information Criterion to estimate the
-        model order.
-    delta : float, optional
-        Ridge penalty parameter, by default 0.0
-    memmap : bool
-        Whether or not to memory map the epoch data on disk during
-        joblib parallelization.
-    compute_fb_operator : bool
-        Whether to compute the backwards operator and average with
-        the forward operator.
-    avg_epochs : bool
-        Whether to average over the VAR models computed from epochs,
-        or to treat each epoch as a separate VAR model. See Notes.
-    %(n_jobs)s
-    %(verbose)s
-
-    Returns
-    -------
-    conn : Connectivity | TemporalConnectivity | EpochConnectivity
-        The connectivity data estimated.
-
-    See Also
-    --------
-    Connectivity
-    TemporalConnectivity
-    EpochConnectivity
-
-    Notes
-    -----
-    *b* is of shape [m, m*p], with sub matrices arranged as follows:
-
-    +------+------+------+------+
-    | b_00 | b_01 | ...  | b_0m |
-    +------+------+------+------+
-    | b_10 | b_11 | ...  | b_1m |
-    +------+------+------+------+
-    | ...  | ...  | ...  | ...  |
-    +------+------+------+------+
-    | b_m0 | b_m1 | ...  | b_mm |
-    +------+------+------+------+
-
-    Each sub matrix b_ij is a column vector of length p that contains the
-    filter coefficients from channel j (source) to channel i (sink).
-    """
-    # 1. determine shape of the window of data
-    n_epochs, n_nodes, n_times = data.shape
-
-    if avg_epochs:
-        # compute VAR model where each epoch is a
-        # sample of the multivariate time-series of interest
-        # ordinary least squares or regularized least squares (ridge regression)
-        X, Y = _construct_var_eqns(data, model_order, delta=delta)
-
-        b, res, rank, s = scipy.linalg.lstsq(X, Y)
-
-        # get the coefficients
-        coef = b.transpose()
-
-        # create connectivity
-        coef = coef.flatten()
-        conn = Connectivity(data=coef, n_nodes=n_nodes, names=names,
-                            n_epochs_used=n_epochs,
-                            method='VAR')
-    else:
-        if times is None:
-            raise RuntimeError('If computing time (epoch) varying VAR model, '
-                               'then "times" must be passed in. From '
-                               'MNE epochs, one can extract using "epochs.times".')
-
-        # compute time-varying VAR model where each epoch
-        # is one sample of a time-varying multivariate time-series
-        # linear system
-        conn = _system_identification(data=data, times=times, names=names, order=model_order,
-                                      delta=delta, memmap=memmap, n_jobs=n_jobs,
-                                      compute_fb_operator=compute_fb_operator,
-                                      verbose=verbose)
-    return conn
-
-
-def _system_identification(data, times, names=None, order=1, delta=0,
+def _system_identification(data, times, names=None, model_order=1, delta=0,
                            random_state=None, memmap=False, n_jobs=-1,
                            compute_fb_operator=False,
                            verbose=True):
@@ -283,9 +278,8 @@ def _system_identification(data, times, names=None, order=1, delta=0,
 
     Treats each epoch as a different window of time to estimate the model:
 
+    .. math::
         X(t+1) = \sum_{i=0}^{order} A_i X(t - i)
-
-        X(t+1) = A X(t)
 
     where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are
     the data snapshots.
@@ -295,7 +289,7 @@ def _system_identification(data, times, names=None, order=1, delta=0,
 
     model_params = {
         'delta': delta,
-        'order': order,
+        'model_order': model_order,
         'random_state': random_state,
         'compute_fb_operator': compute_fb_operator
     }
@@ -344,12 +338,14 @@ def _system_identification(data, times, names=None, order=1, delta=0,
     A_mats = A_mats.reshape((n_epochs, -1))
     conn = EpochConnectivity(data=A_mats, n_nodes=n_nodes, names=names,
                              n_epochs_used=n_epochs,
+                             times_used=times,
                              method='Time-varying LDS',
                              **model_params)
     return conn
 
 
-def _compute_lds_func(data, order, delta, compute_fb_operator, random_state):
+def _compute_lds_func(data, model_order, delta, compute_fb_operator,
+                      random_state):
     """Compute linear system using VAR model.
 
     Allows for parallelization over epochs.
@@ -359,7 +355,7 @@ def _compute_lds_func(data, order, delta, compute_fb_operator, random_state):
     # create large snapshot with time-lags of order specified by
     # ``order`` value
     snaps = _construct_snapshots(
-        data, order=order, n_times=n_times
+        data, order=model_order, n_times=n_times
     )
 
     # get the time-shifted components of each
@@ -384,13 +380,6 @@ def _compute_lds_func(data, order, delta, compute_fb_operator, random_state):
     A = clf.coef_
 
     if compute_fb_operator:
-        """Compute foward-backward operator.
-
-        Addresses bias in the least-square estimation [2].
-
-        .. [2] Characterizing and correcting for the effect of sensor noise in the
-            dynamic mode decomposition. https://arxiv.org/pdf/1507.02264.pdf
-        """
         # compute backward linear operator
         clf.fit(Y.T, X.T)
         back_A = clf.coef_

@@ -18,7 +18,8 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
     Notes
     -----
-    Execution of the main script must be guarded with `if __name__ == '__main__':` when using parallelization.
+    Execution of the main script must be guarded with
+    `if __name__ == '__main__':` when using parallelization.
     """
     if n_jobs:
         try:
@@ -32,7 +33,10 @@ def parallel_loop(func, n_jobs=1, verbose=1):
     if not n_jobs:
         if verbose:
             print('running ', func, ' serially')
-        par = lambda x: list(x)
+
+        def par(x):
+
+            return list(x)
     else:
         if verbose:
             print('running ', func, ' in parallel')

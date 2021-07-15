@@ -2,8 +2,8 @@ from copy import copy
 
 import numpy as np
 import scipy
-from sklearn.utils.extmath import _safe_accumulator_op
 import xarray as xr
+from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt)
@@ -73,20 +73,6 @@ class EpochMixin:
 
 
 class DynamicMixin:
-    def residual(self, data, model_order):
-        # predict data and obtain residuals
-        residuals = data - self.predict(data)
-
-        # compute the covariance of the residuals
-        # row are observations, columns are variables
-
-        t = residuals.shape[0]
-        sampled_residuals = np.concatenate(
-            np.split(residuals[:, :, model_order:], t, 0), axis=2).squeeze(0)
-
-        rescov = np.cov(sampled_residuals)
-        return sampled_residuals, rescov
-
     def predict(self, data):
         """Predict samples on actual data.
 
@@ -94,8 +80,9 @@ class DynamicMixin:
 
         Parameters
         ----------
-        data : array, shape (trials, channels, samples) or (channels, samples)
-            Epoched or continuous data set.
+        data : array
+            Epoched or continuous data set. Has shape
+            (n_epochs, n_signals, n_times) or (n_signals, n_times).
 
         Returns
         -------
@@ -104,26 +91,65 @@ class DynamicMixin:
 
         Notes
         -----
-        Residuals are obtained by r = x - var.predict(x)
+        Residuals are obtained by r = x - var.predict(x).
+
+        To compute residual covariances
+
+            # compute the covariance of the residuals
+            # row are observations, columns are variables
+            t = residuals.shape[0]
+            sampled_residuals = np.concatenate(
+                np.split(residuals[:, :, model_order:], t, 0),
+                axis=2
+            ).squeeze(0)
+            rescov = np.cov(sampled_residuals)
         """
-        data = atleast_3d(data)
-        t, m, l = data.shape
+        if data.ndim < 2 or data.ndim > 3:
+            raise ValueError(f'data passed in must be either 2D or 3D. '
+                             f'The data you passed in has {data.ndim} dims.')
+        if data.ndim == 2 and self.is_epoched:
+            raise RuntimeError('If there is a VAR model over epochs, '
+                               'one must pass in a 3D array.')
+        if data.ndim == 3 and not self.is_epoched:
+            raise RuntimeError('If there is a single VAR model, '
+                               'one must pass in a 2D array.')
 
-        p = int(np.shape(self.coef)[1] / m)
+        # make all datasets 3D
+        if data.ndim == 2:
+            data = data[np.newaxis, ...]
 
-        y = np.zeros(data.shape)
-        if t > l - p:  # which takes less loop iterations
-            for k in range(1, p + 1):
-                bp = self.coef[:, (k - 1)::p]
-                for n in range(p, l):
-                    y[:, :, n] += np.dot(data[:, :, n - k], bp.T)
+        n_epochs, _, n_times = data.shape
+        var_model = self.get_data(output='dense')
+
+        # get the model order
+        model_order = self.attrs.get('model_order')
+
+        # predict the data by applying forward model
+        predicted_data = np.zeros(data.shape)
+        # which takes less loop iterations
+        if n_epochs > n_times - model_order:
+            for idx in range(1, model_order + 1):
+                for jdx in range(model_order, n_times):
+                    if self.is_epoched:
+                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                    else:
+                        bp = var_model[:, (idx - 1)::model_order]
+                    predicted_data[:, :,
+                                   jdx] += np.dot(data[:, :, jdx - idx], bp.T)
         else:
-            for k in range(1, p + 1):
-                bp = self.coef[:, (k - 1)::p]
-                for s in range(t):
-                    y[s, :, p:] += np.dot(bp, data[s, :, (p - k):(l - k)])
+            for idx in range(1, model_order + 1):
+                for jdx in range(n_epochs):
+                    if self.is_epoched:
+                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                    else:
+                        bp = var_model[:, (idx - 1)::model_order]
+                    predicted_data[jdx, :, model_order:] += \
+                        np.dot(
+                            bp,
+                            data[jdx, :, (model_order - idx):(n_times - idx)]
+                    )
 
-        return y
+        return predicted_data
 
     def simulate(self, n_samples, noise_func=None, random_state=None):
         """Simulate vector autoregressive (VAR) model.
@@ -132,9 +158,8 @@ class DynamicMixin:
 
         Parameters
         ----------
-        l : int or [int, int]
-            Number of samples to generate. Can be a tuple or list, where l[0]
-            is the number of samples and l[1] is the number of trials.
+        n_samples : int
+            Number of samples to generate.
         noisefunc : func, optional
             This function is used to create the generating noise process. If
             set to None, Gaussian white noise with zero mean and unit variance
@@ -142,42 +167,44 @@ class DynamicMixin:
 
         Returns
         -------
-        data : array, shape (n_trials, n_samples, n_channels)
+        data : array, shape (n_samples, n_channels)
             Generated data.
         """
-        m, n = np.shape(self.coef)
-        p = n // m
+        var_model = self.get_data(output='dense')
+        n_nodes = self.n_nodes
+        model_order = self.attrs.get('model_order')
 
-        try:
-            l, t = l
-        except TypeError:
-            t = 1
-
-        if noisefunc is None:
+        # set noise function
+        if noise_func is None:
             rng = check_random_state(random_state)
-            def noisefunc(): return rng.normal(size=(1, m))
 
-        n = l + 10 * p
+            def noisefunc():
 
-        y = np.zeros((n, m, t))
-        res = np.zeros((n, m, t))
+                return rng.normal(size=(1, n_nodes))
 
-        for s in range(t):
-            for i in range(p):
-                e = noisefunc()
-                res[i, :, s] = e
-                y[i, :, s] = e
-            for i in range(p, n):
-                e = noisefunc()
-                res[i, :, s] = e
-                y[i, :, s] = e
-                for k in range(1, p + 1):
-                    y[i, :, s] += self.coef[:, (k - 1)::p].dot(y[i - k, :, s])
+        n = n_samples + 10 * model_order
 
-        self.residuals = res[10 * p:, :, :].T
-        self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
+        # simulated data
+        data = np.zeros((n, n_nodes))
+        res = np.zeros((n, n_nodes))
 
-        return y[10 * p:, :, :].transpose([2, 1, 0])
+        for jdx in range(model_order):
+            e = noisefunc()
+            res[jdx, :] = e
+            data[jdx, :] = e
+        for jdx in range(model_order, n):
+            e = noisefunc()
+            res[jdx, :] = e
+            data[jdx, :] = e
+            for idx in range(1, model_order + 1):
+                data[jdx, :] += \
+                    var_model[:, (idx - 1)::model_order].dot(
+                        data[jdx - idx, :]
+                )
+
+        # self.residuals = res[10 * model_order:, :, :].T
+        # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
+        return data[10 * model_order:, :].transpose()
 
     def is_stable(self):
         """Test if VAR model is stable.
@@ -195,26 +222,27 @@ class DynamicMixin:
                Analysis", 2005, Springer, Berlin, Germany.
         """
         m, mp = self.coef.shape
-        p = mp // m
-        assert(mp == m * p)  # TODO: replace with raise?
+        model_order = mp // m
+        assert(mp == m * model_order)  # TODO: replace with raise?
 
         top_block = []
-        for i in range(p):
-            top_block.append(self.coef[:, i::p])
+        for i in range(model_order):
+            top_block.append(self.coef[:, i::model_order])
         top_block = np.hstack(top_block)
 
         im = np.eye(m)
         eye_block = im
-        for i in range(p - 2):
+        for i in range(model_order - 2):
             eye_block = scipy.linalg.block_diag(im, eye_block)
-        eye_block = np.hstack([eye_block, np.zeros((m * (p - 1), m))])
+        eye_block = np.hstack(
+            [eye_block, np.zeros((m * (model_order - 1), m))])
 
         tmp = np.vstack([top_block, eye_block])
         return np.all(np.abs(np.linalg.eig(tmp)[0]) < 1)
 
 
 @fill_doc
-class _Connectivity():
+class _Connectivity(DynamicMixin):
     """Base class for connectivity data.
 
     Connectivity data is anything that represents "connections"
@@ -657,7 +685,7 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
     This is a dataset of shape (n_connections, n_freqs),
     or (n_nodes, n_nodes, n_freqs). This describes how connectivity
-    varies over frequencies. 
+    varies over frequencies.
 
     Parameters
     ----------
@@ -759,7 +787,7 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 
     This is a dataset of shape (n_epochs, n_connections, n_freqs),
     or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how
-    connectivity varies over frequencies for different epochs. 
+    connectivity varies over frequencies for different epochs.
 
     Parameters
     ----------
@@ -789,7 +817,7 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
 
     This is a dataset of shape (n_epochs, n_connections, n_times),
     or (n_epochs, n_nodes, n_nodes, n_times). This describes how
-    connectivity varies over time for different epochs. 
+    connectivity varies over time for different epochs.
 
     Parameters
     ----------
@@ -818,7 +846,7 @@ class EpochSpectroTemporalConnectivity(
 
     This is a dataset of shape (n_epochs, n_connections, n_freqs, n_times),
     or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
-    connectivity varies over frequencies and time for different epochs. 
+    connectivity varies over frequencies and time for different epochs.
 
     Parameters
     ----------
@@ -875,7 +903,7 @@ class EpochConnectivity(_Connectivity, EpochMixin):
 
     This is a dataset of shape (n_epochs, n_connections),
     or (n_epochs, n_nodes, n_nodes). This describes how
-    connectivity varies for different epochs. 
+    connectivity varies for different epochs.
 
 
     Parameters

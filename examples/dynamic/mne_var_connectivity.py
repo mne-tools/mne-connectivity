@@ -22,6 +22,8 @@ import mne
 from mne import make_fixed_length_epochs
 from mne_bids import BIDSPath, read_raw_bids
 
+import matplotlib.pyplot as plt
+
 from mne_connectivity import var
 
 ##############################################################################
@@ -120,13 +122,85 @@ conn = var(data=epochs.get_data(), times=times, names=ch_names)
 print(conn)
 
 ##############################################################################
+# Evaluate this VAR model fit
+# ---------------------------
+# We can now evaluate the model fit by computing
+# the residuals of the model and visualizing it.
+# In addition, we can evaluate the covariance of the
+# residuals.
+
+predicted_data = conn.predict(epochs.get_data())
+
+# compute residuals
+residuals = epochs.get_data() - predicted_data
+
+# visualize the residuals
+fig, ax = plt.subplots()
+ax.plot(residuals.flatten(), '*')
+ax.set(
+    title='Residuals of fitted VAR model',
+    ylabel='Magnitude'
+)
+
+# compute the covariance of the residuals
+model_order = conn.attrs.get('model_order')
+t = residuals.shape[0]
+sampled_residuals = np.concatenate(
+    np.split(residuals[:, :, model_order:], t, 0),
+    axis=2
+).squeeze(0)
+rescov = np.cov(sampled_residuals)
+
+# visualize the covariance of residuals
+fig, ax = plt.subplots()
+cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
+im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
+fig.colorbar(im, cax=cax, orientation='horizontal')
+
+##############################################################################
 # Compute one VAR model using all epochs
 # --------------------------------------
-# By setting ``avg_epochs=True``, we instead treat each
+# By setting ``model='dynamic'``, we instead treat each
 # Epoch as a sample of the same VAR model
 
 conn = var(data=epochs.get_data(), times=times, names=ch_names,
-           avg_epochs=True)
+           model='dynamic')
 
 # this returns a connectivity structure over time
 print(conn)
+
+##############################################################################
+# Evaluate this VAR model fit
+# ---------------------------
+# We can now evaluate the model fit again as done
+# earlier. This model fit will of course have
+# higher residuals then before as we are only
+# fitting 1 VAR model to all the epochs.
+
+predicted_data = conn.predict(epochs.get_data())
+
+# compute residuals
+residuals = epochs.get_data() - predicted_data
+
+# visualize the residuals
+fig, ax = plt.subplots()
+ax.plot(residuals.flatten(), '*')
+ax.set(
+    title='Residuals of fitted VAR model',
+    ylabel='Magnitude'
+)
+
+# compute the covariance of the residuals
+model_order = conn.attrs.get('model_order')
+t = residuals.shape[0]
+sampled_residuals = np.concatenate(
+    np.split(residuals[:, :, model_order:], t, 0),
+    axis=2
+).squeeze(0)
+rescov = np.cov(sampled_residuals)
+
+# visualize the covariance of residuals
+fig, ax = plt.subplots()
+cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
+im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
+fig.colorbar(im, cax=cax, orientation='horizontal')

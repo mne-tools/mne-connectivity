@@ -13,24 +13,24 @@ and mne-connectivity to classify what stage of sleep
 a subject is. This tutorial is inspired by MNE-Python's
 `Sleep stage classification tutorial`_.
 
-.. Sleep stage classification tutorial_ https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html
+.. Sleep stage classification tutorial_
+https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html
 """
 
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
 
-import os.path as op
-
-import numpy as np
 import matplotlib.pyplot as plt
+
 from sklearn.preprocessing import FunctionTransformer
+from sklearn.pipeline import make_pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 import mne
-from mne import make_fixed_length_epochs
 from mne.datasets.sleep_physionet.age import fetch_data
-import mne_connectivity
-from mne_connectivity import var
+from mne_connectivity import var, degree
 
 
 ##############################################################################
@@ -117,58 +117,52 @@ ch_names = raw_train.ch_names
 print(epochs_train)
 
 ##############################################################################
+# Applying the same steps to the test data from Bob
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+raw_test = mne.io.read_raw_edf(bob_files[0])
+annot_test = mne.read_annotations(bob_files[1])
+annot_test.crop(annot_test[1]['onset'] - 30 * 60,
+                annot_test[-2]['onset'] + 30 * 60)
+raw_test.set_annotations(annot_test, emit_warning=False)
+raw_test.set_channel_types(mapping)
+events_test, _ = mne.events_from_annotations(
+    raw_test, event_id=annotation_desc_2_event_id, chunk_duration=30.)
+epochs_test = mne.Epochs(raw=raw_test, events=events_test, event_id=event_id,
+                         tmin=0., tmax=tmax, baseline=None)
+
+print(epochs_test)
+
+##############################################################################
 # Compute the VAR model
 # ---------------------
 
 conn = var(data=epochs_train, times=times, names=ch_names,
            avg_epochs=True)
 
+# create sklearn pipeline
+pipe = make_pipeline(
+    FunctionTransformer(var),
+    FunctionTransformer(degree),
+    RandomForestClassifier(n_estimators=100, random_state=42),
+)
+
+# Train
+y_train = epochs_train.events[:, 2]
+pipe.fit(epochs_train, y_train)
+
+# Test
+y_pred = pipe.predict(epochs_test)
+
+# Assess the results
+y_test = epochs_test.events[:, 2]
+acc = accuracy_score(y_test, y_pred)
+
+print("Accuracy score: {}".format(acc))
+
 ##############################################################################
 # Now we band-pass filter our data and create epochs.
 
-raw.filter(14, 30)
-events = mne.make_fixed_length_events(raw, duration=5.)
-epochs = mne.Epochs(raw, events=events, tmin=0, tmax=5.,
-                    baseline=None, reject=dict(mag=8e-13), preload=True)
-del raw, projs_ecg, projs_eog
-
-##############################################################################
-# Compute label time series and do envelope correlation
-# -----------------------------------------------------
-
-labels = mne.read_labels_from_annot(subject, 'aparc_sub',
-                                    subjects_dir=subjects_dir)
-epochs.apply_hilbert()  # faster to apply in sensor space
-stcs = apply_inverse_epochs(epochs, inv, lambda2=1. / 9., pick_ori='normal',
-                            return_generator=True)
-label_ts = mne.extract_label_time_course(
-    stcs, labels, inv['src'], return_generator=True)
-corr = envelope_correlation(label_ts, verbose=True)
-
-# average over epochs
-corr = corr.combine()
-
-# let's plot this matrix
-fig, ax = plt.subplots(figsize=(4, 4))
-ax.imshow(corr.get_data(output='dense').squeeze(), cmap='viridis',
-          clim=np.percentile(corr.get_data(), [5, 95]))
-fig.tight_layout()
-del epochs, stcs, label_ts
-
-##############################################################################
-# Compute the degree and plot it
-# ------------------------------
-
-# sphinx_gallery_thumbnail_number = 2
-threshold_prop = 0.15  # percentage of strongest edges to keep in the graph
-degree = mne_connectivity.degree(corr, threshold_prop=threshold_prop)
-stc = mne.labels_to_stc(labels, degree)
-stc = stc.in_label(mne.Label(inv['src'][0]['vertno'], hemi='lh') +
-                   mne.Label(inv['src'][1]['vertno'], hemi='rh'))
-brain = stc.plot(
-    clim=dict(kind='percent', lims=[75, 85, 95]), colormap='gnuplot',
-    subjects_dir=subjects_dir, views='dorsal', hemi='both',
-    smoothing_steps=25, time_label='Beta band')
+raw_train.filter(14, 30)
 
 ##############################################################################
 # References
