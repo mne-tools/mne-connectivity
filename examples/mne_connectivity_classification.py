@@ -1,12 +1,12 @@
 """
 .. _ex-var-classification:
 
-=========================================================================
-Classify sleep stages using a vector autoregressive model (linear system)
-=========================================================================
+===============================================
+Classify sleep stages by computing connectivity
+===============================================
 
-Compute a VAR (linear system) model from time-series activity.
-:footcite:`li_linear_2017` using EEG data.
+Compute a connectivity envelope correlation model using EEG data
+and then apply a Random Forest classifier to predict sleep stage.
 
 In this example, we will demonstrate how to use scikit-learn
 and mne-connectivity to classify what stage of sleep
@@ -20,17 +20,18 @@ https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
-
+import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.dummy import DummyClassifier
 
 import mne
 from mne.datasets.sleep_physionet.age import fetch_data
-from mne_connectivity import var, degree
+from mne_connectivity import envelope_correlation, degree
 
 
 ##############################################################################
@@ -57,12 +58,16 @@ annot_train = mne.read_annotations(alice_files[1])
 raw_train.set_annotations(annot_train, emit_warning=False)
 raw_train.set_channel_types(mapping)
 
+# Now we band-pass filter our data.
+raw_train.load_data()
+raw_train.filter(14, 30)
+
 # plot some data
 # scalings were chosen manually to allow for simultaneous visualization of
 # different channel types in this specific dataset
-raw_train.plot(start=60, duration=60,
-               scalings=dict(eeg=1e-4, resp=1e3, eog=1e-4, emg=1e-7,
-                             misc=1e-1))
+# raw_train.plot(start=60, duration=60,
+#                scalings=dict(eeg=1e-4, resp=1e3, eog=1e-4, emg=1e-7,
+#                              misc=1e-1))
 
 ##############################################################################
 # Load the annotations
@@ -93,9 +98,9 @@ event_id = {'Sleep stage W': 1,
             'Sleep stage R': 5}
 
 # plot events
-fig = mne.viz.plot_events(events_train, event_id=event_id,
-                          sfreq=raw_train.info['sfreq'],
-                          first_samp=events_train[0, 0])
+# fig = mne.viz.plot_events(events_train, event_id=event_id,
+#                           sfreq=raw_train.info['sfreq'],
+#                           first_samp=events_train[0, 0])
 
 # keep the color-code for further plotting
 stage_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -114,6 +119,8 @@ epochs_train = mne.Epochs(raw=raw_train, events=events_train,
 times = epochs_train.times
 ch_names = raw_train.ch_names
 
+epochs_train.drop_bad()
+
 print(epochs_train)
 
 ##############################################################################
@@ -125,24 +132,45 @@ annot_test.crop(annot_test[1]['onset'] - 30 * 60,
                 annot_test[-2]['onset'] + 30 * 60)
 raw_test.set_annotations(annot_test, emit_warning=False)
 raw_test.set_channel_types(mapping)
+
+# Now we band-pass filter our data.
+raw_test.load_data()
+raw_test.filter(14, 30)
+
 events_test, _ = mne.events_from_annotations(
     raw_test, event_id=annotation_desc_2_event_id, chunk_duration=30.)
 epochs_test = mne.Epochs(raw=raw_test, events=events_test, event_id=event_id,
                          tmin=0., tmax=tmax, baseline=None)
 
+epochs_test.drop_bad()
+
 print(epochs_test)
 
 ##############################################################################
-# Compute the VAR model
-# ---------------------
+# Compute classification model
+# ----------------------------
+# Here, we use `envelope_correlation` and a ``RandomForestClassifier`` trained
+# on the envelope correlation values to classify sleep stage. We leverage
+# scikit-learn's ``FunctionTransformer`` to create a ``Pipeline`` object
+# for classification.
 
-conn = var(data=epochs_train, times=times, names=ch_names,
-           avg_epochs=True)
+kw_args = dict(names=ch_names,)
+
+
+def apply_degree_across_epochs(conn, **kwargs):
+    degrees = []
+    epoch_conn = conn.get_data(output='dense')
+    for epoch_idx in range(conn.n_epochs):
+        conn_data = epoch_conn[epoch_idx, ...].squeeze()
+        degrees.append(degree(conn_data, **kwargs))
+    return np.array(degrees)
 
 # create sklearn pipeline
 pipe = make_pipeline(
-    FunctionTransformer(var),
-    FunctionTransformer(degree),
+    FunctionTransformer(envelope_correlation, kw_args=kw_args),
+    FunctionTransformer(lambda x: x.get_data(output='raveled').squeeze()),
+    # FunctionTransformer(apply_degree_across_epochs,
+    # kw_args=dict(threshold_prop=0.01)),
     RandomForestClassifier(n_estimators=100, random_state=42),
 )
 
@@ -157,12 +185,15 @@ y_pred = pipe.predict(epochs_test)
 y_test = epochs_test.events[:, 2]
 acc = accuracy_score(y_test, y_pred)
 
+# dummy classifier
+dummby_clf = DummyClassifier(strategy='most_frequent')
+dummby_clf.fit(epochs_train, y_train)
+dummby_pred = dummby_clf.predict(epochs_test)
+dummby_acc = accuracy_score(y_test, dummby_pred)
+
+# We perform slightly better then chance as an initial first pass.
 print("Accuracy score: {}".format(acc))
-
-##############################################################################
-# Now we band-pass filter our data and create epochs.
-
-raw_train.filter(14, 30)
+print(f"Naive dummby accuracy score: {dummby_acc}")
 
 ##############################################################################
 # References

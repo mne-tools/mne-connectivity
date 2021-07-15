@@ -164,14 +164,14 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # Epoch as a sample of the same VAR model
 
 conn = var(data=epochs.get_data(), times=times, names=ch_names,
-           model='dynamic')
+           model='avg-epochs')
 
 # this returns a connectivity structure over time
 print(conn)
 
 ##############################################################################
-# Evaluate this VAR model fit
-# ---------------------------
+# Evaluate model fit again
+# ------------------------
 # We can now evaluate the model fit again as done
 # earlier. This model fit will of course have
 # higher residuals then before as we are only
@@ -204,3 +204,11 @@ fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
 fig.colorbar(im, cax=cax, orientation='horizontal')
+
+##############################################################################
+# Other properties of VAR models
+# ------------------------------
+# We can now evaluate the model fit again as done
+# earlier. This model fit will of course have
+# higher residuals then before as we are only
+# fitting 1 VAR model to all the epochs.

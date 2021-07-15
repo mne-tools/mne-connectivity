@@ -54,15 +54,6 @@ Reading functions
 
    read_connectivity
 
-
-Statistics
-==========
-
-.. autosummary::
-   :toctree: generated/
-
-   stats.portmanteau
-
 Post-processing on connectivity
 ===============================
 
