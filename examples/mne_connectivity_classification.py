@@ -11,10 +11,8 @@ and then apply a Random Forest classifier to predict sleep stage.
 In this example, we will demonstrate how to use scikit-learn
 and mne-connectivity to classify what stage of sleep
 a subject is. This tutorial is inspired by MNE-Python's
-`Sleep stage classification tutorial`_.
-
-.. Sleep stage classification tutorial_
-https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html
+`Sleep stage classification tutorial
+<https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html>`_.
 """
 
 # Authors: Adam Li <adam2392@gmail.com>

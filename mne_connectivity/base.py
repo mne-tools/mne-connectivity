@@ -94,7 +94,7 @@ class DynamicMixin:
         -----
         Residuals are obtained by r = x - var.predict(x).
 
-        To compute residual covariances
+        To compute residual covariances::
 
             # compute the covariance of the residuals
             # row are observations, columns are variables
@@ -104,6 +104,7 @@ class DynamicMixin:
                 axis=2
             ).squeeze(0)
             rescov = np.cov(sampled_residuals)
+
         """
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(f'data passed in must be either 2D or 3D. '
