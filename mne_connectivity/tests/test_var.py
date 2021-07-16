@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_array_equal
+from numpy.testing import (
+    assert_array_almost_equal, assert_array_equal
+)
 
 from mne_connectivity import var
 
@@ -25,7 +27,7 @@ def test_var():
     assert_array_equal(parr_conn.get_data(), conn.get_data())
 
     # compute connectivity with forward-backwards operator
-    fb_conn = var(data, times=times, compute_fb_operator=True, n_jobs=-1)
+    var(data, times=times, compute_fb_operator=True, n_jobs=-1)
 
     # compute single var
     single_conn = var(data, model='avg-epochs')
@@ -35,6 +37,10 @@ def test_var():
     # compute residuals
     residuals = data - parr_conn.predict(data)
 
+    assert np.max(np.abs(residuals)) < 1
+
     # simulate data
     sim_data = parr_conn.simulate(n_samples=100)
     sim_data = parr_conn.simulate(n_samples=100, noise_func=np.random.normal)
+
+    assert sim_data.shape == (4, 100)

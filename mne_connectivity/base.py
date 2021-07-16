@@ -1,7 +1,6 @@
 from copy import copy
 
 import numpy as np
-from numpy.core.fromnumeric import var
 import scipy
 import xarray as xr
 from sklearn.utils import check_random_state
