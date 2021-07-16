@@ -125,7 +125,7 @@ html_theme_options = {
 }
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    'index': ['search-field.html', 'sidebar-quicklinks.html'],
+    'index': ['search-field.html'],
 }
 
 html_context = {

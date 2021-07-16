@@ -36,7 +36,6 @@ def test_var():
 
     # compute residuals
     residuals = data - parr_conn.predict(data)
-
     assert np.max(np.abs(residuals)) < 1
 
     # simulate data
