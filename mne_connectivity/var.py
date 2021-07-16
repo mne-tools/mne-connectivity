@@ -14,7 +14,7 @@ from mne.utils import verbose
 @verbose
 def var(data, times=None, names=None, model_order=1, delta=0.0,
         memmap=True, compute_fb_operator=False,
-        n_jobs=-1, model='dynamic', verbose=None):
+        n_jobs=1, model='dynamic', verbose=None):
     """Compute vector-autoregresssive (VAR) model.
 
     Parameters

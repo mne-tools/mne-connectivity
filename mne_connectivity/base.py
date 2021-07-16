@@ -1,6 +1,7 @@
 from copy import copy
 
 import numpy as np
+from numpy.core.fromnumeric import var
 import scipy
 import xarray as xr
 from sklearn.utils import check_random_state
@@ -173,6 +174,9 @@ class DynamicMixin:
             Generated data.
         """
         var_model = self.get_data(output='dense')
+        if self.is_epoched:
+            var_model = var_model.mean(axis=0)
+
         n_nodes = self.n_nodes
         model_order = self.attrs.get('model_order')
 
@@ -180,7 +184,7 @@ class DynamicMixin:
         if noise_func is None:
             rng = check_random_state(random_state)
 
-            def noisefunc():
+            def noise_func():
 
                 return rng.normal(size=(1, n_nodes))
 
@@ -191,11 +195,11 @@ class DynamicMixin:
         res = np.zeros((n, n_nodes))
 
         for jdx in range(model_order):
-            e = noisefunc()
+            e = noise_func()
             res[jdx, :] = e
             data[jdx, :] = e
         for jdx in range(model_order, n):
-            e = noisefunc()
+            e = noise_func()
             res[jdx, :] = e
             data[jdx, :] = e
             for idx in range(1, model_order + 1):
