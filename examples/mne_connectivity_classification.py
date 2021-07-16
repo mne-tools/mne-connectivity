@@ -149,7 +149,8 @@ print(epochs_test)
 ##############################################################################
 # Compute classification model
 # ----------------------------
-# Here, we use `envelope_correlation` and a ``RandomForestClassifier`` trained
+# Here, we use :func:`mne_connectivity.envelope_correlation` and a
+# ``RandomForestClassifier`` trained
 # on the envelope correlation values to classify sleep stage. We leverage
 # scikit-learn's ``FunctionTransformer`` to create a ``Pipeline`` object
 # for classification.

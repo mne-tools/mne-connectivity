@@ -86,8 +86,9 @@ class DynamicMixin:
 
         Returns
         -------
-        predicted : array, shape `data`.shape
-            Data as predicted by the VAR model.
+        predicted : array
+            Data as predicted by the VAR model of
+            shape same as ``data``.
 
         Notes
         -----
