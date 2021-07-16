@@ -99,12 +99,24 @@ def test_connectivity_containers(conn_cls):
     assert conn.shape == tuple(correct_numpy_shape)
     assert conn.get_data().shape == tuple(correct_numpy_shape)
     assert conn.get_data(output='dense').ndim == len(correct_numpy_shape) + 1
+
+    # test renaming nodes error checks
+    with pytest.raises(ValueError, match="Name*."):
+        conn.rename_nodes({'100': 'new_name'})
+    with pytest.raises(ValueError, match="mapping must be*"):
+        conn.rename_nodes(['0', 'new_name'])
+    with pytest.raises(ValueError, match="New channel names*"):
+        conn.rename_nodes({'0': '1'})
+
+    # test renaming nodes
     orig_names = conn.names
     conn.rename_nodes({'0': 'new_name'})
     new_names = conn.names
     assert all([name_1 == name_2 for name_1, name_2 in
                 zip(orig_names, new_names)
                 if name_2 != 'new_name'])
+    conn.rename_nodes(lambda x: '0' if x == 'new_name' else x)
+    assert_array_equal(orig_names, conn.names)
 
     conn2 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
                      **extra_kwargs)

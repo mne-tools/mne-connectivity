@@ -592,7 +592,7 @@ class _Connectivity(DynamicMixin):
         mapping : dict
             Mapping from original node names (keys) to new node names (values).
         """
-        names = self.names
+        names = copy(self.names)
 
         # first check and assemble clean mappings of index and name
         if isinstance(mapping, dict):
