@@ -153,16 +153,18 @@ print(epochs_test)
 # scikit-learn's ``FunctionTransformer`` to create a ``Pipeline`` object
 # for classification.
 
-kw_args = dict(names=ch_names,)
-
 
 def apply_degree_across_epochs(conn, **kwargs):
+    """Apply degree across epochs and aggregate."""
     degrees = []
     epoch_conn = conn.get_data(output='dense')
     for epoch_idx in range(conn.n_epochs):
         conn_data = epoch_conn[epoch_idx, ...].squeeze()
         degrees.append(degree(conn_data, **kwargs))
     return np.array(degrees)
+
+kw_args = dict(names=ch_names,)
+
 
 # create sklearn pipeline
 pipe = make_pipeline(
