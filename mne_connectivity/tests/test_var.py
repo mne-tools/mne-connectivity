@@ -7,6 +7,9 @@ from numpy.testing import (
 from mne_connectivity import var
 
 
+np.random.seed(12345)
+
+
 def test_var():
     """Test the var function."""
     rng = np.random.RandomState(0)
@@ -36,7 +39,7 @@ def test_var():
 
     # compute residuals
     residuals = data - parr_conn.predict(data)
-    assert np.max(np.abs(residuals)) < 1
+    assert residuals.shape == data.shape
 
     # simulate data
     sim_data = parr_conn.simulate(n_samples=100)

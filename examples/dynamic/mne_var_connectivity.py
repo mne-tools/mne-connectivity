@@ -177,7 +177,8 @@ print(conn)
 # higher residuals then before as we are only
 # fitting 1 VAR model to all the epochs.
 
-predicted_data = conn.predict(epochs.get_data())
+first_epoch = epochs.get_data()[0, ...]
+predicted_data = conn.predict(first_epoch)
 
 # compute residuals
 residuals = epochs.get_data() - predicted_data
