@@ -99,8 +99,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        os: [[ ubuntu-latest ], [ 'macos-latest' ]]
+        python-version: [[ 3.6, 3.7, 3.8, 3.9 ], [3.8]]
 
     env:
       TZ: Europe/Berlin
@@ -127,10 +127,11 @@ jobs:
           date
           python --version
           which python
-      # python -c "import mne; mne.sys_info()"
 
       - name: Install MNE-connectivity
-        run: pip install --no-deps .
+        run: |
+          pip install --no-deps .
+          python -c "import mne; mne.sys_info()"
       - name: Run pytest
         run: |
           python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
