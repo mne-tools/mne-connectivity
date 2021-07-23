@@ -35,7 +35,7 @@ from mne_connectivity import var
 # # <https://mne.tools/mne-bids/>`_.
 #
 # Then, we will do some basic filtering and preprocessing
-# via MNE-Python's API.
+# using MNE-Python.
 
 # paths to mne datasets - sample ECoG
 bids_root = mne.datasets.epilepsy_ecog.data_path()
@@ -44,7 +44,7 @@ bids_root = mne.datasets.epilepsy_ecog.data_path()
 bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
                      task='ictal', datatype='ieeg', extension='vhdr')
 
-# then we'll use it to load in the sample dataset
+# Then we'll use it to load in the sample dataset.
 # Here we use a format (iEEG) that is only available in MNE-BIDS 0.7+, so it
 # will emit a warning on versions <= 0.6
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
@@ -114,7 +114,7 @@ print(epochs)
 # return an EpochConnectivity data structure.
 # Each Epoch here represents the VAR model in the window
 # of data. Taken together, these represent a
-# a time-varying linear system.
+# time-varying linear system.
 
 conn = var(data=epochs.get_data(), times=times, names=ch_names)
 
