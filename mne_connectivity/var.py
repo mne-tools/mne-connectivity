@@ -7,13 +7,11 @@ import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 from sklearn.linear_model import Ridge
-from mne.utils import verbose
 
 from .utils import fill_doc
 
 
 @fill_doc
-@verbose
 def vector_auto_regression(
         data, times=None, names=None,
         model_order=1, delta=0.0,

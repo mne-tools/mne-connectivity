@@ -76,6 +76,20 @@ n_epochs_used : int, optional
     by default None.
 """
 
+# Verbose
+docdict['verbose'] = """
+verbose : bool, str, int, or None
+    If not None, override default verbose level (see :func:`mne.verbose`
+    for more info). If used, it should be passed as a
+    keyword-argument only."""
+
+# Parallelization
+docdict['n_jobs'] = """
+n_jobs : int
+    The number of jobs to run in parallel (default 1).
+    Requires the joblib package.
+"""
+
 docdict_indented = {}
 
 
