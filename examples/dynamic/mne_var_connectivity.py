@@ -24,7 +24,7 @@ from mne_bids import BIDSPath, read_raw_bids
 
 import matplotlib.pyplot as plt
 
-from mne_connectivity import var
+from mne_connectivity import vector_auto_regression
 
 ##############################################################################
 # Load the data
@@ -116,7 +116,7 @@ print(epochs)
 # of data. Taken together, these represent a
 # a time-varying linear system.
 
-conn = var(data=epochs.get_data(), times=times, names=ch_names)
+conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -163,7 +163,7 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # By setting ``model='dynamic'``, we instead treat each
 # Epoch as a sample of the same VAR model
 
-conn = var(data=epochs.get_data(), times=times, names=ch_names,
+conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names,
            model='avg-epochs')
 
 # this returns a connectivity structure over time

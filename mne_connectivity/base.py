@@ -52,7 +52,7 @@ class EpochMixin:
 
         fun = _check_combine(combine, valid=('mean', 'median'))
 
-        # apply function over the dataset
+        # apply function over the  array
         new_xr = xr.apply_ufunc(fun, self.xarray,
                                 input_core_dims=[['epochs']],
                                 vectorize=True)
@@ -116,7 +116,7 @@ class DynamicMixin:
             raise RuntimeError('If there is a single VAR model, '
                                'one must pass in a 2D array.')
 
-        # make all datasets 3D
+        # make the data 3D
         if data.ndim == 2:
             data = data[np.newaxis, ...]
 
@@ -460,7 +460,7 @@ class _Connectivity(DynamicMixin):
 
     @property
     def attrs(self):
-        """Attributes of connectivity dataset.
+        """Xarray attributes of connectivity.
 
         See ``xarray``'s ``attrs``.
         """
@@ -473,7 +473,7 @@ class _Connectivity(DynamicMixin):
 
     @property
     def n_nodes(self):
-        """The number of nodes in the dataset.
+        """The number of nodes in the original dataset.
 
         Even if ``indices`` defines a subset of nodes that
         were computed, this should be the total number of
@@ -686,11 +686,11 @@ class _Connectivity(DynamicMixin):
 
 @fill_doc
 class SpectralConnectivity(_Connectivity, SpectralMixin):
-    """Spectral connectivity container.
+    """Spectral connectivity class.
 
-    This is a dataset of shape (n_connections, n_freqs),
-    or (n_nodes, n_nodes, n_freqs). This describes how connectivity
-    varies over frequencies.
+    This class stores connectivity data that varies over
+    frequencies. The underlying data is an array of shape
+    (n_connections, n_freqs), or (n_nodes, n_nodes, n_freqs).
 
     Parameters
     ----------
@@ -702,6 +702,10 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     %(method)s
     %(spec_method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.spectral_connectivity
     """
     expected_n_dim = 2
 
@@ -716,9 +720,9 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
 @fill_doc
 class TemporalConnectivity(_Connectivity, TimeMixin):
-    """Temporal connectivity container.
+    """Temporal connectivity class.
 
-    This is a dataset of shape (n_connections, n_times),
+    This is an array of shape (n_connections, n_times),
     or (n_nodes, n_nodes, n_times). This describes how connectivity
     varies over time. It describes sample-by-sample time-varying
     connectivity (usually on the order of milliseconds). Here
@@ -737,7 +741,7 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     Notes
     -----
     `mne_connectivity.EpochConnectivity` is a similar connectivity
-    container. However, that describes one connectivity snapshot for
+    class. However, that describes one connectivity snapshot for
     each epoch. These epochs might be chunks of time that have
     different meaning for time ``t=0``. Epochs can mean separate trials,
     where the beginning of the trial implies t=0. These Epochs may
@@ -755,14 +759,15 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
 @fill_doc
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
-    """Spectrotemporal connectivity container.
+    """Spectrotemporal connectivity class.
 
-    This is a dataset of shape (n_connections, n_freqs, n_times),
-    or (n_nodes, n_nodes, n_freqs, n_times). This describes how
-    connectivity varies over frequency and time. It describes
-    sample-by-sample time-varying connectivity (usually on
-    the order of milliseconds), while also describing differences
-    relative to frequency.
+    This class stores connectivity data that varies over both frequency
+    and time. The temporal part describes sample-by-sample time-varying
+    connectivity (usually on the order of milliseconds). Note the
+    difference relative to Epochs.
+
+    The underlying data is an array of shape (n_connections, n_freqs,
+    n_times), or (n_nodes, n_nodes, n_freqs, n_times).
 
     Parameters
     ----------
@@ -788,9 +793,9 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
 
 @fill_doc
 class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
-    """Spectral connectivity container over Epochs.
+    """Spectral connectivity class over Epochs.
 
-    This is a dataset of shape (n_epochs, n_connections, n_freqs),
+    This is an array of shape (n_epochs, n_connections, n_freqs),
     or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how
     connectivity varies over frequencies for different epochs.
 
@@ -818,9 +823,9 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 
 @fill_doc
 class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
-    """Temporal connectivity container over Epochs.
+    """Temporal connectivity class over Epochs.
 
-    This is a dataset of shape (n_epochs, n_connections, n_times),
+    This is an array of shape (n_epochs, n_connections, n_times),
     or (n_epochs, n_nodes, n_nodes, n_times). This describes how
     connectivity varies over time for different epochs.
 
@@ -847,9 +852,9 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
 class EpochSpectroTemporalConnectivity(
     SpectroTemporalConnectivity, EpochMixin
 ):
-    """Spectrotemporal connectivity container over Epochs.
+    """Spectrotemporal connectivity class over Epochs.
 
-    This is a dataset of shape (n_epochs, n_connections, n_freqs, n_times),
+    This is an array of shape (n_epochs, n_connections, n_freqs, n_times),
     or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
     connectivity varies over frequencies and time for different epochs.
 
@@ -878,9 +883,9 @@ class EpochSpectroTemporalConnectivity(
 
 @fill_doc
 class Connectivity(_Connectivity, EpochMixin):
-    """Connectivity container without frequency or time component.
+    """Connectivity class without frequency or time component.
 
-    This is a dataset of shape (n_connections,),
+    This is an array of shape (n_connections,),
     or (n_nodes, n_nodes). This describes a connectivity matrix/graph
     that does not vary over time, frequency, or epochs.
 
@@ -892,6 +897,11 @@ class Connectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    mne_connectivity.envelope_correlation
     """
 
     def __init__(self, data, n_nodes, names=None, indices='all',
@@ -904,9 +914,9 @@ class Connectivity(_Connectivity, EpochMixin):
 
 @fill_doc
 class EpochConnectivity(_Connectivity, EpochMixin):
-    """Epoch connectivity container.
+    """Epoch connectivity class.
 
-    This is a dataset of shape (n_epochs, n_connections),
+    This is an array of shape (n_epochs, n_connections),
     or (n_epochs, n_nodes, n_nodes). This describes how
     connectivity varies for different epochs.
 
@@ -919,6 +929,11 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    mne_connectivity.envelope_correlation
     """
 
     # whether or not the connectivity occurs over epochs

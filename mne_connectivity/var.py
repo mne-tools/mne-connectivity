@@ -7,15 +7,17 @@ import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 from sklearn.linear_model import Ridge
-
 from mne.utils import verbose
 
+from .utils import fill_doc
 
+
+@fill_doc
 @verbose
-def var(data, times=None, names=None, model_order=1, delta=0.0,
+def vector_auto_regression(data, times=None, names=None, model_order=1, delta=0.0,
         memmap=True, compute_fb_operator=False,
         n_jobs=1, model='dynamic', verbose=None):
-    """Compute vector-autoregresssive (VAR) model.
+    """Compute vector auto-regresssive (VAR) model.
 
     Parameters
     ----------
@@ -24,9 +26,7 @@ def var(data, times=None, names=None, model_order=1, delta=0.0,
     data : array-like, shape=(n_epochs, n_signals, n_times) | generator
         The data from which to compute connectivity. The epochs dimension
         is interpreted differently, depending on ``'output'`` argument.
-    names : list | array-like | None
-        A list of names associated with the signals in ``data``.
-        If None, will be a list of indices of the number of nodes.
+    %(names)s
     model_order : int | str, optional
         Autoregressive model order, by default 1. If 'auto', then
         will use Bayesian Information Criterion to estimate the

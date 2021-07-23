@@ -4,7 +4,7 @@ from numpy.testing import (
     assert_array_almost_equal, assert_array_equal
 )
 
-from mne_connectivity import var
+from mne_connectivity import vector_auto_regression
 
 
 np.random.seed(12345)
@@ -18,22 +18,22 @@ def test_var():
     times = np.arange(n_times)
 
     with pytest.raises(RuntimeError, match='If computing time'):
-        var(data)
+        vector_auto_regression(data)
     with pytest.raises(ValueError, match='"model" parameter'):
-        var(data, model='static')
+        vector_auto_regression(data, model='static')
 
     # compute time-varying var
-    conn = var(data, times=times)
+    conn = vector_auto_regression(data, times=times)
 
     # parallel conn should be exactly the same
-    parr_conn = var(data, times=times, n_jobs=-1)
+    parr_conn = vector_auto_regression(data, times=times, n_jobs=-1)
     assert_array_equal(parr_conn.get_data(), conn.get_data())
 
     # compute connectivity with forward-backwards operator
-    var(data, times=times, compute_fb_operator=True, n_jobs=-1)
+    vector_auto_regression(data, times=times, compute_fb_operator=True, n_jobs=-1)
 
     # compute single var
-    single_conn = var(data, model='avg-epochs')
+    single_conn = vector_auto_regression(data, model='avg-epochs')
     assert_array_almost_equal(conn.get_data().mean(axis=0),
                               single_conn.get_data(), decimal=1)
 
