@@ -138,7 +138,7 @@ jobs:
       - name: Install MNE-connectivity
         run: |
           pip install --no-deps .
-          python -c "import mne; mne.sys_info()"
+          mne sys_info
       - name: Run pytest
         run: |
           python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
