@@ -2,15 +2,15 @@
 .. _ex-var-classification:
 
 ===============================================
-Classify sleep stages by computing connectivity
+Classify sleep stages using connectivity measures
 ===============================================
 
 Compute a connectivity envelope correlation model using EEG data
 and then apply a Random Forest classifier to predict sleep stage.
 
 In this example, we will demonstrate how to use scikit-learn
-and mne-connectivity to classify what stage of sleep
-a subject is. This tutorial is inspired by MNE-Python's
+and mne-connectivity to classify the sleep stage a 
+participant is in. This tutorial is inspired by MNE-Python's
 `Sleep stage classification tutorial
 <https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html>`_.
 """
@@ -35,7 +35,7 @@ from mne_connectivity import envelope_correlation, degree
 ##############################################################################
 # Load the data
 # -------------
-# Here, we first download the data from two subjects,
+# Here, we first download the data from two participants,
 # and then set annotations and channel mappings for the
 # available electrode data.
 data_path = mne.datasets.sample.data_path()
@@ -106,7 +106,7 @@ stage_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 ##############################################################################
 # Create Epochs Using MNE-Python
 # ------------------------------
-# Now that we have setup our dataset, we will create an Epochs class
+# Now that we have set up our dataset, we will create an Epochs class
 # that comprises of the different sleep stage events with 30 seconds
 # of data in each Epoch.
 
@@ -192,9 +192,9 @@ dummby_clf.fit(epochs_train, y_train)
 dummby_pred = dummby_clf.predict(epochs_test)
 dummby_acc = accuracy_score(y_test, dummby_pred)
 
-# We perform slightly better then chance as an initial first pass.
+# We perform slightly better than chance as an initial first pass.
 print("Accuracy score: {}".format(acc))
-print(f"Naive dummby accuracy score: {dummby_acc}")
+print(f"Naive dummy accuracy score: {dummby_acc}")
 
 ##############################################################################
 # References
