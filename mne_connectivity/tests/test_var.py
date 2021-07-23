@@ -30,7 +30,8 @@ def test_var():
     assert_array_equal(parr_conn.get_data(), conn.get_data())
 
     # compute connectivity with forward-backwards operator
-    vector_auto_regression(data, times=times, compute_fb_operator=True, n_jobs=-1)
+    vector_auto_regression(data, times=times,
+                           compute_fb_operator=True, n_jobs=-1)
 
     # compute single var
     single_conn = vector_auto_regression(data, model='avg-epochs')

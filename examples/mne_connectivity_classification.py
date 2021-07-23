@@ -9,7 +9,7 @@ Compute a connectivity envelope correlation model using EEG data
 and then apply a Random Forest classifier to predict sleep stage.
 
 In this example, we will demonstrate how to use scikit-learn
-and mne-connectivity to classify the sleep stage a 
+and mne-connectivity to classify the sleep stage a
 participant is in. This tutorial is inspired by MNE-Python's
 `Sleep stage classification tutorial
 <https://mne.tools/stable/auto_tutorials/clinical/60_sleep.html>`_.

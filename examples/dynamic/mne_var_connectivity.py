@@ -116,7 +116,8 @@ print(epochs)
 # of data. Taken together, these represent a
 # time-varying linear system.
 
-conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names)
+conn = vector_auto_regression(
+    data=epochs.get_data(), times=times, names=ch_names)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -161,10 +162,12 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # Compute one VAR model using all epochs
 # --------------------------------------
 # By setting ``model='dynamic'``, we instead treat each
-# Epoch as a sample of the same VAR model
+# Epoch as a sample of the same VAR model and thus
+# we only estimate one VAR model.
 
-conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names,
-           model='avg-epochs')
+conn = vector_auto_regression(
+    data=epochs.get_data(), times=times, names=ch_names,
+    model='avg-epochs')
 
 # this returns a connectivity structure over time
 print(conn)

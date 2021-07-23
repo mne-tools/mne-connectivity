@@ -14,7 +14,9 @@ from .utils import fill_doc
 
 @fill_doc
 @verbose
-def vector_auto_regression(data, times=None, names=None, model_order=1, delta=0.0,
+def vector_auto_regression(
+        data, times=None, names=None,
+        model_order=1, delta=0.0,
         memmap=True, compute_fb_operator=False,
         n_jobs=1, model='dynamic', verbose=None):
     """Compute vector auto-regresssive (VAR) model.
