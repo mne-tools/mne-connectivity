@@ -107,7 +107,7 @@ class DynamicMixin:
 
         """
         if data.ndim < 2 or data.ndim > 3:
-            raise ValueError(f'data passed in must be either 2D or 3D. '
+            raise ValueError(f'Data passed in must be either 2D or 3D. '
                              f'The data you passed in has {data.ndim} dims.')
         if data.ndim == 2 and self.is_epoched:
             raise RuntimeError('If there is a VAR model over epochs, '
