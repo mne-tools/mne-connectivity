@@ -55,8 +55,8 @@ def vector_auto_regression(
 
     See Also
     --------
-    Connectivity
-    EpochConnectivity
+    mne_connectivity.Connectivity
+    mne_connectivity.EpochConnectivity
 
     Notes
     -----

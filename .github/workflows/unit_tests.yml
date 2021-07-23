@@ -112,6 +112,11 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      DISPLAY: ':99.0'
+      MNE_LOGGING_LEVEL: 'info'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+      
     steps:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1

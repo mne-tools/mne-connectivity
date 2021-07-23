@@ -44,7 +44,7 @@ listed above.
    envelope_correlation
    phase_slope_index
    spectral_connectivity
-   var
+   vector_auto_regression
 
 Reading functions
 =================
