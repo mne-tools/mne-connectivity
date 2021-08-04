@@ -741,8 +741,8 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     Notes
     -----
     `mne_connectivity.EpochConnectivity` is a similar connectivity
-    class. However, that describes one connectivity snapshot for
-    each epoch. These epochs might be chunks of time that have
+    class to this one. However, that describes one connectivity snapshot
+    for each epoch. These epochs might be chunks of time that have
     different meaning for time ``t=0``. Epochs can mean separate trials,
     where the beginning of the trial implies t=0. These Epochs may
     also be discontiguous.

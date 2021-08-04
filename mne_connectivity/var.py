@@ -24,6 +24,8 @@ def vector_auto_regression(
     data : array-like, shape=(n_epochs, n_signals, n_times) | generator
         The data from which to compute connectivity. The epochs dimension
         is interpreted differently, depending on ``'output'`` argument.
+    times : array-like
+        The time points used to construct the epoched ``data``.
     %(names)s
     model_order : int | str, optional
         Autoregressive model order, by default 1. If 'auto', then
@@ -58,6 +60,10 @@ def vector_auto_regression(
 
     Notes
     -----
+    Names can be passed in, which are then used to instantiate the nodes
+    of the connectivity class. For example, they can be the electrode names
+    of EEG.
+
     When computing a VAR model (i.e. linear dynamical system), we require
     the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There
     are two ways one can interpret the data in the model.
@@ -173,9 +179,12 @@ def _construct_var_eqns(data, model_order, delta=None):
     -------
     X : np.ndarray
         The predictor multivariate time-series. This will have shape
-        ``() See Notes.
+        ``(model_order * (n_times - model_order),
+        n_signals * model_order)``. See Notes.
     Y : np.ndarray
-        The predicted multivariate time-series. See Notes.
+        The predicted multivariate time-series. This will have shape
+        ``(model_order * (n_times - model_order),
+        n_signals * model_order)``. See Notes.
 
     Notes
     -----

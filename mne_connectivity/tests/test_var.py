@@ -10,7 +10,7 @@ from mne_connectivity import vector_auto_regression
 np.random.seed(12345)
 
 
-def test_var():
+def test_vector_auto_regression():
     """Test the var function."""
     rng = np.random.RandomState(0)
     n_epochs, n_signals, n_times = 2, 4, 64

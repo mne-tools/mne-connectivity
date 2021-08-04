@@ -128,7 +128,8 @@ print(conn)
 # We can now evaluate the model fit by computing
 # the residuals of the model and visualizing it.
 # In addition, we can evaluate the covariance of the
-# residuals.
+# residuals. This will compute an independent
+# VAR model for each epoch (window) of data.
 
 predicted_data = conn.predict(epochs.get_data())
 
@@ -152,7 +153,10 @@ sampled_residuals = np.concatenate(
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
-# visualize the covariance of residuals
+# Next, we visualize the covariance of residuals.
+# Here we will see that because we use ordinary
+# least-squares as an estimation method, the residuals
+# should come with low covariances.
 fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
@@ -163,7 +167,9 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # --------------------------------------
 # By setting ``model='dynamic'``, we instead treat each
 # Epoch as a sample of the same VAR model and thus
-# we only estimate one VAR model.
+# we only estimate one VAR model. One might do this when
+# they suspect their data is stationary and one VAR model
+# represents all epochs.
 
 conn = vector_auto_regression(
     data=epochs.get_data(), times=times, names=ch_names,
@@ -203,7 +209,8 @@ sampled_residuals = np.concatenate(
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
-# visualize the covariance of residuals
+# Next, we visualize the covariance of residuals as before.
+# Here we will see a similar trend with the covariances.
 fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
