@@ -21,8 +21,6 @@ def vector_auto_regression(
 
     Parameters
     ----------
-        Parameters
-    ----------
     data : array-like, shape=(n_epochs, n_signals, n_times) | generator
         The data from which to compute connectivity. The epochs dimension
         is interpreted differently, depending on ``'output'`` argument.
@@ -75,11 +73,11 @@ def vector_auto_regression(
 
     This results in one VAR model over all the epochs.
 
-    The second approach would treat each epoch as a different VAR model.
-    That is we would estimate a time-varying VAR model. We have the same
-    data as earlier, but now we are interested in estimating the
+    The second approach treats each epoch as a different VAR model,
+    estimating a time-varying VAR model. Using the same
+    data as above,  we now are interested in estimating the
     parameters, $(A_1, A_2, ..., A_{order})$ for **each** epoch. The model
-    would be the following for **each** epoch.
+    would be the following for **each** epoch:
 
     .. math::
         X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
@@ -142,7 +140,7 @@ def vector_auto_regression(
         if times is None:
             raise RuntimeError('If computing time (epoch) varying VAR model, '
                                'then "times" must be passed in. From '
-                               'MNE epochs, one can extract using '
+                               'MNE epochs, one can extract this using '
                                '"epochs.times".')
 
         # compute time-varying VAR model where each epoch
