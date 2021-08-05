@@ -47,3 +47,7 @@ def test_vector_auto_regression():
     sim_data = parr_conn.simulate(n_samples=100, noise_func=np.random.normal)
 
     assert sim_data.shape == (4, 100)
+
+
+def test_dynamic_connectivity():
+    pass
