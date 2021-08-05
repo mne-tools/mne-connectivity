@@ -1,7 +1,6 @@
 from copy import copy
 
 import numpy as np
-import scipy
 import xarray as xr
 from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
@@ -211,40 +210,6 @@ class DynamicMixin:
         # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
         return data[10 * model_order:, :].transpose()
 
-    def is_stable(self):
-        """Test if VAR model is stable.
-
-        This function tests stability of the VAR model as described in [1]_.
-
-        Returns
-        -------
-        out : bool
-            True if the model is stable.
-
-        References
-        ----------
-        .. [1] H. Lütkepohl, "New Introduction to Multiple Time Series
-               Analysis", 2005, Springer, Berlin, Germany.
-        """
-        m, mp = self.coef.shape
-        model_order = mp // m
-        assert(mp == m * model_order)  # TODO: replace with raise?
-
-        top_block = []
-        for i in range(model_order):
-            top_block.append(self.coef[:, i::model_order])
-        top_block = np.hstack(top_block)
-
-        im = np.eye(m)
-        eye_block = im
-        for i in range(model_order - 2):
-            eye_block = scipy.linalg.block_diag(im, eye_block)
-        eye_block = np.hstack(
-            [eye_block, np.zeros((m * (model_order - 1), m))])
-
-        tmp = np.vstack([top_block, eye_block])
-        return np.all(np.abs(np.linalg.eig(tmp)[0]) < 1)
-
 
 @fill_doc
 class _Connectivity(DynamicMixin):
@@ -425,14 +390,21 @@ class _Connectivity(DynamicMixin):
         else:
             data_len = data.shape[0]
 
-        # check that the indices passed in are of the same length
         if isinstance(indices, tuple):
+            # check that the indices passed in are of the same length
             if len(indices[0]) != len(indices[1]):
                 raise ValueError(f'If indices are passed in '
                                  f'then they must be the same '
                                  f'length. They are right now '
                                  f'{len(indices[0])} and '
                                  f'{len(indices[1])}.')
+            # indices length should match the data length
+            if len(indices[0]) != data_len:
+                raise ValueError(
+                    f'The number of indices, {len(indices[0])} '
+                    f'should match the raveled data length passed '
+                    f'in of {data_len}.')
+
         elif indices == 'symmetric':
             expected_len = ((n_nodes + 1) * n_nodes) // 2
             if data_len != expected_len:

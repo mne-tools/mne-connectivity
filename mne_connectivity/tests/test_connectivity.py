@@ -18,17 +18,20 @@ from mne_connectivity.io import read_connectivity
 
 
 def _prep_correct_connectivity_input(conn_cls, n_nodes=3, symmetric=False,
-                                     n_epochs=4):
+                                     n_epochs=4, indices=None):
     correct_numpy_shape = []
 
     extra_kwargs = dict()
     if conn_cls.is_epoched:
         correct_numpy_shape.append(n_epochs)
 
-    if symmetric:
-        correct_numpy_shape.append((n_nodes + 1) * n_nodes // 2)
+    if indices is None:
+        if symmetric:
+            correct_numpy_shape.append((n_nodes + 1) * n_nodes // 2)
+        else:
+            correct_numpy_shape.append(n_nodes**2)
     else:
-        correct_numpy_shape.append(n_nodes**2)
+        correct_numpy_shape.append(len(indices[0]))
 
     if conn_cls in (SpectralConnectivity, SpectroTemporalConnectivity,
                     EpochSpectralConnectivity,
@@ -118,11 +121,22 @@ def test_connectivity_containers(conn_cls):
     conn.rename_nodes(lambda x: '0' if x == 'new_name' else x)
     assert_array_equal(orig_names, conn.names)
 
-    conn2 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
-                     **extra_kwargs)
-    conn3 = conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
-                     **extra_kwargs)
-    np.testing.assert_array_equal(conn2.get_data(), conn3.get_data())
+    indiced_numpy_shape, indice_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, symmetric=False, n_epochs=n_epochs,
+        indices=indices
+    )
+    indiced_numpy_input = np.ones(indiced_numpy_shape)
+    conn2 = conn_cls(data=indiced_numpy_input, n_nodes=3, indices=indices,
+                     **indice_kwargs)
+    conn3 = conn_cls(data=indiced_numpy_input, n_nodes=3, indices=indices,
+                     **indice_kwargs)
+    assert_array_equal(
+        conn2.get_data(output='dense'), conn3.get_data(output='dense'))
+
+    # test getting data with indices specified
+    with pytest.raises(ValueError, match='The number of indices'):
+        conn_cls(data=correct_numpy_input, n_nodes=3, indices=indices,
+                 **extra_kwargs)
 
     # test symmetric input
     correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(

@@ -42,12 +42,23 @@ def test_vector_auto_regression():
     residuals = data - parr_conn.predict(data)
     assert residuals.shape == data.shape
 
+    # Dynamic "Connectivity" errors
+    with pytest.raises(ValueError, match='Data passed in must be'):
+        parr_conn.predict(np.zeros((4,)))
+    with pytest.raises(RuntimeError, match='If there is a VAR model'):
+        parr_conn.predict(np.zeros((4, 4)))
+    with pytest.raises(RuntimeError, match='If there is a single VAR'):
+        single_conn.predict(data)
+
+    # prediction should work with a 2D array when non epoched
+    single_conn.predict(rng.randn(n_signals, n_times))
+
     # simulate data
     sim_data = parr_conn.simulate(n_samples=100)
     sim_data = parr_conn.simulate(n_samples=100, noise_func=np.random.normal)
-
     assert sim_data.shape == (4, 100)
 
-
-def test_dynamic_connectivity():
-    pass
+    # simulate data over many epochs
+    big_epoch_data = rng.randn(n_times * 2, n_signals, n_times)
+    parr_conn = vector_auto_regression(big_epoch_data, times=times, n_jobs=-1)
+    parr_conn.predict(big_epoch_data)
