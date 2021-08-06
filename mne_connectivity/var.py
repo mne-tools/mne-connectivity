@@ -143,7 +143,7 @@ def vector_auto_regression(
                             method='VAR', **model_params)
     else:
         assert model == 'dynamic'
-        if times is None:
+        if times is None and n_epochs > 1:
             raise RuntimeError('If computing time (epoch) varying VAR model, '
                                'then "times" must be passed in. From '
                                'MNE epochs, one can extract this using '

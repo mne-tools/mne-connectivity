@@ -1,13 +1,106 @@
 import numpy as np
 import pytest
 from numpy.testing import (
-    assert_array_almost_equal, assert_array_equal
+    assert_array_almost_equal, assert_array_equal,
+    assert_almost_equal
 )
 
 from mne_connectivity import vector_auto_regression
 
 
 np.random.seed(12345)
+
+
+def create_noisy_data(
+    add_noise,
+    asymmetric=False,
+    add_compounding_noise=False,
+    sigma=1e-4,
+    m=100,
+    return_A=False,
+):
+    """Create noisy test data.
+
+    Generate a 2x2 linear system, and perturb
+    observations of the state variables with Gaussian noise.
+
+    Parameters
+    ----------
+    add_noise : bool
+        Whether to add noise or not.
+    sigma : float
+        noise standard deviation.
+    m : int
+        The number of samples.
+    return_A : bool
+        Whether to return the A matrix
+
+    Returns
+    -------
+    sample_data : np.ndarray
+        Observed sample data. Possibly with noise.
+    sample_eigs : np.ndarray
+        The true eigenvalues of the system.
+    sample_A : np.ndarray
+        (Optional) if ``return_A`` is True, then returns the
+        true linear system matrix.
+    """
+    mu = 0.0
+    noise = np.random.normal(mu, sigma, m)  # gaussian noise
+    if asymmetric:
+        A = np.array([[1.0, 1.5], [-1.0, 2.0]])
+    else:
+        A = np.array([[1.0, 1.0], [-1.0, 2.0]])
+    A /= np.sqrt(3)
+
+    # compute true eigenvalues
+    true_eigvals = np.linalg.eigvals(A)
+
+    n = 2
+    X = np.zeros((n, m))
+    X[:, 0] = np.array([0.5, 1.0])
+    # evolve the system and perturb the data with noise
+    for k in range(1, m):
+        X[:, k] = A.dot(X[:, k - 1])
+
+        if add_noise:
+            X[:, k - 1] += noise[k - 1]
+        if add_compounding_noise:
+            X[:, k] += noise[k - 1]
+
+    if return_A:
+        return X.T, true_eigvals, A
+    else:
+        return X.T, true_eigvals
+
+
+def test_vector_auto_regression_computation():
+    """Test VAR model computation accuracy.
+
+    Tests eigenvalue and state matrix recovery.
+    """
+    np.random.seed(12345)
+    sample_data, sample_eigs, sample_A = create_noisy_data(
+        add_noise=True, return_A=True)
+
+    # create 3D array input
+    sample_data = sample_data.T[np.newaxis, ...]
+
+    # compute the model
+    model = vector_auto_regression(sample_data)
+
+    # test the recovered model
+    assert_array_almost_equal(
+        model.get_data(output='dense').squeeze(), sample_A,
+        decimal=2)
+
+    # get the eigenvalues and test accuracy of recovery
+    eigs = np.linalg.eigvals(model.get_data(output='dense').squeeze())
+    eigvals_diff = np.linalg.norm(eigs - sample_eigs)
+    assert_almost_equal(
+        np.linalg.norm(eigs[1]), np.linalg.norm(sample_eigs[1]), decimal=2
+    )
+    assert_almost_equal(eigvals_diff, 0, decimal=2)
 
 
 def test_vector_auto_regression():

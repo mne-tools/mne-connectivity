@@ -12,6 +12,12 @@ from mne_connectivity.viz import plot_connectivity_circle
 
 
 class SpectralMixin:
+    """Mixin class for spectral connectivities.
+
+    Note: In mne-connectivity, we associate the word
+    "spectral" with time-frequency. Reference to
+    eigenvalue structure is not captured in this mixin.
+    """
     @property
     def freqs(self):
         """The frequency points of the connectivity data.
