@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 
 from mne_connectivity import vector_auto_regression
 
-##############################################################################
+# %%
 # Load the data
 # -------------
 # Here, we first download an ECoG dataset that was
@@ -64,7 +64,7 @@ raw.notch_filter(line_freq)
 # drop bad channels
 raw.drop_channels(raw.info['bads'])
 
-##############################################################################
+# %%
 # Crop the data for this example
 # ------------------------------
 #
@@ -89,7 +89,7 @@ onset_sec = onset_sample / raw.info['sfreq']
 # remove all data after the seizure onset
 raw = raw.crop(tmin=0, tmax=onset_sec, include_tmax=False)
 
-##############################################################################
+# %%
 # Create Windows of Data (Epochs) Using MNE-Python
 # ------------------------------------------------
 # We have a continuous iEEG snapshot that is about 60
@@ -106,7 +106,7 @@ ch_names = epochs.ch_names
 
 print(epochs)
 
-##############################################################################
+# %%
 # Compute the VAR model for all windows
 # -------------------------------------
 # Now, we are ready to compute our VAR model.
@@ -122,7 +122,7 @@ conn = vector_auto_regression(
 # this returns a connectivity structure over time
 print(conn)
 
-##############################################################################
+# %%
 # Evaluate this VAR model fit
 # ---------------------------
 # We can now evaluate the model fit by computing
@@ -162,7 +162,7 @@ cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
 fig.colorbar(im, cax=cax, orientation='horizontal')
 
-##############################################################################
+# %%
 # Compute one VAR model using all epochs
 # --------------------------------------
 # By setting ``model='dynamic'``, we instead treat each
@@ -178,7 +178,7 @@ conn = vector_auto_regression(
 # this returns a connectivity structure over time
 print(conn)
 
-##############################################################################
+# %%
 # Evaluate model fit again
 # ------------------------
 # We can now evaluate the model fit again as done
@@ -216,7 +216,7 @@ cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
 fig.colorbar(im, cax=cax, orientation='horizontal')
 
-##############################################################################
+# %%
 # Other properties of VAR models
 # ------------------------------
 # We can now evaluate the model fit again as done

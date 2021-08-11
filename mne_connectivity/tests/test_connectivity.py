@@ -121,15 +121,15 @@ def test_connectivity_containers(conn_cls):
     conn.rename_nodes(lambda x: '0' if x == 'new_name' else x)
     assert_array_equal(orig_names, conn.names)
 
-    indiced_numpy_shape, indice_kwargs = _prep_correct_connectivity_input(
+    indexed_numpy_shape, index_kwargs = _prep_correct_connectivity_input(
         conn_cls, n_nodes=n_nodes, symmetric=False, n_epochs=n_epochs,
         indices=indices
     )
-    indiced_numpy_input = np.ones(indiced_numpy_shape)
-    conn2 = conn_cls(data=indiced_numpy_input, n_nodes=3, indices=indices,
-                     **indice_kwargs)
-    conn3 = conn_cls(data=indiced_numpy_input, n_nodes=3, indices=indices,
-                     **indice_kwargs)
+    indexed_numpy_input = np.ones(indexed_numpy_shape)
+    conn2 = conn_cls(data=indexed_numpy_input, n_nodes=3, indices=indices,
+                     **index_kwargs)
+    conn3 = conn_cls(data=indexed_numpy_input, n_nodes=3, indices=indices,
+                     **index_kwargs)
     assert_array_equal(
         conn2.get_data(output='dense'), conn3.get_data(output='dense'))
 

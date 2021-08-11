@@ -3,6 +3,8 @@
 # License: BSD (3-clause)
 import numpy as np
 
+from mne.utils import logger
+
 
 def parallel_loop(func, n_jobs=1, verbose=1):
     """run loops in parallel, if joblib is available.
@@ -32,14 +34,14 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
     if not n_jobs:
         if verbose:
-            print('running ', func, ' serially')
+            logger.info('running ', func, ' serially')
 
         def par(x):
 
             return list(x)
     else:
         if verbose:
-            print('running ', func, ' in parallel')
+            logger.info('running ', func, ' in parallel')
         func = delayed(func)
         par = Parallel(n_jobs=n_jobs, verbose=verbose)
 
