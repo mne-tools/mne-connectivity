@@ -28,9 +28,7 @@ def vector_auto_regression(
         The time points used to construct the epoched ``data``.
     %(names)s
     model_order : int | str, optional
-        Autoregressive model order, by default 1. If 'auto', then
-        will use Bayesian Information Criterion to estimate the
-        model order.
+        Autoregressive model order, by default 1.
     delta : float, optional
         Ridge penalty parameter, by default 0.0
     memmap : bool
@@ -63,6 +61,14 @@ def vector_auto_regression(
     Names can be passed in, which are then used to instantiate the nodes
     of the connectivity class. For example, they can be the electrode names
     of EEG.
+
+    For higher-order VAR models, then there are "multiple" ``A`` matrices
+    representing the linear dynamics with respect to that lag. These
+    are represented by vertically concatenating matrices. For example, if
+    there is a 3-signal time series, then a order-1 VAR model will result
+    in a 3x3 connectivity matrix. An order-2 VAR model will result in a
+    6x3 connectivity matrix, with two 3x3 matrices representing the dynamics
+    at lag 1 and lag 2 respectively.
 
     When computing a VAR model (i.e. linear dynamical system), we require
     the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There
@@ -136,7 +142,6 @@ def vector_auto_regression(
         coef = b.transpose()
 
         # create connectivity
-        print(coef.shape)
         coef = coef.flatten()
         conn = Connectivity(data=coef, n_nodes=n_nodes, names=names,
                             n_epochs_used=n_epochs,
@@ -303,7 +308,7 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
     }
 
     # compute the A matrix for all Epochs
-    A_mats = np.zeros((n_epochs, n_nodes, n_nodes))
+    A_mats = np.zeros((n_epochs, n_nodes * model_order, n_nodes))
     if n_jobs == 1:
         for idx in tqdm(range(n_epochs)):
             A = _compute_lds_func(data[idx, ...], **model_params)
@@ -334,7 +339,12 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
         )
         for idx in range(len(results)):
             adjmat = results[idx]
-            A_mats[idx, ...] = adjmat
+            # add additional order models in dynamic connectivity
+            # along the first node axes
+            for jdx in range(model_order):
+                A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
+                    -n_nodes:, jdx * n_nodes: n_nodes * (jdx + 1)
+                ]
 
         if memmap:
             try:
