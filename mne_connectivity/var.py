@@ -136,6 +136,7 @@ def vector_auto_regression(
         coef = b.transpose()
 
         # create connectivity
+        print(coef.shape)
         coef = coef.flatten()
         conn = Connectivity(data=coef, n_nodes=n_nodes, names=names,
                             n_epochs_used=n_epochs,

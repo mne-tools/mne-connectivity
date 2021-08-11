@@ -532,7 +532,13 @@ class _Connectivity(DynamicMixin):
                 new_shape = [self.n_epochs]
             else:
                 new_shape = []
-            new_shape.extend([self.n_nodes, self.n_nodes])
+
+            # handle the case where model order is defined in VAR connectivity
+            # and thus appends the connectivity matrices side by side, so the
+            # shape is N x N * model_order
+            model_order = self.attrs.get('model_order', 1)
+            
+            new_shape.extend([self.n_nodes, self.n_nodes * model_order])
             if 'freqs' in self.dims:
                 new_shape.append(len(self.coords['freqs']))
             if 'times' in self.dims:
