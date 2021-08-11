@@ -31,8 +31,8 @@ from mne_connectivity import vector_auto_regression
 # -------------
 # Here, we first download an ECoG dataset that was
 # recorded from a patient with epilepsy. To facilitate
-# loading the data, we use `mne-bids
-# # <https://mne.tools/mne-bids/>`_.
+# loading the data, we use
+# `mne-bids <https://mne.tools/mne-bids/>`_.
 #
 # Then, we will do some basic filtering and preprocessing
 # using MNE-Python.
