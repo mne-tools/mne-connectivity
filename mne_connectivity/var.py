@@ -62,13 +62,13 @@ def vector_auto_regression(
     of the connectivity class. For example, they can be the electrode names
     of EEG.
 
-    For higher-order VAR models, then there are "multiple" ``A`` matrices
+    For higher-order VAR models, there are n_order ``A`` matrices,
     representing the linear dynamics with respect to that lag. These
-    are represented by vertically concatenating matrices. For example, if
-    there is a 3-signal time series, then a order-1 VAR model will result
+    are represented by vertically concatenated matrices. For example, if
+    the input is data where n_signals is 3, then an order-1 VAR model will result
     in a 3x3 connectivity matrix. An order-2 VAR model will result in a
     6x3 connectivity matrix, with two 3x3 matrices representing the dynamics
-    at lag 1 and lag 2 respectively.
+    at lag 1 and lag 2, respectively.
 
     When computing a VAR model (i.e. linear dynamical system), we require
     the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There
