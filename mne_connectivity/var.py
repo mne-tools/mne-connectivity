@@ -65,8 +65,8 @@ def vector_auto_regression(
     For higher-order VAR models, there are n_order ``A`` matrices,
     representing the linear dynamics with respect to that lag. These
     are represented by vertically concatenated matrices. For example, if
-    the input is data where n_signals is 3, then an order-1 VAR model will result
-    in a 3x3 connectivity matrix. An order-2 VAR model will result in a
+    the input is data where n_signals is 3, then an order-1 VAR model will
+    result in a 3x3 connectivity matrix. An order-2 VAR model will result in a
     6x3 connectivity matrix, with two 3x3 matrices representing the dynamics
     at lag 1 and lag 2, respectively.
 
