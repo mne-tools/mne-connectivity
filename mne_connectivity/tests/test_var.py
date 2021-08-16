@@ -11,10 +11,8 @@ from mne_connectivity import vector_auto_regression
 def create_noisy_data(
     add_noise,
     asymmetric=False,
-    add_compounding_noise=False,
     sigma=1e-4,
-    m=100,
-    return_A=False,
+    m=100
 ):
     """Create noisy test data.
 
@@ -62,13 +60,8 @@ def create_noisy_data(
 
         if add_noise:
             X[:, k - 1] += noise[k - 1]
-        if add_compounding_noise:
-            X[:, k] += noise[k - 1]
 
-    if return_A:
-        return X.T, true_eigvals, A
-    else:
-        return X.T, true_eigvals
+    return X.T, true_eigvals, A
 
 
 def test_vector_auto_regression_computation():
@@ -78,7 +71,7 @@ def test_vector_auto_regression_computation():
     """
     np.random.RandomState(12345)
     sample_data, sample_eigs, sample_A = create_noisy_data(
-        add_noise=True, return_A=True)
+        add_noise=True)
 
     # create 3D array input
     sample_data = sample_data.T[np.newaxis, ...]
