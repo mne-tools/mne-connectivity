@@ -1,22 +1,16 @@
-from mne_connectivity.base import Connectivity, EpochConnectivity
-import os
-from pathlib import Path
-import shutil
 import numpy as np
 import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
-from sklearn.linear_model import Ridge
 
 from .utils import fill_doc
+from .base import Connectivity, EpochConnectivity
 
 
 @fill_doc
 def vector_auto_regression(
-        data, times=None, names=None,
-        model_order=1, delta=0.0,
-        memmap=True, compute_fb_operator=False,
-        n_jobs=1, model='dynamic', verbose=None):
+        data, times=None, names=None, model_order=1, delta=0.0,
+        compute_fb_operator=False, n_jobs=1, model='dynamic', verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
     Parameters
@@ -25,19 +19,18 @@ def vector_auto_regression(
         The data from which to compute connectivity. The epochs dimension
         is interpreted differently, depending on ``'output'`` argument.
     times : array-like
-        The time points used to construct the epoched ``data``.
+        (Optional) The time points used to construct the epoched ``data``. If
+        ``None``, then ``times_used`` in the Connectivity will not be
+        available.
     %(names)s
     model_order : int | str, optional
         Autoregressive model order, by default 1.
     delta : float, optional
-        Ridge penalty parameter, by default 0.0
-    memmap : bool
-        Whether or not to memory map the epoch data on disk during
-        joblib parallelization.
+        Ridge penalty (l2-regularization) parameter, by default 0.0
     compute_fb_operator : bool
         Whether to compute the backwards operator and average with
         the forward operator. Addresses bias in the least-square
-        estimation [1].
+        estimation :footcite:`Dawson_2016`.
     model : str
         Whether to compute one VAR model using all epochs as multiple
         samples of the same VAR model ('avg-epochs'), or to compute
@@ -115,8 +108,6 @@ def vector_auto_regression(
     References
     ----------
     .. footbibliography::
-    .. [1] Characterizing and correcting for the effect of sensor noise in the
-        dynamic mode decomposition. https://arxiv.org/pdf/1507.02264.pdf
     """
     if model not in ['avg-epochs', 'dynamic']:
         raise ValueError(f'"model" parameter must be one of '
@@ -160,7 +151,7 @@ def vector_auto_regression(
         # linear system
         conn = _system_identification(
             data=data, times=times, names=names, model_order=model_order,
-            delta=delta, memmap=memmap, n_jobs=n_jobs,
+            delta=delta, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
             verbose=verbose)
     return conn
@@ -173,8 +164,8 @@ def _construct_var_eqns(data, model_order, delta=None):
 
     Parameters
     ----------
-    data : np.ndarray
-        The multivariate data (n_epochs, n_signals, n_times).
+    data : np.ndarray (n_epochs, n_signals, n_times)
+        The multivariate data.
     model_order : int
         The order of the VAR model.
     delta : float, optional
@@ -234,8 +225,8 @@ def _construct_snapshots(snapshots, order, n_times):
 
     Parameters
     ----------
-    snapshots : np.ndarray
-        A multivariate time-series ``(n_signals, n_times)``.
+    snapshots : np.ndarray (n_signals, n_times)
+        A multivariate time-series.
     order : int
         The order of the linear model to be estimated.
     n_times : int
@@ -243,7 +234,7 @@ def _construct_snapshots(snapshots, order, n_times):
 
     Returns
     -------
-    snaps : np.ndarray
+    snaps : np.ndarray (n_signals * order, n_times - order)
         A snapshot matrix with copies of the original ``snapshots``
         along the rows based on the ``order`` of the model.
 
@@ -284,7 +275,7 @@ def _construct_snapshots(snapshots, order, n_times):
 
 
 def _system_identification(data, times, names=None, model_order=1, delta=0,
-                           random_state=None, memmap=False, n_jobs=-1,
+                           random_state=None, n_jobs=-1,
                            compute_fb_operator=False,
                            verbose=True):
     """Solve system identification using least-squares over all epochs.
@@ -315,22 +306,13 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
             A_mats[idx, ...] = A
     else:
         try:
-            from joblib import Parallel, delayed, dump, load
+            from joblib import Parallel, delayed
         except ImportError as e:
             raise ImportError(e)
 
-        if memmap:
-            folder = Path("./joblib_memmap")
-            folder.mkdir(exist_ok=True, parents=True)
+        arr = data
 
-            # dump data into memmap for joblib
-            data_filename_memmap = os.path.join(folder, "data_memmap")
-            dump(data, data_filename_memmap)
-            arr = load(data_filename_memmap, mmap_mode="r")
-        else:
-            arr = data
-
-        # run parallelized job to compute fragility over all windows
+        # run parallelized job to compute over all windows
         results = Parallel(n_jobs=n_jobs)(
             delayed(_compute_lds_func)(
                 arr[idx, ...], **model_params
@@ -345,12 +327,6 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
                 A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
                     -n_nodes:, jdx * n_nodes: n_nodes * (jdx + 1)
                 ]
-
-        if memmap:
-            try:
-                shutil.rmtree(folder)
-            except:  # noqa
-                print("Could not clean-up joblib memmap automatically.")
 
     # create connectivity
     A_mats = A_mats.reshape((n_epochs, -1))
@@ -368,6 +344,8 @@ def _compute_lds_func(data, model_order, delta, compute_fb_operator,
 
     Allows for parallelization over epochs.
     """
+    from sklearn.linear_model import Ridge
+
     n_times = data.shape[-1]
 
     # create large snapshot with time-lags of order specified by

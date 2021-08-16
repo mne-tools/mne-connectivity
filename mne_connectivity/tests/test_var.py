@@ -8,9 +8,6 @@ from numpy.testing import (
 from mne_connectivity import vector_auto_regression
 
 
-np.random.seed(12345)
-
-
 def create_noisy_data(
     add_noise,
     asymmetric=False,
@@ -79,7 +76,7 @@ def test_vector_auto_regression_computation():
 
     Tests eigenvalue and state matrix recovery.
     """
-    np.random.seed(12345)
+    np.random.RandomState(12345)
     sample_data, sample_eigs, sample_A = create_noisy_data(
         add_noise=True, return_A=True)
 

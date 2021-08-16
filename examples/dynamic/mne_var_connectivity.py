@@ -29,13 +29,11 @@ from mne_connectivity import vector_auto_regression
 # %%
 # Load the data
 # -------------
-# Here, we first download an ECoG dataset that was
-# recorded from a patient with epilepsy. To facilitate
-# loading the data, we use
-# `mne-bids <https://mne.tools/mne-bids/>`_.
+# Here, we first download an ECoG dataset that was recorded from a patient with
+# epilepsy. To facilitate loading the data, we use `mne-bids
+# <https://mne.tools/mne-bids/>`_.
 #
-# Then, we will do some basic filtering and preprocessing
-# using MNE-Python.
+# Then, we will do some basic filtering and preprocessing using MNE-Python.
 
 # paths to mne datasets - sample ECoG
 bids_root = mne.datasets.epilepsy_ecog.data_path()
@@ -44,9 +42,9 @@ bids_root = mne.datasets.epilepsy_ecog.data_path()
 bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
                      task='ictal', datatype='ieeg', extension='vhdr')
 
-# Then we'll use it to load in the sample dataset.
-# Here we use a format (iEEG) that is only available in MNE-BIDS 0.7+, so it
-# will emit a warning on versions <= 0.6
+# Then we'll use it to load in the sample dataset. Here we use a format (iEEG)
+# that is only available in MNE-BIDS 0.7+, so it will emit a warning on
+# versions <= 0.6
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
 line_freq = raw.info['line_freq']
@@ -68,14 +66,12 @@ raw.drop_channels(raw.info['bads'])
 # Crop the data for this example
 # ------------------------------
 #
-# We find the onset time of the seizure and remove
-# all data after that time. In this example, we
-# are only interested in analyzing the interictal
+# We find the onset time of the seizure and remove all data after that time.
+# In this example, we are only interested in analyzing the interictal
 # (non-seizure) data period.
 #
-# One might be interested in analyzing the seizure
-# period also, which we leave as an exercise for
-# our readers!
+# One might be interested in analyzing the seizure period also, which we
+# leave as an exercise for our readers!
 
 # Find the annotated events
 events, event_id = mne.events_from_annotations(raw)
@@ -92,29 +88,30 @@ raw = raw.crop(tmin=0, tmax=onset_sec, include_tmax=False)
 # %%
 # Create Windows of Data (Epochs) Using MNE-Python
 # ------------------------------------------------
-# We have a continuous iEEG snapshot that is about 60
-# seconds long (after cropping). We would like to estimate
-# a VAR model over a sliding window of 500 milliseconds with
-# a 250 millisecond step size.
+# We have a continuous iEEG snapshot that is about 60 seconds long
+# (after cropping). We would like to estimate a VAR model over a sliding window
+# of 500 milliseconds with a 250 millisecond step size.
 #
-# We can use `mne.make_fixed_length_epochs` to create an
-# Epochs data structure representing this sliding window.
+# We can use `mne.make_fixed_length_epochs` to create an Epochs data structure
+# representing this sliding window.
 
 epochs = make_fixed_length_epochs(raw=raw, duration=0.5, overlap=0.25)
 times = epochs.times
 ch_names = epochs.ch_names
 
 print(epochs)
+print(epochs.times)
+print(epochs.event_id)
+print(epochs.events)
+
 
 # %%
 # Compute the VAR model for all windows
 # -------------------------------------
-# Now, we are ready to compute our VAR model.
-# This will compute a VAR model for each Epoch and
-# return an EpochConnectivity data structure.
-# Each Epoch here represents the VAR model in the window
-# of data. Taken together, these represent a
-# time-varying linear system.
+# Now, we are ready to compute our VAR model. This will compute a VAR model for
+# each Epoch and return an EpochConnectivity data structure. Each Epoch here
+# represents the VAR model in the window of data. Taken together, these
+# represent a time-varying linear system.
 
 conn = vector_auto_regression(
     data=epochs.get_data(), times=times, names=ch_names)
@@ -125,11 +122,10 @@ print(conn)
 # %%
 # Evaluate this VAR model fit
 # ---------------------------
-# We can now evaluate the model fit by computing
-# the residuals of the model and visualizing it.
-# In addition, we can evaluate the covariance of the
-# residuals. This will compute an independent
-# VAR model for each epoch (window) of data.
+# We can now evaluate the model fit by computing the residuals of the model and
+# visualizing it. In addition, we can evaluate the covariance of the
+# residuals. This will compute an independent VAR model for each epoch (window)
+# of data.
 
 predicted_data = conn.predict(epochs.get_data())
 
@@ -165,11 +161,10 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # %%
 # Compute one VAR model using all epochs
 # --------------------------------------
-# By setting ``model='dynamic'``, we instead treat each
-# Epoch as a sample of the same VAR model and thus
-# we only estimate one VAR model. One might do this when
-# they suspect their data is stationary and one VAR model
-# represents all epochs.
+# By setting ``model='dynamic'``, we instead treat each Epoch as a sample of
+# the same VAR model and thus we only estimate one VAR model. One might do this
+# when they suspect their data is stationary and one VAR model represents all
+# epochs.
 
 conn = vector_auto_regression(
     data=epochs.get_data(), times=times, names=ch_names,
@@ -181,10 +176,9 @@ print(conn)
 # %%
 # Evaluate model fit again
 # ------------------------
-# We can now evaluate the model fit again as done
-# earlier. This model fit will of course have
-# higher residuals then before as we are only
-# fitting 1 VAR model to all the epochs.
+# We can now evaluate the model fit again as done earlier. This model fit will
+# of course have higher residuals then before as we are only fitting 1 VAR
+# model to all the epochs.
 
 first_epoch = epochs.get_data()[0, ...]
 predicted_data = conn.predict(first_epoch)
@@ -215,11 +209,3 @@ fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
 fig.colorbar(im, cax=cax, orientation='horizontal')
-
-# %%
-# Other properties of VAR models
-# ------------------------------
-# We can now evaluate the model fit again as done
-# earlier. This model fit will of course have
-# higher residuals then before as we are only
-# fitting 1 VAR model to all the epochs.
