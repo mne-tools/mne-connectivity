@@ -110,8 +110,8 @@ print(epochs.events)
 # -------------------------------------
 # Now, we are ready to compute our VAR model. We will compute a VAR model for
 # each Epoch and return an EpochConnectivity data structure. Each Epoch here
-# represents the VAR model in the window of data. Taken together, these
-# represent a time-varying linear system.
+# represents a separate VAR model. Taken together, these represent a
+# time-varying linear system.
 
 conn = vector_auto_regression(
     data=epochs.get_data(), times=times, names=ch_names)
@@ -204,7 +204,8 @@ sampled_residuals = np.concatenate(
 rescov = np.cov(sampled_residuals)
 
 # Next, we visualize the covariance of residuals as before.
-# Here we will see a similar trend with the covariances.
+# Here we will see a similar trend with the covariances as
+# with the covariances for time-varying VAR model.
 fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
 im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
