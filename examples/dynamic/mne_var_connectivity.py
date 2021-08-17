@@ -38,7 +38,7 @@ from mne_connectivity import vector_auto_regression
 # paths to mne datasets - sample ECoG
 bids_root = mne.datasets.epilepsy_ecog.data_path()
 
-# first define the bids path
+# first define the BIDS path
 bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
                      task='ictal', datatype='ieeg', extension='vhdr')
 
@@ -50,7 +50,7 @@ raw = read_raw_bids(bids_path=bids_path, verbose=False)
 line_freq = raw.info['line_freq']
 print(f'Data has a power line frequency at {line_freq}.')
 
-# Pick only the ECoG channels, removing the EKG channels
+# Pick only the ECoG channels, removing the ECG channels
 raw.pick_types(ecog=True)
 
 # Load the data
@@ -108,7 +108,7 @@ print(epochs.events)
 # %%
 # Compute the VAR model for all windows
 # -------------------------------------
-# Now, we are ready to compute our VAR model. This will compute a VAR model for
+# Now, we are ready to compute our VAR model. We will compute a VAR model for
 # each Epoch and return an EpochConnectivity data structure. Each Epoch here
 # represents the VAR model in the window of data. Taken together, these
 # represent a time-varying linear system.
@@ -120,10 +120,10 @@ conn = vector_auto_regression(
 print(conn)
 
 # %%
-# Evaluate this VAR model fit
+# Evaluate the VAR model fit
 # ---------------------------
 # We can now evaluate the model fit by computing the residuals of the model and
-# visualizing it. In addition, we can evaluate the covariance of the
+# visualizing them. In addition, we can evaluate the covariance of the
 # residuals. This will compute an independent VAR model for each epoch (window)
 # of data.
 
@@ -163,7 +163,7 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # --------------------------------------
 # By setting ``model='dynamic'``, we instead treat each Epoch as a sample of
 # the same VAR model and thus we only estimate one VAR model. One might do this
-# when they suspect their data is stationary and one VAR model represents all
+# when one suspects the data is stationary and one VAR model represents all
 # epochs.
 
 conn = vector_auto_regression(
@@ -177,7 +177,7 @@ print(conn)
 # Evaluate model fit again
 # ------------------------
 # We can now evaluate the model fit again as done earlier. This model fit will
-# of course have higher residuals then before as we are only fitting 1 VAR
+# of course have higher residuals than before as we are only fitting 1 VAR
 # model to all the epochs.
 
 first_epoch = epochs.get_data()[0, ...]
