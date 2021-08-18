@@ -73,7 +73,7 @@ Contributing to MNE-Connectivity
 
 Please see the documentation on the MNE-Connectivity homepage:
 
-https://mne.tools/mne-connectivity/dev/install/contributing.html
+https://github.com/mne-tools/mne-connectivity/blob/main/CONTRIBUTING.md
 
 
 Forum

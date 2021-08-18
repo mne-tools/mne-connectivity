@@ -123,18 +123,19 @@ html_theme_options = {
     'navigation_with_keys': False,
     'show_toc_level': 1,
 }
+# Custom sidebar templates, maps document names to template names.
 html_sidebars = {
     'index': ['search-field.html'],
 }
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.1 (devel)',
+        'dev': 'v0.2 (devel)',
         'v0.1': 'v0.1',
     },
 }
 
-html_sidebars = {'**': ['localtoc.html']}
+# html_sidebars = {'**': ['localtoc.html']}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {

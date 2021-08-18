@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
+from mne_connectivity import Connectivity
 from mne_connectivity.utils import degree, seed_target_indices
 
 
@@ -54,3 +55,12 @@ def test_degree():
     corr = (corr + corr.T) / 2.
     assert_array_equal(degree(corr, 0.33), [0, 1, 1])
     assert_array_equal(degree(corr, 0.66), [1, 2, 1])
+
+    # check error when connectivity array is > 2D
+    with pytest.raises(ValueError, match='connectivity must be have shape'):
+        degree(np.zeros((5, 5, 5)))
+
+    # call degree using a connectivity object
+    conn = Connectivity(data=np.zeros((4,)), n_nodes=2)
+    deg = degree(conn)
+    assert_array_equal(deg, [0, 0])

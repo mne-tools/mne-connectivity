@@ -99,12 +99,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        include:
+          - os: ubuntu-latest
+            python-version: 3.6
+          - os: ubuntu-latest
+            python-version: 3.7
+          - os: ubuntu-latest
+            python-version: 3.8
+          - os: macos-latest
+            python-version: 3.8
 
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      DISPLAY: ':99.0'
+      MNE_LOGGING_LEVEL: 'info'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+      
     steps:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
@@ -115,6 +127,10 @@ jobs:
         # with:
         #   path: ~/.cache/pip
         #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
+
+      - run: ./tools/setup_xvfb.sh
+        name: 'Setup xvfb'
+        if: runner.os == 'Linux'
 
       - name: Install dependencies
         run: |
@@ -127,10 +143,15 @@ jobs:
           date
           python --version
           which python
-      # python -c "import mne; mne.sys_info()"
 
       - name: Install MNE-connectivity
-        run: pip install --no-deps .
+        run: |
+          pip install --no-deps .
+
+      - shell: bash -el {0}
+        run: mne sys_info
+        name: 'Show infos'
+        
       - name: Run pytest
         run: |
           python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python

@@ -16,4 +16,5 @@ from .effective import phase_slope_index
 from .envelope import envelope_correlation
 from .io import read_connectivity
 from .spectral import spectral_connectivity
+from .var import vector_auto_regression
 from .utils import check_indices, degree, seed_target_indices

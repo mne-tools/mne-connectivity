@@ -2,6 +2,7 @@ from copy import copy
 
 import numpy as np
 import xarray as xr
+from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt)
@@ -11,6 +12,12 @@ from mne_connectivity.viz import plot_connectivity_circle
 
 
 class SpectralMixin:
+    """Mixin class for spectral connectivities.
+
+    Note: In mne-connectivity, we associate the word
+    "spectral" with time-frequency. Reference to
+    eigenvalue structure is not captured in this mixin.
+    """
     @property
     def freqs(self):
         """The frequency points of the connectivity data.
@@ -50,7 +57,7 @@ class EpochMixin:
 
         fun = _check_combine(combine, valid=('mean', 'median'))
 
-        # apply function over the dataset
+        # apply function over the  array
         new_xr = xr.apply_ufunc(fun, self.xarray,
                                 input_core_dims=[['epochs']],
                                 vectorize=True)
@@ -70,8 +77,148 @@ class EpochMixin:
         return conn
 
 
+class DynamicMixin:
+    def predict(self, data):
+        """Predict samples on actual data.
+
+        The result of this function is used for calculating the residuals.
+
+        Parameters
+        ----------
+        data : array
+            Epoched or continuous data set. Has shape
+            (n_epochs, n_signals, n_times) or (n_signals, n_times).
+
+        Returns
+        -------
+        predicted : array
+            Data as predicted by the VAR model of
+            shape same as ``data``.
+
+        Notes
+        -----
+        Residuals are obtained by r = x - var.predict(x).
+
+        To compute residual covariances::
+
+            # compute the covariance of the residuals
+            # row are observations, columns are variables
+            t = residuals.shape[0]
+            sampled_residuals = np.concatenate(
+                np.split(residuals[:, :, model_order:], t, 0),
+                axis=2
+            ).squeeze(0)
+            rescov = np.cov(sampled_residuals)
+
+        """
+        if data.ndim < 2 or data.ndim > 3:
+            raise ValueError(f'Data passed in must be either 2D or 3D. '
+                             f'The data you passed in has {data.ndim} dims.')
+        if data.ndim == 2 and self.is_epoched:
+            raise RuntimeError('If there is a VAR model over epochs, '
+                               'one must pass in a 3D array.')
+        if data.ndim == 3 and not self.is_epoched:
+            raise RuntimeError('If there is a single VAR model, '
+                               'one must pass in a 2D array.')
+
+        # make the data 3D
+        if data.ndim == 2:
+            data = data[np.newaxis, ...]
+
+        n_epochs, _, n_times = data.shape
+        var_model = self.get_data(output='dense')
+
+        # get the model order
+        model_order = self.attrs.get('model_order')
+
+        # predict the data by applying forward model
+        predicted_data = np.zeros(data.shape)
+        # which takes less loop iterations
+        if n_epochs > n_times - model_order:
+            for idx in range(1, model_order + 1):
+                for jdx in range(model_order, n_times):
+                    if self.is_epoched:
+                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                    else:
+                        bp = var_model[:, (idx - 1)::model_order]
+                    predicted_data[:, :,
+                                   jdx] += np.dot(data[:, :, jdx - idx], bp.T)
+        else:
+            for idx in range(1, model_order + 1):
+                for jdx in range(n_epochs):
+                    if self.is_epoched:
+                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                    else:
+                        bp = var_model[:, (idx - 1)::model_order]
+                    predicted_data[jdx, :, model_order:] += \
+                        np.dot(
+                            bp,
+                            data[jdx, :, (model_order - idx):(n_times - idx)]
+                    )
+
+        return predicted_data
+
+    def simulate(self, n_samples, noise_func=None, random_state=None):
+        """Simulate vector autoregressive (VAR) model.
+
+        This function generates data from the VAR model.
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to generate.
+        noisefunc : func, optional
+            This function is used to create the generating noise process. If
+            set to None, Gaussian white noise with zero mean and unit variance
+            is used.
+
+        Returns
+        -------
+        data : array, shape (n_samples, n_channels)
+            Generated data.
+        """
+        var_model = self.get_data(output='dense')
+        if self.is_epoched:
+            var_model = var_model.mean(axis=0)
+
+        n_nodes = self.n_nodes
+        model_order = self.attrs.get('model_order')
+
+        # set noise function
+        if noise_func is None:
+            rng = check_random_state(random_state)
+
+            def noise_func():
+
+                return rng.normal(size=(1, n_nodes))
+
+        n = n_samples + 10 * model_order
+
+        # simulated data
+        data = np.zeros((n, n_nodes))
+        res = np.zeros((n, n_nodes))
+
+        for jdx in range(model_order):
+            e = noise_func()
+            res[jdx, :] = e
+            data[jdx, :] = e
+        for jdx in range(model_order, n):
+            e = noise_func()
+            res[jdx, :] = e
+            data[jdx, :] = e
+            for idx in range(1, model_order + 1):
+                data[jdx, :] += \
+                    var_model[:, (idx - 1)::model_order].dot(
+                        data[jdx - idx, :]
+                )
+
+        # self.residuals = res[10 * model_order:, :, :].T
+        # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
+        return data[10 * model_order:, :].transpose()
+
+
 @fill_doc
-class _Connectivity():
+class _Connectivity(DynamicMixin):
     """Base class for connectivity data.
 
     Connectivity data is anything that represents "connections"
@@ -149,7 +296,7 @@ class _Connectivity():
         r += '>'
         return r
 
-    def _get_n_estimated_nodes(self, data):
+    def _get_num_connections(self, data):
         """Compute the number of estimated nodes' connectivity."""
         # account for epoch data structures
         if self.is_epoched:
@@ -243,20 +390,27 @@ class _Connectivity():
                                    f'{data.shape} shape.')
 
         # get the number of estimated nodes
-        self._get_n_estimated_nodes(data)
+        self._get_num_connections(data)
         if self.is_epoched:
             data_len = data.shape[1]
         else:
             data_len = data.shape[0]
 
-        # check that the indices passed in are of the same length
         if isinstance(indices, tuple):
+            # check that the indices passed in are of the same length
             if len(indices[0]) != len(indices[1]):
                 raise ValueError(f'If indices are passed in '
                                  f'then they must be the same '
                                  f'length. They are right now '
                                  f'{len(indices[0])} and '
                                  f'{len(indices[1])}.')
+            # indices length should match the data length
+            if len(indices[0]) != data_len:
+                raise ValueError(
+                    f'The number of indices, {len(indices[0])} '
+                    f'should match the raveled data length passed '
+                    f'in of {data_len}.')
+
         elif indices == 'symmetric':
             expected_len = ((n_nodes + 1) * n_nodes) // 2
             if data_len != expected_len:
@@ -284,7 +438,7 @@ class _Connectivity():
 
     @property
     def attrs(self):
-        """Attributes of connectivity dataset.
+        """Xarray attributes of connectivity.
 
         See ``xarray``'s ``attrs``.
         """
@@ -297,7 +451,7 @@ class _Connectivity():
 
     @property
     def n_nodes(self):
-        """The number of nodes in the dataset.
+        """The number of nodes in the original dataset.
 
         Even if ``indices`` defines a subset of nodes that
         were computed, this should be the total number of
@@ -378,7 +532,12 @@ class _Connectivity():
                 new_shape = [self.n_epochs]
             else:
                 new_shape = []
-            new_shape.extend([self.n_nodes, self.n_nodes])
+
+            # handle the case where model order is defined in VAR connectivity
+            # and thus appends the connectivity matrices side by side, so the
+            # shape is N x N * model_order
+            model_order = self.attrs.get('model_order', 1)
+            new_shape.extend([self.n_nodes * model_order, self.n_nodes])
             if 'freqs' in self.dims:
                 new_shape.append(len(self.coords['freqs']))
             if 'times' in self.dims:
@@ -421,7 +580,7 @@ class _Connectivity():
         mapping : dict
             Mapping from original node names (keys) to new node names (values).
         """
-        names = self.names
+        names = copy(self.names)
 
         # first check and assemble clean mappings of index and name
         if isinstance(mapping, dict):
@@ -510,7 +669,11 @@ class _Connectivity():
 
 @fill_doc
 class SpectralConnectivity(_Connectivity, SpectralMixin):
-    """Spectral connectivity container.
+    """Spectral connectivity class.
+
+    This class stores connectivity data that varies over
+    frequencies. The underlying data is an array of shape
+    (n_connections, n_freqs), or (n_nodes, n_nodes, n_freqs).
 
     Parameters
     ----------
@@ -522,7 +685,12 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     %(method)s
     %(spec_method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.spectral_connectivity
     """
+    expected_n_dim = 2
 
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices='all', method=None, spec_method=None,
@@ -535,7 +703,13 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
 @fill_doc
 class TemporalConnectivity(_Connectivity, TimeMixin):
-    """Temporal connectivity container.
+    """Temporal connectivity class.
+
+    This is an array of shape (n_connections, n_times),
+    or (n_nodes, n_nodes, n_times). This describes how connectivity
+    varies over time. It describes sample-by-sample time-varying
+    connectivity (usually on the order of milliseconds). Here
+    time (t=0) is the same for all connectivity measures.
 
     Parameters
     ----------
@@ -546,7 +720,17 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    Notes
+    -----
+    `mne_connectivity.EpochConnectivity` is a similar connectivity
+    class to this one. However, that describes one connectivity snapshot
+    for each epoch. These epochs might be chunks of time that have
+    different meaning for time ``t=0``. Epochs can mean separate trials,
+    where the beginning of the trial implies t=0. These Epochs may
+    also be discontiguous.
     """
+    expected_n_dim = 2
 
     def __init__(self, data, times, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
@@ -558,7 +742,15 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
 @fill_doc
 class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
-    """Spectrotemporal connectivity container.
+    """Spectrotemporal connectivity class.
+
+    This class stores connectivity data that varies over both frequency
+    and time. The temporal part describes sample-by-sample time-varying
+    connectivity (usually on the order of milliseconds). Note the
+    difference relative to Epochs.
+
+    The underlying data is an array of shape (n_connections, n_freqs,
+    n_times), or (n_nodes, n_nodes, n_freqs, n_times).
 
     Parameters
     ----------
@@ -584,7 +776,11 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
 
 @fill_doc
 class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
-    """Spectral connectivity container over Epochs.
+    """Spectral connectivity class over Epochs.
+
+    This is an array of shape (n_epochs, n_connections, n_freqs),
+    or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how
+    connectivity varies over frequencies for different epochs.
 
     Parameters
     ----------
@@ -610,7 +806,11 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 
 @fill_doc
 class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
-    """Temporal connectivity container over Epochs.
+    """Temporal connectivity class over Epochs.
+
+    This is an array of shape (n_epochs, n_connections, n_times),
+    or (n_epochs, n_nodes, n_nodes, n_times). This describes how
+    connectivity varies over time for different epochs.
 
     Parameters
     ----------
@@ -635,7 +835,11 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
 class EpochSpectroTemporalConnectivity(
     SpectroTemporalConnectivity, EpochMixin
 ):
-    """Spectrotemporal connectivity container over Epochs.
+    """Spectrotemporal connectivity class over Epochs.
+
+    This is an array of shape (n_epochs, n_connections, n_freqs, n_times),
+    or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
+    connectivity varies over frequencies and time for different epochs.
 
     Parameters
     ----------
@@ -662,7 +866,11 @@ class EpochSpectroTemporalConnectivity(
 
 @fill_doc
 class Connectivity(_Connectivity, EpochMixin):
-    """Connectivity container without frequency or time component.
+    """Connectivity class without frequency or time component.
+
+    This is an array of shape (n_connections,),
+    or (n_nodes, n_nodes). This describes a connectivity matrix/graph
+    that does not vary over time, frequency, or epochs.
 
     Parameters
     ----------
@@ -672,6 +880,11 @@ class Connectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    mne_connectivity.envelope_correlation
     """
 
     def __init__(self, data, n_nodes, names=None, indices='all',
@@ -684,7 +897,12 @@ class Connectivity(_Connectivity, EpochMixin):
 
 @fill_doc
 class EpochConnectivity(_Connectivity, EpochMixin):
-    """Epoch connectivity container.
+    """Epoch connectivity class.
+
+    This is an array of shape (n_epochs, n_connections),
+    or (n_epochs, n_nodes, n_nodes). This describes how
+    connectivity varies for different epochs.
+
 
     Parameters
     ----------
@@ -694,6 +912,11 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    mne_connectivity.envelope_correlation
     """
 
     # whether or not the connectivity occurs over epochs

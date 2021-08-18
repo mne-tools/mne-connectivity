@@ -44,9 +44,10 @@ listed above.
    envelope_correlation
    phase_slope_index
    spectral_connectivity
+   vector_auto_regression
 
-Other functions
-===============
+Reading functions
+=================
 
 .. autosummary::
    :toctree: generated/
