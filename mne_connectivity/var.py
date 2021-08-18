@@ -9,7 +9,7 @@ from .base import Connectivity, EpochConnectivity
 
 @fill_doc
 def vector_auto_regression(
-        data, times=None, names=None, model_order=1, delta=0.0,
+        data, times=None, names=None, model_order=1, l2_reg=0.0,
         compute_fb_operator=False, n_jobs=1, model='dynamic', verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
@@ -25,7 +25,7 @@ def vector_auto_regression(
     %(names)s
     model_order : int | str, optional
         Autoregressive model order, by default 1.
-    delta : float, optional
+    l2_reg : float, optional
         Ridge penalty (l2-regularization) parameter, by default 0.0
     compute_fb_operator : bool
         Whether to compute the backwards operator and average with
@@ -118,7 +118,7 @@ def vector_auto_regression(
 
     model_params = {
         'model_order': model_order,
-        'delta': delta
+        'l2_reg': l2_reg
     }
     if model == 'avg-epochs':
         # compute VAR model where each epoch is a
@@ -151,13 +151,13 @@ def vector_auto_regression(
         # linear system
         conn = _system_identification(
             data=data, times=times, names=names, model_order=model_order,
-            delta=delta, n_jobs=n_jobs,
+            l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
             verbose=verbose)
     return conn
 
 
-def _construct_var_eqns(data, model_order, delta=None):
+def _construct_var_eqns(data, model_order, l2_reg=None):
     """Construct VAR equation system (optionally with RLS constraint).
 
     This function was originally imported from ``scot``.
@@ -168,7 +168,7 @@ def _construct_var_eqns(data, model_order, delta=None):
         The multivariate data.
     model_order : int
         The order of the VAR model.
-    delta : float, optional
+    l2_reg : float, optional
         The l2 penalty term for ridge regression, by default None, which
         will result in ordinary VAR equation.
 
@@ -197,7 +197,7 @@ def _construct_var_eqns(data, model_order, delta=None):
 
     # number of linear relations
     n = (n_times - model_order) * n_epochs
-    rows = n if delta is None else n + n_signals * model_order
+    rows = n if l2_reg is None else n + n_signals * model_order
 
     # Construct matrix X (predictor variables)
     X = np.zeros((rows, n_signals * model_order))
@@ -206,8 +206,8 @@ def _construct_var_eqns(data, model_order, delta=None):
             X[:n, i * model_order + k -
                 1] = np.reshape(data[:, i, model_order - k:-k].T, n)
 
-    if delta is not None:
-        np.fill_diagonal(X[n:, :], delta)
+    if l2_reg is not None:
+        np.fill_diagonal(X[n:, :], l2_reg)
 
     # Construct vectors yi (response variables for each channel i)
     Y = np.zeros((rows, n_signals))
@@ -274,7 +274,7 @@ def _construct_snapshots(snapshots, order, n_times):
     return snaps
 
 
-def _system_identification(data, times, names=None, model_order=1, delta=0,
+def _system_identification(data, times, names=None, model_order=1, l2_reg=0,
                            random_state=None, n_jobs=-1,
                            compute_fb_operator=False,
                            verbose=True):
@@ -292,7 +292,7 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
     n_epochs, n_nodes, n_times = data.shape
 
     model_params = {
-        'delta': delta,
+        'l2_reg': l2_reg,
         'model_order': model_order,
         'random_state': random_state,
         'compute_fb_operator': compute_fb_operator
@@ -338,7 +338,7 @@ def _system_identification(data, times, names=None, model_order=1, delta=0,
     return conn
 
 
-def _compute_lds_func(data, model_order, delta, compute_fb_operator,
+def _compute_lds_func(data, model_order, l2_reg, compute_fb_operator,
                       random_state):
     """Compute linear system using VAR model.
 
@@ -362,7 +362,7 @@ def _compute_lds_func(data, model_order, delta, compute_fb_operator,
     normalize = False
     solver = 'auto'
     clf = Ridge(
-        alpha=delta,
+        alpha=l2_reg,
         fit_intercept=fit_intercept,
         normalize=normalize,
         solver=solver,
