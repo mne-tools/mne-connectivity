@@ -658,6 +658,20 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
     Notes
     -----
+    The measures produced from this function should not be directly interpreted
+    as "brain connectivity" (i.e. values between two nodes indicate the
+    connection strength). These are estimates in a statistical sense and thus
+    are subject to noise in the estimation procedure. One can commonly convert
+    these to "brain connectivity" results by thresholding values below a certain
+    number. This should be done through some cross-validation procedure if
+    possible.
+
+    These measures are not to be intepreted over time. Each Epoch passed into
+    the dataset is intepreted as an independent sample of the same connectivity
+    structure. Within each Epoch, it is assumed that the spectral measure is
+    stationary. **Thus, spectral measures computed with only one Epoch will result
+    in errorful values.**
+
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
     transform with Hanning windows, or a continuous wavelet transform using
