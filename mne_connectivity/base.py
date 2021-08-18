@@ -504,7 +504,7 @@ class _Connectivity(DynamicMixin):
         size += object_size(self.attrs)
         return size
 
-    def get_data(self, output='raveled'):
+    def get_data(self, output='compact'):
         """Get connectivity data as a numpy array.
 
         Parameters
@@ -513,16 +513,22 @@ class _Connectivity(DynamicMixin):
             How to format the output, by default 'raveled', which
             will represent each connectivity matrix as a
             ``(n_nodes_in * n_nodes_out,)`` list. If 'dense', then
-            will return each connectivity matrix as a 2D array.
-        squeeze : bool, optional
-            Whether to squeeze the array or not, by default True.
+            will return each connectivity matrix as a 2D array. If 'compact'
+            (default) then will return 'raveled' if ``indices`` were defined as
+            a list of tuples, or ``dense`` if indices is 'all'.
 
         Returns
         -------
         data : np.ndarray
             The output connectivity data.
         """
-        _check_option('output', output, ['raveled', 'dense'])
+        _check_option('output', output, ['raveled', 'dense', 'compact'])
+
+        if output == 'compact':
+            if self.indices in ['all', 'symmetric']:
+                output = 'dense'
+            else:
+                output = 'raveled'
 
         if output == 'raveled':
             data = self._data

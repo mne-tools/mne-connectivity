@@ -19,6 +19,12 @@ Here we list a changelog of MNE-connectivity.
 Current
 -------
 
+In this version, we return the relevant Connectivity class from each of the
+connectivity estimation functions. These internally use ``xarray`` to represent
+the connectivity data. One can easily get the v0.1 numpy array by doing
+``conn.get_data()``, which will get exactly the same output as one got in v0.1
+running any of the connectivity functions.
+
 Changelog
 ~~~~~~~~~
 
