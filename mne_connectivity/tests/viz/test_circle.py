@@ -9,7 +9,9 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 
-from mne_connectivity.viz import plot_connectivity_circle, circular_layout
+from mne.viz import circular_layout
+
+from mne_connectivity.viz import plot_connectivity_circle
 
 
 def test_plot_connectivity_circle():

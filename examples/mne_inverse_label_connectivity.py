@@ -20,8 +20,9 @@ import matplotlib.pyplot as plt
 import mne
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
+from mne.viz import circular_layout
 from mne_connectivity import spectral_connectivity
-from mne_connectivity.viz import circular_layout, plot_connectivity_circle
+from mne_connectivity.viz import plot_connectivity_circle
 
 print(__doc__)
 

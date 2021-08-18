@@ -71,3 +71,14 @@ Post-processing on connectivity
    degree
    seed_target_indices
    check_indices
+
+Visualization functions
+=======================
+
+.. currentmodule:: mne_connectivity.viz
+
+.. autosummary::
+   :toctree: generated/
+
+   plot_sensors_connectivity
+   plot_connectivity_circle
