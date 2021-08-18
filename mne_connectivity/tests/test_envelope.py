@@ -55,7 +55,7 @@ def test_envelope_correlation():
     # using complex data
     corr = envelope_correlation(data_hilbert)
     assert_allclose(
-        np.mean(corr.get_data(), axis=0).squeeze(),
+        np.mean(corr.get_data(output='raveled'), axis=0).squeeze(),
         corr_orig.flatten()[raveled_triu_inds])
 
     # do Hilbert internally, and don't combine

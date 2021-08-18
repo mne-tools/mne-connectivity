@@ -100,7 +100,7 @@ def test_connectivity_containers(conn_cls):
         conn.get_data(output='blah')
 
     assert conn.shape == tuple(correct_numpy_shape)
-    assert conn.get_data().shape == tuple(correct_numpy_shape)
+    assert conn.get_data(output='raveled').shape == tuple(correct_numpy_shape)
     assert conn.get_data(output='dense').ndim == len(correct_numpy_shape) + 1
 
     # test renaming nodes error checks
@@ -158,7 +158,8 @@ def test_connectivity_containers(conn_cls):
     assert symm_conn.n_nodes == n_nodes
 
     # raveled shape should be the same
-    assert_array_equal(symm_conn.get_data().shape, correct_numpy_shape)
+    assert_array_equal(symm_conn.get_data(output='raveled').shape,
+                       correct_numpy_shape)
 
     # should be ([n_epochs], n_nodes, n_nodes, ...) dense shape
     dense_shape = []
