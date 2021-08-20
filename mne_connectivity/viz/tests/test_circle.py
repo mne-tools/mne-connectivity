@@ -7,7 +7,6 @@
 
 import numpy as np
 import pytest
-import matplotlib.pyplot as plt
 
 from mne.viz import circular_layout
 
@@ -88,4 +87,3 @@ def test_plot_connectivity_circle():
                   group_boundaries=[-1])
     pytest.raises(ValueError, circular_layout, label_names, node_order,
                   group_boundaries=[20, 0])
-    plt.close('all')
