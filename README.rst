@@ -31,6 +31,11 @@ and post-hoc statistics and processing.
 
 .. target for :end-before: title-end-content
 
+This project was initially ported over from mne-python starting v0.23, by Adam
+Li as part of Google Summer of Code 2021. Subsequently v0.1 and v0.2 releases
+were done as part of GSoC period. Future development will occur in subsequent
+versions.
+
 Documentation
 ^^^^^^^^^^^^^
 
