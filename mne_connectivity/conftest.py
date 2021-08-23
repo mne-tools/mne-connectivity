@@ -8,6 +8,9 @@ import os
 import warnings
 from distutils.version import LooseVersion
 
+# data from sample dataset
+from mne.viz._figure import use_browser_backend
+
 
 @pytest.fixture(autouse=True)
 def close_all():
@@ -58,3 +61,86 @@ def matplotlib_config():
             super(CallbackRegistryReraise, self).__init__(*args)
 
     cbook.CallbackRegistry = CallbackRegistryReraise
+
+@pytest.fixture
+def garbage_collect():
+    """Garbage collect on exit."""
+    yield
+    gc.collect()
+
+
+@pytest.fixture(params=['matplotlib'])
+def browse_backend(request, garbage_collect):
+    """Parametrizes the name of the browser backend."""
+    with use_browser_backend(request.param) as backend:
+        yield backend
+
+
+@pytest.fixture(params=["mayavi", "pyvistaqt"])
+def renderer(request, garbage_collect):
+    """Yield the 3D backends."""
+    with _use_backend(request.param, interactive=False) as renderer:
+        yield renderer
+
+
+@pytest.fixture(params=["pyvistaqt"])
+def renderer_pyvistaqt(request, garbage_collect):
+    """Yield the PyVista backend."""
+    with _use_backend(request.param, interactive=False) as renderer:
+        yield renderer
+
+
+@pytest.fixture(params=["notebook"])
+def renderer_notebook(request):
+    """Yield the 3D notebook renderer."""
+    with _use_backend(request.param, interactive=False) as renderer:
+        yield renderer
+
+
+@pytest.fixture(scope="module", params=["pyvistaqt"])
+def renderer_interactive_pyvistaqt(request):
+    """Yield the interactive PyVista backend."""
+    with _use_backend(request.param, interactive=True) as renderer:
+        yield renderer
+
+
+@pytest.fixture(scope="module", params=["pyvistaqt", "mayavi"])
+def renderer_interactive(request):
+    """Yield the interactive 3D backends."""
+    with _use_backend(request.param, interactive=True) as renderer:
+        if renderer._get_3d_backend() == 'mayavi':
+            with warnings.catch_warnings(record=True):
+                try:
+                    from surfer import Brain  # noqa: 401 analysis:ignore
+                except Exception:
+                    pytest.skip('Requires PySurfer')
+        yield renderer
+
+
+@contextmanager
+def _use_backend(backend_name, interactive):
+    from mne.viz.backends.renderer import _use_test_3d_backend
+    _check_skip_backend(backend_name)
+    with _use_test_3d_backend(backend_name, interactive=interactive):
+        from mne.viz.backends import renderer
+        try:
+            yield renderer
+        finally:
+            renderer.backend._close_all()
+
+
+def _check_skip_backend(name):
+    from mne.viz.backends.tests._utils import (has_mayavi, has_pyvista,
+                                               has_pyqt5, has_imageio_ffmpeg,
+                                               has_pyvistaqt)
+    if name in ('pyvistaqt', 'notebook'):
+        if not has_pyvista():
+            pytest.skip("Test skipped, requires pyvista.")
+        if not has_imageio_ffmpeg():
+            pytest.skip("Test skipped, requires imageio-ffmpeg")
+    if name in ('pyvistaqt', 'mayavi') and not has_pyqt5():
+        pytest.skip("Test skipped, requires PyQt5.")
+    if name == 'mayavi' and not has_mayavi():
+        pytest.skip("Test skipped, requires mayavi.")
+    if name == 'pyvistaqt' and not has_pyvistaqt():
+        pytest.skip("Test skipped, requires pyvistaqt")
