@@ -583,7 +583,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
         be a list/generator of array, shape =(n_signals, n_times),
         or a list/generator of SourceEstimate or VolSourceEstimate objects.
     method : str | list of str
-        Connectivity measure(s) to compute.
+        Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
+        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'wpli', 'wpli2_debiased']``.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
@@ -660,17 +661,14 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     -----
     The measures produced from this function should not be directly interpreted
     as "brain connectivity" (i.e. values between two nodes indicate the
-    connection strength). These are estimates in a statistical sense and thus
-    are subject to noise in the estimation procedure. One can commonly convert
-    these to "brain connectivity" results by thresholding values below a
-    certain number. This should be done through some cross-validation procedure
-    if possible.
+    connection strength).
 
     These measures are not to be interpreted over time. Each Epoch passed into
     the dataset is interpreted as an independent sample of the same
     connectivity structure. Within each Epoch, it is assumed that the spectral
-    measure is stationary. **Thus, spectral measures computed with only one
-    Epoch will result in errorful values.**
+    measure is stationary. The spectral measures implemented in this function
+    are computed across Epochs. **Thus, spectral measures computed with only
+    one Epoch will result in errorful values.**
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
