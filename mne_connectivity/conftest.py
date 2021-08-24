@@ -3,8 +3,10 @@
 #
 # License: BSD-3-Clause
 
+from contextlib import contextmanager
 import pytest
 import os
+import gc
 import warnings
 from distutils.version import LooseVersion
 
@@ -61,6 +63,7 @@ def matplotlib_config():
             super(CallbackRegistryReraise, self).__init__(*args)
 
     cbook.CallbackRegistry = CallbackRegistryReraise
+
 
 @pytest.fixture
 def garbage_collect():
