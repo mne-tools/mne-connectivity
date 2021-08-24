@@ -16,6 +16,8 @@ how we can interact with the connectivity class.
 #
 # License: BSD (3-clause)
 
+import numpy as np
+
 import mne
 from mne_connectivity import spectral_connectivity
 from mne.datasets import sample
@@ -42,15 +44,17 @@ event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
 epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
                     baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
 
-# Compute connectivity for the band that contains the evoked response (4-9 Hz).
-# We exclude the baseline period:
-fmin, fmax = 4., 9.
+# Compute connectivity for the band that contains the evoked response
+# (30-90 Hz). We exclude the baseline period:
+fmin, fmax = 30., 90.
+cwt_freqs = np.linspace(fmin, fmax, 20)
 sfreq = raw.info['sfreq']  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
 epochs.load_data().pick_types(meg='grad')  # just keep MEG and no EOG now
 con = spectral_connectivity(
     epochs, method='pli', mode='cwt_morlet', sfreq=sfreq, fmin=fmin, fmax=fmax,
-    faverage=False, tmin=tmin, mt_adaptive=False, n_jobs=1)
+    faverage=False, tmin=tmin, cwt_freqs=cwt_freqs, mt_adaptive=False,
+    n_jobs=1)
 
 # %%
 # Now, we can look at different functionalities of the connectivity
@@ -65,12 +69,16 @@ print(con.coords)
 # the underlying data is stored "raveled"
 print(con.shape)
 
-# however, if one asks for the output dense data, then
-# the shape will show the N by N connectivity
+# However, if one asks for the output dense data, then the shape will show the
+# N by N connectivity. In general, you might prefer the raveled version if you
+# specify a subset of indices (e.g. some subset of sources) to compute
+# bivariate connectivity over, or if you have a symmetric measure
+# (e.g. coherence). The 'dense' output is nice to obtain an actual square
+# matrix, which can be used for post-hoc analysis that expects a matrix shape.
 print(con.get_data(output='dense').shape)
 
-# the number of nodes matches the number of signals
-# used to compute the spectral measure
+# the number of nodes matches the number of electrodes used to compute the
+# spectral measure
 print(con.n_nodes)
 
 # the names of each node correspond to the electrode names
@@ -78,8 +86,10 @@ print(con.names)
 
 # The underlying data is stored as an xarray, so we have access
 # to DataArray attributes. You can store metadata relevant to the
-# estimated measure, or other relevant metadata.
+# estimated measure, or other relevant metadata. For example,
+# the method name used to compute this connectivity is the 'pli' measure.
 print(con.attrs)
+print(con.attrs.get('method'))
 
 # %%
 # Other properties of the connectivity class, special for
