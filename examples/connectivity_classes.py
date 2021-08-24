@@ -44,9 +44,9 @@ event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
 epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
                     baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
 
-# Compute connectivity for the band that contains the evoked response
-# (30-90 Hz). We exclude the baseline period:
-fmin, fmax = 30., 90.
+# Compute connectivity for the alpha band that contains the evoked response
+# (4-9 Hz). We exclude the baseline period:
+fmin, fmax = 4., 9. 
 cwt_freqs = np.linspace(fmin, fmax, 20)
 sfreq = raw.info['sfreq']  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
