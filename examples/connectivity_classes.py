@@ -46,7 +46,7 @@ epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
 
 # Compute connectivity for the alpha band that contains the evoked response
 # (4-9 Hz). We exclude the baseline period:
-fmin, fmax = 4., 9. 
+fmin, fmax = 4., 9.
 cwt_freqs = np.linspace(fmin, fmax, 20)
 sfreq = raw.info['sfreq']  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
@@ -58,7 +58,7 @@ con = spectral_connectivity(
 
 # %%
 # Now, we can look at different functionalities of the connectivity
-# class returned by `spectral_connectivity`.
+# class returned by :func:`mne_connectivity.spectral_connectivity`.
 
 # the dimensions of the data corresponding to each axis
 print(con.dims)
