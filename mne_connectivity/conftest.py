@@ -10,9 +10,6 @@ import gc
 import warnings
 from distutils.version import LooseVersion
 
-# data from sample dataset
-from mne.viz._figure import use_browser_backend
-
 
 @pytest.fixture(autouse=True)
 def close_all():
@@ -70,13 +67,6 @@ def garbage_collect():
     """Garbage collect on exit."""
     yield
     gc.collect()
-
-
-@pytest.fixture(params=['matplotlib'])
-def browse_backend(request, garbage_collect):
-    """Parametrizes the name of the browser backend."""
-    with use_browser_backend(request.param) as backend:
-        yield backend
 
 
 @pytest.fixture(params=["mayavi", "pyvistaqt"])
