@@ -42,12 +42,6 @@ def matplotlib_config():
     # functionality)
     plt.ioff()
     plt.rcParams['figure.dpi'] = 100
-    try:
-        from traits.etsconfig.api import ETSConfig
-    except Exception:
-        pass
-    else:
-        ETSConfig.toolkit = 'qt4'
 
     # Make sure that we always reraise exceptions in handlers
     orig = cbook.CallbackRegistry
