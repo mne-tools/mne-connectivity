@@ -9,7 +9,7 @@ Compute different connectivity measures and then demonstrate
 the utility of the class.
 
 Here we compute the Phase Lag Index (PLI) between all gradiometers and showcase
-how we might interface with the connectivity class.
+how we can interact with the connectivity class.
 """
 
 # Authors: Adam Li <adam2392@gmail.com>
@@ -42,7 +42,7 @@ event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
 epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
                     baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
 
-# Compute connectivity for band containing the evoked response.
+# Compute connectivity for the band that contains the evoked response (4-9 Hz).
 # We exclude the baseline period:
 fmin, fmax = 4., 9.
 sfreq = raw.info['sfreq']  # the sampling frequency
@@ -73,7 +73,7 @@ print(con.get_data(output='dense').shape)
 # used to compute the spectral measure
 print(con.n_nodes)
 
-# the names of each node correspond to the electrodes
+# the names of each node correspond to the electrode names
 print(con.names)
 
 # The underlying data is stored as an xarray, so we have access
