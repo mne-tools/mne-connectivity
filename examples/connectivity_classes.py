@@ -92,8 +92,8 @@ print(con.attrs)
 print(con.attrs.get('method'))
 
 # %%
-# Other properties of the connectivity class, special for
-# the spectro temporal connectivity.
+# Other properties of the connectivity class, special to
+# the spectro-temporal connectivity class.
 #
 # .. note:: Not all connectivity classes will have these properties.
 
