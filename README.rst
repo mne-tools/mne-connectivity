@@ -102,5 +102,5 @@ In the graph interpretation, this can be further stratified into:
 
 The functions implemented in mne-connectivity generally imply the "all-to-all"
 values case. This is an important distinction because the values between each node
-computed from any of these functions do not necessarily imply a connection. These are
+computed from any of these functions do not necessarily imply a causal connection. These are
 all "estimates" in the statistical sense.
