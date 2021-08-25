@@ -90,17 +90,14 @@ A Note About Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the neuroscience community as of 2021, the term "connectivity" can have many
-different meanings. Some common interpretations are:
+different meanings. There is the common question of whether or not
+"connectivity" detected via some measure actually implies a connection between
+two brain regions. That is, is the connectivity causal? Even if one calls their
+connectivity measure, "causal", it depends on the data and the underlying
+assumptions. Some common interpretations of connectivity are in are in
+`Schoffelen`_.
 
-- all-to-all values computed from some bivariate or multivariate function over signals
-- "actual" connectivity as a graph, where edge values indicate a "connection", and an edge value of zero indicates "no connection"
+In mne-connectivity, we do not claim that any of our measures imply causal
+connectivity.
 
-In the graph interpretation, this can be further stratified into:
-
-- directed, or undirected graph (symmetric, or asymmetric)
-- weighted, or unweighted graph (values of 0 and 1 vs continuous values)
-
-The functions implemented in mne-connectivity generally imply the "all-to-all"
-values case. This is an important distinction because the values between each node
-computed from any of these functions do not necessarily imply a causal connection. These are
-all "estimates" in the statistical sense.
+.. _Schoffelen: https://pubmed.ncbi.nlm.nih.gov/26778976/
