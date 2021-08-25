@@ -58,24 +58,14 @@ con = spectral_connectivity(
 
 # %%
 # Now, we can look at different functionalities of the connectivity
-# class returned by :func:`mne_connectivity.spectral_connectivity`.
+# class returned by :func:`mne_connectivity.spectral_connectivity`. The
+# following are some basic attributes of connectivity classes.
 
 # the dimensions of the data corresponding to each axis
 print(con.dims)
 
 # the coordinates for each axis of the data
 print(con.coords)
-
-# the underlying data is stored "raveled"
-print(con.shape)
-
-# However, if one asks for the output dense data, then the data will represent the full
-# N by N connectivity. In general, you might prefer the raveled version if you
-# specify a subset of indices (e.g. some subset of sources) for the computation
-# of a bivariate connectivity measure or if you have a symmetric measure
-# (e.g. coherence). The 'dense' output on the other hand provides an actual square
-# matrix, which can be used for post-hoc analysis that expects a matrix shape.
-print(con.get_data(output='dense').shape)
 
 # the number of nodes matches the number of electrodes used to compute the
 # spectral measure
@@ -84,12 +74,37 @@ print(con.n_nodes)
 # the names of each node correspond to the electrode names
 print(con.names)
 
+# %% Connectivity Measure Data Shapes
+# The underlying connectivity measure can be stored in two ways: i) raveled
+# and ii) dense. Raveled storage will be a 1D column flattened array, similar
+# to what one might expect when using `numpy.ravel`. However, if you ask for
+# the output dense data, then the shape will show the N by N connectivity.
+# In general, you might prefer the raveled version if you specify a subset of
+# indices (e.g. some subset of sources) for the computation
+# of a bivariate connectivity measure or if you have a symmetric measure
+# (e.g. coherence). The 'dense' output on the other hand provides an actual
+# square matrix, which can be used for post-hoc analysis that expects a matrix
+# shape.
+
+# the underlying data is stored "raveled", and the connectivity measure is
+# flattened into one dimension
+print(con.shape)
+
+# the 'dense' output will show the connectivity measure N x N axis
+print(con.get_data(output='dense').shape)
+
+# %% Connectivity Measure XArray Attributes
 # The underlying data is stored as an xarray, so we have access
-# to DataArray attributes. You can store metadata relevant to the
-# estimated measure, or other relevant metadata. For example,
-# the method name used to compute this connectivity is the 'pli' measure.
-print(con.attrs)
+# to DataArray attributes. Each connectivity measure function automatically
+# stores relevant metadata. For example, the method name used to compute this
+# connectivity is the 'pli' measure.
+print(con.attrs.keys())
 print(con.attrs.get('method'))
+
+# You can also store metadata relevant to your experiment, which is easy
+# because ``attrs`` is just a dictionary.
+con.attrs['experimenter'] = 'mne'
+print(con.attrs.keys())
 
 # %%
 # Other properties of the connectivity class, special to
