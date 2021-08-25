@@ -69,11 +69,11 @@ print(con.coords)
 # the underlying data is stored "raveled"
 print(con.shape)
 
-# However, if one asks for the output dense data, then the shape will show the
+# However, if one asks for the output dense data, then the data will represent the full
 # N by N connectivity. In general, you might prefer the raveled version if you
-# specify a subset of indices (e.g. some subset of sources) to compute
-# bivariate connectivity over, or if you have a symmetric measure
-# (e.g. coherence). The 'dense' output is nice to obtain an actual square
+# specify a subset of indices (e.g. some subset of sources) for the computation
+# of a bivariate connectivity measure or if you have a symmetric measure
+# (e.g. coherence). The 'dense' output on the other hand provides an actual square
 # matrix, which can be used for post-hoc analysis that expects a matrix shape.
 print(con.get_data(output='dense').shape)
 
