@@ -78,7 +78,7 @@ print(con.names)
 # The underlying connectivity measure can be stored in two ways: i) raveled
 # and ii) dense. Raveled storage will be a 1D column flattened array, similar
 # to what one might expect when using `numpy.ravel`. However, if you ask for
-# the output dense data, then the shape will show the N by N connectivity.
+# the dense data, then the shape will show the N by N connectivity.
 # In general, you might prefer the raveled version if you specify a subset of
 # indices (e.g. some subset of sources) for the computation
 # of a bivariate connectivity measure or if you have a symmetric measure
@@ -90,19 +90,19 @@ print(con.names)
 # flattened into one dimension
 print(con.shape)
 
-# the 'dense' output will show the connectivity measure N x N axis
+# the 'dense' output will show the connectivity measure's N x N axis
 print(con.get_data(output='dense').shape)
 
 # %% Connectivity Measure XArray Attributes
 # The underlying data is stored as an xarray, so we have access
 # to DataArray attributes. Each connectivity measure function automatically
-# stores relevant metadata. For example, the method name used to compute this
-# connectivity is the 'pli' measure.
+# stores relevant metadata. For example, the method used in this example
+# is the phase-lag index ('pli').
 print(con.attrs.keys())
 print(con.attrs.get('method'))
 
-# You can also store metadata relevant to your experiment, which is easy
-# because ``attrs`` is just a dictionary.
+# You can also store additional metadata relevant to your experiment, which can easily
+# be done, because ``attrs`` is just a dictionary.
 con.attrs['experimenter'] = 'mne'
 print(con.attrs.keys())
 
