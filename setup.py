@@ -26,7 +26,7 @@ URL = 'https://github.com/mne-tools/mne-connectivity'
 LICENSE = 'BSD-3'
 DOWNLOAD_URL = 'https://github.com/mne-tools/mne-connectivity'
 VERSION = version
-INSTALL_REQUIRES = ['numpy', 'scipy', 'mne', 'scikit-learn', 'xarray', 'netCDF4']
+INSTALL_REQUIRES = ['numpy', 'scipy', 'mne', 'xarray', 'netCDF4']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
                'License :: OSI Approved',
@@ -43,6 +43,14 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Programming Language :: Python :: 3.9',
                ]
 EXTRAS_REQUIRE = {
+    'optional': [
+        'scikit-learn',
+        'tqdm',
+        'vtk',
+        'sip',
+        'pyvista',
+        'pyvistaqt',
+        'pyqt5'],
     'tests': [
         'pytest',
         'pytest-cov',
