@@ -659,7 +659,9 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
     Notes
     -----
-    Please note that the interpretation of the measures in this function depends on the data and underlying assumptions and does not necessarily reflect a causal relationship between brain regions.
+    Please note that the interpretation of the measures in this function
+    depends on the data and underlying assumptions and does not necessarily
+    reflect a causal relationship between brain regions.
 
     These measures are not to be interpreted over time. Each Epoch passed into
     the dataset is interpreted as an independent sample of the same
