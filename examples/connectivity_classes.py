@@ -101,8 +101,8 @@ print(con.get_data(output='dense').shape)
 print(con.attrs.keys())
 print(con.attrs.get('method'))
 
-# You can also store additional metadata relevant to your experiment, which can easily
-# be done, because ``attrs`` is just a dictionary.
+# You can also store additional metadata relevant to your experiment, which can
+# easily be done, because ``attrs`` is just a dictionary.
 con.attrs['experimenter'] = 'mne'
 print(con.attrs.keys())
 
