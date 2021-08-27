@@ -659,9 +659,7 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 
     Notes
     -----
-    The measures produced from this function should not be directly interpreted
-    as "brain connectivity" (i.e. values between two nodes indicate the
-    connection strength).
+    Please note that the interpretation of the measures in this function depends on the data and underlying assumptions and does not necessarily reflect a causal relationship between brain regions.
 
     These measures are not to be interpreted over time. Each Epoch passed into
     the dataset is interpreted as an independent sample of the same

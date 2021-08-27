@@ -89,15 +89,17 @@ https://mne.discourse.group
 A Note About Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the neuroscience community as of 2021, the term "connectivity" can have many
-different meanings. There is the common question of whether or not
-"connectivity" detected via some measure actually implies a connection between
-two brain regions. That is, is the connectivity causal? Even if one calls their
-connectivity measure, "causal", it depends on the data and the underlying
-assumptions. Some common interpretations of connectivity are in are in
-`Schoffelen`_.
+In the neuroscience community as of 2021, the term "functional connectivity" can 
+have many different meanings and comprises many different measures. Some of 
+these measures are directed (i.e. try to map a statistical causal relationship between
+brain regions), others are non-directed. Please note that the interpretation of your 
+functional connectivity measure depends on the data and underlying
+assumptions. 
+For a taxonomy of functional connectivity measures and information on the 
+interpretation of those measures, we refer to
+`Bastos and Schoffelen`_.
 
 In mne-connectivity, we do not claim that any of our measures imply causal
 connectivity.
 
-.. _Schoffelen: https://pubmed.ncbi.nlm.nih.gov/26778976/
+.. _Bastos and Schoffelen: https://pubmed.ncbi.nlm.nih.gov/26778976/
