@@ -23,10 +23,10 @@
 MNE-Connectivity
 ================
 
-`MNE-Connectivity`_ is an open-source Python package for connectivity analysis
-of MEG, EEG, or iEEG data built on top of the `MNE-Python`_ API.
-It includes modules for data input/output, visualization, common connectivity analysis,
-and post-hoc statistics and processing.
+`MNE-Connectivity`_ is an open-source Python package for connectivity and
+related measures of MEG, EEG, or iEEG data built on top of the 
+`MNE-Python`_ API. It includes modules for data input/output, visualization,
+common connectivity analysis, and post-hoc statistics and processing.
 
 
 .. target for :end-before: title-end-content
@@ -85,3 +85,21 @@ Forum
 ^^^^^^
 
 https://mne.discourse.group
+
+A Note About Connectivity
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the neuroscience community as of 2021, the term "functional connectivity" can 
+have many different meanings and comprises many different measures. Some of 
+these measures are directed (i.e. try to map a statistical causal relationship between
+brain regions), others are non-directed. Please note that the interpretation of your 
+functional connectivity measure depends on the data and underlying
+assumptions. 
+For a taxonomy of functional connectivity measures and information on the 
+interpretation of those measures, we refer to
+`Bastos and Schoffelen`_.
+
+In mne-connectivity, we do not claim that any of our measures imply causal
+connectivity.
+
+.. _Bastos and Schoffelen: https://pubmed.ncbi.nlm.nih.gov/26778976/
