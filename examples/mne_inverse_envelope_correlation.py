@@ -17,7 +17,7 @@ Note that the original procedure for symmetric orthogonalization in
 2. Symmetric orthogonalization
 3. Band-pass filter
 4. Hilbert transform and absolute value
-6. Low-pass (1 Hz)
+5. Low-pass (1 Hz)
 
 Here we follow the procedure:
 
