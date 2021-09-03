@@ -7,10 +7,11 @@
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_less
 from scipy.signal import hilbert
 
-from mne_connectivity.envelope import envelope_correlation
+from mne.utils import catch_logging, use_log_level
+from mne_connectivity.envelope import envelope_correlation, symmetric_orth
 
 
 def _compute_corrs_orig(data):
@@ -120,3 +121,53 @@ def test_envelope_correlation():
     corr_log = envelope_correlation(
         data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output='dense').squeeze(), ft_vals)
+
+
+@pytest.mark.parametrize('ndim, generator', [
+    (2, False),
+    (3, False),
+    (3, True),
+])
+def test_symmetric_orth(ndim, generator):
+    n_ch, n_time = 5, 1000
+    rng = np.random.RandomState(0)
+    Z = rng.randn(n_ch, n_time)
+    mixing = rng.randn(n_ch, n_ch)
+    mixing = mixing @ mixing.T
+    mixing += np.eye(n_ch)
+    Z = mixing @ Z
+    assert ndim in (2, 3)
+    if generator:
+        assert ndim == 3
+        Z = [Z]
+    elif ndim == 3:
+        Z = Z[np.newaxis]
+    with catch_logging() as log:
+        P = symmetric_orth(Z, verbose='debug')
+        if generator:
+            assert not isinstance(P, np.ndarray)
+            with use_log_level('debug'):
+                P = np.array(list(P))
+    assert isinstance(P, np.ndarray)
+    if ndim == 3:
+        assert P.ndim == 3
+        assert P.shape[0] == 1
+        Z, P = Z[0], P[0]
+    log = log.getvalue()
+    assert 'Convergence reached' in log
+    vals = P @ P.T
+    diag = np.diag(vals)
+    orig = np.diag(Z @ Z.T)
+    assert_array_less(diag, orig)  # some power lost
+    assert_array_less(orig * 0.1, diag)  # but not too much
+    off = np.triu(vals, k=1)
+    assert_allclose(off, 0., atol=1e-6)
+    # Degenerate cases
+    with pytest.raises(RuntimeError, match='at least as many time points'):
+        symmetric_orth(Z[:, :1])
+    with pytest.warns(RuntimeWarning, match='did not converge'):
+        symmetric_orth(Z, n_iter=1)
+    Z_bad = Z.copy()
+    Z_bad[0] = Z[1] + Z[2]
+    with pytest.warns(RuntimeWarning, match='rank deficient'):
+        symmetric_orth(Z_bad)

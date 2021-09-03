@@ -33,6 +33,7 @@ Changelog
 - ``indices`` argument in Connectivity classes can now be ``symmetric``, allowing for memory-efficient storage of symmetric connectivity, by `Adam Li`_ (:gh:`20`)
 - New function ``save`` in Connectivity classes along with :func:`read_connectivity` can now be used to write and read Connectivity data as netCDF files, by `Adam Li`_ (:gh:`20`)
 - New function :func:`vector_auto_regression` to compute dynamic connectivity vector auto-regressive (VAR) model, by `Adam Li`_ (:gh:`23`)
+- Adding symmetric orthogonalization via :func:`mne_connectivity.symmetric_orth`, by `Eric Larson`_ (:gh:`36`)
 
 Bug
 ~~~
@@ -48,8 +49,8 @@ API
 Changes when mne-connectivity was part of MNE-Python
 ----------------------------------------------------
 
-In July, 2021, ``mne.connectivity`` submodule was ported over from the MNE-Python 
-repo into this repository, ``mne-connectivity``. Starting v0.24 of MNE-Python, that sub-module 
+In July, 2021, ``mne.connectivity`` submodule was ported over from the MNE-Python
+repo into this repository, ``mne-connectivity``. Starting v0.24 of MNE-Python, that sub-module
 will be deprecated and development will move over into this repository. Starting v0.25 of MNE-Python,
 ``mne.connectivity`` will completely be removed.
 

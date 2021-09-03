@@ -13,7 +13,7 @@ from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    SpectralConnectivity, SpectroTemporalConnectivity,
                    TemporalConnectivity)
 from .effective import phase_slope_index
-from .envelope import envelope_correlation
+from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity
 from .spectral import spectral_connectivity
 from .var import vector_auto_regression
