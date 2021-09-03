@@ -99,16 +99,16 @@ jobs:
         # Load our data
         - restore_cache:
             keys:
-              - data-cache
+              - data-cache-sample
+
+        # Load our data
+        - restore_cache:
+            keys:
+              - data-cache-bst-resting
 
         - run:
             name: Check PyQt5
             command: LD_DEBUG=libs python -c "from PyQt5.QtWidgets import QApplication, QWidget; app = QApplication([])"
-
-        # Load tiny cache so that ~/.mne does not need to be created below
-        - restore_cache:
-            keys:
-              - data-cache-tiny-0
 
         # Look at what we have and fail early if there is some library conflict
         - run:
@@ -128,6 +128,7 @@ jobs:
               python setup.py develop --user
               mkdir -p ~/mne_data
               python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
+              python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
 
         # Build docs
         - run:
@@ -154,10 +155,16 @@ jobs:
 
         # Keep these separate, maybe better in terms of size limitations (?)
         - save_cache:
-            key: data-cache
+            key: data-cache-sample
             paths:
               - ~/.mne
               - ~/mne_data/MNE-sample-data
+
+        - save_cache:
+            key: data-cache-bst-resting
+            paths:
+              - ~/.mne
+              - ~/mne_data/MNE-brainstorm-data/bst_resting
 
     docs-deploy:
         docker:
@@ -178,7 +185,7 @@ jobs:
                 npm install --global gh-pages@3.0
                 git config --global user.email "circle@mne.com"
                 git config --global user.name "Circle Ci"
-                
+
           - add_ssh_keys:
               fingerprints:
                 - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
@@ -194,7 +201,7 @@ jobs:
                   echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
                   gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./stable
                 fi;
-          
+
           - save_cache:
               key: website-cache
               paths:
