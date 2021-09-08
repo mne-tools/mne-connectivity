@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.var &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/scrollfix.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../index.html">
+<p class="title">MNE-Connectivity</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.3dev0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for mne_connectivity.var</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">sqrtm</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span>
+
+
+<div class="viewcode-block" id="vector_auto_regression"><a class="viewcode-back" href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression">[docs]</a><span class="nd">@fill_doc</span>
+<span class="k">def</span> <span class="nf">vector_auto_regression</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array-like, shape=(n_epochs, n_signals, n_times) | generator</span>
+<span class="sd">        The data from which to compute connectivity. The epochs dimension</span>
+<span class="sd">        is interpreted differently, depending on ``&#39;output&#39;`` argument.</span>
+<span class="sd">    times : array-like</span>
+<span class="sd">        (Optional) The time points used to construct the epoched ``data``. If</span>
+<span class="sd">        ``None``, then ``times_used`` in the Connectivity will not be</span>
+<span class="sd">        available.</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    model_order : int | str, optional</span>
+<span class="sd">        Autoregressive model order, by default 1.</span>
+<span class="sd">    l2_reg : float, optional</span>
+<span class="sd">        Ridge penalty (l2-regularization) parameter, by default 0.0</span>
+<span class="sd">    compute_fb_operator : bool</span>
+<span class="sd">        Whether to compute the backwards operator and average with</span>
+<span class="sd">        the forward operator. Addresses bias in the least-square</span>
+<span class="sd">        estimation :footcite:`Dawson_2016`.</span>
+<span class="sd">    model : str</span>
+<span class="sd">        Whether to compute one VAR model using all epochs as multiple</span>
+<span class="sd">        samples of the same VAR model (&#39;avg-epochs&#39;), or to compute</span>
+<span class="sd">        a separate VAR model for each epoch (&#39;dynamic&#39;), which results</span>
+<span class="sd">        in a time-varying VAR model. See Notes.</span>
+<span class="sd">    %(n_jobs)s</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    conn : Connectivity | TemporalConnectivity | EpochConnectivity</span>
+<span class="sd">        The connectivity data estimated.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.Connectivity</span>
+<span class="sd">    mne_connectivity.EpochConnectivity</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Names can be passed in, which are then used to instantiate the nodes</span>
+<span class="sd">    of the connectivity class. For example, they can be the electrode names</span>
+<span class="sd">    of EEG.</span>
+
+<span class="sd">    For higher-order VAR models, there are n_order ``A`` matrices,</span>
+<span class="sd">    representing the linear dynamics with respect to that lag. These</span>
+<span class="sd">    are represented by vertically concatenated matrices. For example, if</span>
+<span class="sd">    the input is data where n_signals is 3, then an order-1 VAR model will</span>
+<span class="sd">    result in a 3x3 connectivity matrix. An order-2 VAR model will result in a</span>
+<span class="sd">    6x3 connectivity matrix, with two 3x3 matrices representing the dynamics</span>
+<span class="sd">    at lag 1 and lag 2, respectively.</span>
+
+<span class="sd">    When computing a VAR model (i.e. linear dynamical system), we require</span>
+<span class="sd">    the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There</span>
+<span class="sd">    are two ways one can interpret the data in the model.</span>
+
+<span class="sd">    First, epochs can be treated as multiple samples observed for a single</span>
+<span class="sd">    VAR model. That is, we have $X_1, X_2, ..., X_n$, where each $X_i$</span>
+<span class="sd">    is a ``(n_signals, n_times)`` data array, with n epochs. We are</span>
+<span class="sd">    interested in estimating the parameters, $(A_1, A_2, ..., A_{order})$</span>
+<span class="sd">    from the following model over **all** epochs:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)</span>
+
+<span class="sd">    This results in one VAR model over all the epochs.</span>
+
+<span class="sd">    The second approach treats each epoch as a different VAR model,</span>
+<span class="sd">    estimating a time-varying VAR model. Using the same</span>
+<span class="sd">    data as above,  we now are interested in estimating the</span>
+<span class="sd">    parameters, $(A_1, A_2, ..., A_{order})$ for **each** epoch. The model</span>
+<span class="sd">    would be the following for **each** epoch:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)</span>
+
+<span class="sd">    This results in one VAR model for each epoch. This is done according</span>
+<span class="sd">    to the model in :footcite:`li_linear_2017`.</span>
+
+<span class="sd">    *b* is of shape [m, m*p], with sub matrices arranged as follows:</span>
+
+<span class="sd">    +------+------+------+------+</span>
+<span class="sd">    | b_00 | b_01 | ...  | b_0m |</span>
+<span class="sd">    +------+------+------+------+</span>
+<span class="sd">    | b_10 | b_11 | ...  | b_1m |</span>
+<span class="sd">    +------+------+------+------+</span>
+<span class="sd">    | ...  | ...  | ...  | ...  |</span>
+<span class="sd">    +------+------+------+------+</span>
+<span class="sd">    | b_m0 | b_m1 | ...  | b_mm |</span>
+<span class="sd">    +------+------+------+------+</span>
+
+<span class="sd">    Each sub matrix b_ij is a column vector of length p that contains the</span>
+<span class="sd">    filter coefficients from channel j (source) to channel i (sink).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. footbibliography::</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;avg-epochs&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;model&quot; parameter must be one of &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;(avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 1. determine shape of the window of data</span>
+    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;model_order&#39;</span><span class="p">:</span> <span class="n">model_order</span><span class="p">,</span>
+        <span class="s1">&#39;l2_reg&#39;</span><span class="p">:</span> <span class="n">l2_reg</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;avg-epochs&#39;</span><span class="p">:</span>
+        <span class="c1"># compute VAR model where each epoch is a</span>
+        <span class="c1"># sample of the multivariate time-series of interest</span>
+        <span class="c1"># ordinary least squares or regularized least squares</span>
+        <span class="c1"># (ridge regression)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">_construct_var_eqns</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+
+        <span class="n">b</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+        <span class="c1"># get the coefficients</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+        <span class="c1"># create connectivity</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">coef</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">Connectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">coef</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                            <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;VAR&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;dynamic&#39;</span>
+        <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_epochs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;If computing time (epoch) varying VAR model, &#39;</span>
+                               <span class="s1">&#39;then &quot;times&quot; must be passed in. From &#39;</span>
+                               <span class="s1">&#39;MNE epochs, one can extract this using &#39;</span>
+                               <span class="s1">&#39;&quot;epochs.times&quot;.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># compute time-varying VAR model where each epoch</span>
+        <span class="c1"># is one sample of a time-varying multivariate time-series</span>
+        <span class="c1"># linear system</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">_system_identification</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">model_order</span><span class="o">=</span><span class="n">model_order</span><span class="p">,</span>
+            <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="n">compute_fb_operator</span><span class="o">=</span><span class="n">compute_fb_operator</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conn</span></div>
+
+
+<span class="k">def</span> <span class="nf">_construct_var_eqns</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">model_order</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct VAR equation system (optionally with RLS constraint).</span>
+
+<span class="sd">    This function was originally imported from ``scot``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : np.ndarray (n_epochs, n_signals, n_times)</span>
+<span class="sd">        The multivariate data.</span>
+<span class="sd">    model_order : int</span>
+<span class="sd">        The order of the VAR model.</span>
+<span class="sd">    l2_reg : float, optional</span>
+<span class="sd">        The l2 penalty term for ridge regression, by default None, which</span>
+<span class="sd">        will result in ordinary VAR equation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X : np.ndarray</span>
+<span class="sd">        The predictor multivariate time-series. This will have shape</span>
+<span class="sd">        ``(model_order * (n_times - model_order),</span>
+<span class="sd">        n_signals * model_order)``. See Notes.</span>
+<span class="sd">    Y : np.ndarray</span>
+<span class="sd">        The predicted multivariate time-series. This will have shape</span>
+<span class="sd">        ``(model_order * (n_times - model_order),</span>
+<span class="sd">        n_signals * model_order)``. See Notes.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function will format data such as:</span>
+
+<span class="sd">        Y = A X</span>
+
+<span class="sd">    where Y is time-shifted data copy of X and ``A`` defines</span>
+<span class="sd">    how X linearly maps to Y.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># n_epochs, n_signals, n_times</span>
+    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># number of linear relations</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">model_order</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_epochs</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">n</span> <span class="k">if</span> <span class="n">l2_reg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">n</span> <span class="o">+</span> <span class="n">n_signals</span> <span class="o">*</span> <span class="n">model_order</span>
+
+    <span class="c1"># Construct matrix X (predictor variables)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">n_signals</span> <span class="o">*</span> <span class="n">model_order</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">X</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">model_order</span> <span class="o">+</span> <span class="n">k</span> <span class="o">-</span>
+                <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">model_order</span> <span class="o">-</span> <span class="n">k</span><span class="p">:</span><span class="o">-</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">l2_reg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">l2_reg</span><span class="p">)</span>
+
+    <span class="c1"># Construct vectors yi (response variables for each channel i)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">):</span>
+        <span class="n">Y</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">model_order</span><span class="p">:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_snapshots</span><span class="p">(</span><span class="n">snapshots</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct snapshots matrix.</span>
+
+<span class="sd">    This will construct a matrix along the 0th axis (rows),</span>
+<span class="sd">    stacking copies of the data based on order.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    snapshots : np.ndarray (n_signals, n_times)</span>
+<span class="sd">        A multivariate time-series.</span>
+<span class="sd">    order : int</span>
+<span class="sd">        The order of the linear model to be estimated.</span>
+<span class="sd">    n_times : int</span>
+<span class="sd">        The number of times in the original dataset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    snaps : np.ndarray (n_signals * order, n_times - order)</span>
+<span class="sd">        A snapshot matrix with copies of the original ``snapshots``</span>
+<span class="sd">        along the rows based on the ``order`` of the model.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Say ``snapshots`` is an array with shape (N, T) with</span>
+<span class="sd">    order ``M``. We will abbreviate this matrix and call it ``X``.</span>
+<span class="sd">    ``X_ij`` is the ith signal at time point j.</span>
+
+<span class="sd">    The resulting ``snaps`` matrix would be a (N*M, T - M) array:</span>
+
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_00 | X_01 | ...  | X_0(T-M+1) |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_10 | X_11 | ...  | X_1(T-M+1) |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | ...  | ...  | ...  | ...        |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_N0 | X_N1 | ...  | X_N(T-M+1) |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_01 | X_02 | ...  | X_0(T-M+2) |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | ...  | ...  | ...  | ...        |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_N1 | X_N2 | ...  | X_N(T-M+2) |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | ...  | ...  | ...  | ...        |</span>
+<span class="sd">    +------+------+------+------------+</span>
+<span class="sd">    | X_NM | X_N2 | ...  | X_N(T-M+M-1)|</span>
+<span class="sd">    +------+------+------+------------+</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">snaps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">snapshots</span><span class="p">[:,</span> <span class="n">i</span><span class="p">:</span> <span class="n">n_times</span> <span class="o">-</span> <span class="n">order</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">snaps</span>
+
+
+<span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                           <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
+
+<span class="sd">    Treats each epoch as a different window of time to estimate the model:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t - i)</span>
+
+<span class="sd">    where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are</span>
+<span class="sd">    the data snapshots.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. determine shape of the window of data</span>
+    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;l2_reg&#39;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
+        <span class="s1">&#39;model_order&#39;</span><span class="p">:</span> <span class="n">model_order</span><span class="p">,</span>
+        <span class="s1">&#39;random_state&#39;</span><span class="p">:</span> <span class="n">random_state</span><span class="p">,</span>
+        <span class="s1">&#39;compute_fb_operator&#39;</span><span class="p">:</span> <span class="n">compute_fb_operator</span>
+    <span class="p">}</span>
+
+    <span class="c1"># compute the A matrix for all Epochs</span>
+    <span class="n">A_mats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="n">model_order</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)):</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+            <span class="n">A_mats</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="c1"># run parallelized job to compute over all windows</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span>
+            <span class="n">delayed</span><span class="p">(</span><span class="n">_compute_lds_func</span><span class="p">)(</span>
+                <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)):</span>
+            <span class="n">adjmat</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="c1"># add additional order models in dynamic connectivity</span>
+            <span class="c1"># along the first node axes</span>
+            <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model_order</span><span class="p">):</span>
+                <span class="n">A_mats</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">adjmat</span><span class="p">[</span>
+                    <span class="o">-</span><span class="n">n_nodes</span><span class="p">:,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">]</span>
+
+    <span class="c1"># create connectivity</span>
+    <span class="n">A_mats</span> <span class="o">=</span> <span class="n">A_mats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                             <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying LDS&#39;</span><span class="p">,</span>
+                             <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conn</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">model_order</span><span class="p">,</span> <span class="n">l2_reg</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="p">,</span>
+                      <span class="n">random_state</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute linear system using VAR model.</span>
+
+<span class="sd">    Allows for parallelization over epochs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Ridge</span>
+
+    <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># create large snapshot with time-lags of order specified by</span>
+    <span class="c1"># ``order`` value</span>
+    <span class="n">snaps</span> <span class="o">=</span> <span class="n">_construct_snapshots</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">model_order</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span>
+    <span class="p">)</span>
+
+    <span class="c1"># get the time-shifted components of each</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">snaps</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">snaps</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># use scikit-learn Ridge Regression to fit</span>
+    <span class="n">fit_intercept</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">normalize</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span>
+        <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
+        <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># n_samples X n_features and n_samples X n_targets</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="c1"># n_targets X n_features</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">coef_</span>
+
+    <span class="k">if</span> <span class="n">compute_fb_operator</span><span class="p">:</span>
+        <span class="c1"># compute backward linear operator</span>
+        <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">back_A</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">coef_</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">sqrtm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">back_A</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">A</span>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-08.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,820 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.EpochTemporalConnectivity &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_connectivity.EpochSpectralConnectivity" href="mne_connectivity.EpochSpectralConnectivity.html" />
+    <link rel="prev" title="mne_connectivity.EpochConnectivity" href="mne_connectivity.EpochConnectivity.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-Connectivity</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.3dev0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.Connectivity.html">
+   mne_connectivity.Connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html">
+   mne_connectivity.TemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html">
+   mne_connectivity.SpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html">
+   mne_connectivity.SpectroTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochConnectivity.html">
+   mne_connectivity.EpochConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_connectivity.EpochTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html">
+   mne_connectivity.EpochSpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectroTemporalConnectivity.html">
+   mne_connectivity.EpochSpectroTemporalConnectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.envelope_correlation.html">
+   mne_connectivity.envelope_correlation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.phase_slope_index.html">
+   mne_connectivity.phase_slope_index
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity.html">
+   mne_connectivity.spectral_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.vector_auto_regression.html">
+   mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
+   mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.degree.html">
+   mne_connectivity.degree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.seed_target_indices.html">
+   mne_connectivity.seed_target_indices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.check_indices.html">
+   mne_connectivity.check_indices
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="mne-connectivity-epochtemporalconnectivity">
+<h1>mne_connectivity.EpochTemporalConnectivity<a class="headerlink" href="#mne-connectivity-epochtemporalconnectivity" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">EpochTemporalConnectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/base.html#EpochTemporalConnectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporal connectivity class over Epochs.</p>
+<p>This is an array of shape (n_epochs, n_connections, n_times),
+or (n_epochs, n_nodes, n_nodes, n_times). This describes how
+connectivity varies over time for different epochs.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : np.ndarray ([epochs], n_estimated_nodes, [freqs], [times])</p>
+<blockquote>
+<div><p>The connectivity data that is a raveled array of
+<code class="docutils literal notranslate"><span class="pre">(n_estimated_nodes,</span> <span class="pre">...)</span></code> shape. The
+<code class="docutils literal notranslate"><span class="pre">n_estimated_nodes</span></code> is equal to
+<code class="docutils literal notranslate"><span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out</span></code> if one is computing
+the full connectivity, or a subset of nodes
+equal to the length of <code class="docutils literal notranslate"><span class="pre">indices</span></code> passed in.</p>
+</div></blockquote>
+<p><strong>times</strong> : list | np.ndarray</p>
+<blockquote>
+<div><p>The times at which the connectivity data is computed over.</p>
+</div></blockquote>
+<p><strong>n_nodes</strong> : int</p>
+<blockquote>
+<div><p>The number of nodes in the dataset used to compute connectivity.
+This should be equal to the number of signals in the original
+dataset.</p>
+</div></blockquote>
+<p><strong>names</strong> : list | np.ndarray | None</p>
+<blockquote>
+<div><p>The names of the nodes of the dataset used to compute
+connectivity. If ‘None’ (default), then names will be
+a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
+of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
+</div></blockquote>
+<p><strong>indices</strong> : tuple of arrays | str | None</p>
+<blockquote>
+<div><p>The indices of relevant connectivity data. If <code class="docutils literal notranslate"><span class="pre">'all'</span></code> (default),
+then data is connectivity between all nodes. If <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code>,
+then data is symmetric connectivity between all nodes. If a tuple,
+then the first list represents the “in nodes”, and the second list
+represents the “out nodes”. See “Notes” for more information.</p>
+</div></blockquote>
+<p><strong>method</strong> : str, optional</p>
+<blockquote>
+<div><p>The method name used to compute connectivity.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.attrs" title="mne_connectivity.EpochTemporalConnectivity.attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attrs</span></code></a></p>
+<blockquote>
+<div><p>Xarray attributes of connectivity.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.coords" title="mne_connectivity.EpochTemporalConnectivity.coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coords</span></code></a></p>
+<blockquote>
+<div><p>The coordinates of the xarray data.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.dims" title="mne_connectivity.EpochTemporalConnectivity.dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dims</span></code></a></p>
+<blockquote>
+<div><p>The dimensions of the xarray data.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.indices" title="mne_connectivity.EpochTemporalConnectivity.indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indices</span></code></a></p>
+<blockquote>
+<div><p>Indices of connectivity data.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.method" title="mne_connectivity.EpochTemporalConnectivity.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span></code></a></p>
+<blockquote>
+<div><p>The method used to compute connectivity.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.n_epochs_used" title="mne_connectivity.EpochTemporalConnectivity.n_epochs_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_epochs_used</span></code></a></p>
+<blockquote>
+<div><p>Number of epochs used in computation of connectivity.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.n_nodes" title="mne_connectivity.EpochTemporalConnectivity.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></p>
+<blockquote>
+<div><p>The number of nodes in the original dataset.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.names" title="mne_connectivity.EpochTemporalConnectivity.names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></a></p>
+<blockquote>
+<div><p>Node names.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.shape" title="mne_connectivity.EpochTemporalConnectivity.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a></p>
+<blockquote>
+<div><p>Shape of raveled connectivity.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.times" title="mne_connectivity.EpochTemporalConnectivity.times"><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></a></p>
+<blockquote>
+<div><p>The time points of the connectivity data.</p>
+</div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.xarray" title="mne_connectivity.EpochTemporalConnectivity.xarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xarray</span></code></a></p>
+<blockquote>
+<div><p>Xarray of the connectivity data.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.combine" title="mne_connectivity.EpochTemporalConnectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
+<td><p>Combine connectivity data over epochs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.get_data" title="mne_connectivity.EpochTemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output])</p></td>
+<td><p>Get connectivity data as a numpy array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.plot_circle" title="mne_connectivity.EpochTemporalConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
+<td><p>Visualize connectivity as a circular graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.predict" title="mne_connectivity.EpochTemporalConnectivity.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(data)</p></td>
+<td><p>Predict samples on actual data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.rename_nodes" title="mne_connectivity.EpochTemporalConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
+<td><p>Rename nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.save" title="mne_connectivity.EpochTemporalConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
+<td><p>Save connectivity data to disk.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochTemporalConnectivity.simulate" title="mne_connectivity.EpochTemporalConnectivity.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(n_samples[, noise_func, random_state])</p></td>
+<td><p>Simulate vector autoregressive (VAR) model.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.attrs">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Xarray attributes of connectivity.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.combine">
+<span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine connectivity data over epochs.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combine</strong> : ‘mean’ | ‘median’ | callable</p>
+<blockquote>
+<div><p>How to combine correlation estimates across epochs.
+Default is ‘mean’. If callable, it must accept one
+positional input. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">combine</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>conn</strong> : instance of Connectivity</p>
+<blockquote>
+<div><p>The combined connectivity data structure.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.coords">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coords</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coordinates of the xarray data.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.dims">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dims</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dimensions of the xarray data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'compact'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get connectivity data as a numpy array.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output</strong> : str, optional</p>
+<blockquote>
+<div><p>How to format the output, by default ‘raveled’, which
+will represent each connectivity matrix as a
+<code class="docutils literal notranslate"><span class="pre">(n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out,)</span></code> list. If ‘dense’, then
+will return each connectivity matrix as a 2D array. If ‘compact’
+(default) then will return ‘raveled’ if <code class="docutils literal notranslate"><span class="pre">indices</span></code> were defined as
+a list of tuples, or <code class="docutils literal notranslate"><span class="pre">dense</span></code> if indices is ‘all’.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> : np.ndarray</p>
+<blockquote>
+<div><p>The output connectivity data.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.indices">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">indices</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indices of connectivity data.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>indices</strong> : str | tuple of lists</p>
+<blockquote>
+<div><p>Either ‘all’ for all-to-all connectivity,
+‘symmetric’ for symmetric all-to-all connectivity,
+or a tuple of lists representing the node-to-nodes
+that connectivity was computed.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.method">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.method" title="Permalink to this definition">¶</a></dt>
+<dd><p>The method used to compute connectivity.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.n_epochs_used">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_epochs_used</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.n_epochs_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of epochs used in computation of connectivity.</p>
+<p>Can be ‘None’, if there was no epochs used.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.n_nodes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_nodes</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.n_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of nodes in the original dataset.</p>
+<p>Even if <code class="docutils literal notranslate"><span class="pre">indices</span></code> defines a subset of nodes that
+were computed, this should be the total number of
+nodes in the original dataset.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.names">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.plot_circle">
+<span class="sig-name descname"><span class="pre">plot_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.plot_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize connectivity as a circular graph.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_names</strong> : list of str</p>
+<blockquote>
+<div><p>Node names. The order corresponds to the order in con.</p>
+</div></blockquote>
+<p><strong>indices</strong> : tuple of array | None</p>
+<blockquote>
+<div><p>Two arrays with indices of connections for which the connections
+strengths are defined in con. Only needed if con is a 1D array.</p>
+</div></blockquote>
+<p><strong>n_lines</strong> : int | None</p>
+<blockquote>
+<div><p>If not None, only the n_lines strongest connections (strength=abs(con))
+are drawn.</p>
+</div></blockquote>
+<p><strong>node_angles</strong> : array, shape (n_node_names,) | None</p>
+<blockquote>
+<div><p>Array with node positions in degrees. If None, the nodes are equally
+spaced on the circle. See mne.viz.circular_layout.</p>
+</div></blockquote>
+<p><strong>node_width</strong> : float | None</p>
+<blockquote>
+<div><p>Width of each node in degrees. If None, the minimum angle between any
+two nodes is used as the width.</p>
+</div></blockquote>
+<p><strong>node_colors</strong> : list of tuple | list of str</p>
+<blockquote>
+<div><p>List with the color to use for each node. If fewer colors than nodes
+are provided, the colors will be repeated. Any color supported by
+matplotlib can be used, e.g., RGBA tuples, named colors.</p>
+</div></blockquote>
+<p><strong>facecolor</strong> : str</p>
+<blockquote>
+<div><p>Color to use for background. See matplotlib.colors.</p>
+</div></blockquote>
+<p><strong>textcolor</strong> : str</p>
+<blockquote>
+<div><p>Color to use for text. See matplotlib.colors.</p>
+</div></blockquote>
+<p><strong>node_edgecolor</strong> : str</p>
+<blockquote>
+<div><p>Color to use for lines around nodes. See matplotlib.colors.</p>
+</div></blockquote>
+<p><strong>linewidth</strong> : float</p>
+<blockquote>
+<div><p>Line width to use for connections.</p>
+</div></blockquote>
+<p><strong>colormap</strong> : str | instance of matplotlib.colors.LinearSegmentedColormap</p>
+<blockquote>
+<div><p>Colormap to use for coloring the connections.</p>
+</div></blockquote>
+<p><strong>vmin</strong> : float | None</p>
+<blockquote>
+<div><p>Minimum value for colormap. If None, it is determined automatically.</p>
+</div></blockquote>
+<p><strong>vmax</strong> : float | None</p>
+<blockquote>
+<div><p>Maximum value for colormap. If None, it is determined automatically.</p>
+</div></blockquote>
+<p><strong>colorbar</strong> : bool</p>
+<blockquote>
+<div><p>Display a colorbar or not.</p>
+</div></blockquote>
+<p><strong>title</strong> : str</p>
+<blockquote>
+<div><p>The figure title.</p>
+</div></blockquote>
+<p><strong>colorbar_size</strong> : float</p>
+<blockquote>
+<div><p>Size of the colorbar.</p>
+</div></blockquote>
+<p><strong>colorbar_pos</strong> : tuple, shape (2,)</p>
+<blockquote>
+<div><p>Position of the colorbar.</p>
+</div></blockquote>
+<p><strong>fontsize_title</strong> : int</p>
+<blockquote>
+<div><p>Font size to use for title.</p>
+</div></blockquote>
+<p><strong>fontsize_names</strong> : int</p>
+<blockquote>
+<div><p>Font size to use for node names.</p>
+</div></blockquote>
+<p><strong>fontsize_colorbar</strong> : int</p>
+<blockquote>
+<div><p>Font size to use for colorbar.</p>
+</div></blockquote>
+<p><strong>padding</strong> : float</p>
+<blockquote>
+<div><p>Space to add around figure to accommodate long labels.</p>
+</div></blockquote>
+<p><strong>fig</strong> : None | instance of matplotlib.figure.Figure</p>
+<blockquote>
+<div><p>The figure to use. If None, a new figure with the specified background
+color will be created.</p>
+</div></blockquote>
+<p><strong>subplot</strong> : int | tuple, shape (3,)</p>
+<blockquote>
+<div><p>Location of the subplot when creating figures with multiple plots. E.g.
+121 or (1, 2, 1) for 1 row, 2 columns, plot 1. See
+matplotlib.pyplot.subplot.</p>
+</div></blockquote>
+<p><strong>interactive</strong> : bool</p>
+<blockquote>
+<div><p>When enabled, left-click on a node to show only connections to that
+node. Right-click shows all connections.</p>
+</div></blockquote>
+<p><strong>node_linewidth</strong> : float</p>
+<blockquote>
+<div><p>Line with for nodes.</p>
+</div></blockquote>
+<p><strong>show</strong> : bool</p>
+<blockquote>
+<div><p>Show figure if True.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fig</strong> : instance of matplotlib.figure.Figure</p>
+<blockquote>
+<div><p>The figure handle.</p>
+</div></blockquote>
+<p><strong>axes</strong> : instance of matplotlib.projections.polar.PolarAxes</p>
+<blockquote>
+<div><p>The subplot handle.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This code is based on a circle graph example by Nicolas P. Rougier</p>
+<p>By default, <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.4.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a> does not take <code class="docutils literal notranslate"><span class="pre">facecolor</span></code>
+into account when saving, even if set when a figure is generated. This
+can be addressed via, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> is not set via <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.4.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a>, the
+figure labels, title, and legend may be cut off in the output figure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict samples on actual data.</p>
+<p>The result of this function is used for calculating the residuals.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : array</p>
+<blockquote>
+<div><p>Epoched or continuous data set. Has shape
+(n_epochs, n_signals, n_times) or (n_signals, n_times).</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>predicted</strong> : array</p>
+<blockquote>
+<div><p>Data as predicted by the VAR model of
+shape same as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Residuals are obtained by r = x - var.predict(x).</p>
+<p>To compute residual covariances:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the covariance of the residuals</span>
+<span class="c1"># row are observations, columns are variables</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">residuals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">sampled_residuals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">residuals</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">model_order</span><span class="p">:],</span> <span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rescov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">sampled_residuals</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.rename_nodes">
+<span class="sig-name descname"><span class="pre">rename_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.rename_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename nodes.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mapping</strong> : dict</p>
+<blockquote>
+<div><p>Mapping from original node names (keys) to new node names (values).</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save connectivity data to disk.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fname</strong> : str | pathlib.Path</p>
+<blockquote>
+<div><p>The filepath to save the data. Data is saved
+as netCDF files (<code class="docutils literal notranslate"><span class="pre">.nc</span></code> extension).</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.shape">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shape of raveled connectivity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.simulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate vector autoregressive (VAR) model.</p>
+<p>This function generates data from the VAR model.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_samples</strong> : int</p>
+<blockquote>
+<div><p>Number of samples to generate.</p>
+</div></blockquote>
+<p><strong>noisefunc</strong> : func, optional</p>
+<blockquote>
+<div><p>This function is used to create the generating noise process. If
+set to None, Gaussian white noise with zero mean and unit variance
+is used.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> : array, shape (n_samples, n_channels)</p>
+<blockquote>
+<div><p>Generated data.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.times">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">times</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.times" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time points of the connectivity data.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochTemporalConnectivity.xarray">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">xarray</span></span><a class="headerlink" href="#mne_connectivity.EpochTemporalConnectivity.xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Xarray of the connectivity data.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="mne_connectivity.EpochConnectivity.html" title="previous page">mne_connectivity.EpochConnectivity</a>
+    <a class='right-next' id="next-link" href="mne_connectivity.EpochSpectralConnectivity.html" title="next page">mne_connectivity.EpochSpectralConnectivity</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-08.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

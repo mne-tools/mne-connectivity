@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.envelope_correlation &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_connectivity.phase_slope_index" href="mne_connectivity.phase_slope_index.html" />
+    <link rel="prev" title="mne_connectivity.EpochSpectroTemporalConnectivity" href="mne_connectivity.EpochSpectroTemporalConnectivity.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-Connectivity</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.3dev0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.Connectivity.html">
+   mne_connectivity.Connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html">
+   mne_connectivity.TemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html">
+   mne_connectivity.SpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html">
+   mne_connectivity.SpectroTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochConnectivity.html">
+   mne_connectivity.EpochConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html">
+   mne_connectivity.EpochTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html">
+   mne_connectivity.EpochSpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectroTemporalConnectivity.html">
+   mne_connectivity.EpochSpectroTemporalConnectivity
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_connectivity.envelope_correlation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.phase_slope_index.html">
+   mne_connectivity.phase_slope_index
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity.html">
+   mne_connectivity.spectral_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.vector_auto_regression.html">
+   mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
+   mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.degree.html">
+   mne_connectivity.degree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.seed_target_indices.html">
+   mne_connectivity.seed_target_indices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.check_indices.html">
+   mne_connectivity.check_indices
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-connectivity-envelope-correlation">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_connectivity.envelope_correlation
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="mne-connectivity-envelope-correlation">
+<h1>mne_connectivity.envelope_correlation<a class="headerlink" href="#mne-connectivity-envelope-correlation" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mne_connectivity.envelope_correlation">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">envelope_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orthogonalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pairwise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/envelope.html#envelope_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.envelope_correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the envelope correlation.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : array-like, shape=(n_epochs, n_signals, n_times) | generator</p>
+<blockquote>
+<div><p>The data from which to compute connectivity.
+The array-like object can also be a list/generator of array,
+each with shape (n_signals, n_times), or a <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceEstimate</span></code></a>
+object (and <code class="docutils literal notranslate"><span class="pre">stc.data</span></code> will be used). If it’s float data,
+the Hilbert transform will be applied; if it’s complex data,
+it’s assumed the Hilbert has already been applied.</p>
+</div></blockquote>
+<p><strong>names</strong> : list | array-like | None</p>
+<blockquote>
+<div><p>A list of names associated with the signals in <code class="docutils literal notranslate"><span class="pre">data</span></code>.
+If None, will be a list of indices of the number of nodes.</p>
+</div></blockquote>
+<p><strong>orthogonalize</strong> : ‘pairwise’ | False</p>
+<blockquote>
+<div><p>Whether to orthogonalize with the pairwise method or not.
+Defaults to ‘pairwise’. Note that when False,
+the correlation matrix will not be returned with
+absolute values.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.19.</span></p>
+</div>
+</div></blockquote>
+<p><strong>log</strong> : bool</p>
+<blockquote>
+<div><p>If True (default False), square and take the log before orthonalizing
+envelopes or computing correlations.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.22.</span></p>
+</div>
+</div></blockquote>
+<p><strong>absolute</strong> : bool</p>
+<blockquote>
+<div><p>If True (default), then take the absolute value of correlation
+coefficients before making each epoch’s correlation matrix
+symmetric (and thus before combining matrices across epochs).
+Only used when <code class="docutils literal notranslate"><span class="pre">orthogonalize=True</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.22.</span></p>
+</div>
+</div></blockquote>
+<p><strong>verbose</strong> : bool | str | int | None</p>
+<blockquote>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+If used, it should be passed as a keyword-argument only.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>corr</strong> : instance of EpochConnectivity</p>
+<blockquote>
+<div><p>The pairwise orthogonal envelope correlations.
+This matrix is symmetric. The array
+will have three dimensions, the first of which is <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code>.
+The data shape would be <code class="docutils literal notranslate"><span class="pre">(n_epochs,</span> <span class="pre">(n_nodes</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">n_nodes</span> <span class="pre">/</span> <span class="pre">2)</span></code></p>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.EpochConnectivity</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This function computes the power envelope correlation between
+orthogonalized signals <a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2">2</a>.</p>
+<p>If you would like to combine Epochs after the fact using some
+function over the Epochs axis, see the <code class="docutils literal notranslate"><span class="pre">combine</span></code> function from
+<a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a> classes.</p>
+<p class="rubric">References</p>
+<p id="id3"><dl class="footnote brackets">
+<dt class="label" id="footcite-hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
+</dd>
+<dt class="label" id="footcite-khanetal2018"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-connectivity-envelope-correlation">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.envelope_correlation</span></code><a class="headerlink" href="#examples-using-mne-connectivity-envelope-correlation" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 in source sp..."><div class="figure align-default" id="id4">
+<img alt="Compute envelope correlations in source space" src="../_images/sphx_glr_mne_inverse_envelope_correlation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_envelope_correlation.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">Compute envelope correlations in source space</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 in source sp..."><div class="figure align-default" id="id5">
+<img alt="Compute envelope correlations in volume source space" src="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_envelope_correlation_volume.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-volume-py"><span class="std std-ref">Compute envelope correlations in volume source space</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="mne_connectivity.EpochSpectroTemporalConnectivity.html" title="previous page">mne_connectivity.EpochSpectroTemporalConnectivity</a>
+    <a class='right-next' id="next-link" href="mne_connectivity.phase_slope_index.html" title="next page">mne_connectivity.phase_slope_index</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-08.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
