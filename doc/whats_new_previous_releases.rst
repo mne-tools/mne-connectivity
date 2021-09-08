@@ -63,4 +63,4 @@ People who contributed to this release (in alphabetical order):
 
 * `Adam Li`_
 
-.. include:: authors.rst
+.. include:: authors.inc
