@@ -46,6 +46,15 @@ n_nodes : int
     dataset.
 """
 
+docdict['connectivity_kwargs'] = """
+**kwargs : dict
+        Extra connectivity parameters. These may include
+        ``freqs`` for spectral connectivity, and/or
+        ``times`` for connectivity over time. In addition,
+        these may include extra parameters that are stored
+        as xarray ``attrs``.
+"""
+
 # Downstream container variables
 docdict['freqs'] = """
 freqs : list | np.ndarray
@@ -88,6 +97,16 @@ docdict['n_jobs'] = """
 n_jobs : int
     The number of jobs to run in parallel (default 1).
     Requires the joblib package.
+"""
+
+# Random state
+docdict['random_state'] = """
+random_state : None | int | instance of ~numpy.random.RandomState
+    If ``random_state`` is an :class:`int`, it will be used as a seed for
+    :class:`~numpy.random.RandomState`. If ``None``, the seed will be
+    obtained from the operating system (see
+    :class:`~numpy.random.RandomState` for details). Default is
+    ``None``.
 """
 
 docdict_indented = {}

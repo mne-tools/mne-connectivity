@@ -54,14 +54,14 @@ test-no-testing-data: in
 
 test-no-sample-with-coverage: in testing_data
 	rm -rf coverage .coverage
-	$(PYTESTS) --cov=mne --cov-report html:coverage
+	$(PYTESTS) --cov=mne_connectivity --cov-report html:coverage
 
 test-doc: sample_data testing_data
 	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors --doctest-glob='*.rst' ./doc/
 
 test-coverage: testing_data
 	rm -rf coverage .coverage
-	$(PYTESTS) --cov=mne --cov-report html:coverage
+	$(PYTESTS) --cov=mne_connectivity --cov-report html:coverage
 # whats the difference with test-no-sample-with-coverage?
 
 test-mem: in testing_data
@@ -108,3 +108,9 @@ pep:
 	@$(MAKE) -k flake pydocstyle codespell-error check-manifest
 
 docstyle: pydocstyle
+
+build-doc:
+	@echo "Building documentation"
+	make -C doc/ clean
+	make -C doc/ html-noplot
+	cd doc/ && make view

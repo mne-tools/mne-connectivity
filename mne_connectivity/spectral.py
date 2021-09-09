@@ -19,7 +19,7 @@ from mne.utils import (_arange_div, _check_option, _time_mask, logger, verbose,
                        warn)
 
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
-from .utils import check_indices
+from .utils import check_indices, fill_doc
 
 ########################################################################
 # Various connectivity estimators
@@ -557,7 +557,7 @@ def _check_estimators(method, mode):
     return con_method_types, n_methods, accumulate_psd, n_comp_args
 
 
-@verbose
+@fill_doc
 def spectral_connectivity(data, names=None, method='coh', indices=None,
                           sfreq=2 * np.pi,
                           mode='multitaper', fmin=None, fmax=np.inf,
@@ -582,6 +582,7 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
         number of time points as stc_*. The array-like object can also
         be a list/generator of array, shape =(n_signals, n_times),
         or a list/generator of SourceEstimate or VolSourceEstimate objects.
+    %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
         'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'wpli', 'wpli2_debiased']``.

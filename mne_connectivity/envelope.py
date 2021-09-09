@@ -53,7 +53,11 @@ def envelope_correlation(data, names=None,
         The pairwise orthogonal envelope correlations.
         This matrix is symmetric. The array
         will have three dimensions, the first of which is ``n_epochs``.
-        The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``
+        The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
+
+    See Also
+    --------
+    mne_connectivity.EpochConnectivity
 
     Notes
     -----
@@ -63,10 +67,6 @@ def envelope_correlation(data, names=None,
     If you would like to combine Epochs after the fact using some
     function over the Epochs axis, see the ``combine`` function from
     `EpochConnectivity` classes.
-
-    See Also
-    --------
-    mne_connectivity.EpochConnectivity
 
     References
     ----------

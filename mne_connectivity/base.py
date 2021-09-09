@@ -109,7 +109,6 @@ class DynamicMixin:
                 axis=2
             ).squeeze(0)
             rescov = np.cov(sampled_residuals)
-
         """
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(f'Data passed in must be either 2D or 3D. '
@@ -158,6 +157,7 @@ class DynamicMixin:
 
         return predicted_data
 
+    @fill_doc
     def simulate(self, n_samples, noise_func=None, random_state=None):
         """Simulate vector autoregressive (VAR) model.
 
@@ -167,10 +167,11 @@ class DynamicMixin:
         ----------
         n_samples : int
             Number of samples to generate.
-        noisefunc : func, optional
+        noise_func : func, optional
             This function is used to create the generating noise process. If
             set to None, Gaussian white noise with zero mean and unit variance
             is used.
+        %(random_state)s
 
         Returns
         -------
@@ -233,12 +234,7 @@ class _Connectivity(DynamicMixin):
     %(indices)s
     %(method)s
     %(n_nodes)s
-    kwargs : dict
-        Extra connectivity parameters. These may include
-        ``freqs`` for spectral connectivity, and/or
-        ``times`` for connectivity over time. In addition,
-        these may include extra parameters that are stored
-        as xarray ``attrs``.
+    %(connectivity_kwargs)s
 
     Notes
     -----
@@ -691,6 +687,7 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     %(method)s
     %(spec_method)s
     %(n_epochs_used)s
+    %(connectivity_kwargs)s
 
     See Also
     --------
@@ -726,6 +723,7 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+    %(connectivity_kwargs)s
 
     Notes
     -----
@@ -769,6 +767,7 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     %(method)s
     %(spec_method)s
     %(n_epochs_used)s
+    %(connectivity_kwargs)s
     """
 
     def __init__(self, data, freqs, times, n_nodes, names=None,
@@ -797,6 +796,7 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
@@ -826,6 +826,7 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     %(names)s
     %(indices)s
     %(method)s
+    %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
@@ -857,6 +858,7 @@ class EpochSpectroTemporalConnectivity(
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
@@ -886,6 +888,7 @@ class Connectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+    %(connectivity_kwargs)s
 
     See Also
     --------
@@ -909,7 +912,6 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     or (n_epochs, n_nodes, n_nodes). This describes how
     connectivity varies for different epochs.
 
-
     Parameters
     ----------
     %(data)s
@@ -918,6 +920,7 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+    %(connectivity_kwargs)s
 
     See Also
     --------
