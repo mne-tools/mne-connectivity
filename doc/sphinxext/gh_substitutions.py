@@ -21,7 +21,7 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     else:
         slug = 'issues/' + text
     text = '#' + text
-    ref = 'https://github.com/mne-tools/mne-bids/' + slug
+    ref = 'https://github.com/mne-tools/mne-connectivity/' + slug
     set_classes(options)
     node = reference(rawtext, text, refuri=ref, **options)
     return [node], []

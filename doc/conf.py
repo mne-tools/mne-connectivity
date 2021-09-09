@@ -205,7 +205,7 @@ html_sidebars = {
 html_context = {
     'versions_dropdown': {
         'dev': 'v0.3 (devel)',
-        'v0.2': 'v0.2',
+        'stable': 'v0.2 (stable)',
         'v0.1': 'v0.1',
     },
 }
