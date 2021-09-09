@@ -54,6 +54,14 @@ Reading functions
 
    read_connectivity
 
+Pre-processing on connectivity
+==============================
+
+.. autosummary::
+   :toctree: generated/
+
+   symmetric_orth
+
 Post-processing on connectivity
 ===============================
 

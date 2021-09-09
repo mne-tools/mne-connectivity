@@ -8,7 +8,8 @@
 import numpy as np
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
-from mne.utils import _check_option, verbose
+from mne.utils import (_check_option, verbose, logger, _validate_type, warn,
+                       _ensure_int)
 
 from .base import EpochTemporalConnectivity
 
@@ -36,20 +37,14 @@ def envelope_correlation(data, names=None,
         Defaults to 'pairwise'. Note that when False,
         the correlation matrix will not be returned with
         absolute values.
-
-        .. versionadded:: 0.19
     log : bool
         If True (default False), square and take the log before orthonalizing
         envelopes or computing correlations.
-
-        .. versionadded:: 0.22
     absolute : bool
         If True (default), then take the absolute value of correlation
         coefficients before making each epoch's correlation matrix
         symmetric (and thus before combining matrices across epochs).
-        Only used when ``orthogonalize=True``.
-
-        .. versionadded:: 0.22
+        Only used when ``orthogonalize='symmetric'``.
     %(verbose)s
 
     Returns
@@ -184,3 +179,107 @@ def envelope_correlation(data, names=None,
         n_nodes=n_nodes,
     )
     return conn
+
+
+@verbose
+def symmetric_orth(data, *, n_iter=50, tol=1e-6, verbose=None):
+    """Perform symmetric orthogonalization.
+
+    Uses the method from :footcite:`ColcloughEtAl2015` to jointly
+    orthogonalize the time series.
+
+    Parameters
+    ----------
+    data : ndarray, shape ([n_epochs, ]n_signals, n_times) or generator
+        The data to process. If a generator, it must return 2D arrays to
+        process.
+    n_iter : int
+        The maximum number of iterations to perform.
+    tol : float
+        The relative tolerance for convergence.
+    %(verbose)s
+
+    Returns
+    -------
+    data_orth : ndarray, shape (n_epochs, n_signals, n_times) | generator
+        The orthogonalized data. If ``data`` is a generator, a generator
+        is returned.
+
+    References
+    ----------
+    .. footbibliography::
+    """
+    n_iter = _ensure_int(n_iter, 'n_iter')
+    if isinstance(data, np.ndarray):
+        return_generator = False
+        if data.ndim == 2:
+            return_singleton = True
+            data = [data]
+        else:
+            return_singleton = False
+    else:
+        return_generator = True
+        return_singleton = False
+    data_out = _gen_sym_orth(data, n_iter, tol)
+    if not return_generator:
+        data_out = np.array(list(data_out))
+        if return_singleton:
+            data_out = data_out[0]
+    return data_out
+
+
+def _gen_sym_orth(data, n_iter, tol):
+    for ei, Z in enumerate(data):
+        name = f'data[{ei}]'
+        _validate_type(Z, np.ndarray, name)
+        _check_option(f'{name}.ndim', Z.ndim, (2,))
+        _check_option(f'{name}.dtype.kind', Z.dtype.kind, 'f')
+        # implementation follows Colclough et al. 2015 (NeuroImage), quoted
+        # below the paper formulation has Z of shape (m, n) with m time points
+        # and n sensors, but let's reformulate to our dimensionality
+        n, m = Z.shape
+        if m < n:
+            raise RuntimeError(
+                f'Symmetric orth requires at least as many time points ({m}) '
+                f'as the number of time series ({n})')
+        logger.debug('Symmetric orth')
+        # "starting with D(1) = I_n"
+        d = np.ones(n)  # don't bother with making it full diag
+        # "we then allow the vector magnitudes to vary and reduce the error ε
+        # by iterating (4), (6) and (8) until convergence."
+        last_err = np.inf
+        power = np.linalg.norm(Z, 'fro') ** 2
+        power = power or 1.
+        P = None
+        rank = None
+        for ii in range(n_iter):
+            # eq. 4: UΣVᵀ = SVD(ZD), but our Z is transposed
+            U, s, Vh = np.linalg.svd(Z.T * d, full_matrices=False)
+            this_rank = (s >= s[0] * 1e-6).sum()
+            if rank is None:
+                rank = this_rank
+                # Use single precision here (should be good enough)
+                if rank < len(Z):
+                    warn(f'Data are rank deficient ({rank} < {len(Z)}), some '
+                         'orthogonalized components will be noise')
+            # eq. 6 with an added transpose
+            O_ = Vh.T @ U.T
+            # eq. 8 (D=diag(diag(Z^T O)))
+            d = np.einsum('ij,ij->i', Z, O_)
+            # eq. 2 (P=OD) with an added transpose
+            O_ *= d[:, np.newaxis]
+            P = O_
+            err = _ep(Z, P) / power
+            delta = 0 if err == 0 else (last_err - err) / err
+            logger.debug(f'    {ii:2d}: ε={delta:0.2e} ({err}; r={this_rank})')
+            if err == 0 or delta < tol:
+                logger.debug(f'Convergence reached on iteration {ii}')
+                break
+            last_err = err
+        else:
+            warn(f'Symmetric orth did not converge for data[{ei}]')
+        yield P
+
+
+def _ep(Z, P):
+    return np.linalg.norm(Z - P, 'fro') ** 2
