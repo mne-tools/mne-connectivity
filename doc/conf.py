@@ -122,6 +122,7 @@ html_theme_options = {
     'use_edit_page_button': False,
     'navigation_with_keys': False,
     'show_toc_level': 1,
+    'navbar_end': ['version-switcher', 'navbar-icon-links'],
 }
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
@@ -130,7 +131,8 @@ html_sidebars = {
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.2 (devel)',
+        'dev': 'v0.3 (devel)',
+        'v0.2': 'v0.2',
         'v0.1': 'v0.1',
     },
 }
