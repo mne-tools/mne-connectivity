@@ -226,6 +226,8 @@ intersphinx_mapping = {
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
     'nibabel': ('https://nipy.org/nibabel', None),
     'nilearn': ('http://nilearn.github.io', None),
+    'dipy': ('https://dipy.org/documentation/1.4.0./',
+             'https://dipy.org/documentation/1.4.0./objects.inv/'),
 }
 intersphinx_timeout = 5
 
