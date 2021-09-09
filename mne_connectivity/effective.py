@@ -7,12 +7,14 @@ import copy
 import numpy as np
 from mne.utils import logger, verbose
 
+from .utils import fill_doc
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
 from .spectral import spectral_connectivity
 
 
 @verbose
-def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
+@fill_doc
+def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
                       mode='multitaper', fmin=None, fmax=np.inf,
                       tmin=None, tmax=None, mt_bandwidth=None,
                       mt_adaptive=False, mt_low_bias=True,
@@ -32,7 +34,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
     a negative value means the opposite.
 
     The PSI is computed from the coherency (see spectral_connectivity), details
-    can be found in [1].
+    can be found in :footcite:`NolteEtAl2008`.
 
     Parameters
     ----------
@@ -44,6 +46,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
         corresponds to 3 epochs, and arr_* could be an array with the same
         number of time points as stc_*.
+    %(names)s
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
@@ -71,7 +74,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
         Use adaptive weights to combine the tapered spectra into PSD.
         Only used in 'multitaper' mode.
     mt_low_bias : bool
-        Only use tapers with more than 90%% spectral concentration within
+        Only use tapers with more than 90 percent spectral concentration within
         bandwidth. Only used in 'multitaper' mode.
     cwt_freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode.
@@ -105,9 +108,7 @@ def phase_slope_index(data, indices=None, names=None, sfreq=2 * np.pi,
 
     References
     ----------
-    [1] Nolte et al. "Robustly Estimating the Flow Direction of Information in
-        Complex Physical Systems", Physical Review Letters, vol. 100, no. 23,
-        pp. 1-4, Jun. 2008.
+    .. footbibliography::
     """
     logger.info('Estimating phase slope index (PSI)')
     # estimate the coherency

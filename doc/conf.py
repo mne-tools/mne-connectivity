@@ -58,11 +58,84 @@ autodoc_typehints = 'signature'
 # nbsphinx_execute = 'never'
 # nbsphinx_allow_errors = True
 
+error_ignores = {
+    # These we do not live by:
+    'GL01',  # Docstring should start in the line immediately after the quotes
+    'EX01', 'EX02',  # examples failed (we test them separately)
+    'ES01',  # no extended summary
+    'SA01',  # no see also
+    'YD01',  # no yields section
+    'SA04',  # no description in See Also
+    'PR04',  # Parameter "shape (n_channels" has no type
+    'RT02',  # The first line of the Returns section should contain only the type, unless multiple values are being returned  # noqa
+    # XXX should also verify that | is used rather than , to separate params
+    # XXX should maybe also restore the parameter-desc-length < 800 char check
+}
+
 # -- numpydoc
 # Below is needed to prevent errors
+numpydoc_xref_param_type = True
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_use_blockquotes = True
+numpydoc_xref_ignore = {
+    # words
+    'instance', 'instances', 'of', 'default', 'shape', 'or',
+    'with', 'length', 'pair', 'matplotlib', 'optional', 'kwargs', 'in',
+    'dtype', 'object', 'self.verbose',
+    # shapes
+    'n_times', 'obj', 'n_chan', 'n_epochs', 'n_picks', 'n_ch_groups',
+    'n_node_names', 'n_tapers', 'n_signals', 'n_step', 'n_freqs',
+    'epochs', 'freqs', 'times', 'arrays', 'lists', 'func', 'n_nodes',
+    'n_estimated_nodes', 'n_samples', 'n_channels', 'Epochs'
+}
+numpydoc_xref_aliases = {
+    # Python
+    'file-like': ':term:`file-like <python:file object>`',
+    # Matplotlib
+    'colormap': ':doc:`colormap <matplotlib:tutorials/colors/colormaps>`',
+    'color': ':doc:`color <matplotlib:api/colors_api>`',
+    'collection': ':doc:`collections <matplotlib:api/collections_api>`',
+    'Axes': 'matplotlib.axes.Axes',
+    'Figure': 'matplotlib.figure.Figure',
+    'Axes3D': 'mpl_toolkits.mplot3d.axes3d.Axes3D',
+    'ColorbarBase': 'matplotlib.colorbar.ColorbarBase',
+    # joblib
+    'joblib.Parallel': 'joblib.Parallel',
+    # nibabel
+    'Nifti1Image': 'nibabel.nifti1.Nifti1Image',
+    'Nifti2Image': 'nibabel.nifti2.Nifti2Image',
+    'SpatialImage': 'nibabel.spatialimages.SpatialImage',
+    # MNE
+    'Label': 'mne.Label', 'Forward': 'mne.Forward', 'Evoked': 'mne.Evoked',
+    'Info': 'mne.Info', 'SourceSpaces': 'mne.SourceSpaces',
+    'SourceMorph': 'mne.SourceMorph',
+    'Epochs': 'mne.Epochs', 'Layout': 'mne.channels.Layout',
+    'EvokedArray': 'mne.EvokedArray', 'BiHemiLabel': 'mne.BiHemiLabel',
+    'AverageTFR': 'mne.time_frequency.AverageTFR',
+    'EpochsTFR': 'mne.time_frequency.EpochsTFR',
+    'Raw': 'mne.io.Raw', 'ICA': 'mne.preprocessing.ICA',
+    # dipy
+    'dipy.align.AffineMap': 'dipy.align.imaffine.AffineMap',
+    'dipy.align.DiffeomorphicMap': 'dipy.align.imwarp.DiffeomorphicMap',
+}
+numpydoc_validate = True
+numpydoc_validation_checks = {'all'} | set(error_ignores)
+numpydoc_validation_exclude = {  # set of regex
+    # dict subclasses
+    r'\.clear', r'\.get$', r'\.copy$', r'\.fromkeys', r'\.items', r'\.keys',
+    r'\.pop', r'\.popitem', r'\.setdefault', r'\.update', r'\.values',
+    # list subclasses
+    r'\.append', r'\.count', r'\.extend', r'\.index', r'\.insert', r'\.remove',
+    r'\.sort',
+    # we currently don't document these properly (probably okay)
+    r'\.__getitem__', r'\.__contains__', r'\.__hash__', r'\.__mul__',
+    r'\.__sub__', r'\.__add__', r'\.__iter__', r'\.__div__', r'\.__neg__',
+    r'mne_connectivity\.degree', r'mne_connectivity\.seed_target_indices', r'mne_connectivity\.check_indices',
+    r'mne_connectivity\.plot_connectivity', r'mne_connectivity\.plot_circle',
+    r'plot_circle'
+}
+
 
 default_role = 'py:obj'
 
@@ -132,7 +205,7 @@ html_sidebars = {
 html_context = {
     'versions_dropdown': {
         'dev': 'v0.3 (devel)',
-        'v0.2': 'v0.2',
+        'stable': 'v0.2 (stable)',
         'v0.1': 'v0.1',
     },
 }
@@ -153,6 +226,8 @@ intersphinx_mapping = {
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
     'nibabel': ('https://nipy.org/nibabel', None),
     'nilearn': ('http://nilearn.github.io', None),
+    'dipy': ('https://dipy.org/documentation/1.4.0./',
+             'https://dipy.org/documentation/1.4.0./objects.inv/'),
 }
 intersphinx_timeout = 5
 

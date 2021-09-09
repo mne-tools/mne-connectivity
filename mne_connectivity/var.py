@@ -10,7 +10,7 @@ from .base import Connectivity, EpochConnectivity
 @fill_doc
 def vector_auto_regression(
         data, times=None, names=None, model_order=1, l2_reg=0.0,
-        compute_fb_operator=False, n_jobs=1, model='dynamic', verbose=None):
+        compute_fb_operator=False, model='dynamic', n_jobs=1, verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
     Parameters
@@ -26,7 +26,7 @@ def vector_auto_regression(
     model_order : int | str, optional
         Autoregressive model order, by default 1.
     l2_reg : float, optional
-        Ridge penalty (l2-regularization) parameter, by default 0.0
+        Ridge penalty (l2-regularization) parameter, by default 0.0.
     compute_fb_operator : bool
         Whether to compute the backwards operator and average with
         the forward operator. Addresses bias in the least-square
@@ -114,7 +114,7 @@ def vector_auto_regression(
                          f'(avg-epochs, dynamic), not {model}.')
 
     # 1. determine shape of the window of data
-    n_epochs, n_nodes, n_times = data.shape
+    n_epochs, n_nodes, _ = data.shape
 
     model_params = {
         'model_order': model_order,
