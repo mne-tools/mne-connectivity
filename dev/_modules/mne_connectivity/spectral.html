@@ -123,7 +123,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -195,11 +195,10 @@
                                            <span class="n">_mt_spectra</span><span class="p">,</span> <span class="n">_psd_from_mt</span><span class="p">,</span>
                                            <span class="n">_psd_from_mt_adaptive</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency.tfr</span> <span class="kn">import</span> <span class="n">cwt</span><span class="p">,</span> <span class="n">morlet</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
-                       <span class="n">warn</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">check_indices</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
 
 <span class="c1">########################################################################</span>
 <span class="c1"># Various connectivity estimators</span>
@@ -737,7 +736,7 @@
     <span class="k">return</span> <span class="n">con_method_types</span><span class="p">,</span> <span class="n">n_methods</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">,</span> <span class="n">n_comp_args</span>
 
 
-<div class="viewcode-block" id="spectral_connectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.spectral_connectivity.html#mne_connectivity.spectral_connectivity">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="spectral_connectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.spectral_connectivity.html#mne_connectivity.spectral_connectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;coh&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                           <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
                           <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
@@ -762,6 +761,7 @@
 <span class="sd">        number of time points as stc_*. The array-like object can also</span>
 <span class="sd">        be a list/generator of array, shape =(n_signals, n_times),</span>
 <span class="sd">        or a list/generator of SourceEstimate or VolSourceEstimate objects.</span>
+<span class="sd">    %(names)s</span>
 <span class="sd">    method : str | list of str</span>
 <span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cohy&#39;,</span>
 <span class="sd">        &#39;imcoh&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;ppc&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;wpli2_debiased&#39;]``.</span>

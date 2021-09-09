@@ -123,7 +123,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -289,7 +289,6 @@
 <span class="sd">                axis=2</span>
 <span class="sd">            ).squeeze(0)</span>
 <span class="sd">            rescov = np.cov(sampled_residuals)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data passed in must be either 2D or 3D. &#39;</span>
@@ -338,6 +337,7 @@
 
         <span class="k">return</span> <span class="n">predicted_data</span>
 
+    <span class="nd">@fill_doc</span>
     <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">noise_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Simulate vector autoregressive (VAR) model.</span>
 
@@ -347,10 +347,11 @@
 <span class="sd">        ----------</span>
 <span class="sd">        n_samples : int</span>
 <span class="sd">            Number of samples to generate.</span>
-<span class="sd">        noisefunc : func, optional</span>
+<span class="sd">        noise_func : func, optional</span>
 <span class="sd">            This function is used to create the generating noise process. If</span>
 <span class="sd">            set to None, Gaussian white noise with zero mean and unit variance</span>
 <span class="sd">            is used.</span>
+<span class="sd">        %(random_state)s</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -413,12 +414,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_nodes)s</span>
-<span class="sd">    kwargs : dict</span>
-<span class="sd">        Extra connectivity parameters. These may include</span>
-<span class="sd">        ``freqs`` for spectral connectivity, and/or</span>
-<span class="sd">        ``times`` for connectivity over time. In addition,</span>
-<span class="sd">        these may include extra parameters that are stored</span>
-<span class="sd">        as xarray ``attrs``.</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -871,6 +867,7 @@
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -906,6 +903,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -949,6 +947,7 @@
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -977,6 +976,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># whether or not the connectivity occurs over epochs</span>
     <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1006,6 +1006,7 @@
 <span class="sd">    %(names)s</span>
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># whether or not the connectivity occurs over epochs</span>
     <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1037,6 +1038,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># whether or not the connectivity occurs over epochs</span>
     <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1066,6 +1068,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1089,7 +1092,6 @@
 <span class="sd">    or (n_epochs, n_nodes, n_nodes). This describes how</span>
 <span class="sd">    connectivity varies for different epochs.</span>
 
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(data)s</span>
@@ -1098,6 +1100,7 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

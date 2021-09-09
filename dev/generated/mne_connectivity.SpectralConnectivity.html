@@ -125,7 +125,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -314,7 +314,7 @@ frequencies. The underlying data is an array of shape
 (n_connections, n_freqs), or (n_nodes, n_nodes, n_freqs).</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : np.ndarray ([epochs], n_estimated_nodes, [freqs], [times])</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> ([epochs], n_estimated_nodes, [freqs], [times])</p>
 <blockquote>
 <div><p>The connectivity data that is a raveled array of
 <code class="docutils literal notranslate"><span class="pre">(n_estimated_nodes,</span> <span class="pre">...)</span></code> shape. The
@@ -323,26 +323,26 @@ frequencies. The underlying data is an array of shape
 the full connectivity, or a subset of nodes
 equal to the length of <code class="docutils literal notranslate"><span class="pre">indices</span></code> passed in.</p>
 </div></blockquote>
-<p><strong>freqs</strong> : list | np.ndarray</p>
+<p><strong>freqs</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></p>
 <blockquote>
 <div><p>The frequencies at which the connectivity data is computed over.
 If the frequencies are “frequency bands” (i.e. gamma band), then
 these are the median of those bands.</p>
 </div></blockquote>
-<p><strong>n_nodes</strong> : int</p>
+<p><strong>n_nodes</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>The number of nodes in the dataset used to compute connectivity.
 This should be equal to the number of signals in the original
 dataset.</p>
 </div></blockquote>
-<p><strong>names</strong> : list | np.ndarray | None</p>
+<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The names of the nodes of the dataset used to compute
 connectivity. If ‘None’ (default), then names will be
 a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </div></blockquote>
-<p><strong>indices</strong> : tuple of arrays | str | None</p>
+<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of arrays | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The indices of relevant connectivity data. If <code class="docutils literal notranslate"><span class="pre">'all'</span></code> (default),
 then data is connectivity between all nodes. If <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code>,
@@ -350,19 +350,27 @@ then data is symmetric connectivity between all nodes. If a tuple,
 then the first list represents the “in nodes”, and the second list
 represents the “out nodes”. See “Notes” for more information.</p>
 </div></blockquote>
-<p><strong>method</strong> : str, optional</p>
+<p><strong>method</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</p>
 <blockquote>
 <div><p>The method name used to compute connectivity.</p>
 </div></blockquote>
-<p><strong>spec_method</strong> : str, optional</p>
+<p><strong>spec_method</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</p>
 <blockquote>
 <div><p>The type of method used to compute spectral analysis,
 by default None.</p>
 </div></blockquote>
-<p><strong>n_epochs_used</strong> : int, optional</p>
+<p><strong>n_epochs_used</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, optional</p>
 <blockquote>
 <div><p>The number of epochs used in the computation of connectivity,
 by default None.</p>
+</div></blockquote>
+<p><strong>**kwargs</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<blockquote>
+<div><p>Extra connectivity parameters. These may include
+<code class="docutils literal notranslate"><span class="pre">freqs</span></code> for spectral connectivity, and/or
+<code class="docutils literal notranslate"><span class="pre">times</span></code> for connectivity over time. In addition,
+these may include extra parameters that are stored
+as xarray <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
 </div></blockquote>
 </dd>
 </dl>
@@ -480,7 +488,7 @@ be the median frequency of the frequency band.</p>
 <dd><p>Get connectivity data as a numpy array.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>output</strong> : str, optional</p>
+<dd class="field-odd"><p><strong>output</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</p>
 <blockquote>
 <div><p>How to format the output, by default ‘raveled’, which
 will represent each connectivity matrix as a
@@ -491,7 +499,7 @@ a list of tuples, or <code class="docutils literal notranslate"><span class="pre
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>data</strong> : np.ndarray</p>
+<dd class="field-even"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></p>
 <blockquote>
 <div><p>The output connectivity data.</p>
 </div></blockquote>
@@ -505,7 +513,7 @@ a list of tuples, or <code class="docutils literal notranslate"><span class="pre
 <dd><p>Indices of connectivity data.</p>
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>indices</strong> : str | tuple of lists</p>
+<dd class="field-odd"><p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of lists</p>
 <blockquote>
 <div><p>Either ‘all’ for all-to-all connectivity,
 ‘symmetric’ for symmetric all-to-all connectivity,
@@ -550,127 +558,127 @@ nodes in the original dataset.</p>
 <dd><p>Visualize connectivity as a circular graph.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_names</strong> : list of str</p>
+<dd class="field-odd"><p><strong>node_names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Node names. The order corresponds to the order in con.</p>
 </div></blockquote>
-<p><strong>indices</strong> : tuple of array | None</p>
+<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Two arrays with indices of connections for which the connections
 strengths are defined in con. Only needed if con is a 1D array.</p>
 </div></blockquote>
-<p><strong>n_lines</strong> : int | None</p>
+<p><strong>n_lines</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>If not None, only the n_lines strongest connections (strength=abs(con))
 are drawn.</p>
 </div></blockquote>
-<p><strong>node_angles</strong> : array, shape (n_node_names,) | None</p>
+<p><strong>node_angles</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_node_names,) | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Array with node positions in degrees. If None, the nodes are equally
 spaced on the circle. See mne.viz.circular_layout.</p>
 </div></blockquote>
-<p><strong>node_width</strong> : float | None</p>
+<p><strong>node_width</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Width of each node in degrees. If None, the minimum angle between any
 two nodes is used as the width.</p>
 </div></blockquote>
-<p><strong>node_colors</strong> : list of tuple | list of str</p>
+<p><strong>node_colors</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>List with the color to use for each node. If fewer colors than nodes
 are provided, the colors will be repeated. Any color supported by
 matplotlib can be used, e.g., RGBA tuples, named colors.</p>
 </div></blockquote>
-<p><strong>facecolor</strong> : str</p>
+<p><strong>facecolor</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Color to use for background. See matplotlib.colors.</p>
 </div></blockquote>
-<p><strong>textcolor</strong> : str</p>
+<p><strong>textcolor</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Color to use for text. See matplotlib.colors.</p>
 </div></blockquote>
-<p><strong>node_edgecolor</strong> : str</p>
+<p><strong>node_edgecolor</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Color to use for lines around nodes. See matplotlib.colors.</p>
 </div></blockquote>
-<p><strong>linewidth</strong> : float</p>
+<p><strong>linewidth</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Line width to use for connections.</p>
 </div></blockquote>
-<p><strong>colormap</strong> : str | instance of matplotlib.colors.LinearSegmentedColormap</p>
+<p><strong>colormap</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></p>
 <blockquote>
 <div><p>Colormap to use for coloring the connections.</p>
 </div></blockquote>
-<p><strong>vmin</strong> : float | None</p>
+<p><strong>vmin</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Minimum value for colormap. If None, it is determined automatically.</p>
 </div></blockquote>
-<p><strong>vmax</strong> : float | None</p>
+<p><strong>vmax</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Maximum value for colormap. If None, it is determined automatically.</p>
 </div></blockquote>
-<p><strong>colorbar</strong> : bool</p>
+<p><strong>colorbar</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Display a colorbar or not.</p>
 </div></blockquote>
-<p><strong>title</strong> : str</p>
+<p><strong>title</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>The figure title.</p>
 </div></blockquote>
-<p><strong>colorbar_size</strong> : float</p>
+<p><strong>colorbar_size</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Size of the colorbar.</p>
 </div></blockquote>
-<p><strong>colorbar_pos</strong> : tuple, shape (2,)</p>
+<p><strong>colorbar_pos</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>, shape (2,)</p>
 <blockquote>
 <div><p>Position of the colorbar.</p>
 </div></blockquote>
-<p><strong>fontsize_title</strong> : int</p>
+<p><strong>fontsize_title</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>Font size to use for title.</p>
 </div></blockquote>
-<p><strong>fontsize_names</strong> : int</p>
+<p><strong>fontsize_names</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>Font size to use for node names.</p>
 </div></blockquote>
-<p><strong>fontsize_colorbar</strong> : int</p>
+<p><strong>fontsize_colorbar</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>Font size to use for colorbar.</p>
 </div></blockquote>
-<p><strong>padding</strong> : float</p>
+<p><strong>padding</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Space to add around figure to accommodate long labels.</p>
 </div></blockquote>
-<p><strong>fig</strong> : None | instance of matplotlib.figure.Figure</p>
+<p><strong>fig</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure to use. If None, a new figure with the specified background
 color will be created.</p>
 </div></blockquote>
-<p><strong>subplot</strong> : int | tuple, shape (3,)</p>
+<p><strong>subplot</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>, shape (3,)</p>
 <blockquote>
 <div><p>Location of the subplot when creating figures with multiple plots. E.g.
 121 or (1, 2, 1) for 1 row, 2 columns, plot 1. See
 matplotlib.pyplot.subplot.</p>
 </div></blockquote>
-<p><strong>interactive</strong> : bool</p>
+<p><strong>interactive</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>When enabled, left-click on a node to show only connections to that
 node. Right-click shows all connections.</p>
 </div></blockquote>
-<p><strong>node_linewidth</strong> : float</p>
+<p><strong>node_linewidth</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Line with for nodes.</p>
 </div></blockquote>
-<p><strong>show</strong> : bool</p>
+<p><strong>show</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Show figure if True.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>fig</strong> : instance of matplotlib.figure.Figure</p>
+<dd class="field-even"><p><strong>fig</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure handle.</p>
 </div></blockquote>
-<p><strong>axes</strong> : instance of matplotlib.projections.polar.PolarAxes</p>
+<p><strong>axes</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/projections_api.html#matplotlib.projections.polar.PolarAxes" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.projections.polar.PolarAxes</span></code></a></p>
 <blockquote>
 <div><p>The subplot handle.</p>
 </div></blockquote>
@@ -695,14 +703,14 @@ figure labels, title, and legend may be cut off in the output figure.</p>
 <p>The result of this function is used for calculating the residuals.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : array</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
 <div><p>Epoched or continuous data set. Has shape
 (n_epochs, n_signals, n_times) or (n_signals, n_times).</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>predicted</strong> : array</p>
+<dd class="field-even"><p><strong>predicted</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
 <div><p>Data as predicted by the VAR model of
 shape same as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
@@ -730,7 +738,7 @@ shape same as <code class="docutils literal notranslate"><span class="pre">data<
 <dd><p>Rename nodes.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mapping</strong> : dict</p>
+<dd class="field-odd"><p><strong>mapping</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <blockquote>
 <div><p>Mapping from original node names (keys) to new node names (values).</p>
 </div></blockquote>
@@ -744,7 +752,7 @@ shape same as <code class="docutils literal notranslate"><span class="pre">data<
 <dd><p>Save connectivity data to disk.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fname</strong> : str | pathlib.Path</p>
+<dd class="field-odd"><p><strong>fname</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></p>
 <blockquote>
 <div><p>The filepath to save the data. Data is saved
 as netCDF files (<code class="docutils literal notranslate"><span class="pre">.nc</span></code> extension).</p>
@@ -766,19 +774,27 @@ as netCDF files (<code class="docutils literal notranslate"><span class="pre">.n
 <p>This function generates data from the VAR model.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>n_samples</strong> : int</p>
+<dd class="field-odd"><p><strong>n_samples</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>Number of samples to generate.</p>
 </div></blockquote>
-<p><strong>noisefunc</strong> : func, optional</p>
+<p><strong>noise_func</strong> : func, optional</p>
 <blockquote>
 <div><p>This function is used to create the generating noise process. If
 set to None, Gaussian white noise with zero mean and unit variance
 is used.</p>
 </div></blockquote>
+<p><strong>random_state</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></p>
+<blockquote>
+<div><p>If <code class="docutils literal notranslate"><span class="pre">random_state</span></code> is an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, it will be used as a seed for
+<a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the seed will be
+obtained from the operating system (see
+<a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> for details). Default is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>data</strong> : array, shape (n_samples, n_channels)</p>
+<dd class="field-even"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_samples, n_channels)</p>
 <blockquote>
 <div><p>Generated data.</p>
 </div></blockquote>

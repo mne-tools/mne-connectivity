@@ -123,7 +123,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -190,7 +190,7 @@
 <div class="viewcode-block" id="vector_auto_regression"><a class="viewcode-back" href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">vector_auto_regression</span><span class="p">(</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
@@ -206,7 +206,7 @@
 <span class="sd">    model_order : int | str, optional</span>
 <span class="sd">        Autoregressive model order, by default 1.</span>
 <span class="sd">    l2_reg : float, optional</span>
-<span class="sd">        Ridge penalty (l2-regularization) parameter, by default 0.0</span>
+<span class="sd">        Ridge penalty (l2-regularization) parameter, by default 0.0.</span>
 <span class="sd">    compute_fb_operator : bool</span>
 <span class="sd">        Whether to compute the backwards operator and average with</span>
 <span class="sd">        the forward operator. Addresses bias in the least-square</span>
@@ -294,7 +294,7 @@
                          <span class="sa">f</span><span class="s1">&#39;(avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
     <span class="c1"># 1. determine shape of the window of data</span>
-    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;model_order&#39;</span><span class="p">:</span> <span class="n">model_order</span><span class="p">,</span>

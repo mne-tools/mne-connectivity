@@ -125,7 +125,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -314,7 +314,7 @@ All methods are based on estimates of the cross- and power spectral
 densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : array-like, shape=(n_epochs, n_signals, n_times) | Epochs</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.22.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></p>
 <blockquote>
 <div><p>The data from which to compute connectivity. Note that it is also
 possible to combine multiple signals by providing a list of tuples,
@@ -324,104 +324,111 @@ number of time points as stc_*. The array-like object can also
 be a list/generator of array, shape =(n_signals, n_times),
 or a list/generator of SourceEstimate or VolSourceEstimate objects.</p>
 </div></blockquote>
-<p><strong>method</strong> : str | list of str</p>
+<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<blockquote>
+<div><p>The names of the nodes of the dataset used to compute
+connectivity. If ‘None’ (default), then names will be
+a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
+of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
+</div></blockquote>
+<p><strong>method</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'cohy',</span>
 <span class="pre">'imcoh',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'ppc',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'wpli2_debiased']</span></code>.</p>
 </div></blockquote>
-<p><strong>indices</strong> : tuple of array | None</p>
+<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Two arrays with indices of connections for which to compute
 connectivity. If None, all connections are computed.</p>
 </div></blockquote>
-<p><strong>sfreq</strong> : float</p>
+<p><strong>sfreq</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>The sampling frequency.</p>
 </div></blockquote>
-<p><strong>mode</strong> : str</p>
+<p><strong>mode</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Spectrum estimation mode can be either: ‘multitaper’, ‘fourier’, or
 ‘cwt_morlet’.</p>
 </div></blockquote>
-<p><strong>fmin</strong> : float | tuple of float</p>
+<p><strong>fmin</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>The lower frequency of interest. Multiple bands are defined using
 a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
 If None the frequency corresponding to an epoch length of 5 cycles
 is used.</p>
 </div></blockquote>
-<p><strong>fmax</strong> : float | tuple of float</p>
+<p><strong>fmax</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>The upper frequency of interest. Multiple bands are dedined using
 a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.</p>
 </div></blockquote>
-<p><strong>fskip</strong> : int</p>
+<p><strong>fskip</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>Omit every “(fskip + 1)-th” frequency bin to decimate in frequency
 domain.</p>
 </div></blockquote>
-<p><strong>faverage</strong> : bool</p>
+<p><strong>faverage</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Average connectivity scores for each frequency band. If True,
 the output freqs will be a list with arrays of the frequencies
 that were averaged.</p>
 </div></blockquote>
-<p><strong>tmin</strong> : float | None</p>
+<p><strong>tmin</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Time to start connectivity estimation. Note: when “data” is an array,
 the first sample is assumed to be at time 0. For other types
 (Epochs, etc.), the time information contained in the object is used
 to compute the time indices.</p>
 </div></blockquote>
-<p><strong>tmax</strong> : float | None</p>
+<p><strong>tmax</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Time to end connectivity estimation. Note: when “data” is an array,
 the first sample is assumed to be at time 0. For other types
 (Epochs, etc.), the time information contained in the object is used
 to compute the time indices.</p>
 </div></blockquote>
-<p><strong>mt_bandwidth</strong> : float | None</p>
+<p><strong>mt_bandwidth</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The bandwidth of the multitaper windowing function in Hz.
 Only used in ‘multitaper’ mode.</p>
 </div></blockquote>
-<p><strong>mt_adaptive</strong> : bool</p>
+<p><strong>mt_adaptive</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Use adaptive weights to combine the tapered spectra into PSD.
 Only used in ‘multitaper’ mode.</p>
 </div></blockquote>
-<p><strong>mt_low_bias</strong> : bool</p>
+<p><strong>mt_low_bias</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Only use tapers with more than 90% spectral concentration within
 bandwidth. Only used in ‘multitaper’ mode.</p>
 </div></blockquote>
-<p><strong>cwt_freqs</strong> : array</p>
+<p><strong>cwt_freqs</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
 <div><p>Array of frequencies of interest. Only used in ‘cwt_morlet’ mode.</p>
 </div></blockquote>
-<p><strong>cwt_n_cycles</strong> : float | array of float</p>
+<p><strong>cwt_n_cycles</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Number of cycles. Fixed number or one per frequency. Only used in
 ‘cwt_morlet’ mode.</p>
 </div></blockquote>
-<p><strong>block_size</strong> : int</p>
+<p><strong>block_size</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>How many connections to compute at once (higher numbers are faster
 but require more memory).</p>
 </div></blockquote>
-<p><strong>n_jobs</strong> : int</p>
+<p><strong>n_jobs</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>How many epochs to process in parallel.</p>
 </div></blockquote>
-<p><strong>verbose</strong> : bool | str | int | None</p>
+<p><strong>verbose</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
-If used, it should be passed as a keyword-argument only.</p>
+for more info). If used, it should be passed as a
+keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>con</strong> : array | list of array</p>
+<dd class="field-even"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
 <div><p>Computed connectivity measure(s). Either an instance of
 <code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code> or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>.

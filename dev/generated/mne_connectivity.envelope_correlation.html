@@ -125,7 +125,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -311,7 +311,7 @@
 <dd><p>Compute the envelope correlation.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : array-like, shape=(n_epochs, n_signals, n_times) | generator</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.22.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.9)"><span>generator</span></a></p>
 <blockquote>
 <div><p>The data from which to compute connectivity.
 The array-like object can also be a list/generator of array,
@@ -320,31 +320,31 @@ object (and <code class="docutils literal notranslate"><span class="pre">stc.dat
 the Hilbert transform will be applied; if it’s complex data,
 it’s assumed the Hilbert has already been applied.</p>
 </div></blockquote>
-<p><strong>names</strong> : list | array-like | None</p>
+<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.22.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>A list of names associated with the signals in <code class="docutils literal notranslate"><span class="pre">data</span></code>.
 If None, will be a list of indices of the number of nodes.</p>
 </div></blockquote>
-<p><strong>orthogonalize</strong> : ‘pairwise’ | False</p>
+<p><strong>orthogonalize</strong> : ‘pairwise’ | <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">False</span></code></a></p>
 <blockquote>
 <div><p>Whether to orthogonalize with the pairwise method or not.
 Defaults to ‘pairwise’. Note that when False,
 the correlation matrix will not be returned with
 absolute values.</p>
 </div></blockquote>
-<p><strong>log</strong> : bool</p>
+<p><strong>log</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>If True (default False), square and take the log before orthonalizing
 envelopes or computing correlations.</p>
 </div></blockquote>
-<p><strong>absolute</strong> : bool</p>
+<p><strong>absolute</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>If True (default), then take the absolute value of correlation
 coefficients before making each epoch’s correlation matrix
 symmetric (and thus before combining matrices across epochs).
 Only used when <code class="docutils literal notranslate"><span class="pre">orthogonalize='symmetric'</span></code>.</p>
 </div></blockquote>
-<p><strong>verbose</strong> : bool | str | int | None</p>
+<p><strong>verbose</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
@@ -352,12 +352,12 @@ If used, it should be passed as a keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>corr</strong> : instance of EpochConnectivity</p>
+<dd class="field-even"><p><strong>corr</strong> : instance of <a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a></p>
 <blockquote>
 <div><p>The pairwise orthogonal envelope correlations.
 This matrix is symmetric. The array
 will have three dimensions, the first of which is <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code>.
-The data shape would be <code class="docutils literal notranslate"><span class="pre">(n_epochs,</span> <span class="pre">(n_nodes</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">n_nodes</span> <span class="pre">/</span> <span class="pre">2)</span></code></p>
+The data shape would be <code class="docutils literal notranslate"><span class="pre">(n_epochs,</span> <span class="pre">(n_nodes</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">n_nodes</span> <span class="pre">/</span> <span class="pre">2)</span></code>.</p>
 </div></blockquote>
 </dd>
 </dl>

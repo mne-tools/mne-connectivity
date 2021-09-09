@@ -123,7 +123,7 @@
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
 </div>
@@ -187,12 +187,14 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
 <span class="kn">from</span> <span class="nn">.spectral</span> <span class="kn">import</span> <span class="n">spectral_connectivity</span>
 
 
 <div class="viewcode-block" id="phase_slope_index"><a class="viewcode-back" href="../../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">phase_slope_index</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+<span class="nd">@fill_doc</span>
+<span class="k">def</span> <span class="nf">phase_slope_index</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
                       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
                       <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mt_low_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -212,7 +214,7 @@
 <span class="sd">    a negative value means the opposite.</span>
 
 <span class="sd">    The PSI is computed from the coherency (see spectral_connectivity), details</span>
-<span class="sd">    can be found in [1].</span>
+<span class="sd">    can be found in :footcite:`NolteEtAl2008`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -224,6 +226,7 @@
 <span class="sd">        e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],</span>
 <span class="sd">        corresponds to 3 epochs, and arr_* could be an array with the same</span>
 <span class="sd">        number of time points as stc_*.</span>
+<span class="sd">    %(names)s</span>
 <span class="sd">    indices : tuple of array | None</span>
 <span class="sd">        Two arrays with indices of connections for which to compute</span>
 <span class="sd">        connectivity. If None, all connections are computed.</span>
@@ -251,7 +254,7 @@
 <span class="sd">        Use adaptive weights to combine the tapered spectra into PSD.</span>
 <span class="sd">        Only used in &#39;multitaper&#39; mode.</span>
 <span class="sd">    mt_low_bias : bool</span>
-<span class="sd">        Only use tapers with more than 90%% spectral concentration within</span>
+<span class="sd">        Only use tapers with more than 90 percent spectral concentration within</span>
 <span class="sd">        bandwidth. Only used in &#39;multitaper&#39; mode.</span>
 <span class="sd">    cwt_freqs : array</span>
 <span class="sd">        Array of frequencies of interest. Only used in &#39;cwt_morlet&#39; mode.</span>
@@ -285,9 +288,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Nolte et al. &quot;Robustly Estimating the Flow Direction of Information in</span>
-<span class="sd">        Complex Physical Systems&quot;, Physical Review Letters, vol. 100, no. 23,</span>
-<span class="sd">        pp. 1-4, Jun. 2008.</span>
+<span class="sd">    .. footbibliography::</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Estimating phase slope index (PSI)&#39;</span><span class="p">)</span>
     <span class="c1"># estimate the coherency</span>
