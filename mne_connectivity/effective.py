@@ -12,6 +12,7 @@ from .base import SpectralConnectivity, SpectroTemporalConnectivity
 from .spectral import spectral_connectivity
 
 
+@verbose
 @fill_doc
 def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
                       mode='multitaper', fmin=None, fmax=np.inf,
