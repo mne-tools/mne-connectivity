@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral_connectivity &#8212; MNE-Connectivity 0.1 documentation</title>
+    <title>mne_connectivity.spectral_connectivity &#8212; MNE-Connectivity 0.2 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -19,9 +19,15 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     
-      
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
 
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -41,11 +47,16 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples" href="../auto_examples/index.html" />
+    <link rel="next" title="mne_connectivity.vector_auto_regression" href="mne_connectivity.vector_auto_regression.html" />
     <link rel="prev" title="mne_connectivity.phase_slope_index" href="mne_connectivity.phase_slope_index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
@@ -75,6 +86,12 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../install.html">
   Installation
  </a>
@@ -101,6 +118,20 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.2
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
@@ -122,15 +153,102 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">mne_connectivity.spectral_connectivity</a><ul>
-<li><a class="reference internal" href="#examples-using-mne-connectivity-spectral-connectivity">Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity</span></code></a></li>
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.Connectivity.html">
+   mne_connectivity.Connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html">
+   mne_connectivity.TemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html">
+   mne_connectivity.SpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html">
+   mne_connectivity.SpectroTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochConnectivity.html">
+   mne_connectivity.EpochConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html">
+   mne_connectivity.EpochTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html">
+   mne_connectivity.EpochSpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectroTemporalConnectivity.html">
+   mne_connectivity.EpochSpectroTemporalConnectivity
+  </a>
+ </li>
 </ul>
-</li>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.envelope_correlation.html">
+   mne_connectivity.envelope_correlation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.phase_slope_index.html">
+   mne_connectivity.phase_slope_index
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_connectivity.spectral_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.vector_auto_regression.html">
+   mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
+   mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.degree.html">
+   mne_connectivity.degree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.seed_target_indices.html">
+   mne_connectivity.seed_target_indices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.check_indices.html">
+   mne_connectivity.check_indices
+  </a>
+ </li>
 </ul>
 
+  </div>
+</nav>
             </div>
             
           
@@ -182,7 +300,7 @@
 <h1>mne_connectivity.spectral_connectivity<a class="headerlink" href="#mne-connectivity-spectral-connectivity" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.spectral_connectivity">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fskip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faverage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral.html#spectral_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fskip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faverage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral.html#spectral_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute frequency- and time-frequency-domain connectivity measures.</p>
 <p>The connectivity method(s) are specified using the “method” parameter.
 All methods are based on estimates of the cross- and power spectral
@@ -201,7 +319,8 @@ or a list/generator of SourceEstimate or VolSourceEstimate objects.</p>
 </div></blockquote>
 <p><strong>method</strong> : str | list of str</p>
 <blockquote>
-<div><p>Connectivity measure(s) to compute.</p>
+<div><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'cohy',</span>
+<span class="pre">'imcoh',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'ppc',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'wpli2_debiased']</span></code>.</p>
 </div></blockquote>
 <p><strong>indices</strong> : tuple of array | None</p>
 <blockquote>
@@ -289,7 +408,7 @@ but require more memory).</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool | str | int | None</p>
 <blockquote>
-<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
 If used, it should be passed as a keyword-argument only.</p>
 </div></blockquote>
@@ -297,34 +416,35 @@ If used, it should be passed as a keyword-argument only.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>con</strong> : array | list of array</p>
 <blockquote>
-<div><p>Computed connectivity measure(s). The shape of each array is either
-(n_signals, n_signals, n_freqs) mode: ‘multitaper’ or ‘fourier’
-(n_signals, n_signals, n_freqs, n_times) mode: ‘cwt_morlet’
+<div><p>Computed connectivity measure(s). Either an instance of
+<code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code> or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>.
+The shape of each connectivity dataset is either
+(n_signals ** 2, n_freqs) mode: ‘multitaper’ or ‘fourier’
+(n_signals ** 2, n_freqs, n_times) mode: ‘cwt_morlet’
 when “indices” is None, or
 (n_con, n_freqs) mode: ‘multitaper’ or ‘fourier’
 (n_con, n_freqs, n_times) mode: ‘cwt_morlet’
 when “indices” is specified and “n_con = len(indices[0])”.</p>
 </div></blockquote>
-<p><strong>freqs</strong> : array</p>
-<blockquote>
-<div><p>Frequency points at which the connectivity was computed.</p>
-</div></blockquote>
-<p><strong>times</strong> : array</p>
-<blockquote>
-<div><p>Time points for which the connectivity was computed.</p>
-</div></blockquote>
-<p><strong>n_epochs</strong> : int</p>
-<blockquote>
-<div><p>Number of epochs used for computation.</p>
-</div></blockquote>
-<p><strong>n_tapers</strong> : int</p>
-<blockquote>
-<div><p>The number of DPSS tapers used. Only defined in ‘multitaper’ mode.
-Otherwise None is returned.</p>
-</div></blockquote>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectralConnectivity</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectroTemporalConnectivity</span></code></a></dt><dd></dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
+<p>Please note that the interpretation of the measures in this function
+depends on the data and underlying assumptions and does not necessarily
+reflect a causal relationship between brain regions.</p>
+<p>These measures are not to be interpreted over time. Each Epoch passed into
+the dataset is interpreted as an independent sample of the same
+connectivity structure. Within each Epoch, it is assumed that the spectral
+measure is stationary. The spectral measures implemented in this function
+are computed across Epochs. <strong>Thus, spectral measures computed with only
+one Epoch will result in errorful values.</strong></p>
 <p>The spectral densities can be estimated using a multitaper method with
 digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
 transform with Hanning windows, or a continuous wavelet transform using
@@ -363,33 +483,33 @@ e.g., <code class="docutils literal notranslate"><span class="pre">['coh',</span
     <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxx</span><span class="p">]</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="n">Syy</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>‘imcoh’ : Imaginary coherence <a class="footnote-reference brackets" href="#nolteetal2004" id="id1">1</a> given by:</p>
+<p>‘imcoh’ : Imaginary coherence <a class="footnote-reference brackets" href="#footcite-nolteetal2004" id="id1">1</a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="n">Im</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="p">])</span>
 <span class="n">C</span> <span class="o">=</span> <span class="o">----------------------</span>
     <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxx</span><span class="p">]</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="n">Syy</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#lachauxetal1999" id="id2">2</a> given
+<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id2">2</a> given
 by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLV</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">]</span><span class="o">|</span>
 </pre></div>
 </div>
 <p>‘ciplv’ : corrected imaginary PLV (icPLV)
-<a class="footnote-reference brackets" href="#brunaetal2018" id="id3">3</a> given by:</p>
+<a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id3">3</a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">ciPLV</span> <span class="o">=</span> <span class="o">------------------------------------</span>
          <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>‘ppc’ : Pairwise Phase Consistency (PPC), an unbiased estimator
-of squared PLV <a class="footnote-reference brackets" href="#vincketal2010" id="id4">4</a>.</p>
-<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#stametal2007" id="id5">5</a> given by:</p>
+of squared PLV <a class="footnote-reference brackets" href="#footcite-vincketal2010" id="id4">4</a>.</p>
+<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id5">5</a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLI</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">sign</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span><span class="o">|</span>
 </pre></div>
 </div>
 <p>‘pli2_unbiased’ : Unbiased estimator of squared PLI
-<a class="footnote-reference brackets" href="#vincketal2011" id="id6">6</a>.</p>
-<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#vincketal2011" id="id7">6</a>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id6">6</a>.</p>
+<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id7">6</a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">WPLI</span> <span class="o">=</span> <span class="o">------------------</span>
@@ -397,26 +517,26 @@ given by:</p>
 </pre></div>
 </div>
 <p>‘wpli2_debiased’ : Debiased estimator of squared WPLI
-<a class="footnote-reference brackets" href="#vincketal2011" id="id8">6</a>.</p>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8">6</a>.</p>
 </div></blockquote>
 <p class="rubric">References</p>
-<p><dl class="footnote brackets">
-<dt class="label" id="nolteetal2004"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<p id="id9"><dl class="footnote brackets">
+<dt class="label" id="footcite-nolteetal2004"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Guido Nolte, Ou Bai, Lewis Wheaton, Zoltan Mari, Sherry Vorbach, and Mark Hallett. Identifying true brain interaction from EEG data using the imaginary part of coherency. <em>Clinical Neurophysiology</em>, 115(10):2292–2307, 2004. <a class="reference external" href="https://doi.org/10.1016/j.clinph.2004.04.029">doi:10.1016/j.clinph.2004.04.029</a>.</p>
 </dd>
-<dt class="label" id="lachauxetal1999"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="footcite-lachauxetal1999"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
 </dd>
-<dt class="label" id="brunaetal2018"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dt class="label" id="footcite-brunaetal2018"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
 <dd><p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
 </dd>
-<dt class="label" id="vincketal2010"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dt class="label" id="footcite-vincketal2010"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
 <dd><p>Martin Vinck, Marijn van Wingerden, Thilo Womelsdorf, Pascal Fries, and Cyriel M.A. Pennartz. The pairwise phase consistency: a bias-free measure of rhythmic neuronal synchronization. <em>NeuroImage</em>, 51(1):112–122, 2010. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2010.01.073">doi:10.1016/j.neuroimage.2010.01.073</a>.</p>
 </dd>
-<dt class="label" id="stametal2007"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
+<dt class="label" id="footcite-stametal2007"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
 <dd><p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
 </dd>
-<dt class="label" id="vincketal2011"><span class="brackets">6</span><span class="fn-backref">(<a href="#id6">1</a>,<a href="#id7">2</a>,<a href="#id8">3</a>)</span></dt>
+<dt class="label" id="footcite-vincketal2011"><span class="brackets">6</span><span class="fn-backref">(<a href="#id6">1</a>,<a href="#id7">2</a>,<a href="#id8">3</a>)</span></dt>
 <dd><p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
 </dd>
 </dl>
@@ -425,29 +545,33 @@ given by:</p>
 
 <div class="section" id="examples-using-mne-connectivity-spectral-connectivity">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity</span></code><a class="headerlink" href="#examples-using-mne-connectivity-spectral-connectivity" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Computes the Phase Lag Index (PLI) between all gradiometers and shows the connectivity in 3D us..."><div class="figure align-default" id="id9">
+<div class="sphx-glr-thumbcontainer" tooltip="Computes the Phase Lag Index (PLI) between all gradiometers and shows the connectivity in 3D us..."><div class="figure align-default" id="id10">
 <img alt="Compute all-to-all connectivity in sensor space" src="../_images/sphx_glr_sensor_connectivity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the coherence between a seed in the left auditory cortex and the rest of ..."><div class="figure align-default" id="id10">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the coherence between a seed in the left auditory cortex and the rest of ..."><div class="figure align-default" id="id11">
 <img alt="Compute coherence in source space using a MNE inverse solution" src="../_images/sphx_glr_mne_inverse_coherence_epochs_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="The connectivity is computed between 4 labels across the spectrum between 7.5 Hz and 40 Hz."><div class="figure align-default" id="id11">
+</div><div class="sphx-glr-thumbcontainer" tooltip="The connectivity is computed between 4 labels across the spectrum between 7.5 Hz and 40 Hz."><div class="figure align-default" id="id12">
 <img alt="Compute full spectrum source space connectivity between labels" src="../_images/sphx_glr_mne_inverse_connectivity_spectrum_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 75 regions in a mixed source space ba..."><div class="figure align-default" id="id12">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 75 regions in a mixed source space ba..."><div class="figure align-default" id="id13">
 <img alt="Compute mixed source space connectivity and visualize it using a circular graph" src="../_images/sphx_glr_mixed_source_space_connectivity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Computes the connectivity between a seed-gradiometer close to the visual cortex and all other g..."><div class="figure align-default" id="id13">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Computes the connectivity between a seed-gradiometer close to the visual cortex and all other g..."><div class="figure align-default" id="id14">
 <img alt="Compute seed-based time-frequency connectivity in sensor space" src="../_images/sphx_glr_cwt_sensor_connectivity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/cwt_sensor_connectivity.html#sphx-glr-auto-examples-cwt-sensor-connectivity-py"><span class="std std-ref">Compute seed-based time-frequency connectivity in sensor space</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/cwt_sensor_connectivity.html#sphx-glr-auto-examples-cwt-sensor-connectivity-py"><span class="std std-ref">Compute seed-based time-frequency connectivity in sensor space</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 68 regions in source space based on d..."><div class="figure align-default" id="id14">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 68 regions in source space based on d..."><div class="figure align-default" id="id15">
 <img alt="Compute source space connectivity and visualize it using a circular graph" src="../_images/sphx_glr_mne_inverse_label_connectivity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compute different connectivity measures and then demonstrate the utility of the class."><div class="figure align-default" id="id16">
+<img alt="Using the connectivity classes" src="../_images/sphx_glr_connectivity_classes_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/connectivity_classes.html#sphx-glr-auto-examples-connectivity-classes-py"><span class="std std-ref">Using the connectivity classes</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </div>
 </div><div style='clear:both'></div></div>
 </div>
@@ -459,7 +583,7 @@ given by:</p>
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="mne_connectivity.phase_slope_index.html" title="previous page">mne_connectivity.phase_slope_index</a>
-    <a class='right-next' id="next-link" href="../auto_examples/index.html" title="next page">Examples</a>
+    <a class='right-next' id="next-link" href="mne_connectivity.vector_auto_regression.html" title="next page">mne_connectivity.vector_auto_regression</a>
 
               </div>
               
@@ -476,13 +600,13 @@ given by:</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-06-25.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
 </p>
     </div>
     

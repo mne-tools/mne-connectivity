@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import mne
+import mne_connectivity
 from mne_connectivity import envelope_correlation
 from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
@@ -81,9 +82,13 @@ label_ts = mne.extract_label_time_course(
     stcs, labels, inv['src'], return_generator=True)
 corr = envelope_correlation(label_ts, verbose=True)
 
+# average over epochs
+corr = corr.combine()
+
 # let's plot this matrix
 fig, ax = plt.subplots(figsize=(4, 4))
-ax.imshow(corr, cmap='viridis', clim=np.percentile(corr, [5, 95]))
+ax.imshow(corr.get_data(output='dense').squeeze(), cmap='viridis',
+          clim=np.percentile(corr.get_data(), [5, 95]))
 fig.tight_layout()
 del epochs, stcs, label_ts
 
@@ -93,7 +98,7 @@ del epochs, stcs, label_ts
 
 # sphinx_gallery_thumbnail_number = 2
 threshold_prop = 0.15  # percentage of strongest edges to keep in the graph
-degree = mne.connectivity.degree(corr, threshold_prop=threshold_prop)
+degree = mne_connectivity.degree(corr, threshold_prop=threshold_prop)
 stc = mne.labels_to_stc(labels, degree)
 stc = stc.in_label(mne.Label(inv['src'][0]['vertno'], hemi='lh') +
                    mne.Label(inv['src'][1]['vertno'], hemi='rh'))

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.1 documentation</title>
+    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.2 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -19,9 +19,15 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     
-      
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
 
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -43,9 +49,14 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_connectivity.spectral_connectivity" href="mne_connectivity.spectral_connectivity.html" />
     <link rel="prev" title="mne_connectivity.envelope_correlation" href="mne_connectivity.envelope_correlation.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
@@ -75,6 +86,12 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../install.html">
   Installation
  </a>
@@ -101,6 +118,20 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.2
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
@@ -122,15 +153,102 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">mne_connectivity.phase_slope_index</a><ul>
-<li><a class="reference internal" href="#examples-using-mne-connectivity-phase-slope-index">Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code></a></li>
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.Connectivity.html">
+   mne_connectivity.Connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html">
+   mne_connectivity.TemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html">
+   mne_connectivity.SpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html">
+   mne_connectivity.SpectroTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochConnectivity.html">
+   mne_connectivity.EpochConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html">
+   mne_connectivity.EpochTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html">
+   mne_connectivity.EpochSpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectroTemporalConnectivity.html">
+   mne_connectivity.EpochSpectroTemporalConnectivity
+  </a>
+ </li>
 </ul>
-</li>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.envelope_correlation.html">
+   mne_connectivity.envelope_correlation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_connectivity.phase_slope_index
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity.html">
+   mne_connectivity.spectral_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.vector_auto_regression.html">
+   mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
+   mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.degree.html">
+   mne_connectivity.degree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.seed_target_indices.html">
+   mne_connectivity.seed_target_indices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.check_indices.html">
+   mne_connectivity.check_indices
+  </a>
+ </li>
 </ul>
 
+  </div>
+</nav>
             </div>
             
           
@@ -182,7 +300,7 @@
 <h1>mne_connectivity.phase_slope_index<a class="headerlink" href="#mne-connectivity-phase-slope-index" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.phase_slope_index">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Phase Slope Index (PSI) connectivity measure.</p>
 <p>The PSI is an effective connectivity measure, i.e., a measure which can
 give an indication of the direction of the information flow (causality).
@@ -275,41 +393,33 @@ but require more memory).</p>
 </div></blockquote>
 <p><strong>verbose</strong> : bool | str | int | None</p>
 <blockquote>
-<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
 If used, it should be passed as a keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>psi</strong> : array</p>
+<dd class="field-even"><p><strong>conn</strong> : instance of Connectivity</p>
 <blockquote>
-<div><p>Computed connectivity measure(s). The shape of each array is either
-(n_signals, n_signals, n_bands) mode: ‘multitaper’ or ‘fourier’
-(n_signals, n_signals, n_bands, n_times) mode: ‘cwt_morlet’
+<div><p>Computed connectivity measure(s). Either a
+<code class="docutils literal notranslate"><span class="pre">SpectralConnnectivity</span></code>, or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>
+container. The shape of each array is either
+(n_signals ** 2, n_bands) mode: ‘multitaper’ or ‘fourier’
+(n_signals ** 2, n_bands, n_times) mode: ‘cwt_morlet’
 when “indices” is None, or
 (n_con, n_bands) mode: ‘multitaper’ or ‘fourier’
 (n_con, n_bands, n_times) mode: ‘cwt_morlet’
 when “indices” is specified and “n_con = len(indices[0])”.</p>
 </div></blockquote>
-<p><strong>freqs</strong> : array</p>
-<blockquote>
-<div><p>Frequency points at which the connectivity was computed.</p>
-</div></blockquote>
-<p><strong>times</strong> : array</p>
-<blockquote>
-<div><p>Time points for which the connectivity was computed.</p>
-</div></blockquote>
-<p><strong>n_epochs</strong> : int</p>
-<blockquote>
-<div><p>Number of epochs used for computation.</p>
-</div></blockquote>
-<p><strong>n_tapers</strong> : int</p>
-<blockquote>
-<div><p>The number of DPSS tapers used. Only defined in ‘multitaper’ mode.
-Otherwise None is returned.</p>
-</div></blockquote>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectralConnectivity</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectroTemporalConnectivity</span></code></a></dt><dd></dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <dl class="simple">
 <dt>[1] Nolte et al. “Robustly Estimating the Flow Direction of Information in</dt><dd><p>Complex Physical Systems”, Physical Review Letters, vol. 100, no. 23,
@@ -351,13 +461,13 @@ pp. 1-4, Jun. 2008.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-06-25.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
 </p>
     </div>
     

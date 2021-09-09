@@ -66,11 +66,12 @@ label_ts = mne.extract_label_time_course(stcs, labels, src, mode='mean_flip',
 fmin, fmax = 7.5, 40.
 sfreq = raw.info['sfreq']  # the sampling frequency
 
-con, freqs, times, n_epochs, n_tapers = spectral_connectivity(
+con = spectral_connectivity(
     label_ts, method='wpli2_debiased', mode='multitaper', sfreq=sfreq,
     fmin=fmin, fmax=fmax, mt_adaptive=True, n_jobs=1)
+freqs = con.freqs
 
-n_rows, n_cols = con.shape[:2]
+n_rows, n_cols = con.get_data(output='dense').shape[:2]
 fig, axes = plt.subplots(n_rows, n_cols, sharex=True, sharey=True)
 for i in range(n_rows):
     for j in range(i + 1):
@@ -78,8 +79,8 @@ for i in range(n_rows):
             axes[i, j].set_axis_off()
             continue
 
-        axes[i, j].plot(freqs, con[i, j, :])
-        axes[j, i].plot(freqs, con[i, j, :])
+        axes[i, j].plot(freqs, con.get_data(output='dense')[i, j, :])
+        axes[j, i].plot(freqs, con.get_data(output='dense')[i, j, :])
 
         if j == 0:
             axes[i, j].set_ylabel(names[i])
