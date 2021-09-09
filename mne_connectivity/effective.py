@@ -5,7 +5,7 @@
 import copy
 
 import numpy as np
-from mne.utils import logger
+from mne.utils import logger, verbose
 
 from .utils import fill_doc
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
