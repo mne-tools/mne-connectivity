@@ -34,7 +34,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     a negative value means the opposite.
 
     The PSI is computed from the coherency (see spectral_connectivity), details
-    can be found in [1].
+    can be found in :footcite:`NolteEtAl2008`.
 
     Parameters
     ----------
@@ -108,9 +108,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
 
     References
     ----------
-    [1] Nolte et al. "Robustly Estimating the Flow Direction of Information in
-        Complex Physical Systems", Physical Review Letters, vol. 100, no. 23,
-        pp. 1-4, Jun. 2008.
+    .. footbibliography::
     """
     logger.info('Estimating phase slope index (PSI)')
     # estimate the coherency

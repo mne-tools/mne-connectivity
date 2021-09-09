@@ -89,6 +89,36 @@ numpydoc_xref_ignore = {
     'epochs', 'freqs', 'times', 'arrays', 'lists', 'func', 'n_nodes',
     'n_estimated_nodes', 'n_samples', 'n_channels', 'Epochs'
 }
+numpydoc_xref_aliases = {
+    # Python
+    'file-like': ':term:`file-like <python:file object>`',
+    # Matplotlib
+    'colormap': ':doc:`colormap <matplotlib:tutorials/colors/colormaps>`',
+    'color': ':doc:`color <matplotlib:api/colors_api>`',
+    'collection': ':doc:`collections <matplotlib:api/collections_api>`',
+    'Axes': 'matplotlib.axes.Axes',
+    'Figure': 'matplotlib.figure.Figure',
+    'Axes3D': 'mpl_toolkits.mplot3d.axes3d.Axes3D',
+    'ColorbarBase': 'matplotlib.colorbar.ColorbarBase',
+    # joblib
+    'joblib.Parallel': 'joblib.Parallel',
+    # nibabel
+    'Nifti1Image': 'nibabel.nifti1.Nifti1Image',
+    'Nifti2Image': 'nibabel.nifti2.Nifti2Image',
+    'SpatialImage': 'nibabel.spatialimages.SpatialImage',
+    # MNE
+    'Label': 'mne.Label', 'Forward': 'mne.Forward', 'Evoked': 'mne.Evoked',
+    'Info': 'mne.Info', 'SourceSpaces': 'mne.SourceSpaces',
+    'SourceMorph': 'mne.SourceMorph',
+    'Epochs': 'mne.Epochs', 'Layout': 'mne.channels.Layout',
+    'EvokedArray': 'mne.EvokedArray', 'BiHemiLabel': 'mne.BiHemiLabel',
+    'AverageTFR': 'mne.time_frequency.AverageTFR',
+    'EpochsTFR': 'mne.time_frequency.EpochsTFR',
+    'Raw': 'mne.io.Raw', 'ICA': 'mne.preprocessing.ICA',
+    # dipy
+    'dipy.align.AffineMap': 'dipy.align.imaffine.AffineMap',
+    'dipy.align.DiffeomorphicMap': 'dipy.align.imwarp.DiffeomorphicMap',
+}
 numpydoc_validate = True
 numpydoc_validation_checks = {'all'} | set(error_ignores)
 numpydoc_validation_exclude = {  # set of regex
