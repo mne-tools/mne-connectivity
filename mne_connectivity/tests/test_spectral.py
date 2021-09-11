@@ -25,6 +25,65 @@ def _stc_gen(data, sfreq, tmin, combo=False):
             yield (arr, stc)
 
 
+@pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv'])
+@pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
+def test_spectral_connectivity_parallel(method, mode, tmp_path):
+    """Test saving spectral connectivity with parallel functions."""
+    # Use a case known to have no spurious correlations (it would bad if
+    # tests could randomly fail):
+    rng = np.random.RandomState(0)
+    trans_bandwidth = 2.
+
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 8
+    n_times = 256
+    n_jobs = 2  # test with parallelization
+
+    data = rng.randn(n_signals, n_epochs * n_times)
+    # simulate connectivity from 5Hz..15Hz
+    fstart, fend = 5.0, 15.0
+    data[1, :] = filter_data(data[0, :], sfreq, fstart, fend,
+                             filter_length='auto', fir_design='firwin2',
+                             l_trans_bandwidth=trans_bandwidth,
+                             h_trans_bandwidth=trans_bandwidth)
+    # add some noise, so the spectrum is not exactly zero
+    data[1, :] += 1e-2 * rng.randn(n_times * n_epochs)
+    data = data.reshape(n_signals, n_epochs, n_times)
+    data = np.transpose(data, [1, 0, 2])
+
+    # define some frequencies for cwt
+    cwt_freqs = np.arange(3, 24.5, 1)
+
+    if method == 'coh' and mode == 'multitaper':
+        # only check adaptive estimation for coh to reduce test time
+        check_adaptive = [False, True]
+    else:
+        check_adaptive = [False]
+
+    if method == 'coh' and mode == 'cwt_morlet':
+        # so we also test using an array for num cycles
+        cwt_n_cycles = 7. * np.ones(len(cwt_freqs))
+    else:
+        cwt_n_cycles = 7.
+
+    for adaptive in check_adaptive:
+
+        if adaptive:
+            mt_bandwidth = 1.
+        else:
+            mt_bandwidth = None
+
+        con = spectral_connectivity(
+            data, method=method, mode=mode, indices=None, sfreq=sfreq,
+            mt_adaptive=adaptive, mt_low_bias=True,
+            mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles, n_jobs=n_jobs)
+
+        tmp_file = tmp_path / 'temp_file.nc'
+        con.save(tmp_file)
+
+
 @pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv',
                                     ['ciplv', 'ppc', 'pli', 'pli2_unbiased',
                                      'wpli', 'wpli2_debiased', 'coh']])

@@ -870,8 +870,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                            for this_epoch in epoch_block)
             # do the accumulation
             for this_out in out:
-                for method, parallel_method in zip(con_methods, this_out[0]):
-                    method.combine(parallel_method)
+                for _method, parallel_method in zip(con_methods, this_out[0]):
+                    _method.combine(parallel_method)
                 if accumulate_psd:
                     psd += this_out[1]
 
