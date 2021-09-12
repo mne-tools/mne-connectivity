@@ -662,8 +662,9 @@ class _Connectivity(DynamicMixin):
 
         # save as a netCDF file
         # note this requires the netcdf4 python library
-        self.xarray.to_netcdf(fname, mode='w', format='NETCDF4',
-                              engine='netcdf4')
+        self.xarray.to_netcdf(fname, mode='w',
+                              format='NETCDF4',
+                              engine='h5netcdf')
 
         # re-set old attributes
         self.xarray.attrs = old_attrs

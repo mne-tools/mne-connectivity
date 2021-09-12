@@ -5,7 +5,8 @@ import pytest
 from mne import EpochsArray, SourceEstimate, create_info
 from mne.filter import filter_data
 
-from mne_connectivity import SpectralConnectivity, spectral_connectivity
+from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
+                              read_connectivity)
 from mne_connectivity.spectral import _CohEst, _get_n_epochs
 
 
@@ -82,6 +83,9 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
 
         tmp_file = tmp_path / 'temp_file.nc'
         con.save(tmp_file)
+
+        read_con = read_connectivity(tmp_file)
+        assert_array_almost_equal(con.get_data(), read_con.get_data())
 
 
 @pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv',

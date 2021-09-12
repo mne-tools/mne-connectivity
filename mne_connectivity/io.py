@@ -1,3 +1,4 @@
+import numpy as np
 import xarray as xr
 
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
@@ -57,11 +58,11 @@ def read_connectivity(fname):
         A connectivity class.
     """
     # open up a data-array using xarray
-    conn_da = xr.open_dataarray(fname)
+    conn_da = xr.open_dataarray(fname, engine='h5netcdf')
 
     # map 'n/a' to 'None'
     for key, val in conn_da.attrs.items():
-        if not isinstance(val, list):
+        if not isinstance(val, list) and not isinstance(val, np.ndarray):
             if val == 'n/a':
                 conn_da.attrs[key] = None
     # get the name of the class
