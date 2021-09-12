@@ -211,7 +211,7 @@ def test_io(conn_cls, tmpdir):
     new_conn = read_connectivity(fname)
 
     # assert these two objects are the same
-    assert conn.names == new_conn.names
+    assert_array_equal(conn.names, new_conn.names)
     assert conn.dims == new_conn.dims
     for key, val in conn.coords.items():
         assert_array_equal(val, new_conn.coords[key])
