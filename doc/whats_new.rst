@@ -35,7 +35,7 @@ Bug
 API
 ~~~
 
-- ...
+- Added ``h5netcdf`` as a requirement for saving connectivity data.
 
 Authors
 ~~~~~~~
