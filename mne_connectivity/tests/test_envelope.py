@@ -52,6 +52,17 @@ def test_roundtrip_envelope_correlation(tmp_path):
     assert repr(corr) == repr(read_corr)
 
 
+def test_empty_epochs_correlation():
+    """Test empty epochs object results in error."""
+    rng = np.random.RandomState(0)
+    n_epochs, n_signals, n_times = 0, 4, 64
+    data = rng.randn(n_epochs, n_signals, n_times)
+    data_hilbert = hilbert(data, axis=-1)
+
+    with pytest.raises(RuntimeError, match='Passing in empty epochs'):
+        envelope_correlation(data_hilbert)
+
+
 def test_envelope_correlation():
     """Test the envelope correlation function."""
     rng = np.random.RandomState(0)
