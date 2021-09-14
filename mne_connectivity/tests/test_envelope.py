@@ -5,9 +5,11 @@
 #
 # License: BSD (3-clause)
 
+from mne_connectivity.io import read_connectivity
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import (assert_allclose, assert_array_equal,
+                           assert_array_less)
 from scipy.signal import hilbert
 
 from mne.utils import catch_logging, use_log_level
@@ -35,6 +37,31 @@ def _compute_corrs_orig(data):
     corr = (corr + corr.T) / (2. * n_epochs)
     corr.flat[::n_labels + 1] = 0.
     return corr
+
+
+def test_roundtrip_envelope_correlation(tmp_path):
+    """Test write/read roundtrip for envelope correlation."""
+    rng = np.random.RandomState(0)
+    n_epochs, n_signals, n_times = 1, 4, 64
+    data = rng.randn(n_epochs, n_signals, n_times)
+    data_hilbert = hilbert(data, axis=-1)
+    corr = envelope_correlation(data_hilbert)
+    tmp_file = tmp_path / 'temp_file.nc'
+    corr.save(tmp_file)
+
+    read_corr = read_connectivity(tmp_file)
+    assert_array_equal(corr.get_data(), read_corr.get_data())
+
+
+def test_empty_epochs_correlation():
+    """Test empty epochs object results in error."""
+    rng = np.random.RandomState(0)
+    n_epochs, n_signals, n_times = 0, 4, 64
+    data = rng.randn(n_epochs, n_signals, n_times)
+    data_hilbert = hilbert(data, axis=-1)
+
+    with pytest.raises(RuntimeError, match='Passing in empty epochs'):
+        envelope_correlation(data_hilbert)
 
 
 def test_envelope_correlation():

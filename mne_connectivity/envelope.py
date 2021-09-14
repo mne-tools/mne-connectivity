@@ -77,6 +77,8 @@ def envelope_correlation(data, names=None,
 
     corrs = list()
 
+    n_nodes = None
+
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
     # using multiple CPUs. And we require too much GIL for prefer='threading'
@@ -149,6 +151,9 @@ def envelope_correlation(data, names=None,
 
         corrs.append(corr)
         del corr
+
+    if n_nodes is None:
+        raise RuntimeError('Passing in empty epochs object is not allowed.')
 
     # apply function on correlation structure
     n_epochs = len(corrs)

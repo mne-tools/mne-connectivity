@@ -496,7 +496,7 @@ class _Connectivity(DynamicMixin):
     def _size(self):
         """Estimate the object size."""
         size = 0
-        size += object_size(self.get_data())
+        size += object_size(self._data)
         size += object_size(self.attrs)
         return size
 
@@ -662,8 +662,14 @@ class _Connectivity(DynamicMixin):
 
         # save as a netCDF file
         # note this requires the netcdf4 python library
-        self.xarray.to_netcdf(fname, mode='w', format='NETCDF4',
-                              engine='netcdf4')
+        # and h5netcdf library.
+        # The engine specified requires the ability to save
+        # complex data types, which was not natively supported
+        # in xarray. Therefore, h5netcdf is the only engine
+        # to support that feature at this moment.
+        self.xarray.to_netcdf(fname, mode='w',
+                              format='NETCDF4',
+                              engine='h5netcdf')
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
