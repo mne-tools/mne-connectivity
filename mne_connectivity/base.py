@@ -305,15 +305,7 @@ class _Connectivity(DynamicMixin):
 
     def _prepare_xarray(self, data, names, indices, n_nodes, method,
                         **kwargs):
-        """Prepare xarray data structure.
-
-        Parameters
-        ----------
-        data : [type]
-            [description]
-        names : [type]
-            [description]
-        """
+        """Prepare xarray data structure."""
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
