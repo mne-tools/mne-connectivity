@@ -676,7 +676,7 @@
     <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Estimate the object size.&quot;&quot;&quot;</span>
         <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">object_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">object_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
         <span class="n">size</span> <span class="o">+=</span> <span class="n">object_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">size</span>
 
@@ -842,8 +842,14 @@
 
         <span class="c1"># save as a netCDF file</span>
         <span class="c1"># note this requires the netcdf4 python library</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4&#39;</span><span class="p">,</span>
-                              <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">)</span>
+        <span class="c1"># and h5netcdf library.</span>
+        <span class="c1"># The engine specified requires the ability to save</span>
+        <span class="c1"># complex data types, which was not natively supported</span>
+        <span class="c1"># in xarray. Therefore, h5netcdf is the only engine</span>
+        <span class="c1"># to support that feature at this moment.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+                              <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4&#39;</span><span class="p">,</span>
+                              <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;h5netcdf&#39;</span><span class="p">)</span>
 
         <span class="c1"># re-set old attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">old_attrs</span>
@@ -1140,13 +1146,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-14.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     

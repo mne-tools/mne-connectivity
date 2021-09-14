@@ -1050,8 +1050,8 @@
                            <span class="k">for</span> <span class="n">this_epoch</span> <span class="ow">in</span> <span class="n">epoch_block</span><span class="p">)</span>
             <span class="c1"># do the accumulation</span>
             <span class="k">for</span> <span class="n">this_out</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">parallel_method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">con_methods</span><span class="p">,</span> <span class="n">this_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                    <span class="n">method</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">parallel_method</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_method</span><span class="p">,</span> <span class="n">parallel_method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">con_methods</span><span class="p">,</span> <span class="n">this_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">_method</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">parallel_method</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
                     <span class="n">psd</span> <span class="o">+=</span> <span class="n">this_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -1340,13 +1340,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-14.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     
