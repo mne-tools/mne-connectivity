@@ -496,7 +496,7 @@ class _Connectivity(DynamicMixin):
     def _size(self):
         """Estimate the object size."""
         size = 0
-        size += object_size(self.get_data())
+        size += object_size(self._data)
         size += object_size(self.attrs)
         return size
 
