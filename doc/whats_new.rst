@@ -29,7 +29,7 @@ Enhancements
 Bug
 ~~~
 
-- Fixed bug when saving connectivity with ``n_jobs`` greater than 1 from :func:`mne_connectivity.spectral_connectivity`, by `Adam Li`_ (:gh:43)
+- Fixed bug when saving connectivity with ``n_jobs`` greater than 1 from :func:`mne_connectivity.spectral_connectivity`, by `Adam Li`_ (:gh:`43`)
 - Fixed bug to allow saving complex data connectivity, by `Adam Li`_ (:gh:`43`)
 
 API
