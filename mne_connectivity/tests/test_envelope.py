@@ -8,10 +8,10 @@
 from mne_connectivity.io import read_connectivity
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose, assert_array_less
+from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 from scipy.signal import hilbert
 
-from mne.utils import catch_logging, use_log_level
+from mne.utils import catch_logging, use_log_level, assert_object_equal
 from mne_connectivity.envelope import envelope_correlation, symmetric_orth
 
 
@@ -49,7 +49,7 @@ def test_roundtrip_envelope_correlation(tmp_path):
     corr.save(tmp_file)
 
     read_corr = read_connectivity(tmp_file)
-    assert repr(corr) == repr(read_corr)
+    assert_array_equal(corr.get_data(), read_corr.get_data())
 
 
 def test_empty_epochs_correlation():
