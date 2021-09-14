@@ -662,6 +662,11 @@ class _Connectivity(DynamicMixin):
 
         # save as a netCDF file
         # note this requires the netcdf4 python library
+        # and h5netcdf library.
+        # The engine specified requires the ability to save
+        # complex data types, which was not natively supported
+        # in xarray. Therefore, h5netcdf is the only engine
+        # to support that feature at this moment.
         self.xarray.to_netcdf(fname, mode='w',
                               format='NETCDF4',
                               engine='h5netcdf')

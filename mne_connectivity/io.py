@@ -58,6 +58,10 @@ def read_connectivity(fname):
         A connectivity class.
     """
     # open up a data-array using xarray
+    # The engine specified requires the ability to save
+    # complex data types, which was not natively supported
+    # in xarray. Therefore, h5netcdf is the only engine
+    # to support that feature at this moment.
     conn_da = xr.open_dataarray(fname, engine='h5netcdf')
 
     # map 'n/a' to 'None'
