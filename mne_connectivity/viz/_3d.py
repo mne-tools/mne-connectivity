@@ -38,8 +38,8 @@ def plot_sensors_connectivity(info, con, picks=None,
 
     Returns
     -------
-    fig : instance of mayavi.mlab.Figure
-        The mayavi figure.
+    fig : instance of Renderer
+        The 3D figure.
     """
     _validate_type(info, "info")
 

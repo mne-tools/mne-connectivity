@@ -15,7 +15,7 @@ Dependencies
 * ``pandas`` (>=0.23.4, optional, for generating event statistics)
 * ``matplotlib`` (optional, for using the interactive data inspector)
 
-We require that you use Python 3.6 or higher.
+We require that you use Python 3.7 or higher.
 You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_.
 
 Installation via Pip

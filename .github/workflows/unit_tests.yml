@@ -1,4 +1,7 @@
-name: 'gh_actions'
+name: 'unit_tests'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.type }}
+  cancel-in-progress: true
 on:
   push:
     branches:
@@ -37,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        python-version: [ 3.7, 3.8, 3.9 ]
     steps:
       - uses: actions/checkout@v2
         # with:
@@ -101,13 +104,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python-version: 3.6
-          - os: ubuntu-latest
             python-version: 3.7
           - os: ubuntu-latest
-            python-version: 3.8
+            python-version: 3.9
           - os: macos-latest
-            python-version: 3.8
+            python-version: 3.9
 
     env:
       TZ: Europe/Berlin
@@ -116,7 +117,7 @@ jobs:
       MNE_LOGGING_LEVEL: 'info'
       OPENBLAS_NUM_THREADS: '1'
       PYTHONUNBUFFERED: '1'
-      
+
     steps:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
@@ -151,7 +152,7 @@ jobs:
       - shell: bash -el {0}
         run: mne sys_info
         name: 'Show infos'
-        
+
       - name: Run pytest
         run: |
           python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python

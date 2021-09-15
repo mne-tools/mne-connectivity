@@ -305,15 +305,7 @@ class _Connectivity(DynamicMixin):
 
     def _prepare_xarray(self, data, names, indices, n_nodes, method,
                         **kwargs):
-        """Prepare xarray data structure.
-
-        Parameters
-        ----------
-        data : [type]
-            [description]
-        names : [type]
-            [description]
-        """
+        """Prepare xarray data structure."""
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
@@ -669,7 +661,8 @@ class _Connectivity(DynamicMixin):
         # to support that feature at this moment.
         self.xarray.to_netcdf(fname, mode='w',
                               format='NETCDF4',
-                              engine='h5netcdf')
+                              engine='h5netcdf',
+                              invalid_netcdf=True)
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
