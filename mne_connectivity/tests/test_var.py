@@ -64,7 +64,7 @@ def create_noisy_data(
     return X.T, true_eigvals, A
 
 
-@pytest.mark.timout(15)
+@pytest.mark.timeout(15)
 def test_vector_auto_regression_computation():
     """Test VAR model computation accuracy.
 
