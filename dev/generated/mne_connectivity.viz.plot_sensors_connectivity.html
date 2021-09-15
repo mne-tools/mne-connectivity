@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.read_connectivity &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    <title>mne_connectivity.viz.plot_sensors_connectivity &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -47,8 +47,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.symmetric_orth" href="mne_connectivity.symmetric_orth.html" />
-    <link rel="prev" title="mne_connectivity.vector_auto_regression" href="mne_connectivity.vector_auto_regression.html" />
+    <link rel="next" title="mne_connectivity.viz.plot_connectivity_circle" href="mne_connectivity.viz.plot_connectivity_circle.html" />
+    <link rel="prev" title="mne_connectivity.check_indices" href="mne_connectivity.check_indices.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -222,9 +222,9 @@
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
    mne_connectivity.read_connectivity
   </a>
  </li>
@@ -253,9 +253,9 @@
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_connectivity.viz.plot_sensors_connectivity.html">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_connectivity.viz.plot_sensors_connectivity
   </a>
  </li>
@@ -278,9 +278,24 @@
               
               <div class="toc-item">
                 
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-connectivity-viz-plot-sensors-connectivity">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_connectivity.viz.plot_sensors_connectivity
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
 </nav>
               </div>
               
@@ -300,29 +315,54 @@
               
               <div>
                 
-  <div class="section" id="mne-connectivity-read-connectivity">
-<h1>mne_connectivity.read_connectivity<a class="headerlink" href="#mne-connectivity-read-connectivity" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-connectivity-viz-plot-sensors-connectivity">
+<h1>mne_connectivity.viz.plot_sensors_connectivity<a class="headerlink" href="#mne-connectivity-viz-plot-sensors-connectivity" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_connectivity.read_connectivity">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">read_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/io.html#read_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.read_connectivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read connectivity data from netCDF file.</p>
+<dt class="sig sig-object py" id="mne_connectivity.viz.plot_sensors_connectivity">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.viz.</span></span><span class="sig-name descname"><span class="pre">plot_sensors_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">con</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Connectivity'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/viz/_3d.html#plot_sensors_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.viz.plot_sensors_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize the sensor connectivity in 3D.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fname</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></p>
+<dd class="field-odd"><p><strong>info</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
-<div><p>The filepath.</p>
+<div><p>The measurement info.</p>
+</div></blockquote>
+<p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_channels, n_channels) | <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The computed connectivity measure(s).</p>
+</div></blockquote>
+<p><strong>picks</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slice</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<blockquote>
+<div><p>Channels to include. Slices and lists of integers will be interpreted as channel indices. In lists, channel <em>type</em> strings
+(e.g., <code class="docutils literal notranslate"><span class="pre">['meg',</span> <span class="pre">'eeg']</span></code>) will pick channels of those
+types, channel <em>name</em> strings (e.g., <code class="docutils literal notranslate"><span class="pre">['MEG0111',</span> <span class="pre">'MEG2623']</span></code>
+will pick the given channels. Can also be the string values
+“all” to pick all channels, or “data” to pick <a class="reference external" href="https://mne.tools/dev/glossary.html#term-data-channels" title="(in MNE v0.24)"><span class="xref std std-term">data channels</span></a>.
+None (default) will pick good data channels. Note that channels in <code class="docutils literal notranslate"><span class="pre">info['bads']</span></code> <em>will be included</em> if their names or indices are explicitly provided.
+Indices of selected channels.</p>
+</div></blockquote>
+<p><strong>cbar_label</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<blockquote>
+<div><p>Label for the colorbar.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<dd class="field-even"><p><strong>fig</strong> : instance of Renderer</p>
 <blockquote>
-<div><p>A connectivity class.</p>
+<div><p>The 3D figure.</p>
 </div></blockquote>
 </dd>
 </dl>
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div class="section" id="examples-using-mne-connectivity-viz-plot-sensors-connectivity">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.viz.plot_sensors_connectivity</span></code><a class="headerlink" href="#examples-using-mne-connectivity-viz-plot-sensors-connectivity" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Computes the Phase Lag Index (PLI) between all gradiometers and shows the connectivity in 3D us..."><div class="figure align-default" id="id1">
+<img alt="Compute all-to-all connectivity in sensor space" src="../_images/sphx_glr_sensor_connectivity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
 
 
               </div>
@@ -330,8 +370,8 @@
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="mne_connectivity.vector_auto_regression.html" title="previous page">mne_connectivity.vector_auto_regression</a>
-    <a class='right-next' id="next-link" href="mne_connectivity.symmetric_orth.html" title="next page">mne_connectivity.symmetric_orth</a>
+    <a class='left-prev' id="prev-link" href="mne_connectivity.check_indices.html" title="previous page">mne_connectivity.check_indices</a>
+    <a class='right-next' id="next-link" href="mne_connectivity.viz.plot_connectivity_circle.html" title="next page">mne_connectivity.viz.plot_connectivity_circle</a>
 
               </div>
               

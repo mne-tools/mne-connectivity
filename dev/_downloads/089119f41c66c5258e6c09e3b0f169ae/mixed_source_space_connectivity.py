@@ -22,8 +22,9 @@ from mne import setup_volume_source_space, setup_source_space
 from mne import make_forward_solution
 from mne.io import read_raw_fif
 from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
+from mne.viz import circular_layout
 from mne_connectivity import spectral_connectivity
-from mne_connectivity.viz import circular_layout, plot_connectivity_circle
+from mne_connectivity.viz import plot_connectivity_circle
 
 # Set directories
 data_path = sample.data_path()

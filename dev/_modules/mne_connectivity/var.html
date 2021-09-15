@@ -539,12 +539,10 @@
 
     <span class="c1"># use scikit-learn Ridge Regression to fit</span>
     <span class="n">fit_intercept</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">normalize</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">solver</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
     <span class="n">clf</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span>
         <span class="n">alpha</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span>
         <span class="n">fit_intercept</span><span class="o">=</span><span class="n">fit_intercept</span><span class="p">,</span>
-        <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
         <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
         <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
     <span class="p">)</span>
@@ -560,6 +558,7 @@
         <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">back_A</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">coef_</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">sqrtm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">back_A</span><span class="p">)))</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">real</span>  <span class="c1"># remove numerical noise</span>
 
     <span class="k">return</span> <span class="n">A</span>
 </pre></div>
@@ -585,7 +584,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-14.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-15.<br/>
 </p>
     </div>
     
