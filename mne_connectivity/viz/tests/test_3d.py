@@ -1,6 +1,8 @@
 import os.path as op
 import numpy as np
 import pytest
+
+import mne
 from mne.datasets import testing
 
 from mne_connectivity.viz import plot_sensors_connectivity
@@ -8,19 +10,16 @@ from mne_connectivity.viz import plot_sensors_connectivity
 data_dir = testing.data_path(download=False)
 
 
-@pytest.mark.slowtest
 @testing.requires_testing_data
 def test_plot_sensors_connectivity(renderer):
     """Test plotting of sensors connectivity."""
-    from mne import io, pick_types
-
     data_path = data_dir
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    raw = io.read_raw_fif(raw_fname)
-    picks = pick_types(raw.info, meg='grad', eeg=False, stim=False,
-                       eog=True, exclude='bads')
+    raw = mne.io.read_raw_fif(raw_fname)
+    picks = mne.pick_types(
+        raw.info, meg='grad', eeg=False, stim=False, eog=True, exclude='bads')
     n_channels = len(picks)
     con = np.random.RandomState(42).randn(n_channels, n_channels)
     info = raw.info

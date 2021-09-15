@@ -359,12 +359,10 @@ def _compute_lds_func(data, model_order, l2_reg, compute_fb_operator,
 
     # use scikit-learn Ridge Regression to fit
     fit_intercept = False
-    normalize = False
     solver = 'auto'
     clf = Ridge(
         alpha=l2_reg,
         fit_intercept=fit_intercept,
-        normalize=normalize,
         solver=solver,
         random_state=random_state,
     )
@@ -380,5 +378,6 @@ def _compute_lds_func(data, model_order, l2_reg, compute_fb_operator,
         clf.fit(Y.T, X.T)
         back_A = clf.coef_
         A = sqrtm(A.dot(np.linalg.inv(back_A)))
+        A = A.real  # remove numerical noise
 
     return A

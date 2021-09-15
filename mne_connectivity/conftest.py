@@ -11,6 +11,24 @@ import warnings
 from distutils.version import LooseVersion
 
 
+def pytest_configure(config):
+    """Configure pytest options."""
+    # Fixtures
+    for fixture in ('matplotlib_config',):
+        config.addinivalue_line('usefixtures', fixture)
+
+    warning_lines = r"""
+    error::
+    ignore:.*`np.bool` is a deprecated alias.*:DeprecationWarning
+    ignore:.*String decoding changed with h5py.*:FutureWarning
+    always::ResourceWarning
+    """  # noqa: E501
+    for warning_line in warning_lines.split('\n'):
+        warning_line = warning_line.strip()
+        if warning_line and not warning_line.startswith('#'):
+            config.addinivalue_line('filterwarnings', warning_line)
+
+
 @pytest.fixture(autouse=True)
 def close_all():
     """Close all matplotlib plots, regardless of test status."""

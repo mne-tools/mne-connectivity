@@ -661,7 +661,8 @@ class _Connectivity(DynamicMixin):
         # to support that feature at this moment.
         self.xarray.to_netcdf(fname, mode='w',
                               format='NETCDF4',
-                              engine='h5netcdf')
+                              engine='h5netcdf',
+                              invalid_netcdf=True)
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
