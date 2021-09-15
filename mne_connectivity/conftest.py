@@ -63,7 +63,7 @@ def garbage_collect():
     gc.collect()
 
 
-@pytest.fixture(params=["mayavi", "pyvistaqt"])
+@pytest.fixture(params=["pyvistaqt"])
 def renderer(request, garbage_collect):
     """Yield the 3D backends."""
     with _use_backend(request.param, interactive=False) as renderer:
@@ -91,7 +91,7 @@ def renderer_interactive_pyvistaqt(request):
         yield renderer
 
 
-@pytest.fixture(scope="module", params=["pyvistaqt", "mayavi"])
+@pytest.fixture(scope="module", params=["pyvistaqt"])
 def renderer_interactive(request):
     """Yield the interactive 3D backends."""
     with _use_backend(request.param, interactive=True) as renderer:
@@ -117,7 +117,7 @@ def _use_backend(backend_name, interactive):
 
 
 def _check_skip_backend(name):
-    from mne.viz.backends.tests._utils import (has_mayavi, has_pyvista,
+    from mne.viz.backends.tests._utils import (has_pyvista,
                                                has_pyqt5, has_imageio_ffmpeg,
                                                has_pyvistaqt)
     if name in ('pyvistaqt', 'notebook'):
@@ -125,9 +125,7 @@ def _check_skip_backend(name):
             pytest.skip("Test skipped, requires pyvista.")
         if not has_imageio_ffmpeg():
             pytest.skip("Test skipped, requires imageio-ffmpeg")
-    if name in ('pyvistaqt', 'mayavi') and not has_pyqt5():
+    if name == 'pyvistaqt' and not has_pyqt5():
         pytest.skip("Test skipped, requires PyQt5.")
-    if name == 'mayavi' and not has_mayavi():
-        pytest.skip("Test skipped, requires mayavi.")
     if name == 'pyvistaqt' and not has_pyvistaqt():
         pytest.skip("Test skipped, requires pyvistaqt")

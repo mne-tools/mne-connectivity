@@ -49,7 +49,18 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
 
 def check_indices(indices):
-    """Check indices parameter."""
+    """Check indices parameter.
+
+    Parameters
+    ----------
+    indices : tuple of array
+        Tuple of length 2 containing index pairs.
+
+    Returns
+    -------
+    indices : tuple of array
+        The indices.
+    """
     if not isinstance(indices, tuple) or len(indices) != 2:
         raise ValueError('indices must be a tuple of length 2')
 

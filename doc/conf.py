@@ -87,7 +87,7 @@ numpydoc_xref_ignore = {
     'n_times', 'obj', 'n_chan', 'n_epochs', 'n_picks', 'n_ch_groups',
     'n_node_names', 'n_tapers', 'n_signals', 'n_step', 'n_freqs',
     'epochs', 'freqs', 'times', 'arrays', 'lists', 'func', 'n_nodes',
-    'n_estimated_nodes', 'n_samples', 'n_channels', 'Epochs'
+    'n_estimated_nodes', 'n_samples', 'n_channels', 'Renderer'
 }
 numpydoc_xref_aliases = {
     # Python
@@ -115,6 +115,8 @@ numpydoc_xref_aliases = {
     'AverageTFR': 'mne.time_frequency.AverageTFR',
     'EpochsTFR': 'mne.time_frequency.EpochsTFR',
     'Raw': 'mne.io.Raw', 'ICA': 'mne.preprocessing.ICA',
+    # MNE-Connectivity
+    'Connectivity': 'mne_connectivity.Connectivity',
     # dipy
     'dipy.align.AffineMap': 'dipy.align.imaffine.AffineMap',
     'dipy.align.DiffeomorphicMap': 'dipy.align.imwarp.DiffeomorphicMap',
@@ -131,8 +133,6 @@ numpydoc_validation_exclude = {  # set of regex
     # we currently don't document these properly (probably okay)
     r'\.__getitem__', r'\.__contains__', r'\.__hash__', r'\.__mul__',
     r'\.__sub__', r'\.__add__', r'\.__iter__', r'\.__div__', r'\.__neg__',
-    r'mne_connectivity\.degree', r'mne_connectivity\.seed_target_indices', r'mne_connectivity\.check_indices',
-    r'mne_connectivity\.plot_connectivity', r'mne_connectivity\.plot_circle',
     r'plot_circle'
 }
 

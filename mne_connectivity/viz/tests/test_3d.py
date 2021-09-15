@@ -30,12 +30,5 @@ def test_plot_sensors_connectivity(renderer):
         plot_sensors_connectivity(info=info, con=con[::2, ::2], picks=picks)
 
     fig = plot_sensors_connectivity(info=info, con=con, picks=picks)
-    if renderer._get_3d_backend() == 'pyvista':
-        title = list(fig.plotter.scalar_bars.values())[0].GetTitle()
-    else:
-        assert renderer._get_3d_backend() == 'mayavi'
-        # the last thing we add is the Tube, so we need to go
-        # vtkDataSource->Stripper->Tube->ModuleManager
-        mod_man = fig.children[-1].children[0].children[0].children[0]
-        title = mod_man.scalar_lut_manager.scalar_bar.title
+    title = list(fig.plotter.scalar_bars.values())[0].GetTitle()
     assert title == 'Connectivity'
