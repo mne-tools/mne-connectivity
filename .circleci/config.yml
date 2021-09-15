@@ -206,56 +206,6 @@ jobs:
               key: website-cache
               paths:
                 - ~/mne-connectivity
-    # deploy:
-    #   docker:
-    #     - image: circleci/python:3.6-jessie
-    #   steps:
-    #     - attach_workspace:
-    #         at: /tmp/build
-    #     - restore_cache:
-    #         keys:
-    #           - website-cache
-    #     - run:
-    #         name: Fetch docs
-    #         command: |
-    #           set -e
-    #           mkdir -p ~/.ssh
-    #           echo -e "Host *\nStrictHostKeyChecking no" > ~/.ssh/config
-    #           chmod og= ~/.ssh/config
-    #           if [ ! -d ~/mne-connectivity ]; then
-    #             git clone git@github.com:/mne-tools/mne-connectivity.git ~/mne-connectivity --depth=1
-    #           fi
-    #     - run:
-    #         name: Deploy docs
-    #         command: |
-    #           set -e;
-    #           git config --global user.email "circle@mne.com";
-    #           git config --global user.name "Circle CI";
-    #           cd ~/mne-connectivity;
-    #           git remote -v
-    #           git fetch origin
-    #           git checkout gh-pages
-    #           git reset --hard origin/gh-pages
-    #           git clean -xdf
-    #           if [ "${CIRCLE_BRANCH}" == "main" ]; then
-    #             echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
-    #             rm -Rf dev;  # remove the dev folder
-    #             cp -a /tmp/build/html dev;
-    #             git add -A;
-    #             git commit -m "CircleCI update of mne-connectivity docs (${CIRCLE_BUILD_NUM}).";
-    #           else
-    #             echo "No deployment (build: ${CIRCLE_BRANCH}).";
-    #             echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
-    #             rm -Rf stable;
-    #             cp -a /tmp/build/html_stable stable;
-    #             git add -A;
-    #             git commit -m "CircleCI update of stable docs (${CIRCLE_BUILD_NUM}).";
-    #           fi;
-    #           git push origin gh-pages;
-    #     - save_cache:
-    #         key: website-cache
-    #         paths:
-              # - ~/mne-connectivity
 
 workflows:
   version: 2
