@@ -105,6 +105,11 @@ def vector_auto_regression(
     Each sub matrix b_ij is a column vector of length p that contains the
     filter coefficients from channel j (source) to channel i (sink).
 
+    In order to optimize RAM usage, the estimating equations are set up
+    by iterating over sample points. This assumes that there are in general
+    more sample points then channels. You should not estimate a VAR model
+    using less sample points then channels, unless you have good reason.
+
     References
     ----------
     .. footbibliography::
@@ -348,7 +353,7 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator,
     """
     from sklearn.linear_model import Ridge
 
-    n_times = data.shape[-1]
+    n_channels, n_times = data.shape
 
     # create large snapshot with time-lags of order specified by
     # ``order`` value
@@ -357,29 +362,55 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator,
     )
 
     # get the time-shifted components of each
-    X, Y = snaps[:, :-1], snaps[:, 1:]
+    X, Y = snaps[:, :-1].T, snaps[:, 1:].T
+
+    # X.T @ X coefficient matrix
+    XdotX = np.zeros((n_channels, n_channels))
+
+    # X.T @ Y ordinate / dependent variable matrix
+    XdotY = np.zeros((n_channels, n_channels))
+
+    # loop over sample points and aggregate the
+    # necessary elements of the normal equations
+    for idx in range(n_times - 1):
+        first_component = X[idx, :].T[:, np.newaxis]
+        second_component = X[idx, :][np.newaxis, :]
+        
+        # increment for X.T @ X
+        XdotX += first_component @ second_component
+
+        # increment for X.T @ Y
+        second_component = Y[idx, :][np.newaxis, :]
+        XdotY += first_component @ second_component
+
+    # add l2 regularization
+    XdotX += l2_reg * np.eye(n_channels)
+
+    # directly solve for the A matrix
+    # Note, we need to transpose
+    A = np.linalg.lstsq(XdotX, XdotY, rcond=-1)[0].T
 
     # use scikit-learn Ridge Regression to fit
-    fit_intercept = False
-    solver = 'auto'
-    clf = Ridge(
-        alpha=l2_reg,
-        fit_intercept=fit_intercept,
-        solver=solver,
-        random_state=random_state,
-    )
+    # fit_intercept = False
+    # solver = 'auto'
+    # clf = Ridge(
+    #     alpha=l2_reg,
+    #     fit_intercept=fit_intercept,
+    #     solver=solver,
+    #     random_state=random_state,
+    # )
 
-    # n_samples X n_features and n_samples X n_targets
-    clf.fit(X.T, Y.T)
+    # # n_samples X n_features and n_samples X n_targets
+    # clf.fit(X.T, Y.T)
 
     # n_targets X n_features
-    A = clf.coef_
+    # A = clf.coef_
 
-    if compute_fb_operator:
-        # compute backward linear operator
-        clf.fit(Y.T, X.T)
-        back_A = clf.coef_
-        A = sqrtm(A.dot(np.linalg.inv(back_A)))
-        A = A.real  # remove numerical noise
+    # if compute_fb_operator:
+    #     # compute backward linear operator
+    #     clf.fit(Y.T, X.T)
+    #     back_A = clf.coef_
+    #     A = sqrtm(A.dot(np.linalg.inv(back_A)))
+    #     A = A.real  # remove numerical noise
 
     return A

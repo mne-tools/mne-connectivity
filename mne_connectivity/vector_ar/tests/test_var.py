@@ -12,7 +12,8 @@ def create_noisy_data(
     add_noise,
     asymmetric=False,
     sigma=1e-4,
-    m=100
+    m=100,
+    random_state=12345,
 ):
     """Create noisy test data.
 
@@ -29,6 +30,8 @@ def create_noisy_data(
         The number of samples.
     return_A : bool
         Whether to return the A matrix
+    random_state : int
+        The random state to set.
 
     Returns
     -------
@@ -40,8 +43,10 @@ def create_noisy_data(
         (Optional) if ``return_A`` is True, then returns the
         true linear system matrix.
     """
+    rng = np.random.RandomState(random_state)
+
     mu = 0.0
-    noise = np.random.normal(mu, sigma, m)  # gaussian noise
+    noise = rng.normal(mu, sigma, m)  # gaussian noise
     if asymmetric:
         A = np.array([[1.0, 1.5], [-1.0, 2.0]])
     else:
@@ -62,6 +67,37 @@ def create_noisy_data(
             X[:, k - 1] += noise[k - 1]
 
     return X.T, true_eigvals, A
+
+
+def test_regression():
+    """Regression test to prevent numerical changes for VAR.
+    
+    This was copied over from the working version that
+    matches statsmodels VAR answer.
+    """
+    sample_data, sample_eigs, sample_A = create_noisy_data(
+        add_noise=True)
+
+    # create 3D array input
+    sample_data = sample_data.T[np.newaxis, ...]
+
+    # compute the model
+    model = vector_auto_regression(sample_data)
+
+    # test the recovered model
+    expected_A = np.array([[0.57733211,  0.57736152],
+                           [-0.57735815, 1.15471885]])
+    assert_array_almost_equal(
+        model.get_data(output='dense').squeeze(),
+        expected_A)
+
+    # without noise, the estimated A should match exactly
+    sample_data, sample_eigs, sample_A = create_noisy_data(
+        add_noise=False)
+    sample_data = sample_data.T[np.newaxis, ...]
+    model = vector_auto_regression(sample_data)
+    assert_array_almost_equal(model.get_data(output='dense').squeeze(),
+        sample_A)
 
 
 @pytest.mark.timeout(15)
