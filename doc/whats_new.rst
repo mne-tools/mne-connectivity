@@ -25,6 +25,8 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Adding symmetric orthogonalization via :func:`mne_connectivity.symmetric_orth`, by `Eric Larson`_ (:gh:`36`)
+- Improved RAM usage for :func:`mne_connectivity.vector_auto_regressive` and added ability to model a trend in the data, by `Adam Li`_ (:gh:`44`)
+- Added :func:`mne_connectivity.select_order` for helping to select VAR order using information criterion, by `Adam Li`_ (:gh:`44`)
 
 Bug
 ~~~
@@ -35,8 +37,9 @@ Bug
 API
 ~~~
 
-- Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`).
-- Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regression` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`47`)
+- Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`)
+- Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regressive` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`44`)
+
 
 Authors
 ~~~~~~~

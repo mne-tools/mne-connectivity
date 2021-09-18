@@ -4,8 +4,25 @@ from numpy.testing import (
     assert_array_almost_equal, assert_array_equal,
     assert_almost_equal
 )
+from mne.utils import assert_object_equal
 
-from mne_connectivity import vector_auto_regression
+from mne_connectivity import vector_auto_regression, select_order
+
+
+warning_str = dict(
+    sm_depr='ignore:Using or importing*.:DeprecationWarning',  # noqa
+)
+
+
+def bivariate_var_data():
+    """A bivariate dataset for VAR estimation"""
+    rng = np.random.RandomState(12345)
+    e = rng.standard_normal((252, 2))
+    y = np.zeros_like(e)
+    y[:2] = e[:2]
+    for i in range(2, 252):
+        y[i] = 0.2 * y[i - 1] + 0.1 * y[i - 2] + e[i]
+    return y
 
 
 def create_noisy_data(
@@ -35,7 +52,7 @@ def create_noisy_data(
 
     Returns
     -------
-    sample_data : np.ndarray
+    sample_data : np.ndarray (n_channels, n_samples)
         Observed sample data. Possibly with noise.
     sample_eigs : np.ndarray
         The true eigenvalues of the system.
@@ -48,7 +65,7 @@ def create_noisy_data(
     mu = 0.0
     noise = rng.normal(mu, sigma, m)  # gaussian noise
     if asymmetric:
-        A = np.array([[1.0, 1.5], [-1.0, 2.0]])
+        A = np.array([[1.0, 1.5], [-1.1, 2.0]])
     else:
         A = np.array([[1.0, 1.0], [-1.0, 2.0]])
     A /= np.sqrt(3)
@@ -66,12 +83,71 @@ def create_noisy_data(
         if add_noise:
             X[:, k - 1] += noise[k - 1]
 
-    return X.T, true_eigvals, A
+    return X, true_eigvals, A
+
+
+# XXX: get this to work with all lags and trends
+@pytest.mark.parametrize(
+    ['lags', 'trend'],
+    [
+        (1, 'n'),
+        # (1, 'c'), (1, '')
+        # (2, 'n'),
+        # (3, 'n'),
+        # (2, 'c')
+    ]
+)
+@pytest.mark.filterwarnings(warning_str['sm_depr'])
+def test_regression_against_statsmodels(lags, trend):
+    """Test regression against any statsmodels changes in VAR model."""
+    from statsmodels.tsa.vector_ar.var_model import VAR
+    sample_data, _, sample_A = create_noisy_data(
+        add_noise=False)
+
+    # statsmodels feeds in (n_samples, n_channels)
+    sm_var = VAR(endog=sample_data.T)
+    sm_params = sm_var.fit(maxlags=lags, trend=trend)
+
+    # the returned VAR model is transposed
+    sm_A = sm_params.params.T
+
+    # compute the model
+    model = vector_auto_regression(sample_data[np.newaxis, ...], lags=lags,
+                                   trend=trend)
+
+    # the models should match against the sample A matrix without noise
+    assert_array_almost_equal(
+        model.get_data(output='dense').squeeze(),
+        sample_A)
+
+    # the models should match each other
+    assert_array_almost_equal(
+        model.get_data().squeeze(),
+        sm_A.squeeze())
+
+
+@pytest.mark.filterwarnings(warning_str['sm_depr'])
+@pytest.mark.parametrize(
+    ['lags', 'trend'],
+    [
+        (5, 'n'),
+    ]
+)
+def test_regression_select_order(lags, trend):
+    from statsmodels.tsa.vector_ar.var_model import VAR
+    x = bivariate_var_data()
+    sm_model = VAR(endog=x)
+    results = sm_model.select_order(maxlags=lags, trend=trend)
+    sm_selected_orders = results.selected_orders
+
+    # compare with our version
+    selected_orders = select_order(X=x, maxlags=lags, trend=trend)
+    assert_object_equal(sm_selected_orders, selected_orders)
 
 
 def test_regression():
     """Regression test to prevent numerical changes for VAR.
-    
+
     This was copied over from the working version that
     matches statsmodels VAR answer.
     """
@@ -79,10 +155,10 @@ def test_regression():
         add_noise=True)
 
     # create 3D array input
-    sample_data = sample_data.T[np.newaxis, ...]
+    sample_data = sample_data[np.newaxis, ...]
 
     # compute the model
-    model = vector_auto_regression(sample_data)
+    model = vector_auto_regression(sample_data, lags=1)
 
     # test the recovered model
     expected_A = np.array([[0.57733211,  0.57736152],
@@ -91,13 +167,36 @@ def test_regression():
         model.get_data(output='dense').squeeze(),
         expected_A)
 
+    assert_array_almost_equal(
+        sample_eigs, np.linalg.eigvals(model.get_data().squeeze()))
+
     # without noise, the estimated A should match exactly
-    sample_data, sample_eigs, sample_A = create_noisy_data(
+    sample_data, _, sample_A = create_noisy_data(
         add_noise=False)
-    sample_data = sample_data.T[np.newaxis, ...]
+    sample_data = sample_data[np.newaxis, ...]
     model = vector_auto_regression(sample_data)
     assert_array_almost_equal(model.get_data(output='dense').squeeze(),
-        sample_A)
+                              sample_A)
+
+
+@pytest.mark.parametrize('l2_reg', np.linspace(0, 5, 10))
+def test_var_l2_reg(l2_reg):
+    """Test l2 regularization works as expected."""
+    sample_data, _, _ = create_noisy_data(
+        add_noise=True)
+
+    # test l2 regularization
+    model = vector_auto_regression(sample_data[np.newaxis, ...], l2_reg=l2_reg)
+    print(model.get_data().shape)
+
+    # manually solve things using pseudoinverse
+    sample_data = sample_data.T
+    X, Y = sample_data.squeeze()[:-1, :], sample_data.squeeze()[1:, :]
+    n_col = X.shape[1]
+    manual_A = np.linalg.lstsq(
+        X.T.dot(X) + l2_reg * np.eye(n_col), X.T.dot(Y), rcond=-1)[0].T
+    assert_array_almost_equal(model.get_data().squeeze(),
+                              manual_A)
 
 
 @pytest.mark.timeout(15)
@@ -111,7 +210,7 @@ def test_vector_auto_regression_computation():
         add_noise=True)
 
     # create 3D array input
-    sample_data = sample_data.T[np.newaxis, ...]
+    sample_data = sample_data[np.newaxis, ...]
 
     # compute the model
     model = vector_auto_regression(sample_data)
