@@ -15,7 +15,7 @@ warning_str = dict(
 
 
 def bivariate_var_data():
-    """A bivariate dataset for VAR estimation"""
+    """A bivariate dataset for VAR estimation."""
     rng = np.random.RandomState(12345)
     e = rng.standard_normal((252, 2))
     y = np.zeros_like(e)
