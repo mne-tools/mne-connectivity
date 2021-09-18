@@ -105,7 +105,7 @@ class DynamicMixin:
             # row are observations, columns are variables
             t = residuals.shape[0]
             sampled_residuals = np.concatenate(
-                np.split(residuals[:, :, model_order:], t, 0),
+                np.split(residuals[:, :, lags:], t, 0),
                 axis=2
             ).squeeze(0)
             rescov = np.cov(sampled_residuals)
@@ -128,31 +128,31 @@ class DynamicMixin:
         var_model = self.get_data(output='dense')
 
         # get the model order
-        model_order = self.attrs.get('model_order')
+        lags = self.attrs.get('lags')
 
         # predict the data by applying forward model
         predicted_data = np.zeros(data.shape)
         # which takes less loop iterations
-        if n_epochs > n_times - model_order:
-            for idx in range(1, model_order + 1):
-                for jdx in range(model_order, n_times):
+        if n_epochs > n_times - lags:
+            for idx in range(1, lags + 1):
+                for jdx in range(lags, n_times):
                     if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                        bp = var_model[jdx, :, (idx - 1)::lags]
                     else:
-                        bp = var_model[:, (idx - 1)::model_order]
+                        bp = var_model[:, (idx - 1)::lags]
                     predicted_data[:, :,
                                    jdx] += np.dot(data[:, :, jdx - idx], bp.T)
         else:
-            for idx in range(1, model_order + 1):
+            for idx in range(1, lags + 1):
                 for jdx in range(n_epochs):
                     if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1)::model_order]
+                        bp = var_model[jdx, :, (idx - 1)::lags]
                     else:
-                        bp = var_model[:, (idx - 1)::model_order]
-                    predicted_data[jdx, :, model_order:] += \
+                        bp = var_model[:, (idx - 1)::lags]
+                    predicted_data[jdx, :, lags:] += \
                         np.dot(
                             bp,
-                            data[jdx, :, (model_order - idx):(n_times - idx)]
+                            data[jdx, :, (lags - idx):(n_times - idx)]
                     )
 
         return predicted_data
@@ -183,7 +183,7 @@ class DynamicMixin:
             var_model = var_model.mean(axis=0)
 
         n_nodes = self.n_nodes
-        model_order = self.attrs.get('model_order')
+        lags = self.attrs.get('lags')
 
         # set noise function
         if noise_func is None:
@@ -193,29 +193,29 @@ class DynamicMixin:
 
                 return rng.normal(size=(1, n_nodes))
 
-        n = n_samples + 10 * model_order
+        n = n_samples + 10 * lags
 
         # simulated data
         data = np.zeros((n, n_nodes))
         res = np.zeros((n, n_nodes))
 
-        for jdx in range(model_order):
+        for jdx in range(lags):
             e = noise_func()
             res[jdx, :] = e
             data[jdx, :] = e
-        for jdx in range(model_order, n):
+        for jdx in range(lags, n):
             e = noise_func()
             res[jdx, :] = e
             data[jdx, :] = e
-            for idx in range(1, model_order + 1):
+            for idx in range(1, lags + 1):
                 data[jdx, :] += \
-                    var_model[:, (idx - 1)::model_order].dot(
+                    var_model[:, (idx - 1)::lags].dot(
                         data[jdx - idx, :]
                 )
 
-        # self.residuals = res[10 * model_order:, :, :].T
+        # self.residuals = res[10 * lags:, :, :].T
         # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
-        return data[10 * model_order:, :].transpose()
+        return data[10 * lags:, :].transpose()
 
 
 @fill_doc
@@ -529,9 +529,9 @@ class _Connectivity(DynamicMixin):
 
             # handle the case where model order is defined in VAR connectivity
             # and thus appends the connectivity matrices side by side, so the
-            # shape is N x N * model_order
-            model_order = self.attrs.get('model_order', 1)
-            new_shape.extend([self.n_nodes * model_order, self.n_nodes])
+            # shape is N x N * lags
+            lags = self.attrs.get('lags', 1)
+            new_shape.extend([self.n_nodes * lags, self.n_nodes])
             if 'freqs' in self.dims:
                 new_shape.append(len(self.coords['freqs']))
             if 'times' in self.dims:
