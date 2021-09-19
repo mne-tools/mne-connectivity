@@ -35,7 +35,8 @@ Bug
 API
 ~~~
 
-- Added ``h5netcdf`` as a requirement for saving connectivity data.
+- Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`).
+- Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regression` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`47`)
 
 Authors
 ~~~~~~~

@@ -71,10 +71,12 @@ jobs:
         - restore_cache:
             keys:
               - user-install-bin-cache
+              
         - run:
             name: Get Python running
             command: |
               ./tools/circleci_dependencies.sh
+
         - save_cache:
             key: pip-cache
             paths:
