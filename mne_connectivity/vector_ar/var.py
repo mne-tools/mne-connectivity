@@ -3,13 +3,13 @@ import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 
-from .utils import fill_doc
-from .base import Connectivity, EpochConnectivity
+from ..utils import fill_doc
+from ..base import Connectivity, EpochConnectivity
 
 
 @fill_doc
 def vector_auto_regression(
-        data, times=None, names=None, model_order=1, l2_reg=0.0,
+        data, times=None, names=None, lags=1, l2_reg=0.0,
         compute_fb_operator=False, model='dynamic', n_jobs=1, verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
@@ -23,7 +23,7 @@ def vector_auto_regression(
         ``None``, then ``times_used`` in the Connectivity will not be
         available.
     %(names)s
-    model_order : int | str, optional
+    lags : int | str, optional
         Autoregressive model order, by default 1.
     l2_reg : float, optional
         Ridge penalty (l2-regularization) parameter, by default 0.0.
@@ -117,8 +117,8 @@ def vector_auto_regression(
     n_epochs, n_nodes, _ = data.shape
 
     model_params = {
-        'model_order': model_order,
-        'l2_reg': l2_reg
+        'lags': lags,
+        'l2_reg': l2_reg,
     }
     if model == 'avg-epochs':
         # compute VAR model where each epoch is a
@@ -150,14 +150,14 @@ def vector_auto_regression(
         # is one sample of a time-varying multivariate time-series
         # linear system
         conn = _system_identification(
-            data=data, times=times, names=names, model_order=model_order,
+            data=data, times=times, names=names, lags=lags,
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
             verbose=verbose)
     return conn
 
 
-def _construct_var_eqns(data, model_order, l2_reg=None):
+def _construct_var_eqns(data, lags, l2_reg=None):
     """Construct VAR equation system (optionally with RLS constraint).
 
     This function was originally imported from ``scot``.
@@ -166,22 +166,24 @@ def _construct_var_eqns(data, model_order, l2_reg=None):
     ----------
     data : np.ndarray (n_epochs, n_signals, n_times)
         The multivariate data.
-    model_order : int
+    lags : int
         The order of the VAR model.
     l2_reg : float, optional
         The l2 penalty term for ridge regression, by default None, which
         will result in ordinary VAR equation.
+    lags : int
+        Not used.
 
     Returns
     -------
     X : np.ndarray
         The predictor multivariate time-series. This will have shape
-        ``(model_order * (n_times - model_order),
-        n_signals * model_order)``. See Notes.
+        ``(lags * (n_times - lags),
+        n_signals * lags)``. See Notes.
     Y : np.ndarray
         The predicted multivariate time-series. This will have shape
-        ``(model_order * (n_times - model_order),
-        n_signals * model_order)``. See Notes.
+        ``(lags * (n_times - lags),
+        n_signals * lags)``. See Notes.
 
     Notes
     -----
@@ -196,15 +198,15 @@ def _construct_var_eqns(data, model_order, l2_reg=None):
     n_epochs, n_signals, n_times = np.shape(data)
 
     # number of linear relations
-    n = (n_times - model_order) * n_epochs
-    rows = n if l2_reg is None else n + n_signals * model_order
+    n = (n_times - lags) * n_epochs
+    rows = n if l2_reg is None else n + n_signals * lags
 
     # Construct matrix X (predictor variables)
-    X = np.zeros((rows, n_signals * model_order))
+    X = np.zeros((rows, n_signals * lags))
     for i in range(n_signals):
-        for k in range(1, model_order + 1):
-            X[:n, i * model_order + k -
-                1] = np.reshape(data[:, i, model_order - k:-k].T, n)
+        for k in range(1, lags + 1):
+            X[:n, i * lags + k -
+                1] = np.reshape(data[:, i, lags - k:-k].T, n)
 
     if l2_reg is not None:
         np.fill_diagonal(X[n:, :], l2_reg)
@@ -212,7 +214,7 @@ def _construct_var_eqns(data, model_order, l2_reg=None):
     # Construct vectors yi (response variables for each channel i)
     Y = np.zeros((rows, n_signals))
     for i in range(n_signals):
-        Y[:n, i] = np.reshape(data[:, i, model_order:].T, n)
+        Y[:n, i] = np.reshape(data[:, i, lags:].T, n)
 
     return X, Y
 
@@ -274,7 +276,7 @@ def _construct_snapshots(snapshots, order, n_times):
     return snaps
 
 
-def _system_identification(data, times, names=None, model_order=1, l2_reg=0,
+def _system_identification(data, times, names=None, lags=1, l2_reg=0,
                            random_state=None, n_jobs=-1,
                            compute_fb_operator=False,
                            verbose=True):
@@ -293,13 +295,13 @@ def _system_identification(data, times, names=None, model_order=1, l2_reg=0,
 
     model_params = {
         'l2_reg': l2_reg,
-        'model_order': model_order,
+        'lags': lags,
         'random_state': random_state,
         'compute_fb_operator': compute_fb_operator
     }
 
     # compute the A matrix for all Epochs
-    A_mats = np.zeros((n_epochs, n_nodes * model_order, n_nodes))
+    A_mats = np.zeros((n_epochs, n_nodes * lags, n_nodes))
     if n_jobs == 1:
         for idx in tqdm(range(n_epochs)):
             A = _compute_lds_func(data[idx, ...], **model_params)
@@ -323,7 +325,7 @@ def _system_identification(data, times, names=None, model_order=1, l2_reg=0,
             adjmat = results[idx]
             # add additional order models in dynamic connectivity
             # along the first node axes
-            for jdx in range(model_order):
+            for jdx in range(lags):
                 A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
                     -n_nodes:, jdx * n_nodes: n_nodes * (jdx + 1)
                 ]
@@ -338,7 +340,7 @@ def _system_identification(data, times, names=None, model_order=1, l2_reg=0,
     return conn
 
 
-def _compute_lds_func(data, model_order, l2_reg, compute_fb_operator,
+def _compute_lds_func(data, lags, l2_reg, compute_fb_operator,
                       random_state):
     """Compute linear system using VAR model.
 
@@ -351,7 +353,7 @@ def _compute_lds_func(data, model_order, l2_reg, compute_fb_operator,
     # create large snapshot with time-lags of order specified by
     # ``order`` value
     snaps = _construct_snapshots(
-        data, order=model_order, n_times=n_times
+        data, order=lags, n_times=n_times
     )
 
     # get the time-shifted components of each
