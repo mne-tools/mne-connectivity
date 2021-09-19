@@ -285,7 +285,7 @@
 <span class="sd">            # row are observations, columns are variables</span>
 <span class="sd">            t = residuals.shape[0]</span>
 <span class="sd">            sampled_residuals = np.concatenate(</span>
-<span class="sd">                np.split(residuals[:, :, model_order:], t, 0),</span>
+<span class="sd">                np.split(residuals[:, :, lags:], t, 0),</span>
 <span class="sd">                axis=2</span>
 <span class="sd">            ).squeeze(0)</span>
 <span class="sd">            rescov = np.cov(sampled_residuals)</span>
@@ -308,31 +308,31 @@
         <span class="n">var_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
 
         <span class="c1"># get the model order</span>
-        <span class="n">model_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_order&#39;</span><span class="p">)</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lags&#39;</span><span class="p">)</span>
 
         <span class="c1"># predict the data by applying forward model</span>
         <span class="n">predicted_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="c1"># which takes less loop iterations</span>
-        <span class="k">if</span> <span class="n">n_epochs</span> <span class="o">&gt;</span> <span class="n">n_times</span> <span class="o">-</span> <span class="n">model_order</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model_order</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n_epochs</span> <span class="o">&gt;</span> <span class="n">n_times</span> <span class="o">-</span> <span class="n">lags</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">model_order</span><span class="p">]</span>
+                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">lags</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">model_order</span><span class="p">]</span>
+                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">lags</span><span class="p">]</span>
                     <span class="n">predicted_data</span><span class="p">[:,</span> <span class="p">:,</span>
                                    <span class="n">jdx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">jdx</span> <span class="o">-</span> <span class="n">idx</span><span class="p">],</span> <span class="n">bp</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">model_order</span><span class="p">]</span>
+                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">lags</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">model_order</span><span class="p">]</span>
-                    <span class="n">predicted_data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">model_order</span><span class="p">:]</span> <span class="o">+=</span> \
+                        <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">lags</span><span class="p">]</span>
+                    <span class="n">predicted_data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">lags</span><span class="p">:]</span> <span class="o">+=</span> \
                         <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
                             <span class="n">bp</span><span class="p">,</span>
-                            <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">model_order</span> <span class="o">-</span> <span class="n">idx</span><span class="p">):(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">idx</span><span class="p">)]</span>
+                            <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="n">idx</span><span class="p">):(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">idx</span><span class="p">)]</span>
                     <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">predicted_data</span>
@@ -363,7 +363,7 @@
             <span class="n">var_model</span> <span class="o">=</span> <span class="n">var_model</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="n">n_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span>
-        <span class="n">model_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_order&#39;</span><span class="p">)</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lags&#39;</span><span class="p">)</span>
 
         <span class="c1"># set noise function</span>
         <span class="k">if</span> <span class="n">noise_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -373,29 +373,29 @@
 
                 <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
 
-        <span class="n">n</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">model_order</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">lags</span>
 
         <span class="c1"># simulated data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model_order</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">noise_func</span><span class="p">()</span>
             <span class="n">res</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
             <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
-        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model_order</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">noise_func</span><span class="p">()</span>
             <span class="n">res</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
             <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> \
-                    <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">model_order</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)::</span><span class="n">lags</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
                         <span class="n">data</span><span class="p">[</span><span class="n">jdx</span> <span class="o">-</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
                 <span class="p">)</span>
 
-        <span class="c1"># self.residuals = res[10 * model_order:, :, :].T</span>
+        <span class="c1"># self.residuals = res[10 * lags:, :, :].T</span>
         <span class="c1"># self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)</span>
-        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">model_order</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">lags</span><span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
 
 <span class="nd">@fill_doc</span>
@@ -709,9 +709,9 @@
 
             <span class="c1"># handle the case where model order is defined in VAR connectivity</span>
             <span class="c1"># and thus appends the connectivity matrices side by side, so the</span>
-            <span class="c1"># shape is N x N * model_order</span>
-            <span class="n">model_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_order&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="n">model_order</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">])</span>
+            <span class="c1"># shape is N x N * lags</span>
+            <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lags&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">])</span>
             <span class="k">if</span> <span class="s1">&#39;freqs&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s1">&#39;freqs&#39;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="s1">&#39;times&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
@@ -1139,7 +1139,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-15.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-19.<br/>
 </p>
     </div>
     
