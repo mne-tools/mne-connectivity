@@ -6,12 +6,12 @@ from tqdm import tqdm
 from mne.utils import _check_option, logger
 
 from ..utils import fill_doc
-from ..base import Connectivity, EpochConnectivity
+from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
 
 
 @fill_doc
 def vector_auto_regression(
-        data, times=None, names=None, lags=1, trend='n', l2_reg=0.0,
+        data, times=None, names=None, lags=1, l2_reg=0.0,
         compute_fb_operator=False, model='dynamic', n_jobs=1, verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
@@ -27,14 +27,6 @@ def vector_auto_regression(
     %(names)s
     lags : int, optional
         Autoregressive model order, by default 1.
-    trend : str {'n', 'c', 't', 'ct', 'ctt'}
-        The trend to add.
-
-        * 'n' add no trend.
-        * 'c' add constant only.
-        * 't' add trend only.
-        * 'ct' add constant and linear trend.
-        * 'ctt' add constant and linear and quadratic trend.
     l2_reg : float, optional
         Ridge penalty (l2-regularization) parameter, by default 0.0.
     compute_fb_operator : bool
@@ -170,7 +162,7 @@ def vector_auto_regression(
         # is one sample of a time-varying multivariate time-series
         # linear system
         conn = _system_identification(
-            data=data, times=times, names=names, lags=lags, trend=trend,
+            data=data, times=times, names=names, lags=lags, trend='n',
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator)
     return conn
@@ -260,7 +252,7 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
     }
 
     # storage for the A matrices, residuals and sum of squared estimated errors
-    A_mats = np.zeros((n_epochs, n_nodes * lags, n_nodes))
+    A_mats = np.zeros((n_epochs, n_nodes, n_nodes, lags))
     residuals = np.zeros((n_epochs, n_nodes, n_times - lags))
     sse_matrix = np.zeros((n_epochs, n_nodes, n_nodes))
 
@@ -272,7 +264,7 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
             # add additional order models in dynamic connectivity
             # along the first node axes
             for jdx in range(lags):
-                A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
+                A_mats[idx, :, :, jdx] = adjmat[
                     jdx * n_nodes: n_nodes * (jdx + 1), :
                 ].T
             residuals[idx, ...] = resid.T
@@ -300,17 +292,35 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
             # add additional order models in dynamic connectivity
             # along the first node axes
             for jdx in range(lags):
-                A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
+                A_mats[idx, :, :, jdx] = adjmat[
                     jdx * n_nodes: n_nodes * (jdx + 1), :
                 ].T
+                # A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
+                #     jdx * n_nodes: n_nodes * (jdx + 1), :
+                # ].T
+
+    # ravel the matrix
+    if lags == 1:
+        A_mats = A_mats.reshape((n_epochs, -1))
+    else:
+        A_mats = A_mats.reshape((n_epochs, -1, lags))
 
     # create connectivity
-    A_mats = A_mats.reshape((n_epochs, -1))
-    conn = EpochConnectivity(data=A_mats, n_nodes=n_nodes, names=names,
-                             n_epochs_used=n_epochs,
-                             times_used=times,
-                             method='Time-varying LDS',
-                             **model_params)
+    if lags > 1:
+        conn = EpochTemporalConnectivity(data=A_mats,
+                                         times=list(range(lags)),
+                                         n_nodes=n_nodes, names=names,
+                                         n_epochs_used=n_epochs,
+                                         times_used=times,
+                                         method='Time-varying VAR(p)',
+                                         **model_params)
+    else:
+        conn = EpochConnectivity(data=A_mats, n_nodes=n_nodes,
+                                 names=names,
+                                 n_epochs_used=n_epochs,
+                                 times_used=times,
+                                 method='Time-varying VAR(1)',
+                                 **model_params)
     return conn
 
 

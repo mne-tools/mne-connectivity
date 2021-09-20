@@ -4,7 +4,7 @@ from collections import defaultdict
 from .var import _estimate_var, _get_trendorder
 
 
-def select_order(X, Y=None, maxlags=None, trend="c"):
+def select_order(X, Y=None, maxlags=None, trend="n"):
     """
     Compute lag order selections based on each of the available information
     criteria
@@ -23,6 +23,7 @@ def select_order(X, Y=None, maxlags=None, trend="c"):
         * "c" - constant term
         * "ct" - constant and linear term
         * "ctt" - constant, linear, and quadratic term
+        Only ``n`` is currently implemented.
 
     Returns
     -------
@@ -33,6 +34,9 @@ def select_order(X, Y=None, maxlags=None, trend="c"):
         hqic : Hannan-Quinn
         bic : Bayesian a.k.a. Schwarz
     """
+    if trend != 'n':
+        raise RuntimeError(f'Trend {trend} is not implemented for yet.')
+
     # get the number of observations
     n_total_obs, n_equations = X.shape
 

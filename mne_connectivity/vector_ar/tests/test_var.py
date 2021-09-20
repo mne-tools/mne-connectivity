@@ -91,10 +91,8 @@ def create_noisy_data(
     ['lags', 'trend'],
     [
         (1, 'n'),
-        # (1, 'c'), (1, '')
         (2, 'n'),
         (3, 'n'),
-        # (2, 'c')
     ]
 )
 @pytest.mark.filterwarnings(warning_str['sm_depr'])
@@ -103,6 +101,7 @@ def test_regression_against_statsmodels(lags, trend):
     from statsmodels.tsa.vector_ar.var_model import VAR
     sample_data, _, sample_A = create_noisy_data(
         add_noise=False)
+    block_size = sample_data.shape[0]
 
     # statsmodels feeds in (n_samples, n_channels)
     sm_var = VAR(endog=sample_data.T)
@@ -112,19 +111,26 @@ def test_regression_against_statsmodels(lags, trend):
     sm_A = sm_params.params.T
 
     # compute the model
-    model = vector_auto_regression(sample_data[np.newaxis, ...], lags=lags,
-                                   trend=trend)
+    model = vector_auto_regression(sample_data[np.newaxis, ...], lags=lags)
 
     # the models should match against the sample A matrix without noise
-    if lags == 1:
+    if lags == 1 and trend == 'n':
         assert_array_almost_equal(
             model.get_data(output='dense').squeeze(),
             sample_A)
 
     # the models should match each other
-    assert_array_almost_equal(
-        model.get_data().squeeze(),
-        sm_A.squeeze())
+    if lags == 1:
+        print(model.get_data().shape)
+        print(sm_A.shape)
+        assert_array_almost_equal(
+            model.get_data().squeeze(),
+            sm_A.squeeze())
+    else:
+        for idx in range(lags):
+            assert_array_almost_equal(
+                model.get_data().squeeze()[..., idx],
+                sm_A.squeeze()[:, idx * block_size: (idx + 1) * block_size])
 
 
 @pytest.mark.filterwarnings(warning_str['sm_depr'])
@@ -142,7 +148,7 @@ def test_regression_select_order(lags, trend):
     sm_selected_orders = results.selected_orders
 
     # compare with our version
-    selected_orders = select_order(X=x, maxlags=lags, trend=trend)
+    selected_orders = select_order(X=x, maxlags=lags)
     assert_object_equal(sm_selected_orders, selected_orders)
 
 

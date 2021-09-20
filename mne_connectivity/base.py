@@ -9,6 +9,7 @@ from mne.utils import (_check_combine, _check_option, _validate_type,
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
+from mne_connectivity.vector_ar.utils import _block_companion
 
 
 class SpectralMixin:
@@ -78,6 +79,24 @@ class EpochMixin:
 
 
 class DynamicMixin:
+
+    @property
+    def companion(self):
+        """Generate block companion matrix"""
+        lags = self.attrs.get('lags')
+        if lags is None:
+            raise RuntimeError('Companion matrix form is only defined '
+                               'for the vector_auto_regressive models.')
+
+        data = self.get_data()
+        arrs = []
+        for idx in range(self.n_epochs):
+            blocks = _block_companion(
+                [data[idx, ..., jdx]for jdx in range(lags)]
+            )
+            arrs.append(blocks)
+        return arrs
+
     def predict(self, data):
         """Predict samples on actual data.
 
@@ -530,8 +549,7 @@ class _Connectivity(DynamicMixin):
             # handle the case where model order is defined in VAR connectivity
             # and thus appends the connectivity matrices side by side, so the
             # shape is N x N * lags
-            lags = self.attrs.get('lags', 1)
-            new_shape.extend([self.n_nodes * lags, self.n_nodes])
+            new_shape.extend([self.n_nodes, self.n_nodes])
             if 'freqs' in self.dims:
                 new_shape.append(len(self.coords['freqs']))
             if 'times' in self.dims:
