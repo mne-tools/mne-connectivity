@@ -9,7 +9,6 @@ from mne.utils import (_check_combine, _check_option, _validate_type,
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
-from mne_connectivity.vector_ar.utils import _block_companion
 
 
 class SpectralMixin:
@@ -83,6 +82,8 @@ class DynamicMixin:
     @property
     def companion(self):
         """Generate block companion matrix"""
+        from mne_connectivity.vector_ar.utils import _block_companion
+
         lags = self.attrs.get('lags')
         if lags is None:
             raise RuntimeError('Companion matrix form is only defined '
