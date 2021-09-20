@@ -81,7 +81,7 @@ class DynamicMixin:
 
     @property
     def companion(self):
-        """Generate block companion matrix"""
+        """Generate block companion matrix."""
         from mne_connectivity.vector_ar.utils import _block_companion
 
         lags = self.attrs.get('lags')

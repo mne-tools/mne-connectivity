@@ -25,7 +25,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Adding symmetric orthogonalization via :func:`mne_connectivity.symmetric_orth`, by `Eric Larson`_ (:gh:`36`)
-- Improved RAM usage for :func:`mne_connectivity.vector_auto_regressive` and added ability to model a trend in the data, by `Adam Li`_ (:gh:`46`)
+- Improved RAM usage for :func:`mne_connectivity.vector_auto_regression` by leveraging code from ``statsmodels``, by `Adam Li`_ (:gh:`46`)
 - Added :func:`mne_connectivity.select_order` for helping to select VAR order using information criterion, by `Adam Li`_ (:gh:`46`)
 
 Bug

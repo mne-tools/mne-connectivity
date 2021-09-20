@@ -4,36 +4,44 @@ from collections import defaultdict
 from .var import _estimate_var, _get_trendorder
 
 
-def select_order(X, Y=None, maxlags=None, trend="n"):
-    """
-    Compute lag order selections based on each of the available information
-    criteria
+def select_order(X, maxlags=None, trend="n"):
+    """Compute lag order selections based on information criterion.
+
+    Selects a lag order based on each of the available information
+    criteria.
 
     Parameters
     ----------
     X : np.ndarray (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
-    Y : np.ndarray (n_ytimes, n_ychannels), optional
-        Exogenous variable that is additionally passed in to influence the
-        endogenous variable.
     maxlags : int
-        if None, defaults to 12 * (nobs/100.)**(1./4)
+        The maximum number of lags to check. Will then check from
+        ``1`` to ``maxlags``. If None, defaults to
+        ``12 * (n_times / 100.)**(1./4)``.
     trend : str {"n", "c", "ct", "ctt"}
         * "n" - no deterministic terms
         * "c" - constant term
         * "ct" - constant and linear term
         * "ctt" - constant, linear, and quadratic term
+
         Only ``n`` is currently implemented.
 
     Returns
     -------
     selected_orders : dict
-        The selected orders based on the information criterion.
-        aic : Akaike
-        fpe : Final prediction error
-        hqic : Hannan-Quinn
-        bic : Bayesian a.k.a. Schwarz
+        The selected orders based on the following information criterion.
+        * aic : Akaike
+        * fpe : Final prediction error
+        * hqic : Hannan-Quinn
+        * bic : Bayesian a.k.a. Schwarz
+
+        The selected order is then stored as the value.
     """
+    # endogenous variable
+    # included here from statsmodels, but we will not incorporate
+    # that into our modeling.
+    Y = None
+
     if trend != 'n':
         raise RuntimeError(f'Trend {trend} is not implemented for yet.')
 
@@ -67,7 +75,7 @@ def select_order(X, Y=None, maxlags=None, trend="n"):
         # exclude some periods to same amount of data used for each lag
         # order
         params, resid, sigma_u = _estimate_var(
-            X, lags=p, Y=Y, offset=maxlags - p, trend=trend)
+            X, lags=p, Y=None, offset=maxlags - p, trend=trend)
 
         info_criteria = _info_criteria(params, X, exog=Y, sigma_u=sigma_u,
                                        lags=p, trend=trend)
