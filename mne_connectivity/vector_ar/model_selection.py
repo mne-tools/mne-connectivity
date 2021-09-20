@@ -1,7 +1,7 @@
 import numpy as np
 from collections import defaultdict
 
-from .var_model import _estimate_var, _get_trendorder
+from .var import _estimate_var, _get_trendorder
 
 
 def select_order(X, Y=None, maxlags=None, trend="c"):

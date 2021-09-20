@@ -261,15 +261,21 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
 
     # storage for the A matrices, residuals and sum of squared estimated errors
     A_mats = np.zeros((n_epochs, n_nodes * lags, n_nodes))
-    residuals = np.zeros((n_epochs, n_nodes, n_times))
+    residuals = np.zeros((n_epochs, n_nodes, n_times - lags))
     sse_matrix = np.zeros((n_epochs, n_nodes, n_nodes))
 
     # compute the A matrix for all Epochs
     if n_jobs == 1:
         for idx in tqdm(range(n_epochs)):
-            A, resid, omega = _compute_lds_func(data[idx, ...], **model_params)
-            A_mats[idx, ...] = A
-            residuals[idx, ...] = resid
+            adjmat, resid, omega = _compute_lds_func(
+                data[idx, ...], **model_params)
+            # add additional order models in dynamic connectivity
+            # along the first node axes
+            for jdx in range(lags):
+                A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
+                    jdx * n_nodes: n_nodes * (jdx + 1), :
+                ].T
+            residuals[idx, ...] = resid.T
             sse_matrix[idx, ...] = omega
     else:
         try:
@@ -288,15 +294,15 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
         )
         for idx in range(len(results)):
             adjmat, resid, omega = results[idx]
-            residuals[idx, ...] = resid
+            residuals[idx, ...] = resid.T
             sse_matrix[idx, ...] = omega
 
             # add additional order models in dynamic connectivity
             # along the first node axes
             for jdx in range(lags):
                 A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
-                    -n_nodes:, jdx * n_nodes: n_nodes * (jdx + 1)
-                ]
+                    jdx * n_nodes: n_nodes * (jdx + 1), :
+                ].T
 
     # create connectivity
     A_mats = A_mats.reshape((n_epochs, -1))
@@ -312,6 +318,20 @@ def _compute_lds_func(data, lags, l2_reg, trend, compute_fb_operator):
     """Compute linear system using VAR model.
 
     Allows for parallelization over epochs.
+
+    Note
+    ----
+    The ``_estimate_var`` function returns a set of A matrices that represent
+    the system:
+
+        X(t+1) = X(t) A
+
+    Whereas we would like the system:
+
+        X(t+1) = A X(t)
+
+    Therefore, a transpose is needed. If there are additional lags, then each
+    of these matrices need to be transposed.
     """
     # make sure data is T x K (samples, coefficients) to make use of underlying
     # functions
@@ -321,14 +341,12 @@ def _compute_lds_func(data, lags, l2_reg, trend, compute_fb_operator):
     X = data[:, :]
     A, resid, omega = _estimate_var(X, lags=lags, offset=0, trend=trend,
                                     l2_reg=l2_reg)
-    A = A.T  # estimate_var returns a transposed version of the matrix
 
     if compute_fb_operator:
         # compute backward linear operator
         # original method
         back_A, back_resid, back_omega = _estimate_var(
             X[::-1, :], lags=lags, offset=0, trend=trend, l2_reg=l2_reg)
-        back_A = back_A.T
         A = sqrtm(A.dot(np.linalg.inv(back_A)))
         A = A.real  # remove numerical noise
 

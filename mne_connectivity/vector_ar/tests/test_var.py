@@ -92,8 +92,8 @@ def create_noisy_data(
     [
         (1, 'n'),
         # (1, 'c'), (1, '')
-        # (2, 'n'),
-        # (3, 'n'),
+        (2, 'n'),
+        (3, 'n'),
         # (2, 'c')
     ]
 )
@@ -116,9 +116,10 @@ def test_regression_against_statsmodels(lags, trend):
                                    trend=trend)
 
     # the models should match against the sample A matrix without noise
-    assert_array_almost_equal(
-        model.get_data(output='dense').squeeze(),
-        sample_A)
+    if lags == 1:
+        assert_array_almost_equal(
+            model.get_data(output='dense').squeeze(),
+            sample_A)
 
     # the models should match each other
     assert_array_almost_equal(
