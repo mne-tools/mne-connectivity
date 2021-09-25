@@ -88,7 +88,7 @@ class DynamicMixin:
     @property
     def companion(self):
         """Generate block companion matrix.
-        
+
         Returns the data matrix if the model is VAR(1).
         """
         from mne_connectivity.vector_ar.utils import _block_companion
