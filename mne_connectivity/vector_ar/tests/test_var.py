@@ -52,7 +52,7 @@ def create_noisy_data(
 
     Returns
     -------
-    sample_data : np.ndarray (n_channels, n_samples)
+    sample_data : ndarray, shape (n_channels, n_samples)
         Observed sample data. Possibly with noise.
     sample_eigs : np.ndarray
         The true eigenvalues of the system.

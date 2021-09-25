@@ -83,14 +83,13 @@ def select_order(X, maxlags=None, trend="n"):
             ics[k].append(v)
 
     selected_orders = dict(
-        (k, np.array(v).argmin() + p_min) for k, v in ics.items()
+        (k, np.argmin(v) + p_min) for k, v in ics.items()
     )
     return selected_orders
 
 
 def _logdet_symm(m, check_symm=False):
-    """
-    Return log(det(m)) asserting positive definiteness of m.
+    """Return log(det(m)) asserting positive definiteness of m.
 
     Parameters
     ----------
