@@ -75,10 +75,10 @@ def select_order(X, maxlags=None, trend="n"):
     for p in range(p_min, maxlags + 1):
         # exclude some periods to same amount of data used for each lag
         # order
-        params, resid, sigma_u = _estimate_var(
-            X, lags=p, Y=None, offset=maxlags - p, trend=trend)
+        params, _, sigma_u = _estimate_var(
+            X, lags=p, offset=maxlags - p, trend=trend)
 
-        info_criteria = _info_criteria(params, X, exog=Y, sigma_u=sigma_u,
+        info_criteria = _info_criteria(params, X, sigma_u=sigma_u,
                                        lags=p, trend=trend)
         for k, v in info_criteria.items():
             ics[k].append(v)
