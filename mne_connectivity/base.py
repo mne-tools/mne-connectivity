@@ -78,10 +78,19 @@ class EpochMixin:
 
 
 class DynamicMixin:
+    def is_stable(self):
+        companion_mat = self.companion
+        return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.
+
+    def eigvals(self):
+        return np.linalg.eigvals(self.companion)
 
     @property
     def companion(self):
-        """Generate block companion matrix."""
+        """Generate block companion matrix.
+        
+        Returns the data matrix if the model is VAR(1).
+        """
         from mne_connectivity.vector_ar.utils import _block_companion
 
         lags = self.attrs.get('lags')
@@ -90,6 +99,9 @@ class DynamicMixin:
                                'for the vector_auto_regressive models.')
 
         data = self.get_data()
+        if lags == 1:
+            return data
+
         arrs = []
         for idx in range(self.n_epochs):
             blocks = _block_companion(

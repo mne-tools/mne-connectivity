@@ -1,5 +1,6 @@
-import numpy as np
 from collections import defaultdict
+import numpy as np
+from scipy import linalg
 
 from .var import _estimate_var, _get_trendorder
 
@@ -12,7 +13,7 @@ def select_order(X, maxlags=None, trend="n"):
 
     Parameters
     ----------
-    X : np.ndarray (n_times, n_channels)
+    X : np.ndarray, shape (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
     maxlags : int
         The maximum number of lags to check. Will then check from
@@ -88,12 +89,12 @@ def select_order(X, maxlags=None, trend="n"):
     return selected_orders
 
 
-def _logdet_symm(m, check_symm=False):
+def _logdet_symm(m):
     """Return log(det(m)) asserting positive definiteness of m.
 
     Parameters
     ----------
-    m : array_like (N, N)
+    m : np.ndarray, shape (N, N)
         2d array that is positive-definite (and symmetric)
 
     Returns
@@ -101,10 +102,6 @@ def _logdet_symm(m, check_symm=False):
     logdet : float
         The log-determinant of m.
     """
-    from scipy import linalg
-    if check_symm:
-        if not np.all(m == m.T):  # would be nice to short-circuit check
-            raise ValueError("m is not symmetric.")
     c, _ = linalg.cho_factor(m, lower=True)
     return 2 * np.sum(np.log(c.diagonal()))
 
@@ -118,7 +115,7 @@ def _sigma_u_mle(df_resid, nobs, sigma_u):
         Number of observations minus number of estimated parameters.
     nobs : int
         Number of observations/samples in the dataset.
-    sigma_u : np.ndarray (n_channels, n_channels)
+    sigma_u : np.ndarray, shape (n_channels, n_channels)
         Estimate of white noise process variance
 
     Returns
@@ -126,23 +123,19 @@ def _sigma_u_mle(df_resid, nobs, sigma_u):
     sigma_u_mle : float
         The biased MLE of noise process covariance.
     """
-    if not df_resid:
-        return np.zeros_like(sigma_u)
     return sigma_u * df_resid / nobs
 
 
-def _info_criteria(params, X, exog, sigma_u, lags, trend):
+def _info_criteria(params, X, sigma_u, lags, trend):
     """Compute information criteria for lagorder selection.
 
     Parameters
     ----------
-    params : np.ndarray (lags, n_channels, n_channels)
+    params : np.ndarray, shape (lags, n_channels, n_channels)
         The coefficient state matrix that governs the linear system (VAR).
     X : np.ndarray (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
-    exog : [type]
-        [description]
-    sigma_u : np.ndarray (n_channels, n_channels)
+    sigma_u : np.ndarray, shape (n_channels, n_channels)
         Estimate of white noise process variance
     lags : int
         Lags of the endogenous variable.
@@ -164,12 +157,6 @@ def _info_criteria(params, X, exog, sigma_u, lags, trend):
     k_ar = lags
     endog_start = k_trend
 
-    # construct coefficient matrices
-    # Each matrix needs to be transposed
-    if exog is not None:
-        k_exog_user = exog.shape[1]
-        endog_start += k_exog_user
-
     # compute the number of free parameters for degrees of freedom
     coefs_exog = params[:endog_start].T
     k_exog = coefs_exog.shape[1]
@@ -178,10 +165,7 @@ def _info_criteria(params, X, exog, sigma_u, lags, trend):
     # compute the
     df_model = neqs * k_ar + k_exog
     df_resid = nobs - df_model
-    if df_resid:
-        ld = _logdet_symm(_sigma_u_mle(df_resid, nobs, sigma_u))
-    else:
-        ld = -np.inf
+    ld = _logdet_symm(_sigma_u_mle(df_resid, nobs, sigma_u))
 
     # See Lütkepohl pp. 146-150
     aic = ld + (2.0 / nobs) * free_params

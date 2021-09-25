@@ -27,7 +27,6 @@ def bivariate_var_data():
 
 def create_noisy_data(
     add_noise,
-    asymmetric=False,
     sigma=1e-4,
     m=100,
     random_state=12345,
@@ -47,8 +46,12 @@ def create_noisy_data(
         The number of samples.
     return_A : bool
         Whether to return the A matrix
-    random_state : int
-        The random state to set.
+    random_state : None | int | instance of ~numpy.random.RandomState
+        If ``random_state`` is an :class:`int`, it will be used as a seed for
+        :class:`~numpy.random.RandomState`. If ``None``, the seed will be
+        obtained from the operating system (see
+        :class:`~numpy.random.RandomState` for details). Default is
+        ``None``.
 
     Returns
     -------
@@ -64,10 +67,7 @@ def create_noisy_data(
 
     mu = 0.0
     noise = rng.normal(mu, sigma, m)  # gaussian noise
-    if asymmetric:
-        A = np.array([[1.0, 1.5], [-1.1, 2.0]])
-    else:
-        A = np.array([[1.0, 1.0], [-1.0, 2.0]])
+    A = np.array([[1.0, 1.0], [-1.0, 2.0]])
     A /= np.sqrt(3)
 
     # compute true eigenvalues
@@ -86,7 +86,7 @@ def create_noisy_data(
     return X, true_eigvals, A
 
 
-# XXX: get this to work with all lags and trends
+# XXX: get this to work with all trends
 @pytest.mark.parametrize(
     ['lags', 'trend'],
     [
@@ -121,8 +121,6 @@ def test_regression_against_statsmodels(lags, trend):
 
     # the models should match each other
     if lags == 1:
-        print(model.get_data().shape)
-        print(sm_A.shape)
         assert_array_almost_equal(
             model.get_data().squeeze(),
             sm_A.squeeze())
@@ -131,6 +129,10 @@ def test_regression_against_statsmodels(lags, trend):
             assert_array_almost_equal(
                 model.get_data().squeeze()[..., idx],
                 sm_A.squeeze()[:, idx * block_size: (idx + 1) * block_size])
+
+    if lags == 3:
+        # the regressed model should be stable for sufficient lags
+        assert model.is_stable()
 
 
 @pytest.mark.filterwarnings(warning_str['sm_depr'])
@@ -186,6 +188,26 @@ def test_regression():
                               sample_A)
 
 
+def test_var_debiased():
+    """Test forward backward operator."""
+    sample_data, sample_eigs, _ = create_noisy_data(
+        add_noise=True, sigma=1e-2)
+
+    # test without forward backward de-biasing
+    model = vector_auto_regression(sample_data[np.newaxis, ...])
+
+    # test with forward backward de-biasing
+    model_fb = vector_auto_regression(sample_data[np.newaxis, ...],
+                                      compute_fb_operator=True)
+
+    # manually solve things using pseudoinverse
+    eigvals = model.eigvals()
+    eigvals_fb = model_fb.eigvals()
+
+    assert np.linalg.norm(eigvals - sample_eigs) > \
+        np.linalg.norm(eigvals_fb - sample_eigs)
+
+
 @pytest.mark.parametrize('l2_reg', np.linspace(0, 5, 10))
 def test_var_l2_reg(l2_reg):
     """Test l2 regularization works as expected."""
@@ -194,7 +216,6 @@ def test_var_l2_reg(l2_reg):
 
     # test l2 regularization
     model = vector_auto_regression(sample_data[np.newaxis, ...], l2_reg=l2_reg)
-    print(model.get_data().shape)
 
     # manually solve things using pseudoinverse
     sample_data = sample_data.T
