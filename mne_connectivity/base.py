@@ -91,7 +91,7 @@ class DynamicMixin:
 
         Returns the data matrix if the model is VAR(1).
         """
-        from mne_connectivity.vector_ar.utils import _block_companion
+        from .vector_ar.utils import _block_companion
 
         lags = self.attrs.get('lags')
         if lags is None:
