@@ -100,7 +100,7 @@ def test_regression_against_statsmodels(lags, trend):
     """Test regression against any statsmodels changes in VAR model."""
     from statsmodels.tsa.vector_ar.var_model import VAR
     sample_data, _, sample_A = create_noisy_data(
-        add_noise=False)
+        add_noise=False, random_state=12345)
     block_size = sample_data.shape[0]
 
     # statsmodels feeds in (n_samples, n_channels)
