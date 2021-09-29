@@ -94,10 +94,6 @@ class DynamicMixin:
         from .vector_ar.utils import _block_companion
 
         lags = self.attrs.get('lags')
-        if lags is None:
-            raise RuntimeError('Companion matrix form is only defined '
-                               'for the vector_auto_regressive models.')
-
         data = self.get_data()
         if lags == 1:
             return data

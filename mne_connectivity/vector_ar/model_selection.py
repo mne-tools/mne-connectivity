@@ -5,7 +5,7 @@ from scipy import linalg
 from .var import _estimate_var, _get_trendorder
 
 
-def select_order(X, maxlags=None, trend="n"):
+def select_order(X, maxlags=None):
     """Compute lag order selections based on information criterion.
 
     Selects a lag order based on each of the available information
@@ -19,13 +19,6 @@ def select_order(X, maxlags=None, trend="n"):
         The maximum number of lags to check. Will then check from
         ``1`` to ``maxlags``. If None, defaults to
         ``12 * (n_times / 100.)**(1./4)``.
-    trend : str {"n", "c", "ct", "ctt"}
-        * "n" - no deterministic terms
-        * "c" - constant term
-        * "ct" - constant and linear term
-        * "ctt" - constant, linear, and quadratic term
-
-        Only ``n`` is currently implemented.
 
     Returns
     -------
@@ -38,18 +31,13 @@ def select_order(X, maxlags=None, trend="n"):
 
         The selected order is then stored as the value.
     """
-    # endogenous variable
-    # included here from statsmodels, but we will not incorporate
-    # that into our modeling.
-    Y = None
-
     if trend != 'n':
         raise RuntimeError(f'Trend {trend} is not implemented for yet.')
 
     # get the number of observations
     n_total_obs, n_equations = X.shape
 
-    ntrend = len(trend) if trend.startswith("c") else 0
+    ntrend = 0
     max_estimable = (n_total_obs - n_equations - ntrend) // (1 + n_equations)
     if maxlags is None:
         maxlags = int(round(12 * (n_total_obs / 100.0) ** (1 / 4.0)))
@@ -71,7 +59,7 @@ def select_order(X, maxlags=None, trend="n"):
     # define dictionary of information criterions
     ics = defaultdict(list)
 
-    p_min = 0 if Y is not None or trend != "n" else 1
+    p_min = 1
     for p in range(p_min, maxlags + 1):
         # exclude some periods to same amount of data used for each lag
         # order
@@ -171,9 +159,6 @@ def _info_criteria(params, X, sigma_u, lags, trend):
     aic = ld + (2.0 / nobs) * free_params
     bic = ld + (np.log(nobs) / nobs) * free_params
     hqic = ld + (2.0 * np.log(np.log(nobs)) / nobs) * free_params
-    if df_resid:
-        fpe = ((nobs + df_model) / df_resid) ** neqs * np.exp(ld)
-    else:
-        fpe = np.inf
+    fpe = ((nobs + df_model) / df_resid) ** neqs * np.exp(ld)
 
     return {"aic": aic, "bic": bic, "hqic": hqic, "fpe": fpe}

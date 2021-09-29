@@ -247,7 +247,6 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
         'l2_reg': l2_reg,
         'lags': lags,
         'trend': trend,
-        # 'random_state': random_state,
         'compute_fb_operator': compute_fb_operator
     }
 
@@ -295,9 +294,6 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
                 A_mats[idx, :, :, jdx] = adjmat[
                     jdx * n_nodes: n_nodes * (jdx + 1), :
                 ].T
-                # A_mats[idx, jdx * n_nodes: n_nodes * (jdx + 1), :] = adjmat[
-                #     jdx * n_nodes: n_nodes * (jdx + 1), :
-                # ].T
 
     # ravel the matrix
     if lags == 1:
@@ -363,12 +359,7 @@ def _compute_lds_func(data, lags, l2_reg, trend, compute_fb_operator):
     return A, resid, omega
 
 
-def _get_trendorder(trend='n'):
-    """Trend order to stay in line with statsmodels API."""
-    return 0
-
-
-def _estimate_var(X, lags, offset=0, trend='n', l2_reg=0):
+def _estimate_var(X, lags, offset=0, l2_reg=0):
     """Estimate a VAR model.
 
     Parameters
@@ -380,13 +371,6 @@ def _estimate_var(X, lags, offset=0, trend='n', l2_reg=0):
     offset : int, optional
         Periods to drop from the beginning of the time-series, by default 0.
         Used for order selection, so it's an apples-to-apples comparison
-    trend : str {"c", "ct", "ctt", "n"}
-        "c" - add constant
-        "ct" - constant and trend
-        "ctt" - constant, linear and quadratic trend
-        "n" - co constant, no trend
-        Note that these are prepended to the columns of the dataset.
-        By default 'n'
     l2_reg : int
         The amount of l2-regularization to use. Default of 0.
 
@@ -404,9 +388,6 @@ def _estimate_var(X, lags, offset=0, trend='n', l2_reg=0):
     This function was originally copied from statsmodels VAR model computation
     and modified for MNE-connectivity usage.
     """
-    # determine the type of trend
-    k_trend = _get_trendorder(trend)
-
     # get the number of equations we want
     n_equations = X.shape[1]
 
@@ -418,18 +399,9 @@ def _estimate_var(X, lags, offset=0, trend='n', l2_reg=0):
     # Note that the pure endogenous VAR model with OLS
     # makes this matrix a (n_samples - lags, n_channels * lags) matrix
     temp_z = _get_var_predictor_matrix(
-        endog, lags, trend=trend
+        endog, lags
     )
     z = temp_z
-
-    # the following modification of z is necessary to get the same results
-    # as JMulTi for the constant-term-parameter...
-    for i in range(k_trend):
-        if (np.diff(z[:, i]) == 1).all():  # modify the trend-column
-            z[:, i] += lags
-        # make the same adjustment for the quadratic term
-        if (np.diff(np.sqrt(z[:, i])) == 1).all():
-            z[:, i] = (np.sqrt(z[:, i]) + lags) ** 2
 
     y_sample = endog[lags:]
 
@@ -445,19 +417,16 @@ def _estimate_var(X, lags, offset=0, trend='n', l2_reg=0):
 
     # compute the degrees of freedom in residual calculation
     avobs = len(y_sample)
-    df_resid = avobs - (n_equations * lags + k_trend)
+    df_resid = avobs - (n_equations * lags)
 
     # K x K sse
     sse = np.dot(resid.T, resid)
-    if df_resid:
-        omega = sse / df_resid
-    else:
-        omega = np.full_like(sse, np.nan)
+    omega = sse / df_resid
 
     return params, resid, omega
 
 
-def _get_var_predictor_matrix(y, lags, trend='c'):
+def _get_var_predictor_matrix(y, lags):
     """Make predictor matrix for VAR(p) process, Z.
 
     Parameters
@@ -466,8 +435,6 @@ def _get_var_predictor_matrix(y, lags, trend='c'):
         The passed in data array.
     lags : int
         The number of lags.
-    trend : str, optional
-        [description], by default 'c'
 
     Returns
     -------
