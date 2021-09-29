@@ -131,8 +131,11 @@ def test_regression_against_statsmodels(lags, trend):
                 sm_A.squeeze()[:, idx * block_size: (idx + 1) * block_size])
 
     if lags == 3:
-        # the regressed model should be stable for sufficient lags
-        assert model.is_stable()
+        if np.max(np.abs(np.linalg.eigvals(model.companion))) < 1.:
+            # the regressed model should be stable for sufficient lags
+            assert model.is_stable()
+        else:
+            assert not model.is_stable()
 
 
 @pytest.mark.filterwarnings(warning_str['sm_depr'])
