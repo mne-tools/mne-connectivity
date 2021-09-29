@@ -162,7 +162,7 @@ def vector_auto_regression(
         # is one sample of a time-varying multivariate time-series
         # linear system
         conn = _system_identification(
-            data=data, times=times, names=names, lags=lags, trend='n',
+            data=data, times=times, names=names, lags=lags,
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator)
     return conn
@@ -228,7 +228,7 @@ def _construct_var_eqns(data, lags, l2_reg=None):
     return X, Y
 
 
-def _system_identification(data, times, names, lags, trend, l2_reg=0,
+def _system_identification(data, times, names, lags, l2_reg=0,
                            n_jobs=-1, compute_fb_operator=False):
     """Solve system identification using least-squares over all epochs.
 
@@ -246,7 +246,6 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
     model_params = {
         'l2_reg': l2_reg,
         'lags': lags,
-        'trend': trend,
         'compute_fb_operator': compute_fb_operator
     }
 
@@ -320,7 +319,7 @@ def _system_identification(data, times, names, lags, trend, l2_reg=0,
     return conn
 
 
-def _compute_lds_func(data, lags, l2_reg, trend, compute_fb_operator):
+def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):
     """Compute linear system using VAR model.
 
     Allows for parallelization over epochs.
@@ -345,14 +344,14 @@ def _compute_lds_func(data, lags, l2_reg, trend, compute_fb_operator):
 
     # get time-shifted versions
     X = data[:, :]
-    A, resid, omega = _estimate_var(X, lags=lags, offset=0, trend=trend,
+    A, resid, omega = _estimate_var(X, lags=lags, offset=0,
                                     l2_reg=l2_reg)
 
     if compute_fb_operator:
         # compute backward linear operator
         # original method
         back_A, back_resid, back_omega = _estimate_var(
-            X[::-1, :], lags=lags, offset=0, trend=trend, l2_reg=l2_reg)
+            X[::-1, :], lags=lags, offset=0, l2_reg=l2_reg)
         A = sqrtm(A.dot(np.linalg.inv(back_A)))
         A = A.real  # remove numerical noise
 

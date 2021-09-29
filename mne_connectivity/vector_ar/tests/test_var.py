@@ -146,16 +146,18 @@ def test_regression_select_order(lags):
     from statsmodels.tsa.vector_ar.var_model import VAR
     x = bivariate_var_data()
     sm_model = VAR(endog=x)
-    results = sm_model.select_order(maxlags=lags)
-    sm_selected_orders = results.selected_orders
-
-    # compare with our version
     if lags != 200:
-        selected_orders = select_order(X=x, maxlags=lags)
-        assert_object_equal(sm_selected_orders, selected_orders)
+        results = sm_model.select_order(maxlags=lags)
     else:
         with pytest.raises(ValueError, match='maxlags is too large'):
             select_order(X=x, maxlags=lags)
+        return
+
+    sm_selected_orders = results.selected_orders
+
+    # compare with our version
+    selected_orders = select_order(X=x, maxlags=lags)
+    assert_object_equal(sm_selected_orders, selected_orders)
 
 
 def test_regression():

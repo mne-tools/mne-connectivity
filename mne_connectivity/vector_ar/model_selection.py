@@ -2,7 +2,7 @@ from collections import defaultdict
 import numpy as np
 from scipy import linalg
 
-from .var import _estimate_var, _get_trendorder
+from .var import _estimate_var
 
 
 def select_order(X, maxlags=None):
@@ -31,9 +31,6 @@ def select_order(X, maxlags=None):
 
         The selected order is then stored as the value.
     """
-    if trend != 'n':
-        raise RuntimeError(f'Trend {trend} is not implemented for yet.')
-
     # get the number of observations
     n_total_obs, n_equations = X.shape
 
@@ -64,10 +61,10 @@ def select_order(X, maxlags=None):
         # exclude some periods to same amount of data used for each lag
         # order
         params, _, sigma_u = _estimate_var(
-            X, lags=p, offset=maxlags - p, trend=trend)
+            X, lags=p, offset=maxlags - p)
 
         info_criteria = _info_criteria(params, X, sigma_u=sigma_u,
-                                       lags=p, trend=trend)
+                                       lags=p)
         for k, v in info_criteria.items():
             ics[k].append(v)
 
@@ -114,7 +111,7 @@ def _sigma_u_mle(df_resid, nobs, sigma_u):
     return sigma_u * df_resid / nobs
 
 
-def _info_criteria(params, X, sigma_u, lags, trend):
+def _info_criteria(params, X, sigma_u, lags):
     """Compute information criteria for lagorder selection.
 
     Parameters
@@ -127,11 +124,6 @@ def _info_criteria(params, X, sigma_u, lags, trend):
         Estimate of white noise process variance
     lags : int
         Lags of the endogenous variable.
-    trend : str {"n", "c", "ct", "ctt"}
-        * "n" - no deterministic terms
-        * "c" - constant term
-        * "ct" - constant and linear term
-        * "ctt" - constant, linear, and quadratic term
 
     Returns
     -------
@@ -141,7 +133,7 @@ def _info_criteria(params, X, sigma_u, lags, trend):
     n_totobs, neqs = X.shape
     nobs = n_totobs - lags
     lag_order = lags
-    k_trend = _get_trendorder(trend)
+    k_trend = 0
     k_ar = lags
     endog_start = k_trend
 
