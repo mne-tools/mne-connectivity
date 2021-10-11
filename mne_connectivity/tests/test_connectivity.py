@@ -216,3 +216,40 @@ def test_io(conn_cls, tmpdir):
     for key, val in conn.coords.items():
         assert_array_equal(val, new_conn.coords[key])
     assert_array_equal(conn.get_data(), new_conn.get_data())
+
+
+@pytest.mark.parametrize(
+    'conn_cls', [EpochConnectivity,
+                 EpochTemporalConnectivity,
+                 EpochSpectralConnectivity,
+                 EpochSpectroTemporalConnectivity],
+)
+def test_append(conn_cls):
+    """Test appending connectivity data."""
+    correct_numpy_shape = []
+    extra_kwargs = dict()
+    if conn_cls.is_epoched:
+        correct_numpy_shape.append(4)
+    correct_numpy_shape.append(4)
+    if conn_cls in (SpectralConnectivity, SpectroTemporalConnectivity,
+                    EpochSpectralConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['freqs'] = np.arange(4)
+        correct_numpy_shape.append(4)
+    if conn_cls in (TemporalConnectivity, SpectroTemporalConnectivity,
+                    EpochTemporalConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['times'] = np.arange(3)
+        correct_numpy_shape.append(3)
+
+    correct_numpy_input = np.ones(correct_numpy_shape)
+
+    # create the connectivity data structure
+    conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+
+    # create a copy of the connectivity
+    conn_2 = conn.copy()
+
+    # append epochs
+    conn_3 = conn.append(conn_2, dim='epochs')
+    assert conn_3.n_epochs_used == conn_2.n_epochs_used + conn.n_epochs_used

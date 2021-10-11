@@ -1,11 +1,13 @@
-from copy import copy
+from copy import copy, deepcopy
 
 import numpy as np
 import xarray as xr
 from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
-                       sizeof_fmt)
+                       sizeof_fmt, _check_event_id, _ensure_events,
+                       _on_missing, warn)
+from mne.epochs import _handle_event_repeated
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
@@ -36,6 +38,81 @@ class TimeMixin:
 
 
 class EpochMixin:
+    def __init__(self, events, event_id, on_missing='warn') -> None:
+        if events is not None:  # Epochs can have events
+            events = _ensure_events(events)
+
+        event_id = _check_event_id(event_id, events)
+        self.event_id = event_id
+        self.events = events
+
+        # see BaseEpochs init in MNE-Python
+        if events is not None:
+            for key, val in self.event_id.items():
+                if val not in events[:, 2]:
+                    msg = ('No matching events found for %s '
+                           '(event id %i)' % (key, val))
+                    _on_missing(on_missing, msg)
+
+            # ensure metadata matches original events size
+            self.selection = np.arange(len(events))
+            self.events = events
+            del events
+
+            values = list(self.event_id.values())
+            selected = np.where(np.in1d(self.events[:, 2], values))[0]
+
+            self.events = self.events[selected]
+
+    def append(self, epoch_conn, dim):
+        """Append another connectivity structure.
+
+        Parameters
+        ----------
+        epoch_conn : instance of Connectivity
+            The Epoched Connectivity class to append.
+
+        Raises
+        ------
+        ValueError
+            [description]
+        """
+        if type(self) != type(epoch_conn):
+            raise ValueError(f'The type of the epoch connectivity to append '
+                             f'is {type(epoch_conn)}, which does not match '
+                             f'{type(self)}.')
+
+        events = deepcopy(self.events)
+        event_id = deepcopy(self.event_id)
+
+        #
+        tmin, tmax = 0, self.n_epochs_used
+
+        # offset is the last epoch + tmax + 10 second
+        shift = int((10 + tmax) * self.info['sfreq'])
+        events_offset = int(np.max(events[0][:, 0])) + shift
+
+        # compare event_id
+        common_keys = list(set(event_id).intersection(
+            set(epoch_conn.event_id)))
+        for key in common_keys:
+            if not event_id[key] == epoch_conn.event_id[key]:
+                msg = ('event_id values must be the same for identical keys '
+                       'for all concatenated epochs. Key "{}" maps to {} in '
+                       'some epochs and to {} in others.')
+                raise ValueError(msg.format(key, event_id[key],
+                                            epoch_conn.event_id[key]))
+
+        evs = epoch_conn.events.copy()
+        if len(epoch_conn.events) == 0:
+            warn('Epoch Connectivity object to append was empty.')
+        events.append(evs)
+        event_id.update(epoch_conn.event_id)
+        events = np.concatenate(events, axis=0)
+
+        # now combine the xarray data
+        self.xarray = xr.concat([self.xarray, epoch_conn.xarray], dim=dim)
+
     def combine(self, combine='mean'):
         """Combine connectivity data over epochs.
 
@@ -795,6 +872,8 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
@@ -802,11 +881,13 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices='all', method=None,
-                 spec_method=None, **kwargs):
-        super().__init__(
+                 spec_method=None, events=None,
+                 event_id=None, **kwargs):
+        super(SpectralConnectivity, self).__init__(
             data, freqs=freqs, names=names, indices=indices,
             n_nodes=n_nodes, method=method,
             spec_method=spec_method, **kwargs)
+        super(EpochMixin, self).__init__(events, event_id)
 
 
 @fill_doc
@@ -825,16 +906,20 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     %(names)s
     %(indices)s
     %(method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
     def __init__(self, data, times, n_nodes, names=None,
-                 indices='all', method=None, **kwargs):
-        super().__init__(data, times=times, names=names,
-                         indices=indices, n_nodes=n_nodes,
-                         method=method, **kwargs)
+                 indices='all', method=None, events=None,
+                 event_id=None, **kwargs):
+        super(TemporalConnectivity, self).__init__(data, times=times, names=names,
+                                                   indices=indices, n_nodes=n_nodes,
+                                                   method=method, **kwargs)
+        super(EpochMixin, self).__init__(events, event_id)
 
 
 @fill_doc
@@ -857,6 +942,8 @@ class EpochSpectroTemporalConnectivity(
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
@@ -864,11 +951,13 @@ class EpochSpectroTemporalConnectivity(
 
     def __init__(self, data, freqs, times, n_nodes,
                  names=None, indices='all', method=None,
-                 spec_method=None, **kwargs):
-        super().__init__(
+                 spec_method=None, events=None, event_id=None,
+                 **kwargs):
+        super(SpectroTemporalConnectivity, self).__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
+        super(EpochMixin, self).__init__(events, event_id)
 
 
 @fill_doc
@@ -919,6 +1008,8 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
 
     See Also
@@ -931,8 +1022,10 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     is_epoched = True
 
     def __init__(self, data, n_nodes, names=None, indices='all',
-                 method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method,
-                         n_nodes=n_nodes, indices=indices,
-                         n_epochs_used=n_epochs_used,
-                         **kwargs)
+                 method=None, n_epochs_used=None, events=None,
+                 event_id=None, **kwargs):
+        super(_Connectivity, self).__init__(data, names=names, method=method,
+                                            n_nodes=n_nodes, indices=indices,
+                                            n_epochs_used=n_epochs_used,
+                                            **kwargs)
+        super(EpochMixin, self).__init__(events, event_id)
