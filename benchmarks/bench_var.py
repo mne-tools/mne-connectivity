@@ -31,4 +31,4 @@ if __name__ == '__main__':
 
     # use conn and statsmodels with pytest memory
     run_experiment(data, times)
-    run_sm_experiment(data)
+    # run_sm_experiment(data)

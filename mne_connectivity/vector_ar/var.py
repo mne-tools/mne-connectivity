@@ -344,7 +344,7 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):
 
     # get time-shifted versions
     X = data[:, :]
-    A, resid, omega = _estimate_var(X, lags=lags, offset=0,
+    A, resid, omega = _test_forloop(X, lags=lags, offset=0,
                                     l2_reg=l2_reg)
 
     if compute_fb_operator:
@@ -403,7 +403,7 @@ def _estimate_var(X, lags, offset=0, l2_reg=0):
     z = temp_z
 
     y_sample = endog[lags:]
-
+    del endog, X
     # Lütkepohl p75, about 5x faster than stated formula
     if l2_reg != 0:
         params = np.linalg.lstsq(z.T @ z + l2_reg * np.eye(n_equations * lags),
@@ -425,7 +425,7 @@ def _estimate_var(X, lags, offset=0, l2_reg=0):
     return params, resid, omega
 
 
-def _test_forloop():
+def _test_forloop(X, lags, offset=0, l2_reg=0):
     # possibly offset the endogenous variable over the samples
     endog = X[offset:, :]
 
@@ -433,14 +433,6 @@ def _test_forloop():
     n_times, n_equations = endog.shape
 
     y_sample = endog[lags:]
-    
-
-    # # Lütkepohl p75, about 5x faster than stated formula
-    # if l2_reg != 0:
-    #     params = np.linalg.lstsq(z.T @ z + l2_reg * np.eye(n_equations * lags),
-    #                              z.T @ y_sample, rcond=1e-15)[0]
-    # else:
-    #     params = np.linalg.lstsq(z, y_sample, rcond=1e-15)[0]
 
     # X.T @ X coefficient matrix
     n_channels = n_equations * lags
@@ -451,21 +443,22 @@ def _test_forloop():
 
     # loop over sample points and aggregate the
     # necessary elements of the normal equations
+    first_component = np.zeros((n_channels, 1))
+    second_component = np.zeros((1, n_channels))
+    y_component = np.zeros((1, n_channels))
     for idx in range(n_times - lags):
-        first_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)]).T[:, np.newaxis]
-        second_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)])[np.newaxis, :]
-        # first_component = X[idx, :].T[:, np.newaxis]
-        # second_component = X[idx, :][np.newaxis, :]
-
-        # print(first_component.shape, second_component.shape)
+        for jdx in range(lags):
+            first_component[jdx * n_equations: (jdx+1) * n_equations, :] = endog[idx + jdx, :][:, np.newaxis]
+            second_component[:, jdx * n_equations: (jdx+1) * n_equations] = endog[idx + jdx, :][np.newaxis, :]
+            y_component[:, jdx * n_equations: (jdx+1) * n_equations] = endog[idx + 1 + jdx, :][np.newaxis, :]
+        # second_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+        # print(second_component.shape)
         # increment for X.T @ X
         XdotX += first_component @ second_component
 
         # increment for X.T @ Y
-        # second_component = Y[idx, :][np.newaxis, :]
-        second_component = np.hstack([endog[idx + 1 + jdx, :] for jdx in range(lags)])[np.newaxis, :]
-        # print(first_component.shape, second_component.shape)
-        XdotY += first_component @ second_component
+        # second_component = np.hstack([endog[idx + 1 + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+        XdotY += first_component @ y_component
 
     if l2_reg != 0:
         final_params = np.linalg.lstsq(XdotX + l2_reg * np.eye(n_equations * lags),
@@ -473,6 +466,7 @@ def _test_forloop():
     else:
         final_params = np.linalg.lstsq(XdotX, XdotY, rcond=1e-15)[0].T
     
+    # format the final matrix as (lags * n_equations, n_equations)
     params = np.empty((lags * n_equations, n_equations))
     for idx in range(lags):
         start_col = n_equations*idx
@@ -502,6 +496,8 @@ def _test_forloop():
     # K x K sse
     sse = np.dot(resid.T, resid)
     omega = sse / df_resid
+    return params, resid, omega
+
 
 
 def _get_var_predictor_matrix(y, lags):
