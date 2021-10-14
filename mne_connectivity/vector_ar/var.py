@@ -425,6 +425,85 @@ def _estimate_var(X, lags, offset=0, l2_reg=0):
     return params, resid, omega
 
 
+def _test_forloop():
+    # possibly offset the endogenous variable over the samples
+    endog = X[offset:, :]
+
+    # get the number of equations we want
+    n_times, n_equations = endog.shape
+
+    y_sample = endog[lags:]
+    
+
+    # # Lütkepohl p75, about 5x faster than stated formula
+    # if l2_reg != 0:
+    #     params = np.linalg.lstsq(z.T @ z + l2_reg * np.eye(n_equations * lags),
+    #                              z.T @ y_sample, rcond=1e-15)[0]
+    # else:
+    #     params = np.linalg.lstsq(z, y_sample, rcond=1e-15)[0]
+
+    # X.T @ X coefficient matrix
+    n_channels = n_equations * lags
+    XdotX = np.zeros((n_channels, n_channels))
+
+    # X.T @ Y ordinate / dependent variable matrix
+    XdotY = np.zeros((n_channels, n_channels))
+
+    # loop over sample points and aggregate the
+    # necessary elements of the normal equations
+    for idx in range(n_times - lags):
+        first_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)]).T[:, np.newaxis]
+        second_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+        # first_component = X[idx, :].T[:, np.newaxis]
+        # second_component = X[idx, :][np.newaxis, :]
+
+        # print(first_component.shape, second_component.shape)
+        # increment for X.T @ X
+        XdotX += first_component @ second_component
+
+        # increment for X.T @ Y
+        # second_component = Y[idx, :][np.newaxis, :]
+        second_component = np.hstack([endog[idx + 1 + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+        # print(first_component.shape, second_component.shape)
+        XdotY += first_component @ second_component
+
+    if l2_reg != 0:
+        final_params = np.linalg.lstsq(XdotX + l2_reg * np.eye(n_equations * lags),
+                                 XdotY, rcond=1e-15)[0]
+    else:
+        final_params = np.linalg.lstsq(XdotX, XdotY, rcond=1e-15)[0].T
+    
+    params = np.empty((lags * n_equations, n_equations))
+    for idx in range(lags):
+        start_col = n_equations*idx
+        stop_col = n_equations*(idx+1)
+        start_row = n_equations * (lags - idx - 1)
+        stop_row = n_equations*(lags - idx)
+        params[start_row:stop_row, ...] = final_params[n_equations * (lags - 1):, start_col:stop_col].T
+    
+    # print(final_params.round(5))
+    # print(params_)
+    # print(params)
+    # build the predictor matrix using the endogenous data
+    # with lags and trends.
+    # Note that the pure endogenous VAR model with OLS
+    # makes this matrix a (n_samples - lags, n_channels * lags) matrix
+    # z = _get_var_predictor_matrix(
+        # endog, lags
+    # )
+    # (n_samples - lags, n_channels)
+    # resid = y_sample - np.dot(z, params)
+    resid = np.zeros((n_times - lags, n_equations))
+
+    # compute the degrees of freedom in residual calculation
+    avobs = len(y_sample)
+    df_resid = avobs - (n_equations * lags)
+
+    # K x K sse
+    sse = np.dot(resid.T, resid)
+    omega = sse / df_resid
+
+
 def _get_var_predictor_matrix(y, lags):
     """Make predictor matrix for VAR(p) process, Z.
 
