@@ -344,7 +344,7 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):
 
     # get time-shifted versions
     X = data[:, :]
-    A, resid, omega = _test_forloop(X, lags=lags, offset=0,
+    A, resid, omega = _estimate_var(X, lags=lags, offset=0,
                                     l2_reg=l2_reg)
 
     if compute_fb_operator:
@@ -448,33 +448,40 @@ def _test_forloop(X, lags, offset=0, l2_reg=0):
     y_component = np.zeros((1, n_channels))
     for idx in range(n_times - lags):
         for jdx in range(lags):
-            first_component[jdx * n_equations: (jdx+1) * n_equations, :] = endog[idx + jdx, :][:, np.newaxis]
-            second_component[:, jdx * n_equations: (jdx+1) * n_equations] = endog[idx + jdx, :][np.newaxis, :]
-            y_component[:, jdx * n_equations: (jdx+1) * n_equations] = endog[idx + 1 + jdx, :][np.newaxis, :]
-        # second_component = np.hstack([endog[idx + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+            first_component[
+                jdx * n_equations: (jdx + 1) * n_equations, :] = \
+                endog[idx + jdx, :][:, np.newaxis]
+            second_component[:, jdx * n_equations: (
+                jdx + 1) * n_equations] = endog[idx + jdx, :][np.newaxis, :]
+            y_component[:, jdx * n_equations: (jdx + 1) *
+                        n_equations] = endog[idx + 1 + jdx, :][np.newaxis, :]
+        # second_component = np.hstack([endog[idx + jdx, :]
+        # for jdx in range(lags)])[np.newaxis, :]
         # print(second_component.shape)
         # increment for X.T @ X
         XdotX += first_component @ second_component
 
         # increment for X.T @ Y
-        # second_component = np.hstack([endog[idx + 1 + jdx, :] for jdx in range(lags)])[np.newaxis, :]
+        # second_component = np.hstack([endog[idx + 1 + jdx, :]
+        # for jdx in range(lags)])[np.newaxis, :]
         XdotY += first_component @ y_component
 
     if l2_reg != 0:
-        final_params = np.linalg.lstsq(XdotX + l2_reg * np.eye(n_equations * lags),
-                                 XdotY, rcond=1e-15)[0]
+        final_params = np.linalg.lstsq(
+            XdotX + l2_reg * np.eye(n_equations * lags), XdotY, rcond=1e-15)[0]
     else:
         final_params = np.linalg.lstsq(XdotX, XdotY, rcond=1e-15)[0].T
-    
+
     # format the final matrix as (lags * n_equations, n_equations)
     params = np.empty((lags * n_equations, n_equations))
     for idx in range(lags):
-        start_col = n_equations*idx
-        stop_col = n_equations*(idx+1)
+        start_col = n_equations * idx
+        stop_col = n_equations * (idx + 1)
         start_row = n_equations * (lags - idx - 1)
-        stop_row = n_equations*(lags - idx)
-        params[start_row:stop_row, ...] = final_params[n_equations * (lags - 1):, start_col:stop_col].T
-    
+        stop_row = n_equations * (lags - idx)
+        params[start_row:stop_row, ...] = final_params[
+            n_equations * (lags - 1):, start_col:stop_col].T
+
     # print(final_params.round(5))
     # print(params_)
     # print(params)
@@ -497,7 +504,6 @@ def _test_forloop(X, lags, offset=0, l2_reg=0):
     sse = np.dot(resid.T, resid)
     omega = sse / df_resid
     return params, resid, omega
-
 
 
 def _get_var_predictor_matrix(y, lags):
