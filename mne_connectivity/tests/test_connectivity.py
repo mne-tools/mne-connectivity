@@ -3,10 +3,14 @@
 # License: BSD (3-clause)
 
 import os
+from mne.annotations import Annotations, events_from_annotations
+from mne.io.meas_info import create_info
 
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
+from mne.io import RawArray
+from mne import make_fixed_length_epochs
 
 from mne_connectivity import (Connectivity, EpochConnectivity,
                               EpochSpectralConnectivity,
@@ -15,6 +19,7 @@ from mne_connectivity import (Connectivity, EpochConnectivity,
                               SpectroTemporalConnectivity,
                               TemporalConnectivity)
 from mne_connectivity.io import read_connectivity
+from mne_connectivity import envelope_correlation, vector_auto_regression
 
 
 def _prep_correct_connectivity_input(conn_cls, n_nodes=3, symmetric=False,
@@ -253,3 +258,37 @@ def test_append(conn_cls):
     # append epochs
     conn_3 = conn.append(conn_2, dim='epochs')
     assert conn_3.n_epochs_used == conn_2.n_epochs_used + conn.n_epochs_used
+
+
+@pytest.mark.parametrize(
+    'conn_func',
+    [envelope_correlation, vector_auto_regression]
+)
+def test_events_handling(conn_func):
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 10
+    n_times = 500
+    rng = np.random.RandomState(42)
+    data = rng.randn(n_signals, n_epochs * n_times)
+
+    # create Epochs
+    info = create_info(np.arange(n_signals).astype(str).tolist(), sfreq=sfreq,
+                       ch_types='eeg')
+    onset = [0, 0.5, 3]
+    duration = [0, 0, 0]
+    description = ['test1', 'test2', 'test3']
+    annots = Annotations(onset=onset, duration=duration,
+                         description=description)
+    raw = RawArray(data, info)
+    raw = raw.set_annotations(annots)
+    epochs = make_fixed_length_epochs(raw, duration=10, preload=True)
+    events, event_id = events_from_annotations(raw)
+    epochs.events = np.concatenate((epochs.events, events), axis=0)
+    epochs.event_id.update(event_id)
+    assert len(epochs) == n_epochs + 3
+    assert len(epochs.events) == n_epochs + 3
+
+    # create the connectivity data structure
+    conn = conn_func(epochs)
+    assert len(conn.events) == n_epochs + 3

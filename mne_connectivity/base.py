@@ -7,7 +7,6 @@ from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt, _check_event_id, _ensure_events,
                        _on_missing, warn)
-from mne.epochs import _handle_event_repeated
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
@@ -38,9 +37,11 @@ class TimeMixin:
 
 
 class EpochMixin:
-    def __init__(self, events, event_id, on_missing='warn') -> None:
+    def _init_epochs(self, events, event_id, on_missing='warn') -> None:
         if events is not None:  # Epochs can have events
             events = _ensure_events(events)
+        else:
+            events = np.empty((0, 3))
 
         event_id = _check_event_id(event_id, events)
         self.event_id = event_id
@@ -86,11 +87,11 @@ class EpochMixin:
         event_id = deepcopy(self.event_id)
 
         #
-        tmin, tmax = 0, self.n_epochs_used
+        # _, tmax = 0, self.n_epochs_used
 
         # offset is the last epoch + tmax + 10 second
-        shift = int((10 + tmax) * self.info['sfreq'])
-        events_offset = int(np.max(events[0][:, 0])) + shift
+        # shift = int((10 + tmax))  # * self.info['sfreq'])
+        # events_offset = int(np.max(events[0][:, 0])) + shift
 
         # compare event_id
         common_keys = list(set(event_id).intersection(
@@ -486,6 +487,9 @@ class _Connectivity(DynamicMixin):
                                  f'But there should be {expected_len} '
                                  f'estimated connections.')
 
+    def copy(self):
+        return deepcopy(self)
+
     @property
     def _data(self):
         """Numpy array of connectivity data."""
@@ -774,10 +778,11 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices='all', method=None, spec_method=None,
                  n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method,
-                         indices=indices, n_nodes=n_nodes,
-                         freqs=freqs, spec_method=spec_method,
-                         n_epochs_used=n_epochs_used, **kwargs)
+        super(SpectralConnectivity, self).__init__(
+            data, names=names, method=method,
+            indices=indices, n_nodes=n_nodes,
+            freqs=freqs, spec_method=spec_method,
+            n_epochs_used=n_epochs_used, **kwargs)
 
 
 @fill_doc
@@ -814,10 +819,11 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
     def __init__(self, data, times, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method,
-                         n_nodes=n_nodes, indices=indices,
-                         times=times, n_epochs_used=n_epochs_used,
-                         **kwargs)
+        super(TemporalConnectivity, self).__init__(
+            data, names=names, method=method,
+            n_nodes=n_nodes, indices=indices,
+            times=times, n_epochs_used=n_epochs_used,
+            **kwargs)
 
 
 @fill_doc
@@ -849,10 +855,11 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
     def __init__(self, data, freqs, times, n_nodes, names=None,
                  indices='all', method=None,
                  spec_method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method, indices=indices,
-                         n_nodes=n_nodes, freqs=freqs,
-                         spec_method=spec_method, times=times,
-                         n_epochs_used=n_epochs_used, **kwargs)
+        super(SpectroTemporalConnectivity, self).__init__(
+            data, names=names, method=method, indices=indices,
+            n_nodes=n_nodes, freqs=freqs,
+            spec_method=spec_method, times=times,
+            n_epochs_used=n_epochs_used, **kwargs)
 
 
 @fill_doc
@@ -883,11 +890,11 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
                  indices='all', method=None,
                  spec_method=None, events=None,
                  event_id=None, **kwargs):
-        super(SpectralConnectivity, self).__init__(
+        super(EpochSpectralConnectivity, self).__init__(
             data, freqs=freqs, names=names, indices=indices,
             n_nodes=n_nodes, method=method,
             spec_method=spec_method, **kwargs)
-        super(EpochMixin, self).__init__(events, event_id)
+        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
@@ -916,10 +923,11 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     def __init__(self, data, times, n_nodes, names=None,
                  indices='all', method=None, events=None,
                  event_id=None, **kwargs):
-        super(TemporalConnectivity, self).__init__(data, times=times, names=names,
-                                                   indices=indices, n_nodes=n_nodes,
-                                                   method=method, **kwargs)
-        super(EpochMixin, self).__init__(events, event_id)
+        super(EpochTemporalConnectivity, self).__init__(
+            data, times=times, names=names,
+            indices=indices, n_nodes=n_nodes,
+            method=method, **kwargs)
+        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
@@ -953,11 +961,11 @@ class EpochSpectroTemporalConnectivity(
                  names=None, indices='all', method=None,
                  spec_method=None, events=None, event_id=None,
                  **kwargs):
-        super(SpectroTemporalConnectivity, self).__init__(
+        super(EpochSpectroTemporalConnectivity, self).__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
-        super(EpochMixin, self).__init__(events, event_id)
+        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
@@ -986,10 +994,10 @@ class Connectivity(_Connectivity, EpochMixin):
 
     def __init__(self, data, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, **kwargs):
-        super().__init__(data, names=names, method=method,
-                         n_nodes=n_nodes, indices=indices,
-                         n_epochs_used=n_epochs_used,
-                         **kwargs)
+        super(Connectivity, self).__init__(data, names=names, method=method,
+                                           n_nodes=n_nodes, indices=indices,
+                                           n_epochs_used=n_epochs_used,
+                                           **kwargs)
 
 
 @fill_doc
@@ -1024,8 +1032,9 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     def __init__(self, data, n_nodes, names=None, indices='all',
                  method=None, n_epochs_used=None, events=None,
                  event_id=None, **kwargs):
-        super(_Connectivity, self).__init__(data, names=names, method=method,
-                                            n_nodes=n_nodes, indices=indices,
-                                            n_epochs_used=n_epochs_used,
-                                            **kwargs)
-        super(EpochMixin, self).__init__(events, event_id)
+        super(EpochConnectivity, self).__init__(
+            data, names=names, method=method,
+            n_nodes=n_nodes, indices=indices,
+            n_epochs_used=n_epochs_used,
+            **kwargs)
+        self._init_epochs(events, event_id, on_missing='warn')

@@ -2,6 +2,7 @@ import numpy as np
 import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
+from mne import Epochs
 
 from ..utils import fill_doc
 from ..base import Connectivity, EpochConnectivity
@@ -15,7 +16,7 @@ def vector_auto_regression(
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | generator
+    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | generator
         The data from which to compute connectivity. The epochs dimension
         is interpreted differently, depending on ``'output'`` argument.
     times : array-like
@@ -108,10 +109,19 @@ def vector_auto_regression(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa
     if model not in ['avg-epochs', 'dynamic']:
         raise ValueError(f'"model" parameter must be one of '
                          f'(avg-epochs, dynamic), not {model}.')
+
+    events = None
+    event_id = None
+    # metadata = None
+    if isinstance(data, Epochs):
+        events = data.events
+        event_id = data.event_id
+        # metadata = data.metadata
+        data = data.data
 
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape
@@ -154,6 +164,7 @@ def vector_auto_regression(
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
             verbose=verbose)
+        conn._init_epochs(events=events, event_id=event_id)
     return conn
 
 
