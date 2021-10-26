@@ -121,7 +121,7 @@ def vector_auto_regression(
         events = data.events
         event_id = data.event_id
         # metadata = data.metadata
-        data = data.data
+        data = data.get_data()
 
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape

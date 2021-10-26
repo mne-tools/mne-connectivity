@@ -87,7 +87,7 @@ def envelope_correlation(data, names=None,
         events = data.events
         event_id = data.event_id
         metadata = data.metadata
-        data = data.data
+        data = data.get_data()
 
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
