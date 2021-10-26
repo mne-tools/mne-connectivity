@@ -71,6 +71,7 @@ Post-processing on connectivity
    degree
    seed_target_indices
    check_indices
+   select_order
 
 Visualization functions
 =======================

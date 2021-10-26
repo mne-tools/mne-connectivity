@@ -2,10 +2,9 @@ from copy import copy
 
 import numpy as np
 import xarray as xr
-from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
-                       sizeof_fmt)
+                       sizeof_fmt, check_random_state)
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
@@ -78,6 +77,34 @@ class EpochMixin:
 
 
 class DynamicMixin:
+    def is_stable(self):
+        companion_mat = self.companion
+        return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.
+
+    def eigvals(self):
+        return np.linalg.eigvals(self.companion)
+
+    @property
+    def companion(self):
+        """Generate block companion matrix.
+
+        Returns the data matrix if the model is VAR(1).
+        """
+        from .vector_ar.utils import _block_companion
+
+        lags = self.attrs.get('lags')
+        data = self.get_data()
+        if lags == 1:
+            return data
+
+        arrs = []
+        for idx in range(self.n_epochs):
+            blocks = _block_companion(
+                [data[idx, ..., jdx]for jdx in range(lags)]
+            )
+            arrs.append(blocks)
+        return arrs
+
     def predict(self, data):
         """Predict samples on actual data.
 
@@ -530,8 +557,7 @@ class _Connectivity(DynamicMixin):
             # handle the case where model order is defined in VAR connectivity
             # and thus appends the connectivity matrices side by side, so the
             # shape is N x N * lags
-            lags = self.attrs.get('lags', 1)
-            new_shape.extend([self.n_nodes * lags, self.n_nodes])
+            new_shape.extend([self.n_nodes, self.n_nodes])
             if 'freqs' in self.dims:
                 new_shape.append(len(self.coords['freqs']))
             if 'times' in self.dims:
