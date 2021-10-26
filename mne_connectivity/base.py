@@ -2,10 +2,9 @@ from copy import copy
 
 import numpy as np
 import xarray as xr
-from sklearn.utils import check_random_state
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
-                       sizeof_fmt)
+                       sizeof_fmt, check_random_state)
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle

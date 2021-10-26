@@ -25,7 +25,7 @@ def run_sm_experiment(sample_data):
 
 if __name__ == '__main__':
     rng = np.random.RandomState(0)
-    n_epochs, n_signals, n_times = 1, 500, 1000
+    n_epochs, n_signals, n_times = 1, 50, 100
     data = rng.randn(n_epochs, n_signals, n_times)
     times = np.arange(n_times)
 
