@@ -4,6 +4,7 @@
 
 import os
 from mne.annotations import Annotations, events_from_annotations
+from mne.event import make_fixed_length_events
 from mne.io.meas_info import create_info
 
 import numpy as np
@@ -244,20 +245,25 @@ def test_append(conn_cls):
     if conn_cls in (TemporalConnectivity, SpectroTemporalConnectivity,
                     EpochTemporalConnectivity,
                     EpochSpectroTemporalConnectivity):
-        extra_kwargs['times'] = np.arange(3)
-        correct_numpy_shape.append(3)
+        extra_kwargs['times'] = np.arange(50)
+        correct_numpy_shape.append(50)
 
     correct_numpy_input = np.ones(correct_numpy_shape)
+    events = np.zeros((correct_numpy_input.shape[0], 3), dtype=int)
+    events[:, -1] = 1  # event ID
+    events[:, 0] = np.linspace(0, 50, len(events))
 
     # create the connectivity data structure
-    conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+    conn = conn_cls(data=correct_numpy_input, n_nodes=2, events=events,
+                    **extra_kwargs)
 
     # create a copy of the connectivity
     conn_2 = conn.copy()
 
     # append epochs
-    conn_3 = conn.append(conn_2, dim='epochs')
-    assert conn_3.n_epochs_used == conn_2.n_epochs_used + conn.n_epochs_used
+    conn.append(conn_2)
+    assert conn.n_epochs == conn_2.n_epochs * 2
+    assert len(conn.events) == conn.n_epochs
 
 
 @pytest.mark.parametrize(

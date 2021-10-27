@@ -127,6 +127,7 @@ def vector_auto_regression(
     if isinstance(data, Epochs):
         events = data.events
         event_id = data.event_id
+        times = data.times
         # metadata = data.metadata
         data = data.get_data()
 
@@ -174,8 +175,7 @@ def vector_auto_regression(
         conn = _system_identification(
             data=data, times=times, names=names, lags=lags,
             l2_reg=l2_reg, n_jobs=n_jobs,
-            compute_fb_operator=compute_fb_operator,
-            verbose=verbose)
+            compute_fb_operator=compute_fb_operator)
         conn._init_epochs(events=events, event_id=event_id)
     return conn
 

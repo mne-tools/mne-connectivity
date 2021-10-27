@@ -64,7 +64,7 @@ class EpochMixin:
 
             self.events = self.events[selected]
 
-    def append(self, epoch_conn, dim):
+    def append(self, epoch_conn):
         """Append another connectivity structure.
 
         Parameters
@@ -72,25 +72,24 @@ class EpochMixin:
         epoch_conn : instance of Connectivity
             The Epoched Connectivity class to append.
 
-        Raises
-        ------
-        ValueError
-            [description]
+        Returns
+        -------
+        self : instance of Connectivity
+            The altered Epoched Connectivity class.
         """
         if type(self) != type(epoch_conn):
             raise ValueError(f'The type of the epoch connectivity to append '
                              f'is {type(epoch_conn)}, which does not match '
                              f'{type(self)}.')
+        if hasattr(self, 'times'):
+            if not np.allclose(self.times, epoch_conn.times):
+                raise ValueError('Epochs must have same times')
+        if hasattr(self, 'freqs'):
+            if not np.allclose(self.freqs, epoch_conn.freqs):
+                raise ValueError('Epochs must have same frequencies')
 
-        events = deepcopy(self.events)
+        events = list(deepcopy(self.events))
         event_id = deepcopy(self.event_id)
-
-        #
-        # _, tmax = 0, self.n_epochs_used
-
-        # offset is the last epoch + tmax + 10 second
-        # shift = int((10 + tmax))  # * self.info['sfreq'])
-        # events_offset = int(np.max(events[0][:, 0])) + shift
 
         # compare event_id
         common_keys = list(set(event_id).intersection(
@@ -104,14 +103,16 @@ class EpochMixin:
                                             epoch_conn.event_id[key]))
 
         evs = epoch_conn.events.copy()
-        if len(epoch_conn.events) == 0:
+        if epoch_conn.n_epochs == 0:
             warn('Epoch Connectivity object to append was empty.')
-        events.append(evs)
         event_id.update(epoch_conn.event_id)
-        events = np.concatenate(events, axis=0)
+        events = np.concatenate((events, evs), axis=0)
 
-        # now combine the xarray data
-        self.xarray = xr.concat([self.xarray, epoch_conn.xarray], dim=dim)
+        # now combine the xarray data, altered events and event ID
+        self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim='epochs')
+        self.events = events
+        self.event_id = event_id
+        return self
 
     def combine(self, combine='mean'):
         """Combine connectivity data over epochs.
