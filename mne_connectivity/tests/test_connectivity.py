@@ -4,7 +4,6 @@
 
 import os
 from mne.annotations import Annotations, events_from_annotations
-from mne.event import make_fixed_length_events
 from mne.io.meas_info import create_info
 
 import numpy as np
