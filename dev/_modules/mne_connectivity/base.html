@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mne_connectivity.base &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,15 +29,15 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -52,7 +52,10 @@
     <script type="text/javascript" src="../../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -182,10 +185,9 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_combine</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span>
                        <span class="n">copy_function_doc_to_method_doc</span><span class="p">,</span> <span class="n">object_size</span><span class="p">,</span>
-                       <span class="n">sizeof_fmt</span><span class="p">)</span>
+                       <span class="n">sizeof_fmt</span><span class="p">,</span> <span class="n">check_random_state</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">mne_connectivity.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">mne_connectivity.viz</span> <span class="kn">import</span> <span class="n">plot_connectivity_circle</span>
@@ -258,6 +260,34 @@
 
 
 <span class="k">class</span> <span class="nc">DynamicMixin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">is_stable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">companion_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">companion</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">companion_mat</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1.</span>
+
+    <span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">companion</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">companion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate block companion matrix.</span>
+
+<span class="sd">        Returns the data matrix if the model is VAR(1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.vector_ar.utils</span> <span class="kn">import</span> <span class="n">_block_companion</span>
+
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lags&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lags</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="p">):</span>
+            <span class="n">blocks</span> <span class="o">=</span> <span class="n">_block_companion</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">jdx</span><span class="p">]</span><span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="n">arrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arrs</span>
+
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Predict samples on actual data.</span>
 
@@ -710,8 +740,7 @@
             <span class="c1"># handle the case where model order is defined in VAR connectivity</span>
             <span class="c1"># and thus appends the connectivity matrices side by side, so the</span>
             <span class="c1"># shape is N x N * lags</span>
-            <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lags&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">])</span>
+            <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">])</span>
             <span class="k">if</span> <span class="s1">&#39;freqs&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s1">&#39;freqs&#39;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="s1">&#39;times&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
@@ -1121,10 +1150,9 @@
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
               
           </main>
           
@@ -1132,20 +1160,19 @@
       </div>
     </div>
   
-  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-19.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-27.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

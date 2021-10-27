@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,15 +30,15 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -300,7 +304,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="compute-envelope-correlations-in-source-space">
+<section class="sphx-glr-example-title" id="compute-envelope-correlations-in-source-space">
 <span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this headline">¶</a></h1>
 <p>Compute envelope correlations of orthogonalized activity
 <a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2">2</a> using pairwise and symmetric
@@ -436,12 +440,16 @@ No EEG channels found. Forcing n_eeg to 0
 Adding projection: axial--0.200-0.200-PCA-01
 Adding projection: axial--0.200-0.200-PCA-02
 Done.
+/home/circleci/project/examples/mne_inverse_envelope_correlation.py:70: DeprecationWarning: projs cannot be set directly. This warning will turn into an error after 0.24
+  raw.info[&#39;projs&#39;] += projs_ecg
+/home/circleci/project/examples/mne_inverse_envelope_correlation.py:71: DeprecationWarning: projs cannot be set directly. This warning will turn into an error after 0.24
+  raw.info[&#39;projs&#39;] += projs_eog
 Using up to 300 segments
 Number of samples used : 4800
 [done]
 </pre></div>
 </div>
-<div class="section" id="compute-the-forward-and-inverse">
+<section id="compute-the-forward-and-inverse">
 <h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_source_spaces.html#mne.read_source_spaces" title="mne.read_source_spaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_source_spaces</span></a><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 <span class="n">fwd</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_forward_solution</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bem</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -509,6 +517,8 @@ Checking that the sources are inside the surface (will take a few...)
     Skipping interior check for 1235 sources that fit inside a sphere of radius   49.6 mm
     Skipping solid angle check for 0 points using Qhull
 
+    Skipping interior check for 0 sources that fit inside a sphere of radius   49.6 mm
+    Skipping solid angle check for 272 points using Qhull
 Setting up compensation data...
     272 out of 272 channels have the compensation set.
     Desired compensation data (3) found.
@@ -569,8 +579,8 @@ Created an SSP operator (subspace dimension = 4)
 4 projection items activated
 </pre></div>
 </div>
-</div>
-<div class="section" id="do-pairwise-orthogonalized-envelope-correlation">
+</section>
+<section id="do-pairwise-orthogonalized-envelope-correlation">
 <h2>Do pairwise-orthogonalized envelope correlation<a class="headerlink" href="#do-pairwise-orthogonalized-envelope-correlation" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
 
@@ -727,8 +737,8 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 Using control points [73. 80. 89.]
 </pre></div>
 </div>
-</div>
-<div class="section" id="do-symmetric-orthogonalized-envelope-correlation">
+</section>
+<section id="do-symmetric-orthogonalized-envelope-correlation">
 <h2>Do symmetric-orthogonalized envelope correlation<a class="headerlink" href="#do-symmetric-orthogonalized-envelope-correlation" title="Permalink to this headline">¶</a></h2>
 <p>Here we need the number of labels to be less than the rank of the data
 (here around 200), because all label time courses are orthogonalized
@@ -863,11 +873,11 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7f38f3cf24c0&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f547806c310&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="references">
+</section>
+<section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p id="id6"><dl class="footnote brackets">
 <dt class="label" id="footcite-hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -881,7 +891,7 @@ Using control points [26. 29. 32.]
 </dd>
 </dl>
 </p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  44.224 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  7.410 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
@@ -891,19 +901,30 @@ Using control points [26. 29. 32.]
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_inverse_coherence_epochs.html" title="previous page">Compute coherence in source space using a MNE inverse solution</a>
-    <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation_volume.html" title="next page">Compute envelope correlations in volume source space</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_inverse_coherence_epochs.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Compute coherence in source space using a MNE inverse solution</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation_volume.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Compute envelope correlations in volume source space</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -911,20 +932,19 @@ Using control points [26. 29. 32.]
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-19.<br/>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-27.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

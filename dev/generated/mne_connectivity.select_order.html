@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>mne_connectivity.read_connectivity &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    <title>mne_connectivity.select_order &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -48,8 +48,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.symmetric_orth" href="mne_connectivity.symmetric_orth.html" />
-    <link rel="prev" title="mne_connectivity.vector_auto_regression" href="mne_connectivity.vector_auto_regression.html" />
+    <link rel="next" title="mne_connectivity.viz.plot_sensors_connectivity" href="mne_connectivity.viz.plot_sensors_connectivity.html" />
+    <link rel="prev" title="mne_connectivity.check_indices" href="mne_connectivity.check_indices.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -226,9 +226,9 @@
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
    mne_connectivity.read_connectivity
   </a>
  </li>
@@ -240,7 +240,7 @@
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_connectivity.degree.html">
    mne_connectivity.degree
@@ -256,8 +256,8 @@
    mne_connectivity.check_indices
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_connectivity.select_order.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_connectivity.select_order
   </a>
  </li>
@@ -309,23 +309,36 @@
               
               <div>
                 
-  <section id="mne-connectivity-read-connectivity">
-<h1>mne_connectivity.read_connectivity<a class="headerlink" href="#mne-connectivity-read-connectivity" title="Permalink to this headline">¶</a></h1>
+  <section id="mne-connectivity-select-order">
+<h1>mne_connectivity.select_order<a class="headerlink" href="#mne-connectivity-select-order" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_connectivity.read_connectivity">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">read_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/io.html#read_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.read_connectivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read connectivity data from netCDF file.</p>
+<dt class="sig sig-object py" id="mne_connectivity.select_order">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">select_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/vector_ar/model_selection.html#select_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.select_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute lag order selections based on information criterion.</p>
+<p>Selects a lag order based on each of the available information
+criteria.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fname</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></p>
+<dd class="field-odd"><p><strong>X</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, shape (n_times, n_channels)</p>
 <blockquote>
-<div><p>The filepath.</p>
+<div><p>Endogenous variable, that predicts the exogenous.</p>
+</div></blockquote>
+<p><strong>maxlags</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<blockquote>
+<div><p>The maximum number of lags to check. Will then check from
+<code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">maxlags</span></code>. If None, defaults to
+<code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">*</span> <span class="pre">(n_times</span> <span class="pre">/</span> <span class="pre">100.)**(1./4)</span></code>.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<dd class="field-even"><p><strong>selected_orders</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <blockquote>
-<div><p>A connectivity class.</p>
+<div><p>The selected orders based on the following information criterion.
+* aic : Akaike
+* fpe : Final prediction error
+* hqic : Hannan-Quinn
+* bic : Bayesian a.k.a. Schwarz</p>
+<p>The selected order is then stored as the value.</p>
 </div></blockquote>
 </dd>
 </dl>
@@ -339,17 +352,17 @@
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="mne_connectivity.vector_auto_regression.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="mne_connectivity.check_indices.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_connectivity.vector_auto_regression</p>
+            <p class="prev-next-title">mne_connectivity.check_indices</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="mne_connectivity.symmetric_orth.html" title="next page">
+    <a class='right-next' id="next-link" href="mne_connectivity.viz.plot_sensors_connectivity.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.symmetric_orth</p>
+        <p class="prev-next-title">mne_connectivity.viz.plot_sensors_connectivity</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
