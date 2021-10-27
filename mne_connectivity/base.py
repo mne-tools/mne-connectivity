@@ -386,6 +386,8 @@ class _Connectivity(DynamicMixin):
     def __repr__(self) -> str:
         r = f'<{self.__class__.__name__} | '
 
+        if self.n_epochs is not None:
+            r += f"n_epochs : {self.n_epochs}, "
         if 'freqs' in self.dims:
             r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])
         if 'times' in self.dims:
@@ -402,9 +404,7 @@ class _Connectivity(DynamicMixin):
         # account for epoch data structures
         if self.is_epoched:
             start_idx = 1
-            self.n_epochs = data.shape[0]
         else:
-            self.n_epochs = None
             start_idx = 0
         self.n_estimated_nodes = data.shape[start_idx]
 
@@ -518,6 +518,15 @@ class _Connectivity(DynamicMixin):
         return deepcopy(self)
 
     @property
+    def n_epochs(self):
+        """The number of epochs the connectivity data varies over."""
+        if self.is_epoched:
+            n_epochs = self._data.shape[0]
+        else:
+            n_epochs = None
+        return n_epochs
+
+    @property
     def _data(self):
         """Numpy array of connectivity data."""
         return self.xarray.values
@@ -588,7 +597,9 @@ class _Connectivity(DynamicMixin):
     def n_epochs_used(self):
         """Number of epochs used in computation of connectivity.
 
-        Can be 'None', if there was no epochs used.
+        Can be 'None', if there was no epochs used. This is
+        equivalent to the number of epochs, if there is no
+        combining of epochs.
         """
         return self.attrs.get('n_epochs_used')
 
