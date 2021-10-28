@@ -189,6 +189,7 @@
 <span class="c1"># License: BSD (3-clause)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span>
 <span class="kn">from</span> <span class="nn">mne.filter</span> <span class="kn">import</span> <span class="n">next_fast_len</span>
 <span class="kn">from</span> <span class="nn">mne.source_estimate</span> <span class="kn">import</span> <span class="n">_BaseSourceEstimate</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_option</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span>
@@ -205,7 +206,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    data : array-like, shape=(n_epochs, n_signals, n_times) | generator</span>
+<span class="sd">    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | generator</span>
 <span class="sd">        The data from which to compute connectivity.</span>
 <span class="sd">        The array-like object can also be a list/generator of array,</span>
 <span class="sd">        each with shape (n_signals, n_times), or a :class:`~mne.SourceEstimate`</span>
@@ -254,13 +255,22 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
     <span class="n">_check_option</span><span class="p">(</span><span class="s1">&#39;orthogonalize&#39;</span><span class="p">,</span> <span class="n">orthogonalize</span><span class="p">,</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;pairwise&#39;</span><span class="p">))</span>
     <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">hilbert</span>
 
     <span class="n">corrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Epochs</span><span class="p">):</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
 
     <span class="c1"># Note: This is embarassingly parallel, but the overhead of sending</span>
     <span class="c1"># the data to different workers is roughly the same as the gain of</span>
@@ -365,6 +375,9 @@
         <span class="n">indices</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">,</span>
         <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
         <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">conn</span></div>
 
@@ -492,7 +505,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-27.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-28.<br>
 </p>
     </div>
     

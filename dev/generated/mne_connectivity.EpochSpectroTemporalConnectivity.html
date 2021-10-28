@@ -313,7 +313,7 @@
 <h1>mne_connectivity.EpochSpectroTemporalConnectivity<a class="headerlink" href="#mne-connectivity-epochspectrotemporalconnectivity" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mne_connectivity.EpochSpectroTemporalConnectivity">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">EpochSpectroTemporalConnectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/base.html#EpochSpectroTemporalConnectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">EpochSpectroTemporalConnectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/base.html#EpochSpectroTemporalConnectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spectrotemporal connectivity class over Epochs.</p>
 <p>This is an array of shape (n_epochs, n_connections, n_freqs, n_times),
 or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
@@ -369,6 +369,22 @@ represents the “out nodes”. See “Notes” for more information.</p>
 <div><p>The type of method used to compute spectral analysis,
 by default None.</p>
 </div></blockquote>
+<p><strong>events</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_events, 3)</p>
+<blockquote>
+<div><p>The events typically returned by the read_events function.
+If some events don’t match the events of interest as specified
+by event_id, they will be marked as ‘IGNORED’ in the drop log.</p>
+</div></blockquote>
+<p><strong>event_id</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<blockquote>
+<div><p>The id of the event to consider. If dict,
+the keys can later be used to access associated events. Example:
+dict(auditory=1, visual=3). If int, a dict will be created with
+the id as string. If a list, all events with the IDs specified
+in the list are used. If None, all events will be used with
+and a dict is created with string integer names corresponding
+to the event id integers.</p>
+</div></blockquote>
 <p><strong>**kwargs</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <blockquote>
 <div><p>Extra connectivity parameters. These may include
@@ -407,6 +423,10 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 <blockquote>
 <div><p>The method used to compute connectivity.</p>
 </div></blockquote>
+<p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs" title="mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_epochs</span></code></a></p>
+<blockquote>
+<div><p>The number of epochs the connectivity data varies over.</p>
+</div></blockquote>
 <p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs_used" title="mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_epochs_used</span></code></a></p>
 <blockquote>
 <div><p>Number of epochs used in computation of connectivity.</p>
@@ -440,25 +460,28 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.combine" title="mne_connectivity.EpochSpectroTemporalConnectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.append" title="mne_connectivity.EpochSpectroTemporalConnectivity.append"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code></a>(epoch_conn)</p></td>
+<td><p>Append another connectivity structure.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.combine" title="mne_connectivity.EpochSpectroTemporalConnectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
 <td><p>Combine connectivity data over epochs.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.get_data" title="mne_connectivity.EpochSpectroTemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.get_data" title="mne_connectivity.EpochSpectroTemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output])</p></td>
 <td><p>Get connectivity data as a numpy array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.plot_circle" title="mne_connectivity.EpochSpectroTemporalConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.plot_circle" title="mne_connectivity.EpochSpectroTemporalConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
 <td><p>Visualize connectivity as a circular graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.predict" title="mne_connectivity.EpochSpectroTemporalConnectivity.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.predict" title="mne_connectivity.EpochSpectroTemporalConnectivity.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(data)</p></td>
 <td><p>Predict samples on actual data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.rename_nodes" title="mne_connectivity.EpochSpectroTemporalConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.rename_nodes" title="mne_connectivity.EpochSpectroTemporalConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
 <td><p>Rename nodes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.save" title="mne_connectivity.EpochSpectroTemporalConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.save" title="mne_connectivity.EpochSpectroTemporalConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
 <td><p>Save connectivity data to disk.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.simulate" title="mne_connectivity.EpochSpectroTemporalConnectivity.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(n_samples[, noise_func, random_state])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.EpochSpectroTemporalConnectivity.simulate" title="mne_connectivity.EpochSpectroTemporalConnectivity.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(n_samples[, noise_func, random_state])</p></td>
 <td><p>Simulate vector autoregressive (VAR) model.</p></td>
 </tr>
 </tbody>
@@ -469,14 +492,37 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 <col style="width: 43%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>eigvals</strong></p></td>
+<tr class="row-odd"><td><p><strong>copy</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>is_stable</strong></p></td>
+<tr class="row-even"><td><p><strong>eigvals</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>is_stable</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.EpochSpectroTemporalConnectivity.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append another connectivity structure.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>epoch_conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The Epoched Connectivity class to append.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The altered Epoched Connectivity class.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_connectivity.EpochSpectroTemporalConnectivity.attrs">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity.attrs" title="Permalink to this definition">¶</a></dt>
@@ -585,10 +631,18 @@ that connectivity was computed.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_epochs</span></span><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of epochs the connectivity data varies over.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs_used">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_epochs_used</span></span><a class="headerlink" href="#mne_connectivity.EpochSpectroTemporalConnectivity.n_epochs_used" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of epochs used in computation of connectivity.</p>
-<p>Can be ‘None’, if there was no epochs used.</p>
+<p>Can be ‘None’, if there was no epochs used. This is
+equivalent to the number of epochs, if there is no
+combining of epochs.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -906,7 +960,7 @@ obtained from the operating system (see
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-27.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-28.<br>
 </p>
     </div>
     
