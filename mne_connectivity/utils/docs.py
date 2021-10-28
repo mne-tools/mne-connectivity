@@ -85,6 +85,24 @@ n_epochs_used : int, optional
     by default None.
 """
 
+docdict['events'] = """
+events : array of int, shape (n_events, 3)
+    The events typically returned by the read_events function.
+    If some events don't match the events of interest as specified
+    by event_id, they will be marked as 'IGNORED' in the drop log.
+"""
+
+docdict['event_id'] = """
+event_id : int | list of int | dict | None
+    The id of the event to consider. If dict,
+    the keys can later be used to access associated events. Example:
+    dict(auditory=1, visual=3). If int, a dict will be created with
+    the id as string. If a list, all events with the IDs specified
+    in the list are used. If None, all events will be used with
+    and a dict is created with string integer names corresponding
+    to the event id integers.
+"""
+
 # Verbose
 docdict['verbose'] = """
 verbose : bool, str, int, or None

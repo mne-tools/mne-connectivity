@@ -6,6 +6,7 @@
 # License: BSD (3-clause)
 
 import numpy as np
+from mne import Epochs
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import (_check_option, verbose, logger, _validate_type, warn,
@@ -22,7 +23,7 @@ def envelope_correlation(data, names=None,
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | generator
+    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | generator
         The data from which to compute connectivity.
         The array-like object can also be a list/generator of array,
         each with shape (n_signals, n_times), or a :class:`~mne.SourceEstimate`
@@ -71,13 +72,22 @@ def envelope_correlation(data, names=None,
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa
     _check_option('orthogonalize', orthogonalize, (False, 'pairwise'))
     from scipy.signal import hilbert
 
     corrs = list()
 
     n_nodes = None
+
+    events = None
+    event_id = None
+    metadata = None
+    if isinstance(data, Epochs):
+        events = data.events
+        event_id = data.event_id
+        metadata = data.metadata
+        data = data.get_data()
 
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of
@@ -182,6 +192,9 @@ def envelope_correlation(data, names=None,
         indices='symmetric',
         n_epochs_used=n_epochs,
         n_nodes=n_nodes,
+        events=events,
+        event_id=event_id,
+        metadata=metadata
     )
     return conn
 

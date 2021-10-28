@@ -3,10 +3,14 @@
 # License: BSD (3-clause)
 
 import os
+from mne.annotations import Annotations, events_from_annotations
+from mne.io.meas_info import create_info
 
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
+from mne.io import RawArray
+from mne import make_fixed_length_epochs
 
 from mne_connectivity import (Connectivity, EpochConnectivity,
                               EpochSpectralConnectivity,
@@ -15,6 +19,7 @@ from mne_connectivity import (Connectivity, EpochConnectivity,
                               SpectroTemporalConnectivity,
                               TemporalConnectivity)
 from mne_connectivity.io import read_connectivity
+from mne_connectivity import envelope_correlation, vector_auto_regression
 
 
 def _prep_correct_connectivity_input(conn_cls, n_nodes=3, symmetric=False,
@@ -216,3 +221,79 @@ def test_io(conn_cls, tmpdir):
     for key, val in conn.coords.items():
         assert_array_equal(val, new_conn.coords[key])
     assert_array_equal(conn.get_data(), new_conn.get_data())
+
+
+@pytest.mark.parametrize(
+    'conn_cls', [EpochConnectivity,
+                 EpochTemporalConnectivity,
+                 EpochSpectralConnectivity,
+                 EpochSpectroTemporalConnectivity],
+)
+def test_append(conn_cls):
+    """Test appending connectivity data."""
+    correct_numpy_shape = []
+    extra_kwargs = dict()
+    if conn_cls.is_epoched:
+        correct_numpy_shape.append(4)
+    correct_numpy_shape.append(4)
+    if conn_cls in (SpectralConnectivity, SpectroTemporalConnectivity,
+                    EpochSpectralConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['freqs'] = np.arange(4)
+        correct_numpy_shape.append(4)
+    if conn_cls in (TemporalConnectivity, SpectroTemporalConnectivity,
+                    EpochTemporalConnectivity,
+                    EpochSpectroTemporalConnectivity):
+        extra_kwargs['times'] = np.arange(50)
+        correct_numpy_shape.append(50)
+
+    correct_numpy_input = np.ones(correct_numpy_shape)
+    events = np.zeros((correct_numpy_input.shape[0], 3), dtype=int)
+    events[:, -1] = 1  # event ID
+    events[:, 0] = np.linspace(0, 50, len(events))
+
+    # create the connectivity data structure
+    conn = conn_cls(data=correct_numpy_input, n_nodes=2, events=events,
+                    **extra_kwargs)
+
+    # create a copy of the connectivity
+    conn_2 = conn.copy()
+
+    # append epochs
+    conn.append(conn_2)
+    assert conn.n_epochs == conn_2.n_epochs * 2
+    assert len(conn.events) == conn.n_epochs
+
+
+@pytest.mark.parametrize(
+    'conn_func',
+    [envelope_correlation, vector_auto_regression]
+)
+def test_events_handling(conn_func):
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 10
+    n_times = 500
+    rng = np.random.RandomState(42)
+    data = rng.randn(n_signals, n_epochs * n_times)
+
+    # create Epochs
+    info = create_info(np.arange(n_signals).astype(str).tolist(), sfreq=sfreq,
+                       ch_types='eeg')
+    onset = [0, 0.5, 3]
+    duration = [0, 0, 0]
+    description = ['test1', 'test2', 'test3']
+    annots = Annotations(onset=onset, duration=duration,
+                         description=description)
+    raw = RawArray(data, info)
+    raw = raw.set_annotations(annots)
+    epochs = make_fixed_length_epochs(raw, duration=10, preload=True)
+    events, event_id = events_from_annotations(raw)
+    epochs.events = np.concatenate((epochs.events, events), axis=0)
+    epochs.event_id.update(event_id)
+    assert len(epochs) == n_epochs + 3
+    assert len(epochs.events) == n_epochs + 3
+
+    # create the connectivity data structure
+    conn = conn_func(epochs)
+    assert len(conn.events) == n_epochs + 3
