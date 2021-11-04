@@ -364,8 +364,7 @@ hurt SNR) and downsample. Then we compute SSP projectors and apply them.</p>
 <span class="n">raw</span><span class="o">.</span><span class="n">apply_gradient_compensation</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">projs_ecg</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_ecg.html#mne.preprocessing.compute_proj_ecg" title="mne.preprocessing.compute_proj_ecg" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_ecg</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">n_grad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_mag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">projs_eog</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_eog.html#mne.preprocessing.compute_proj_eog" title="mne.preprocessing.compute_proj_eog" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_eog</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">n_grad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_mag</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ch_name</span><span class="o">=</span><span class="s1">&#39;MLT31-4407&#39;</span><span class="p">)</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;projs&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">projs_ecg</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;projs&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">projs_eog</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">add_proj</span><span class="p">(</span><span class="n">projs_ecg</span> <span class="o">+</span> <span class="n">projs_eog</span><span class="p">)</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">apply_proj</span><span class="p">()</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># this helps with symmetric orthogonalization later</span>
 <a href="https://mne.tools/dev/generated/mne.Covariance.html#mne.Covariance" title="mne.Covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cov</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.compute_raw_covariance.html#mne.compute_raw_covariance" title="mne.compute_raw_covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">compute_raw_covariance</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>  <span class="c1"># compute before band-pass of interest</span>
@@ -440,10 +439,6 @@ No EEG channels found. Forcing n_eeg to 0
 Adding projection: axial--0.200-0.200-PCA-01
 Adding projection: axial--0.200-0.200-PCA-02
 Done.
-/home/circleci/project/examples/mne_inverse_envelope_correlation.py:70: DeprecationWarning: projs cannot be set directly. This warning will turn into an error after 0.24
-  raw.info[&#39;projs&#39;] += projs_ecg
-/home/circleci/project/examples/mne_inverse_envelope_correlation.py:71: DeprecationWarning: projs cannot be set directly. This warning will turn into an error after 0.24
-  raw.info[&#39;projs&#39;] += projs_eog
 Using up to 300 segments
 Number of samples used : 4800
 [done]
@@ -873,7 +868,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7f7c367a1610&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f93979cc430&gt;
 </pre></div>
 </div>
 </section>
@@ -891,7 +886,7 @@ Using control points [26. 29. 32.]
 </dd>
 </dl>
 </p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  15.457 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  21.253 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
@@ -938,7 +933,7 @@ Using control points [26. 29. 32.]
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-10-28.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-11-04.<br>
 </p>
     </div>
     
