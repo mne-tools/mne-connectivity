@@ -67,8 +67,7 @@ raw.crop(0, 60).pick_types(meg=True, eeg=False).load_data().resample(80)
 raw.apply_gradient_compensation(3)
 projs_ecg, _ = compute_proj_ecg(raw, n_grad=1, n_mag=2)
 projs_eog, _ = compute_proj_eog(raw, n_grad=1, n_mag=2, ch_name='MLT31-4407')
-raw.info['projs'] += projs_ecg
-raw.info['projs'] += projs_eog
+raw.add_proj(projs_ecg + projs_eog)
 raw.apply_proj()
 raw.filter(0.1, None)  # this helps with symmetric orthogonalization later
 cov = mne.compute_raw_covariance(raw)  # compute before band-pass of interest
