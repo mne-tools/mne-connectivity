@@ -8,7 +8,7 @@ from inspect import getmembers
 
 import numpy as np
 from mne.epochs import BaseEpochs
-from mne.fixes import _get_args, _import_fft
+from mne.fixes import _get_args
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.time_frequency.multitaper import (_compute_mt_params, _csd_from_mt,
@@ -982,7 +982,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           mode, fskip, n_bands,
                           cwt_freqs, faverage):
     """Check and precompute dimensions of results data."""
-    rfftfreq = _import_fft('rfftfreq')
+    from scipy.fft import rfftfreq
     first_epoch = epoch_block[0]
 
     # get the data size and time scale
