@@ -94,7 +94,7 @@ def test_envelope_correlation():
     assert_allclose(corr.squeeze(), corr_orig)
 
     # degenerate
-    with pytest.raises(ValueError, match='float'):
+    with pytest.raises(ValueError, match='dtype must be float or complex'):
         envelope_correlation(data.astype(int))
     with pytest.raises(ValueError, match='entry in data must be 2D'):
         envelope_correlation(data[np.newaxis])
