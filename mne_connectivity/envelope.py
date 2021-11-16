@@ -107,7 +107,7 @@ def envelope_correlation(data, names=None,
 
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
-        if np.isrealobj(epoch_data):
+        if np.issubdtype(epoch_data.dtype, np.floating):
             n_fft = next_fast_len(n_times)
             epoch_data = hilbert(epoch_data, N=n_fft, axis=-1)[..., :n_times]
 
