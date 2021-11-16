@@ -21,6 +21,7 @@ def pytest_configure(config):
     error::
     ignore:.*`np.bool` is a deprecated alias.*:DeprecationWarning
     ignore:.*String decoding changed with h5py.*:FutureWarning
+    ignore:.*SelectableGroups dict interface is deprecated.*:DeprecationWarning
     always::ResourceWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):

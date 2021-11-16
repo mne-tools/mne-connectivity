@@ -45,7 +45,7 @@ def envelope_correlation(data, names=None,
         If True (default), then take the absolute value of correlation
         coefficients before making each epoch's correlation matrix
         symmetric (and thus before combining matrices across epochs).
-        Only used when ``orthogonalize='symmetric'``.
+        Only used when ``orthogonalize='pairwise'``.
     %(verbose)s
 
     Returns
@@ -107,11 +107,11 @@ def envelope_correlation(data, names=None,
 
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
-        if epoch_data.dtype in (np.float32, np.float64):
+        if np.issubdtype(epoch_data.dtype, np.floating):
             n_fft = next_fast_len(n_times)
             epoch_data = hilbert(epoch_data, N=n_fft, axis=-1)[..., :n_times]
 
-        if epoch_data.dtype not in (np.complex64, np.complex128):
+        if not np.iscomplexobj(epoch_data):
             raise ValueError('data.dtype must be float or complex, got %s'
                              % (epoch_data.dtype,))
         data_mag = np.abs(epoch_data)
@@ -153,7 +153,7 @@ def envelope_correlation(data, names=None,
             corr[li] = np.sum(label_data_orth * data_mag_nomean, axis=1)
             corr[li] /= data_mag_std
             corr[li] /= label_data_orth_std
-        if orthogonalize is not False:
+        if orthogonalize:
             # Make it symmetric (it isn't at this point)
             if absolute:
                 corr = np.abs(corr)
