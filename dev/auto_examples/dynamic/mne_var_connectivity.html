@@ -373,21 +373,24 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▉                                   | 4.61M/88.2M [00:00&lt;00:01, 46.1MB/s]
- 12%|████▌                                | 10.9M/88.2M [00:00&lt;00:01, 55.7MB/s]
- 19%|███████                              | 16.9M/88.2M [00:00&lt;00:01, 58.0MB/s]
- 27%|██████████                           | 24.0M/88.2M [00:00&lt;00:01, 62.9MB/s]
- 34%|████████████▋                        | 30.3M/88.2M [00:00&lt;00:00, 63.1MB/s]
- 43%|███████████████▉                     | 37.9M/88.2M [00:00&lt;00:00, 67.4MB/s]
- 52%|███████████████████▎                 | 45.9M/88.2M [00:00&lt;00:00, 71.6MB/s]
- 61%|██████████████████████▋              | 53.9M/88.2M [00:00&lt;00:00, 74.3MB/s]
- 70%|█████████████████████████▉           | 61.9M/88.2M [00:00&lt;00:00, 76.0MB/s]
- 79%|█████████████████████████████▏       | 69.5M/88.2M [00:01&lt;00:00, 75.6MB/s]
- 87%|████████████████████████████████▎    | 77.1M/88.2M [00:01&lt;00:00, 73.6MB/s]
- 96%|███████████████████████████████████▌ | 84.6M/88.2M [00:01&lt;00:00, 74.1MB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
+
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 147GB/s]
+  5%|█▊                                   | 4.47M/88.2M [00:00&lt;00:01, 44.7MB/s]
+ 12%|████▌                                | 11.0M/88.2M [00:00&lt;00:01, 56.8MB/s]
+ 20%|███████▍                             | 17.7M/88.2M [00:00&lt;00:01, 61.6MB/s]
+ 28%|██████████▎                          | 24.4M/88.2M [00:00&lt;00:00, 63.7MB/s]
+ 35%|█████████████                        | 31.2M/88.2M [00:00&lt;00:00, 65.3MB/s]
+ 43%|███████████████▉                     | 38.1M/88.2M [00:00&lt;00:00, 66.5MB/s]
+ 51%|██████████████████▊                  | 44.8M/88.2M [00:00&lt;00:00, 66.7MB/s]
+ 59%|█████████████████████▋               | 51.6M/88.2M [00:00&lt;00:00, 67.1MB/s]
+ 66%|████████████████████████▍            | 58.3M/88.2M [00:00&lt;00:00, 66.7MB/s]
+ 74%|███████████████████████████▎         | 65.1M/88.2M [00:01&lt;00:00, 67.1MB/s]
+ 82%|██████████████████████████████▏      | 71.9M/88.2M [00:01&lt;00:00, 67.3MB/s]
+ 89%|████████████████████████████████▉    | 78.6M/88.2M [00:01&lt;00:00, 66.9MB/s]
+ 97%|███████████████████████████████████▊ | 85.3M/88.2M [00:01&lt;00:00, 66.3MB/s]
+  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 130GB/s]
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The required channels are:
@@ -891,21 +894,54 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|6         | 20/302 [00:00&lt;00:01, 195.29it/s]
- 14%|#3        | 41/302 [00:00&lt;00:01, 198.60it/s]
- 21%|##        | 62/302 [00:00&lt;00:01, 199.58it/s]
- 27%|##7       | 83/302 [00:00&lt;00:01, 199.93it/s]
- 34%|###4      | 103/302 [00:00&lt;00:00, 199.70it/s]
- 41%|####1     | 124/302 [00:00&lt;00:00, 200.93it/s]
- 48%|####8     | 145/302 [00:00&lt;00:00, 199.74it/s]
- 55%|#####4    | 165/302 [00:00&lt;00:00, 197.03it/s]
- 61%|######1   | 185/302 [00:00&lt;00:00, 197.18it/s]
- 68%|######7   | 205/302 [00:01&lt;00:00, 196.22it/s]
- 75%|#######4  | 226/302 [00:01&lt;00:00, 197.53it/s]
- 82%|########1 | 247/302 [00:01&lt;00:00, 198.56it/s]
- 89%|########8 | 268/302 [00:01&lt;00:00, 199.78it/s]
- 96%|#########5| 289/302 [00:01&lt;00:00, 201.75it/s]
-100%|##########| 302/302 [00:01&lt;00:00, 199.61it/s]
+  4%|4         | 13/302 [00:00&lt;00:02, 123.40it/s]
+  9%|8         | 26/302 [00:00&lt;00:03, 81.08it/s]
+ 12%|#1        | 35/302 [00:00&lt;00:04, 66.60it/s]
+ 14%|#4        | 43/302 [00:00&lt;00:03, 65.61it/s]
+ 17%|#6        | 50/302 [00:00&lt;00:04, 55.51it/s]
+ 19%|#8        | 56/302 [00:00&lt;00:04, 55.82it/s]
+ 21%|##        | 62/302 [00:00&lt;00:04, 55.24it/s]
+ 23%|##2       | 68/302 [00:01&lt;00:04, 55.54it/s]
+ 25%|##4       | 74/302 [00:01&lt;00:04, 48.46it/s]
+ 26%|##6       | 80/302 [00:01&lt;00:04, 49.82it/s]
+ 28%|##8       | 86/302 [00:01&lt;00:04, 51.65it/s]
+ 30%|###       | 92/302 [00:01&lt;00:04, 52.46it/s]
+ 32%|###2      | 98/302 [00:01&lt;00:03, 53.57it/s]
+ 34%|###4      | 104/302 [00:01&lt;00:04, 46.49it/s]
+ 36%|###6      | 110/302 [00:01&lt;00:03, 49.17it/s]
+ 38%|###8      | 116/302 [00:02&lt;00:03, 50.66it/s]
+ 40%|####      | 122/302 [00:02&lt;00:03, 52.01it/s]
+ 42%|####2     | 128/302 [00:02&lt;00:03, 52.92it/s]
+ 44%|####4     | 134/302 [00:02&lt;00:03, 46.69it/s]
+ 46%|####6     | 140/302 [00:02&lt;00:03, 49.40it/s]
+ 48%|####8     | 146/302 [00:02&lt;00:02, 52.03it/s]
+ 50%|#####     | 152/302 [00:02&lt;00:02, 53.54it/s]
+ 52%|#####2    | 158/302 [00:02&lt;00:02, 54.45it/s]
+ 54%|#####4    | 164/302 [00:02&lt;00:02, 55.22it/s]
+ 56%|#####6    | 170/302 [00:03&lt;00:02, 56.32it/s]
+ 58%|#####8    | 176/302 [00:03&lt;00:02, 56.32it/s]
+ 60%|######    | 182/302 [00:03&lt;00:02, 56.99it/s]
+ 62%|######2   | 188/302 [00:03&lt;00:01, 57.17it/s]
+ 64%|######4   | 194/302 [00:03&lt;00:02, 50.06it/s]
+ 66%|######6   | 200/302 [00:03&lt;00:01, 51.93it/s]
+ 68%|######8   | 206/302 [00:03&lt;00:01, 53.34it/s]
+ 70%|#######   | 212/302 [00:03&lt;00:01, 54.54it/s]
+ 72%|#######2  | 218/302 [00:03&lt;00:01, 55.32it/s]
+ 74%|#######4  | 224/302 [00:04&lt;00:01, 55.97it/s]
+ 76%|#######6  | 230/302 [00:04&lt;00:01, 56.39it/s]
+ 78%|#######8  | 236/302 [00:04&lt;00:01, 56.04it/s]
+ 80%|########  | 242/302 [00:04&lt;00:01, 55.61it/s]
+ 82%|########2 | 248/302 [00:04&lt;00:01, 48.42it/s]
+ 84%|########4 | 254/302 [00:04&lt;00:00, 50.82it/s]
+ 86%|########6 | 260/302 [00:04&lt;00:00, 51.81it/s]
+ 88%|########8 | 266/302 [00:04&lt;00:00, 52.75it/s]
+ 90%|######### | 272/302 [00:04&lt;00:00, 53.66it/s]
+ 92%|#########2| 278/302 [00:05&lt;00:00, 54.28it/s]
+ 94%|#########4| 284/302 [00:05&lt;00:00, 47.31it/s]
+ 96%|#########6| 290/302 [00:05&lt;00:00, 49.69it/s]
+ 98%|#########8| 296/302 [00:05&lt;00:00, 51.89it/s]
+100%|##########| 302/302 [00:05&lt;00:00, 53.86it/s]
+100%|##########| 302/302 [00:05&lt;00:00, 54.08it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -956,7 +992,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading data for 302 events and 500 original time points ...
 Loading data for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f93b44b43d0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7fcd7ee51340&gt;
 </pre></div>
 </div>
 </section>
@@ -1025,10 +1061,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading data for 302 events and 500 original time points ...
 Loading data for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f9397e0f2e0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7fcdbe0d4160&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  57.629 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  6.223 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1068,13 +1104,13 @@ Loading data for 302 events and 500 original time points ...
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-11-04.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
 </p>
     </div>
     
