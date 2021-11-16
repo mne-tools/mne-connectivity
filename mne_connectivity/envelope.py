@@ -45,7 +45,7 @@ def envelope_correlation(data, names=None,
         If True (default), then take the absolute value of correlation
         coefficients before making each epoch's correlation matrix
         symmetric (and thus before combining matrices across epochs).
-        Only used when ``orthogonalize='symmetric'``.
+        Only used when ``orthogonalize='pairwise'``.
     %(verbose)s
 
     Returns
