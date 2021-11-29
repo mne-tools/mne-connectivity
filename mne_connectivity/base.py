@@ -370,7 +370,7 @@ class _Connectivity(DynamicMixin):
     is_epoched = False
 
     def __init__(self, data, names, indices, method,
-                 n_nodes, **kwargs):
+                 n_nodes, metadata=None, **kwargs):
 
         if isinstance(indices, str) and \
                 indices not in ['all', 'symmetric']:
@@ -383,6 +383,9 @@ class _Connectivity(DynamicMixin):
         self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
         self._prepare_xarray(data, names=names, indices=indices,
                              n_nodes=n_nodes, method=method, **kwargs)
+
+        # prepare metadata pandas dataframe
+        self.metadata = metadata
 
     def __repr__(self) -> str:
         r = f'<{self.__class__.__name__} | '
@@ -517,6 +520,9 @@ class _Connectivity(DynamicMixin):
 
     def copy(self):
         return deepcopy(self)
+
+    def get_epoch_annotations(self):
+        pass
 
     @property
     def n_epochs(self):
