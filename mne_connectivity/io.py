@@ -1,5 +1,6 @@
 import numpy as np
 import xarray as xr
+import pandas as pd
 
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
@@ -37,9 +38,19 @@ def _xarray_to_conn(array, cls_func):
     # get the names
     names = array.attrs['node_names']
 
+    # get metadata if it's in attrs
+    metadata_index = array.attrs.pop('metadata_index')
+    metadata_cols = array.attrs.pop('metadata_cols')
+    metadata_arr = array.attrs.pop('metadata_arr')
+    if metadata_arr is not None:
+        metadata = pd.DataFrame(metadata_arr, index=metadata_index,
+                                columns=metadata_cols)
+    else:
+        metadata = None
+
     # create the connectivity class
     conn = cls_func(
-        data=data, names=names, **array.attrs
+        data=data, names=names, metadata=metadata, **array.attrs
     )
     return conn
 

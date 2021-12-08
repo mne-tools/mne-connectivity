@@ -393,18 +393,14 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
                              f'should be a list of tuples. '
                              f'It cannot be {indices}.')
 
-        # check the incoming data structure
-        self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
-        self._prepare_xarray(data, names=names, indices=indices,
-                             n_nodes=n_nodes, method=method, **kwargs)
-
         # prepare metadata pandas dataframe
         self.metadata = metadata
 
-        # generate events and event_id that originate from Epochs class
-        # which stores the windows of Raw that were used to generate
-        # the corresponding connectivity data
-        self._init_epochs(events, event_id, on_missing='warn')
+        # check the incoming data structure
+        self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
+        self._prepare_xarray(data, names=names, indices=indices,
+                             n_nodes=n_nodes, method=method, events=events,
+                             event_id=event_id, **kwargs)
 
     def __repr__(self) -> str:
         r = f'<{self.__class__.__name__} | '
@@ -432,8 +428,13 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         self.n_estimated_nodes = data.shape[start_idx]
 
     def _prepare_xarray(self, data, names, indices, n_nodes, method,
-                        **kwargs):
+                        events, event_id, **kwargs):
         """Prepare xarray data structure."""
+        # generate events and event_id that originate from Epochs class
+        # which stores the windows of Raw that were used to generate
+        # the corresponding connectivity data
+        self._init_epochs(events, event_id, on_missing='warn')
+
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
@@ -474,6 +475,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         kwargs['method'] = method
         kwargs['indices'] = indices
         kwargs['n_nodes'] = n_nodes
+        kwargs['events'] = self.events
+        # kwargs['event_id'] = self.event_id
 
         # create xarray object
         xarray_obj = xr.DataArray(
@@ -635,6 +638,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         size = 0
         size += object_size(self._data)
         size += object_size(self.attrs)
+
+        if self.metadata is not None:
+            size += self.metadata.memory_usage(index=True).sum()
         return size
 
     def get_data(self, output='compact'):
@@ -789,6 +795,15 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         # save the name of the connectivity structure
         self.attrs['data_structure'] = str(self.__class__.__name__)
+
+        # get a copy of metadata into attrs as a dictionary
+        if self.metadata is not None:
+            self.attrs['metadata_arr'] = self.metadata.to_numpy()
+            self.attrs['metadata_cols'] = self.metadata.columns.values
+            self.attrs['metadata_index'] = self.metadata.index.values
+
+        # if self.event_id is not None:
+        #     self.attrs['event_id'] = self.event_id
 
         # netCDF does not support 'None'
         # so map these to 'n/a'

@@ -295,19 +295,20 @@ def test_append(conn_cls):
      envelope_correlation, phase_slope_index]
 )
 def test_events_handling(conn_func):
+    """Test that events and event_id are passed through correctly."""
     epochs = _make_test_epochs()
     n_epochs = len(epochs)
     assert len(epochs.events) == n_epochs
 
     # create the connectivity data structure
-    conn = conn_func(epochs)
+    conn = conn_func(epochs, verbose=False)
     assert len(conn.events) == n_epochs
 
 
 @pytest.mark.parametrize(
     'func', [vector_auto_regression, spectral_connectivity,
              envelope_correlation, phase_slope_index])
-def test_metadata_handling(func):
+def test_metadata_handling(func, tmpdir):
     """Test the presence of metadata is handled properly."""
     # create Epochs
     epochs = _make_test_epochs()
@@ -321,3 +322,16 @@ def test_metadata_handling(func):
     # number of rows
     assert 'Annotations' in metadata.columns
     assert len(metadata) == len(epochs)
+
+    # temporary conn save
+    fname = os.path.join(tmpdir, 'connectivity.nc')
+    conn.save(fname)
+
+    new_conn = read_connectivity(fname)
+    # assert these two objects are the same
+    assert_array_equal(conn.names, new_conn.names)
+    assert conn.dims == new_conn.dims
+    for key, val in conn.coords.items():
+        assert_array_equal(val, new_conn.coords[key])
+    assert_array_equal(conn.get_data(), new_conn.get_data())
+    assert metadata.equals(new_conn.metadata)
