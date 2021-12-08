@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 from scipy.linalg import sqrtm
 from tqdm import tqdm
-from mne import Epochs
+from mne import BaseEpochs
 
 from mne.utils import logger
 
@@ -123,13 +123,21 @@ def vector_auto_regression(
 
     events = None
     event_id = None
-    # metadata = None
-    if isinstance(data, Epochs):
+    if isinstance(data, BaseEpochs):
         events = data.events
         event_id = data.event_id
         times = data.times
-        # metadata = data.metadata
+
+        # Extract metadata from the Epochs data structure.
+        # Make Annotations persist through by adding them to the metadata.
+        if hasattr(data, 'annotations'):
+            data.add_annotations_to_metadata()
+        metadata = data.metadata
+
+        # get the actual data in numpy
         data = data.get_data()
+    else:
+        metadata = None
 
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape
@@ -160,7 +168,9 @@ def vector_auto_regression(
         conn = Connectivity(data=coef, n_nodes=n_nodes, names=names,
                             n_epochs_used=n_epochs,
                             times_used=times,
-                            method='VAR', **model_params)
+                            method='VAR', metadata=metadata,
+                            events=events, event_id=event_id,
+                            **model_params)
     else:
         assert model == 'dynamic'
         if times is None and n_epochs > 1:
@@ -172,11 +182,30 @@ def vector_auto_regression(
         # compute time-varying VAR model where each epoch
         # is one sample of a time-varying multivariate time-series
         # linear system
-        conn = _system_identification(
+        A_mats = _system_identification(
             data=data, times=times, names=names, lags=lags,
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator)
-        conn._init_epochs(events=events, event_id=event_id)
+        # create connectivity
+        if lags > 1:
+            conn = EpochTemporalConnectivity(data=A_mats,
+                                             times=list(range(lags)),
+                                             n_nodes=n_nodes, names=names,
+                                             n_epochs_used=n_epochs,
+                                             times_used=times,
+                                             method='Time-varying VAR(p)',
+                                             metadata=metadata,
+                                             events=events, event_id=event_id,
+                                             **model_params)
+        else:
+            conn = EpochConnectivity(data=A_mats, n_nodes=n_nodes,
+                                     names=names,
+                                     n_epochs_used=n_epochs,
+                                     times_used=times,
+                                     method='Time-varying VAR(1)',
+                                     metadata=metadata,
+                                     events=events, event_id=event_id,
+                                     **model_params)
     return conn
 
 
@@ -311,24 +340,7 @@ def _system_identification(data, times, names, lags, l2_reg=0,
         A_mats = A_mats.reshape((n_epochs, -1))
     else:
         A_mats = A_mats.reshape((n_epochs, -1, lags))
-
-    # create connectivity
-    if lags > 1:
-        conn = EpochTemporalConnectivity(data=A_mats,
-                                         times=list(range(lags)),
-                                         n_nodes=n_nodes, names=names,
-                                         n_epochs_used=n_epochs,
-                                         times_used=times,
-                                         method='Time-varying VAR(p)',
-                                         **model_params)
-    else:
-        conn = EpochConnectivity(data=A_mats, n_nodes=n_nodes,
-                                 names=names,
-                                 n_epochs_used=n_epochs,
-                                 times_used=times,
-                                 method='Time-varying VAR(1)',
-                                 **model_params)
-    return conn
+    return A_mats
 
 
 def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):

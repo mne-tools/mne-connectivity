@@ -6,7 +6,7 @@
 # License: BSD (3-clause)
 
 import numpy as np
-from mne import Epochs
+from mne import BaseEpochs
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import (_check_option, verbose, logger, _validate_type, warn,
@@ -82,12 +82,20 @@ def envelope_correlation(data, names=None,
 
     events = None
     event_id = None
-    metadata = None
-    if isinstance(data, Epochs):
+    if isinstance(data, BaseEpochs):
         events = data.events
         event_id = data.event_id
+
+        # Extract metadata from the Epochs data structure.
+        # Make Annotations persist through by adding them to the metadata.
+        if hasattr(data, 'annotations'):
+            data.add_annotations_to_metadata()
         metadata = data.metadata
+
+        # get the actual data in numpy
         data = data.get_data()
+    else:
+        metadata = None
 
     # Note: This is embarassingly parallel, but the overhead of sending
     # the data to different workers is roughly the same as the gain of

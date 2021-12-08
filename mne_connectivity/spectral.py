@@ -779,11 +779,22 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
     (con_method_types, n_methods, accumulate_psd,
      n_comp_args) = _check_estimators(method=method, mode=mode)
 
+    events = None
+    event_id = None
     if isinstance(data, BaseEpochs):
         times_in = data.times  # input times for Epochs input type
         sfreq = data.info['sfreq']
+
+        events = data.events
+        event_id = data.event_id
+        # Extract metadata from the Epochs data structure.
+        # Make Annotations persist through by adding them to the metadata.
+        if hasattr(data, 'annotations'):
+            data.add_annotations_to_metadata()
+        metadata = data.metadata
     else:
         times_in = None
+        metadata = None
 
     # loop over data; it could be a generator that returns
     # (n_signals x n_times) arrays or SourceEstimates
@@ -958,6 +969,9 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
                       freqs_used=freqs_used,
                       times_used=times,
                       n_tapers=n_tapers,
+                      metadata=metadata,
+                      events=events,
+                      event_id=event_id
                       )
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
