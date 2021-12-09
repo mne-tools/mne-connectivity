@@ -320,7 +320,9 @@ def test_metadata_handling(func, tmpdir):
 
     # each metadata frame should have an Annotations column with n_epochs
     # number of rows
-    assert 'Annotations' in metadata.columns
+    assert 'Annotations_onset' in metadata.columns
+    assert 'Annotations_duration' in metadata.columns
+    assert 'Annotations_description' in metadata.columns
     assert len(metadata) == len(epochs)
 
     # temporary conn save

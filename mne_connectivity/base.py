@@ -5,7 +5,8 @@ import xarray as xr
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt, _check_event_id, _ensure_events,
-                       _on_missing, warn, check_random_state)
+                       _on_missing, warn, check_random_state,
+                       _prepare_write_metadata)
 
 from mne_connectivity.utils import fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
@@ -798,12 +799,12 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         # get a copy of metadata into attrs as a dictionary
         if self.metadata is not None:
-            self.attrs['metadata_arr'] = self.metadata.to_numpy()
-            self.attrs['metadata_cols'] = self.metadata.columns.values
-            self.attrs['metadata_index'] = self.metadata.index.values
+            self.attrs['metadata'] = _prepare_write_metadata(self.metadata)
 
-        # if self.event_id is not None:
-        #     self.attrs['event_id'] = self.event_id
+        # write event IDs since they are stored as a list instead
+        if self.event_id is not None:
+            self.attrs['event_id_keys'] = list(self.event_id.keys())
+            self.attrs['event_id_vals'] = list(self.event_id.values())
 
         # netCDF does not support 'None'
         # so map these to 'n/a'
