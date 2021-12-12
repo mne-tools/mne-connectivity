@@ -316,7 +316,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     # Draw node labels
     angles_deg = 180 * node_angles / np.pi
     for name, angle_rad, angle_deg in zip(node_names, node_angles, angles_deg):
-        if angle_deg >= 270:
+        if angle_deg >= 270 or angle_deg < 90:
             ha = 'left'
         else:
             # Flip the label, so text is always upright
