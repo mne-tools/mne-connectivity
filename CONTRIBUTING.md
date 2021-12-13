@@ -55,3 +55,15 @@ or
     $ make html-noplot
 
 if you don't want to run the examples to build the documentation. This will result in a faster build but produce no plots in the examples.
+
+### Issues with Memory Usage
+
+All documentation examples are built on a CI pipeline that occurs online for free. For example, our docs are built with circleCI perhaps. This limits the ability for us to run large data examples that have a lot of RAM usage. For this reason, many times we crop, downsample, or limit the analysis in some way to reduce RAM usage.
+
+Some good tools for profiling memory are ``mprof``. For example, one can memory profile a specific example, such as:
+
+    mprof run examples/connectivity_classes.py
+
+Then one could plot the memory usage:
+
+    mprof plot
