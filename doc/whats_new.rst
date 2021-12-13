@@ -33,6 +33,7 @@ Bug
 
 - Fixed bug when saving connectivity with ``n_jobs`` greater than 1 from :func:`mne_connectivity.spectral_connectivity`, by `Adam Li`_ (:gh:`43`)
 - Fixed bug to allow saving complex data connectivity, by `Adam Li`_ (:gh:`43`)
+- Fixed bug to keep label orientation upright in :func:`mne_connectivity.viz.circle.plot_connectivity_circle`, by `Alexander Kroner`_ (:gh:`60`)
 
 API
 ~~~
@@ -46,6 +47,7 @@ Authors
 
 * `Adam Li`_
 * `Eric Larson`_
+* `Alexander Kroner`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
