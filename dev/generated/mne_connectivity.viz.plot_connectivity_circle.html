@@ -332,7 +332,7 @@
 <dd><p>Visualize connectivity as a circular graph.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<dd class="field-odd"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
 <blockquote>
 <div><p>Connectivity scores. Can be a square matrix, or a 1D array. If a 1D
 array is provided, “indices” has to be used to define the connection
@@ -342,7 +342,7 @@ indices.</p>
 <blockquote>
 <div><p>Node names. The order corresponds to the order in con.</p>
 </div></blockquote>
-<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Two arrays with indices of connections for which the connections
 strengths are defined in con. Only needed if con is a 1D array.</p>
@@ -352,7 +352,7 @@ strengths are defined in con. Only needed if con is a 1D array.</p>
 <div><p>If not None, only the n_lines strongest connections (strength=abs(con))
 are drawn.</p>
 </div></blockquote>
-<p><strong>node_angles</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_node_names,) | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<p><strong>node_angles</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_node_names,) | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Array with node positions in degrees. If None, the nodes are equally
 spaced on the circle. See mne.viz.circular_layout.</p>
@@ -384,7 +384,7 @@ matplotlib can be used, e.g., RGBA tuples, named colors.</p>
 <blockquote>
 <div><p>Line width to use for connections.</p>
 </div></blockquote>
-<p><strong>colormap</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></p>
+<p><strong>colormap</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></p>
 <blockquote>
 <div><p>Colormap to use for coloring the connections.</p>
 </div></blockquote>
@@ -428,7 +428,7 @@ matplotlib can be used, e.g., RGBA tuples, named colors.</p>
 <blockquote>
 <div><p>Space to add around figure to accommodate long labels.</p>
 </div></blockquote>
-<p><strong>fig</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
+<p><strong>fig</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure to use. If None, a new figure with the specified background
 color will be created.</p>
@@ -454,11 +454,11 @@ node. Right-click shows all connections.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>fig</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
+<dd class="field-even"><p><strong>fig</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure handle.</p>
 </div></blockquote>
-<p><strong>axes</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/projections_api.html#matplotlib.projections.polar.PolarAxes" title="(in Matplotlib v3.4.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.projections.polar.PolarAxes</span></code></a></p>
+<p><strong>axes</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/projections_api.html#matplotlib.projections.polar.PolarAxes" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.projections.polar.PolarAxes</span></code></a></p>
 <blockquote>
 <div><p>The subplot handle.</p>
 </div></blockquote>
@@ -466,13 +466,13 @@ node. Right-click shows all connections.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>This code is based on a circle graph example by Nicolas P. Rougier</p>
-<p>By default, <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.4.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a> does not take <code class="docutils literal notranslate"><span class="pre">facecolor</span></code>
+<p>By default, <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a> does not take <code class="docutils literal notranslate"><span class="pre">facecolor</span></code>
 into account when saving, even if set when a figure is generated. This
 can be addressed via, e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span> 
 </pre></div>
 </div>
-<p>If <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> is not set via <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.4.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a>, the
+<p>If <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> is not set via <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a>, the
 figure labels, title, and legend may be cut off in the output figure.</p>
 </dd></dl>
 
@@ -527,13 +527,13 @@ figure labels, title, and legend may be cut off in the output figure.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-11-16.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
 </p>
     </div>
     

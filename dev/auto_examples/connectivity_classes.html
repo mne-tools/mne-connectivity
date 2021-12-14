@@ -320,7 +320,7 @@ how we can interact with the connectivity class.</p>
 <span class="c1"># Compute connectivity for the alpha band that contains the evoked response</span>
 <span class="c1"># (4-9 Hz). We exclude the baseline period:</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">9.</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwt_freqs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwt_freqs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># exclude the baseline period</span>
 <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.load_data" title="mne.Epochs.load_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">()</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="s1">&#39;grad&#39;</span><span class="p">)</span>  <span class="c1"># just keep MEG and no EOG now</span>
@@ -339,7 +339,6 @@ how we can interact with the connectivity class.</p>
         Average EEG reference (1 x 60)  idle
     Range : 6450 ... 48149 =     42.956 ...   320.665 secs
 Ready.
-Not setting metadata
 Not setting metadata
 73 matching events found
 Setting baseline interval to [-0.19979521315838786, 0.0] sec
@@ -379,7 +378,7 @@ Connectivity computation...
 only using indices for lower-triangular matrix
     computing connectivity for 20503 connections
     using t=0.000s..1.498s for estimation (226 points)
-    frequencies: 4.0Hz..9.0Hz (20 points)
+    frequencies: 4.0Hz..9.0Hz (5 points)
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: PLI
     computing connectivity for epoch 1
@@ -554,7 +553,7 @@ following are some basic attributes of connectivity classes.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(&#39;node_in -&gt; node_out&#39;, &#39;freqs&#39;, &#39;times&#39;)
 Coordinates:
   * node_in -&gt; node_out  (node_in -&gt; node_out) &lt;U5 &#39;0&#39; &#39;1&#39; ... &#39;41207&#39; &#39;41208&#39;
-  * freqs                (freqs) float64 4.0 4.263 4.526 ... 8.474 8.737 9.0
+  * freqs                (freqs) float64 4.0 5.25 6.5 7.75 9.0
   * times                (times) float64 0.0 0.00666 0.01332 ... 1.492 1.498
 203
 [&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;, &#39;9&#39;, &#39;10&#39;, &#39;11&#39;, &#39;12&#39;, &#39;13&#39;, &#39;14&#39;, &#39;15&#39;, &#39;16&#39;, &#39;17&#39;, &#39;18&#39;, &#39;19&#39;, &#39;20&#39;, &#39;21&#39;, &#39;22&#39;, &#39;23&#39;, &#39;24&#39;, &#39;25&#39;, &#39;26&#39;, &#39;27&#39;, &#39;28&#39;, &#39;29&#39;, &#39;30&#39;, &#39;31&#39;, &#39;32&#39;, &#39;33&#39;, &#39;34&#39;, &#39;35&#39;, &#39;36&#39;, &#39;37&#39;, &#39;38&#39;, &#39;39&#39;, &#39;40&#39;, &#39;41&#39;, &#39;42&#39;, &#39;43&#39;, &#39;44&#39;, &#39;45&#39;, &#39;46&#39;, &#39;47&#39;, &#39;48&#39;, &#39;49&#39;, &#39;50&#39;, &#39;51&#39;, &#39;52&#39;, &#39;53&#39;, &#39;54&#39;, &#39;55&#39;, &#39;56&#39;, &#39;57&#39;, &#39;58&#39;, &#39;59&#39;, &#39;60&#39;, &#39;61&#39;, &#39;62&#39;, &#39;63&#39;, &#39;64&#39;, &#39;65&#39;, &#39;66&#39;, &#39;67&#39;, &#39;68&#39;, &#39;69&#39;, &#39;70&#39;, &#39;71&#39;, &#39;72&#39;, &#39;73&#39;, &#39;74&#39;, &#39;75&#39;, &#39;76&#39;, &#39;77&#39;, &#39;78&#39;, &#39;79&#39;, &#39;80&#39;, &#39;81&#39;, &#39;82&#39;, &#39;83&#39;, &#39;84&#39;, &#39;85&#39;, &#39;86&#39;, &#39;87&#39;, &#39;88&#39;, &#39;89&#39;, &#39;90&#39;, &#39;91&#39;, &#39;92&#39;, &#39;93&#39;, &#39;94&#39;, &#39;95&#39;, &#39;96&#39;, &#39;97&#39;, &#39;98&#39;, &#39;99&#39;, &#39;100&#39;, &#39;101&#39;, &#39;102&#39;, &#39;103&#39;, &#39;104&#39;, &#39;105&#39;, &#39;106&#39;, &#39;107&#39;, &#39;108&#39;, &#39;109&#39;, &#39;110&#39;, &#39;111&#39;, &#39;112&#39;, &#39;113&#39;, &#39;114&#39;, &#39;115&#39;, &#39;116&#39;, &#39;117&#39;, &#39;118&#39;, &#39;119&#39;, &#39;120&#39;, &#39;121&#39;, &#39;122&#39;, &#39;123&#39;, &#39;124&#39;, &#39;125&#39;, &#39;126&#39;, &#39;127&#39;, &#39;128&#39;, &#39;129&#39;, &#39;130&#39;, &#39;131&#39;, &#39;132&#39;, &#39;133&#39;, &#39;134&#39;, &#39;135&#39;, &#39;136&#39;, &#39;137&#39;, &#39;138&#39;, &#39;139&#39;, &#39;140&#39;, &#39;141&#39;, &#39;142&#39;, &#39;143&#39;, &#39;144&#39;, &#39;145&#39;, &#39;146&#39;, &#39;147&#39;, &#39;148&#39;, &#39;149&#39;, &#39;150&#39;, &#39;151&#39;, &#39;152&#39;, &#39;153&#39;, &#39;154&#39;, &#39;155&#39;, &#39;156&#39;, &#39;157&#39;, &#39;158&#39;, &#39;159&#39;, &#39;160&#39;, &#39;161&#39;, &#39;162&#39;, &#39;163&#39;, &#39;164&#39;, &#39;165&#39;, &#39;166&#39;, &#39;167&#39;, &#39;168&#39;, &#39;169&#39;, &#39;170&#39;, &#39;171&#39;, &#39;172&#39;, &#39;173&#39;, &#39;174&#39;, &#39;175&#39;, &#39;176&#39;, &#39;177&#39;, &#39;178&#39;, &#39;179&#39;, &#39;180&#39;, &#39;181&#39;, &#39;182&#39;, &#39;183&#39;, &#39;184&#39;, &#39;185&#39;, &#39;186&#39;, &#39;187&#39;, &#39;188&#39;, &#39;189&#39;, &#39;190&#39;, &#39;191&#39;, &#39;192&#39;, &#39;193&#39;, &#39;194&#39;, &#39;195&#39;, &#39;196&#39;, &#39;197&#39;, &#39;198&#39;, &#39;199&#39;, &#39;200&#39;, &#39;201&#39;, &#39;202&#39;]
@@ -562,7 +561,7 @@ Coordinates:
 </div>
 <p>The underlying connectivity measure can be stored in two ways: i) raveled
 and ii) dense. Raveled storage will be a 1D column flattened array, similar
-to what one might expect when using <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ravel.html#numpy.ravel" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ravel</span></code></a>. However, if you ask for
+to what one might expect when using <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ravel.html#numpy.ravel" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ravel</span></code></a>. However, if you ask for
 the dense data, then the shape will show the N by N connectivity.
 In general, you might prefer the raveled version if you specify a subset of
 indices (e.g. some subset of sources) for the computation
@@ -579,8 +578,8 @@ shape.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(41209, 20, 226)
-(203, 203, 20, 226)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(41209, 5, 226)
+(203, 203, 5, 226)
 </pre></div>
 </div>
 <p>The underlying data is stored as an xarray, so we have access
@@ -618,11 +617,11 @@ the spectro-temporal connectivity class.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[4.0, 4.2631578947368425, 4.526315789473684, 4.7894736842105265, 5.052631578947368, 5.315789473684211, 5.578947368421053, 5.842105263157895, 6.105263157894736, 6.368421052631579, 6.631578947368421, 6.894736842105263, 7.157894736842105, 7.421052631578947, 7.684210526315789, 7.947368421052632, 8.210526315789473, 8.473684210526315, 8.736842105263158, 9.0]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[4.0, 5.25, 6.5, 7.75, 9.0]
 [0.0, 0.006659840438612929, 0.013319680877225858, 0.019979521315838786, 0.026639361754451717, 0.03329920219306465, 0.03995904263167757, 0.0466188830702905, 0.05327872350890343, 0.05993856394751636, 0.0665984043861293, 0.07325824482474222, 0.07991808526335514, 0.08657792570196808, 0.093237766140581, 0.09989760657919393, 0.10655744701780687, 0.11321728745641979, 0.11987712789503271, 0.12653696833364564, 0.1331968087722586, 0.13985664921087151, 0.14651648964948444, 0.15317633008809736, 0.1598361705267103, 0.1664960109653232, 0.17315585140393616, 0.17981569184254909, 0.186475532281162, 0.19313537271977493, 0.19979521315838786, 0.20645505359700078, 0.21311489403561373, 0.21977473447422666, 0.22643457491283958, 0.2330944153514525, 0.23975425579006543, 0.24641409622867838, 0.2530739366672913, 0.25973377710590423, 0.2663936175445172, 0.2730534579831301, 0.27971329842174303, 0.2863731388603559, 0.2930329792989689, 0.2996928197375818, 0.3063526601761947, 0.3130125006148077, 0.3196723410534206, 0.3263321814920335, 0.3329920219306464, 0.33965186236925937, 0.3463117028078723, 0.3529715432464852, 0.35963138368509817, 0.36629122412371107, 0.372951064562324, 0.37961090500093697, 0.38627074543954987, 0.3929305858781628, 0.3995904263167757, 0.40625026675538867, 0.41291010719400156, 0.4195699476326145, 0.42622978807122747, 0.43288962850984036, 0.4395494689484533, 0.4462093093870662, 0.45286914982567916, 0.4595289902642921, 0.466188830702905, 0.47284867114151796, 0.47950851158013086, 0.4861683520187438, 0.49282819245735676, 0.49948803289596966, 0.5061478733345826, 0.5128077137731956, 0.5194675542118085, 0.5261273946504214, 0.5327872350890344, 0.5394470755276473, 0.5461069159662602, 0.552766756404873, 0.5594265968434861, 0.566086437282099, 0.5727462777207118, 0.5794061181593249, 0.5860659585979378, 0.5927257990365506, 0.5993856394751635, 0.6060454799137766, 0.6127053203523894, 0.6193651607910023, 0.6260250012296154, 0.6326848416682282, 0.6393446821068411, 0.6460045225454542, 0.652664362984067, 0.6593242034226799, 0.6659840438612928, 0.6726438842999058, 0.6793037247385187, 0.6859635651771316, 0.6926234056157446, 0.6992832460543575, 0.7059430864929704, 0.7126029269315833, 0.7192627673701963, 0.7259226078088092, 0.7325824482474221, 0.7392422886860351, 0.745902129124648, 0.7525619695632609, 0.7592218100018739, 0.7658816504404868, 0.7725414908790997, 0.7792013313177126, 0.7858611717563256, 0.7925210121949385, 0.7991808526335514, 0.8058406930721644, 0.8125005335107773, 0.8191603739493902, 0.8258202143880031, 0.8324800548266161, 0.839139895265229, 0.8457997357038419, 0.8524595761424549, 0.8591194165810678, 0.8657792570196807, 0.8724390974582937, 0.8790989378969066, 0.8857587783355195, 0.8924186187741324, 0.8990784592127454, 0.9057382996513583, 0.9123981400899712, 0.9190579805285842, 0.9257178209671971, 0.93237766140581, 0.939037501844423, 0.9456973422830359, 0.9523571827216488, 0.9590170231602617, 0.9656768635988747, 0.9723367040374876, 0.9789965444761005, 0.9856563849147135, 0.9923162253533264, 0.9989760657919393, 1.0056359062305522, 1.012295746669165, 1.0189555871077782, 1.0256154275463911, 1.032275267985004, 1.038935108423617, 1.0455949488622298, 1.0522547893008427, 1.0589146297394556, 1.0655744701780687, 1.0722343106166816, 1.0788941510552945, 1.0855539914939074, 1.0922138319325203, 1.0988736723711332, 1.105533512809746, 1.1121933532483592, 1.1188531936869721, 1.125513034125585, 1.132172874564198, 1.1388327150028108, 1.1454925554414237, 1.1521523958800366, 1.1588122363186497, 1.1654720767572626, 1.1721319171958755, 1.1787917576344884, 1.1854515980731013, 1.1921114385117142, 1.198771278950327, 1.2054311193889402, 1.212090959827553, 1.218750800266166, 1.225410640704779, 1.2320704811433918, 1.2387303215820047, 1.2453901620206178, 1.2520500024592307, 1.2587098428978436, 1.2653696833364565, 1.2720295237750694, 1.2786893642136823, 1.2853492046522952, 1.2920090450909083, 1.2986688855295212, 1.305328725968134, 1.311988566406747, 1.3186484068453599, 1.3253082472839728, 1.3319680877225857, 1.3386279281611988, 1.3452877685998117, 1.3519476090384246, 1.3586074494770375, 1.3652672899156504, 1.3719271303542633, 1.3785869707928762, 1.3852468112314893, 1.3919066516701022, 1.398566492108715, 1.405226332547328, 1.4118861729859409, 1.4185460134245538, 1.4252058538631667, 1.4318656943017798, 1.4385255347403927, 1.4451853751790056, 1.4518452156176185, 1.4585050560562314, 1.4651648964948443, 1.4718247369334574, 1.4784845773720703, 1.4851444178106832, 1.491804258249296, 1.498464098687909]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  47.780 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.839 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-connectivity-classes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/980054063d6073a3d7942ac239432571/connectivity_classes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">connectivity_classes.py</span></code></a></p>
@@ -668,13 +667,13 @@ the spectro-temporal connectivity class.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-11-16.<br>
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
 </p>
     </div>
     
