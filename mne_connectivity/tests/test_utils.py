@@ -2,8 +2,13 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
+from mne.io import RawArray
+from mne.epochs import Epochs, make_fixed_length_epochs
+from mne.io.meas_info import create_info
+
 from mne_connectivity import Connectivity
-from mne_connectivity.utils import degree, seed_target_indices
+from mne_connectivity.utils import (
+    degree, seed_target_indices, map_epoch_annotations_to_epoch)
 
 
 def test_indices():
@@ -64,3 +69,37 @@ def test_degree():
     conn = Connectivity(data=np.zeros((4,)), n_nodes=2)
     deg = degree(conn)
     assert_array_equal(deg, [0, 0])
+
+
+def test_mapping_epochs_to_epochs():
+    """Test map_epoch_annotations_to_epoch function."""
+    n_times = 1000
+    sfreq = 100
+    data = np.random.random((2, n_times))
+    info = create_info(ch_names=['A1', 'A2'], sfreq=sfreq,
+                       ch_types='mag')
+    raw = RawArray(data, info)
+
+    # create two different sets of Epochs
+    # the first one is just a contiguous chunks of 1 seconds
+    epoch_one = make_fixed_length_epochs(raw, duration=1, overlap=0)
+
+    events = np.zeros((2, 3), dtype=int)
+    events[:, 0] = [100, 900]
+    epoch_two = Epochs(raw, events, tmin=-0.5, tmax=0.5)
+
+    # map Epochs from two to one
+    all_cases = map_epoch_annotations_to_epoch(epoch_one, epoch_two)
+    assert all_cases.shape == (2, 10)
+
+    # only 1-3 Epochs of epoch_one should overlap with the epoch_two's
+    # 1st Epoch
+    assert all(all_cases[0, :2])
+    assert all(all_cases[1, -2:])
+
+    # map Epochs from one to two
+    all_cases = map_epoch_annotations_to_epoch(epoch_two, epoch_one)
+    assert all_cases.shape == (10, 2)
+
+    assert all(all_cases[:2, 0])
+    assert all(all_cases[-2:, 1])
