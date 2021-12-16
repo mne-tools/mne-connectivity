@@ -72,6 +72,7 @@ Post-processing on connectivity
    seed_target_indices
    check_indices
    select_order
+   map_epoch_annotations_to_epoch
 
 Visualization functions
 =======================
