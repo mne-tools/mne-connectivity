@@ -2,13 +2,14 @@ from copy import copy, deepcopy
 
 import numpy as np
 import xarray as xr
+import pandas as pd
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt, _check_event_id, _ensure_events,
-                       _on_missing, warn, check_random_state,
-                       _prepare_write_metadata)
+                       _on_missing, warn, check_random_state)
 
-from mne_connectivity.utils import fill_doc
+from mne_connectivity.utils import (
+    fill_doc, _prepare_xarray_mne_data_structures)
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -38,7 +39,10 @@ class TimeMixin:
 
 class EpochMixin:
     def _init_epochs(self, events, event_id, on_missing='warn') -> None:
-        if events is not None:  # Epochs can have events
+        # Epochs should have the events array that informs user of
+        # sample points at which each Epoch was taken from.
+        # An empty list occurs when NetCDF stores empty arrays.
+        if events is not None and np.array(events).size != 0:
             events = _ensure_events(events)
         else:
             events = np.empty((0, 3))
@@ -91,6 +95,7 @@ class EpochMixin:
 
         events = list(deepcopy(self.events))
         event_id = deepcopy(self.event_id)
+        metadata = copy(self.metadata)
 
         # compare event_id
         common_keys = list(set(event_id).intersection(
@@ -108,6 +113,7 @@ class EpochMixin:
             warn('Epoch Connectivity object to append was empty.')
         event_id.update(epoch_conn.event_id)
         events = np.concatenate((events, evs), axis=0)
+        metadata = pd.concat([epoch_conn.metadata, metadata])
 
         # now combine the xarray data, altered events and event ID
         self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim='epochs')
@@ -139,6 +145,9 @@ class EpochMixin:
                                f'It does not work with {self}')
 
         fun = _check_combine(combine, valid=('mean', 'median'))
+
+        # get a copy of metadata into attrs as a dictionary
+        self = _prepare_xarray_mne_data_structures(self)
 
         # apply function over the  array
         new_xr = xr.apply_ufunc(fun, self.xarray,
@@ -394,7 +403,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
                              f'should be a list of tuples. '
                              f'It cannot be {indices}.')
 
-        # prepare metadata pandas dataframe
+        # prepare metadata pandas dataframe and ensure metadata is a Pandas
+        # DataFrame object
+        if metadata is None:
+            metadata = pd.DataFrame(dtype='float64')
         self.metadata = metadata
 
         # check the incoming data structure
@@ -640,8 +652,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         size += object_size(self._data)
         size += object_size(self.attrs)
 
-        if self.metadata is not None:
-            size += self.metadata.memory_usage(index=True).sum()
+        # if self.metadata is not None:
+        #     size += self.metadata.memory_usage(index=True).sum()
         return size
 
     def get_data(self, output='compact'):
@@ -798,13 +810,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         self.attrs['data_structure'] = str(self.__class__.__name__)
 
         # get a copy of metadata into attrs as a dictionary
-        if self.metadata is not None:
-            self.attrs['metadata'] = _prepare_write_metadata(self.metadata)
-
-        # write event IDs since they are stored as a list instead
-        if self.event_id is not None:
-            self.attrs['event_id_keys'] = list(self.event_id.keys())
-            self.attrs['event_id_vals'] = list(self.event_id.values())
+        self = _prepare_xarray_mne_data_structures(self)
 
         # netCDF does not support 'None'
         # so map these to 'n/a'

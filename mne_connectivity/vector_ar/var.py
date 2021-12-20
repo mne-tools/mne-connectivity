@@ -173,17 +173,11 @@ def vector_auto_regression(
                             **model_params)
     else:
         assert model == 'dynamic'
-        if times is None and n_epochs > 1:
-            raise RuntimeError('If computing time (epoch) varying VAR model, '
-                               'then "times" must be passed in. From '
-                               'MNE epochs, one can extract this using '
-                               '"epochs.times".')
-
         # compute time-varying VAR model where each epoch
         # is one sample of a time-varying multivariate time-series
         # linear system
         A_mats = _system_identification(
-            data=data, times=times, names=names, lags=lags,
+            data=data, lags=lags,
             l2_reg=l2_reg, n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator)
         # create connectivity
@@ -269,7 +263,7 @@ def _construct_var_eqns(data, lags, l2_reg=None):
     return X, Y
 
 
-def _system_identification(data, times, names, lags, l2_reg=0,
+def _system_identification(data, lags, l2_reg=0,
                            n_jobs=-1, compute_fb_operator=False):
     """Solve system identification using least-squares over all epochs.
 

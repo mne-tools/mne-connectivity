@@ -4,9 +4,11 @@
 
 import os
 from mne.annotations import Annotations
+from mne.epochs import BaseEpochs
 from mne.io.meas_info import create_info
 
 import numpy as np
+import pandas as pd
 import pytest
 from numpy.testing import assert_array_equal
 from mne.io import RawArray
@@ -43,6 +45,9 @@ def _make_test_epochs():
     raw = RawArray(data, info)
     raw = raw.set_annotations(annots)
     epochs = make_fixed_length_epochs(raw, duration=1, preload=True)
+
+    # make sure Epochs has metadata
+    epochs.add_annotations_to_metadata()
     return epochs
 
 
@@ -306,24 +311,35 @@ def test_events_handling(conn_func):
 
 
 @pytest.mark.parametrize(
-    'func', [vector_auto_regression, spectral_connectivity,
-             envelope_correlation, phase_slope_index])
-def test_metadata_handling(func, tmpdir):
-    """Test the presence of metadata is handled properly."""
-    # create Epochs
-    epochs = _make_test_epochs()
+    'epochs', [
+        _make_test_epochs(),
+        np.random.RandomState(0).random((10, 3, 500))
+    ])
+@pytest.mark.parametrize(
+    'func', [
+        vector_auto_regression,
+        spectral_connectivity,
+        envelope_correlation,
+        phase_slope_index
+    ])
+def test_metadata_handling(func, tmpdir, epochs):
+    """Test the presence of metadata is handled properly.
 
+    Test both with the cases of having an array input and
+    an ``mne.Epochs`` object input.
+    """
     # for each function, check that Annotations were added to the metadata
     # and are handled correctly
     conn = func(epochs, verbose=False)
     metadata = conn.metadata
 
-    # each metadata frame should have an Annotations column with n_epochs
-    # number of rows
-    assert 'Annotations_onset' in metadata.columns
-    assert 'Annotations_duration' in metadata.columns
-    assert 'Annotations_description' in metadata.columns
-    assert len(metadata) == len(epochs)
+    if isinstance(epochs, BaseEpochs):
+        # each metadata frame should have an Annotations column with n_epochs
+        # number of rows
+        assert 'Annotations_onset' in metadata.columns
+        assert 'Annotations_duration' in metadata.columns
+        assert 'Annotations_description' in metadata.columns
+        assert len(metadata) == len(epochs)
 
     # temporary conn save
     fname = os.path.join(tmpdir, 'connectivity.nc')
@@ -336,4 +352,8 @@ def test_metadata_handling(func, tmpdir):
     for key, val in conn.coords.items():
         assert_array_equal(val, new_conn.coords[key])
     assert_array_equal(conn.get_data(), new_conn.get_data())
-    assert metadata.equals(new_conn.metadata)
+    if isinstance(epochs, BaseEpochs):
+        assert metadata.equals(new_conn.metadata)
+    else:
+        assert isinstance(new_conn.metadata, pd.DataFrame)
+        assert metadata.empty

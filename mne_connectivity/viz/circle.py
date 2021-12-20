@@ -149,9 +149,9 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     import matplotlib.patches as m_patches
     import matplotlib.path as m_path
     import matplotlib.pyplot as plt
-    from mne_connectivity.base import _Connectivity
+    from mne_connectivity.base import BaseConnectivity
 
-    if isinstance(con, _Connectivity):
+    if isinstance(con, BaseConnectivity):
         con = con.get_data()
     n_nodes = len(node_names)
 

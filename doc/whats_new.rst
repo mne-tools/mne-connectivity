@@ -27,6 +27,7 @@ Enhancements
 - Adding symmetric orthogonalization via :func:`mne_connectivity.symmetric_orth`, by `Eric Larson`_ (:gh:`36`)
 - Improved RAM usage for :func:`mne_connectivity.vector_auto_regression` by leveraging code from ``statsmodels``, by `Adam Li`_ (:gh:`46`)
 - Added :func:`mne_connectivity.select_order` for helping to select VAR order using information criterion, by `Adam Li`_ (:gh:`46`)
+- All connectivity functions retain ``events``, ``event_id`` and ``metadata`` from `mne.Epochs` objects as input and is stored as part of the connectivity object, by `Adam Li`_ (:gh:`58`)
 
 Bug
 ~~~
@@ -39,6 +40,7 @@ API
 
 - Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`)
 - Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regression` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`47`)
+- Add ``pandas`` as a requirement for dealing with metadata associated from the original Epochs file, by `Adam Li`_ (:gh:`58`)
 
 
 Authors

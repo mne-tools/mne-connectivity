@@ -273,8 +273,6 @@ def test_vector_auto_regression():
     data = rng.randn(n_epochs, n_signals, n_times)
     times = np.arange(n_times)
 
-    with pytest.raises(RuntimeError, match='If computing time'):
-        vector_auto_regression(data)
     with pytest.raises(ValueError, match='"model" parameter'):
         vector_auto_regression(data, model='static')
 

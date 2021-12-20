@@ -44,9 +44,9 @@ def plot_sensors_connectivity(info, con, picks=None,
     _validate_type(info, "info")
 
     from mne.viz.backends.renderer import _get_renderer
-    from mne_connectivity.base import _Connectivity
+    from mne_connectivity.base import BaseConnectivity
 
-    if isinstance(con, _Connectivity):
+    if isinstance(con, BaseConnectivity):
         con = con.get_data()
 
     renderer = _get_renderer(size=(600, 600), bgcolor=(0.5, 0.5, 0.5))

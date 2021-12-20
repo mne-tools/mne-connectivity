@@ -3,7 +3,7 @@
 # License: BSD (3-clause)
 import numpy as np
 
-from mne.utils import logger
+from mne.utils import logger, _prepare_write_metadata
 
 
 def parallel_loop(func, n_jobs=1, verbose=1):
@@ -121,9 +121,9 @@ def degree(connectivity, threshold_prop=0.2):
     During thresholding, the symmetry of the connectivity matrix is
     auto-detected based on :func:`numpy.allclose` of it with its transpose.
     """
-    from mne_connectivity.base import _Connectivity
+    from mne_connectivity.base import BaseConnectivity
 
-    if isinstance(connectivity, _Connectivity):
+    if isinstance(connectivity, BaseConnectivity):
         connectivity = connectivity.get_data(output='dense').squeeze()
 
     connectivity = np.array(connectivity)
@@ -151,3 +151,21 @@ def degree(connectivity, threshold_prop=0.2):
         degree += degree.T  # normally unsafe, but we know where our zeros are
     degree = np.sum(degree > 0, axis=0)
     return degree
+
+
+def _prepare_xarray_mne_data_structures(conn_obj):
+    """Prepare an xarray connectivity object with extra MNE data structures.
+
+    For MNE, these are:
+    - metadata -> stored as a string representation
+    - event_id -> stored as two lists
+    """
+    # get a copy of metadata into attrs as a dictionary
+    conn_obj.attrs['metadata'] = _prepare_write_metadata(conn_obj.metadata)
+
+    # write event IDs since they are stored as a list instead
+    if conn_obj.event_id is not None:
+        conn_obj.attrs['event_id_keys'] = list(conn_obj.event_id.keys())
+        conn_obj.attrs['event_id_vals'] = list(conn_obj.event_id.values())
+
+    return conn_obj
