@@ -22,7 +22,6 @@ Most-used classes
 .. autosummary::
    :toctree: generated/
 
-   BaseConnectivity
    Connectivity
    TemporalConnectivity
    SpectralConnectivity
