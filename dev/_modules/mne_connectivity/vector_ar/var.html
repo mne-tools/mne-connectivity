@@ -185,7 +185,7 @@
 <span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">sqrtm</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
 
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 
@@ -306,13 +306,22 @@
 
     <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1"># metadata = None</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Epochs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
         <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
         <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span>
-        <span class="c1"># metadata = data.metadata</span>
+
+        <span class="c1"># Extract metadata from the Epochs data structure.</span>
+        <span class="c1"># Make Annotations persist through by adding them to the metadata.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;annotations&#39;</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">()</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+
+        <span class="c1"># get the actual data in numpy</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># 1. determine shape of the window of data</span>
     <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
@@ -343,23 +352,38 @@
         <span class="n">conn</span> <span class="o">=</span> <span class="n">Connectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">coef</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
                             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                             <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;VAR&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+                            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;VAR&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;dynamic&#39;</span>
-        <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_epochs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;If computing time (epoch) varying VAR model, &#39;</span>
-                               <span class="s1">&#39;then &quot;times&quot; must be passed in. From &#39;</span>
-                               <span class="s1">&#39;MNE epochs, one can extract this using &#39;</span>
-                               <span class="s1">&#39;&quot;epochs.times&quot;.&#39;</span><span class="p">)</span>
-
         <span class="c1"># compute time-varying VAR model where each epoch</span>
         <span class="c1"># is one sample of a time-varying multivariate time-series</span>
         <span class="c1"># linear system</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">_system_identification</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
+        <span class="n">A_mats</span> <span class="o">=</span> <span class="n">_system_identification</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
             <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
             <span class="n">compute_fb_operator</span><span class="o">=</span><span class="n">compute_fb_operator</span><span class="p">)</span>
-        <span class="n">conn</span><span class="o">.</span><span class="n">_init_epochs</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">)</span>
+        <span class="c1"># create connectivity</span>
+        <span class="k">if</span> <span class="n">lags</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span>
+                                             <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
+                                             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                                             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                                             <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                                             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(p)&#39;</span><span class="p">,</span>
+                                             <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+                                     <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                                     <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                                     <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                                     <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(1)&#39;</span><span class="p">,</span>
+                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                     <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">conn</span></div>
 
 
@@ -423,7 +447,7 @@
     <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
 
 
-<span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
 
@@ -494,24 +518,7 @@
         <span class="n">A_mats</span> <span class="o">=</span> <span class="n">A_mats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">A_mats</span> <span class="o">=</span> <span class="n">A_mats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span><span class="p">))</span>
-
-    <span class="c1"># create connectivity</span>
-    <span class="k">if</span> <span class="n">lags</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span>
-                                         <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
-                                         <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                                         <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
-                                         <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                                         <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(p)&#39;</span><span class="p">,</span>
-                                         <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-                                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
-                                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                                 <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(1)&#39;</span><span class="p">,</span>
-                                 <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">conn</span>
+    <span class="k">return</span> <span class="n">A_mats</span>
 
 
 <span class="k">def</span> <span class="nf">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="p">):</span>
@@ -749,13 +756,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-03.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br>
 </p>
     </div>
     

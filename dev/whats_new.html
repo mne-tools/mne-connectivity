@@ -254,6 +254,7 @@
 <li><p>Adding symmetric orthogonalization via <a class="reference internal" href="generated/mne_connectivity.symmetric_orth.html#mne_connectivity.symmetric_orth" title="mne_connectivity.symmetric_orth"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.symmetric_orth()</span></code></a>, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/36">#36</a>)</p></li>
 <li><p>Improved RAM usage for <a class="reference internal" href="generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.vector_auto_regression()</span></code></a> by leveraging code from <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/46">#46</a>)</p></li>
 <li><p>Added <a class="reference internal" href="generated/mne_connectivity.select_order.html#mne_connectivity.select_order" title="mne_connectivity.select_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.select_order()</span></code></a> for helping to select VAR order using information criterion, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/46">#46</a>)</p></li>
+<li><p>All connectivity functions retain <code class="docutils literal notranslate"><span class="pre">events</span></code>, <code class="docutils literal notranslate"><span class="pre">event_id</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> from <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> objects as input and is stored as part of the connectivity object, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/58">#58</a>)</p></li>
 </ul>
 </section>
 <section id="bug">
@@ -269,6 +270,7 @@
 <ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">h5netcdf</span></code> as a requirement for saving connectivity data, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/43">#43</a>)</p></li>
 <li><p>Changed keyword argument <code class="docutils literal notranslate"><span class="pre">model_order</span></code> in <a class="reference internal" href="generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.vector_auto_regression()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">lags</span></code> to more align with statsmodels API, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/47">#47</a>)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">pandas</span></code> as a requirement for dealing with metadata associated from the original Epochs file, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/58">#58</a>)</p></li>
 </ul>
 </section>
 <section id="authors">
@@ -317,13 +319,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-03.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br>
 </p>
     </div>
     

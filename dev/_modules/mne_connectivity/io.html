@@ -184,6 +184,8 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_prepare_read_metadata</span>
+
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span><span class="p">,</span> <span class="n">EpochSpectralConnectivity</span><span class="p">,</span>
                    <span class="n">EpochSpectroTemporalConnectivity</span><span class="p">,</span> <span class="n">EpochTemporalConnectivity</span><span class="p">,</span>
                    <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">,</span>
@@ -220,9 +222,19 @@
     <span class="c1"># get the names</span>
     <span class="n">names</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;node_names&#39;</span><span class="p">]</span>
 
+    <span class="c1"># get metadata if it&#39;s in attrs</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">_prepare_read_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="c1"># write event IDs</span>
+    <span class="n">event_id_keys</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_keys&#39;</span><span class="p">)</span>
+    <span class="n">event_id_vals</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_vals&#39;</span><span class="p">)</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">event_id_keys</span><span class="p">,</span> <span class="n">event_id_vals</span><span class="p">)}</span>
+    <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
+
     <span class="c1"># create the connectivity class</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">cls_func</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">conn</span>
 
@@ -292,13 +304,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-03.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br>
 </p>
     </div>
     

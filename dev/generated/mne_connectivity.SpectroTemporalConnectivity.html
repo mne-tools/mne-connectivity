@@ -467,6 +467,12 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectroTemporalConnectivity.append" title="mne_connectivity.SpectroTemporalConnectivity.append"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code></a>(epoch_conn)</p></td>
+<td><p>Append another connectivity structure.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectroTemporalConnectivity.combine" title="mne_connectivity.SpectroTemporalConnectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
+<td><p>Combine connectivity data over epochs.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectroTemporalConnectivity.get_data" title="mne_connectivity.SpectroTemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output])</p></td>
 <td><p>Get connectivity data as a numpy array.</p></td>
 </tr>
@@ -489,8 +495,8 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 </table>
 <table class="table">
 <colgroup>
-<col style="width: 57%" />
-<col style="width: 43%" />
+<col style="width: 71%" />
+<col style="width: 29%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>copy</strong></p></td>
@@ -499,16 +505,64 @@ as xarray <code class="docutils literal notranslate"><span class="pre">attrs</sp
 <tr class="row-even"><td><p><strong>eigvals</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>is_stable</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_epoch_annotations</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>is_stable</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.SpectroTemporalConnectivity.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.SpectroTemporalConnectivity.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append another connectivity structure.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>epoch_conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The Epoched Connectivity class to append.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The altered Epoched Connectivity class.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_connectivity.SpectroTemporalConnectivity.attrs">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#mne_connectivity.SpectroTemporalConnectivity.attrs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Xarray attributes of connectivity.</p>
 <p>See <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.SpectroTemporalConnectivity.combine">
+<span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.SpectroTemporalConnectivity.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine connectivity data over epochs.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combine</strong> : ‘mean’ | ‘median’ | <a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a></p>
+<blockquote>
+<div><p>How to combine correlation estimates across epochs.
+Default is ‘mean’. If callable, it must accept one
+positional input. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">combine</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<blockquote>
+<div><p>The combined connectivity data structure.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -668,7 +722,7 @@ matplotlib can be used, e.g., RGBA tuples, named colors.</p>
 <blockquote>
 <div><p>Line width to use for connections.</p>
 </div></blockquote>
-<p><strong>colormap</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></p>
+<p><strong>colormap</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.5.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></p>
 <blockquote>
 <div><p>Colormap to use for coloring the connections.</p>
 </div></blockquote>
@@ -712,7 +766,7 @@ matplotlib can be used, e.g., RGBA tuples, named colors.</p>
 <blockquote>
 <div><p>Space to add around figure to accommodate long labels.</p>
 </div></blockquote>
-<p><strong>fig</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
+<p><strong>fig</strong> : <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure to use. If None, a new figure with the specified background
 color will be created.</p>
@@ -738,11 +792,11 @@ node. Right-click shows all connections.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>fig</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
+<dd class="field-even"><p><strong>fig</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 <blockquote>
 <div><p>The figure handle.</p>
 </div></blockquote>
-<p><strong>axes</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/projections_api.html#matplotlib.projections.polar.PolarAxes" title="(in Matplotlib v3.5.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.projections.polar.PolarAxes</span></code></a></p>
+<p><strong>axes</strong> : instance of <a class="reference external" href="https://matplotlib.org/api/projections_api.html#matplotlib.projections.polar.PolarAxes" title="(in Matplotlib v3.5.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.projections.polar.PolarAxes</span></code></a></p>
 <blockquote>
 <div><p>The subplot handle.</p>
 </div></blockquote>
@@ -750,13 +804,13 @@ node. Right-click shows all connections.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>This code is based on a circle graph example by Nicolas P. Rougier</p>
-<p>By default, <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a> does not take <code class="docutils literal notranslate"><span class="pre">facecolor</span></code>
+<p>By default, <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a> does not take <code class="docutils literal notranslate"><span class="pre">facecolor</span></code>
 into account when saving, even if set when a figure is generated. This
 can be addressed via, e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span> 
 </pre></div>
 </div>
-<p>If <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> is not set via <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a>, the
+<p>If <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> is not set via <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.5.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig()</span></code></a>, the
 figure labels, title, and legend may be cut off in the output figure.</p>
 </dd></dl>
 
@@ -931,13 +985,13 @@ obtained from the operating system (see
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-03.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br>
 </p>
     </div>
     

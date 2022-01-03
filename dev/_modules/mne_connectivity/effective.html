@@ -303,6 +303,7 @@
         <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="n">cwt_n_cycles</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
+    <span class="c1"># extract class properties from the spectral connectivity structure</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohy</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">):</span>
         <span class="n">times</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">times</span>
     <span class="k">else</span><span class="p">:</span>
@@ -312,6 +313,9 @@
     <span class="n">n_tapers</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_tapers&#39;</span><span class="p">)</span>
     <span class="n">n_epochs_used</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_epochs</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_nodes</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">events</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">event_id</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Computing PSI from estimated Coherency: </span><span class="si">{</span><span class="n">cohy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="c1"># compute PSI in the requested bands</span>
@@ -369,7 +373,10 @@
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
-            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span>
+            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
         <span class="c1"># spectrotemporal</span>
@@ -384,7 +391,10 @@
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
-            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span>
+            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">conn</span></div>
@@ -409,13 +419,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-12-14.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-03.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br>
 </p>
     </div>
     
