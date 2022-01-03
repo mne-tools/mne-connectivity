@@ -124,6 +124,7 @@ def vector_auto_regression(
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
+        names = data.ch_names
         events = data.events
         event_id = data.event_id
         times = data.times
