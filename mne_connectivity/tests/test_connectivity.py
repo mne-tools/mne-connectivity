@@ -3,10 +3,12 @@
 # License: BSD (3-clause)
 
 import os
-from mne.annotations import Annotations, events_from_annotations
+from mne.annotations import Annotations
+from mne.epochs import BaseEpochs
 from mne.io.meas_info import create_info
 
 import numpy as np
+import pandas as pd
 import pytest
 from numpy.testing import assert_array_equal
 from mne.io import RawArray
@@ -18,8 +20,35 @@ from mne_connectivity import (Connectivity, EpochConnectivity,
                               EpochTemporalConnectivity, SpectralConnectivity,
                               SpectroTemporalConnectivity,
                               TemporalConnectivity)
+from mne_connectivity.effective import phase_slope_index
 from mne_connectivity.io import read_connectivity
 from mne_connectivity import envelope_correlation, vector_auto_regression
+from mne_connectivity.spectral import spectral_connectivity
+
+
+def _make_test_epochs():
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 10
+    n_times = 500
+    rng = np.random.RandomState(42)
+    data = rng.randn(n_signals, n_epochs * n_times)
+
+    # create Epochs
+    info = create_info(np.arange(n_signals).astype(str).tolist(), sfreq=sfreq,
+                       ch_types='eeg')
+    onset = [0, 0.5, 3]
+    duration = [0, 0, 0]
+    description = ['test1', 'test2', 'test3']
+    annots = Annotations(onset=onset, duration=duration,
+                         description=description)
+    raw = RawArray(data, info)
+    raw = raw.set_annotations(annots)
+    epochs = make_fixed_length_epochs(raw, duration=1, preload=True)
+
+    # make sure Epochs has metadata
+    epochs.add_annotations_to_metadata()
+    return epochs
 
 
 def _prep_correct_connectivity_input(conn_cls, n_nodes=3, symmetric=False,
@@ -267,33 +296,64 @@ def test_append(conn_cls):
 
 @pytest.mark.parametrize(
     'conn_func',
-    [envelope_correlation, vector_auto_regression]
+    [vector_auto_regression, spectral_connectivity,
+     envelope_correlation, phase_slope_index]
 )
 def test_events_handling(conn_func):
-    sfreq = 50.
-    n_signals = 3
-    n_epochs = 10
-    n_times = 500
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_signals, n_epochs * n_times)
-
-    # create Epochs
-    info = create_info(np.arange(n_signals).astype(str).tolist(), sfreq=sfreq,
-                       ch_types='eeg')
-    onset = [0, 0.5, 3]
-    duration = [0, 0, 0]
-    description = ['test1', 'test2', 'test3']
-    annots = Annotations(onset=onset, duration=duration,
-                         description=description)
-    raw = RawArray(data, info)
-    raw = raw.set_annotations(annots)
-    epochs = make_fixed_length_epochs(raw, duration=10, preload=True)
-    events, event_id = events_from_annotations(raw)
-    epochs.events = np.concatenate((epochs.events, events), axis=0)
-    epochs.event_id.update(event_id)
-    assert len(epochs) == n_epochs + 3
-    assert len(epochs.events) == n_epochs + 3
+    """Test that events and event_id are passed through correctly."""
+    epochs = _make_test_epochs()
+    n_epochs = len(epochs)
+    assert len(epochs.events) == n_epochs
 
     # create the connectivity data structure
-    conn = conn_func(epochs)
-    assert len(conn.events) == n_epochs + 3
+    conn = conn_func(epochs, verbose=False)
+    assert len(conn.events) == n_epochs
+
+
+@pytest.mark.parametrize(
+    'epochs', [
+        _make_test_epochs(),
+        np.random.RandomState(0).random((10, 3, 500))
+    ])
+@pytest.mark.parametrize(
+    'func', [
+        vector_auto_regression,
+        spectral_connectivity,
+        envelope_correlation,
+        phase_slope_index
+    ])
+def test_metadata_handling(func, tmpdir, epochs):
+    """Test the presence of metadata is handled properly.
+
+    Test both with the cases of having an array input and
+    an ``mne.Epochs`` object input.
+    """
+    # for each function, check that Annotations were added to the metadata
+    # and are handled correctly
+    conn = func(epochs, verbose=False)
+    metadata = conn.metadata
+
+    if isinstance(epochs, BaseEpochs):
+        # each metadata frame should have an Annotations column with n_epochs
+        # number of rows
+        assert 'Annotations_onset' in metadata.columns
+        assert 'Annotations_duration' in metadata.columns
+        assert 'Annotations_description' in metadata.columns
+        assert len(metadata) == len(epochs)
+
+    # temporary conn save
+    fname = os.path.join(tmpdir, 'connectivity.nc')
+    conn.save(fname)
+
+    new_conn = read_connectivity(fname)
+    # assert these two objects are the same
+    assert_array_equal(conn.names, new_conn.names)
+    assert conn.dims == new_conn.dims
+    for key, val in conn.coords.items():
+        assert_array_equal(val, new_conn.coords[key])
+    assert_array_equal(conn.get_data(), new_conn.get_data())
+    if isinstance(epochs, BaseEpochs):
+        assert metadata.equals(new_conn.metadata)
+    else:
+        assert isinstance(new_conn.metadata, pd.DataFrame)
+        assert metadata.empty

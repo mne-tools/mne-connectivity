@@ -36,7 +36,9 @@ Connectivity functions
 
 These functions compute connectivity and return
 one of the Connectivity data structure classes
-listed above.
+listed above. All these functions work with MNE-Python's ``Epochs`` class,
+which is the recommended input to these functions. However, they also work
+on numpy array inputs.
 
 .. autosummary::
    :toctree: generated/

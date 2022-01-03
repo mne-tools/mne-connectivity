@@ -105,10 +105,13 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: 3.7
+            mne-version: mne-main
           - os: ubuntu-latest
             python-version: 3.9
+            mne-version: mne-main
           - os: macos-latest
             python-version: 3.9
+            mne-version: mne-main
 
     env:
       TZ: Europe/Berlin
@@ -138,6 +141,18 @@ jobs:
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
           pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
 
+      - name: Install MNE (stable)
+        if: "matrix.mne-version == 'mne-stable'"
+        run: |
+          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
+          pip install --no-deps -e ./mne-python
+
+      - name: Install MNE (main)
+        if: "matrix.mne-version == 'mne-main'"
+        run: |
+          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
+          pip install --no-deps -e ./mne-python
+          
       - name: Display versions and environment information
         run: |
           echo $TZ

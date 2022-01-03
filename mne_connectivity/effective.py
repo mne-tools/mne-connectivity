@@ -120,6 +120,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
         cwt_n_cycles=cwt_n_cycles, block_size=block_size, n_jobs=n_jobs,
         verbose=verbose)
 
+    # extract class properties from the spectral connectivity structure
     if isinstance(cohy, SpectroTemporalConnectivity):
         times = cohy.times
     else:
@@ -129,6 +130,9 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     n_tapers = cohy.attrs.get('n_tapers')
     n_epochs_used = cohy.n_epochs
     n_nodes = cohy.n_nodes
+    metadata = cohy.metadata
+    events = cohy.events
+    event_id = cohy.event_id
 
     logger.info(f'Computing PSI from estimated Coherency: {cohy}')
     # compute PSI in the requested bands
@@ -186,7 +190,10 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
             indices=indices,
             freqs_computed=freqs,
             n_epochs_used=n_epochs_used,
-            n_tapers=n_tapers
+            n_tapers=n_tapers,
+            metadata=metadata,
+            events=events,
+            event_id=event_id
         )
     elif mode == 'cwt_morlet':
         # spectrotemporal
@@ -201,7 +208,10 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
             indices=indices,
             freqs_computed=freqs,
             n_epochs_used=n_epochs_used,
-            n_tapers=n_tapers
+            n_tapers=n_tapers,
+            metadata=metadata,
+            events=events,
+            event_id=event_id
         )
 
     return conn

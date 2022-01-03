@@ -2,12 +2,14 @@ from copy import copy, deepcopy
 
 import numpy as np
 import xarray as xr
+import pandas as pd
 from mne.utils import (_check_combine, _check_option, _validate_type,
                        copy_function_doc_to_method_doc, object_size,
                        sizeof_fmt, _check_event_id, _ensure_events,
                        _on_missing, warn, check_random_state)
 
-from mne_connectivity.utils import fill_doc
+from mne_connectivity.utils import (
+    fill_doc, _prepare_xarray_mne_data_structures)
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -37,7 +39,10 @@ class TimeMixin:
 
 class EpochMixin:
     def _init_epochs(self, events, event_id, on_missing='warn') -> None:
-        if events is not None:  # Epochs can have events
+        # Epochs should have the events array that informs user of
+        # sample points at which each Epoch was taken from.
+        # An empty list occurs when NetCDF stores empty arrays.
+        if events is not None and np.array(events).size != 0:
             events = _ensure_events(events)
         else:
             events = np.empty((0, 3))
@@ -90,6 +95,7 @@ class EpochMixin:
 
         events = list(deepcopy(self.events))
         event_id = deepcopy(self.event_id)
+        metadata = copy(self.metadata)
 
         # compare event_id
         common_keys = list(set(event_id).intersection(
@@ -107,6 +113,7 @@ class EpochMixin:
             warn('Epoch Connectivity object to append was empty.')
         event_id.update(epoch_conn.event_id)
         events = np.concatenate((events, evs), axis=0)
+        metadata = pd.concat([epoch_conn.metadata, metadata])
 
         # now combine the xarray data, altered events and event ID
         self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim='epochs')
@@ -133,7 +140,14 @@ class EpochMixin:
         """
         from .io import _xarray_to_conn
 
+        if not self.is_epoched:
+            raise RuntimeError('Combine only works over Epoched connectivity. '
+                               f'It does not work with {self}')
+
         fun = _check_combine(combine, valid=('mean', 'median'))
+
+        # get a copy of metadata into attrs as a dictionary
+        self = _prepare_xarray_mne_data_structures(self)
 
         # apply function over the  array
         new_xr = xr.apply_ufunc(fun, self.xarray,
@@ -325,8 +339,12 @@ class DynamicMixin:
 
 
 @fill_doc
-class _Connectivity(DynamicMixin):
+class BaseConnectivity(DynamicMixin, EpochMixin):
     """Base class for connectivity data.
+
+    This class should not be instantiated directly, but should be used
+    to do type-checking. All connectivity classes will be returned from
+    corresponding connectivity computing functions.
 
     Connectivity data is anything that represents "connections"
     between nodes as a (N, N) array. It can be symmetric, or
@@ -340,6 +358,11 @@ class _Connectivity(DynamicMixin):
     %(indices)s
     %(method)s
     %(n_nodes)s
+    %(events)s
+    %(event_id)s
+    metadata : instance of pandas.DataFrame | None
+        The metadata data frame that would come from the :class:`mne.Epochs`
+        class. See :class:`mne.Epochs` docstring for details.
     %(connectivity_kwargs)s
 
     Notes
@@ -370,7 +393,8 @@ class _Connectivity(DynamicMixin):
     is_epoched = False
 
     def __init__(self, data, names, indices, method,
-                 n_nodes, **kwargs):
+                 n_nodes, events=None, event_id=None,
+                 metadata=None, **kwargs):
 
         if isinstance(indices, str) and \
                 indices not in ['all', 'symmetric']:
@@ -379,10 +403,17 @@ class _Connectivity(DynamicMixin):
                              f'should be a list of tuples. '
                              f'It cannot be {indices}.')
 
+        # prepare metadata pandas dataframe and ensure metadata is a Pandas
+        # DataFrame object
+        if metadata is None:
+            metadata = pd.DataFrame(dtype='float64')
+        self.metadata = metadata
+
         # check the incoming data structure
         self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
         self._prepare_xarray(data, names=names, indices=indices,
-                             n_nodes=n_nodes, method=method, **kwargs)
+                             n_nodes=n_nodes, method=method, events=events,
+                             event_id=event_id, **kwargs)
 
     def __repr__(self) -> str:
         r = f'<{self.__class__.__name__} | '
@@ -410,8 +441,13 @@ class _Connectivity(DynamicMixin):
         self.n_estimated_nodes = data.shape[start_idx]
 
     def _prepare_xarray(self, data, names, indices, n_nodes, method,
-                        **kwargs):
+                        events, event_id, **kwargs):
         """Prepare xarray data structure."""
+        # generate events and event_id that originate from Epochs class
+        # which stores the windows of Raw that were used to generate
+        # the corresponding connectivity data
+        self._init_epochs(events, event_id, on_missing='warn')
+
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
@@ -452,6 +488,8 @@ class _Connectivity(DynamicMixin):
         kwargs['method'] = method
         kwargs['indices'] = indices
         kwargs['n_nodes'] = n_nodes
+        kwargs['events'] = self.events
+        # kwargs['event_id'] = self.event_id
 
         # create xarray object
         xarray_obj = xr.DataArray(
@@ -517,6 +555,9 @@ class _Connectivity(DynamicMixin):
 
     def copy(self):
         return deepcopy(self)
+
+    def get_epoch_annotations(self):
+        pass
 
     @property
     def n_epochs(self):
@@ -610,6 +651,9 @@ class _Connectivity(DynamicMixin):
         size = 0
         size += object_size(self._data)
         size += object_size(self.attrs)
+
+        # if self.metadata is not None:
+        #     size += self.metadata.memory_usage(index=True).sum()
         return size
 
     def get_data(self, output='compact'):
@@ -765,6 +809,9 @@ class _Connectivity(DynamicMixin):
         # save the name of the connectivity structure
         self.attrs['data_structure'] = str(self.__class__.__name__)
 
+        # get a copy of metadata into attrs as a dictionary
+        self = _prepare_xarray_mne_data_structures(self)
+
         # netCDF does not support 'None'
         # so map these to 'n/a'
         for key, val in self.attrs.items():
@@ -788,7 +835,7 @@ class _Connectivity(DynamicMixin):
 
 
 @fill_doc
-class SpectralConnectivity(_Connectivity, SpectralMixin):
+class SpectralConnectivity(BaseConnectivity, SpectralMixin):
     """Spectral connectivity class.
 
     This class stores connectivity data that varies over
@@ -824,7 +871,7 @@ class SpectralConnectivity(_Connectivity, SpectralMixin):
 
 
 @fill_doc
-class TemporalConnectivity(_Connectivity, TimeMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin):
     """Temporal connectivity class.
 
     This is an array of shape (n_connections, n_times),
@@ -865,7 +912,7 @@ class TemporalConnectivity(_Connectivity, TimeMixin):
 
 
 @fill_doc
-class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
+class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
     """Spectrotemporal connectivity class.
 
     This class stores connectivity data that varies over both frequency
@@ -901,7 +948,7 @@ class SpectroTemporalConnectivity(_Connectivity, SpectralMixin, TimeMixin):
 
 
 @fill_doc
-class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
+class EpochSpectralConnectivity(SpectralConnectivity):
     """Spectral connectivity class over Epochs.
 
     This is an array of shape (n_epochs, n_connections, n_freqs),
@@ -917,8 +964,6 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(spec_method)s
-    %(events)s
-    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
@@ -926,17 +971,15 @@ class EpochSpectralConnectivity(SpectralConnectivity, EpochMixin):
 
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices='all', method=None,
-                 spec_method=None, events=None,
-                 event_id=None, **kwargs):
+                 spec_method=None, **kwargs):
         super(EpochSpectralConnectivity, self).__init__(
             data, freqs=freqs, names=names, indices=indices,
             n_nodes=n_nodes, method=method,
             spec_method=spec_method, **kwargs)
-        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
-class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
+class EpochTemporalConnectivity(TemporalConnectivity):
     """Temporal connectivity class over Epochs.
 
     This is an array of shape (n_epochs, n_connections, n_times),
@@ -951,27 +994,21 @@ class EpochTemporalConnectivity(TemporalConnectivity, EpochMixin):
     %(names)s
     %(indices)s
     %(method)s
-    %(events)s
-    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
     def __init__(self, data, times, n_nodes, names=None,
-                 indices='all', method=None, events=None,
-                 event_id=None, **kwargs):
+                 indices='all', method=None, **kwargs):
         super(EpochTemporalConnectivity, self).__init__(
             data, times=times, names=names,
             indices=indices, n_nodes=n_nodes,
             method=method, **kwargs)
-        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
-class EpochSpectroTemporalConnectivity(
-    SpectroTemporalConnectivity, EpochMixin
-):
+class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     """Spectrotemporal connectivity class over Epochs.
 
     This is an array of shape (n_epochs, n_connections, n_freqs, n_times),
@@ -988,8 +1025,6 @@ class EpochSpectroTemporalConnectivity(
     %(indices)s
     %(method)s
     %(spec_method)s
-    %(events)s
-    %(event_id)s
     %(connectivity_kwargs)s
     """
     # whether or not the connectivity occurs over epochs
@@ -997,17 +1032,15 @@ class EpochSpectroTemporalConnectivity(
 
     def __init__(self, data, freqs, times, n_nodes,
                  names=None, indices='all', method=None,
-                 spec_method=None, events=None, event_id=None,
-                 **kwargs):
+                 spec_method=None, **kwargs):
         super(EpochSpectroTemporalConnectivity, self).__init__(
             data, names=names, freqs=freqs, times=times, indices=indices,
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
-        self._init_epochs(events, event_id, on_missing='warn')
 
 
 @fill_doc
-class Connectivity(_Connectivity, EpochMixin):
+class Connectivity(BaseConnectivity):
     """Connectivity class without frequency or time component.
 
     This is an array of shape (n_connections,),
@@ -1039,7 +1072,7 @@ class Connectivity(_Connectivity, EpochMixin):
 
 
 @fill_doc
-class EpochConnectivity(_Connectivity, EpochMixin):
+class EpochConnectivity(BaseConnectivity):
     """Epoch connectivity class.
 
     This is an array of shape (n_epochs, n_connections),
@@ -1054,8 +1087,6 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     %(indices)s
     %(method)s
     %(n_epochs_used)s
-    %(events)s
-    %(event_id)s
     %(connectivity_kwargs)s
 
     See Also
@@ -1068,11 +1099,9 @@ class EpochConnectivity(_Connectivity, EpochMixin):
     is_epoched = True
 
     def __init__(self, data, n_nodes, names=None, indices='all',
-                 method=None, n_epochs_used=None, events=None,
-                 event_id=None, **kwargs):
+                 method=None, n_epochs_used=None, **kwargs):
         super(EpochConnectivity, self).__init__(
             data, names=names, method=method,
             n_nodes=n_nodes, indices=indices,
             n_epochs_used=n_epochs_used,
             **kwargs)
-        self._init_epochs(events, event_id, on_missing='warn')

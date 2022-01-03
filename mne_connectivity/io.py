@@ -1,6 +1,8 @@
 import numpy as np
 import xarray as xr
 
+from mne.utils import _prepare_read_metadata
+
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
                    SpectralConnectivity, SpectroTemporalConnectivity,
@@ -37,9 +39,19 @@ def _xarray_to_conn(array, cls_func):
     # get the names
     names = array.attrs['node_names']
 
+    # get metadata if it's in attrs
+    metadata = array.attrs.pop('metadata')
+    metadata = _prepare_read_metadata(metadata)
+
+    # write event IDs
+    event_id_keys = array.attrs.pop('event_id_keys')
+    event_id_vals = array.attrs.pop('event_id_vals')
+    event_id = {key: val for key, val in zip(event_id_keys, event_id_vals)}
+    array.attrs['event_id'] = event_id
+
     # create the connectivity class
     conn = cls_func(
-        data=data, names=names, **array.attrs
+        data=data, names=names, metadata=metadata, **array.attrs
     )
     return conn
 
