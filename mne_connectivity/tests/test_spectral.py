@@ -6,8 +6,61 @@ from mne import EpochsArray, SourceEstimate, create_info
 from mne.filter import filter_data
 
 from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
-                              read_connectivity)
+                              read_connectivity, spectral_connectivity_epochs)
 from mne_connectivity.spectral import _CohEst, _get_n_epochs
+
+
+def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
+                        fstart, fend, trans_bandwidth=2.):
+    """Create test dataset with no spurious correlations.
+
+    Parameters
+    ----------
+    sfreq : float
+        The simulated data sampling rate.
+    n_signals : int
+        The number of channels/signals to simulate.
+    n_epochs : int
+        The number of Epochs to simulate.
+    n_times : int
+        The number of time points at which the Epoch data is "sampled".
+    tmin : int
+        The start time of the Epoch data.
+    tmax : int
+        The end time of the Epoch data.
+    fstart : int
+        The frequency at which connectivity starts. The lower end of the
+        spectral connectivity.
+    fend : int
+        The frequency at which connectivity ends. The upper end of the
+        spectral connectivity.
+    trans_bandwidth : int, optional
+        The bandwidth of the filtering operation, by default 2.
+
+    Returns
+    -------
+    data : np.ndarray of shape (n_epochs, n_signals, n_times)
+        The epoched dataset.
+    times_data : np.ndarray of shape (n_times, )
+        The times at which each sample of the ``data`` occurs at.
+    """
+    # Use a case known to have no spurious correlations (it would bad if
+    # tests could randomly fail):
+    rng = np.random.RandomState(0)
+
+    data = rng.randn(n_signals, n_epochs * n_times)
+    times_data = np.linspace(tmin, tmax, n_times)
+
+    # simulate connectivity from fstart to fend
+    data[1, :] = filter_data(data[0, :], sfreq, fstart, fend,
+                             filter_length='auto', fir_design='firwin2',
+                             l_trans_bandwidth=trans_bandwidth,
+                             h_trans_bandwidth=trans_bandwidth)
+    # add some noise, so the spectrum is not exactly zero
+    data[1, :] += 1e-2 * rng.randn(n_times * n_epochs)
+    data = data.reshape(n_signals, n_epochs, n_times)
+    data = np.transpose(data, [1, 0, 2])
+    return data, times_data
 
 
 def _stc_gen(data, sfreq, tmin, combo=False):
@@ -95,30 +148,20 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
 def test_spectral_connectivity(method, mode):
     """Test frequency-domain connectivity methods."""
-    # Use a case known to have no spurious correlations (it would bad if
-    # tests could randomly fail):
-    rng = np.random.RandomState(0)
-    trans_bandwidth = 2.
-
     sfreq = 50.
     n_signals = 3
     n_epochs = 8
     n_times = 256
-
+    trans_bandwidth = 2.
     tmin = 0.
     tmax = (n_times - 1) / sfreq
-    data = rng.randn(n_signals, n_epochs * n_times)
-    times_data = np.linspace(tmin, tmax, n_times)
-    # simulate connectivity from 5Hz..15Hz
+
+    # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
-    data[1, :] = filter_data(data[0, :], sfreq, fstart, fend,
-                             filter_length='auto', fir_design='firwin2',
-                             l_trans_bandwidth=trans_bandwidth,
-                             h_trans_bandwidth=trans_bandwidth)
-    # add some noise, so the spectrum is not exactly zero
-    data[1, :] += 1e-2 * rng.randn(n_times * n_epochs)
-    data = data.reshape(n_signals, n_epochs, n_times)
-    data = np.transpose(data, [1, 0, 2])
+    data, times_data = create_test_dataset(
+        sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
 
     # First we test some invalid parameters:
     pytest.raises(ValueError, spectral_connectivity, data, method='notamethod')
@@ -391,3 +434,27 @@ def test_epochs_tmin_tmax(kind):
     with pytest.warns(RuntimeWarning, match='time scales of input') as w:
         spectral_connectivity(X, **kwargs)
     assert len(w) == 1  # just one even though there were multiple epochs
+
+
+def test_spectral_connectivity_time_resolved():
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 8
+    n_times = 256
+    trans_bandwidth = 2.
+    tmin = 0.
+    tmax = (n_times - 1) / sfreq
+    # 5Hz..15Hz
+    fstart, fend = 5.0, 15.0
+    data, times_data = create_test_dataset(
+        sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
+
+    # define some frequencies for cwt
+    cwt_freqs = np.arange(3, 24.5, 1)
+
+    # run connectivity estimation
+    conn = spectral_connectivity_epochs(data)
+
+    assert conn.shape == (n_epochs, n_signals, n_times)
