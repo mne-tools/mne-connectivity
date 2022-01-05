@@ -437,9 +437,10 @@ def test_epochs_tmin_tmax(kind):
 
 
 def test_spectral_connectivity_time_resolved():
+    """Test time-resolved spectral connectivity."""
     sfreq = 50.
     n_signals = 3
-    n_epochs = 8
+    n_epochs = 2
     n_times = 256
     trans_bandwidth = 2.
     tmin = 0.
@@ -450,11 +451,15 @@ def test_spectral_connectivity_time_resolved():
         sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
         tmin=tmin, tmax=tmax,
         fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
+    ch_names = np.arange(n_signals).astype(str).tolist()
+    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types='eeg')
+    data = EpochsArray(data, info)
 
     # define some frequencies for cwt
     cwt_freqs = np.arange(3, 24.5, 1)
+    n_freqs = len(cwt_freqs)
 
     # run connectivity estimation
-    conn = spectral_connectivity_epochs(data)
+    conn = spectral_connectivity_epochs(data, freqs=cwt_freqs)
 
-    assert conn.shape == (n_epochs, n_signals, n_times)
+    assert conn.shape == (n_epochs, n_signals, n_freqs, n_times)

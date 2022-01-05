@@ -8,7 +8,6 @@ from inspect import getmembers
 
 import numpy as np
 import xarray as xr
-from scipy.signal import fftconvolve
 from mne.epochs import BaseEpochs
 from mne.fixes import _get_args
 from mne.parallel import parallel_func
@@ -20,7 +19,8 @@ from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper)
 from mne.utils import (_arange_div, _check_option, _time_mask, logger, warn)
 
-from .base import SpectralConnectivity, SpectroTemporalConnectivity
+from .base import (EpochSpectroTemporalConnectivity, SpectralConnectivity,
+                   SpectroTemporalConnectivity)
 from .smooth import _create_kernel, _smooth_spectra
 from .utils import check_indices, fill_doc
 
@@ -1000,11 +1000,11 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=2 * np.pi, foi=None, sm_times=.5,
                                  sm_freqs=1, sm_kernel='hanning',
-                                 mode='multitaper', fmin=None, fmax=np.inf,
+                                 mode='cwt_morlet', fmin=None, fmax=np.inf,
                                  fskip=0, faverage=False, tmin=None, tmax=None,
                                  mt_bandwidth=None, freqs=None,
                                  n_cycles=7, decim=1,
-                                 block_size=1000, n_jobs=1,
+                                 block_size=None, n_jobs=1,
                                  verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
@@ -1020,7 +1020,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         The data from which to compute connectivity.
     %(names)s
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'plv', 
+        Connectivity measure(s) to compute. These can be ``['coh', 'plv',
         'sxy']``. These are:
 
             * 'coh' : Coherence
@@ -1113,8 +1113,9 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     mne_connectivity.SpectralConnectivity
     mne_connectivity.SpectroTemporalConnectivity
 
-    Notes  
+    Notes
     -----
+    This function was originally implemented in ``frites``.
     x_s and x_t -> source_idx, and target_idx
     sf -> sfreq
 
@@ -1132,18 +1133,27 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     sfreq = data.info['sfreq']
     events = data.events
     event_id = data.event_id
-    n_epochs, n_signals, n_times = data.shape
+    n_epochs, n_signals, n_times = data.get_data().shape
     # Extract metadata from the Epochs data structure.
     # Make Annotations persist through by adding them to the metadata.
     if hasattr(data, 'annotations'):
         data.add_annotations_to_metadata()
     metadata = data.metadata
+    data = data.get_data()
+
+    # convert kernel width in time to samples
+    if isinstance(sm_times, (int, float)):
+        sm_times = int(np.round(sm_times * sfreq))
+
+    # convert frequency smoothing from hz to samples
+    if isinstance(sm_freqs, (int, float)):
+        sm_freqs = int(np.round(max(sm_freqs, 1)))
 
     # temporal decimation
-    # if isinstance(decim, int):
-    #     times = times[::decim]
-    #     sm_times = int(np.round(sm_times / decim))
-    #     sm_times = max(sm_times, 1)
+    if isinstance(decim, int):
+        times = times[::decim]
+        sm_times = int(np.round(sm_times / decim))
+        sm_times = max(sm_times, 1)
 
     # Create smoothing kernel
     kernel = _create_kernel(sm_times, sm_freqs, kernel=sm_kernel)
@@ -1151,7 +1161,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     # get indices of pairs of (group) regions
     roi = names  # ch_names
     if indices is None:
-        roi_gp, roi_idx = roi, np.arange(len(roi)).reshape(-1, 1)
+        # roi_gp and roi_idx
+        roi_gp, _ = roi, np.arange(len(roi)).reshape(-1, 1)
 
         # get pairs for directed / undirected conn
         source_idx, target_idx = np.triu_indices(len(roi_gp), k=1)
@@ -1159,7 +1170,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         indices_use = check_indices(indices)
         source_idx = [x[0] for x in indices_use]
         target_idx = [x[1] for x in indices_use]
-        roi_gp, roi_idx = roi, np.arange(len(roi)).reshape(-1, 1)
+        roi_gp, _ = roi, np.arange(len(roi)).reshape(-1, 1)
     n_pairs = len(source_idx)
 
     # frequency checking
@@ -1188,64 +1199,35 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             f_vec = freqs[foi_idx].mean(1)
 
     # build block size indices
-    # if isinstance(block_size, int) and (block_size > 1):
-    #     blocks = np.array_split(np.arange(n_epochs), block_size)
-    # else:
-    #     blocks = [np.arange(n_epochs)]
+    if isinstance(block_size, int) and (block_size > 1):
+        blocks = np.array_split(np.arange(n_epochs), block_size)
+    else:
+        blocks = [np.arange(n_epochs)]
 
     # compute coherence on blocks of trials
     conn = np.zeros((n_epochs, n_pairs, len(f_vec), len(times)))
     logger.info('Connectivity computation...')
-    epoch_idx = 0
-    n_bands = len(fmin)
-    for epoch_block in _get_n_epochs(data, n_jobs):
-        if epoch_idx == 0:
-            # initialize everything times and frequencies
-            (n_cons, times, n_times, times_in, n_times_in, tmin_idx,
-             tmax_idx, n_freqs, freq_mask, freqs, freqs_bands, freq_idx_bands,
-             n_signals, indices_use, warn_times) = _prepare_connectivity(
-                epoch_block=epoch_block, times_in=times_in,
-                tmin=tmin, tmax=tmax, fmin=fmin, fmax=fmax, sfreq=sfreq,
-                indices=indices, mode=mode, fskip=fskip, n_bands=n_bands,
-                cwt_freqs=freqs, faverage=faverage)
 
-        # parameters to pass to the connectivity function
-        call_params = dict(
-            method=method, kernel=kernel, foi_idx=foi_idx,
-            source_idx=source_idx, target_idx=target_idx,
-            mode=mode, sfreq=sfreq, freqs=freqs, n_cycles=n_cycles,
-            mt_bandwidth=mt_bandwidth,
-            decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
-            verbose=False)
+    # parameters to pass to the connectivity function
+    call_params = dict(
+        method=method, kernel=kernel, foi_idx=foi_idx,
+        source_idx=source_idx, target_idx=target_idx,
+        mode=mode, sfreq=sfreq, freqs=freqs, n_cycles=n_cycles,
+        mt_bandwidth=mt_bandwidth,
+        decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
+        verbose=False)
 
-        if n_jobs == 1:
-            # no parallel processing
-            for this_epoch in epoch_block:
-                logger.info('    computing connectivity for epoch %d'
-                            % (epoch_idx + 1))
+    for epoch_idx in blocks:
+        # compute time-resolved spectral connectivity
+        conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
+        # merge results
+        conn[epoch_idx, ...] = np.stack(conn_tr, axis=1)
 
-                # compute time-resolved spectral connectivity
-                conn_tr = _spectral_connectivity(this_epoch, **call_params)
-                # merge results
-                conn[epoch_idx, ...] = np.stack(conn_tr, axis=1)
-                epoch_idx += 1
-
-                # Call GC
-                del conn_tr
-        else:
-            # process epochs in parallel
-            logger.info('    computing connectivity for epochs %d..%d'
-                        % (epoch_idx + 1, epoch_idx + len(epoch_block)))
-
-            out = parallel(my_spectral_connectivity(
-                           data=this_epoch, **call_params)
-                           for this_epoch in epoch_block)
-            # merge results
-            for jdx, conn_tr in enumerate(out):
-                conn[epoch_idx + jdx, ...] = np.stack(conn_tr, axis=1)
-            epoch_idx += len(epoch_block)
     # create a Connectivity container
-
+    conn = EpochSpectroTemporalConnectivity(
+        conn, freqs=freqs, times=times,
+        n_nodes=n_signals, names=names, indices=indices, method=method,
+        spec_method=mode, events=events, event_id=event_id, metadata=metadata)
     return conn
 
 
@@ -1262,8 +1244,8 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     # first compute time-frequency decomposition
     if mode == 'cwt_morlet':
         out = tfr_array_morlet(
-            data, sfreq, freqs, n_cycles=n_cycles, output='complex', decim=decim,
-            n_jobs=n_jobs, **kw_cwt)
+            data, sfreq, freqs, n_cycles=n_cycles, output='complex',
+            decim=decim, n_jobs=n_jobs, **kw_cwt)
     elif mode == 'multitaper':
         # In case multiple values are provided for mt_bandwidth
         # the MT decomposition is done separatedly for each
@@ -1287,6 +1269,9 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
 
     print(out.shape)
+    print(foi_idx)
+    print(source_idx)
+    print(target_idx)
     # computes conn across trials
     this_conn = conn_func(out, kernel, foi_idx, source_idx, target_idx,
                           n_jobs=n_jobs, verbose=verbose, total=n_pairs)
@@ -1461,7 +1446,7 @@ def _assemble_spectral_params(mode, n_times, mt_adaptive, mt_bandwidth, sfreq,
 ###############################################################################
 ###############################################################################
 
-def _coh(w, kernel, foi_idx, x_s, x_t, kw_para):
+def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     """Pairwise coherence."""
     # auto spectra (faster that w * w.conj())
     s_auto = w.real ** 2 + w.imag ** 2
@@ -1469,7 +1454,11 @@ def _coh(w, kernel, foi_idx, x_s, x_t, kw_para):
     # smooth the auto spectra
     s_auto = _smooth_spectra(s_auto, kernel)
 
+    print(w.shape)
+    print(s_auto.shape)
+    print(kernel.shape)
     # define the pairwise coherence
+
     def pairwise_coh(w_x, w_y):
         # computes the coherence
         s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])
@@ -1484,13 +1473,14 @@ def _coh(w, kernel, foi_idx, x_s, x_t, kw_para):
             return out
 
     # define the function to compute in parallel
-    parallel, p_fun = parallel_func(pairwise_coh, **kw_para)
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_coh, n_jobs=n_jobs, verbose=verbose, total=total)
 
     # compute the single trial coherence
-    return parallel(p_fun(s, t) for s, t in zip(x_s, x_t))
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
 
-def _plv(w, kernel, foi_idx, x_s, x_t, kw_para):
+def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     """Pairwise phase-locking value."""
     # define the pairwise plv
     def pairwise_plv(w_x, w_y):
@@ -1509,13 +1499,14 @@ def _plv(w, kernel, foi_idx, x_s, x_t, kw_para):
             return out
 
     # define the function to compute in parallel
-    parallel, p_fun = parallel_func(pairwise_plv, **kw_para)
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_plv, n_jobs=n_jobs, verbose=verbose, total=total)
 
     # compute the single trial coherence
-    return parallel(p_fun(s, t) for s, t in zip(x_s, x_t))
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
 
-def _cs(w, kernel, foi_idx, x_s, x_t, kw_para):
+def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     """Pairwise cross-spectra."""
     # define the pairwise cross-spectra
     def pairwise_cs(w_x, w_y):
@@ -1528,44 +1519,11 @@ def _cs(w, kernel, foi_idx, x_s, x_t, kw_para):
             return out
 
     # define the function to compute in parallel
-    parallel, p_fun = parallel_func(pairwise_cs, **kw_para)
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_cs, n_jobs=n_jobs, verbose=verbose, total=total)
 
     # compute the single trial coherence
-    return parallel(p_fun(s, t) for s, t in zip(x_s, x_t))
-
-
-def _smooth_spectra(spectra, kernel, scale=False, decim=1):
-    """Smoothing spectra.
-
-    This function assumes that the frequency and time axis are respectively
-    located at positions (..., freqs, times).
-
-    Parameters
-    ----------
-    spectra : array_like
-        Spectra of shape (..., n_freqs, n_times)
-    kernel : array_like
-        Smoothing kernel of shape (sm_freqs, sm_times)
-    decim : int | 1
-        Decimation factor to apply after the kernel smoothing
-
-    Returns
-    -------
-    sm_spectra : array_like
-        Smoothed spectra of shape (..., n_freqs, n_times)
-    """
-    # fill potentially missing dimensions
-    while kernel.ndim != spectra.ndim:
-        kernel = kernel[np.newaxis, ...]
-    # smooth the spectra
-    if not scale:
-        axes = (-2, -1)
-    else:
-        axes = -1
-
-    spectra = fftconvolve(spectra, kernel, mode='same', axes=axes)
-    # return decimated spectra
-    return spectra[..., ::decim]
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
 
 def _foi_average(conn, foi_idx):
