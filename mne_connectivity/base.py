@@ -856,7 +856,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
     See Also
     --------
-    mne_connectivity.spectral_connectivity
+    mne_connectivity.spectral_connectivity_epochs
     """
     expected_n_dim = 2
 
