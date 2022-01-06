@@ -8,7 +8,7 @@ import mne
 from mne import (EpochsArray, SourceEstimate, create_info,
                  make_fixed_length_epochs)
 from mne.filter import filter_data
-from mne.utils.misc import _resource_path
+from mne.utils import _resource_path
 from mne_bids import BIDSPath, read_raw_bids
 
 from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
