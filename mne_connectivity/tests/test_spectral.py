@@ -2,13 +2,13 @@ import numpy as np
 from numpy.testing import (assert_allclose, assert_array_almost_equal,
                            assert_array_less)
 import pytest
-import importlib.resources
 import warnings
 
 import mne
 from mne import (EpochsArray, SourceEstimate, create_info,
                  make_fixed_length_epochs)
 from mne.filter import filter_data
+from mne.utils.misc import _resource_path
 from mne_bids import BIDSPath, read_raw_bids
 
 from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
@@ -499,9 +499,9 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     To see how the test dataset was generated, see
     ``benchmarks/single_epoch_conn.py``.
     """
-    test_file_path_str = str(importlib.resources.files(
-        'mne_connectivity.tests').joinpath(
-            f'data/test_frite_dataset_{mode}_{method}.npy'))
+    test_file_path_str = str(_resource_path(
+        'mne_connectivity.tests',
+        f'data/test_frite_dataset_{mode}_{method}.npy'))
     test_conn = np.load(test_file_path_str)
 
     # paths to mne datasets - sample ECoG

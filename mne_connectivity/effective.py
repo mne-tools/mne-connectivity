@@ -14,7 +14,7 @@ from .spectral import spectral_connectivity
 
 @verbose
 @fill_doc
-def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
+def phase_slope_index_arr(data, names=None, indices=None, sfreq=2 * np.pi,
                       mode='multitaper', fmin=None, fmax=np.inf,
                       tmin=None, tmax=None, mt_bandwidth=None,
                       mt_adaptive=False, mt_low_bias=True,
