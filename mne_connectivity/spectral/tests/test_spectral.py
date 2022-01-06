@@ -14,7 +14,7 @@ from mne_bids import BIDSPath, read_raw_bids
 from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
     read_connectivity, spectral_connectivity_time)
-from mne_connectivity.spectral import _CohEst, _get_n_epochs
+from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
 
 
 def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,

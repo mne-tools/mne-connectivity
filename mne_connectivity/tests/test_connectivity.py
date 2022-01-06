@@ -23,7 +23,7 @@ from mne_connectivity import (Connectivity, EpochConnectivity,
 from mne_connectivity.effective import phase_slope_index
 from mne_connectivity.io import read_connectivity
 from mne_connectivity import envelope_correlation, vector_auto_regression
-from mne_connectivity.spectral.time import spectral_connectivity
+from mne_connectivity.spectral import spectral_connectivity
 
 
 def _make_test_epochs():
