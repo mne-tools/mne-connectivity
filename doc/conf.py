@@ -229,6 +229,7 @@ intersphinx_mapping = {
     'nilearn': ('http://nilearn.github.io', None),
     'dipy': ('https://dipy.org/documentation/1.4.0./',
              'https://dipy.org/documentation/1.4.0./objects.inv/'),
+    'frites': ('https://brainets.github.io/frites/', None),
 }
 intersphinx_timeout = 5
 
