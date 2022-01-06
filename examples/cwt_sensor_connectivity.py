@@ -16,7 +16,7 @@ import numpy as np
 
 import mne
 from mne import io
-from mne_connectivity import spectral_connectivity, seed_target_indices
+from mne_connectivity import spectral_connectivity_epochs, seed_target_indices
 from mne.datasets import sample
 from mne.time_frequency import AverageTFR
 
@@ -60,7 +60,7 @@ cwt_n_cycles = cwt_freqs / 7.
 
 # Run the connectivity analysis using 2 parallel jobs
 sfreq = raw.info['sfreq']  # the sampling frequency
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     epochs, indices=indices,
     method='wpli2_debiased', mode='cwt_morlet', sfreq=sfreq,
     cwt_freqs=cwt_freqs, cwt_n_cycles=cwt_n_cycles, n_jobs=1)

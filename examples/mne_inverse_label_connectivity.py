@@ -21,7 +21,7 @@ import mne
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
 from mne.viz import circular_layout
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity_epochs
 from mne_connectivity.viz import plot_connectivity_circle
 
 print(__doc__)
@@ -102,7 +102,7 @@ fmin = 8.
 fmax = 13.
 sfreq = raw.info['sfreq']  # the sampling frequency
 con_methods = ['pli', 'wpli2_debiased', 'ciplv']
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     label_ts, method=con_methods, mode='multitaper', sfreq=sfreq, fmin=fmin,
     fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
 
