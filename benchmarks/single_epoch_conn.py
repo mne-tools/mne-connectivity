@@ -1,4 +1,12 @@
+"""
+=====================================================================
+Generate Test Dataset for Spectral Connectivity Over Time With Frites
+=====================================================================
 
+As of v0.3, mne-connectivity ported over an implemenetation for 
+spectral connectivity over epochs. This file will generate the test
+dataset used with Frites v0.4.1.
+"""
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 import mne
@@ -108,7 +116,7 @@ def test_inner_funcs():
 
     epochs = make_fixed_length_epochs(raw=raw, duration=2., overlap=1.)
 
-    from mne_connectivity.spectral import _spectral_connectivity, _create_kernel
+    from mne_connectivity.spectral.time import _spectral_connectivity, _create_kernel
     data = epochs.get_data()
     method = 'coh'
     mode = 'cwt_morlet'

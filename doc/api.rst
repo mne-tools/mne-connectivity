@@ -45,8 +45,9 @@ on numpy array inputs.
 
    envelope_correlation
    phase_slope_index
-   spectral_connectivity
    vector_auto_regression
+   spectral_connectivity_epochs
+   spectral_connectivity_time
 
 Reading functions
 =================

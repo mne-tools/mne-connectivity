@@ -11,8 +11,9 @@ from mne.filter import filter_data
 from mne.utils import _resource_path
 from mne_bids import BIDSPath, read_raw_bids
 
-from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
-                              read_connectivity, spectral_connectivity_epochs)
+from mne_connectivity import (
+    SpectralConnectivity, spectral_connectivity_epochs,
+    read_connectivity, spectral_connectivity_time)
 from mne_connectivity.spectral import _CohEst, _get_n_epochs
 
 
@@ -134,7 +135,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
         else:
             mt_bandwidth = None
 
-        con = spectral_connectivity(
+        con = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=None, sfreq=sfreq,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
@@ -170,17 +171,19 @@ def test_spectral_connectivity(method, mode):
         fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
 
     # First we test some invalid parameters:
-    pytest.raises(ValueError, spectral_connectivity, data, method='notamethod')
-    pytest.raises(ValueError, spectral_connectivity, data,
+    pytest.raises(ValueError, spectral_connectivity_epochs,
+                  data, method='notamethod')
+    pytest.raises(ValueError, spectral_connectivity_epochs, data,
                   mode='notamode')
 
     # test invalid fmin fmax settings
-    pytest.raises(ValueError, spectral_connectivity, data, fmin=10,
+    pytest.raises(ValueError, spectral_connectivity_epochs, data, fmin=10,
                   fmax=10 + 0.5 * (sfreq / float(n_times)))
-    pytest.raises(ValueError, spectral_connectivity, data, fmin=10, fmax=5)
-    pytest.raises(ValueError, spectral_connectivity, data, fmin=(0, 11),
+    pytest.raises(ValueError, spectral_connectivity_epochs,
+                  data, fmin=10, fmax=5)
+    pytest.raises(ValueError, spectral_connectivity_epochs, data, fmin=(0, 11),
                   fmax=(5, 10))
-    pytest.raises(ValueError, spectral_connectivity, data, fmin=(11,),
+    pytest.raises(ValueError, spectral_connectivity_epochs, data, fmin=(11,),
                   fmax=(12, 15))
 
     # define some frequencies for cwt
@@ -205,7 +208,7 @@ def test_spectral_connectivity(method, mode):
         else:
             mt_bandwidth = None
 
-        con = spectral_connectivity(
+        con = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=None, sfreq=sfreq,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
@@ -293,7 +296,7 @@ def test_spectral_connectivity(method, mode):
             test_methods = method
 
         stc_data = _stc_gen(data, sfreq, tmin)
-        con2 = spectral_connectivity(
+        con2 = spectral_connectivity_epochs(
             stc_data, method=test_methods, mode=mode, indices=indices,
             sfreq=sfreq, mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, tmin=tmin, tmax=tmax,
@@ -336,7 +339,7 @@ def test_spectral_connectivity(method, mode):
         # compute same connections for two bands, fskip=1, and f. avg.
         fmin = (5., 15.)
         fmax = (15., 30.)
-        con3 = spectral_connectivity(
+        con3 = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=indices,
             sfreq=sfreq, fmin=fmin, fmax=fmax, fskip=1, faverage=True,
             mt_adaptive=adaptive, mt_low_bias=True,
@@ -380,7 +383,7 @@ def test_spectral_connectivity(method, mode):
 
 @ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
 def test_epochs_tmin_tmax(kind):
-    """Test spectral.spectral_connectivity with epochs and arrays."""
+    """Test spectral.spectral_connectivity_epochs with epochs and arrays."""
     rng = np.random.RandomState(0)
     n_epochs, n_chs, n_times, sfreq, f = 10, 2, 2000, 1000., 20.
     data = rng.randn(n_epochs, n_chs, n_times)
@@ -410,27 +413,27 @@ def test_epochs_tmin_tmax(kind):
               'mt_adaptive': False, 'n_jobs': 1}
 
     # Check the entire interval
-    conn = spectral_connectivity(X, **kwargs)
+    conn = spectral_connectivity_epochs(X, **kwargs)
     assert 0.89 < conn.get_data(output='dense')[1, 0] < 0.91
     assert_allclose(conn.attrs.get('times_used'), want_times)
     # Check a time interval before the sinusoid
-    conn = spectral_connectivity(X, tmax=tmin + 0.5, **kwargs)
+    conn = spectral_connectivity_epochs(X, tmax=tmin + 0.5, **kwargs)
     assert 0 < conn.get_data(output='dense')[1, 0] < 0.15
     # Check a time during the sinusoid
-    conn = spectral_connectivity(
+    conn = spectral_connectivity_epochs(
         X, tmin=tmin + 0.5, tmax=tmin + 1.5, **kwargs)
     assert 0.93 < conn.get_data(output='dense')[1, 0] <= 0.94
     # Check a time interval after the sinusoid
-    conn = spectral_connectivity(
+    conn = spectral_connectivity_epochs(
         X, tmin=tmin + 1.5, tmax=tmin + 1.9, **kwargs)
     assert 0 < conn.get_data(output='dense')[1, 0] < 0.15
 
     # Check for warning if tmin, tmax is outside of the time limits of data
     with pytest.warns(RuntimeWarning, match='start time tmin'):
-        spectral_connectivity(X, **kwargs, tmin=tmin - 0.1)
+        spectral_connectivity_epochs(X, **kwargs, tmin=tmin - 0.1)
 
     with pytest.warns(RuntimeWarning, match='stop time tmax'):
-        spectral_connectivity(X, **kwargs, tmax=tmin + 2.5)
+        spectral_connectivity_epochs(X, **kwargs, tmax=tmin + 2.5)
 
     # make one with mismatched times
     if kind != 'combo':
@@ -438,7 +441,7 @@ def test_epochs_tmin_tmax(kind):
     X = [(SourceEstimate(d[[0]], [[0], []], tmin - 1, 1. / sfreq),
           SourceEstimate(d[[1]], [[0], []], tmin, 1. / sfreq)) for d in data]
     with pytest.warns(RuntimeWarning, match='time scales of input') as w:
-        spectral_connectivity(X, **kwargs)
+        spectral_connectivity_epochs(X, **kwargs)
     assert len(w) == 1  # just one even though there were multiple epochs
 
 
@@ -469,7 +472,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
     n_freqs = len(freqs)
 
     # run connectivity estimation
-    con = spectral_connectivity_epochs(
+    con = spectral_connectivity_time(
         data, freqs=freqs, method=method, mode=mode)
     assert con.shape == (n_epochs, n_signals * 2, n_freqs, n_times)
     assert con.get_data(output='dense').shape == \
@@ -540,7 +543,7 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     # mode was renamed in mne-connectivity
     if mode == 'morlet':
         mode = 'cwt_morlet'
-    conn = spectral_connectivity_epochs(
+    conn = spectral_connectivity_time(
         epochs, freqs=freqs, n_jobs=1, method=method, mode=mode)
 
     # frites only stores the upper triangular parts of the raveled array
