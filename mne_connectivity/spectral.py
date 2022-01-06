@@ -1000,10 +1000,8 @@ def spectral_connectivity(data, names=None, method='coh', indices=None,
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=2 * np.pi, foi=None, sm_times=.5,
                                  sm_freqs=1, sm_kernel='hanning',
-                                 mode='cwt_morlet', fmin=None, fmax=np.inf,
-                                 fskip=0, faverage=False, tmin=None, tmax=None,
-                                 mt_bandwidth=None, freqs=None,
-                                 n_cycles=7, decim=1,
+                                 mode='cwt_morlet', mt_bandwidth=None,
+                                 freqs=None, n_cycles=7, decim=1,
                                  block_size=None, n_jobs=1,
                                  verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
@@ -1016,7 +1014,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs
+    data : Epochs
         The data from which to compute connectivity.
     %(names)s
     method : str | list of str
@@ -1049,31 +1047,6 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     mode : str, optional
         Spectrum estimation mode can be either: 'multitaper', or
         'cwt_morlet'.
-    fmin : float | tuple of float
-        The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-        If None the frequency corresponding to an epoch length of 5 cycles
-        is used.
-    fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
-        a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
-    fskip : int
-        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
-        domain.
-    faverage : bool
-        Average connectivity scores for each frequency band. If True,
-        the output freqs will be a list with arrays of the frequencies
-        that were averaged.
-    tmin : float | None
-        Time to start connectivity estimation. Note: when "data" is an array,
-        the first sample is assumed to be at time 0. For other types
-        (Epochs, etc.), the time information contained in the object is used
-        to compute the time indices.
-    tmax : float | None
-        Time to end connectivity estimation. Note: when "data" is an array,
-        the first sample is assumed to be at time 0. For other types
-        (Epochs, etc.), the time information contained in the object is used
-        to compute the time indices.
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz.
         Only used in 'multitaper' mode.
@@ -1120,11 +1093,6 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     sf -> sfreq
 
     """
-    if n_jobs != 1:
-        parallel, my_spectral_connectivity, _ = \
-            parallel_func(_spectral_connectivity, n_jobs,
-                          verbose=verbose)
-
     events = None
     event_id = None
     # extract data from Epochs object
@@ -1165,7 +1133,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         roi_gp, _ = roi, np.arange(len(roi)).reshape(-1, 1)
 
         # get pairs for directed / undirected conn
-        source_idx, target_idx = np.triu_indices(len(roi_gp), k=1)
+        source_idx, target_idx = np.triu_indices(len(roi_gp), k=0)
     else:
         indices_use = check_indices(indices)
         source_idx = [x[0] for x in indices_use]
@@ -1204,8 +1172,10 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     else:
         blocks = [np.arange(n_epochs)]
 
+    n_freqs = len(f_vec)
+
     # compute coherence on blocks of trials
-    conn = np.zeros((n_epochs, n_pairs, len(f_vec), len(times)))
+    conn = np.zeros((n_epochs, n_pairs, n_freqs, len(times)))
     logger.info('Connectivity computation...')
 
     # parameters to pass to the connectivity function
@@ -1215,19 +1185,22 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         mode=mode, sfreq=sfreq, freqs=freqs, n_cycles=n_cycles,
         mt_bandwidth=mt_bandwidth,
         decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
-        verbose=False)
+        verbose=verbose)
 
     for epoch_idx in blocks:
         # compute time-resolved spectral connectivity
         conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
+
         # merge results
         conn[epoch_idx, ...] = np.stack(conn_tr, axis=1)
 
     # create a Connectivity container
+    indices = 'symmetric'
     conn = EpochSpectroTemporalConnectivity(
         conn, freqs=freqs, times=times,
         n_nodes=n_signals, names=names, indices=indices, method=method,
         spec_method=mode, events=events, event_id=event_id, metadata=metadata)
+
     return conn
 
 
@@ -1268,10 +1241,6 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     # get the supported connectivity function
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
 
-    print(out.shape)
-    print(foi_idx)
-    print(source_idx)
-    print(target_idx)
     # computes conn across trials
     this_conn = conn_func(out, kernel, foi_idx, source_idx, target_idx,
                           n_jobs=n_jobs, verbose=verbose, total=n_pairs)
@@ -1454,11 +1423,7 @@ def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # smooth the auto spectra
     s_auto = _smooth_spectra(s_auto, kernel)
 
-    print(w.shape)
-    print(s_auto.shape)
-    print(kernel.shape)
     # define the pairwise coherence
-
     def pairwise_coh(w_x, w_y):
         # computes the coherence
         s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])

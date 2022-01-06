@@ -31,6 +31,7 @@ def main():
 
     # drop bad channels
     raw.drop_channels(raw.info['bads'])
+    raw = raw.pick_channels(raw.ch_names[:3])
 
     # Load the data
     raw.load_data()
@@ -39,23 +40,39 @@ def main():
     raw.notch_filter(line_freq)
 
     # crop data
-    raw = raw.crop(tmin=0, tmax=10, include_tmax=False)
+    raw = raw.crop(tmin=0, tmax=4, include_tmax=False)
 
     epochs = make_fixed_length_epochs(raw=raw, duration=2., overlap=1.)
 
     # run frites analysis
     epoch_data = epochs.get_data()
+    n_signals = len(epochs.ch_names)
     freqs = [30, 90]
-    frite_conn = conn_spec(epoch_data, freqs=freqs, sfreq=raw.info['sfreq'])
+    for method in ['coh', 'plv', 'sxy']:
+        for mode in ['morlet', 'multitaper']:
+            frite_conn = conn_spec(epoch_data, freqs=freqs, sfreq=raw.info['sfreq'], metric=method, mode=mode)
 
-    print(epoch_data.shape)
-    print(frite_conn.shape)
-    frite_data = frite_conn.data
-    np.save('./test_frite_dataset.npy', frite_data)
+            print(epoch_data.shape)
+            print(frite_conn.shape)
+            frite_data = frite_conn.data
+            np.save(f'./mne_connectivity/tests/data/test_frite_dataset_{mode}_{method}.npy', frite_data)
 
-    # run mne-connectivity version
-    conn = spectral_connectivity_epochs(epochs, freqs=freqs, n_jobs=1)
-    assert_array_almost_equal(conn, frite_conn)
+            # run mne-connectivity version
+            if mode == 'morlet':
+                mode = 'cwt_morlet'
+            conn = spectral_connectivity_epochs(epochs, freqs=freqs, n_jobs=1, method=method, mode=mode)
+
+            # test the simulated signal
+            row_triu_inds, col_triu_inds = np.triu_indices(len(raw.ch_names), k=1)
+            # triu_inds_ravel = np.ravel_multi_index(triu_inds, dims=(n_signals, n_signals)).astype(int)
+
+            print(conn.get_data(output='dense').shape)
+            print(frite_conn.shape)
+            # print(triu_inds_ravel)
+            conn_data = conn.get_data(output='dense')[:, row_triu_inds, col_triu_inds, ...]
+            print(conn_data.shape)
+            # conn_data = conn_data[: triu_inds_ravel, ...]
+            assert_array_almost_equal(conn_data, frite_conn)
 
 
 def test_inner_funcs():
@@ -153,5 +170,5 @@ def test_inner_funcs():
 
 
 if __name__ == '__main__':
-    test_inner_funcs()
+    # test_inner_funcs()
     main()

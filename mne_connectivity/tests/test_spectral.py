@@ -2,8 +2,14 @@ import numpy as np
 from numpy.testing import (assert_allclose, assert_array_almost_equal,
                            assert_array_less)
 import pytest
-from mne import EpochsArray, SourceEstimate, create_info
+import importlib.resources
+import warnings
+
+import mne
+from mne import (EpochsArray, SourceEstimate, create_info,
+                 make_fixed_length_epochs)
 from mne.filter import filter_data
+from mne_bids import BIDSPath, read_raw_bids
 
 from mne_connectivity import (SpectralConnectivity, spectral_connectivity,
                               read_connectivity, spectral_connectivity_epochs)
@@ -436,7 +442,10 @@ def test_epochs_tmin_tmax(kind):
     assert len(w) == 1  # just one even though there were multiple epochs
 
 
-def test_spectral_connectivity_time_resolved():
+@pytest.mark.parametrize('method', ['coh', 'plv'])
+@pytest.mark.parametrize(
+    'mode', ['cwt_morlet', 'multitaper'])
+def test_spectral_connectivity_time_resolved(method, mode):
     """Test time-resolved spectral connectivity."""
     sfreq = 50.
     n_signals = 3
@@ -447,7 +456,7 @@ def test_spectral_connectivity_time_resolved():
     tmax = (n_times - 1) / sfreq
     # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
-    data, times_data = create_test_dataset(
+    data, _ = create_test_dataset(
         sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
         tmin=tmin, tmax=tmax,
         fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
@@ -456,10 +465,86 @@ def test_spectral_connectivity_time_resolved():
     data = EpochsArray(data, info)
 
     # define some frequencies for cwt
-    cwt_freqs = np.arange(3, 24.5, 1)
-    n_freqs = len(cwt_freqs)
+    freqs = np.arange(3, 20.5, 1)
+    n_freqs = len(freqs)
 
     # run connectivity estimation
-    conn = spectral_connectivity_epochs(data, freqs=cwt_freqs)
+    con = spectral_connectivity_epochs(
+        data, freqs=freqs, method=method, mode=mode)
+    assert con.shape == (n_epochs, n_signals * 2, n_freqs, n_times)
+    assert con.get_data(output='dense').shape == \
+        (n_epochs, n_signals, n_signals, n_freqs, n_times)
 
-    assert conn.shape == (n_epochs, n_signals, n_freqs, n_times)
+    # average over time
+    conn_data = con.get_data(output='dense').mean(axis=-1)
+    conn_data = conn_data.mean(axis=-1)
+
+    # test the simulated signal
+    triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
+
+    # the indices at which there is a correlation should be greater
+    # then the rest of the components
+    for epoch_idx in range(n_epochs):
+        high_conn_val = conn_data[epoch_idx, 0, 1]
+        assert all(high_conn_val >= conn_data[epoch_idx, idx, jdx]
+                   for idx, jdx in triu_inds)
+
+
+@pytest.mark.parametrize('method', ['coh', 'plv'])
+@pytest.mark.parametrize(
+    'mode', ['morlet', 'multitaper'])
+def test_time_resolved_spectral_conn_regression(method, mode):
+    """Regression test against original implementation in Frites.
+
+    To see how the test dataset was generated, see
+    ``benchmarks/single_epoch_conn.py``.
+    """
+    test_file_path_str = str(importlib.resources.files(
+        'mne_connectivity.tests').joinpath(
+            f'data/test_frite_dataset_{mode}_{method}.npy'))
+    test_conn = np.load(test_file_path_str)
+
+    # paths to mne datasets - sample ECoG
+    bids_root = mne.datasets.epilepsy_ecog.data_path()
+
+    # first define the BIDS path and load in the dataset
+    bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
+                         task='ictal', datatype='ieeg', extension='vhdr')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    line_freq = raw.info['line_freq']
+
+    # Pick only the ECoG channels, removing the ECG channels
+    raw.pick_types(ecog=True)
+
+    # drop bad channels
+    raw.drop_channels(raw.info['bads'])
+
+    # only pick the first three channels to lower RAM usage
+    raw = raw.pick_channels(raw.ch_names[:3])
+
+    # Load the data
+    raw.load_data()
+
+    # Then we remove line frequency interference
+    raw.notch_filter(line_freq)
+
+    # crop data and then Epoch
+    raw = raw.crop(tmin=0, tmax=4, include_tmax=False)
+    epochs = make_fixed_length_epochs(raw=raw, duration=2., overlap=1.)
+
+    # compare data to original run using Frites
+    freqs = [30, 90]
+
+    # mode was renamed in mne-connectivity
+    if mode == 'morlet':
+        mode = 'cwt_morlet'
+    conn = spectral_connectivity_epochs(
+        epochs, freqs=freqs, n_jobs=1, method=method, mode=mode)
+
+    # frites only stores the upper triangular parts of the raveled array
+    row_triu_inds, col_triu_inds = np.triu_indices(len(raw.ch_names), k=1)
+    conn_data = conn.get_data(output='dense')[
+        :, row_triu_inds, col_triu_inds, ...]
+    assert_array_almost_equal(conn_data, test_conn)
