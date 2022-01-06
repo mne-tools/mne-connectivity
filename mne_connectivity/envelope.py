@@ -83,6 +83,7 @@ def envelope_correlation(data, names=None,
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
+        names = data.ch_names
         events = data.events
         event_id = data.event_id
 

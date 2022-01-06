@@ -19,6 +19,7 @@
 .. _MNE-Connectivity documentation: https://mne.tools/mne-connectivity/stable/index.html
 .. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
 .. _pip: https://pip.pypa.io/en/stable/
+.. _Frites: https://github.com/brainets/frites
 
 MNE-Connectivity
 ================
@@ -34,7 +35,7 @@ common connectivity analysis, and post-hoc statistics and processing.
 This project was initially ported over from mne-python starting v0.23, by Adam
 Li as part of Google Summer of Code 2021. Subsequently v0.1 and v0.2 releases
 were done as part of GSoC period. Future development will occur in subsequent
-versions.
+versions. 
 
 Documentation
 ^^^^^^^^^^^^^
