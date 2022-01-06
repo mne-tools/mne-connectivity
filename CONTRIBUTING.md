@@ -9,6 +9,13 @@ it can be incorporated into the `main` branch.
 To help developing `mne-connectivity`, you will need a few adjustments to your
 installation as shown below.
 
+# What Methods Warrant Inclusion in MNE-Connectivity?
+
+With emerging packages, such as `Frites`, MNE-Connectivity aims to be a platform
+for enabling other connectivity-based packages that leverage the MNE API. As such, we will not be able to include every single connectivity method possible.
+As a rule of thumb (borrowed from scikit-learn), we will accept PRs for methods
+that are accepted in the community and tested already through multiple publications.
+
 ## Running tests
 
 ### (Optional) Install development version of MNE-Python
