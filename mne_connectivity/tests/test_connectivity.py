@@ -23,7 +23,7 @@ from mne_connectivity import (Connectivity, EpochConnectivity,
 from mne_connectivity.effective import phase_slope_index
 from mne_connectivity.io import read_connectivity
 from mne_connectivity import envelope_correlation, vector_auto_regression
-from mne_connectivity.spectral import spectral_connectivity
+from mne_connectivity.spectral import spectral_connectivity_epochs
 
 
 def _make_test_epochs():
@@ -296,7 +296,7 @@ def test_append(conn_cls):
 
 @pytest.mark.parametrize(
     'conn_func',
-    [vector_auto_regression, spectral_connectivity,
+    [vector_auto_regression, spectral_connectivity_epochs,
      envelope_correlation, phase_slope_index]
 )
 def test_events_handling(conn_func):
@@ -318,7 +318,7 @@ def test_events_handling(conn_func):
 @pytest.mark.parametrize(
     'func', [
         vector_auto_regression,
-        spectral_connectivity,
+        spectral_connectivity_epochs,
         envelope_correlation,
         phase_slope_index
     ])

@@ -20,6 +20,7 @@
 .. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
 .. _pip: https://pip.pypa.io/en/stable/
 .. _Frites: https://github.com/brainets/frites
+.. _contributing guide: https://github.com/mne-tools/mne-connectivity/blob/main/CONTRIBUTING.md
 
 MNE-Connectivity
 ================
@@ -36,6 +37,14 @@ This project was initially ported over from mne-python starting v0.23, by Adam
 Li as part of Google Summer of Code 2021. Subsequently v0.1 and v0.2 releases
 were done as part of GSoC period. Future development will occur in subsequent
 versions. 
+
+MNE-Connectivity aims to contain the standard implementations of connectivity
+analysis that the community has accepted. `Frites`_ is a Python package that also
+implements connectivity methods with the MNE API/framework. For more recent and
+new research-geared methods, see `Frites`_ for a possible implementation. 
+
+Although this is a subjective standard, we are open to discussion.
+Please see our `contributing guide`_ for more information.
 
 Documentation
 ^^^^^^^^^^^^^
