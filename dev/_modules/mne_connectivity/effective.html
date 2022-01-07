@@ -192,7 +192,7 @@
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
-<span class="kn">from</span> <span class="nn">.spectral</span> <span class="kn">import</span> <span class="n">spectral_connectivity</span>
+<span class="kn">from</span> <span class="nn">.spectral</span> <span class="kn">import</span> <span class="n">spectral_connectivity_epochs</span>
 
 
 <div class="viewcode-block" id="phase_slope_index"><a class="viewcode-back" href="../../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index">[docs]</a><span class="nd">@verbose</span>
@@ -216,8 +216,8 @@
 <span class="sd">    A positive value means that time series 0 is ahead of time series 1 and</span>
 <span class="sd">    a negative value means the opposite.</span>
 
-<span class="sd">    The PSI is computed from the coherency (see spectral_connectivity), details</span>
-<span class="sd">    can be found in :footcite:`NolteEtAl2008`.</span>
+<span class="sd">    The PSI is computed from the coherency (see spectral_connectivity_epochs),</span>
+<span class="sd">    details can be found in :footcite:`NolteEtAl2008`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -295,7 +295,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Estimating phase slope index (PSI)&#39;</span><span class="p">)</span>
     <span class="c1"># estimate the coherency</span>
-    <span class="n">cohy</span> <span class="o">=</span> <span class="n">spectral_connectivity</span><span class="p">(</span>
+    <span class="n">cohy</span> <span class="o">=</span> <span class="n">spectral_connectivity_epochs</span><span class="p">(</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cohy&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
         <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
         <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
@@ -419,7 +419,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-06.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-07.<br>
 </p>
     </div>
     

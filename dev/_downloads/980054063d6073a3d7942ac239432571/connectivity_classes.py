@@ -19,7 +19,7 @@ how we can interact with the connectivity class.
 import numpy as np
 
 import mne
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity_epochs
 from mne.datasets import sample
 
 # %%
@@ -51,14 +51,14 @@ cwt_freqs = np.linspace(fmin, fmax, 5)
 sfreq = raw.info['sfreq']  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
 epochs.load_data().pick_types(meg='grad')  # just keep MEG and no EOG now
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     epochs, method='pli', mode='cwt_morlet', sfreq=sfreq, fmin=fmin, fmax=fmax,
     faverage=False, tmin=tmin, cwt_freqs=cwt_freqs, mt_adaptive=False,
     n_jobs=1)
 
 # %%
 # Now, we can look at different functionalities of the connectivity
-# class returned by :func:`mne_connectivity.spectral_connectivity`. The
+# class returned by :func:`mne_connectivity.spectral_connectivity_epochs`. The
 # following are some basic attributes of connectivity classes.
 
 # the dimensions of the data corresponding to each axis

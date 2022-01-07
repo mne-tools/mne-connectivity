@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.3dev0 documentation</title>
+    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -48,8 +48,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.vector_auto_regression" href="mne_connectivity.vector_auto_regression.html" />
-    <link rel="prev" title="mne_connectivity.envelope_correlation" href="mne_connectivity.envelope_correlation.html" />
+    <link rel="next" title="mne_connectivity.read_connectivity" href="mne_connectivity.read_connectivity.html" />
+    <link rel="prev" title="mne_connectivity.spectral_connectivity_epochs" href="mne_connectivity.spectral_connectivity_epochs.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -210,8 +210,8 @@
    mne_connectivity.envelope_correlation
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.phase_slope_index.html">
    mne_connectivity.phase_slope_index
   </a>
  </li>
@@ -225,8 +225,8 @@
    mne_connectivity.spectral_connectivity_epochs
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_connectivity.spectral_connectivity_time.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_connectivity.spectral_connectivity_time
   </a>
  </li>
@@ -292,24 +292,9 @@
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage pt-5 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#examples-using-mne-connectivity-phase-slope-index">
-   Examples using
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     mne_connectivity.phase_slope_index
-    </span>
-   </code>
-  </a>
- </li>
-</ul>
-
+    
 </nav>
               </div>
               
@@ -329,33 +314,21 @@
               
               <div>
                 
-  <section id="mne-connectivity-phase-slope-index">
-<h1>mne_connectivity.phase_slope_index<a class="headerlink" href="#mne-connectivity-phase-slope-index" title="Permalink to this headline">¶</a></h1>
+  <section id="mne-connectivity-spectral-connectivity-time">
+<h1>mne_connectivity.spectral_connectivity_time<a class="headerlink" href="#mne-connectivity-spectral-connectivity-time" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_connectivity.phase_slope_index">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Phase Slope Index (PSI) connectivity measure.</p>
-<p>The PSI is an effective connectivity measure, i.e., a measure which can
-give an indication of the direction of the information flow (causality).
-For two time series, and one computes the PSI between the first and the
-second time series as follows</p>
-<p>indices = (np.array([0]), np.array([1]))
-psi = phase_slope_index(data, indices=indices, …)</p>
-<p>A positive value means that time series 0 is ahead of time series 1 and
-a negative value means the opposite.</p>
-<p>The PSI is computed from the coherency (see spectral_connectivity_epochs),
-details can be found in <a class="footnote-reference brackets" href="#footcite-nolteetal2008" id="id1">1</a>.</p>
+<dt class="sig sig-object py" id="mne_connectivity.spectral_connectivity_time">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hanning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cwt_morlet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral/time.html#spectral_connectivity_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute frequency- and time-frequency-domain connectivity measures.</p>
+<p>This method computes single-Epoch time-resolved spectral connectivity.</p>
+<p>The connectivity method(s) are specified using the “method” parameter.
+All methods are based on estimates of the cross- and power spectral
+densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.23.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times)</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></p>
 <blockquote>
-<div><p>Can also be a list/generator of array, shape =(n_signals, n_times);
-list/generator of SourceEstimate; or Epochs.
-The data from which to compute connectivity. Note that it is also
-possible to combine multiple signals by providing a list of tuples,
-e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
-corresponds to 3 epochs, and arr_* could be an array with the same
-number of time points as stc_*.</p>
+<div><p>The data from which to compute connectivity.</p>
 </div></blockquote>
 <p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
@@ -364,63 +337,74 @@ connectivity. If ‘None’ (default), then names will be
 a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </div></blockquote>
+<p><strong>method</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<blockquote>
+<div><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'plv',</span>
+<span class="pre">'sxy']</span></code>. These are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘coh’ : Coherence</p></li>
+<li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
+<li><p>‘sxy’ : Cross-spectrum</p></li>
+</ul>
+</div></blockquote>
+<p>By default, the coherence is used.</p>
+</div></blockquote>
 <p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Two arrays with indices of connections for which to compute
-connectivity. If None, all connections are computed.</p>
+connectivity. I.e. it is a <code class="docutils literal notranslate"><span class="pre">(n_pairs,</span> <span class="pre">2)</span></code> array essentially.
+If None, all connections are computed.</p>
 </div></blockquote>
 <p><strong>sfreq</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>The sampling frequency.</p>
 </div></blockquote>
-<p><strong>mode</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<p><strong>foi</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.23.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
-<div><p>Spectrum estimation mode can be either: ‘multitaper’, ‘fourier’, or
+<div><p>Extract frequencies of interest. This parameters should be an array of
+shapes (n_foi, 2) defining where each band of interest start and
+finish.</p>
+</div></blockquote>
+<p><strong>sm_times</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | .5</p>
+<blockquote>
+<div><p>Number of points to consider for the temporal smoothing in seconds. By
+default, a 500ms smoothing is used.</p>
+</div></blockquote>
+<p><strong>sm_freqs</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | 1</p>
+<blockquote>
+<div><p>Number of points for frequency smoothing. By default, 1 is used which
+is equivalent to no smoothing</p>
+</div></blockquote>
+<p><strong>kernel</strong> : {‘square’, ‘hanning’}</p>
+<blockquote>
+<div><p>Kernel type to use. Choose either ‘square’ or ‘hanning’</p>
+</div></blockquote>
+<p><strong>mode</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</p>
+<blockquote>
+<div><p>Spectrum estimation mode can be either: ‘multitaper’, or
 ‘cwt_morlet’.</p>
-</div></blockquote>
-<p><strong>fmin</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
-<blockquote>
-<div><p>The lower frequency of interest. Multiple bands are defined using
-a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-If None the frequency corresponding to an epoch length of 5 cycles
-is used.</p>
-</div></blockquote>
-<p><strong>fmax</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
-<blockquote>
-<div><p>The upper frequency of interest. Multiple bands are dedined using
-a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.</p>
-</div></blockquote>
-<p><strong>tmin</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
-<blockquote>
-<div><p>Time to start connectivity estimation.</p>
-</div></blockquote>
-<p><strong>tmax</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
-<blockquote>
-<div><p>Time to end connectivity estimation.</p>
 </div></blockquote>
 <p><strong>mt_bandwidth</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The bandwidth of the multitaper windowing function in Hz.
 Only used in ‘multitaper’ mode.</p>
 </div></blockquote>
-<p><strong>mt_adaptive</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></p>
+<p><strong>freqs</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
-<div><p>Use adaptive weights to combine the tapered spectra into PSD.
-Only used in ‘multitaper’ mode.</p>
+<div><p>Array of frequencies of interest for use in time-frequency
+decomposition method (specified by <code class="docutils literal notranslate"><span class="pre">mode</span></code>).</p>
 </div></blockquote>
-<p><strong>mt_low_bias</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></p>
+<p><strong>n_cycles</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
-<div><p>Only use tapers with more than 90 percent spectral concentration within
-bandwidth. Only used in ‘multitaper’ mode.</p>
+<div><p>Number of cycles for use in time-frequency decomposition method
+(specified by <code class="docutils literal notranslate"><span class="pre">mode</span></code>). Fixed number or one per frequency.</p>
 </div></blockquote>
-<p><strong>cwt_freqs</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
+<p><strong>decim</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | 1</p>
 <blockquote>
-<div><p>Array of frequencies of interest. Only used in ‘cwt_morlet’ mode.</p>
-</div></blockquote>
-<p><strong>cwt_n_cycles</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
-<blockquote>
-<div><p>Number of cycles. Fixed number or one per frequency. Only used in
-‘cwt_morlet’ mode.</p>
+<div><p>To reduce memory usage, decimation factor after time-frequency
+decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
+returns tfr[…, decim].</p>
 </div></blockquote>
 <p><strong>block_size</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
@@ -439,16 +423,16 @@ keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>conn</strong> : instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<dd class="field-even"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
 <blockquote>
-<div><p>Computed connectivity measure(s). Either a
-<code class="docutils literal notranslate"><span class="pre">SpectralConnnectivity</span></code>, or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>
-container. The shape of each array is either
-(n_signals ** 2, n_bands) mode: ‘multitaper’ or ‘fourier’
-(n_signals ** 2, n_bands, n_times) mode: ‘cwt_morlet’
+<div><p>Computed connectivity measure(s). Either an instance of
+<code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code> or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>.
+The shape of each connectivity dataset is either
+(n_signals ** 2, n_freqs) mode: ‘multitaper’ or ‘fourier’
+(n_signals ** 2, n_freqs, n_times) mode: ‘cwt_morlet’
 when “indices” is None, or
-(n_con, n_bands) mode: ‘multitaper’ or ‘fourier’
-(n_con, n_bands, n_times) mode: ‘cwt_morlet’
+(n_con, n_freqs) mode: ‘multitaper’ or ‘fourier’
+(n_con, n_freqs, n_times) mode: ‘cwt_morlet’
 when “indices” is specified and “n_con = len(indices[0])”.</p>
 </div></blockquote>
 </dd>
@@ -456,29 +440,20 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs</span></code></a></dt><dd></dd>
 <dt><a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectralConnectivity</span></code></a></dt><dd></dd>
 <dt><a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectroTemporalConnectivity</span></code></a></dt><dd></dd>
 </dl>
 </div>
-<p class="rubric">References</p>
-<p id="id2"><dl class="footnote brackets">
-<dt class="label" id="footcite-nolteetal2008"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Guido Nolte, Andreas Ziehe, Vadim V. Nikulin, Alois Schlögl, Nicole Krämer, Tom Brismar, and Klaus-Robert Müller. Robustly estimating the flow direction of information in complex physical systems. <em>Physical Review Letters</em>, 2008. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.100.234101">doi:10.1103/PhysRevLett.100.234101</a>.</p>
-</dd>
-</dl>
-</p>
+<p class="rubric">Notes</p>
+<p>This function was originally implemented in <code class="docutils literal notranslate"><span class="pre">frites</span></code> and was
+ported over.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.</span></p>
+</div>
 </dd></dl>
 
-<section id="examples-using-mne-connectivity-phase-slope-index">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code><a class="headerlink" href="#examples-using-mne-connectivity-phase-slope-index" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in sour..."><figure class="align-default" id="id3">
-<img alt="Compute Phase Slope Index (PSI) in source space for a visual stimulus" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-</div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
               </div>
@@ -486,17 +461,17 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="mne_connectivity.envelope_correlation.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="mne_connectivity.spectral_connectivity_epochs.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_connectivity.envelope_correlation</p>
+            <p class="prev-next-title">mne_connectivity.spectral_connectivity_epochs</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="mne_connectivity.vector_auto_regression.html" title="next page">
+    <a class='right-next' id="next-link" href="mne_connectivity.read_connectivity.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.vector_auto_regression</p>
+        <p class="prev-next-title">mne_connectivity.read_connectivity</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
