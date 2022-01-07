@@ -99,16 +99,16 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
 
     See Also
     --------
-    mne_connectivity.spectral_connectivity
+    mne_connectivity.spectral_connectivity_epochs
     mne_connectivity.SpectralConnectivity
     mne_connectivity.SpectroTemporalConnectivity
 
     Notes
     -----
-    This function was originally implemented in ``frites``.
-    x_s and x_t -> source_idx, and target_idx
-    sf -> sfreq
+    This function was originally implemented in ``frites`` and was
+    ported over.
 
+    .. versionadded:: 0.3
     """
     events = None
     event_id = None
