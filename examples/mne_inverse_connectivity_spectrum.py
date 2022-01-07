@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import mne
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity_epochs
 
 print(__doc__)
 
@@ -66,7 +66,7 @@ label_ts = mne.extract_label_time_course(stcs, labels, src, mode='mean_flip',
 fmin, fmax = 7.5, 40.
 sfreq = raw.info['sfreq']  # the sampling frequency
 
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     label_ts, method='wpli2_debiased', mode='multitaper', sfreq=sfreq,
     fmin=fmin, fmax=fmax, mt_adaptive=True, n_jobs=1)
 freqs = con.freqs

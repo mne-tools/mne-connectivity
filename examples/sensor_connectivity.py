@@ -13,7 +13,7 @@ are used which produces strong connectvitiy in the right occipital sensors.
 # License: BSD (3-clause)
 
 import mne
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity_epochs
 from mne.datasets import sample
 from mne_connectivity.viz import plot_sensors_connectivity
 
@@ -47,7 +47,7 @@ fmin, fmax = 4., 9.
 sfreq = raw.info['sfreq']  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
 epochs.load_data().pick_types(meg='grad')  # just keep MEG and no EOG now
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     epochs, method='pli', mode='multitaper', sfreq=sfreq, fmin=fmin, fmax=fmax,
     faverage=True, tmin=tmin, mt_adaptive=False, n_jobs=1)
 

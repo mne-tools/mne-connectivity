@@ -23,7 +23,7 @@ from mne import make_forward_solution
 from mne.io import read_raw_fif
 from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
 from mne.viz import circular_layout
-from mne_connectivity import spectral_connectivity
+from mne_connectivity import spectral_connectivity_epochs
 from mne_connectivity.viz import plot_connectivity_circle
 
 # Set directories
@@ -119,7 +119,7 @@ label_ts = mne.extract_label_time_course(
 fmin = 8.
 fmax = 13.
 sfreq = epochs.info['sfreq']  # the sampling frequency
-con = spectral_connectivity(
+con = spectral_connectivity_epochs(
     label_ts, method='pli', mode='multitaper', sfreq=sfreq, fmin=fmin,
     fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
 

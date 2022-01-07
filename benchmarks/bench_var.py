@@ -1,3 +1,12 @@
+"""
+===================================================
+Benchmark Vector Autoregression Against Statsmodels
+===================================================
+
+This file benchmarks mne-connectivity VAR implementation
+against that of statsmodels to prevent us from creating
+a dependency on statsmodels.
+"""
 import numpy as np
 from memory_profiler import profile
 

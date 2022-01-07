@@ -20,6 +20,7 @@
 .. _installation guide: https://mne.tools/mne-connectivity/dev/install/index.html
 .. _pip: https://pip.pypa.io/en/stable/
 .. _Frites: https://github.com/brainets/frites
+.. _contributing guide: https://github.com/mne-tools/mne-connectivity/blob/main/CONTRIBUTING.md
 
 MNE-Connectivity
 ================

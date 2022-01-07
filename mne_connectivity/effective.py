@@ -9,7 +9,7 @@ from mne.utils import logger, verbose
 
 from .utils import fill_doc
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
-from .spectral import spectral_connectivity
+from .spectral import spectral_connectivity_epochs
 
 
 @verbose
@@ -33,8 +33,8 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     A positive value means that time series 0 is ahead of time series 1 and
     a negative value means the opposite.
 
-    The PSI is computed from the coherency (see spectral_connectivity), details
-    can be found in :footcite:`NolteEtAl2008`.
+    The PSI is computed from the coherency (see spectral_connectivity_epochs),
+    details can be found in :footcite:`NolteEtAl2008`.
 
     Parameters
     ----------
@@ -112,7 +112,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     """
     logger.info('Estimating phase slope index (PSI)')
     # estimate the coherency
-    cohy = spectral_connectivity(
+    cohy = spectral_connectivity_epochs(
         data, names, method='cohy', indices=indices, sfreq=sfreq, mode=mode,
         fmin=fmin, fmax=fmax, fskip=0, faverage=False, tmin=tmin, tmax=tmax,
         mt_bandwidth=mt_bandwidth, mt_adaptive=mt_adaptive,
