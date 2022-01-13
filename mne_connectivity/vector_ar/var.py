@@ -131,9 +131,13 @@ def vector_auto_regression(
 
         # Extract metadata from the Epochs data structure.
         # Make Annotations persist through by adding them to the metadata.
-        annots_in_metadata = all(name not in data.metadata.columns
-                                 for name in ['annot_onset', 'annot_duration',
-                                              'annot_description'])
+        metadata = data.metadata
+        if metadata is None:
+            annots_in_metadata = False
+        else:
+            annots_in_metadata = all(
+                name not in metadata.columns for name in [
+                    'annot_onset', 'annot_duration', 'annot_description'])
         if hasattr(data, 'annotations') and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
