@@ -70,10 +70,10 @@ jobs:
               - pip-cache
         - restore_cache:
             keys:
-              - user-install-bin-cache
+              - user-install-bin-cachev1
               
         - run:
-            name: Get Python running
+            name: Get Python running and install dependencies
             command: |
               ./tools/circleci_dependencies.sh
 
@@ -83,7 +83,7 @@ jobs:
               - ~/.cache/pip
 
         - save_cache:
-            key: user-install-bin-cache
+            key: user-install-bin-cachev1
             paths:
               - ~/.local/lib/python3.8/site-packages
               - ~/.local/bin
