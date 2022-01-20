@@ -4,7 +4,10 @@
 #
 # License: BSD (3-clause)
 
-from mne.externals.doccer import indentcount_lines
+try:  # 1.0+
+    from mne.utils.docs import _indentcount_lines
+except ImportError:
+    from mne.externals.doccer import indentcount_lines as _indentcount_lines  # noqa
 
 ##############################################################################
 # Define our standard documentation entries
@@ -151,7 +154,7 @@ def fill_doc(f):
     if len(lines) < 2:
         icount = 0
     else:
-        icount = indentcount_lines(lines[1:])
+        icount = _indentcount_lines(lines[1:])
     # Insert this indent to dictionary docstrings
     try:
         indented = docdict_indented[icount]
