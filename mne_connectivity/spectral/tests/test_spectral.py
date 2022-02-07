@@ -151,7 +151,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
 
 @pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv',
                                     ['ciplv', 'ppc', 'pli', 'pli2_unbiased',
-                                     'wpli', 'wpli2_debiased', 'coh']])
+                                     'dpli', 'wpli', 'wpli2_debiased', 'coh']])
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
 def test_spectral_connectivity(method, mode):
     """Test frequency-domain connectivity methods."""
