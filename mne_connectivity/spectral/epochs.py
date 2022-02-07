@@ -374,6 +374,31 @@ class _PLIUnbiasedEst(_PLIEst):
         self.con_scores[con_idx] = con
 
 
+class _DPLIEst(_EpochMeanConEstBase):
+    """DPLI Estimator."""
+
+    name = 'DPLI'
+
+    def __init__(self, n_cons, n_freqs, n_times):
+        super(_DPLIEst, self).__init__(n_cons, n_freqs, n_times)
+
+        # allocate accumulator
+        self._acc = np.zeros(self.csd_shape)
+
+    def accumulate(self, con_idx, csd_xy):
+        """Accumulate some connections."""
+        self._acc[con_idx] += np.heaviside(np.imag(csd_xy), 0.5)
+
+    def compute_con(self, con_idx, n_epochs):
+        """Compute final con. score for some connections."""
+        if self.con_scores is None:
+            self.con_scores = np.zeros(self.csd_shape)
+
+        con = self._acc[con_idx] / n_epochs
+
+        self.con_scores[con_idx] = con
+
+
 class _WPLIEst(_EpochMeanConEstBase):
     """WPLI Estimator."""
 
@@ -687,7 +712,8 @@ def _get_and_verify_data_sizes(data, sfreq, n_signals=None, n_times=None,
 _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'plv': _PLVEst, 'ciplv': _ciPLVEst, 'ppc': _PPCEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
-                   'wpli': _WPLIEst, 'wpli2_debiased': _WPLIDebiasedEst}
+                   'dpli': _DPLIEst, 'wpli': _WPLIEst,
+                   'wpli2_debiased': _WPLIDebiasedEst}
 
 
 def _check_estimators(method, mode):
@@ -749,7 +775,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
-        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'wpli', 'wpli2_debiased']``.
+        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
+        'wpli2_debiased']``.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
@@ -903,6 +930,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
         'pli2_unbiased' : Unbiased estimator of squared PLI
         :footcite:`VinckEtAl2011`.
+
+        'dpli' : Directed Phase Lag Index (DPLI) :footcite`StamEtAl2012`
+        given by::
+
+            DPLI = E[H(Im(Sxy))]
 
         'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011`
         given by::
