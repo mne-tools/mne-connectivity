@@ -931,8 +931,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         'pli2_unbiased' : Unbiased estimator of squared PLI
         :footcite:`VinckEtAl2011`.
 
-        'dpli' : Directed Phase Lag Index (DPLI) :footcite`StamEtAl2012`
-        given by::
+        'dpli' : Directed Phase Lag Index (DPLI) :footcite:`StamEtAl2012`
+        given by (where H is the Heaviside function)::
 
             DPLI = E[H(Im(Sxy))]
 
