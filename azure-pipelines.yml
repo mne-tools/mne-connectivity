@@ -39,6 +39,10 @@ jobs:
     displayName: 'Install dependencies with pip'
   - script: python setup.py develop
     displayName: 'Install MNE-Realtime'
+  - bash: |
+      set -e
+      git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git
+      powershell gl-ci-helpers/appveyor/install_opengl.ps1
   - script: python -c "import mne; print(mne.sys_info())"
     displayName: 'Print config'
   - script: python -c "import mne; mne.datasets.testing.data_path(verbose=True)"
