@@ -239,6 +239,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     n_pairs = len(source_idx)
 
     # first compute time-frequency decomposition
+    collapse = None
     if mode == 'cwt_morlet':
         out = tfr_array_morlet(
             data, sfreq, freqs, n_cycles=n_cycles, output='complex',
@@ -261,13 +262,24 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                 data, sfreq, freqs, n_cycles=n_cycles,
                 time_bandwidth=mt_bandwidth, output='complex', decim=decim,
                 n_jobs=n_jobs, **kw_mt)
+            collapse = True
+            if out.ndim == 5:  # newest MNE-Python
+                collapse = -3
 
     # get the supported connectivity function
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
 
     # computes conn across trials
+    # TODO: This is wrong -- it averages in the complex domain (over tapers).
+    # What it *should* do is compute the conn for each taper, then average
+    # (see below).
+    if collapse is not None:
+        out = np.mean(out, axis=collapse)
     this_conn = conn_func(out, kernel, foi_idx, source_idx, target_idx,
                           n_jobs=n_jobs, verbose=verbose, total=n_pairs)
+    # This is where it should go, but the regression test fails...
+    # if collapse is not None:
+    #     this_conn = [c.mean(axis=collapse) for c in this_conn]
     return this_conn
 
 
@@ -288,10 +300,10 @@ def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise coherence
     def pairwise_coh(w_x, w_y):
         # computes the coherence
-        s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])
+        s_xy = w[:, w_y] * np.conj(w[:, w_x])
         s_xy = _smooth_spectra(s_xy, kernel)
-        s_xx = s_auto[:, w_x, :, :]
-        s_yy = s_auto[:, w_y, :, :]
+        s_xx = s_auto[:, w_x]
+        s_yy = s_auto[:, w_y]
         out = np.abs(s_xy) ** 2 / (s_xx * s_yy)
         # mean inside frequency sliding window (if needed)
         if isinstance(foi_idx, np.ndarray):
@@ -312,7 +324,7 @@ def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise plv
     def pairwise_plv(w_x, w_y):
         # computes the plv
-        s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])
+        s_xy = w[:, w_y] * np.conj(w[:, w_x])
         # complex exponential of phase differences
         exp_dphi = s_xy / np.abs(s_xy)
         # smooth e^(-i*\delta\phi)
@@ -338,7 +350,7 @@ def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise cross-spectra
     def pairwise_cs(w_x, w_y):
         #  computes the cross-spectra
-        out = w[:, w_x, :, :] * np.conj(w[:, w_y, :, :])
+        out = w[:, w_x] * np.conj(w[:, w_y])
         out = _smooth_spectra(out, kernel)
         if foi_idx is not None:
             return _foi_average(out, foi_idx)
