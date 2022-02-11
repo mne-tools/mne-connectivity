@@ -215,8 +215,18 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         # compute time-resolved spectral connectivity
         conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
 
+        print(data.shape)
+        print(conn.shape)
+        print([x.shape for x in conn_tr])
+
+        # average across tapers if necessary
+        conn_tr = np.stack(conn_tr, axis=1)
+        if all(x.ndim == 4 for x in conn_tr):
+            conn_tr = np.mean(conn, axis=1)
+
+        print(conn_tr.shape)
         # merge results
-        conn[epoch_idx, ...] = np.stack(conn_tr, axis=1)
+        conn[epoch_idx, ...] = conn_tr
 
     # create a Connectivity container
     indices = 'symmetric'
@@ -255,7 +265,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                 out += [tfr_array_multitaper(
                     data, sfreq, [f_c], n_cycles=float(n_c), time_bandwidth=mt,
                     output='complex', decim=decim, n_jobs=n_jobs, **kw_mt)]
-            out = np.stack(out, axis=2).squeeze()
+            out = np.stack(out, axis=3).squeeze()
         elif isinstance(mt_bandwidth, (type(None), int, float)):
             out = tfr_array_multitaper(
                 data, sfreq, freqs, n_cycles=n_cycles,
@@ -264,6 +274,10 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 
     # get the supported connectivity function
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
+
+    # XXX: averages over tapers if necessary, but I don't think this is correct
+    if out.ndim == 5:
+        out = np.mean(out, axis=2)
 
     # computes conn across trials
     this_conn = conn_func(out, kernel, foi_idx, source_idx, target_idx,
