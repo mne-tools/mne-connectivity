@@ -53,14 +53,14 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         Extract frequencies of interest. This parameters should be an array of
         shapes (n_foi, 2) defining where each band of interest start and
         finish.
-    sm_times : float | .5
-        Number of points to consider for the temporal smoothing in seconds. By
-        default, a 500ms smoothing is used.
-    sm_freqs : int | 1
+    sm_times : float
+        Amount of time to consider for the temporal smoothing in seconds. By
+        default, 0.5 sec smoothing is used.
+    sm_freqs : int
         Number of points for frequency smoothing. By default, 1 is used which
         is equivalent to no smoothing
-    kernel : {'square', 'hanning'}
-        Kernel type to use. Choose either 'square' or 'hanning'
+    sm_kernel : {'square', 'hanning'}
+        Kernel type to use. Choose either 'square' or 'hanning' (default).
     mode : str, optional
         Spectrum estimation mode can be either: 'multitaper', or
         'cwt_morlet'.
