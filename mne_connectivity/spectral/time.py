@@ -58,7 +58,7 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         default, 0.5 sec smoothing is used.
     sm_freqs : int
         Number of points for frequency smoothing. By default, 1 is used which
-        is equivalent to no smoothing
+        is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
         Kernel type to use. Choose either 'square' or 'hanning' (default).
     mode : str, optional
