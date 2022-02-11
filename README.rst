@@ -11,6 +11,9 @@
 .. |Codecov| image:: https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/mne-tools/mne-connectivity
 
+.. |conda-forge| image:: https://img.shields.io/conda/dn/conda-forge/mne-connectivity.svg?label=Conda%20downloads
+.. _conda-forge: https://anaconda.org/conda-forge/mne-connectivity
+
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
 
