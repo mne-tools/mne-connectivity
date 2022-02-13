@@ -238,14 +238,14 @@
 <span class="sd">        Extract frequencies of interest. This parameters should be an array of</span>
 <span class="sd">        shapes (n_foi, 2) defining where each band of interest start and</span>
 <span class="sd">        finish.</span>
-<span class="sd">    sm_times : float | .5</span>
-<span class="sd">        Number of points to consider for the temporal smoothing in seconds. By</span>
-<span class="sd">        default, a 500ms smoothing is used.</span>
-<span class="sd">    sm_freqs : int | 1</span>
+<span class="sd">    sm_times : float</span>
+<span class="sd">        Amount of time to consider for the temporal smoothing in seconds. By</span>
+<span class="sd">        default, 0.5 sec smoothing is used.</span>
+<span class="sd">    sm_freqs : int</span>
 <span class="sd">        Number of points for frequency smoothing. By default, 1 is used which</span>
-<span class="sd">        is equivalent to no smoothing</span>
-<span class="sd">    kernel : {&#39;square&#39;, &#39;hanning&#39;}</span>
-<span class="sd">        Kernel type to use. Choose either &#39;square&#39; or &#39;hanning&#39;</span>
+<span class="sd">        is equivalent to no smoothing.</span>
+<span class="sd">    sm_kernel : {&#39;square&#39;, &#39;hanning&#39;}</span>
+<span class="sd">        Kernel type to use. Choose either &#39;square&#39; or &#39;hanning&#39; (default).</span>
 <span class="sd">    mode : str, optional</span>
 <span class="sd">        Spectrum estimation mode can be either: &#39;multitaper&#39;, or</span>
 <span class="sd">        &#39;cwt_morlet&#39;.</span>
@@ -424,6 +424,7 @@
     <span class="n">n_pairs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
 
     <span class="c1"># first compute time-frequency decomposition</span>
+    <span class="n">collapse</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_morlet</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span>
@@ -446,13 +447,24 @@
                 <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
                 <span class="n">time_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span> <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
                 <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_mt</span><span class="p">)</span>
+            <span class="n">collapse</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># newest MNE-Python</span>
+                <span class="n">collapse</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
 
     <span class="c1"># get the supported connectivity function</span>
     <span class="n">conn_func</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coh&#39;</span><span class="p">:</span> <span class="n">_coh</span><span class="p">,</span> <span class="s1">&#39;plv&#39;</span><span class="p">:</span> <span class="n">_plv</span><span class="p">,</span> <span class="s1">&#39;sxy&#39;</span><span class="p">:</span> <span class="n">_cs</span><span class="p">}[</span><span class="n">method</span><span class="p">]</span>
 
     <span class="c1"># computes conn across trials</span>
+    <span class="c1"># TODO: This is wrong -- it averages in the complex domain (over tapers).</span>
+    <span class="c1"># What it *should* do is compute the conn for each taper, then average</span>
+    <span class="c1"># (see below).</span>
+    <span class="k">if</span> <span class="n">collapse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">collapse</span><span class="p">)</span>
     <span class="n">this_conn</span> <span class="o">=</span> <span class="n">conn_func</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span>
                           <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">n_pairs</span><span class="p">)</span>
+    <span class="c1"># This is where it should go, but the regression test fails...</span>
+    <span class="c1"># if collapse is not None:</span>
+    <span class="c1">#     this_conn = [c.mean(axis=collapse) for c in this_conn]</span>
     <span class="k">return</span> <span class="n">this_conn</span>
 
 
@@ -473,10 +485,10 @@
     <span class="c1"># define the pairwise coherence</span>
     <span class="k">def</span> <span class="nf">pairwise_coh</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
         <span class="c1"># computes the coherence</span>
-        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">])</span>
         <span class="n">s_xy</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
-        <span class="n">s_xx</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
-        <span class="n">s_yy</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">s_xx</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">]</span>
+        <span class="n">s_yy</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">s_xx</span> <span class="o">*</span> <span class="n">s_yy</span><span class="p">)</span>
         <span class="c1"># mean inside frequency sliding window (if needed)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -497,7 +509,7 @@
     <span class="c1"># define the pairwise plv</span>
     <span class="k">def</span> <span class="nf">pairwise_plv</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
         <span class="c1"># computes the plv</span>
-        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">])</span>
         <span class="c1"># complex exponential of phase differences</span>
         <span class="n">exp_dphi</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
         <span class="c1"># smooth e^(-i*\delta\phi)</span>
@@ -523,7 +535,7 @@
     <span class="c1"># define the pairwise cross-spectra</span>
     <span class="k">def</span> <span class="nf">pairwise_cs</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
         <span class="c1">#  computes the cross-spectra</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">])</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">foi_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">)</span>
@@ -588,7 +600,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-01-20.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-02-13.<br>
 </p>
     </div>
     
