@@ -24,6 +24,7 @@ def pytest_configure(config):
     ignore:.*SelectableGroups dict interface is deprecated.*:DeprecationWarning
     ignore:.*Converting `np.character` to a dtype is deprecated.*:DeprecationWarning
     ignore:.*distutils Version classes are deprecated.*:DeprecationWarning
+    ignore:.*`np.MachAr` is deprecated.*:DeprecationWarning
     # for the persistence of metadata and Raw Annotations within mne-python
     # Epochs class
     ignore:.*There were no Annotations stored in.*:RuntimeWarning

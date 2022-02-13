@@ -9,7 +9,7 @@ trigger:
 jobs:
 - job: Windows
   pool:
-    vmIMage: 'VS2017-Win2016'
+    vmIMage: 'windows-latest'
   variables:
     MNE_LOGGING_LEVEL: 'warning'
     MNE_FORCE_SERIAL: 'true'
@@ -34,16 +34,19 @@ jobs:
       $PSDefaultParameterValues['*:ErrorAction']='Stop'
       pip install --upgrade --pre numpy scipy matplotlib
       pip install https://api.github.com/repos/mne-tools/mne-python/zipball/main
-      pip install --upgrade -r requirements.txt
-      pip install codecov pylsl
+      pip install --upgrade -r requirements.txt -r requirements_testing.txt codecov
     displayName: 'Install dependencies with pip'
   - script: python setup.py develop
-    displayName: 'Install MNE-Realtime'
+    displayName: 'Install MNE-Connectivity'
+  - bash: |
+      set -e
+      git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git
+      powershell gl-ci-helpers/appveyor/install_opengl.ps1
   - script: python -c "import mne; print(mne.sys_info())"
     displayName: 'Print config'
   - script: python -c "import mne; mne.datasets.testing.data_path(verbose=True)"
     displayName: 'Get test data'
-  - script: pytest mne_realtime
+  - script: pytest mne_connectivity
     displayName: 'Run tests'
   - script: codecov --root %BUILD_REPOSITORY_LOCALPATH% -t %CODECOV_TOKEN%
     displayName: 'Codecov'
