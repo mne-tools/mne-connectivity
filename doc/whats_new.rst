@@ -44,7 +44,7 @@ API
 - Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`)
 - Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regression` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`47`)
 - Add ``pandas`` as a requirement for dealing with metadata associated from the original Epochs file, by `Adam Li`_ (:gh:`58`)
-- Rename ``mne_connectivity.spectral_connectivity`` to :func:`mne_connectivity.spectral_connectivity_epochs`
+- Rename ``mne_connectivity.spectral_connectivity`` to :func:`mne_connectivity.spectral_connectivity_epochs`, by `Adam Li`_ (:gh:`69`)
 
 Authors
 ~~~~~~~
