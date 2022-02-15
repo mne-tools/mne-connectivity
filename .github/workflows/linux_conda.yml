@@ -1,0 +1,68 @@
+name: 'linux / conda'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  # Linux
+  job:
+    timeout-minutes: 90
+    name: 'py3.9'
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    env:
+      CONDA_ENV: 'environment.yml'
+      DISPLAY: ':99.0'
+      MNE_LOGGING_LEVEL: 'warning'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+      PYTHON_VERSION: '3.9'
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./tools/setup_xvfb.sh
+        name: 'Setup xvfb'
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: 'mne'
+          python-version: ${{ env.PYTHON_VERSION }}
+          environment-file: ${{ env.CONDA_ENV }}
+        name: 'Setup conda'
+      - shell: bash -el {0}
+        run: |
+          conda activate mne
+          source tools/get_minimal_commands.sh
+          pip install -r requirements_testing.txt
+        name: 'Install dependencies'
+
+      - shell: bash -el {0}
+        name: Install MNE (main)
+        run: |
+          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
+          pip install -e ./mne-python
+
+      - shell: bash -el {0}
+        run: |
+          python setup.py build
+          python setup.py install
+        name: 'Install MNE'
+      
+      - shell: bash -el {0}
+        run: |
+          which mne
+          mne sys_info -pd
+          python -c "import numpy; numpy.show_config()"
+        name: 'Show infos'
+      
+      - name: Run pytest
+        run: |
+          python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+        shell: bash -el {0}

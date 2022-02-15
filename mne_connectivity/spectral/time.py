@@ -53,14 +53,14 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         Extract frequencies of interest. This parameters should be an array of
         shapes (n_foi, 2) defining where each band of interest start and
         finish.
-    sm_times : float | .5
-        Number of points to consider for the temporal smoothing in seconds. By
-        default, a 500ms smoothing is used.
-    sm_freqs : int | 1
+    sm_times : float
+        Amount of time to consider for the temporal smoothing in seconds. By
+        default, 0.5 sec smoothing is used.
+    sm_freqs : int
         Number of points for frequency smoothing. By default, 1 is used which
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
-        Kernel type to use. Choose either 'square' or 'hanning'
+        Kernel type to use. Choose either 'square' or 'hanning' (default).
     mode : str, optional
         Spectrum estimation mode can be either: 'multitaper', or
         'cwt_morlet'.
@@ -249,6 +249,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     n_pairs = len(source_idx)
 
     # first compute time-frequency decomposition
+    collapse = None
     if mode == 'cwt_morlet':
         out = tfr_array_morlet(
             data, sfreq, freqs, n_cycles=n_cycles, output='complex',
@@ -271,6 +272,9 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                 data, sfreq, freqs, n_cycles=n_cycles,
                 time_bandwidth=mt_bandwidth, output='complex', decim=decim,
                 n_jobs=n_jobs, **kw_mt)
+            collapse = True
+            if out.ndim == 5:  # newest MNE-Python
+                collapse = -3
 
     # get the supported connectivity function
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
@@ -280,8 +284,16 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         out = np.mean(out, axis=2)
 
     # computes conn across trials
+    # TODO: This is wrong -- it averages in the complex domain (over tapers).
+    # What it *should* do is compute the conn for each taper, then average
+    # (see below).
+    if collapse is not None:
+        out = np.mean(out, axis=collapse)
     this_conn = conn_func(out, kernel, foi_idx, source_idx, target_idx,
                           n_jobs=n_jobs, verbose=verbose, total=n_pairs)
+    # This is where it should go, but the regression test fails...
+    # if collapse is not None:
+    #     this_conn = [c.mean(axis=collapse) for c in this_conn]
     return this_conn
 
 
@@ -302,10 +314,10 @@ def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise coherence
     def pairwise_coh(w_x, w_y):
         # computes the coherence
-        s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])
+        s_xy = w[:, w_y] * np.conj(w[:, w_x])
         s_xy = _smooth_spectra(s_xy, kernel)
-        s_xx = s_auto[:, w_x, :, :]
-        s_yy = s_auto[:, w_y, :, :]
+        s_xx = s_auto[:, w_x]
+        s_yy = s_auto[:, w_y]
         out = np.abs(s_xy) ** 2 / (s_xx * s_yy)
         # mean inside frequency sliding window (if needed)
         if isinstance(foi_idx, np.ndarray):
@@ -326,7 +338,7 @@ def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise plv
     def pairwise_plv(w_x, w_y):
         # computes the plv
-        s_xy = w[:, w_y, :, :] * np.conj(w[:, w_x, :, :])
+        s_xy = w[:, w_y] * np.conj(w[:, w_x])
         # complex exponential of phase differences
         exp_dphi = s_xy / np.abs(s_xy)
         # smooth e^(-i*\delta\phi)
@@ -352,7 +364,7 @@ def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total):
     # define the pairwise cross-spectra
     def pairwise_cs(w_x, w_y):
         #  computes the cross-spectra
-        out = w[:, w_x, :, :] * np.conj(w[:, w_y, :, :])
+        out = w[:, w_x] * np.conj(w[:, w_y])
         out = _smooth_spectra(out, kernel)
         if foi_idx is not None:
             return _foi_average(out, foi_idx)

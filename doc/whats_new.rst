@@ -29,6 +29,7 @@ Enhancements
 - Added :func:`mne_connectivity.select_order` for helping to select VAR order using information criterion, by `Adam Li`_ (:gh:`46`)
 - All connectivity functions retain ``events``, ``event_id`` and ``metadata`` from `mne.Epochs` objects as input and is stored as part of the connectivity object, by `Adam Li`_ (:gh:`58`)
 - Add spectral connectivity over time function :func:`mne_connectivity.spectral_connectivity_time`, by `Adam Li`_ (:gh:`67`)
+- Add conda installation, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`81`)
 
 Bug
 ~~~
@@ -43,7 +44,7 @@ API
 - Added ``h5netcdf`` as a requirement for saving connectivity data, by `Adam Li`_ (:gh:`43`)
 - Changed keyword argument ``model_order`` in :func:`mne_connectivity.vector_auto_regression` to ``lags`` to more align with statsmodels API, by `Adam Li`_ (:gh:`47`)
 - Add ``pandas`` as a requirement for dealing with metadata associated from the original Epochs file, by `Adam Li`_ (:gh:`58`)
-- Rename ``mne_connectivity.spectral_connectivity`` to :func:`mne_connectivity.spectral_connectivity_epochs`
+- Rename ``mne_connectivity.spectral_connectivity`` to :func:`mne_connectivity.spectral_connectivity_epochs`, by `Adam Li`_ (:gh:`69`)
 
 Authors
 ~~~~~~~
