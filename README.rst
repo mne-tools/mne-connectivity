@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Codecov|_ |PyPI|_
+|GH|_ |Circle|_ |Azure|_ |Codecov|_ |PyPI|_ |conda-forge|_
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
