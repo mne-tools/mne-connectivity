@@ -44,6 +44,13 @@ jobs:
         name: 'Install dependencies'
 
       - shell: bash -el {0}
+        name: Install MNE (main)
+        if: "matrix.mne-version == 'mne-main'"
+        run: |
+          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
+          pip install -e ./mne-python
+
+      - shell: bash -el {0}
         run: |
           python setup.py build
           python setup.py install
