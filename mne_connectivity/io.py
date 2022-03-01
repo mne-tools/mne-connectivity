@@ -44,8 +44,8 @@ def _xarray_to_conn(array, cls_func):
     metadata = _prepare_read_metadata(metadata)
 
     # write event IDs
-    event_id_keys = array.attrs.pop('event_id_keys')
-    event_id_vals = array.attrs.pop('event_id_vals')
+    event_id_keys = np.atleast_1d(array.attrs.pop('event_id_keys')).tolist()
+    event_id_vals = np.atleast_1d(array.attrs.pop('event_id_vals')).tolist()
     event_id = {key: val for key, val in zip(event_id_keys, event_id_vals)}
     array.attrs['event_id'] = event_id
 

@@ -313,7 +313,7 @@ def test_events_handling(conn_func):
 @pytest.mark.parametrize(
     'epochs', [
         _make_test_epochs(),
-        np.random.RandomState(0).random((10, 3, 500))
+        # np.random.RandomState(0).random((10, 3, 500))
     ])
 @pytest.mark.parametrize(
     'func', [
