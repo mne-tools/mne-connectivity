@@ -1,0 +1,477 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.2 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_connectivity.spectral_connectivity" href="mne_connectivity.spectral_connectivity.html" />
+    <link rel="prev" title="mne_connectivity.envelope_correlation" href="mne_connectivity.envelope_correlation.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-Connectivity</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  What’s new?
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../auto_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.2
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.3 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.2 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.Connectivity.html">
+   mne_connectivity.Connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html">
+   mne_connectivity.TemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html">
+   mne_connectivity.SpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html">
+   mne_connectivity.SpectroTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochConnectivity.html">
+   mne_connectivity.EpochConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html">
+   mne_connectivity.EpochTemporalConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html">
+   mne_connectivity.EpochSpectralConnectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.EpochSpectroTemporalConnectivity.html">
+   mne_connectivity.EpochSpectroTemporalConnectivity
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.envelope_correlation.html">
+   mne_connectivity.envelope_correlation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_connectivity.phase_slope_index
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity.html">
+   mne_connectivity.spectral_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.vector_auto_regression.html">
+   mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.read_connectivity.html">
+   mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.degree.html">
+   mne_connectivity.degree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.seed_target_indices.html">
+   mne_connectivity.seed_target_indices
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.check_indices.html">
+   mne_connectivity.check_indices
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-connectivity-phase-slope-index">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_connectivity.phase_slope_index
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="mne-connectivity-phase-slope-index">
+<h1>mne_connectivity.phase_slope_index<a class="headerlink" href="#mne-connectivity-phase-slope-index" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mne_connectivity.phase_slope_index">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Phase Slope Index (PSI) connectivity measure.</p>
+<p>The PSI is an effective connectivity measure, i.e., a measure which can
+give an indication of the direction of the information flow (causality).
+For two time series, and one computes the PSI between the first and the
+second time series as follows</p>
+<p>indices = (np.array([0]), np.array([1]))
+psi = phase_slope_index(data, indices=indices, …)</p>
+<p>A positive value means that time series 0 is ahead of time series 1 and
+a negative value means the opposite.</p>
+<p>The PSI is computed from the coherency (see spectral_connectivity), details
+can be found in [1].</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> : array-like, shape=(n_epochs, n_signals, n_times)</p>
+<blockquote>
+<div><p>Can also be a list/generator of array, shape =(n_signals, n_times);
+list/generator of SourceEstimate; or Epochs.
+The data from which to compute connectivity. Note that it is also
+possible to combine multiple signals by providing a list of tuples,
+e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
+corresponds to 3 epochs, and arr_* could be an array with the same
+number of time points as stc_*.</p>
+</div></blockquote>
+<p><strong>indices</strong> : tuple of array | None</p>
+<blockquote>
+<div><p>Two arrays with indices of connections for which to compute
+connectivity. If None, all connections are computed.</p>
+</div></blockquote>
+<p><strong>sfreq</strong> : float</p>
+<blockquote>
+<div><p>The sampling frequency.</p>
+</div></blockquote>
+<p><strong>mode</strong> : str</p>
+<blockquote>
+<div><p>Spectrum estimation mode can be either: ‘multitaper’, ‘fourier’, or
+‘cwt_morlet’.</p>
+</div></blockquote>
+<p><strong>fmin</strong> : float | tuple of float</p>
+<blockquote>
+<div><p>The lower frequency of interest. Multiple bands are defined using
+a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
+If None the frequency corresponding to an epoch length of 5 cycles
+is used.</p>
+</div></blockquote>
+<p><strong>fmax</strong> : float | tuple of float</p>
+<blockquote>
+<div><p>The upper frequency of interest. Multiple bands are dedined using
+a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.</p>
+</div></blockquote>
+<p><strong>tmin</strong> : float | None</p>
+<blockquote>
+<div><p>Time to start connectivity estimation.</p>
+</div></blockquote>
+<p><strong>tmax</strong> : float | None</p>
+<blockquote>
+<div><p>Time to end connectivity estimation.</p>
+</div></blockquote>
+<p><strong>mt_bandwidth</strong> : float | None</p>
+<blockquote>
+<div><p>The bandwidth of the multitaper windowing function in Hz.
+Only used in ‘multitaper’ mode.</p>
+</div></blockquote>
+<p><strong>mt_adaptive</strong> : bool</p>
+<blockquote>
+<div><p>Use adaptive weights to combine the tapered spectra into PSD.
+Only used in ‘multitaper’ mode.</p>
+</div></blockquote>
+<p><strong>mt_low_bias</strong> : bool</p>
+<blockquote>
+<div><p>Only use tapers with more than 90% spectral concentration within
+bandwidth. Only used in ‘multitaper’ mode.</p>
+</div></blockquote>
+<p><strong>cwt_freqs</strong> : array</p>
+<blockquote>
+<div><p>Array of frequencies of interest. Only used in ‘cwt_morlet’ mode.</p>
+</div></blockquote>
+<p><strong>cwt_n_cycles</strong> : float | array of float</p>
+<blockquote>
+<div><p>Number of cycles. Fixed number or one per frequency. Only used in
+‘cwt_morlet’ mode.</p>
+</div></blockquote>
+<p><strong>block_size</strong> : int</p>
+<blockquote>
+<div><p>How many connections to compute at once (higher numbers are faster
+but require more memory).</p>
+</div></blockquote>
+<p><strong>n_jobs</strong> : int</p>
+<blockquote>
+<div><p>How many epochs to process in parallel.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : bool | str | int | None</p>
+<blockquote>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+If used, it should be passed as a keyword-argument only.</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>conn</strong> : instance of Connectivity</p>
+<blockquote>
+<div><p>Computed connectivity measure(s). Either a
+<code class="docutils literal notranslate"><span class="pre">SpectralConnnectivity</span></code>, or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>
+container. The shape of each array is either
+(n_signals ** 2, n_bands) mode: ‘multitaper’ or ‘fourier’
+(n_signals ** 2, n_bands, n_times) mode: ‘cwt_morlet’
+when “indices” is None, or
+(n_con, n_bands) mode: ‘multitaper’ or ‘fourier’
+(n_con, n_bands, n_times) mode: ‘cwt_morlet’
+when “indices” is specified and “n_con = len(indices[0])”.</p>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectralConnectivity</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectroTemporalConnectivity</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Nolte et al. “Robustly Estimating the Flow Direction of Information in</dt><dd><p>Complex Physical Systems”, Physical Review Letters, vol. 100, no. 23,
+pp. 1-4, Jun. 2008.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-connectivity-phase-slope-index">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code><a class="headerlink" href="#examples-using-mne-connectivity-phase-slope-index" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in sour..."><div class="figure align-default" id="id1">
+<img alt="Compute Phase Slope Index (PSI) in source space for a visual stimulus" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="mne_connectivity.envelope_correlation.html" title="previous page">mne_connectivity.envelope_correlation</a>
+    <a class='right-next' id="next-link" href="mne_connectivity.spectral_connectivity.html" title="next page">mne_connectivity.spectral_connectivity</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

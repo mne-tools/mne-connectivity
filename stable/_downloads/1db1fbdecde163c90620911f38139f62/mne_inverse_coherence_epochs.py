@@ -17,7 +17,7 @@ import mne
 from mne.datasets import sample
 from mne.minimum_norm import (apply_inverse, apply_inverse_epochs,
                               read_inverse_operator)
-from mne_connectivity import seed_target_indices, spectral_connectivity
+from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 print(__doc__)
 
@@ -111,7 +111,7 @@ fmin = (8., 13.)
 fmax = (13., 30.)
 sfreq = raw.info['sfreq']  # the sampling frequency
 
-coh = spectral_connectivity(
+coh = spectral_connectivity_epochs(
     stcs, method='coh', mode='fourier', indices=indices,
     sfreq=sfreq, fmin=fmin, fmax=fmax, faverage=True, n_jobs=1)
 freqs = coh.freqs

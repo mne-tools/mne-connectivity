@@ -4,20 +4,21 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.vector_auto_regression &#8212; MNE-Connectivity 0.2 documentation</title>
-    
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+    <title>mne_connectivity.vector_auto_regression &#8212; MNE-Connectivity 0.3dev0 documentation</title>
     
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
     
     <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
     <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
@@ -29,16 +30,16 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
-
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -48,14 +49,17 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.read_connectivity" href="mne_connectivity.read_connectivity.html" />
-    <link rel="prev" title="mne_connectivity.spectral_connectivity" href="mne_connectivity.spectral_connectivity.html" />
+    <link rel="next" title="mne_connectivity.spectral_connectivity_epochs" href="mne_connectivity.spectral_connectivity_epochs.html" />
+    <link rel="prev" title="mne_connectivity.phase_slope_index" href="mne_connectivity.phase_slope_index.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -121,7 +125,7 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.2
+        v0.3dev0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
@@ -135,10 +139,8 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
       </ul>
       </div>
@@ -154,7 +156,8 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -212,14 +215,19 @@
    mne_connectivity.phase_slope_index
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_connectivity.spectral_connectivity.html">
-   mne_connectivity.spectral_connectivity
-  </a>
- </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    mne_connectivity.vector_auto_regression
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html">
+   mne_connectivity.spectral_connectivity_epochs
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.spectral_connectivity_time.html">
+   mne_connectivity.spectral_connectivity_time
   </a>
  </li>
 </ul>
@@ -227,6 +235,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="mne_connectivity.read_connectivity.html">
    mne_connectivity.read_connectivity
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.symmetric_orth.html">
+   mne_connectivity.symmetric_orth
   </a>
  </li>
 </ul>
@@ -246,10 +261,30 @@
    mne_connectivity.check_indices
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.select_order.html">
+   mne_connectivity.select_order
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.viz.plot_sensors_connectivity.html">
+   mne_connectivity.viz.plot_sensors_connectivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_connectivity.viz.plot_connectivity_circle.html">
+   mne_connectivity.viz.plot_connectivity_circle
+  </a>
+ </li>
 </ul>
 
   </div>
 </nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
             </div>
             
           
@@ -297,67 +332,67 @@
               
               <div>
                 
-  <div class="section" id="mne-connectivity-vector-auto-regression">
+  <section id="mne-connectivity-vector-auto-regression">
 <h1>mne_connectivity.vector_auto_regression<a class="headerlink" href="#mne-connectivity-vector-auto-regression" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.vector_auto_regression">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">vector_auto_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_fb_operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dynamic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/var.html#vector_auto_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.vector_auto_regression" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">vector_auto_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_fb_operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dynamic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/vector_ar/var.html#vector_auto_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.vector_auto_regression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute vector auto-regresssive (VAR) model.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : array-like, shape=(n_epochs, n_signals, n_times) | generator</p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.23.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.10)"><span>generator</span></a></p>
 <blockquote>
 <div><p>The data from which to compute connectivity. The epochs dimension
 is interpreted differently, depending on <code class="docutils literal notranslate"><span class="pre">'output'</span></code> argument.</p>
 </div></blockquote>
-<p><strong>times</strong> : array-like</p>
+<p><strong>times</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.23.dev0)"><span>array_like</span></a></p>
 <blockquote>
 <div><p>(Optional) The time points used to construct the epoched <code class="docutils literal notranslate"><span class="pre">data</span></code>. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, then <code class="docutils literal notranslate"><span class="pre">times_used</span></code> in the Connectivity will not be
 available.</p>
 </div></blockquote>
-<p><strong>names</strong> : list | np.ndarray | None</p>
+<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The names of the nodes of the dataset used to compute
 connectivity. If ‘None’ (default), then names will be
 a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </div></blockquote>
-<p><strong>model_order</strong> : int | str, optional</p>
+<p><strong>lags</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, optional</p>
 <blockquote>
 <div><p>Autoregressive model order, by default 1.</p>
 </div></blockquote>
-<p><strong>l2_reg</strong> : float, optional</p>
+<p><strong>l2_reg</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, optional</p>
 <blockquote>
-<div><p>Ridge penalty (l2-regularization) parameter, by default 0.0</p>
+<div><p>Ridge penalty (l2-regularization) parameter, by default 0.0.</p>
 </div></blockquote>
-<p><strong>compute_fb_operator</strong> : bool</p>
+<p><strong>compute_fb_operator</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></p>
 <blockquote>
 <div><p>Whether to compute the backwards operator and average with
 the forward operator. Addresses bias in the least-square
 estimation <a class="footnote-reference brackets" href="#footcite-dawson-2016" id="id1">1</a>.</p>
 </div></blockquote>
-<p><strong>model</strong> : str</p>
+<p><strong>model</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></p>
 <blockquote>
 <div><p>Whether to compute one VAR model using all epochs as multiple
 samples of the same VAR model (‘avg-epochs’), or to compute
 a separate VAR model for each epoch (‘dynamic’), which results
 in a time-varying VAR model. See Notes.</p>
 </div></blockquote>
-<p><strong>n_jobs</strong> : int</p>
+<p><strong>n_jobs</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></p>
 <blockquote>
 <div><p>The number of jobs to run in parallel (default 1).
 Requires the joblib package.</p>
 </div></blockquote>
-<p><strong>verbose</strong> : bool, str, int, or None</p>
+<p><strong>verbose</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
-<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 for more info). If used, it should be passed as a
 keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>conn</strong> : Connectivity | TemporalConnectivity | EpochConnectivity</p>
+<dd class="field-even"><p><strong>conn</strong> : <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a> | <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemporalConnectivity</span></code></a> | <a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a></p>
 <blockquote>
 <div><p>The connectivity data estimated.</p>
 </div></blockquote>
@@ -434,6 +469,10 @@ to the model in <a class="footnote-reference brackets" href="#footcite-li-linear
 </table>
 <p>Each sub matrix b_ij is a column vector of length p that contains the
 filter coefficients from channel j (source) to channel i (sink).</p>
+<p>In order to optimize RAM usage, the estimating equations are set up
+by iterating over sample points. This assumes that there are in general
+more sample points then channels. You should not estimate a VAR model
+using less sample points then channels, unless you have good reason.</p>
 <p class="rubric">References</p>
 <p id="id3"><dl class="footnote brackets">
 <dt class="label" id="footcite-dawson-2016"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -446,25 +485,35 @@ filter coefficients from channel j (source) to channel i (sink).</p>
 </p>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-connectivity-vector-auto-regression">
+<section id="examples-using-mne-connectivity-vector-auto-regression">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.vector_auto_regression</span></code><a class="headerlink" href="#examples-using-mne-connectivity-vector-auto-regression" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Compute a VAR (linear system) model from time-series activity li_linear_2017 using a continuous..."><div class="figure align-default" id="id4">
-<img alt="Compute vector autoregressive model (linear system)" src="../_images/sphx_glr_mne_var_connectivity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/dynamic/mne_var_connectivity.html#sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"><span class="std std-ref">Compute vector autoregressive model (linear system)</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Compute a VAR (linear system) model from time-series activity li_linear_2017 using a continuous..."><img alt="Compute vector autoregressive model (linear system)" src="../_images/sphx_glr_mne_var_connectivity_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/dynamic/mne_var_connectivity.html#sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"><span class="std std-ref">Compute vector autoregressive model (linear system)</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compute vector autoregressive model (linear system)</div>
+</div><div style='clear:both'></div></section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_connectivity.spectral_connectivity.html" title="previous page">mne_connectivity.spectral_connectivity</a>
-    <a class='right-next' id="next-link" href="mne_connectivity.read_connectivity.html" title="next page">mne_connectivity.read_connectivity</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="mne_connectivity.phase_slope_index.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_connectivity.phase_slope_index</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_connectivity.spectral_connectivity_epochs.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_connectivity.spectral_connectivity_epochs</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -472,20 +521,19 @@ filter coefficients from channel j (source) to channel i (sink).</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
   <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-02-15.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
 </p>
     </div>
     
