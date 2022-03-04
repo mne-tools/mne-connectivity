@@ -90,8 +90,9 @@ def _smooth_spectra(spectra, kernel, scale=False, decim=1):
         Smoothed spectra of shape (..., n_freqs, n_times)
     """
     # fill potentially missing dimensions
-    while kernel.ndim != spectra.ndim:
-        kernel = kernel[np.newaxis, ...]
+    kernel = kernel[
+        tuple([np.newaxis] * (spectra.ndim - kernel.ndim)) + (Ellipsis,)]
+
     # smooth the spectra
     if not scale:
         axes = (-2, -1)

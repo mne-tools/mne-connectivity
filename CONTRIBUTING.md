@@ -1,6 +1,7 @@
 # Contributions
 
-Contributions are welcome in the form of pull requests.
+Contributions are welcome in the form of pull requests. We heavily rely on the
+contribution guides of [MNE-Python](https://mne.tools/stable/install/contributing.html)
 
 Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),

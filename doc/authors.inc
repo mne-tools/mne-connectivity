@@ -3,3 +3,4 @@
 .. _Britta Westner: https://github.com/britta-wstnr
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Kenji Marshall: https://github.com/kenjimarshall
+.. _Richard Höchenberger: https://github.com/hoechenberger
