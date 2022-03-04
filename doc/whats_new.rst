@@ -29,6 +29,7 @@ Enhancements
 - Added :func:`mne_connectivity.select_order` for helping to select VAR order using information criterion, by `Adam Li`_ (:gh:`46`)
 - All connectivity functions retain ``events``, ``event_id`` and ``metadata`` from `mne.Epochs` objects as input and is stored as part of the connectivity object, by `Adam Li`_ (:gh:`58`)
 - Add spectral connectivity over time function :func:`mne_connectivity.spectral_connectivity_time`, by `Adam Li`_ (:gh:`67`)
+- Add directed phase lag index (dPLI) as a method in :func:`mne_connectivity.spectral_connectivity_epochs` with a corresponding example by `Kenji Marshall`_ (:gh:`79`)
 
 Bug
 ~~~
@@ -51,6 +52,7 @@ Authors
 * `Adam Li`_
 * `Eric Larson`_
 * `Alexander Kroner`_
+* `Kenji Marshall`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
