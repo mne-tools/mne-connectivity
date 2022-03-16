@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Codecov|_ |PyPI|_
+|GH|_ |Circle|_ |Azure|_ |Codecov|_ |PyPI|_ |conda-forge|_
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
@@ -8,8 +8,14 @@
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity
 
+.. |Azure| image:: https://dev.azure.com/mne-tools/mne-connectivity/_apis/build/status/mne-tools.mne-connectivity?branchName=main
+.. _Azure: https://dev.azure.com/mne-tools/mne-connectivity/_build/latest?definitionId=1&branchName=main
+
 .. |Codecov| image:: https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/mne-tools/mne-connectivity
+
+.. |conda-forge| image:: https://img.shields.io/conda/dn/conda-forge/mne-connectivity.svg?label=Conda%20downloads
+.. _conda-forge: https://anaconda.org/conda-forge/mne-connectivity
 
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/

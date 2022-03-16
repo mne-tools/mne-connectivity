@@ -205,8 +205,9 @@ html_sidebars = {
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.3 (devel)',
-        'stable': 'v0.2 (stable)',
+        'dev': 'v0.4 (devel)',
+        'stable': 'v0.3 (stable)',
+        'v0.2': 'v0.2',
         'v0.1': 'v0.1',
     },
 }
@@ -220,7 +221,7 @@ intersphinx_mapping = {
     'mne-bids': ('https://mne.tools/mne-bids/dev/', None),
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
-    'matplotlib': ('https://matplotlib.org', None),
+    'matplotlib': ('https://matplotlib.org/stable', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
     'pyvista': ('https://docs.pyvista.org', None),
