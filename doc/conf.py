@@ -100,6 +100,7 @@ numpydoc_xref_aliases = {
     'Axes': 'matplotlib.axes.Axes',
     'Figure': 'matplotlib.figure.Figure',
     'Axes3D': 'mpl_toolkits.mplot3d.axes3d.Axes3D',
+    'PolarAxes': 'matplotlib.projections.polar.PolarAxes',
     'ColorbarBase': 'matplotlib.colorbar.ColorbarBase',
     # joblib
     'joblib.Parallel': 'joblib.Parallel',
