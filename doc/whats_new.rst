@@ -26,7 +26,6 @@ Enhancements
 
 - Add ``node_height`` to :func:`mne_connectivity.viz.plot_connectivity_circle` and enable passing a polar ``ax``, by `Alex Rockhill`_ :gh:`88`
 
-
 Bug
 ~~~
 
