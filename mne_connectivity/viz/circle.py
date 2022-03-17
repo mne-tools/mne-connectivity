@@ -141,32 +141,15 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
                 subplot = (subplot,)
             ax = plt.subplot(*subplot, polar=True)
 
-    try:
-        return _plot_connectivity_circle(
-            con=con, node_names=node_names, indices=indices, n_lines=n_lines,
-            node_angles=node_angles, node_width=node_width,
-            node_height=node_height, node_colors=node_colors,
-            facecolor=facecolor, textcolor=textcolor,
-            node_edgecolor=node_edgecolor, linewidth=linewidth,
-            colormap=colormap, vmin=vmin, vmax=vmax, colorbar=colorbar,
-            title=title, colorbar_size=colorbar_size,
-            colorbar_pos=colorbar_pos, fontsize_title=fontsize_title,
-            fontsize_names=fontsize_names, fontsize_colorbar=fontsize_colorbar,
-            padding=padding, ax=ax, interactive=interactive,
-            node_linewidth=node_linewidth, show=show)
-    except TypeError as err:
-        if len(err.args) != 1 or err.args[0] not in (
-            "cannot unpack non-iterable NoneType object",
-                "unsupported operand type(s) for -: 'int' and 'NoneType'"):
-            raise TypeError(err)
-        return _plot_connectivity_circle(
-            con=con, node_names=node_names, indices=indices, n_lines=n_lines,
-            node_angles=node_angles, node_width=node_width,
-            node_height=node_height, node_colors=node_colors,
-            facecolor=facecolor, textcolor=textcolor,
-            node_edgecolor=node_edgecolor, linewidth=linewidth,
-            colormap=colormap, vmin=vmin, vmax=vmax, colorbar=colorbar,
-            title=title, colorbar_size=0.2, colorbar_pos=(-0.3, 0.1),
-            fontsize_title=fontsize_title, fontsize_names=fontsize_names,
-            fontsize_colorbar=fontsize_colorbar, padding=padding, ax=ax,
-            interactive=interactive, node_linewidth=node_linewidth, show=show)
+    return _plot_connectivity_circle(
+        con=con, node_names=node_names, indices=indices, n_lines=n_lines,
+        node_angles=node_angles, node_width=node_width,
+        node_height=node_height, node_colors=node_colors,
+        facecolor=facecolor, textcolor=textcolor,
+        node_edgecolor=node_edgecolor, linewidth=linewidth,
+        colormap=colormap, vmin=vmin, vmax=vmax, colorbar=colorbar,
+        title=title, colorbar_size=colorbar_size,
+        colorbar_pos=colorbar_pos, fontsize_title=fontsize_title,
+        fontsize_names=fontsize_names, fontsize_colorbar=fontsize_colorbar,
+        padding=padding, ax=ax, interactive=interactive,
+        node_linewidth=node_linewidth, show=show)
