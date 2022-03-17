@@ -146,14 +146,17 @@ node_angles = circular_layout(label_names, node_order, start_pos=90,
 
 # Plot the graph using node colors from the FreeSurfer parcellation. We only
 # show the 300 strongest connections.
+fig, ax = plt.subplots(figsize=(8, 8), facecolor='black',
+                       subplot_kw=dict(polar=True))
 plot_connectivity_circle(con_res['pli'], label_names, n_lines=300,
                          node_angles=node_angles, node_colors=label_colors,
                          title='All-to-All Connectivity left-Auditory '
-                               'Condition (PLI)')
+                               'Condition (PLI)', ax=ax)
+fig.tight_layout()
 
 ###############################################################################
-# Make two connectivity plots in the same figure
-# ----------------------------------------------
+# Make multiple connectivity plots in the same figure
+# ---------------------------------------------------
 #
 # We can also assign these connectivity plots to axes in a figure. Below we'll
 # show the connectivity plot using two different connectivity methods.
