@@ -177,7 +177,7 @@ for ax, method in zip(axes, con_methods):
 #
 # By default matplotlib does not save using the facecolor, even though this was
 # set when the figure was generated. If not set via savefig, the labels, title,
-# and legend will be cut off from the output png file::
+# and legend will be cut off from the output png file.
 #
 # .. code-block:: python
 #
