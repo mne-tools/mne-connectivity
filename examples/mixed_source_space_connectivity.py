@@ -184,7 +184,7 @@ fig.tight_layout()
 # set when the figure was generated. If not set via savefig, the labels, title,
 # and legend will be cut off from the output png file::
 #
-#  .. code-block:: python
+# .. code-block:: python
 #
 #     fname_fig = op.join(data_path, 'MEG', 'sample', 'plot_mixed_connect.png')
 #     fig.savefig(fname_fig, facecolor=fig.get_facecolor())
