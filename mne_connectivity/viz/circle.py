@@ -148,8 +148,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
         facecolor=facecolor, textcolor=textcolor,
         node_edgecolor=node_edgecolor, linewidth=linewidth,
         colormap=colormap, vmin=vmin, vmax=vmax, colorbar=colorbar,
-        title=title, colorbar_size=colorbar_size,
-        colorbar_pos=colorbar_pos, fontsize_title=fontsize_title,
-        fontsize_names=fontsize_names, fontsize_colorbar=fontsize_colorbar,
-        padding=padding, ax=ax, interactive=interactive,
-        node_linewidth=node_linewidth, show=show)
+        title=title, colorbar_size=colorbar_size, colorbar_pos=colorbar_pos,
+        fontsize_title=fontsize_title, fontsize_names=fontsize_names,
+        fontsize_colorbar=fontsize_colorbar, padding=padding, ax=ax,
+        interactive=interactive, node_linewidth=node_linewidth, show=show)
