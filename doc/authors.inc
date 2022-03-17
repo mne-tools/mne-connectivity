@@ -3,3 +3,4 @@
 .. _Britta Westner: https://github.com/britta-wstnr
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Richard Höchenberger: https://github.com/hoechenberger
+.. _Alex Rockhill: https://github.com/alexrockhill
