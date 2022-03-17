@@ -187,4 +187,4 @@ fig.tight_layout()
 #  .. code-block:: python
 #
 #     fname_fig = op.join(data_path, 'MEG', 'sample', 'plot_mixed_connect.png')
-#     plt.savefig(fname_fig, facecolor=fig.get_facecolor())
+#     fig.savefig(fname_fig, facecolor=fig.get_facecolor())
