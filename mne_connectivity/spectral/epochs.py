@@ -28,6 +28,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           mode, fskip, n_bands,
                           cwt_freqs, faverage):
     """Check and precompute dimensions of results data."""
+    print('inside prepare conn', fmin, fmax)
     from scipy.fft import rfftfreq
     first_epoch = epoch_block[0]
 
@@ -1107,7 +1108,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     if faverage:
         # for each band we return the frequencies that were averaged
         freqs = [np.mean(x) for x in freqs_bands]
+        
+        # make sure freq_bands is a list of equal-length lists
+        # XXX: we lose information on which frequency points went into the
+        # computation. If h5netcdf supports numpy objects in the future, then
+        # we can change the min/max to just make it a list of lists.
         freqs_used = freqs_bands
+        freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
     if indices is None:
         # return all-to-all connectivity matrices
