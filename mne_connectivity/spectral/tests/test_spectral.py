@@ -15,6 +15,8 @@ from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
     read_connectivity, spectral_connectivity_time)
 from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
+from mne_connectivity.spectral.epochs import (
+    _compute_freq_mask, _compute_freqs)
 
 
 def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
@@ -354,51 +356,50 @@ def test_spectral_connectivity(method, mode):
 
         assert (isinstance(freqs3, list))
         assert (len(freqs3) == len(fmin))
-        print(fmin, fmax)
-        print(method, cwt_freqs)
         for i in range(len(freqs3)):
             _fmin = max(fmin[i], min(cwt_freqs))
             _fmax = min(fmax[i], max(cwt_freqs))
-            assert freqs3[i][0] >= _fmin
-            assert freqs3[i][1] <= _fmax
+            assert_allclose(freqs3[i][0], _fmin, atol=1)
+            assert_allclose(freqs3[i][1], _fmax, atol=1)
 
         # average con2 "manually" and we get the same result
-        print('freqs2: ', freqs2)
-        print(freqs3, fmin)
+        fskip = 1
         if not isinstance(method, list):
             for i in range(len(freqs3)):
-                # now we want to get the frequency indices 
+                # now we want to get the frequency indices
                 # create a frequency mask for all bands
-                fskip = 1
-                freq_mask = np.ones(len(freqs2), dtype=bool)
-                out_of_bound_idx = np.argwhere(
-                        (np.array(freqs2) < fmin[i]) | (np.array(freqs2) > fmax[i]))
-                freq_mask[out_of_bound_idx] = False
+                n_times = len(con2.attrs.get('times_used'))
 
-                # possibly skip frequency points
-                for pos in range(fskip):
-                    freq_mask[pos + 1::fskip + 1] = False
-                
-                con2_avg = np.mean(con2.get_data()[:, freq_mask], axis=1)
+                # compute frequencies to analyze based on number of samples,
+                # sampling rate, specified wavelet frequencies and mode
+                freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+
+                # compute the mask based on specified min/max and decimation factor
+                freq_mask = _compute_freq_mask(
+                    freqs, [fmin[i]], [fmax[i]], fskip)
+                freqs = freqs[freq_mask]
+                freqs_idx = np.searchsorted(freqs2, freqs)
+                con2_avg = np.mean(con2.get_data()[:, freqs_idx], axis=1)
                 assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
         else:
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
-                    # freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    # now we want to get the frequency indices 
+                    # now we want to get the frequency indices
                     # create a frequency mask for all bands
-                    fskip = 1
-                    freq_mask = np.ones(len(freqs2), dtype=bool)
-                    out_of_bound_idx = np.argwhere(
-                            (np.array(freqs2) < fmin[i]) | (np.array(freqs2) > fmax[i]))
-                    freq_mask[out_of_bound_idx] = False
+                    n_times = len(con2[0].attrs.get('times_used'))
 
-                    # possibly skip frequency points
-                    for pos in range(fskip):
-                        freq_mask[pos + 1::fskip + 1] = False
-                
-                    con2_avg = np.mean(con2[j].get_data()[:, freq_mask],
-                                       axis=1)
+                    # compute frequencies to analyze based on number of samples,
+                    # sampling rate, specified wavelet frequencies and mode
+                    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+
+                    # compute the mask based on specified min/max and decimation factor
+                    freq_mask = _compute_freq_mask(
+                        freqs, [fmin[i]], [fmax[i]], fskip)
+                    freqs = freqs[freq_mask]
+                    freqs_idx = np.searchsorted(freqs2, freqs)
+
+                    con2_avg = np.mean(con2[j].get_data()[
+                                       :, freqs_idx], axis=1)
                     assert_array_almost_equal(
                         con2_avg, con3[j].get_data()[:, i])
 
@@ -583,7 +584,7 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     assert_array_almost_equal(conn_data, test_conn)
 
 
-def test_save():
+def test_save(tmp_path):
     """Test saving results of spectral connectivity."""
     rng = np.random.RandomState(0)
     n_epochs, n_chs, n_times, sfreq, f = 10, 2, 2000, 1000., 20.
@@ -594,6 +595,6 @@ def test_save():
     tmin = -1
     epochs = EpochsArray(data, info, tmin=tmin)
 
-    conn = spectral_connectivity_epochs(epochs, 
-        fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45), faverage=True)
-    conn.save('foo.nc')
+    conn = spectral_connectivity_epochs(epochs,
+                                        fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45), faverage=True)
+    conn.save(tmp_path / 'foo.nc')
