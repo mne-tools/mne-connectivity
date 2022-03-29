@@ -215,16 +215,6 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         # compute time-resolved spectral connectivity
         conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
 
-        print(data.shape)
-        print(conn.shape)
-        print([x.shape for x in conn_tr])
-
-        # average across tapers if necessary
-        conn_tr = np.stack(conn_tr, axis=1)
-        if all(x.ndim == 4 for x in conn_tr):
-            conn_tr = np.mean(conn, axis=1)
-
-        print(conn_tr.shape)
         # merge results
         conn[epoch_idx, ...] = conn_tr
 
