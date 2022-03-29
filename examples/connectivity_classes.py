@@ -16,6 +16,7 @@ how we can interact with the connectivity class.
 #
 # License: BSD (3-clause)
 
+import os.path as op
 import numpy as np
 
 import mne
@@ -25,8 +26,10 @@ from mne.datasets import sample
 # %%
 # Set parameters
 data_path = sample.data_path()
-raw_fname = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
-event_fname = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+raw_fname = op.join(data_path, 'MEG', 'sample',
+                    'sample_audvis_filt-0-40_raw.fif')
+event_fname = op.join(data_path, 'MEG', 'sample',
+                      'sample_audvis_filt-0-40_raw-eve.fif')
 
 # Setup for reading the raw data
 raw = mne.io.read_raw_fif(raw_fname)

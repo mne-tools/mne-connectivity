@@ -24,12 +24,13 @@ Version 0.4 (Unreleased)
 Enhancements
 ~~~~~~~~~~~~
 
+- Add ``node_height`` to :func:`mne_connectivity.viz.plot_connectivity_circle` and enable passing a polar ``ax``, by `Alex Rockhill`_ :gh:`88`
 - Add directed phase lag index (dPLI) as a method in :func:`mne_connectivity.spectral_connectivity_epochs` with a corresponding example by `Kenji Marshall`_ (:gh:`79`)
 
 Bug
 ~~~
 
--
+- Fix the output of :func:`mne_connectivity.spectral_connectivity_epochs` when ``faverage=True``, allowing one to save the Connectivity object, by `Adam Li`_ and `Szonja Weigl`_ :gh:`91`
 
 API
 ~~~

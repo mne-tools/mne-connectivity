@@ -146,27 +146,30 @@ node_angles = circular_layout(label_names, node_order, start_pos=90,
 
 # Plot the graph using node colors from the FreeSurfer parcellation. We only
 # show the 300 strongest connections.
+fig, ax = plt.subplots(figsize=(8, 8), facecolor='black',
+                       subplot_kw=dict(polar=True))
 plot_connectivity_circle(con_res['pli'], label_names, n_lines=300,
                          node_angles=node_angles, node_colors=label_colors,
                          title='All-to-All Connectivity left-Auditory '
-                               'Condition (PLI)')
+                               'Condition (PLI)', ax=ax)
+fig.tight_layout()
 
 ###############################################################################
-# Make two connectivity plots in the same figure
-# ----------------------------------------------
+# Make multiple connectivity plots in the same figure
+# ---------------------------------------------------
 #
 # We can also assign these connectivity plots to axes in a figure. Below we'll
 # show the connectivity plot using two different connectivity methods.
 
-fig = plt.figure(num=None, figsize=(8, 4), facecolor='black')
+fig, axes = plt.subplots(1, 3, figsize=(8, 4), facecolor='black',
+                         subplot_kw=dict(polar=True))
 no_names = [''] * len(label_names)
-for ii, method in enumerate(con_methods):
+for ax, method in zip(axes, con_methods):
     plot_connectivity_circle(con_res[method], no_names, n_lines=300,
                              node_angles=node_angles, node_colors=label_colors,
                              title=method, padding=0, fontsize_colorbar=6,
-                             fig=fig, subplot=(1, 3, ii + 1))
+                             ax=ax)
 
-plt.show()
 
 ###############################################################################
 # Save the figure (optional)
@@ -175,6 +178,10 @@ plt.show()
 # By default matplotlib does not save using the facecolor, even though this was
 # set when the figure was generated. If not set via savefig, the labels, title,
 # and legend will be cut off from the output png file.
-
-# fname_fig = data_path + '/MEG/sample/plot_inverse_connect.png'
-# fig.savefig(fname_fig, facecolor='black')
+#
+# .. code-block:: python
+#
+#     import os.path as op
+#     fname_fig = op.join(data_path, 'MEG', 'sample',
+#                         'plot_inverse_connect.png')
+#     fig.savefig(fname_fig, facecolor=fig.get_facecolor())

@@ -100,6 +100,7 @@ numpydoc_xref_aliases = {
     'Axes': 'matplotlib.axes.Axes',
     'Figure': 'matplotlib.figure.Figure',
     'Axes3D': 'mpl_toolkits.mplot3d.axes3d.Axes3D',
+    'PolarAxes': 'matplotlib.projections.polar.PolarAxes',
     'ColorbarBase': 'matplotlib.colorbar.ColorbarBase',
     # joblib
     'joblib.Parallel': 'joblib.Parallel',
@@ -205,8 +206,9 @@ html_sidebars = {
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.3 (devel)',
-        'stable': 'v0.2 (stable)',
+        'dev': 'v0.4 (devel)',
+        'stable': 'v0.3 (stable)',
+        'v0.2': 'v0.2',
         'v0.1': 'v0.1',
     },
 }
