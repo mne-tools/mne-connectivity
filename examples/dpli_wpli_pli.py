@@ -37,7 +37,7 @@ from mne.datasets import sample
 # for these methods :footcite:`VinckEtAl2011`. In the equations below,
 # :math:`\mathcal{I}` refers to the imaginary component,
 # :math:`\mathcal{H}` refers to the Heaviside step function, and
-# :math:`sgn` refers to the sign function
+# :math:`sgn` refers to the sign function.
 #
 # :math:`PLI = |E[sgn(\mathcal{I}(X_{ij}))]|` :footcite:`StamEtAl2007`
 #
@@ -238,7 +238,7 @@ data = np.swapaxes(np.array(data), 0, 1)
 # Visualize the data
 fig, ax = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 ax[0].plot(t[:10], data[0, 0, :10], label="Reference")
-ax[0].plot(t[:10], data[0, 1, :10])
+ax[0].plot(t[:10], data[1, 1, :10])
 
 ax[0].set_title(r"Phase Lagging ($-\pi/100$ Phase Difference)")
 ax[0].set_xlabel("Time (s)")
@@ -246,7 +246,7 @@ ax[0].set_ylabel("Signal")
 ax[0].legend()
 
 ax[1].plot(t[:fs], data[0, 0, :fs], label="Reference")
-ax[1].plot(t[:fs], data[0, -1, :fs])
+ax[1].plot(t[:fs], data[-1, 1, :fs])
 ax[1].set_title(r"Phase Leading ($\pi/2$ Phase Difference)")
 ax[1].set_xlabel("Time (s)")
 
