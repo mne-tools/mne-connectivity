@@ -354,8 +354,8 @@ def test_spectral_connectivity(method, mode):
         assert (isinstance(freqs3, list))
         assert (len(freqs3) == len(fmin))
         for i in range(len(freqs3)):
-            assert np.all((freqs3[i] >= fmin[i]) &
-                          (freqs3[i] <= fmax[i]))
+            assert np.all((freqs3[i][0] >= fmin[i]) &
+                          (freqs3[i][1] <= fmax[i]))
 
         # average con2 "manually" and we get the same result
         if not isinstance(method, list):
