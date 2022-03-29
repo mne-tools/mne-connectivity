@@ -216,7 +216,7 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
         conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
 
         # merge results
-        conn[epoch_idx, ...] = conn_tr
+        conn[epoch_idx, ...] = np.stack(conn_tr, axis=1)
 
     # create a Connectivity container
     indices = 'symmetric'
