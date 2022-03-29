@@ -220,7 +220,7 @@ intersphinx_mapping = {
     'mne-bids': ('https://mne.tools/mne-bids/dev/', None),
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
-    'matplotlib': ('https://matplotlib.org', None),
+    'matplotlib': ('https://matplotlib.org/stable', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
     'pyvista': ('https://docs.pyvista.org', None),
