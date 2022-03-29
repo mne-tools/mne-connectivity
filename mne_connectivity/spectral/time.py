@@ -269,10 +269,6 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     # get the supported connectivity function
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs}[method]
 
-    # XXX: averages over tapers if necessary, but I don't think this is correct
-    if out.ndim == 5:
-        out = np.mean(out, axis=2)
-
     # computes conn across trials
     # TODO: This is wrong -- it averages in the complex domain (over tapers).
     # What it *should* do is compute the conn for each taper, then average
