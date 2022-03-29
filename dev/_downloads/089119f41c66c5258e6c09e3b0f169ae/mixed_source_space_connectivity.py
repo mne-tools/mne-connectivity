@@ -14,9 +14,9 @@ is ordered based on the locations of the regions in the axial plane.
 
 import os.path as op
 import numpy as np
-import mne
 import matplotlib.pyplot as plt
 
+import mne
 from mne.datasets import sample
 from mne import setup_volume_source_space, setup_source_space
 from mne import make_forward_solution
@@ -39,10 +39,10 @@ fname_aseg = op.join(subjects_dir, subject, 'mri', 'aseg.mgz')
 fname_model = op.join(bem_dir, '%s-5120-bem.fif' % subject)
 fname_bem = op.join(bem_dir, '%s-5120-bem-sol.fif' % subject)
 
-fname_raw = data_dir + '/sample_audvis_filt-0-40_raw.fif'
-fname_trans = data_dir + '/sample_audvis_raw-trans.fif'
-fname_cov = data_dir + '/ernoise-cov.fif'
-fname_event = data_dir + '/sample_audvis_filt-0-40_raw-eve.fif'
+fname_raw = op.join(data_dir, 'sample_audvis_filt-0-40_raw.fif')
+fname_trans = op.join(data_dir, 'sample_audvis_raw-trans.fif')
+fname_cov = op.join(data_dir, 'ernoise-cov.fif')
+fname_event = op.join(data_dir, 'sample_audvis_filt-0-40_raw-eve.fif')
 
 # List of sub structures we are interested in. We select only the
 # sub structures we want to include in the source space
@@ -168,11 +168,13 @@ node_angles = circular_layout(label_names, node_order, start_pos=90,
 # Plot the graph using node colors from the FreeSurfer parcellation. We only
 # show the 300 strongest connections.
 conmat = con.get_data(output='dense')[:, :, 0]
-fig = plt.figure(num=None, figsize=(8, 8), facecolor='black')
+fig, ax = plt.subplots(figsize=(8, 8), facecolor='black',
+                       subplot_kw=dict(polar=True))
 plot_connectivity_circle(conmat, label_names, n_lines=300,
                          node_angles=node_angles, node_colors=node_colors,
                          title='All-to-All Connectivity left-Auditory '
-                         'Condition (PLI)', fig=fig)
+                         'Condition (PLI)', ax=ax)
+fig.tight_layout()
 
 ###############################################################################
 # Save the figure (optional)
@@ -180,7 +182,9 @@ plot_connectivity_circle(conmat, label_names, n_lines=300,
 #
 # By default matplotlib does not save using the facecolor, even though this was
 # set when the figure was generated. If not set via savefig, the labels, title,
-# and legend will be cut off from the output png file::
+# and legend will be cut off from the output png file.
 #
-#     >>> fname_fig = data_path + '/MEG/sample/plot_mixed_connect.png'
-#     >>> plt.savefig(fname_fig, facecolor='black')
+# .. code-block:: python
+#
+#     fname_fig = op.join(data_path, 'MEG', 'sample', 'plot_mixed_connect.png')
+#     fig.savefig(fname_fig, facecolor=fig.get_facecolor())

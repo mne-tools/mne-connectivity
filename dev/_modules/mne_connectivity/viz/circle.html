@@ -7,29 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mne_connectivity.viz.circle &#8212; MNE-Connectivity 0.4dev0 documentation</title>
     
-    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
-    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
-    <!-- ... and optionally preload the `woff2` for snappier page loads -->
-    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
-    <style>
-        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
-        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
-    </style>
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
@@ -37,8 +27,9 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
     
-    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -59,7 +50,7 @@
     
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -186,60 +177,26 @@
   <h1>Source code for mne_connectivity.viz.circle</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Functions to plot on circle as for connectivity.&quot;&quot;&quot;</span>
 
-<span class="c1"># Authors: Alexandre Gramfort &lt;alexandre.gramfort@inria.fr&gt;</span>
-<span class="c1">#          Denis Engemann &lt;denis.engemann@gmail.com&gt;</span>
-<span class="c1">#          Martin Luessi &lt;mluessi@nmr.mgh.harvard.edu&gt;</span>
+<span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#          Alex Rockhill &lt;aprockhill@mailbox.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: Simplified BSD</span>
 
-
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne.viz.utils</span> <span class="kn">import</span> <span class="n">plt_show</span>
-
-
-<span class="k">def</span> <span class="nf">_plot_connectivity_circle_onpick</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                     <span class="n">n_nodes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">node_angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                     <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;Isolate connections around a single node when user left clicks a node.</span>
-
-<span class="sd">    On right click, resets all connections.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="n">axes</span><span class="p">:</span>
-        <span class="k">return</span>
-
-    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># left click</span>
-        <span class="c1"># click must be near node radius</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">&lt;=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="k">return</span>
-
-        <span class="c1"># all angles in range [0, 2*pi]</span>
-        <span class="n">node_angles</span> <span class="o">=</span> <span class="n">node_angles</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">node_angles</span><span class="p">))</span>
-
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="o">.</span><span class="n">patches</span>
-        <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
-            <span class="n">patches</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># right click</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="o">.</span><span class="n">patches</span>
-        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)):</span>
-            <span class="n">patches</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">mne.viz.circle</span> <span class="kn">import</span> <span class="n">_plot_connectivity_circle</span>
 
 
 <div class="viewcode-block" id="plot_connectivity_circle"><a class="viewcode-back" href="../../../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle">[docs]</a><span class="k">def</span> <span class="nf">plot_connectivity_circle</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">node_angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">node_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-                             <span class="n">textcolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">node_edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-                             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">node_height</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">node_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">textcolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
+                             <span class="n">node_edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                             <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">colorbar_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">colorbar_pos</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
                              <span class="n">fontsize_title</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontsize_names</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-                             <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
-                             <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="mi">111</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                              <span class="n">node_linewidth</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Visualize connectivity as a circular graph.</span>
 
@@ -263,6 +220,9 @@
 <span class="sd">    node_width : float | None</span>
 <span class="sd">        Width of each node in degrees. If None, the minimum angle between any</span>
 <span class="sd">        two nodes is used as the width.</span>
+<span class="sd">    node_height : float</span>
+<span class="sd">        The relative height of the colored bar labeling each node. Default 1.0</span>
+<span class="sd">        is the standard height.</span>
 <span class="sd">    node_colors : list of tuple | list of str</span>
 <span class="sd">        List with the color to use for each node. If fewer colors than nodes</span>
 <span class="sd">        are provided, the colors will be repeated. Any color supported by</span>
@@ -297,13 +257,21 @@
 <span class="sd">        Font size to use for colorbar.</span>
 <span class="sd">    padding : float</span>
 <span class="sd">        Space to add around figure to accommodate long labels.</span>
+<span class="sd">    ax : instance of matplotlib PolarAxes | None</span>
+<span class="sd">        The axes to use to plot the connectivity circle.</span>
 <span class="sd">    fig : None | instance of matplotlib.figure.Figure</span>
 <span class="sd">        The figure to use. If None, a new figure with the specified background</span>
 <span class="sd">        color will be created.</span>
+
+<span class="sd">        Deprecated: will be removed in version 0.5.</span>
+
 <span class="sd">    subplot : int | tuple, shape (3,)</span>
 <span class="sd">        Location of the subplot when creating figures with multiple plots. E.g.</span>
 <span class="sd">        121 or (1, 2, 1) for 1 row, 2 columns, plot 1. See</span>
 <span class="sd">        matplotlib.pyplot.subplot.</span>
+
+<span class="sd">        Deprecated: will be removed in version 0.5.</span>
+
 <span class="sd">    interactive : bool</span>
 <span class="sd">        When enabled, left-click on a node to show only connections to that</span>
 <span class="sd">        node. Right-click shows all connections.</span>
@@ -316,7 +284,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    fig : instance of matplotlib.figure.Figure</span>
 <span class="sd">        The figure handle.</span>
-<span class="sd">    axes : instance of matplotlib.projections.polar.PolarAxes</span>
+<span class="sd">    ax : instance of matplotlib.projections.polar.PolarAxes</span>
 <span class="sd">        The subplot handle.</span>
 
 <span class="sd">    Notes</span>
@@ -332,213 +300,35 @@
 <span class="sd">    If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the</span>
 <span class="sd">    figure labels, title, and legend may be cut off in the output figure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">m_patches</span>
-    <span class="kn">import</span> <span class="nn">matplotlib.path</span> <span class="k">as</span> <span class="nn">m_path</span>
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
     <span class="kn">from</span> <span class="nn">mne_connectivity.base</span> <span class="kn">import</span> <span class="n">BaseConnectivity</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
         <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
-    <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_names</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">node_angles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_angles</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_nodes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;node_angles has to be the same length &#39;</span>
-                             <span class="s1">&#39;as node_names&#39;</span><span class="p">)</span>
-        <span class="c1"># convert it to radians</span>
-        <span class="n">node_angles</span> <span class="o">=</span> <span class="n">node_angles</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># uniform layout on unit circle</span>
-        <span class="n">node_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">subplot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Passing a `fig` and `subplot` is deprecated and not be &#39;</span>
+             <span class="s1">&#39;supported after mne-connectivity version 0.4. Please &#39;</span>
+             <span class="s1">&#39;use the `ax` argument and pass a matplotlib axes object &#39;</span>
+             <span class="s1">&#39;with polar coordinates instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># don&#39;t overwrite ax if passed</span>
+            <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subplot</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">subplot</span> <span class="o">=</span> <span class="p">(</span><span class="n">subplot</span><span class="p">,)</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="o">*</span><span class="n">subplot</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">node_width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># widths correspond to the minimum angle between two nodes</span>
-        <span class="n">dist_mat</span> <span class="o">=</span> <span class="n">node_angles</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">node_angles</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="n">dist_mat</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1e9</span>
-        <span class="n">node_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">node_width</span> <span class="o">=</span> <span class="n">node_width</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
-
-    <span class="k">if</span> <span class="n">node_colors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_colors</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">n_nodes</span><span class="p">:</span>
-            <span class="n">node_colors</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">node_colors</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># assign colors using colormap</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">spectral</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">spectral</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">spectral</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Spectral</span>
-        <span class="n">node_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">spectral</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">))</span>
-                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)]</span>
-
-    <span class="c1"># handle 1D and 2D connectivity information</span>
-    <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;indices has to be provided if con.ndim == 1&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">con</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_nodes</span> <span class="ow">or</span> <span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_nodes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;con has to be 1D or a square matrix&#39;</span><span class="p">)</span>
-        <span class="c1"># we use the lower-triangular part</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;con has to be 1D or a square matrix&#39;</span><span class="p">)</span>
-
-    <span class="c1"># get the colormap</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colormap</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
-
-    <span class="c1"># Make figure background the same colors as axes</span>
-    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">)</span>
-
-    <span class="c1"># Use a polar axes</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subplot</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-        <span class="n">subplot</span> <span class="o">=</span> <span class="p">(</span><span class="n">subplot</span><span class="p">,)</span>
-    <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="o">*</span><span class="n">subplot</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">axes</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">facecolor</span><span class="p">)</span>
-
-    <span class="c1"># No ticks, we&#39;ll put our own</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
-
-    <span class="c1"># Set y axes limit, add additional space if requested</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span>
-
-    <span class="c1"># Remove the black axes border which may obscure the labels</span>
-    <span class="n">axes</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s1">&#39;polar&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="c1"># Draw lines between connected nodes, only draw the strongest connections</span>
-    <span class="k">if</span> <span class="n">n_lines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">n_lines</span><span class="p">:</span>
-        <span class="n">con_thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())[</span><span class="o">-</span><span class="n">n_lines</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">con_thresh</span> <span class="o">=</span> <span class="mf">0.</span>
-
-    <span class="c1"># get the connections which we are drawing and sort by connection strength</span>
-    <span class="c1"># this will allow us to draw the strongest connections first</span>
-    <span class="n">con_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
-    <span class="n">con_draw_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">con_abs</span> <span class="o">&gt;=</span> <span class="n">con_thresh</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="p">[</span><span class="n">con_draw_idx</span><span class="p">]</span>
-    <span class="n">con_abs</span> <span class="o">=</span> <span class="n">con_abs</span><span class="p">[</span><span class="n">con_draw_idx</span><span class="p">]</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">con_draw_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
-
-    <span class="c1"># now sort them</span>
-    <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">con_abs</span><span class="p">)</span>
-    <span class="k">del</span> <span class="n">con_abs</span>
-    <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
-
-    <span class="c1"># Get vmin vmax for color scaling</span>
-    <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">con</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">con</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">con_thresh</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
-    <span class="n">vrange</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span>
-
-    <span class="c1"># We want to add some &quot;noise&quot; to the start and end position of the</span>
-    <span class="c1"># edges: We modulate the noise with the number of connections of the</span>
-    <span class="c1"># node and the connection strength, such that the strongest connections</span>
-    <span class="c1"># are closer to the node center</span>
-    <span class="n">nodes_n_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="n">nodes_n_con</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">nodes_n_con</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="c1"># initialize random number generator so plot is reproducible</span>
-    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">mtrand</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="n">n_con</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">noise_max</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">node_width</span>
-    <span class="n">start_noise</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">noise_max</span><span class="p">,</span> <span class="n">noise_max</span><span class="p">,</span> <span class="n">n_con</span><span class="p">)</span>
-    <span class="n">end_noise</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">noise_max</span><span class="p">,</span> <span class="n">noise_max</span><span class="p">,</span> <span class="n">n_con</span><span class="p">)</span>
-
-    <span class="n">nodes_n_con_seen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">nodes_n_con</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
-        <span class="n">nodes_n_con_seen</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">nodes_n_con_seen</span><span class="p">[</span><span class="n">end</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="n">start_noise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="p">((</span><span class="n">nodes_n_con</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes_n_con_seen</span><span class="p">[</span><span class="n">start</span><span class="p">])</span> <span class="o">/</span>
-                           <span class="nb">float</span><span class="p">(</span><span class="n">nodes_n_con</span><span class="p">[</span><span class="n">start</span><span class="p">]))</span>
-        <span class="n">end_noise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="p">((</span><span class="n">nodes_n_con</span><span class="p">[</span><span class="n">end</span><span class="p">]</span> <span class="o">-</span> <span class="n">nodes_n_con_seen</span><span class="p">[</span><span class="n">end</span><span class="p">])</span> <span class="o">/</span>
-                         <span class="nb">float</span><span class="p">(</span><span class="n">nodes_n_con</span><span class="p">[</span><span class="n">end</span><span class="p">]))</span>
-
-    <span class="c1"># scale connectivity for colormap (vmin&lt;=&gt;0, vmax&lt;=&gt;1)</span>
-    <span class="n">con_val_scaled</span> <span class="o">=</span> <span class="p">(</span><span class="n">con</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">/</span> <span class="n">vrange</span>
-
-    <span class="c1"># Finally, we draw the connections</span>
-    <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
-        <span class="c1"># Start point</span>
-        <span class="n">t0</span><span class="p">,</span> <span class="n">r0</span> <span class="o">=</span> <span class="n">node_angles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">10</span>
-
-        <span class="c1"># End point</span>
-        <span class="n">t1</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">node_angles</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="mi">10</span>
-
-        <span class="c1"># Some noise in start and end point</span>
-        <span class="n">t0</span> <span class="o">+=</span> <span class="n">start_noise</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
-        <span class="n">t1</span> <span class="o">+=</span> <span class="n">end_noise</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
-
-        <span class="n">verts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t0</span><span class="p">,</span> <span class="n">r0</span><span class="p">),</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">r1</span><span class="p">)]</span>
-        <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">m_path</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">,</span> <span class="n">m_path</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span> <span class="n">m_path</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span>
-                 <span class="n">m_path</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">m_path</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">verts</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
-
-        <span class="n">color</span> <span class="o">=</span> <span class="n">colormap</span><span class="p">(</span><span class="n">con_val_scaled</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
-
-        <span class="c1"># Actual line</span>
-        <span class="n">patch</span> <span class="o">=</span> <span class="n">m_patches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-                                    <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
-        <span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
-
-    <span class="c1"># Draw ring with colored nodes</span>
-    <span class="n">height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span>
-    <span class="n">bars</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">node_angles</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">node_width</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
-                    <span class="n">edgecolor</span><span class="o">=</span><span class="n">node_edgecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">node_linewidth</span><span class="p">,</span>
-                    <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;.9&#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">bar</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">):</span>
-        <span class="n">bar</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-
-    <span class="c1"># Draw node labels</span>
-    <span class="n">angles_deg</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">node_angles</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">angle_rad</span><span class="p">,</span> <span class="n">angle_deg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node_names</span><span class="p">,</span> <span class="n">node_angles</span><span class="p">,</span> <span class="n">angles_deg</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">angle_deg</span> <span class="o">&gt;=</span> <span class="mi">270</span> <span class="ow">or</span> <span class="n">angle_deg</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
-            <span class="n">ha</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Flip the label, so text is always upright</span>
-            <span class="n">angle_deg</span> <span class="o">+=</span> <span class="mi">180</span>
-            <span class="n">ha</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span>
-
-        <span class="n">axes</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">angle_rad</span><span class="p">,</span> <span class="mf">10.4</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize_names</span><span class="p">,</span>
-                  <span class="n">rotation</span><span class="o">=</span><span class="n">angle_deg</span><span class="p">,</span> <span class="n">rotation_mode</span><span class="o">=</span><span class="s1">&#39;anchor&#39;</span><span class="p">,</span>
-                  <span class="n">horizontalalignment</span><span class="o">=</span><span class="n">ha</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
-                  <span class="n">color</span><span class="o">=</span><span class="n">textcolor</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">textcolor</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">,</span>
-                  <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
-        <span class="n">sm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span>
-                                   <span class="n">norm</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">))</span>
-        <span class="n">sm</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">))</span>
-        <span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">use_gridspec</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                          <span class="n">shrink</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span>
-                          <span class="n">anchor</span><span class="o">=</span><span class="n">colorbar_pos</span><span class="p">)</span>
-        <span class="n">cb_yticks</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="s1">&#39;yticklabels&#39;</span><span class="p">)</span>
-        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">fontsize_colorbar</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">cb_yticks</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">textcolor</span><span class="p">)</span>
-
-    <span class="c1"># Add callback for interaction</span>
-    <span class="k">if</span> <span class="n">interactive</span><span class="p">:</span>
-        <span class="n">callback</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_plot_connectivity_circle_onpick</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
-                           <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-                           <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">)</span>
-
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
-
-    <span class="n">plt_show</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span></div>
+    <span class="k">return</span> <span class="n">_plot_connectivity_circle</span><span class="p">(</span>
+        <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span> <span class="n">node_names</span><span class="o">=</span><span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_lines</span><span class="o">=</span><span class="n">n_lines</span><span class="p">,</span>
+        <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">,</span> <span class="n">node_width</span><span class="o">=</span><span class="n">node_width</span><span class="p">,</span>
+        <span class="n">node_height</span><span class="o">=</span><span class="n">node_height</span><span class="p">,</span> <span class="n">node_colors</span><span class="o">=</span><span class="n">node_colors</span><span class="p">,</span>
+        <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">textcolor</span><span class="o">=</span><span class="n">textcolor</span><span class="p">,</span>
+        <span class="n">node_edgecolor</span><span class="o">=</span><span class="n">node_edgecolor</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">colorbar_size</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span> <span class="n">colorbar_pos</span><span class="o">=</span><span class="n">colorbar_pos</span><span class="p">,</span>
+        <span class="n">fontsize_title</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">,</span> <span class="n">fontsize_names</span><span class="o">=</span><span class="n">fontsize_names</span><span class="p">,</span>
+        <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="n">fontsize_colorbar</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="n">interactive</span><span class="o">=</span><span class="n">interactive</span><span class="p">,</span> <span class="n">node_linewidth</span><span class="o">=</span><span class="n">node_linewidth</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span></div>
 </pre></div>
 
               </div>
@@ -554,19 +344,20 @@
       </div>
     </div>
   
-    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-03-08.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-03-29.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     

@@ -7,29 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.4dev0 documentation</title>
     
-    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
-    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
-    <!-- ... and optionally preload the `woff2` for snappier page loads -->
-    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
-    <style>
-        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
-        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
-    </style>
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
@@ -37,8 +27,9 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
     
-    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -59,7 +50,7 @@
     
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -209,12 +200,47 @@
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">check_indices</span>
 
 
+<span class="k">def</span> <span class="nf">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">rfftfreq</span>
+    <span class="c1"># get frequencies of interest for the different modes</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="s1">&#39;fourier&#39;</span><span class="p">):</span>
+        <span class="c1"># fmin fmax etc is only supported for these modes</span>
+        <span class="c1"># decide which frequencies to keep</span>
+        <span class="n">freqs_all</span> <span class="o">=</span> <span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
+        <span class="c1"># cwt_morlet mode</span>
+        <span class="k">if</span> <span class="n">cwt_freqs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;define frequencies of interest using &#39;</span>
+                             <span class="s1">&#39;cwt_freqs&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cwt_freqs</span> <span class="o">=</span> <span class="n">cwt_freqs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cwt_freqs</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;entries in cwt_freqs cannot be &#39;</span>
+                             <span class="s1">&#39;larger than Nyquist (sfreq / 2)&#39;</span><span class="p">)</span>
+        <span class="n">freqs_all</span> <span class="o">=</span> <span class="n">cwt_freqs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;mode has an invalid value&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">freqs_all</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">):</span>
+    <span class="c1"># create a frequency mask for all bands</span>
+    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f_lower</span><span class="p">,</span> <span class="n">f_upper</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">):</span>
+        <span class="n">freq_mask</span> <span class="o">|=</span> <span class="p">((</span><span class="n">freqs_all</span> <span class="o">&gt;=</span> <span class="n">f_lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_all</span> <span class="o">&lt;=</span> <span class="n">f_upper</span><span class="p">))</span>
+
+    <span class="c1"># possibly skip frequency points</span>
+    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fskip</span><span class="p">):</span>
+        <span class="n">freq_mask</span><span class="p">[</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">::</span><span class="n">fskip</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">freq_mask</span>
+
+
 <span class="k">def</span> <span class="nf">_prepare_connectivity</span><span class="p">(</span><span class="n">epoch_block</span><span class="p">,</span> <span class="n">times_in</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span>
                           <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span>
                           <span class="n">mode</span><span class="p">,</span> <span class="n">fskip</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">,</span>
                           <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">faverage</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check and precompute dimensions of results data.&quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">scipy.fft</span> <span class="kn">import</span> <span class="n">rfftfreq</span>
     <span class="n">first_epoch</span> <span class="o">=</span> <span class="n">epoch_block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># get the data size and time scale</span>
@@ -254,25 +280,6 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    using t=</span><span class="si">%0.3f</span><span class="s1">s..</span><span class="si">%0.3f</span><span class="s1">s for estimation (</span><span class="si">%d</span><span class="s1"> points)&#39;</span>
                 <span class="o">%</span> <span class="p">(</span><span class="n">tmin_true</span><span class="p">,</span> <span class="n">tmax_true</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
 
-    <span class="c1"># get frequencies of interest for the different modes</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="s1">&#39;fourier&#39;</span><span class="p">):</span>
-        <span class="c1"># fmin fmax etc is only supported for these modes</span>
-        <span class="c1"># decide which frequencies to keep</span>
-        <span class="n">freqs_all</span> <span class="o">=</span> <span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
-        <span class="c1"># cwt_morlet mode</span>
-        <span class="k">if</span> <span class="n">cwt_freqs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;define frequencies of interest using &#39;</span>
-                             <span class="s1">&#39;cwt_freqs&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">cwt_freqs</span> <span class="o">=</span> <span class="n">cwt_freqs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cwt_freqs</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;entries in cwt_freqs cannot be &#39;</span>
-                             <span class="s1">&#39;larger than Nyquist (sfreq / 2)&#39;</span><span class="p">)</span>
-        <span class="n">freqs_all</span> <span class="o">=</span> <span class="n">cwt_freqs</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;mode has an invalid value&#39;</span><span class="p">)</span>
-
     <span class="c1"># check that fmin corresponds to at least 5 cycles</span>
     <span class="n">dur</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span> <span class="o">/</span> <span class="n">sfreq</span>
     <span class="n">five_cycle_freq</span> <span class="o">=</span> <span class="mf">5.</span> <span class="o">/</span> <span class="n">dur</span>
@@ -287,17 +294,15 @@
                  <span class="s1">&#39;unreliable.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span> <span class="n">dur</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span> <span class="n">dur</span><span class="p">,</span>
                                   <span class="mf">5.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span> <span class="n">five_cycle_freq</span><span class="p">))</span>
 
-    <span class="c1"># create a frequency mask for all bands</span>
-    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">f_lower</span><span class="p">,</span> <span class="n">f_upper</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">):</span>
-        <span class="n">freq_mask</span> <span class="o">|=</span> <span class="p">((</span><span class="n">freqs_all</span> <span class="o">&gt;=</span> <span class="n">f_lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_all</span> <span class="o">&lt;=</span> <span class="n">f_upper</span><span class="p">))</span>
+    <span class="c1"># compute frequencies to analyze based on number of samples,</span>
+    <span class="c1"># sampling rate, specified wavelet frequencies and mode</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
-    <span class="c1"># possibly skip frequency points</span>
-    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fskip</span><span class="p">):</span>
-        <span class="n">freq_mask</span><span class="p">[</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">::</span><span class="n">fskip</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># compute the mask based on specified min/max and decimation factor</span>
+    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">)</span>
 
     <span class="c1"># the frequency points where we compute connectivity</span>
-    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs_all</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">]</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">]</span>
     <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
 
     <span class="c1"># get the freq. indices and points for each band</span>
@@ -1293,7 +1298,13 @@
     <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
         <span class="c1"># for each band we return the frequencies that were averaged</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">freqs_bands</span><span class="p">]</span>
+
+        <span class="c1"># make sure freq_bands is a list of equal-length lists</span>
+        <span class="c1"># XXX: we lose information on which frequency points went into the</span>
+        <span class="c1"># computation. If h5netcdf supports numpy objects in the future, then</span>
+        <span class="c1"># we can change the min/max to just make it a list of lists.</span>
         <span class="n">freqs_used</span> <span class="o">=</span> <span class="n">freqs_bands</span>
+        <span class="n">freqs_used</span> <span class="o">=</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">band</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">band</span><span class="p">)]</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">freqs_used</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># return all-to-all connectivity matrices</span>
@@ -1364,19 +1375,20 @@
       </div>
     </div>
   
-    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-03-08.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-03-29.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     
