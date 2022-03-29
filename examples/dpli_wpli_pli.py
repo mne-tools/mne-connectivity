@@ -34,7 +34,9 @@ from mne.datasets import sample
 # and is :math:`0` when the phase difference is given by :math:`k\pi` (where
 # :math:`k \in \mathbb{Z}`). This property provides protection against
 # recognizing volume conduction effects as connectivity, and is the backbone
-# for these methods :footcite:`VinckEtAl2011`.
+# for these methods :footcite:`VinckEtAl2011`. In the equations below,
+# :math:`\mathcal{I}` refers to the imaginary component, while
+# :math:`\mathcal{H}` refers to the Heaviside step function.
 #
 # :math:`PLI = |E[sgn(\mathcal{I}(X_{ij}))]|` :footcite:`StamEtAl2007`
 #
