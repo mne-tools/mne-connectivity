@@ -35,8 +35,9 @@ from mne.datasets import sample
 # :math:`k \in \mathbb{Z}`). This property provides protection against
 # recognizing volume conduction effects as connectivity, and is the backbone
 # for these methods :footcite:`VinckEtAl2011`. In the equations below,
-# :math:`\mathcal{I}` refers to the imaginary component, while
-# :math:`\mathcal{H}` refers to the Heaviside step function.
+# :math:`\mathcal{I}` refers to the imaginary component,
+# :math:`\mathcal{H}` refers to the Heaviside step function, and
+# :math:`sgn` refers to the sign function
 #
 # :math:`PLI = |E[sgn(\mathcal{I}(X_{ij}))]|` :footcite:`StamEtAl2007`
 #
