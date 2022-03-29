@@ -4,3 +4,4 @@
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Alex Rockhill: https://github.com/alexrockhill
+.. _Szonja Weigl: https://github.com/weiglszonja
