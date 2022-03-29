@@ -336,12 +336,12 @@ def test_spectral_connectivity(method, mode):
                 assert (n == n2)
                 assert_array_almost_equal(times_data, times2)
 
-        # compute same connections for two bands, fskip=1, and f. avg.
+        # compute same connections for two bands, and f. avg.
         fmin = (5., 15.)
         fmax = (15., 30.)
         con3 = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=indices,
-            sfreq=sfreq, fmin=fmin, fmax=fmax, fskip=1, faverage=True,
+            sfreq=sfreq, fmin=fmin, fmax=fmax, faverage=True,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles)
@@ -360,14 +360,18 @@ def test_spectral_connectivity(method, mode):
         # average con2 "manually" and we get the same result
         if not isinstance(method, list):
             for i in range(len(freqs3)):
-                freq_idx = np.searchsorted(freqs2, freqs3[i])
-                con2_avg = np.mean(con2.get_data()[:, freq_idx], axis=1)
-                assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
+                freq_idx = np.where(np.logical_and(freqs2 >= freqs3[i][0],
+                                                   freqs2 <= freqs3[i][1]))
+                con2_avg = np.mean(con2.get_data()[:, freq_idx].squeeze(),
+                                   axis=1)
+                assert_array_almost_equal(
+                    con2_avg, con3.get_data()[:, i])
         else:
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
-                    freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx],
+                    freq_idx = np.where(np.logical_and(freqs2 >= freqs3[i][0],
+                                                       freqs2 <= freqs3[i][1]))
+                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx].squeeze(),
                                        axis=1)
                     assert_array_almost_equal(
                         con2_avg, con3[j].get_data()[:, i])
