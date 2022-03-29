@@ -46,6 +46,7 @@ def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
 
     return freqs_all
 
+
 def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
     # create a frequency mask for all bands
     freq_mask = np.zeros(len(freqs_all), dtype=bool)
@@ -56,6 +57,7 @@ def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
     for pos in range(fskip):
         freq_mask[pos + 1::fskip + 1] = False
     return freq_mask
+
 
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           fmin, fmax, sfreq, indices,
@@ -100,7 +102,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                 % n_cons)
     logger.info('    using t=%0.3fs..%0.3fs for estimation (%d points)'
                 % (tmin_true, tmax_true, n_times))
-    
+
     # check that fmin corresponds to at least 5 cycles
     dur = float(n_times) / sfreq
     five_cycle_freq = 5. / dur
@@ -118,10 +120,10 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     # compute frequencies to analyze based on number of samples,
     # sampling rate, specified wavelet frequencies and mode
     freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
-    
+
     # compute the mask based on specified min/max and decimation factor
     freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
-    
+
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
     n_freqs = len(freqs)
@@ -1119,7 +1121,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     if faverage:
         # for each band we return the frequencies that were averaged
         freqs = [np.mean(x) for x in freqs_bands]
-        
+
         # make sure freq_bands is a list of equal-length lists
         # XXX: we lose information on which frequency points went into the
         # computation. If h5netcdf supports numpy objects in the future, then

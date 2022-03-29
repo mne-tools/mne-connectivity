@@ -24,6 +24,8 @@ jobs:
               if ! git remote -v | grep upstream; then
                 git remote add upstream https://github.com/mne-tools/mne-connectivity.git
               fi
+                git remote add upstream https://github.com/mne-tools/mne-connectivity.git
+              git remote set-url upstream 
               git fetch upstream
 
         - save_cache:

@@ -374,7 +374,7 @@ def test_spectral_connectivity(method, mode):
                 # sampling rate, specified wavelet frequencies and mode
                 freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-                # compute the mask based on specified min/max and decimation factor
+                # compute the mask based on specified min/max and decim factor
                 freq_mask = _compute_freq_mask(
                     freqs, [fmin[i]], [fmax[i]], fskip)
                 freqs = freqs[freq_mask]
@@ -388,11 +388,13 @@ def test_spectral_connectivity(method, mode):
                     # create a frequency mask for all bands
                     n_times = len(con2[0].attrs.get('times_used'))
 
-                    # compute frequencies to analyze based on number of samples,
-                    # sampling rate, specified wavelet frequencies and mode
+                    # compute frequencies to analyze based on number of
+                    # samples, sampling rate, specified wavelet frequencies
+                    # and mode
                     freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-                    # compute the mask based on specified min/max and decimation factor
+                    # compute the mask based on specified min/max and
+                    # decim factor
                     freq_mask = _compute_freq_mask(
                         freqs, [fmin[i]], [fmax[i]], fskip)
                     freqs = freqs[freq_mask]
@@ -595,6 +597,7 @@ def test_save(tmp_path):
     tmin = -1
     epochs = EpochsArray(data, info, tmin=tmin)
 
-    conn = spectral_connectivity_epochs(epochs,
-                                        fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45), faverage=True)
+    conn = spectral_connectivity_epochs(
+        epochs, fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45),
+        faverage=True)
     conn.save(tmp_path / 'foo.nc')
