@@ -15,6 +15,8 @@ from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
     read_connectivity, spectral_connectivity_time)
 from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
+from mne_connectivity.spectral.epochs import (
+    _compute_freq_mask, _compute_freqs)
 
 
 def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
@@ -336,6 +338,7 @@ def test_spectral_connectivity(method, mode):
                 assert (n == n2)
                 assert_array_almost_equal(times_data, times2)
 
+        # Test with faverage
         # compute same connections for two bands, fskip=1, and f. avg.
         fmin = (5., 15.)
         fmax = (15., 30.)
@@ -354,21 +357,51 @@ def test_spectral_connectivity(method, mode):
         assert (isinstance(freqs3, list))
         assert (len(freqs3) == len(fmin))
         for i in range(len(freqs3)):
-            assert np.all((freqs3[i] >= fmin[i]) &
-                          (freqs3[i] <= fmax[i]))
+            _fmin = max(fmin[i], min(cwt_freqs))
+            _fmax = min(fmax[i], max(cwt_freqs))
+            assert_allclose(freqs3[i][0], _fmin, atol=1)
+            assert_allclose(freqs3[i][1], _fmax, atol=1)
 
         # average con2 "manually" and we get the same result
+        fskip = 1
         if not isinstance(method, list):
             for i in range(len(freqs3)):
-                freq_idx = np.searchsorted(freqs2, freqs3[i])
-                con2_avg = np.mean(con2.get_data()[:, freq_idx], axis=1)
+                # now we want to get the frequency indices
+                # create a frequency mask for all bands
+                n_times = len(con2.attrs.get('times_used'))
+
+                # compute frequencies to analyze based on number of samples,
+                # sampling rate, specified wavelet frequencies and mode
+                freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+
+                # compute the mask based on specified min/max and decim factor
+                freq_mask = _compute_freq_mask(
+                    freqs, [fmin[i]], [fmax[i]], fskip)
+                freqs = freqs[freq_mask]
+                freqs_idx = np.searchsorted(freqs2, freqs)
+                con2_avg = np.mean(con2.get_data()[:, freqs_idx], axis=1)
                 assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
         else:
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
-                    freq_idx = np.searchsorted(freqs2, freqs3[i])
-                    con2_avg = np.mean(con2[j].get_data()[:, freq_idx],
-                                       axis=1)
+                    # now we want to get the frequency indices
+                    # create a frequency mask for all bands
+                    n_times = len(con2[0].attrs.get('times_used'))
+
+                    # compute frequencies to analyze based on number of
+                    # samples, sampling rate, specified wavelet frequencies
+                    # and mode
+                    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+
+                    # compute the mask based on specified min/max and
+                    # decim factor
+                    freq_mask = _compute_freq_mask(
+                        freqs, [fmin[i]], [fmax[i]], fskip)
+                    freqs = freqs[freq_mask]
+                    freqs_idx = np.searchsorted(freqs2, freqs)
+
+                    con2_avg = np.mean(con2[j].get_data()[
+                                       :, freqs_idx], axis=1)
                     assert_array_almost_equal(
                         con2_avg, con3[j].get_data()[:, i])
 
@@ -551,3 +584,20 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     conn_data = conn.get_data(output='dense')[
         :, row_triu_inds, col_triu_inds, ...]
     assert_array_almost_equal(conn_data, test_conn)
+
+
+def test_save(tmp_path):
+    """Test saving results of spectral connectivity."""
+    rng = np.random.RandomState(0)
+    n_epochs, n_chs, n_times, sfreq, f = 10, 2, 2000, 1000., 20.
+    data = rng.randn(n_epochs, n_chs, n_times)
+    sig = np.sin(2 * np.pi * f * np.arange(1000) / sfreq) * np.hanning(1000)
+    data[:, :, 500:1500] += sig
+    info = create_info(n_chs, sfreq, 'eeg')
+    tmin = -1
+    epochs = EpochsArray(data, info, tmin=tmin)
+
+    conn = spectral_connectivity_epochs(
+        epochs, fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45),
+        faverage=True)
+    conn.save(tmp_path / 'foo.nc')

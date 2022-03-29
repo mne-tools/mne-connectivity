@@ -23,12 +23,47 @@ from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
 
 
+def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
+    from scipy.fft import rfftfreq
+    # get frequencies of interest for the different modes
+    if mode in ('multitaper', 'fourier'):
+        # fmin fmax etc is only supported for these modes
+        # decide which frequencies to keep
+        freqs_all = rfftfreq(n_times, 1. / sfreq)
+    elif mode == 'cwt_morlet':
+        # cwt_morlet mode
+        if cwt_freqs is None:
+            raise ValueError('define frequencies of interest using '
+                             'cwt_freqs')
+        else:
+            cwt_freqs = cwt_freqs.astype(np.float64)
+        if any(cwt_freqs > (sfreq / 2.)):
+            raise ValueError('entries in cwt_freqs cannot be '
+                             'larger than Nyquist (sfreq / 2)')
+        freqs_all = cwt_freqs
+    else:
+        raise ValueError('mode has an invalid value')
+
+    return freqs_all
+
+
+def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
+    # create a frequency mask for all bands
+    freq_mask = np.zeros(len(freqs_all), dtype=bool)
+    for f_lower, f_upper in zip(fmin, fmax):
+        freq_mask |= ((freqs_all >= f_lower) & (freqs_all <= f_upper))
+
+    # possibly skip frequency points
+    for pos in range(fskip):
+        freq_mask[pos + 1::fskip + 1] = False
+    return freq_mask
+
+
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           fmin, fmax, sfreq, indices,
                           mode, fskip, n_bands,
                           cwt_freqs, faverage):
     """Check and precompute dimensions of results data."""
-    from scipy.fft import rfftfreq
     first_epoch = epoch_block[0]
 
     # get the data size and time scale
@@ -68,25 +103,6 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     logger.info('    using t=%0.3fs..%0.3fs for estimation (%d points)'
                 % (tmin_true, tmax_true, n_times))
 
-    # get frequencies of interest for the different modes
-    if mode in ('multitaper', 'fourier'):
-        # fmin fmax etc is only supported for these modes
-        # decide which frequencies to keep
-        freqs_all = rfftfreq(n_times, 1. / sfreq)
-    elif mode == 'cwt_morlet':
-        # cwt_morlet mode
-        if cwt_freqs is None:
-            raise ValueError('define frequencies of interest using '
-                             'cwt_freqs')
-        else:
-            cwt_freqs = cwt_freqs.astype(np.float64)
-        if any(cwt_freqs > (sfreq / 2.)):
-            raise ValueError('entries in cwt_freqs cannot be '
-                             'larger than Nyquist (sfreq / 2)')
-        freqs_all = cwt_freqs
-    else:
-        raise ValueError('mode has an invalid value')
-
     # check that fmin corresponds to at least 5 cycles
     dur = float(n_times) / sfreq
     five_cycle_freq = 5. / dur
@@ -101,17 +117,15 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                  'unreliable.' % (np.min(fmin), dur * np.min(fmin), dur,
                                   5. / np.min(fmin), five_cycle_freq))
 
-    # create a frequency mask for all bands
-    freq_mask = np.zeros(len(freqs_all), dtype=bool)
-    for f_lower, f_upper in zip(fmin, fmax):
-        freq_mask |= ((freqs_all >= f_lower) & (freqs_all <= f_upper))
+    # compute frequencies to analyze based on number of samples,
+    # sampling rate, specified wavelet frequencies and mode
+    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-    # possibly skip frequency points
-    for pos in range(fskip):
-        freq_mask[pos + 1::fskip + 1] = False
+    # compute the mask based on specified min/max and decimation factor
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
 
     # the frequency points where we compute connectivity
-    freqs = freqs_all[freq_mask]
+    freqs = freqs[freq_mask]
     n_freqs = len(freqs)
 
     # get the freq. indices and points for each band
@@ -1107,7 +1121,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     if faverage:
         # for each band we return the frequencies that were averaged
         freqs = [np.mean(x) for x in freqs_bands]
+
+        # make sure freq_bands is a list of equal-length lists
+        # XXX: we lose information on which frequency points went into the
+        # computation. If h5netcdf supports numpy objects in the future, then
+        # we can change the min/max to just make it a list of lists.
         freqs_used = freqs_bands
+        freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
     if indices is None:
         # return all-to-all connectivity matrices

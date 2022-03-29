@@ -29,7 +29,7 @@ Enhancements
 Bug
 ~~~
 
--
+- Fix the output of :func:`mne_connectivity.spectral_connectivity_epochs` when ``faverage=True``, allowing one to save the Connectivity object, by `Adam Li`_ and `Szonja Weigl`_ :gh:`91`
 
 API
 ~~~
