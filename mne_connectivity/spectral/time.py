@@ -256,7 +256,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                 out += [tfr_array_multitaper(
                     data, sfreq, [f_c], n_cycles=float(n_c), time_bandwidth=mt,
                     output='complex', decim=decim, n_jobs=n_jobs, **kw_mt)]
-            out = np.stack(out, axis=2).squeeze()
+            out = np.stack(out, axis=3).squeeze()
         elif isinstance(mt_bandwidth, (type(None), int, float)):
             out = tfr_array_multitaper(
                 data, sfreq, freqs, n_cycles=n_cycles,

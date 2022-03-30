@@ -25,6 +25,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Add ``node_height`` to :func:`mne_connectivity.viz.plot_connectivity_circle` and enable passing a polar ``ax``, by `Alex Rockhill`_ :gh:`88`
+- Add directed phase lag index (dPLI) as a method in :func:`mne_connectivity.spectral_connectivity_epochs` with a corresponding example by `Kenji Marshall`_ (:gh:`79`)
 
 Bug
 ~~~
@@ -39,7 +40,10 @@ API
 Authors
 ~~~~~~~
 
-
+* `Kenji Marshall`_
+* `Adam Li`_
+* `Alex Rockhill`_
+* `Szonja Weigl`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
