@@ -41,6 +41,9 @@ Authors
 ~~~~~~~
 
 * `Kenji Marshall`_
+* `Adam Li`_
+* `Alex Rockhill`_
+* `Szonja Weigl`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
