@@ -8,29 +8,19 @@
 
     <title>Using the connectivity classes &#8212; MNE-Connectivity 0.3 documentation</title>
     
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
-    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
-    <!-- ... and optionally preload the `woff2` for snappier page loads -->
-    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
-    <style>
-        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
-        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
-    </style>
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -38,8 +28,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -62,7 +53,7 @@
     
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -283,7 +274,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="using-the-connectivity-classes">
-<span id="ex-connectivity-measures"></span><span id="sphx-glr-auto-examples-connectivity-classes-py"></span><h1>Using the connectivity classes<a class="headerlink" href="#using-the-connectivity-classes" title="Permalink to this headline">¶</a></h1>
+<span id="ex-connectivity-measures"></span><span id="sphx-glr-auto-examples-connectivity-classes-py"></span><h1>Using the connectivity classes<a class="headerlink" href="#using-the-connectivity-classes" title="Permalink to this headline">#</a></h1>
 <p>Compute different connectivity measures and then demonstrate
 the utility of the class.</p>
 <p>Here we compute the Phase Lag Index (PLI) between all gradiometers and showcase
@@ -301,53 +292,270 @@ how we can interact with the connectivity class.</p>
 </div>
 <p>Set parameters</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
-<span class="n">raw_fname</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
-<span class="n">event_fname</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_fname</span></a> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&#39;</span>
 
 <span class="c1"># Setup for reading the raw data</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
-<span class="n">events</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><span class="n">event_fname</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_fname</span></a><span class="p">)</span>
 
 <span class="c1"># Add a bad channel</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;MEG 2443&#39;</span><span class="p">]</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;MEG 2443&#39;</span><span class="p">]</span>
 
 <span class="c1"># Pick MEG gradiometers</span>
-<span class="n">picks</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s1">&#39;grad&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s1">&#39;grad&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">exclude</span><span class="o">=</span><span class="s1">&#39;bads&#39;</span><span class="p">)</span>
 
 <span class="c1"># Create epochs for the visual condition</span>
-<span class="n">event_id</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span>  <span class="c1"># need a long enough epoch for 5 cycles</span>
-<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span>  <span class="c1"># need a long enough epoch for 5 cycles</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="p">,</span>
                     <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">grad</span><span class="o">=</span><span class="mf">4000e-13</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">))</span>
 
 <span class="c1"># Compute connectivity for the alpha band that contains the evoked response</span>
 <span class="c1"># (4-9 Hz). We exclude the baseline period:</span>
-<span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">9.</span>
-<span class="n">cwt_freqs</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
-<span class="n">tmin</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># exclude the baseline period</span>
-<span class="n">epochs</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="s1">&#39;grad&#39;</span><span class="p">)</span>  <span class="c1"># just keep MEG and no EOG now</span>
-<span class="n">con</span> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
-    <span class="n">epochs</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;pli&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cwt_morlet&#39;</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
-    <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">9.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwt_freqs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># exclude the baseline period</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.load_data" title="mne.Epochs.load_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">()</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="s1">&#39;grad&#39;</span><span class="p">)</span>  <span class="c1"># just keep MEG and no EOG now</span>
+<a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;pli&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cwt_morlet&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span>
+    <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwt_freqs</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwt_freqs</span></a><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/adamli/Documents/mne-connectivity/examples/connectivity_classes.py:28: DeprecationWarning: data_path functions now return pathlib.Path objects which do not natively support the plus (+) operator, switch to using forward slash (/) instead. Support for plus will be removed in 1.2.
+  raw_fname = data_path + &#39;/MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;
+/Users/adamli/Documents/mne-connectivity/examples/connectivity_classes.py:29: DeprecationWarning: data_path functions now return pathlib.Path objects which do not natively support the plus (+) operator, switch to using forward slash (/) instead. Support for plus will be removed in 1.2.
+  event_fname = data_path + &#39;/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&#39;
+Opening raw data file /Users/adamli/mne_data/MNE-sample-data//MEG/sample/sample_audvis_filt-0-40_raw.fif...
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102)  idle
+        PCA-v2 (1 x 102)  idle
+        PCA-v3 (1 x 102)  idle
+        Average EEG reference (1 x 60)  idle
+    Range : 6450 ... 48149 =     42.956 ...   320.665 secs
+Ready.
+Not setting metadata
+73 matching events found
+Setting baseline interval to [-0.19979521315838786, 0.0] sec
+Applying baseline correction (mode: mean)
+4 projection items activated
+Loading data for 73 events and 256 original time points ...
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+24 bad epochs dropped
+Removing projector &lt;Projection | PCA-v1, active : True, n_channels : 102&gt;
+Removing projector &lt;Projection | PCA-v2, active : True, n_channels : 102&gt;
+Removing projector &lt;Projection | PCA-v3, active : True, n_channels : 102&gt;
+Removing projector &lt;Projection | Average EEG reference, active : True, n_channels : 60&gt;
+Adding metadata with 3 columns
+Connectivity computation...
+only using indices for lower-triangular matrix
+    computing connectivity for 20503 connections
+    using t=0.000s..1.498s for estimation (226 points)
+    frequencies: 4.0Hz..9.0Hz (5 points)
+    using CWT with Morlet wavelets to estimate spectra
+    the following metrics will be computed: PLI
+    computing connectivity for epoch 1
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 2
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 3
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 4
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 5
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 6
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 7
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 8
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 9
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 10
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 11
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 12
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 13
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 14
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 15
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 16
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 17
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 18
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 19
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 20
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 21
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 22
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 23
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 24
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 25
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 26
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 27
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 28
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 29
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 30
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 31
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 32
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 33
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 34
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 35
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 36
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 37
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 38
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 39
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 40
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 41
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 42
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 43
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 44
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 45
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 46
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 47
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 48
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    computing connectivity for epoch 49
+/Users/adamli/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:561: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+  this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
+    assembling connectivity matrix
+[Connectivity computation done]
 </pre></div>
 </div>
 <p>Now, we can look at different functionalities of the connectivity
 class returned by <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a>. The
 following are some basic attributes of connectivity classes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># the dimensions of the data corresponding to each axis</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.dims" title="mne_connectivity.SpectroTemporalConnectivity.dims" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">dims</span></a><span class="p">)</span>
 
 <span class="c1"># the coordinates for each axis of the data</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.coords" title="mne_connectivity.SpectroTemporalConnectivity.coords" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">coords</span></a><span class="p">)</span>
 
 <span class="c1"># the number of nodes matches the number of electrodes used to compute the</span>
 <span class="c1"># spectral measure</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.n_nodes" title="mne_connectivity.SpectroTemporalConnectivity.n_nodes" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">)</span>
 
 <span class="c1"># the names of each node correspond to the electrode names</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.names" title="mne_connectivity.SpectroTemporalConnectivity.names" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(&#39;node_in -&gt; node_out&#39;, &#39;freqs&#39;, &#39;times&#39;)
+Coordinates:
+  * node_in -&gt; node_out  (node_in -&gt; node_out) &lt;U5 &#39;0&#39; &#39;1&#39; ... &#39;41207&#39; &#39;41208&#39;
+  * freqs                (freqs) float64 4.0 5.25 6.5 7.75 9.0
+  * times                (times) float64 0.0 0.00666 0.01332 ... 1.492 1.498
+203
+[&#39;MEG 0113&#39;, &#39;MEG 0112&#39;, &#39;MEG 0122&#39;, &#39;MEG 0123&#39;, &#39;MEG 0132&#39;, &#39;MEG 0133&#39;, &#39;MEG 0143&#39;, &#39;MEG 0142&#39;, &#39;MEG 0213&#39;, &#39;MEG 0212&#39;, &#39;MEG 0222&#39;, &#39;MEG 0223&#39;, &#39;MEG 0232&#39;, &#39;MEG 0233&#39;, &#39;MEG 0243&#39;, &#39;MEG 0242&#39;, &#39;MEG 0313&#39;, &#39;MEG 0312&#39;, &#39;MEG 0322&#39;, &#39;MEG 0323&#39;, &#39;MEG 0333&#39;, &#39;MEG 0332&#39;, &#39;MEG 0343&#39;, &#39;MEG 0342&#39;, &#39;MEG 0413&#39;, &#39;MEG 0412&#39;, &#39;MEG 0422&#39;, &#39;MEG 0423&#39;, &#39;MEG 0432&#39;, &#39;MEG 0433&#39;, &#39;MEG 0443&#39;, &#39;MEG 0442&#39;, &#39;MEG 0513&#39;, &#39;MEG 0512&#39;, &#39;MEG 0523&#39;, &#39;MEG 0522&#39;, &#39;MEG 0532&#39;, &#39;MEG 0533&#39;, &#39;MEG 0542&#39;, &#39;MEG 0543&#39;, &#39;MEG 0613&#39;, &#39;MEG 0612&#39;, &#39;MEG 0622&#39;, &#39;MEG 0623&#39;, &#39;MEG 0633&#39;, &#39;MEG 0632&#39;, &#39;MEG 0642&#39;, &#39;MEG 0643&#39;, &#39;MEG 0713&#39;, &#39;MEG 0712&#39;, &#39;MEG 0723&#39;, &#39;MEG 0722&#39;, &#39;MEG 0733&#39;, &#39;MEG 0732&#39;, &#39;MEG 0743&#39;, &#39;MEG 0742&#39;, &#39;MEG 0813&#39;, &#39;MEG 0812&#39;, &#39;MEG 0822&#39;, &#39;MEG 0823&#39;, &#39;MEG 0913&#39;, &#39;MEG 0912&#39;, &#39;MEG 0923&#39;, &#39;MEG 0922&#39;, &#39;MEG 0932&#39;, &#39;MEG 0933&#39;, &#39;MEG 0942&#39;, &#39;MEG 0943&#39;, &#39;MEG 1013&#39;, &#39;MEG 1012&#39;, &#39;MEG 1023&#39;, &#39;MEG 1022&#39;, &#39;MEG 1032&#39;, &#39;MEG 1033&#39;, &#39;MEG 1043&#39;, &#39;MEG 1042&#39;, &#39;MEG 1112&#39;, &#39;MEG 1113&#39;, &#39;MEG 1123&#39;, &#39;MEG 1122&#39;, &#39;MEG 1133&#39;, &#39;MEG 1132&#39;, &#39;MEG 1142&#39;, &#39;MEG 1143&#39;, &#39;MEG 1213&#39;, &#39;MEG 1212&#39;, &#39;MEG 1223&#39;, &#39;MEG 1222&#39;, &#39;MEG 1232&#39;, &#39;MEG 1233&#39;, &#39;MEG 1243&#39;, &#39;MEG 1242&#39;, &#39;MEG 1312&#39;, &#39;MEG 1313&#39;, &#39;MEG 1323&#39;, &#39;MEG 1322&#39;, &#39;MEG 1333&#39;, &#39;MEG 1332&#39;, &#39;MEG 1342&#39;, &#39;MEG 1343&#39;, &#39;MEG 1412&#39;, &#39;MEG 1413&#39;, &#39;MEG 1423&#39;, &#39;MEG 1422&#39;, &#39;MEG 1433&#39;, &#39;MEG 1432&#39;, &#39;MEG 1442&#39;, &#39;MEG 1443&#39;, &#39;MEG 1512&#39;, &#39;MEG 1513&#39;, &#39;MEG 1522&#39;, &#39;MEG 1523&#39;, &#39;MEG 1533&#39;, &#39;MEG 1532&#39;, &#39;MEG 1543&#39;, &#39;MEG 1542&#39;, &#39;MEG 1613&#39;, &#39;MEG 1612&#39;, &#39;MEG 1622&#39;, &#39;MEG 1623&#39;, &#39;MEG 1632&#39;, &#39;MEG 1633&#39;, &#39;MEG 1643&#39;, &#39;MEG 1642&#39;, &#39;MEG 1713&#39;, &#39;MEG 1712&#39;, &#39;MEG 1722&#39;, &#39;MEG 1723&#39;, &#39;MEG 1732&#39;, &#39;MEG 1733&#39;, &#39;MEG 1743&#39;, &#39;MEG 1742&#39;, &#39;MEG 1813&#39;, &#39;MEG 1812&#39;, &#39;MEG 1822&#39;, &#39;MEG 1823&#39;, &#39;MEG 1832&#39;, &#39;MEG 1833&#39;, &#39;MEG 1843&#39;, &#39;MEG 1842&#39;, &#39;MEG 1912&#39;, &#39;MEG 1913&#39;, &#39;MEG 1923&#39;, &#39;MEG 1922&#39;, &#39;MEG 1932&#39;, &#39;MEG 1933&#39;, &#39;MEG 1943&#39;, &#39;MEG 1942&#39;, &#39;MEG 2013&#39;, &#39;MEG 2012&#39;, &#39;MEG 2023&#39;, &#39;MEG 2022&#39;, &#39;MEG 2032&#39;, &#39;MEG 2033&#39;, &#39;MEG 2042&#39;, &#39;MEG 2043&#39;, &#39;MEG 2113&#39;, &#39;MEG 2112&#39;, &#39;MEG 2122&#39;, &#39;MEG 2123&#39;, &#39;MEG 2133&#39;, &#39;MEG 2132&#39;, &#39;MEG 2143&#39;, &#39;MEG 2142&#39;, &#39;MEG 2212&#39;, &#39;MEG 2213&#39;, &#39;MEG 2223&#39;, &#39;MEG 2222&#39;, &#39;MEG 2233&#39;, &#39;MEG 2232&#39;, &#39;MEG 2242&#39;, &#39;MEG 2243&#39;, &#39;MEG 2312&#39;, &#39;MEG 2313&#39;, &#39;MEG 2323&#39;, &#39;MEG 2322&#39;, &#39;MEG 2332&#39;, &#39;MEG 2333&#39;, &#39;MEG 2343&#39;, &#39;MEG 2342&#39;, &#39;MEG 2412&#39;, &#39;MEG 2413&#39;, &#39;MEG 2423&#39;, &#39;MEG 2422&#39;, &#39;MEG 2433&#39;, &#39;MEG 2432&#39;, &#39;MEG 2442&#39;, &#39;MEG 2512&#39;, &#39;MEG 2513&#39;, &#39;MEG 2522&#39;, &#39;MEG 2523&#39;, &#39;MEG 2533&#39;, &#39;MEG 2532&#39;, &#39;MEG 2543&#39;, &#39;MEG 2542&#39;, &#39;MEG 2612&#39;, &#39;MEG 2613&#39;, &#39;MEG 2623&#39;, &#39;MEG 2622&#39;, &#39;MEG 2633&#39;, &#39;MEG 2632&#39;, &#39;MEG 2642&#39;, &#39;MEG 2643&#39;]
 </pre></div>
 </div>
 <p>The underlying connectivity measure can be stored in two ways: i) raveled
@@ -362,23 +570,34 @@ square matrix, which can be used for post-hoc analysis that expects a matrix
 shape.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># the underlying data is stored &quot;raveled&quot;, and the connectivity measure is</span>
 <span class="c1"># flattened into one dimension</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.shape" title="mne_connectivity.SpectroTemporalConnectivity.shape" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span>
 
 <span class="c1"># the &#39;dense&#39; output will show the connectivity measure&#39;s N x N axis</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.get_data" title="mne_connectivity.SpectroTemporalConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(41209, 5, 226)
+(203, 203, 5, 226)
 </pre></div>
 </div>
 <p>The underlying data is stored as an xarray, so we have access
 to DataArray attributes. Each connectivity measure function automatically
 stores relevant metadata. For example, the method used in this example
 is the phase-lag index (‘pli’).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.attrs" title="mne_connectivity.SpectroTemporalConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span></a><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.attrs" title="mne_connectivity.SpectroTemporalConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">))</span>
 
 <span class="c1"># You can also store additional metadata relevant to your experiment, which can</span>
 <span class="c1"># easily be done, because ``attrs`` is just a dictionary.</span>
-<span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;experimenter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mne&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.attrs" title="mne_connectivity.SpectroTemporalConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s1">&#39;experimenter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mne&#39;</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.attrs" title="mne_connectivity.SpectroTemporalConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span></a><span class="p">())</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;spec_method&#39;, &#39;n_epochs_used&#39;, &#39;freqs_used&#39;, &#39;times_used&#39;, &#39;n_tapers&#39;, &#39;node_names&#39;, &#39;method&#39;, &#39;indices&#39;, &#39;n_nodes&#39;, &#39;events&#39;])
+[&#39;pli&#39;]
+dict_keys([&#39;spec_method&#39;, &#39;n_epochs_used&#39;, &#39;freqs_used&#39;, &#39;times_used&#39;, &#39;n_tapers&#39;, &#39;node_names&#39;, &#39;method&#39;, &#39;indices&#39;, &#39;n_nodes&#39;, &#39;events&#39;, &#39;experimenter&#39;])
 </pre></div>
 </div>
 <p>Other properties of the connectivity class, special to
@@ -389,14 +608,19 @@ the spectro-temporal connectivity class.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># a frequency axis shows the different frequencies used in estimating</span>
 <span class="c1"># the spectral measure</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.freqs" title="mne_connectivity.SpectroTemporalConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">)</span>
 
 <span class="c1"># a time axis shows the different time points because the spectral</span>
 <span class="c1"># measure is time-resolved</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.times" title="mne_connectivity.SpectroTemporalConnectivity.times" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[4.0, 5.25, 6.5, 7.75, 9.0]
+[0.0, 0.006659840438612929, 0.013319680877225858, 0.019979521315838786, 0.026639361754451717, 0.03329920219306465, 0.03995904263167757, 0.0466188830702905, 0.05327872350890343, 0.05993856394751636, 0.0665984043861293, 0.07325824482474222, 0.07991808526335514, 0.08657792570196808, 0.093237766140581, 0.09989760657919393, 0.10655744701780687, 0.11321728745641979, 0.11987712789503271, 0.12653696833364564, 0.1331968087722586, 0.13985664921087151, 0.14651648964948444, 0.15317633008809736, 0.1598361705267103, 0.1664960109653232, 0.17315585140393616, 0.17981569184254909, 0.186475532281162, 0.19313537271977493, 0.19979521315838786, 0.20645505359700078, 0.21311489403561373, 0.21977473447422666, 0.22643457491283958, 0.2330944153514525, 0.23975425579006543, 0.24641409622867838, 0.2530739366672913, 0.25973377710590423, 0.2663936175445172, 0.2730534579831301, 0.27971329842174303, 0.2863731388603559, 0.2930329792989689, 0.2996928197375818, 0.3063526601761947, 0.3130125006148077, 0.3196723410534206, 0.3263321814920335, 0.3329920219306464, 0.33965186236925937, 0.3463117028078723, 0.3529715432464852, 0.35963138368509817, 0.36629122412371107, 0.372951064562324, 0.37961090500093697, 0.38627074543954987, 0.3929305858781628, 0.3995904263167757, 0.40625026675538867, 0.41291010719400156, 0.4195699476326145, 0.42622978807122747, 0.43288962850984036, 0.4395494689484533, 0.4462093093870662, 0.45286914982567916, 0.4595289902642921, 0.466188830702905, 0.47284867114151796, 0.47950851158013086, 0.4861683520187438, 0.49282819245735676, 0.49948803289596966, 0.5061478733345826, 0.5128077137731956, 0.5194675542118085, 0.5261273946504214, 0.5327872350890344, 0.5394470755276473, 0.5461069159662602, 0.552766756404873, 0.5594265968434861, 0.566086437282099, 0.5727462777207118, 0.5794061181593249, 0.5860659585979378, 0.5927257990365506, 0.5993856394751635, 0.6060454799137766, 0.6127053203523894, 0.6193651607910023, 0.6260250012296154, 0.6326848416682282, 0.6393446821068411, 0.6460045225454542, 0.652664362984067, 0.6593242034226799, 0.6659840438612928, 0.6726438842999058, 0.6793037247385187, 0.6859635651771316, 0.6926234056157446, 0.6992832460543575, 0.7059430864929704, 0.7126029269315833, 0.7192627673701963, 0.7259226078088092, 0.7325824482474221, 0.7392422886860351, 0.745902129124648, 0.7525619695632609, 0.7592218100018739, 0.7658816504404868, 0.7725414908790997, 0.7792013313177126, 0.7858611717563256, 0.7925210121949385, 0.7991808526335514, 0.8058406930721644, 0.8125005335107773, 0.8191603739493902, 0.8258202143880031, 0.8324800548266161, 0.839139895265229, 0.8457997357038419, 0.8524595761424549, 0.8591194165810678, 0.8657792570196807, 0.8724390974582937, 0.8790989378969066, 0.8857587783355195, 0.8924186187741324, 0.8990784592127454, 0.9057382996513583, 0.9123981400899712, 0.9190579805285842, 0.9257178209671971, 0.93237766140581, 0.939037501844423, 0.9456973422830359, 0.9523571827216488, 0.9590170231602617, 0.9656768635988747, 0.9723367040374876, 0.9789965444761005, 0.9856563849147135, 0.9923162253533264, 0.9989760657919393, 1.0056359062305522, 1.012295746669165, 1.0189555871077782, 1.0256154275463911, 1.032275267985004, 1.038935108423617, 1.0455949488622298, 1.0522547893008427, 1.0589146297394556, 1.0655744701780687, 1.0722343106166816, 1.0788941510552945, 1.0855539914939074, 1.0922138319325203, 1.0988736723711332, 1.105533512809746, 1.1121933532483592, 1.1188531936869721, 1.125513034125585, 1.132172874564198, 1.1388327150028108, 1.1454925554414237, 1.1521523958800366, 1.1588122363186497, 1.1654720767572626, 1.1721319171958755, 1.1787917576344884, 1.1854515980731013, 1.1921114385117142, 1.198771278950327, 1.2054311193889402, 1.212090959827553, 1.218750800266166, 1.225410640704779, 1.2320704811433918, 1.2387303215820047, 1.2453901620206178, 1.2520500024592307, 1.2587098428978436, 1.2653696833364565, 1.2720295237750694, 1.2786893642136823, 1.2853492046522952, 1.2920090450909083, 1.2986688855295212, 1.305328725968134, 1.311988566406747, 1.3186484068453599, 1.3253082472839728, 1.3319680877225857, 1.3386279281611988, 1.3452877685998117, 1.3519476090384246, 1.3586074494770375, 1.3652672899156504, 1.3719271303542633, 1.3785869707928762, 1.3852468112314893, 1.3919066516701022, 1.398566492108715, 1.405226332547328, 1.4118861729859409, 1.4185460134245538, 1.4252058538631667, 1.4318656943017798, 1.4385255347403927, 1.4451853751790056, 1.4518452156176185, 1.4585050560562314, 1.4651648964948443, 1.4718247369334574, 1.4784845773720703, 1.4851444178106832, 1.491804258249296, 1.498464098687909]
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.224 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-connectivity-classes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/980054063d6073a3d7942ac239432571/connectivity_classes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">connectivity_classes.py</span></code></a></p>
@@ -436,19 +660,20 @@ the spectro-temporal connectivity class.</p>
       </div>
     </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-03-08.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-04-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     
