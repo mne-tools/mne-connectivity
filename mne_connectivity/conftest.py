@@ -10,6 +10,8 @@ import gc
 import warnings
 from distutils.version import LooseVersion
 
+from mne.utils import _check_qt_version
+
 
 def pytest_configure(config):
     """Configure pytest options."""
@@ -143,15 +145,14 @@ def _use_backend(backend_name, interactive):
 
 
 def _check_skip_backend(name):
-    from mne.viz.backends.tests._utils import (has_pyvista,
-                                               has_pyqt5, has_imageio_ffmpeg,
+    from mne.viz.backends.tests._utils import (has_pyvista, has_imageio_ffmpeg,
                                                has_pyvistaqt)
     if name in ('pyvistaqt', 'notebook'):
         if not has_pyvista():
             pytest.skip("Test skipped, requires pyvista.")
         if not has_imageio_ffmpeg():
             pytest.skip("Test skipped, requires imageio-ffmpeg")
-    if name == 'pyvistaqt' and not has_pyqt5():
+    if name == 'pyvistaqt' and not _check_qt_version():
         pytest.skip("Test skipped, requires PyQt5.")
     if name == 'pyvistaqt' and not has_pyvistaqt():
         pytest.skip("Test skipped, requires pyvistaqt")
