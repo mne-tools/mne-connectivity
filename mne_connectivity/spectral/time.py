@@ -221,7 +221,7 @@ def spectral_connectivity_time(data, names=None, method='coh', indices=None,
     # create a Connectivity container
     indices = 'symmetric'
     conn = EpochSpectroTemporalConnectivity(
-        conn, freqs=freqs, times=times,
+        conn, freqs=f_vec, times=times,
         n_nodes=n_signals, names=names, indices=indices, method=method,
         spec_method=mode, events=events, event_id=event_id, metadata=metadata)
 
