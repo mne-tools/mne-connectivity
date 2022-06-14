@@ -567,9 +567,13 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     raw.notch_filter(line_freq)
 
     # crop data and then Epoch
+    raw_copy = raw.copy()
     raw = raw.crop(tmin=0, tmax=4, include_tmax=False)
     epochs = make_fixed_length_epochs(raw=raw, duration=2., overlap=1.)
 
+    ######################################################################
+    # Perform basic test to match simulation data using time-resolved spec
+    ######################################################################
     # compare data to original run using Frites
     freqs = [30, 90]
 
@@ -584,6 +588,31 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     conn_data = conn.get_data(output='dense')[
         :, row_triu_inds, col_triu_inds, ...]
     assert_array_almost_equal(conn_data, test_conn)
+
+    ######################################################################
+    # Give varying set of frequency bands and frequencies to perform cWT
+    ######################################################################
+    raw = raw_copy.crop(tmin=0, tmax=10, include_tmax=False)
+    ch_names = epochs.ch_names
+    epochs = make_fixed_length_epochs(raw=raw, duration=5, overlap=0.)
+
+    # sampling rate of my data
+    sfreq = raw.info['sfreq']
+
+    # frequency bands of interest
+    fois = np.array([[4, 8], [8, 12], [12, 16], [16, 32]])
+
+    # frequencies of Continuous Morlet Wavelet Transform
+    freqs = np.arange(4., 32., 1)
+
+    # compute coherence
+    cohs = spectral_connectivity_time(
+        epochs, names=None, method=method, indices=None,
+        sfreq=sfreq, foi=fois, sm_times=0.5, sm_freqs=1, sm_kernel='hanning',
+        mode=mode, mt_bandwidth=None, freqs=freqs, n_cycles=5)
+    assert cohs.get_data(output='dense').shape == (
+        len(epochs), len(ch_names), len(ch_names), len(fois), len(epochs.times)
+    )
 
 
 def test_save(tmp_path):
