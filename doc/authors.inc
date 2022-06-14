@@ -6,3 +6,4 @@
 .. _Alex Rockhill: https://github.com/alexrockhill
 .. _Szonja Weigl: https://github.com/weiglszonja
 .. _Kenji Marshall: https://github.com/kenjimarshall
+.. _Sezan Mert: https://github.com/SezanMert
