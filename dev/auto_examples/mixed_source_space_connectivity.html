@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Compute mixed source space connectivity and visualize it using a circular graph &#8212; MNE-Connectivity 0.4dev0 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -27,13 +31,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -45,33 +50,41 @@
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">MNE-Connectivity</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.4dev0 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -142,13 +155,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -240,19 +253,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -267,23 +281,21 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -291,7 +303,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-mixed-source-space-connectivity-and-visualize-it-using-a-circular-graph">
-<span id="sphx-glr-auto-examples-mixed-source-space-connectivity-py"></span><h1>Compute mixed source space connectivity and visualize it using a circular graph<a class="headerlink" href="#compute-mixed-source-space-connectivity-and-visualize-it-using-a-circular-graph" title="Permalink to this headline">#</a></h1>
+<span id="sphx-glr-auto-examples-mixed-source-space-connectivity-py"></span><h1>Compute mixed source space connectivity and visualize it using a circular graph<a class="headerlink" href="#compute-mixed-source-space-connectivity-and-visualize-it-using-a-circular-graph" title="Permalink to this heading">#</a></h1>
 <p>This example computes the all-to-all connectivity between 75 regions in a
 mixed source space based on dSPM inverse solutions and a FreeSurfer cortical
 parcellation. The connectivity is visualized using a circular graph which
@@ -521,7 +533,7 @@ Checking surface interior status for 2961 points...
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.7s finished
     Found   97/1340 points outside using solid angles
     Total 1589/2961 points inside the surface
-Interior check completed in 1744.1 ms
+Interior check completed in 1746.0 ms
     1372 source space points omitted because they are outside the inner skull surface.
     283 source space points omitted because of the    5.0-mm distance limit.
 1306 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -613,79 +625,79 @@ Checking surface interior status for 1026 points...
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.2s finished
     Found    0/ 815 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1212.6 ms
+Interior check completed in 1195.4 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 1026 points...
     Found  219/1026 points inside  an interior sphere of radius   43.6 mm
     Found    0/1026 points outside an exterior sphere of radius   91.8 mm
     Found    0/ 807 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.3s finished
     Found    0/ 807 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1226.2 ms
+Interior check completed in 1291.5 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 2 points...
     Found 2/2 points inside  an interior sphere of radius   43.6 mm
     Found 0/2 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found 0/0 points outside using solid angles
     Total 2/2 points inside the surface
-Interior check completed in 249.9 ms
+Interior check completed in 279.4 ms
 Checking surface interior status for 9 points...
     Found 9/9 points inside  an interior sphere of radius   43.6 mm
     Found 0/9 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found 0/0 points outside using solid angles
     Total 9/9 points inside the surface
-Interior check completed in 245.4 ms
+Interior check completed in 287.1 ms
 Checking surface interior status for 33 points...
     Found  1/33 point  inside  an interior sphere of radius   43.6 mm
     Found  0/33 points outside an exterior sphere of radius   91.8 mm
     Found  0/32 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
     Found  0/32 points outside using solid angles
     Total 33/33 points inside the surface
-Interior check completed in 328.9 ms
+Interior check completed in 374.5 ms
 Checking surface interior status for 21 points...
     Found  8/21 points inside  an interior sphere of radius   43.6 mm
     Found  0/21 points outside an exterior sphere of radius   91.8 mm
     Found  0/13 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
     Found  0/13 points outside using solid angles
     Total 21/21 points inside the surface
-Interior check completed in 282.3 ms
+Interior check completed in 356.3 ms
 Checking surface interior status for 1 point ...
     Found 1/1 point  inside  an interior sphere of radius   43.6 mm
     Found 0/1 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
     Found 0/0 points outside using solid angles
     Total 1/1 point  inside the surface
-Interior check completed in 246.8 ms
+Interior check completed in 434.4 ms
 Checking surface interior status for 7 points...
     Found 7/7 points inside  an interior sphere of radius   43.6 mm
     Found 0/7 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found 0/0 points outside using solid angles
     Total 7/7 points inside the surface
-Interior check completed in 245.2 ms
+Interior check completed in 340.3 ms
 Checking surface interior status for 44 points...
     Found  1/44 point  inside  an interior sphere of radius   43.6 mm
     Found  0/44 points outside an exterior sphere of radius   91.8 mm
@@ -695,34 +707,34 @@ Checking surface interior status for 44 points...
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
     Found  0/43 points outside using solid angles
     Total 44/44 points inside the surface
-Interior check completed in 352.1 ms
+Interior check completed in 395.0 ms
 
 Checking surface interior status for 305 points...
     Found   0/305 points inside  an interior sphere of radius   43.6 mm
     Found 305/305 points outside an exterior sphere of radius   91.8 mm
     Found   0/  0 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found   0/  0 points outside using solid angles
     Total 0/305 points inside the surface
-Interior check completed in 246.1 ms
+Interior check completed in 293.3 ms
 Setting up compensation data...
     No compensation set. Nothing more to do.
 
 Composing the field computation matrix...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.9s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.9s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.2s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.5s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.5s finished
 Computing MEG at 2001 source locations (free orientations)...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
@@ -1015,7 +1027,7 @@ Extracting time courses for 75 labels (mode: mean_flip)
 </pre></div>
 </div>
 <section id="save-the-figure-optional">
-<h2>Save the figure (optional)<a class="headerlink" href="#save-the-figure-optional" title="Permalink to this headline">#</a></h2>
+<h2>Save the figure (optional)<a class="headerlink" href="#save-the-figure-optional" title="Permalink to this heading">#</a></h2>
 <p>By default matplotlib does not save using the facecolor, even though this was
 set when the figure was generated. If not set via savefig, the labels, title,
 and legend will be cut off from the output png file.</p>
@@ -1023,7 +1035,7 @@ and legend will be cut off from the output png file.</p>
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.988 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.103 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mixed-source-space-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/089119f41c66c5258e6c09e3b0f169ae/mixed_source_space_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mixed_source_space_connectivity.py</span></code></a></p>
@@ -1037,51 +1049,55 @@ and legend will be cut off from the output png file.</p>
 </section>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="mne_inverse_connectivity_spectrum.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Compute full spectrum source space connectivity between labels</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="cwt_sensor_connectivity.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Compute seed-based time-frequency connectivity in sensor space</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="mne_inverse_connectivity_spectrum.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Compute full spectrum source space connectivity between labels</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="cwt_sensor_connectivity.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Compute seed-based time-frequency connectivity in sensor space</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-05-09.<br>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-06-14.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.4dev0 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -27,13 +31,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -45,33 +50,41 @@
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">MNE-Connectivity</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.4dev0 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -142,13 +155,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -240,19 +253,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -282,23 +296,21 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -306,7 +318,7 @@
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-envelope-correlations-in-source-space">
-<span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this headline">#</a></h1>
+<span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this heading">#</a></h1>
 <p>Compute envelope correlations of orthogonalized activity
 <a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2">2</a> using pairwise and symmetric
 orthogonalization <a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id3">3</a> in source space using
@@ -502,14 +514,14 @@ Designing a one-pass, zero-phase, non-causal highpass filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.3s finished
+[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.2s finished
 Using up to 300 segments
 Number of samples used : 4800
 [done]
 </pre></div>
 </div>
 <section id="compute-the-forward-and-inverse">
-<h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Permalink to this headline">#</a></h2>
+<h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_source_spaces.html#mne.read_source_spaces" title="mne.read_source_spaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_source_spaces</span></a><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 <span class="n">fwd</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_forward_solution</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bem</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">src</span>
@@ -575,32 +587,32 @@ Checking surface interior status for 4098 points...
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2859 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.6s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.6s finished
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3507.7 ms
+Interior check completed in 3624.1 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.8s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.8s finished
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3485.4 ms
+Interior check completed in 3778.6 ms
 
 Checking surface interior status for 272 points...
     Found   0/272 points inside  an interior sphere of radius   49.6 mm
     Found 257/272 points outside an exterior sphere of radius  105.3 mm
     Found  15/ 15 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found   0/  0 points outside using solid angles
     Total 0/272 points inside the surface
-Interior check completed in 408.7 ms
+Interior check completed in 292.3 ms
 Setting up compensation data...
     272 out of 272 channels have the compensation set.
     Desired compensation data (3) found.
@@ -611,25 +623,25 @@ Setting up compensation data...
 
 Composing the field computation matrix...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.7s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.7s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.4s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    4.8s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    4.8s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.5s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.5s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.5s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s finished
 Composing the field computation matrix (compensation coils)...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.7s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.7s finished
 Computing MEG at 8196 source locations (free orientations)...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.8s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.8s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.7s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.7s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.4s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.4s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.7s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.7s finished
 
 Finished.
 Converting forward solution to surface orientation
@@ -679,7 +691,7 @@ Created an SSP operator (subspace dimension = 4)
 </div>
 </section>
 <section id="do-pairwise-orthogonalized-envelope-correlation">
-<h2>Do pairwise-orthogonalized envelope correlation<a class="headerlink" href="#do-pairwise-orthogonalized-envelope-correlation" title="Permalink to this headline">#</a></h2>
+<h2>Do pairwise-orthogonalized envelope correlation<a class="headerlink" href="#do-pairwise-orthogonalized-envelope-correlation" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_labels_from_annot.html#mne.read_labels_from_annot" title="mne.read_labels_from_annot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;aparc_sub&#39;</span><span class="p">,</span>
@@ -771,44 +783,6 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.1s finished
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 sec)
-
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.1s finished
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 sec)
-
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.2s finished
 Setting up band-pass filter from 14 - 30 Hz
 
@@ -866,7 +840,45 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.1s finished
+[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.2s finished
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 sec)
+
+[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.2s finished
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 sec)
+
+[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done 450 out of 450 | elapsed:    0.2s finished
 Using control points [73. 80. 89.]
 For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
 For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
@@ -881,7 +893,7 @@ pip install qdarkstyle
 </div>
 </section>
 <section id="do-symmetric-orthogonalized-envelope-correlation">
-<h2>Do symmetric-orthogonalized envelope correlation<a class="headerlink" href="#do-symmetric-orthogonalized-envelope-correlation" title="Permalink to this headline">#</a></h2>
+<h2>Do symmetric-orthogonalized envelope correlation<a class="headerlink" href="#do-symmetric-orthogonalized-envelope-correlation" title="Permalink to this heading">#</a></h2>
 <p>Here we need the number of labels to be less than the rank of the data
 (here around 200), because all label time courses are orthogonalized
 relative to one another. <code class="docutils literal notranslate"><span class="pre">'aparc_sub'</span></code> has over 400 labels, so here we
@@ -983,7 +995,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 150 out of 150 | elapsed:    0.1s finished
+[Parallel(n_jobs=1)]: Done 150 out of 150 | elapsed:    0.0s finished
 Processing epoch : 4 / 6 (at most)
 Extracting time courses for 150 labels (mode: mean_flip)
 Setting up band-pass filter from 14 - 30 Hz
@@ -1046,7 +1058,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 150 out of 150 | elapsed:    0.0s finished
+[Parallel(n_jobs=1)]: Done 150 out of 150 | elapsed:    0.1s finished
 [done]
 Using control points [26. 29. 32.]
 For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
@@ -1060,12 +1072,12 @@ To use light mode, &quot;qdarkstyle&quot; has to be installed! You can install i
 pip install qdarkstyle
 
 
-&lt;mne.viz._brain._brain.Brain object at 0x7f5ccadfd3d0&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f0e3bafbf10&gt;
 </pre></div>
 </div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <div class="docutils container" id="id6">
 <dl class="footnote brackets">
 <dt class="label" id="footcite-hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -1079,7 +1091,7 @@ pip install qdarkstyle
 </dd>
 </dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  30.691 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  23.120 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
@@ -1093,51 +1105,55 @@ pip install qdarkstyle
 </section>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="mne_inverse_coherence_epochs.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Compute coherence in source space using a MNE inverse solution</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation_volume.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Compute envelope correlations in volume source space</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="mne_inverse_coherence_epochs.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Compute coherence in source space using a MNE inverse solution</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation_volume.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Compute envelope correlations in volume source space</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-05-09.<br>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-06-14.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>
