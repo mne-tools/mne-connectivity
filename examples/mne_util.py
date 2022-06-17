@@ -207,7 +207,7 @@ def apply_projs(epochs, fwd, cov):
 def scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
     grad_scale=1.):
     """ apply per-channel-type scaling to epochs, forward, and covariance """
-    # from util import Carray ##skip import
+    # from util import Carray ##skip import just pasted; util also from MEGLDS repo
     Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
     Carray32 = lambda X: np.require(X, dtype=np.float32, requirements='C')
     Carray = Carray64
@@ -217,9 +217,14 @@ def scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
     sel_eeg = pick_types(fwd['info'], meg=False, eeg=True, ref_meg=False)
     sel_mag = pick_types(fwd['info'], meg='mag', eeg=False, ref_meg=False)
     sel_grad = pick_types(fwd['info'], meg='grad', eeg=False, ref_meg=False)
-    idx_eeg = [ch_names.index(ch_names[c]) for c in sel_eeg]
-    idx_mag = [ch_names.index(ch_names[c]) for c in sel_mag]
-    idx_grad = [ch_names.index(ch_names[c]) for c in sel_grad]
+    #2 channels are removed so idx != ch_name   
+    #can we do idx = c for c in sel??
+    #idx_eeg = [ch_names.index(ch_names[c]) for c in sel_eeg]
+    #idx_mag = [ch_names.index(ch_names[c]) for c in sel_mag]
+    #idx_grad = [ch_names.index(ch_names[c]) for c in sel_grad]
+    idx_eeg = [c for c in sel_eeg]
+    idx_mag = [c for c in sel_mag]
+    idx_grad = [c for c in sel_grad]
 
     # retrieve forward and sensor covariance
     G = fwd['sol']['data'].copy()
