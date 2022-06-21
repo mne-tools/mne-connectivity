@@ -149,6 +149,44 @@ sampled_residuals = np.concatenate(
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
+# %%
+# Estimate significant connections using a time-shuffled null distribution
+# ------------------------------------------------------------------------
+# We can maintain autocorrelations by shuffling the channels in time relative
+# to one another as explained in :ref:`RecanatesiEtAl2022`. The pairwise
+# correlations will then be an estimate of connectivity under a null model
+# of uncorrelated neural data.
+
+null_dist = list()
+data = epochs.get_data()
+rng = np.random.default_rng(99)
+for niter in range(20):  # 1000 or more would be reasonable for a real analysis
+    print(f'Computing null connectivity {niter}')
+    for epo_idx in range(data.shape[0]):
+        for ch_idx in range(data.shape[1]):
+            # pick a random starting time for each epoch and channel
+            start_idx = np.round(rng.random() * data.shape[2]).astype(int)
+            data[epo_idx, ch_idx] = np.concatenate(
+                [data[epo_idx, ch_idx, start_idx:],
+                 data[epo_idx, ch_idx, :start_idx]])
+    null_dist.append(vector_auto_regression(
+        data=data, times=times, names=ch_names).get_data())
+
+# %%
+# Visualize significant connections over time with animation
+# ----------------------------------------------------------
+# Let's animate over time to visualize the significant connections at each
+# epoch.
+
+con_data = conn.get_data()
+# collapse across epochs since this is inter-ictal/resting state,
+# bonferroni correct across epochs
+threshes = np.quantile(abs(np.array(null_dist)),
+                       1 - (0.05 / con_data.shape[0]),
+                       axis=(0, 1))
+n_lines = np.sum(abs(con_data) > threshes, axis=(1, 2))
+anim, ax = conn.plot_circle(n_lines=n_lines)
+
 # Next, we visualize the covariance of residuals.
 # Here we will see that because we use ordinary
 # least-squares as an estimation method, the residuals
