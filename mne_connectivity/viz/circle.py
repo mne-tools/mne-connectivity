@@ -22,7 +22,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
                              fontsize_title=12, fontsize_names=8,
                              fontsize_colorbar=8, padding=6., ax=None,
                              fig=None, subplot=None, interactive=True,
-                             node_linewidth=2., anim_time=3, show=True):
+                             node_linewidth=2., show=True):
     """Visualize connectivity as a circular graph.
 
     Parameters
@@ -102,8 +102,6 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
         node. Right-click shows all connections.
     node_linewidth : float
         Line with for nodes.
-    anim_time : float
-        The time length for animated plots with connectivity over time.
     show : bool
         Show figure if True.
 
@@ -171,7 +169,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
                 interactive=interactive, node_linewidth=node_linewidth,
                 show=show)
             # circle is size 10
-            ax.text(3 * np.pi / 4, 20, f't = {i}', color='white',
+            ax.text(3 * np.pi / 4, 25, f't = {i}', color='white',
                     clip_on=False)
 
         anim = FuncAnimation(fig, update_connectivity,
