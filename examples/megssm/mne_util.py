@@ -22,7 +22,7 @@ class ROIToSourceMap(object):
     - fwd_src_snsr : G
     - fwd_roi_snsr : C
     - fwd_src_roi : L
-    - snsr_src_cov : R
+    - snsr_cov : Q_e
     - roi_cov : Q
     - roi_cov_0 : Q0         """
 
@@ -114,7 +114,7 @@ class ROIToSourceMap(object):
         self._which_roi = val
 
     @property
-    def fwd_roi_sn(self):
+    def fwd_roi_snsr(self):
         from util import Carray
         return Carray(csr_matrix.dot(self.fwd_src_roi.T, self.fwd_src_sn.T).T)
 
@@ -187,20 +187,20 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
 
     # retrieve forward and sensor covariance
     fwd_src_snsr = fwd['sol']['data'].copy()
-    snsr_src_cov = cov.data.copy()
+    snsr_cov = cov.data.copy()
 
     # scale forward matrix
     fwd_src_snsr[idx_eeg,:] *= eeg_scale
     fwd_src_snsr[idx_mag,:] *= mag_scale
     fwd_src_snsr[idx_grad,:] *= grad_scale
 
-    # construct fwd_roi_sn matrix
+    # construct fwd_roi_snsr matrix
     fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, fwd_src_snsr.T).T)
 
     # scale sensor covariance
-    snsr_src_cov[np.ix_(idx_eeg, idx_eeg)] *= eeg_scale**2
-    snsr_src_cov[np.ix_(idx_mag, idx_mag)] *= mag_scale**2
-    snsr_src_cov[np.ix_(idx_grad, idx_grad)] *= grad_scale**2
+    snsr_cov[np.ix_(idx_eeg, idx_eeg)] *= eeg_scale**2
+    snsr_cov[np.ix_(idx_mag, idx_mag)] *= mag_scale**2
+    snsr_cov[np.ix_(idx_grad, idx_grad)] *= grad_scale**2
 
     # scale epochs
     info = epochs.info.copy()
@@ -212,6 +212,6 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
 
     epochs = mne.EpochsArray(data, info)
 
-    return fwd_src_snsr, fwd_roi_snsr, snsr_src_cov, epochs
+    return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
 
 
