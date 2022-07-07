@@ -10,6 +10,12 @@ from mne.utils import logger
 from mne import label_sign_flip
 
 from scipy.sparse import csc_matrix, csr_matrix, diags
+from sklearn.decomposition import PCA
+
+# from util import Carray ##skip import just pasted; util also from MEGLDS repo
+Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
+Carray32 = lambda X: np.require(X, dtype=np.float32, requirements='C')
+Carray = Carray64
 
 
 class ROIToSourceMap(object):
@@ -171,10 +177,10 @@ def apply_projs(epochs, fwd, cov):
 def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
     grad_scale=1.):
     """ apply per-channel-type scaling to epochs, forward, and covariance """
-    # from util import Carray ##skip import just pasted; util also from MEGLDS repo
-    Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
-    Carray32 = lambda X: np.require(X, dtype=np.float32, requirements='C')
-    Carray = Carray64
+    # # from util import Carray ##skip import just pasted; util also from MEGLDS repo
+    # Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
+    # Carray32 = lambda X: np.require(X, dtype=np.float32, requirements='C')
+    # Carray = Carray64
 
     # get indices for each channel type
     ch_names = cov['names'] # same as self.fwd['info']['ch_names']
@@ -215,3 +221,70 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
     return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
 
 
+def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
+                       pctvar=0.99, mean_center=False, label_flip=False):
+    """ apply sensor scaling, PCA dimensionality reduction with/without
+        whitening, and mean-centering to subject data """
+
+    if dim_mode not in ['rank', 'pctvar', 'whiten']:
+        raise ValueError("dim_mode must be in {'rank', 'pctvar', 'whiten'}")
+
+    print("running pca for subject %s" % subject_name)
+
+    # compute ROI-to-source map
+    roi_to_src = ROIToSourceMap(fwd, labels, label_flip)
+    scales = {'eeg_scale' : 1, 'mag_scale' : 1, 'grad_scale' : 1}
+    if dim_mode == 'whiten':
+
+        # scales = {'eeg_scale' : 1, 'mag_scale' : 1, 'grad_scale' : 1}
+        G, GL, Q_snsr, epochs = \
+            _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales)
+        dat = epochs.get_data()
+        dat = Carray(np.swapaxes(dat, -1, -2))
+
+        if mean_center:
+            dat -= np.mean(dat, axis=1, keepdims=True)
+
+        dat_stacked = np.reshape(dat, (-1, dat.shape[-1]))
+
+        W, _ = mne.cov.compute_whitener(subject.sensor_cov,
+                                        info=subject.epochs_list[0].info,
+                                        pca=True)
+        print("whitener for subject %s using %d principal components" %
+              (subject_name, W.shape[0]))
+
+    else:
+
+        G, GL, Q_snsr, epochs = \
+            _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) #info.scales
+        dat = epochs.get_data()
+        dat = Carray(np.swapaxes(dat, -1, -2))
+
+        if mean_center:
+            dat -= np.mean(dat, axis=1, keepdims=True)
+
+        dat_stacked = np.reshape(dat, (-1, dat.shape[-1]))
+
+        pca = PCA()
+        pca.fit(dat_stacked)
+
+        if dim_mode == 'rank':
+            idx = np.linalg.matrix_rank(np.cov(dat_stacked, rowvar=False))
+        else:
+            idx = np.where(np.cumsum(pca.explained_variance_ratio_) > pctvar)[0][0]
+
+        idx = np.maximum(idx, len(labels))
+        W = pca.components_[:idx]
+        print("subject %s using %d principal components" % (subject_name, idx))
+
+    ntrials, T, _ = dat.shape
+    dat_pca = np.dot(dat_stacked, W.T)
+    dat_pca = np.reshape(dat_pca, (ntrials, T, -1))
+
+    G_pca = np.dot(W, G)
+    GL_pca = np.dot(W, GL)
+    Q_snsr_pca = np.dot(W,np.dot(Q_snsr, W.T)) #dot3(W, Q_snsr, W.T)
+
+    data = dat_pca
+
+    return data, GL_pca, G_pca, Q_snsr_pca, roi_to_src.which_roi

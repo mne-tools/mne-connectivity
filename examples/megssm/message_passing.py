@@ -304,7 +304,7 @@ def rts_smooth_fast(Y, A, C, Q, R, mu0, Q0, compute_lag1_cov=False):
     I_tiled = np.tile(np.eye(Dnlags), (N, 1, 1))
 
     for t in range(T):
-
+        
         # condition
         tmp1 = einsum2('ik,nkj->nij', CC, sigma_predict[:,t,:,:])
 
@@ -361,7 +361,7 @@ def rts_smooth_fast(Y, A, C, Q, R, mu0, Q0, compute_lag1_cov=False):
         sigma_predict[:,t+1,:,:] = sym(einsum2('nil,jl->nij', tmp, AA[t]) + QQ[t])
 
     for t in range(T-2, -1, -1):
-
+        
         # these names are stolen from mattjj and slinderman
         #temp_nn = np.dot(A[t], sigmas_smooth[n,t,:,:])
         temp_nn = einsum2('ik,nkj->nij', AA[t], sigmas_smooth[:,t,:,:])
