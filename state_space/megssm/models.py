@@ -1,4 +1,6 @@
 import sys
+import os
+import mne
 
 import autograd.numpy as np
 import scipy.optimize as spopt
@@ -40,14 +42,14 @@ class _MEGModel(object):
 
     def __init__(self):
         self._subjectdata = None
-        self._timepts = 0
+        self._n_timepts = 0
         self._ntrials_all = 0
         self._nsubjects = 0
 
     def set_data(self, subjectdata):
-        timepts_lst = [self.unpack_subject_data(e)[0].shape[1] for e in subjectdata]
-        assert len(list(set(timepts_lst))) == 1
-        self._timepts = timepts_lst[0]
+        n_timepts_lst = [self.unpack_subject_data(e)[0].shape[1] for e in subjectdata]
+        assert len(list(set(n_timepts_lst))) == 1
+        self._n_timepts = n_timepts_lst[0]
         ntrials_lst = [self.unpack_subject_data(e)[0].shape[0] for e in \
                        subjectdata]
         self._ntrials_all = np.sum(ntrials_lst)
@@ -83,25 +85,27 @@ class MEGLDS(_MEGModel):
         cross-region dynamic connectivity in MEG/EEG", Yang et al., NIPS 2016.
     """
 
-    def __init__(self, num_roi, timepts, A_t_=None, roi_cov=None, mu0=None, roi_cov_0=None, 
-                 log_sigsq_lst=None, lam0=0., lam1=0., penalty='ridge', 
-                 store_St=True):
-
-        super().__init__()
-
-        set_default = \
-            lambda prm, val, deflt: \
-                self.__setattr__(prm, val.copy() if val is not None else deflt)
+    # def __init__(self, num_roi, n_timepts, A_t_=None, roi_cov=None, mu0=None, roi_cov_0=None, 
+    #              log_sigsq_lst=None, lam0=0., lam1=0., penalty='ridge', 
+    #              store_St=True):
+    def __init__(self, lam0=0., lam1=0., penalty='ridge', store_St=True):
         
-        # initialize parameters
-        set_default("A_t_", A_t_,
-                    np.stack([rand_stable(num_roi, maxew=0.7) for _ in range(timepts)],
-                              axis=0))
-        set_default("roi_cov", roi_cov, rand_psd(num_roi))
-        set_default("mu0", mu0, np.zeros(num_roi))
-        set_default("roi_cov_0", roi_cov_0, rand_psd(num_roi))
-        set_default("log_sigsq_lst", log_sigsq_lst,
-                    [np.log(np.random.gamma(2, 1, size=num_roi+1))])
+        super().__init__()
+        self._model_initalized = False
+
+        # set_default = \
+        #     lambda prm, val, deflt: \
+        #         self.__setattr__(prm, val.copy() if val is not None else deflt)
+        
+        # # initialize parameters
+        # set_default("A_t_", A_t_,
+        #             np.stack([rand_stable(num_roi, maxew=0.7) for _ in range(n_timepts)],
+        #                       axis=0))
+        # set_default("roi_cov", roi_cov, rand_psd(num_roi))
+        # set_default("mu0", mu0, np.zeros(num_roi))
+        # set_default("roi_cov_0", roi_cov_0, rand_psd(num_roi))
+        # set_default("log_sigsq_lst", log_sigsq_lst,
+        #             [np.log(np.random.gamma(2, 1, size=num_roi+1))])
 
         self.lam0 = lam0
         self.lam1 = lam1
@@ -118,37 +122,248 @@ class MEGLDS(_MEGModel):
         self._loglik = None
         self._store_St = bool(store_St)
 
-        # initialize sufficient statistics
-        timepts, num_roi, _ = self.A_t_.shape
-        self._B0 = np.zeros((num_roi, num_roi))
-        self._B1 = np.zeros((timepts-1, num_roi, num_roi))
-        self._B3 = np.zeros((timepts-1, num_roi, num_roi))
-        self._B2 = np.zeros((timepts-1, num_roi, num_roi))
-        self._B4 = list()
+        # # initialize sufficient statistics
+        # n_timepts, num_roi, _ = self.A_t_.shape
+        # self._B0 = np.zeros((num_roi, num_roi))
+        # self._B1 = np.zeros((n_timepts-1, num_roi, num_roi))
+        # self._B3 = np.zeros((n_timepts-1, num_roi, num_roi))
+        # self._B2 = np.zeros((n_timepts-1, num_roi, num_roi))
+        # self._B4 = list()
         
-        self._subject_data = dict()
+        self._all_subject_data = list()#dict()
         
+    #SNR boost epochs, bootstraps of 3    
+    def bootstrap_subject(self, subject_name, seed=8675309, sfreq=100, lower=None, 
+                          upper=None, nbootstrap=3, g_nsamples=-5, 
+                          overwrite=False, validation_set=True):
+        
+        # subjects =  ['sample']
+        datasets = ['train', 'validation']
+        use_erm = eq = False
+        independent = False
+        if g_nsamples == 0:
+            print('nsamples == 0, ensuring independence of samples')
+            independent = True
+        elif g_nsamples == -1:
+            print("using half of trials per sample")
+        elif g_nsamples == -2:
+            print("using empty room noise at half of trials per sample")
+            use_erm = True
+        elif g_nsamples == -3:
+            print("using independent and trial-count equalized samples")
+            eq = True
+            independent = True
+        elif g_nsamples == -4:
+            print("using independent, trial-count equailized, non-boosted samples")
+            assert nbootstrap == 0  # sanity check
+            eq = True
+            independent = True
+            datasets = ['train']
+        elif g_nsamples == -5:
+            print("using independent, trial-count equailized, integer boosted samples")
+            eq = True
+            independent = True
+            datasets = ['train']
+
+        if lower is not None or upper is not None:
+            if upper is None:
+                print('high-pass filtering at %.2f Hz' % lower)
+            elif lower is None:
+                print('low-pass filtering at %.2f Hz' % upper)
+            else:
+                print('band-pass filtering from %.2f-%.2f Hz' % (lower, upper))
+
+        if sfreq is not None:
+            print('resampling to %.2f Hz' % sfreq)
+            
+        print(":: processing subject %s" % subject_name)
+        np.random.seed(seed)
+
+        for dataset in datasets:
+
+            print('  generating ', dataset, ' set')
+            datadir = './data'
+
+            subj_dir = os.path.join(datadir, subject_name)
+            print("subject dir:" + subj_dir)
+            if not os.path.exists(subj_dir):
+                print('  %s not found, skipping' % subject_name)
+                return
+
+            epochs_dir = os.path.join(datadir, subject_name, 'epochs')
+            epochs_fname = "All_55-sss_%s-epo.fif" % subject_name
+            epochs_bs_fname = (epochs_fname.split('-epo')[0] +
+                               "-bootstrap_%d-nsamples_%d-seed_%d%s%s%s-"
+                               % (nbootstrap, g_nsamples, seed,
+                                  '-lower_%.2e' % lower if lower is not None else '',
+                                  '-upper_%.2e' % upper if upper is not None else '',
+                                  '-sfreq_%.2e' % sfreq if sfreq is not None else '') +
+                               dataset + "-epo.fif")
+
+            if os.path.exists(os.path.join(epochs_dir, epochs_bs_fname)) and \
+                    not overwrite:
+                print("    => found existing bootstrapped epochs, skipping")
+                return
+
+            epochs = mne.read_epochs(os.path.join(epochs_dir, epochs_fname),
+                                     preload=True)
+            condition_map = {'auditory_left':['auditory_left'],'auditory_right': ['auditory_right'],
+                             'visual_left': ['visual_left'], 'visual_right': ['visual_right']}
+            condition_eq_map = dict(auditory_left=['auditory_left'], auditory_right=['auditory_right'],
+                                    visual_left=['visual_left'], visual_right='visual_right')
+            if eq:
+                epochs.equalize_event_counts(list(condition_map))
+                cond_map = condition_eq_map
+            
+            # apply band-pass filter to limit signal to desired frequency band
+            if lower is not None or upper is not None:
+                epochs = epochs.filter(lower, upper)
+
+            # perform resampling with specified sampling frequency
+            if sfreq is not None:
+                epochs = epochs.resample(sfreq)
+
+            data_bs_all = list()
+            events_bs_all = list()
+            for cond in sorted(cond_map.keys()):
+                print("    -> condition %s: bootstrapping" % cond, end='')            
+                ep = epochs[cond_map[cond]] 
+                dat = ep.get_data().copy()
+                ntrials, T, p = dat.shape 
+                
+                use_bootstrap = nbootstrap
+                if g_nsamples == -4:
+                    nsamples = 1
+                    use_bootstrap = ntrials
+                elif g_nsamples == -5:
+                    nsamples = nbootstrap
+                    use_bootstrap = ntrials // nsamples
+                elif independent:
+                    nsamples = (ntrials - 1) // use_bootstrap
+                elif g_nsamples in (-1, -2):
+                    nsamples = ntrials // 2
+                else:
+                    assert g_nsamples > 0
+                    nsamples = g_nsamples
+                print("    using %d samples (%d trials)"
+                      % (nsamples, use_bootstrap))
+
+                # bootstrap here
+                if independent:  # independent
+                    if nsamples == 1 and use_bootstrap == ntrials:
+                        inds = np.arange(ntrials)
+                    else:
+                        inds = np.random.choice(ntrials, nsamples * use_bootstrap)
+                    inds.shape = (use_bootstrap, nsamples)
+                    dat_bs = np.mean(dat[inds], axis=1)
+                    events_bs = ep.events[inds[:, 0]]
+                    assert dat_bs.shape[0] == events_bs.shape[0]
+                else:
+                    dat_bs = np.empty((ntrials, T, p))
+                    events_bs = np.empty((ntrials, 3), dtype=int)
+                    for i in range(ntrials):
+
+                        inds = list(set(range(ntrials)).difference([i]))
+                        inds = np.random.choice(inds, size=nsamples,
+                                                replace=False)
+                        inds = np.append(inds, i)
+
+                        dat_bs[i] = np.mean(dat[inds], axis=0)
+                        events_bs[i] = ep.events[i]
+
+                    inds = np.random.choice(ntrials, size=use_bootstrap,
+                                            replace=False)
+                    dat_bs = dat_bs[inds]
+                    events_bs = events_bs[inds]
+                
+                assert dat_bs.shape == (use_bootstrap, T, p)
+                assert events_bs.shape == (use_bootstrap, 3)
+                assert (events_bs[:, 2] == events_bs[0, 2]).all() #not working for sample_info
+
+                data_bs_all.append(dat_bs)
+                events_bs_all.append(events_bs)
+
+            # write bootstrap epochs
+            info_dict = epochs.info.copy()
+
+            dat_all = np.vstack(data_bs_all)
+            events_all = np.vstack(events_bs_all)
+            # replace first column with sequential list as we don't really care
+            # about the raw timings
+            events_all[:, 0] = np.arange(events_all.shape[0])
+
+            epochs_bs = mne.EpochsArray(
+                dat_all, info_dict, events=events_all, tmin=-0.2,
+                event_id=epochs.event_id.copy(), on_missing='ignore')
+
+            # print("    saving bootstrapped epochs (%s)" % (epochs_bs_fname,))
+            # epochs_bs.save(os.path.join(epochs_dir, epochs_bs_fname))
+            return epochs_bs
+            
     def add_subject(self, subject, subject_dir, epochs,labels, fwd, cov):
+        
+        if not self._model_initalized:
+            n_timepts = len(epochs.times)
+            num_roi = len(labels)
+            self._init_model(n_timepts, num_roi)
+            self._model_initalized = True
+        if len(epochs.times) != self._n_times:
+            raise ValueError(f'Number of time points ({len(epochs.times)})' /
+                             'does not match original count ({self._n_times})')
+            
         roi_to_src = ROIToSourceMap(fwd, labels) # compute ROI-to-source map
-        fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs = \
-                _scale_sensor_data(epochs, fwd, cov, roi_to_src)
+        # fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs = \
+        #         _scale_sensor_data(epochs, fwd, cov, roi_to_src)
         
         # cov = cov.pick_channels(epochs.ch_names)
-        sdata = run_pca_on_subject(subject, epochs, fwd, cov, labels) #check for channel mismatch
+        epochs_bs = self.bootstrap_subject(subject)
+        sdata = run_pca_on_subject(subject, epochs_bs, fwd, cov, labels, dim_mode='pctvar') #check for channel mismatch
         data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
-        subjectdata = [(data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi)]
+        subjectdata = (data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi)
         
-        self.set_data(subjectdata)
+        self._all_subject_data.append(subjectdata)
+        # self.set_data(subjectdata)
         
         # epochs, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = subjectdata
         self._subject_data[subject] = dict()
-        self._subject_data[subject]['epochs'] = epochs
+        self._subject_data[subject]['epochs'] = data
         self._subject_data[subject]['fwd_src_snsr'] = fwd_src_snsr
         self._subject_data[subject]['fwd_roi_snsr'] = fwd_roi_snsr
         self._subject_data[subject]['snsr_cov'] = snsr_cov
         self._subject_data[subject]['labels'] = labels
         self._subject_data[subject]['which_roi'] = which_roi
-
+        
+        # dict_to_tuple = list(tuple(x.values()) for x in self._subject_data.values())
+        # print(f' dict vs tuples = {np.allclose(subjectdata, dict_to_tuple)}')
+        
+    def _init_model(self, n_timepts, num_roi, A_t_=None, roi_cov=None, mu0=None, 
+                    roi_cov_0=None, log_sigsq_lst=None):
+        
+        self._n_times = n_timepts
+        self._subject_data = dict()
+        
+        set_default = \
+                lambda prm, val, deflt: \
+                    self.__setattr__(prm, val.copy() if val is not None else deflt)
+            
+        # initialize parameters
+        set_default("A_t_", A_t_,
+                    np.stack([rand_stable(num_roi, maxew=0.7) for _ in range(n_timepts)],
+                              axis=0))
+        set_default("roi_cov", roi_cov, rand_psd(num_roi))
+        set_default("mu0", mu0, np.zeros(num_roi))
+        set_default("roi_cov_0", roi_cov_0, rand_psd(num_roi))
+        set_default("log_sigsq_lst", log_sigsq_lst,
+                    [np.log(np.random.gamma(2, 1, size=num_roi+1))])
+        
+        # initialize sufficient statistics
+        n_timepts, num_roi, _ = self.A_t_.shape
+        self._B0 = np.zeros((num_roi, num_roi))
+        self._B1 = np.zeros((n_timepts-1, num_roi, num_roi))
+        self._B3 = np.zeros((n_timepts-1, num_roi, num_roi))
+        self._B2 = np.zeros((n_timepts-1, num_roi, num_roi))
+        self._B4 = list()
+            
     def set_data(self, subjectdata):
         # add subject data, re-generate log_sigsq_lst if necessary
         super().set_data(subjectdata)
@@ -183,7 +398,7 @@ class MEGLDS(_MEGModel):
 
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
 
-            ntrials, timepts, _ = Y.shape
+            ntrials, n_timepts, _ = Y.shape
 
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
             R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
@@ -191,7 +406,7 @@ class MEGLDS(_MEGModel):
 
             if (self._mus_smooth_lst is None or self._sigmas_smooth_lst is None
                 or self._sigmas_tnt_smooth_lst is None):
-                roi_cov_t = _ensure_ndim(self.roi_cov, timepts, 3)
+                roi_cov_t = _ensure_ndim(self.roi_cov, n_timepts, 3)
                 with numpy_num_threads(1):
                     _, mus_smooth, sigmas_smooth, sigmas_tnt_smooth = \
                             rts_smooth_fast(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0,
@@ -237,7 +452,7 @@ class MEGLDS(_MEGModel):
 
             # obj += L2(roi_cov, At)
             L_roi_cov_inv_tmp = solve_triangular(L_roi_cov, tmp, lower=True)
-            L2 += (ntrials*(timepts-1)*2.*np.sum(np.log(np.diag(L_roi_cov)))
+            L2 += (ntrials*(n_timepts-1)*2.*np.sum(np.log(np.diag(L_roi_cov)))
                    + np.trace(solve_triangular(L_roi_cov, L_roi_cov_inv_tmp, lower=True,
                                                trans='T')))
 
@@ -253,7 +468,7 @@ class MEGLDS(_MEGModel):
 
             # obj += L3(sigsq_vals)
             L_R_inv_B4 = solve_triangular(L_R, B4, lower=True)
-            L3 += (ntrials*timepts*2*np.sum(np.log(np.diag(L_R)))
+            L3 += (ntrials*n_timepts*2*np.sum(np.log(np.diag(L_R)))
                    + np.trace(solve_triangular(L_R, L_R_inv_B4, lower=True,
                                                trans='T')))
 
@@ -283,9 +498,11 @@ class MEGLDS(_MEGModel):
            diag_roi_cov=False, update_sigsq=True, do_final_smoothing=True,
            average_mus_smooth=True, Atrue=None, tau=0.1, c1=1e-4):
 
+        self.set_data(self._all_subject_data)
+        
         fxn_start = datetime.now()
                 
-        timepts, num_roi, _ = self.A_t_.shape
+        n_timepts, num_roi, _ = self.A_t_.shape
 
         # make initial A_t_ stationary if stationary_A_t_ option specified
         if stationary_A_t_:
@@ -449,7 +666,7 @@ class MEGLDS(_MEGModel):
                 Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
                 sigsq_vals = np.exp(self.log_sigsq_lst[s])
                 R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-                roi_cov_t = _ensure_ndim(self.roi_cov, self._timepts, 3)
+                roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
                 with numpy_num_threads(1):
                     loglik_subject, mus_smooth, _, _, St = \
                         rts_smooth(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0, self.roi_cov_0,
@@ -475,8 +692,7 @@ class MEGLDS(_MEGModel):
         return objvals, converged, mus_smooth_lst, self._loglik, St_lst
 
     def _e_step(self, verbose=0):
-
-        timepts, num_roi, _ = self.A_t_.shape
+        n_timepts, num_roi, _ = self.A_t_.shape
 
         # reset accumulation arrays
         self._B0[:] = 0.
@@ -504,7 +720,7 @@ class MEGLDS(_MEGModel):
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
             R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
             L_R = np.linalg.cholesky(R)
-            roi_cov_t = _ensure_ndim(self.roi_cov, self._timepts, 3)
+            roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
 
             with numpy_num_threads(1):
                 _, mus_smooth, sigmas_smooth, sigmas_tnt_smooth = \
@@ -608,7 +824,7 @@ class MEGLDS(_MEGModel):
                 tmp = einsum2('tik,tkl->til', At, self._B3)
                 AtB3AtT = einsum2('til,tjl->tij', tmp, At)
                 elbo_2 = np.sum(self._B1 - AtB2T - B2AtT + AtB3AtT, axis=0)
-                self.roi_cov = (1. / (self._ntrials_all * self._timepts
+                self.roi_cov = (1. / (self._ntrials_all * self._n_timepts
                                 )) * elbo_2
                 if diag_roi_cov:
                     self.roi_cov = np.diag(np.diag(self.roi_cov))
@@ -633,20 +849,20 @@ class MEGLDS(_MEGModel):
         if verbose > 1:
             print("    update subject log-sigmasq")
 
-        timepts, num_roi, _ = self.A_t_.shape
+        n_timepts, num_roi, _ = self.A_t_.shape
 
         # update log_sigsq_vals for each subject and ROI
         for s, sdata in enumerate(self.unpack_all_subject_data()):
 
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
-            ntrials, timepts, _ = Y.shape
+            ntrials, n_timepts, _ = Y.shape
             mus_smooth = self._mus_smooth_lst[s]
             sigmas_smooth = self._sigmas_smooth_lst[s]
             B4 = self._B4[s]
 
             log_sigsq = self.log_sigsq_lst[s].copy()
             log_sigsq_obj = lambda x: \
-                MEGLDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, timepts)
+                MEGLDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, n_timepts)
             log_sigsq_val_and_grad = vgrad(log_sigsq_obj)
 
             options = {'maxiter': 500}
@@ -678,7 +894,7 @@ class MEGLDS(_MEGModel):
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
             R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-            roi_cov_t = _ensure_ndim(self.roi_cov, self._timepts, 3)
+            roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
             with numpy_num_threads(1):
                 ll, mus_smooth, sigmas_smooth, sigmas_tnt_smooth, _ = \
                     rts_smooth(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0, self.roi_cov_0,
@@ -704,7 +920,7 @@ class MEGLDS(_MEGModel):
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
             R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-            roi_cov_t = _ensure_ndim(self.roi_cov, self._timepts, 3)
+            roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
             ll, _, _, _ = kalman_filter(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0,
                                         self.roi_cov_0, store_St=False)
             self._loglik += ll
@@ -712,9 +928,9 @@ class MEGLDS(_MEGModel):
         return self._loglik
 
     def nparams(self):
-        timepts, p, _ = self.A_t_.shape
+        n_timepts, p, _ = self.A_t_.shape
 
-        # this should equal (timepts-1)*p*p unless some shrinkage is used on At
+        # this should equal (n_timepts-1)*p*p unless some shrinkage is used on At
         nparams_At = np.sum(np.abs(self.A_t_[:-1]) > 0)
 
         # nparams = nparams(At) + nparams(roi_cov) + nparams(roi_cov_0)
@@ -790,17 +1006,24 @@ class MEGLDS(_MEGModel):
 
     # TODO: convert to instance method
     @staticmethod
-    def L3_obj(log_sigsq_vals, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, timepts):
+    def L3_obj(log_sigsq_vals, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, n_timepts):
         R = MEGLDS.R_(snsr_cov, fwd_src_snsr, np.exp(log_sigsq_vals), which_roi)
         try:
             L_R = np.linalg.cholesky(R)
         except LinAlgError:
             return np.finfo('float').max
         L_R_inv_B4 = solve_triangular(L_R, B4, lower=True)
-        return (ntrials*timepts*2.*np.sum(np.log(np.diag(L_R)))
+        return (ntrials*n_timepts*2.*np.sum(np.log(np.diag(L_R)))
                 + np.trace(solve_triangular(L_R, L_R_inv_B4, lower=True,
                                             trans='T')))
 
+    # @property
+    # def A_t_(self):
+    #     '''The time-varying connectivity'''
+    #     if self._A_t_ is not None:
+    #         return self._A_t_.copy()
+    #     else:
+    #         return None
 
     # @property
     # def A(self):
@@ -847,8 +1070,8 @@ class MEGLDS(_MEGModel):
     #     return self.A.shape[1]
 
     # @property
-    # def timepts(self):
-    #     return self._timepts
+    # def n_timepts(self):
+    #     return self._n_timepts
 
     # @property
     # def lam0(self):

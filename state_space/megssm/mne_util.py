@@ -186,18 +186,69 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src):
     del cov, fwd, epochs #neccessary? 
     
     # rescale data according to covariance whitener?
-    # rescale_cov = mne.make_ad_hoc_cov(info)
-    # scaler = mne.cov.compute_whitener(rescale_cov, info)
-    # del rescale_cov
-    # fwd_src_snsr = scaler[0] @ fwd_src_snsr
-    # snsr_cov = scaler[0] @ snsr_cov
-    # data = scaler[0] @ data
+    rescale_cov = mne.make_ad_hoc_cov(info, std=1)
+    scaler = mne.cov.compute_whitener(rescale_cov, info)
+    del rescale_cov
+    fwd_src_snsr = scaler[0] @ fwd_src_snsr
+    snsr_cov = scaler[0] @ snsr_cov
+    data = scaler[0] @ data
     
     fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, fwd_src_snsr.T).T)
     
     epochs = mne.EpochsArray(data, info)
 
     return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
+
+# def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., mag_scale=1.,
+#     grad_scale=1.):
+#     """ apply per-channel-type scaling to epochs, forward, and covariance """
+#     # # from util import Carray ##skip import just pasted; util also from MEGLDS repo
+#     # Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
+#     # Carray32 = lambda X: np.require(X, dtype=np.float32, requirements='C')
+#     # Carray = Carray64
+
+#     epochs = epochs.copy().pick('data', exclude='bads')
+#     cov = cov.pick_channels(epochs.ch_names, ordered=True)
+#     fwd = mne.convert_forward_solution(fwd, force_fixed=True)
+#     fwd = fwd.pick_channels(epochs.ch_names, ordered=True)
+#     #     
+#     # get indices for each channel type
+#     ch_names = cov['names'] # same as self.fwd['info']['ch_names']
+#     sel_eeg = pick_types(fwd['info'], meg=False, eeg=True, ref_meg=False)
+#     sel_mag = pick_types(fwd['info'], meg='mag', eeg=False, ref_meg=False)
+#     sel_grad = pick_types(fwd['info'], meg='grad', eeg=False, ref_meg=False)
+#     idx_eeg = [ch_names.index(ch_names[c]) for c in sel_eeg]
+#     idx_mag = [ch_names.index(ch_names[c]) for c in sel_mag]
+#     idx_grad = [ch_names.index(ch_names[c]) for c in sel_grad]
+
+#     # retrieve forward and sensor covariance
+#     fwd_src_snsr = fwd['sol']['data'].copy()
+#     snsr_cov = cov.data.copy()
+
+#     # scale forward matrix
+#     fwd_src_snsr[idx_eeg,:] *= eeg_scale
+#     fwd_src_snsr[idx_mag,:] *= mag_scale
+#     fwd_src_snsr[idx_grad,:] *= grad_scale
+
+#     # construct fwd_roi_snsr matrix
+#     fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, fwd_src_snsr.T).T)
+
+#     # scale sensor covariance
+#     snsr_cov[np.ix_(idx_eeg, idx_eeg)] *= eeg_scale**2
+#     snsr_cov[np.ix_(idx_mag, idx_mag)] *= mag_scale**2
+#     snsr_cov[np.ix_(idx_grad, idx_grad)] *= grad_scale**2
+
+#     # scale epochs
+#     info = epochs.info.copy()
+#     data = epochs.get_data().copy()
+
+#     data[:,idx_eeg,:] *= eeg_scale
+#     data[:,idx_mag,:] *= mag_scale
+#     data[:,idx_grad,:] *= grad_scale
+
+#     epochs = mne.EpochsArray(data, info)
+
+#     return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
 
 
 def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
@@ -234,7 +285,7 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
 
         fwd_src_snsr, fwd_roi_snsr, Q_snsr, epochs = \
             _scale_sensor_data(epochs, fwd, cov, roi_to_src) 
-        dat = epochs.get_data()
+        dat = epochs.get_data().copy()
         dat = Carray(np.swapaxes(dat, -1, -2))
 
         if mean_center:
