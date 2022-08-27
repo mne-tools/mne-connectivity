@@ -5,7 +5,7 @@ import mne
 import autograd.numpy as np
 import scipy.optimize as spopt
 
-from autograd import grad #autograd --> jax
+from autograd import grad 
 from autograd import value_and_grad as vgrad
 from scipy.linalg import LinAlgError
 
@@ -16,26 +16,19 @@ from .message_passing import kalman_filter, rts_smooth, rts_smooth_fast
 from .message_passing import predict_step, condition
 from .numpy_numthreads import numpy_num_threads
 
-from .mne_util import ROIToSourceMap, _scale_sensor_data, run_pca_on_subject
+from .mne_util import (ROIToSourceMap, _scale_sensor_data, run_pca_on_subject, 
+                       apply_projs)
 
 try:
     from autograd_linalg import solve_triangular
 except ImportError:
     raise RuntimeError("must install `autograd_linalg` package")
 
-# einsum2 is a parallel version of einsum that works for two arguments
-try:
-    from einsum2 import einsum2
-except ImportError:
-    # rename standard numpy function if don't have einsum2
-    print("=> WARNING: using standard numpy.einsum,",
-          "consider installing einsum2 package")
-    from autograd.numpy import einsum as einsum2
+from autograd.numpy import einsum 
 
 from datetime import datetime
 
 
-# TODO: add documentation to all methods
 class _MEGModel(object):
     """ Base class for any model applied to MEG data that handles storing and
         unpacking data from tuples. """
@@ -47,7 +40,8 @@ class _MEGModel(object):
         self._nsubjects = 0
 
     def set_data(self, subjectdata):
-        n_timepts_lst = [self.unpack_subject_data(e)[0].shape[1] for e in subjectdata]
+        n_timepts_lst = [self.unpack_subject_data(e)[0].shape[1] for e in 
+                         subjectdata]
         assert len(list(set(n_timepts_lst))) == 1
         self._n_timepts = n_timepts_lst[0]
         ntrials_lst = [self.unpack_subject_data(e)[0].shape[0] for e in \
@@ -78,35 +72,15 @@ class _MEGModel(object):
         return Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi
 
 
-# TODO: add documentation to all methods
-# TODO: make some methods "private" (leading underscore) if necessary
 class MEGLDS(_MEGModel):
     """ State-space model for MEG data, as described in "A state-space model of
         cross-region dynamic connectivity in MEG/EEG", Yang et al., NIPS 2016.
     """
 
-    # def __init__(self, num_roi, n_timepts, A_t_=None, roi_cov=None, mu0=None, roi_cov_0=None, 
-    #              log_sigsq_lst=None, lam0=0., lam1=0., penalty='ridge', 
-    #              store_St=True):
     def __init__(self, lam0=0., lam1=0., penalty='ridge', store_St=True):
         
         super().__init__()
         self._model_initalized = False
-
-        # set_default = \
-        #     lambda prm, val, deflt: \
-        #         self.__setattr__(prm, val.copy() if val is not None else deflt)
-        
-        # # initialize parameters
-        # set_default("A_t_", A_t_,
-        #             np.stack([rand_stable(num_roi, maxew=0.7) for _ in range(n_timepts)],
-        #                       axis=0))
-        # set_default("roi_cov", roi_cov, rand_psd(num_roi))
-        # set_default("mu0", mu0, np.zeros(num_roi))
-        # set_default("roi_cov_0", roi_cov_0, rand_psd(num_roi))
-        # set_default("log_sigsq_lst", log_sigsq_lst,
-        #             [np.log(np.random.gamma(2, 1, size=num_roi+1))])
-
         self.lam0 = lam0
         self.lam1 = lam1
 
@@ -122,22 +96,13 @@ class MEGLDS(_MEGModel):
         self._loglik = None
         self._store_St = bool(store_St)
 
-        # # initialize sufficient statistics
-        # n_timepts, num_roi, _ = self.A_t_.shape
-        # self._B0 = np.zeros((num_roi, num_roi))
-        # self._B1 = np.zeros((n_timepts-1, num_roi, num_roi))
-        # self._B3 = np.zeros((n_timepts-1, num_roi, num_roi))
-        # self._B2 = np.zeros((n_timepts-1, num_roi, num_roi))
-        # self._B4 = list()
-        
-        self._all_subject_data = list()#dict()
+        self._all_subject_data = list()
         
     #SNR boost epochs, bootstraps of 3    
-    def bootstrap_subject(self, subject_name, seed=8675309, sfreq=100, lower=None, 
-                          upper=None, nbootstrap=3, g_nsamples=-5, 
+    def bootstrap_subject(self, epochs, subject_name, seed=8675309, sfreq=100,
+                          lower=None, upper=None, nbootstrap=3, g_nsamples=-5, 
                           overwrite=False, validation_set=True):
         
-        # subjects =  ['sample']
         datasets = ['train', 'validation']
         use_erm = eq = False
         independent = False
@@ -154,13 +119,15 @@ class MEGLDS(_MEGModel):
             eq = True
             independent = True
         elif g_nsamples == -4:
-            print("using independent, trial-count equailized, non-boosted samples")
+            print("using independent, trial-count equailized, non-boosted"
+                  "samples")
             assert nbootstrap == 0  # sanity check
             eq = True
             independent = True
             datasets = ['train']
         elif g_nsamples == -5:
-            print("using independent, trial-count equailized, integer boosted samples")
+            print("using independent, trial-count equailized, integer boosted"
+                  "samples")
             eq = True
             independent = True
             datasets = ['train']
@@ -184,33 +151,15 @@ class MEGLDS(_MEGModel):
             print('  generating ', dataset, ' set')
             datadir = './data'
 
-            subj_dir = os.path.join(datadir, subject_name)
-            print("subject dir:" + subj_dir)
-            if not os.path.exists(subj_dir):
-                print('  %s not found, skipping' % subject_name)
-                return
-
-            epochs_dir = os.path.join(datadir, subject_name, 'epochs')
-            epochs_fname = "All_55-sss_%s-epo.fif" % subject_name
-            epochs_bs_fname = (epochs_fname.split('-epo')[0] +
-                               "-bootstrap_%d-nsamples_%d-seed_%d%s%s%s-"
-                               % (nbootstrap, g_nsamples, seed,
-                                  '-lower_%.2e' % lower if lower is not None else '',
-                                  '-upper_%.2e' % upper if upper is not None else '',
-                                  '-sfreq_%.2e' % sfreq if sfreq is not None else '') +
-                               dataset + "-epo.fif")
-
-            if os.path.exists(os.path.join(epochs_dir, epochs_bs_fname)) and \
-                    not overwrite:
-                print("    => found existing bootstrapped epochs, skipping")
-                return
-
-            epochs = mne.read_epochs(os.path.join(epochs_dir, epochs_fname),
-                                     preload=True)
-            condition_map = {'auditory_left':['auditory_left'],'auditory_right': ['auditory_right'],
-                             'visual_left': ['visual_left'], 'visual_right': ['visual_right']}
-            condition_eq_map = dict(auditory_left=['auditory_left'], auditory_right=['auditory_right'],
-                                    visual_left=['visual_left'], visual_right='visual_right')
+            condition_map = {'auditory_left':['auditory_left'],
+                             'auditory_right': ['auditory_right'],
+                             'visual_left': ['visual_left'], 
+                             'visual_right': ['visual_right']}
+            condition_eq_map = dict(auditory_left=['auditory_left'], 
+                                    auditory_right=['auditory_right'],
+                                    visual_left=['visual_left'], 
+                                    visual_right='visual_right')
+                 
             if eq:
                 epochs.equalize_event_counts(list(condition_map))
                 cond_map = condition_eq_map
@@ -253,7 +202,8 @@ class MEGLDS(_MEGModel):
                     if nsamples == 1 and use_bootstrap == ntrials:
                         inds = np.arange(ntrials)
                     else:
-                        inds = np.random.choice(ntrials, nsamples * use_bootstrap)
+                        inds = np.random.choice(ntrials, 
+                                                nsamples * use_bootstrap)
                     inds.shape = (use_bootstrap, nsamples)
                     dat_bs = np.mean(dat[inds], axis=1)
                     events_bs = ep.events[inds[:, 0]]
@@ -278,7 +228,7 @@ class MEGLDS(_MEGModel):
                 
                 assert dat_bs.shape == (use_bootstrap, T, p)
                 assert events_bs.shape == (use_bootstrap, 3)
-                assert (events_bs[:, 2] == events_bs[0, 2]).all() #not working for sample_info
+                assert (events_bs[:, 2] == events_bs[0, 2]).all()
 
                 data_bs_all.append(dat_bs)
                 events_bs_all.append(events_bs)
@@ -296,35 +246,44 @@ class MEGLDS(_MEGModel):
                 dat_all, info_dict, events=events_all, tmin=-0.2,
                 event_id=epochs.event_id.copy(), on_missing='ignore')
 
-            # print("    saving bootstrapped epochs (%s)" % (epochs_bs_fname,))
-            # epochs_bs.save(os.path.join(epochs_dir, epochs_bs_fname))
             return epochs_bs
             
-    def add_subject(self, subject, subject_dir, epochs,labels, fwd, cov):
+    def add_subject(self, subject,condition,epochs,labels,fwd, 
+                    cov):
+        
+        epochs_bs = self.bootstrap_subject(epochs, subject)
+        epochs_bs = epochs_bs.crop(tmin=-0.2, tmax=0.7)
+        epochs_bs = epochs_bs[condition]
+        epochs = epochs_bs        
+                
+        cov = cov.pick_channels(epochs.ch_names, ordered=True)
+        fwd = mne.convert_forward_solution(fwd, force_fixed=True)
+        fwd = fwd.pick_channels(epochs.ch_names, ordered=True)
         
         if not self._model_initalized:
             n_timepts = len(epochs.times)
             num_roi = len(labels)
             self._init_model(n_timepts, num_roi)
             self._model_initalized = True
+            self.n_timepts = n_timepts
+            self.num_roi = num_roi
+            self.times = epochs.times
         if len(epochs.times) != self._n_times:
             raise ValueError(f'Number of time points ({len(epochs.times)})' /
                              'does not match original count ({self._n_times})')
             
-        roi_to_src = ROIToSourceMap(fwd, labels) # compute ROI-to-source map
-        # fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs = \
-        #         _scale_sensor_data(epochs, fwd, cov, roi_to_src)
+        cov_scale = 3 # equal to number of bootstrap trials
+        cov['data'] /= cov_scale
+        fwd, cov = apply_projs(epochs_bs, fwd, cov) 
         
-        # cov = cov.pick_channels(epochs.ch_names)
-        epochs_bs = self.bootstrap_subject(subject)
-        sdata = run_pca_on_subject(subject, epochs_bs, fwd, cov, labels, dim_mode='pctvar') #check for channel mismatch
+        sdata = run_pca_on_subject(subject, epochs_bs, fwd, cov, labels, 
+                                   dim_mode='pctvar', mean_center=True) 
         data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
+        
         subjectdata = (data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi)
         
         self._all_subject_data.append(subjectdata)
-        # self.set_data(subjectdata)
         
-        # epochs, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = subjectdata
         self._subject_data[subject] = dict()
         self._subject_data[subject]['epochs'] = data
         self._subject_data[subject]['fwd_src_snsr'] = fwd_src_snsr
@@ -333,23 +292,22 @@ class MEGLDS(_MEGModel):
         self._subject_data[subject]['labels'] = labels
         self._subject_data[subject]['which_roi'] = which_roi
         
-        # dict_to_tuple = list(tuple(x.values()) for x in self._subject_data.values())
-        # print(f' dict vs tuples = {np.allclose(subjectdata, dict_to_tuple)}')
         
-    def _init_model(self, n_timepts, num_roi, A_t_=None, roi_cov=None, mu0=None, 
-                    roi_cov_0=None, log_sigsq_lst=None):
+    def _init_model(self, n_timepts, num_roi, A_t_=None, roi_cov=None, 
+                    mu0=None, roi_cov_0=None, log_sigsq_lst=None):
         
         self._n_times = n_timepts
         self._subject_data = dict()
         
         set_default = \
                 lambda prm, val, deflt: \
-                    self.__setattr__(prm, val.copy() if val is not None else deflt)
+                    self.__setattr__(prm, val.copy() if val is not None else 
+                                     deflt)
             
         # initialize parameters
         set_default("A_t_", A_t_,
-                    np.stack([rand_stable(num_roi, maxew=0.7) for _ in range(n_timepts)],
-                              axis=0))
+                    np.stack([rand_stable(num_roi, maxew=0.7) for _ in 
+                              range(n_timepts)], axis=0))
         set_default("roi_cov", roi_cov, rand_psd(num_roi))
         set_default("mu0", mu0, np.zeros(num_roi))
         set_default("roi_cov_0", roi_cov_0, rand_psd(num_roi))
@@ -380,8 +338,6 @@ class MEGLDS(_MEGModel):
         self._loglik = None
         self._B4 = [None] * self._nsubjects
 
-    # TODO: figure out how to initialize smoothed parameters so this doesn't
-    #       break, e.g. if _em_objective is called before em for some reason
     def _em_objective(self):
         
         _, num_roi, _ = self.A_t_.shape
@@ -409,61 +365,63 @@ class MEGLDS(_MEGModel):
                 roi_cov_t = _ensure_ndim(self.roi_cov, n_timepts, 3)
                 with numpy_num_threads(1):
                     _, mus_smooth, sigmas_smooth, sigmas_tnt_smooth = \
-                            rts_smooth_fast(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0,
-                                            self.roi_cov_0, compute_lag1_cov=True)
+                            rts_smooth_fast(Y, self.A_t_, fwd_roi_snsr, 
+                                            roi_cov_t, R, self.mu0, 
+                                            self.roi_cov_0, 
+                                            compute_lag1_cov=True)
 
             else:
                 mus_smooth = self._mus_smooth_lst[s]
                 sigmas_smooth = self._sigmas_smooth_lst[s]
                 sigmas_tnt_smooth = self._sigmas_tnt_smooth_lst[s]
 
-            x_smooth_0_outer = einsum2('ri,rj->rij', mus_smooth[:,0,:num_roi],
+            x_smooth_0_outer = einsum('ri,rj->rij', mus_smooth[:,0,:num_roi],
                                                      mus_smooth[:,0,:num_roi])
-            B0 = w_s*np.sum(sigmas_smooth[:,0,:num_roi,:num_roi] + x_smooth_0_outer,
-                                  axis=0)
+            B0 = w_s*np.sum(sigmas_smooth[:,0,:num_roi,:num_roi] + 
+                            x_smooth_0_outer, axis=0)
 
-            x_smooth_outer = einsum2('rti,rtj->rtij', mus_smooth[:,1:,:num_roi],
-                                                      mus_smooth[:,1:,:num_roi])
-            B1 = w_s*np.sum(sigmas_smooth[:,1:,:num_roi,:num_roi] + x_smooth_outer, axis=0)
-
-            z_smooth_outer = einsum2('rti,rtj->rtij', mus_smooth[:,:-1,:],
+            x_smooth_outer = einsum('rti,rtj->rtij', mus_smooth[:,1:,:num_roi],
+                                    mus_smooth[:,1:,:num_roi])
+            B1 = w_s*np.sum(sigmas_smooth[:,1:,:num_roi,:num_roi] + 
+                            x_smooth_outer, axis=0)
+            z_smooth_outer = einsum('rti,rtj->rtij', mus_smooth[:,:-1,:],
                                                       mus_smooth[:,:-1,:])
             B3 = w_s*np.sum(sigmas_smooth[:,:-1,:,:] + z_smooth_outer, axis=0)
 
-            mus_smooth_outer_l1 = einsum2('rti,rtj->rtij',
+            mus_smooth_outer_l1 = einsum('rti,rtj->rtij',
                                           mus_smooth[:,1:,:num_roi],
                                           mus_smooth[:,:-1,:])
-            B2 = w_s*np.sum(sigmas_tnt_smooth[:,:,:num_roi,:] + mus_smooth_outer_l1,
-                            axis=0)
+            B2 = w_s*np.sum(sigmas_tnt_smooth[:,:,:num_roi,:] + 
+                            mus_smooth_outer_l1, axis=0)
 
             # obj += L1(roi_cov_0)
             L_roi_cov_0_inv_B0 = solve_triangular(L_roi_cov_0, B0, lower=True)
             L1 += (ntrials*2.*np.sum(np.log(np.diag(L_roi_cov_0)))
-                   + np.trace(solve_triangular(L_roi_cov_0, L_roi_cov_0_inv_B0, lower=True,
-                                               trans='T')))
+                   + np.trace(solve_triangular(L_roi_cov_0, L_roi_cov_0_inv_B0, 
+                                               lower=True, trans='T')))
 
             At = self.A_t_[:-1]
-            AtB2T = einsum2('tik,tjk->tij', At, B2)
-            B2AtT = einsum2('tik,tjk->tij', B2, At)
-            tmp = einsum2('tik,tkl->til', At, B3)
-            AtB3AtT = einsum2('tik,tjk->tij', tmp, At)
+            AtB2T = einsum('tik,tjk->tij', At, B2)
+            B2AtT = einsum('tik,tjk->tij', B2, At)
+            tmp = einsum('tik,tkl->til', At, B3)
+            AtB3AtT = einsum('tik,tjk->tij', tmp, At)
 
             tmp = np.sum(B1 - AtB2T - B2AtT + AtB3AtT, axis=0)
 
             # obj += L2(roi_cov, At)
             L_roi_cov_inv_tmp = solve_triangular(L_roi_cov, tmp, lower=True)
             L2 += (ntrials*(n_timepts-1)*2.*np.sum(np.log(np.diag(L_roi_cov)))
-                   + np.trace(solve_triangular(L_roi_cov, L_roi_cov_inv_tmp, lower=True,
-                                               trans='T')))
+                   + np.trace(solve_triangular(L_roi_cov, L_roi_cov_inv_tmp, 
+                                               lower=True, trans='T')))
 
-            res = Y - einsum2('ik,ntk->nti', fwd_roi_snsr, mus_smooth[:,:,:num_roi])
-            CP_smooth = einsum2('ik,ntkj->ntij', fwd_roi_snsr, sigmas_smooth[:,:,:num_roi,:num_roi])
+            res = Y - einsum('ik,ntk->nti', fwd_roi_snsr, 
+                             mus_smooth[:,:,:num_roi])
+            CP_smooth = einsum('ik,ntkj->ntij', fwd_roi_snsr, 
+                               sigmas_smooth[:,:,:num_roi,:num_roi])
 
-            # TODO: np.sum does not parallelize over the accumulators, possible
-            # bottleneck.
-            B4 = w_s*(np.sum(einsum2('nti,ntj->ntij', res, res), axis=(0,1))
-                             + np.sum(einsum2('ntik,jk->ntij', CP_smooth, fwd_roi_snsr),
-                                    axis=(0,1)))
+            B4 = w_s*(np.sum(einsum('nti,ntj->ntij', res, res), axis=(0,1))
+                             + np.sum(einsum('ntik,jk->ntij', CP_smooth, 
+                                             fwd_roi_snsr), axis=(0,1)))
             self._B4[s] = B4
 
             # obj += L3(sigsq_vals)
@@ -493,10 +451,11 @@ class MEGLDS(_MEGModel):
 
         return obj
 
-    def fit(self, niter=100, tol=1e-6, A_t_roi_cov_niter=100, A_t_roi_cov_tol=1e-6, verbose=0,
-           update_A_t_=True, update_roi_cov=True, update_roi_cov_0=True, stationary_A_t_=False,
-           diag_roi_cov=False, update_sigsq=True, do_final_smoothing=True,
-           average_mus_smooth=True, Atrue=None, tau=0.1, c1=1e-4):
+    def fit(self, niter=100, tol=1e-6, A_t_roi_cov_niter=100, 
+            A_t_roi_cov_tol=1e-6, verbose=0, update_A_t_=True, 
+            update_roi_cov=True, update_roi_cov_0=True, stationary_A_t_=False,
+            diag_roi_cov=False, update_sigsq=True, do_final_smoothing=True,
+            average_mus_smooth=True, Atrue=None, tau=0.1, c1=1e-4):
 
         self.set_data(self._all_subject_data)
         
@@ -523,7 +482,8 @@ class MEGLDS(_MEGModel):
         converged = False
         best_objval = np.finfo('float').max
         best_params = (self.A_t_.copy(), self.roi_cov.copy(), self.mu0.copy(),
-                       self.roi_cov_0.copy(), [l.copy() for l in self.log_sigsq_lst])
+                       self.roi_cov_0.copy(), [l.copy() for l in 
+                       self.log_sigsq_lst])
 
         # previous parameter values (for checking convergence)
         At_prev = None
@@ -533,7 +493,8 @@ class MEGLDS(_MEGModel):
 
         if Atrue is not None:
             import matplotlib.pyplot as plt
-            fig_A_t_, ax_A_t_ = plt.subplots(num_roi, num_roi, sharex=True, sharey=True)
+            fig_A_t_, ax_A_t_ = plt.subplots(num_roi, num_roi, sharex=True, 
+                                             sharey=True)
             plt.ion()
 
         # calculate initial objective value, check for updated best iterate
@@ -560,9 +521,12 @@ class MEGLDS(_MEGModel):
             roi_cov_0_prev = self.roi_cov_0.copy()
             log_sigsq_lst_prev = np.array(self.log_sigsq_lst).copy()
 
-            self._m_step(update_A_t_=update_A_t_, update_roi_cov=update_roi_cov,
-                        update_roi_cov_0=update_roi_cov_0, stationary_A_t_=stationary_A_t_,
-                        diag_roi_cov=diag_roi_cov, update_sigsq=update_sigsq,
+            self._m_step(update_A_t_=update_A_t_, 
+                        update_roi_cov=update_roi_cov,
+                        update_roi_cov_0=update_roi_cov_0, 
+                        stationary_A_t_=stationary_A_t_,
+                        diag_roi_cov=diag_roi_cov, 
+                        update_sigsq=update_sigsq,
                         tau=tau, c1=c1, verbose=verbose)
 
             if Atrue is not None:
@@ -592,15 +556,16 @@ class MEGLDS(_MEGModel):
 
             if objval < best_objval:
                 best_objval = objval
-                best_params = (self.A_t_.copy(), self.roi_cov.copy(), self.mu0.copy(),
-                               self.roi_cov_0.copy(),
+                best_params = (self.A_t_.copy(), self.roi_cov.copy(), 
+                               self.mu0.copy(), self.roi_cov_0.copy(),
                                [l.copy() for l in self.log_sigsq_lst])
 
             # check for convergence
             if it >= 1:
                 relnormdiff_At = relnormdiff(self.A_t_[:-1], At_prev)
                 relnormdiff_roi_cov = relnormdiff(self.roi_cov, roi_cov_prev)
-                relnormdiff_roi_cov_0 = relnormdiff(self.roi_cov_0, roi_cov_0_prev)
+                relnormdiff_roi_cov_0 = relnormdiff(self.roi_cov_0, 
+                                                    roi_cov_0_prev)
                 relnormdiff_log_sigsq_lst = \
                     np.array(
                         [relnormdiff(self.log_sigsq_lst[s],
@@ -616,7 +581,8 @@ class MEGLDS(_MEGModel):
                 if verbose > 0:
                     print("  relnormdiff_At: %.3e" % relnormdiff_At)
                     print("  relnormdiff_roi_cov: %.3e" % relnormdiff_roi_cov)
-                    print("  relnormdiff_roi_cov_0: %.3e" % relnormdiff_roi_cov_0)
+                    print("  relnormdiff_roi_cov_0: %.3e" % 
+                          relnormdiff_roi_cov_0)
                     print("  relnormdiff_log_sigsq_lst:",
                           relnormdiff_log_sigsq_lst)
                     print("  relobjdiff:  %.3e" % relobjdiff)
@@ -669,7 +635,8 @@ class MEGLDS(_MEGModel):
                 roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
                 with numpy_num_threads(1):
                     loglik_subject, mus_smooth, _, _, St = \
-                        rts_smooth(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0, self.roi_cov_0,
+                        rts_smooth(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, 
+                                   self.mu0, self.roi_cov_0,
                                    compute_lag1_cov=False,
                                    store_St=self._store_St)
                 # just save the mean of the smoothed trials
@@ -724,29 +691,30 @@ class MEGLDS(_MEGModel):
 
             with numpy_num_threads(1):
                 _, mus_smooth, sigmas_smooth, sigmas_tnt_smooth = \
-                        rts_smooth_fast(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0,
-                                        self.roi_cov_0, compute_lag1_cov=True)
+                        rts_smooth_fast(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, 
+                                        R, self.mu0, self.roi_cov_0, 
+                                        compute_lag1_cov=True)
 
             self._mus_smooth_lst.append(mus_smooth)
             self._sigmas_smooth_lst.append(sigmas_smooth)
             self._sigmas_tnt_smooth_lst.append(sigmas_tnt_smooth)
 
-            x_smooth_0_outer = einsum2('ri,rj->rij', mus_smooth[:,0,:num_roi],
+            x_smooth_0_outer = einsum('ri,rj->rij', mus_smooth[:,0,:num_roi],
                                                      mus_smooth[:,0,:num_roi])
-            self._B0 += w_s*np.sum(sigmas_smooth[:,0,:num_roi,:num_roi] + x_smooth_0_outer,
-                                   axis=0)
+            self._B0 += w_s*np.sum(sigmas_smooth[:,0,:num_roi,:num_roi] + 
+                                   x_smooth_0_outer, axis=0)
 
-            x_smooth_outer = einsum2('rti,rtj->rtij', mus_smooth[:,1:,:num_roi],
-                                                      mus_smooth[:,1:,:num_roi])
-            self._B1 += w_s*np.sum(sigmas_smooth[:,1:,:num_roi,:num_roi] + x_smooth_outer,
-                                   axis=0)
+            x_smooth_outer = einsum('rti,rtj->rtij', mus_smooth[:,1:,:num_roi],
+                                    mus_smooth[:,1:,:num_roi])
+            self._B1 += w_s*np.sum(sigmas_smooth[:,1:,:num_roi,:num_roi] + 
+                                   x_smooth_outer, axis=0)
 
-            z_smooth_outer = einsum2('rti,rtj->rtij', mus_smooth[:,:-1,:],
+            z_smooth_outer = einsum('rti,rtj->rtij', mus_smooth[:,:-1,:],
                                                       mus_smooth[:,:-1,:])
             self._B3 += w_s*np.sum(sigmas_smooth[:,:-1,:,:] + z_smooth_outer,
                                    axis=0)
 
-            mus_smooth_outer_l1 = einsum2('rti,rtj->rtij',
+            mus_smooth_outer_l1 = einsum('rti,rtj->rtij',
                                           mus_smooth[:,1:,:num_roi],
                                           mus_smooth[:,:-1,:])
             self._B2 += w_s*np.sum(sigmas_tnt_smooth[:,:,:num_roi,:] +
@@ -755,8 +723,9 @@ class MEGLDS(_MEGModel):
         if verbose > 0:
             print("\n  done")
 
-    def _m_step(self, update_A_t_=True, update_roi_cov=True, update_roi_cov_0=True,
-        stationary_A_t_=False, diag_roi_cov=False, update_sigsq=True, tau=0.1, c1=1e-4,
+    def _m_step(self, update_A_t_=True, update_roi_cov=True, 
+                update_roi_cov_0=True, stationary_A_t_=False, 
+                diag_roi_cov=False, update_sigsq=True, tau=0.1, c1=1e-4,
         verbose=0):
         self._loglik = None
         if verbose > 0:
@@ -765,13 +734,16 @@ class MEGLDS(_MEGModel):
             self.roi_cov_0 = (1. / self._ntrials_all) * self._B0
             if diag_roi_cov:
                 self.roi_cov_0 = np.diag(np.diag(self.roi_cov_0))
-        self.update_A_t_and_roi_cov(update_A_t_=update_A_t_, update_roi_cov=update_roi_cov,
-                            stationary_A_t_=stationary_A_t_, diag_roi_cov=diag_roi_cov,
-                            tau=tau, c1=c1, verbose=verbose)
+        self.update_A_t_and_roi_cov(update_A_t_=update_A_t_, 
+                                    update_roi_cov=update_roi_cov,
+                                    stationary_A_t_=stationary_A_t_, 
+                                    diag_roi_cov=diag_roi_cov, tau=tau, 
+                                    c1=c1, verbose=verbose)
         if update_sigsq:
             self.update_log_sigsq_lst(verbose=verbose)
 
-    def update_A_t_and_roi_cov(self, update_A_t_=True, update_roi_cov=True, stationary_A_t_=False,
+    def update_A_t_and_roi_cov(self, update_A_t_=True, update_roi_cov=True, 
+                               stationary_A_t_=False,
         diag_roi_cov=False, tau=0.1, c1=1e-4, verbose=0):
 
         if verbose > 1:
@@ -819,10 +791,10 @@ class MEGLDS(_MEGModel):
 
             # update roi_cov using closed form
             if update_roi_cov:
-                AtB2T = einsum2('tik,tjk->tij', At, self._B2)
-                B2AtT = einsum2('tik,tjk->tij', self._B2, At)
-                tmp = einsum2('tik,tkl->til', At, self._B3)
-                AtB3AtT = einsum2('til,tjl->tij', tmp, At)
+                AtB2T = einsum('tik,tjk->tij', At, self._B2)
+                B2AtT = einsum('tik,tjk->tij', self._B2, At)
+                tmp = einsum('tik,tkl->til', At, self._B3)
+                AtB3AtT = einsum('til,tjl->tij', tmp, At)
                 elbo_2 = np.sum(self._B1 - AtB2T - B2AtT + AtB3AtT, axis=0)
                 self.roi_cov = (1. / (self._ntrials_all * self._n_timepts
                                 )) * elbo_2
@@ -862,7 +834,8 @@ class MEGLDS(_MEGModel):
 
             log_sigsq = self.log_sigsq_lst[s].copy()
             log_sigsq_obj = lambda x: \
-                MEGLDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, n_timepts)
+                MEGLDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4, 
+                              ntrials, n_timepts)
             log_sigsq_val_and_grad = vgrad(log_sigsq_obj)
 
             options = {'maxiter': 500}
@@ -881,119 +854,22 @@ class MEGLDS(_MEGModel):
         if verbose > 1:
             print("\n    done")
 
-    def calculate_smoothed_estimates(self):
-        """ recalculate smoothed estimates with current model parameters """
-
-        self._mus_smooth_lst = list()
-        self._sigmas_smooth_lst = list()
-        self._sigmas_tnt_smooth_lst = list()
-        self._St_lst = list()
-        self._loglik = 0.
-
-        for s, sdata in enumerate(self.unpack_all_subject_data()):
-            Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
-            sigsq_vals = np.exp(self.log_sigsq_lst[s])
-            R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-            roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
-            with numpy_num_threads(1):
-                ll, mus_smooth, sigmas_smooth, sigmas_tnt_smooth, _ = \
-                    rts_smooth(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0, self.roi_cov_0,
-                               compute_lag1_cov=True, store_St=False)
-            self._mus_smooth_lst.append(mus_smooth)
-            self._sigmas_smooth_lst.append(sigmas_smooth)
-            self._sigmas_tnt_smooth_lst.append(sigmas_tnt_smooth)
-            #self._St_lst.append(np.diagonal(St, axis1=-2, axis2=-1))
-            self._loglik += ll
-
-    def log_likelihood(self):
-        """ calculate log marginal likelihood using the Kalman filter """
-
-        #if (self._mus_smooth_lst is None or self._sigmas_smooth_lst is None \
-        #    or self._sigmas_tnt_smooth_lst is None):
-        #    self.calculate_smoothed_estimates()
-        #    return self._loglik
-        if self._loglik is not None:
-            return self._loglik
-
-        self._loglik = 0.
-        for s, sdata in enumerate(self.unpack_all_subject_data()):
-            Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
-            sigsq_vals = np.exp(self.log_sigsq_lst[s])
-            R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-            roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
-            ll, _, _, _ = kalman_filter(Y, self.A_t_, fwd_roi_snsr, roi_cov_t, R, self.mu0,
-                                        self.roi_cov_0, store_St=False)
-            self._loglik += ll
-
-        return self._loglik
-
-    def nparams(self):
-        n_timepts, p, _ = self.A_t_.shape
-
-        # this should equal (n_timepts-1)*p*p unless some shrinkage is used on At
-        nparams_At = np.sum(np.abs(self.A_t_[:-1]) > 0)
-
-        # nparams = nparams(At) + nparams(roi_cov) + nparams(roi_cov_0)
-        #           + nparams(log_sigsq_lst)
-        return nparams_At + p*(p+1)/2 + p*(p+1)/2 \
-               + np.sum([p+1 for _ in range(len(self.log_sigsq_lst))])
-
-    def AIC(self):
-        return -2*self.log_likelihood() + 2*self.nparams()
-
-    def BIC(self):
-        if self._ntrials_all == 0:
-            raise RuntimeError("use set_data to add subject data before" \
-                               + " computing BIC")
-        return -2*self.log_likelihood() \
-               + np.log(self._ntrials_all)*self.nparams()
-
-    def save(self, filename, **kwargs):
-        savedict = { 'A_t_' : self.A_t_, 'roi_cov' : self.roi_cov, 'mu0' : self.mu0,
-                     'roi_cov_0' : self.roi_cov_0, 'log_sigsq_lst' : self.log_sigsq_lst,
-                     'lam0' : self.lam0, 'lam1' : self.lam1}
-        savedict.update(kwargs)
-        np.savez_compressed(filename, **savedict)
-
-    def load(self, filename):
-        loaddict = np.load(filename)
-        param_names = ['A_t_', 'roi_cov', 'mu0', 'roi_cov_0', 'log_sigsq_lst', 'lam0', 'lam1']
-        for name in param_names:
-            if name not in loaddict.keys():
-                raise RuntimeError('specified file is not a saved model:\n%s'
-                                   % (filename,))
-        for name in param_names:
-            if name == 'log_sigsq_lst':
-                self.log_sigsq_lst = [l.copy() for l in loaddict[name]]
-            elif name in ('lam0', 'lam1'):
-                self.__setattr__(name, float(loaddict[name]))
-            else:
-                self.__setattr__(name, loaddict[name].copy())
-
-        # return remaining saved items, if there are any
-        others = {key : loaddict[key] for key in loaddict.keys() \
-                                      if key not in param_names}
-        if len(others.keys()) > 0:
-            return others
-
+    
     @staticmethod
     def R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi):
-        return snsr_cov + np.dot(fwd_src_snsr, sigsq_vals[which_roi][:,None]*fwd_src_snsr.T)
+        return snsr_cov + np.dot(fwd_src_snsr, 
+                                 sigsq_vals[which_roi][:,None]*fwd_src_snsr.T)
 
     def L2_obj(self, At, L_roi_cov):
-        
-        # import autograd.numpy
-        # if isinstance(At,autograd.numpy.numpy_boxes.ArrayBox):
-        #     At = At._value
-            
-        AtB2T = einsum2('tik,tjk->tij', At, self._B2)
-        B2AtT = einsum2('tik,tjk->tij', self._B2, At)
-        tmp = einsum2('tik,tkl->til', At, self._B3)
-        AtB3AtT = einsum2('til,tjl->tij', tmp, At)
+        AtB2T = einsum('tik,tjk->tij', At, self._B2)
+        B2AtT = einsum('tik,tjk->tij', self._B2, At)
+        tmp = einsum('tik,tkl->til', At, self._B3)
+        AtB3AtT = einsum('til,tjl->tij', tmp, At)
         elbo_2 = np.sum(self._B1 - AtB2T - B2AtT + AtB3AtT, axis=0)
 
         L_roi_cov_inv_elbo_2 = solve_triangular(L_roi_cov, elbo_2, lower=True)
-        obj = np.trace(solve_triangular(L_roi_cov, L_roi_cov_inv_elbo_2, lower=True,
+        obj = np.trace(solve_triangular(L_roi_cov, L_roi_cov_inv_elbo_2, 
+                                        lower=True,
                                         trans='T'))
         obj = obj / self._ntrials_all
 
@@ -1004,10 +880,11 @@ class MEGLDS(_MEGModel):
 
         return obj
 
-    # TODO: convert to instance method
     @staticmethod
-    def L3_obj(log_sigsq_vals, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, n_timepts):
-        R = MEGLDS.R_(snsr_cov, fwd_src_snsr, np.exp(log_sigsq_vals), which_roi)
+    def L3_obj(log_sigsq_vals, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials, 
+               n_timepts):
+        R = MEGLDS.R_(snsr_cov, fwd_src_snsr, np.exp(log_sigsq_vals), 
+                      which_roi)
         try:
             L_R = np.linalg.cholesky(R)
         except LinAlgError:
@@ -1017,74 +894,4 @@ class MEGLDS(_MEGModel):
                 + np.trace(solve_triangular(L_R, L_R_inv_B4, lower=True,
                                             trans='T')))
 
-    # @property
-    # def A_t_(self):
-    #     '''The time-varying connectivity'''
-    #     if self._A_t_ is not None:
-    #         return self._A_t_.copy()
-    #     else:
-    #         return None
-
-    # @property
-    # def A(self):
-    #     return self._A
-
-    # @A.setter
-    # def A(self, A):
-    #     self._A = A
-
-    # @property
-    # def roi_cov(self):
-    #     return self._roi_cov
-
-    # @roi_cov.setter
-    # def roi_cov(self, roi_cov):
-    #     self._roi_cov = roi_cov
-
-    # @property
-    # def mu0(self):
-    #     return self._mu0
-
-    # @mu0.setter
-    # def mu0(self, mu0):
-    #     self._mu0 = mu0
-
-    # @property
-    # def roi_cov_0(self):
-    #     return self._roi_cov_0
-
-    # @roi_cov_0.setter
-    # def roi_cov_0(self, roi_cov_0):
-    #     self._roi_cov_0 = roi_cov_0
-
-    # @property
-    # def log_sigsq_lst(self):
-    #     return self._log_sigsq_lst
-
-    # @log_sigsq_lst.setter
-    # def log_sigsq_lst(self, log_sigsq_lst):
-    #     self._log_sigsq_lst = log_sigsq_lst
-
-    # @property
-    # def num_roi(self):
-    #     return self.A.shape[1]
-
-    # @property
-    # def n_timepts(self):
-    #     return self._n_timepts
-
-    # @property
-    # def lam0(self):
-    #     return self._lam0
-
-    # @lam0.setter
-    # def lam0(self, lam0):
-    #     self._lam0 = lam0
-
-    # @property
-    # def lam1(self):
-    #     return self._lam1
-
-    # @lam1.setter
-    # def lam1(self, lam1):
-    #     self._lam1 = lam1
+   
