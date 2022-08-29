@@ -111,30 +111,30 @@ def apply_projs(epochs, fwd, cov):
     return fwd, cov
 
 
-# def _scale_sensor_data(epochs, fwd, cov, roi_to_src, **std):
-#     """ apply per-channel-type scaling to epochs, forward, and covariance """
+def _mne_scale_sensor_data(epochs, fwd, cov, roi_to_src, **std):
+    """ apply per-channel-type scaling to epochs, forward, and covariance """
 
-#     for s in std:
-#           std[s] = 1/std[s]    
-#     snsr_cov = cov.data.copy()
-#     fwd_src_snsr = fwd['sol']['data'].copy()
+    for s in std:
+          std[s] = 1/std[s]    
+    snsr_cov = cov.data.copy()
+    fwd_src_snsr = fwd['sol']['data'].copy()
 
-#     info = epochs.info.copy()
-#     data = epochs.get_data().copy()
+    info = epochs.info.copy()
+    data = epochs.get_data().copy()
 
-#     rescale_cov = mne.make_ad_hoc_cov(info, std=std)
-#     scaler = mne.cov.compute_whitener(rescale_cov, info)
-#     del rescale_cov
-#     fwd_src_snsr = scaler[0] @ fwd_src_snsr
-#     snsr_cov = scaler[0] @ snsr_cov
-#     data = scaler[0] @ data
+    rescale_cov = mne.make_ad_hoc_cov(info, std=std)
+    scaler = mne.cov.compute_whitener(rescale_cov, info)
+    del rescale_cov
+    fwd_src_snsr = scaler[0] @ fwd_src_snsr
+    snsr_cov = scaler[0] @ snsr_cov
+    data = scaler[0] @ data
     
-    # fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, 
-    #fwd_src_snsr.T).T)
+    fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, 
+    fwd_src_snsr.T).T)
     
-#     epochs = mne.EpochsArray(data, info)
+    epochs = mne.EpochsArray(data, info)
 
-#     return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
+    return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
 
 
 def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., 
@@ -218,10 +218,15 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
               (subject_name, W.shape[0]))
 
     else:
-           
-        fwd_src_snsr, fwd_roi_snsr, cov_snsr, epochs = \
-            _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
-           
+        
+        scaled_data = _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
+        mne_scaled_data = _mne_scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
+        
+        fwd_src_snsr, fwd_roi_snsr, cov_snsr, epochs = scaled_data#\
+            # _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
+        
+        # for i in range(len(scaled_data)):
+        #     np.testing.assert_allclose(scaled_data[i], mne_scaled_data[i], atol=1e-3)
              
         dat = epochs.get_data().copy()
         dat = Carray(np.swapaxes(dat, -1, -2))

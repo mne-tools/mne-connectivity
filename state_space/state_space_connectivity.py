@@ -21,8 +21,7 @@ from megssm.plotting import plot_A_t_
 
 
 # define paths to sample data
-path = None################################
-path = '/Users/jordandrew/Documents/MEG/mne_data'#'/MNE-sample-data'
+path = None
 data_path = mne.datasets.sample.data_path(path=path)
 sample_folder = data_path / 'MEG/sample'
 subjects_dir = data_path / 'subjects'
