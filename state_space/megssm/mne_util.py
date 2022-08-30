@@ -141,7 +141,7 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
     Q = cov.data.copy()
 
     # scale forward matrix
-    G = scaler.T @ G
+    G_mne = scaler.T @ G
     G[idx_eeg,:] *= eeg_scale
     G[idx_mag,:] *= mag_scale
     G[idx_grad,:] *= grad_scale
