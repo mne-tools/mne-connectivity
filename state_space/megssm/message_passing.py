@@ -7,10 +7,23 @@ from autograd.scipy.linalg import block_diag
 
 from .util import T_, sym, dot3, _ensure_ndim, component_matrix, hs
 
-try:
-    from autograd_linalg import solve_triangular
-except ImportError:
-    raise RuntimeError("must install `autograd_linalg` package")
+from scipy.linalg import solve_triangular as _solve_triangular
+
+
+def solve_triangular(L, b, *, lower=True, trans=0):
+    if hasattr(L, '_value'):  # autograd ArrayBox
+        L = L._value
+    if hasattr(b, '_value'):
+        b = b._value
+    if L.ndim == 3 and b.ndim in (2, 3):
+        return np.array([
+          _solve_triangular(LL, bb, lower=lower, trans=trans)
+          for LL, bb in zip(L, b)], L.dtype)
+    elif L.ndim == 2 and b.ndim in (2, 1):
+        return _solve_triangular(L, b, lower=lower, trans=trans)
+    raise RuntimeError(f'Unknown shapes {L.shape} and {b.shape}')
+
+
 
 # einsum2 is a parallel version of einsum that works for two arguments
 try:
@@ -304,7 +317,7 @@ def rts_smooth_fast(Y, A, C, Q, R, mu0, Q0, compute_lag1_cov=False):
     I_tiled = np.tile(np.eye(Dnlags), (N, 1, 1))
 
     for t in range(T):
-        
+
         # condition
         tmp1 = einsum2('ik,nkj->nij', CC, sigma_predict[:,t,:,:])
 
@@ -361,7 +374,7 @@ def rts_smooth_fast(Y, A, C, Q, R, mu0, Q0, compute_lag1_cov=False):
         sigma_predict[:,t+1,:,:] = sym(einsum2('nil,jl->nij', tmp, AA[t]) + QQ[t])
 
     for t in range(T-2, -1, -1):
-        
+
         # these names are stolen from mattjj and slinderman
         #temp_nn = np.dot(A[t], sigmas_smooth[n,t,:,:])
         temp_nn = einsum2('ik,nkj->nij', AA[t], sigmas_smooth[:,t,:,:])

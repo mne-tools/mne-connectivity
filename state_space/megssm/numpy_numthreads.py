@@ -9,22 +9,9 @@ from ctypes.util import find_library
 # from Ubuntu repos
 try_paths = [find_library('openblas')]
 openblas_lib = None
-for libpath in try_paths:
-    try:
-        openblas_lib = ctypes.cdll.LoadLibrary(libpath)
-        break
-    except Exception: #OSError:
-        continue
+mkl_rt = None
 #if openblas_lib is None:
     #raise EnvironmentError('Could not locate an OpenBLAS shared library', 2)
-
-try:
-    mkl_rt_path = find_library('mkl_rt')
-    mkl_rt = ctypes.cdll.LoadLibrary(mkl_rt_path)
-    # print(mkl_rt)
-except OSError:
-    mkl_rt = None
-    pass
 
 
 def set_num_threads(n):
@@ -48,6 +35,9 @@ try:
         def get_num_threads():
             """Get the current number of threads used by the OpenBLAS server."""
             return openblas_lib.openblas_get_num_threads()
+    else:
+        def get_num_threads():
+            return -1
 except AttributeError:
     def get_num_threads():
         """Dummy function (symbol not present in %s), returns -1."""

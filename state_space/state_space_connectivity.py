@@ -6,7 +6,7 @@ Authors: Jordan Drew <jadrew43@uw.edu>
 """
 
 '''
-For 'mne-connectivity/examples/' to show usage of LDS 
+For 'mne-connectivity/examples/' to show usage of LDS
 Use MNE-sample-data for auditory/left
 '''
 
@@ -26,8 +26,8 @@ data_path = mne.datasets.sample.data_path(path=path)
 sample_folder = data_path / 'MEG/sample'
 subjects_dir = data_path / 'subjects'
 
-## import raw data and find events 
-raw_fname = sample_folder / 'sample_audvis_raw.fif' 
+## import raw data and find events
+raw_fname = sample_folder / 'sample_audvis_raw.fif'
 raw = mne.io.read_raw_fif(raw_fname).crop(tmax=60)
 events = mne.find_events(raw, stim_channel='STI 014')
 
@@ -39,17 +39,24 @@ epochs = mne.Epochs(raw, events, tmin=-0.2, tmax=0.7, event_id=event_dict,
 condition = 'auditory_left'
 
 ## read forward solution, remove bad channels
-fwd_fname = sample_folder / 'sample_audvis-meg-eeg-oct-6-fwd.fif' 
+fwd_fname = sample_folder / 'sample_audvis-meg-eeg-oct-6-fwd.fif'
 fwd = mne.read_forward_solution(fwd_fname)
 
-## read in covariance 
+## read in covariance
 cov_fname = sample_folder / 'sample_audvis-cov.fif'
-cov = mne.read_cov(cov_fname) 
+cov = mne.read_cov(cov_fname)
 
 ## read labels for analysis
-label_names = ['AUD-lh', 'AUD-rh', 'Vis-lh', 'Vis-rh']
-labels = [mne.read_label(sample_folder / 'labels' / f'{label}.label',
-                          subject='sample') for label in label_names]
+regexp = '^(G_temp_sup-G_T_transv.*|Pole_occipital)'
+labels = mne.read_labels_from_annot(
+    'sample', 'aparc.a2009s', regexp=regexp, subjects_dir=subjects_dir)
+label_names = [label.name for label in labels]
+assert len(label_names) == 4
+# brain = mne.viz.Brain('sample', surf='inflated', subjects_dir=subjects_dir)
+# for label in labels:
+#     brain.add_label(label)
+# raise RuntimeError
+
 
 # initiate model
 model = LDS(lam0=0, lam1=100)
@@ -65,7 +72,7 @@ assert A_t_.shape == (n_timepts, num_roi, num_roi)
 
 with mpl.rc_context():
     {'xtick.labelsize': 'x-small', 'ytick.labelsize': 'x-small'}
-    fig, ax = plt.subplots(num_roi, num_roi, constrained_layout=True, 
+    fig, ax = plt.subplots(num_roi, num_roi, constrained_layout=True,
                            squeeze=False, figsize=(12, 10))
     plot_A_t_(A_t_, labels=label_names, times=times, ax=ax)
     fig.suptitle('testing_')
@@ -91,19 +98,3 @@ with mpl.rc_context():
                     spine.set(lw=2)
             else:
                 a.axhline(0, color='k', ls=':', lw=1.)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
