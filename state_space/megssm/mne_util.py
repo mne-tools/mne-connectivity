@@ -117,6 +117,15 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
     Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
     Carray = Carray64
 
+    info = epochs.info.copy()
+    std = dict(grad=1. / grad_scale, mag=1. / mag_scale, eeg=1. / eeg_scale)
+    noproj_info = info.copy()
+    with noproj_info._unlock():
+        noproj_info['projs'] = []
+    rescale_cov = mne.make_ad_hoc_cov(noproj_info, std=std)
+    scaler, ch_names = mne.cov.compute_whitener(rescale_cov, noproj_info)
+    np.testing.assert_array_equal(np.diag(np.diag(scaler)), scaler)
+    assert ch_names == info['ch_names']
 
     # get indices for each channel type
     ch_names = cov['names']  # same as self.fwd['info']['ch_names']
@@ -132,41 +141,30 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
     Q = cov.data.copy()
 
     # scale forward matrix
+    G = scaler.T @ G
     G[idx_eeg,:] *= eeg_scale
     G[idx_mag,:] *= mag_scale
     G[idx_grad,:] *= grad_scale
+    np.testing.assert_allclose(G, G_mne)
 
     # construct GL matrix
     GL = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, G.T).T)
 
     # scale sensor covariance
+    Q_mne = scaler.T @ Q  # @ scaler
     Q[np.ix_(idx_eeg, idx_eeg)] *= eeg_scale**2
     Q[np.ix_(idx_mag, idx_mag)] *= mag_scale**2
     Q[np.ix_(idx_grad, idx_grad)] *= grad_scale**2
+    np.testing.assert_allclose(Q, Q_mne)
 
     # scale epochs
-    info = epochs.info.copy()
     data = epochs.get_data().copy()
 
+    data_mne = scaler @ epochs.get_data()
     data[:,idx_eeg,:] *= eeg_scale
     data[:,idx_mag,:] *= mag_scale
     data[:,idx_grad,:] *= grad_scale
-
-    data_mne = epochs.get_data().copy()
-    std = dict(grad=1. / grad_scale, mag=1. / mag_scale, eeg=1. / eeg_scale)
-    noproj_info = info.copy()
-    with noproj_info._unlock():
-        noproj_info['projs'] = []
-    rescale_cov = mne.make_ad_hoc_cov(noproj_info, std=std)
-    scaler, ch_names = mne.cov.compute_whitener(rescale_cov, noproj_info)
-    np.testing.assert_array_equal(np.diag(np.diag(scaler)), scaler)
-    assert ch_names == info['ch_names']
-    data_mne = scaler @ data_mne
-    assert len(ch_names) == data_mne.shape[1]
-    for ii, ch_name in enumerate(ch_names):
-        np.testing.assert_allclose(
-            data_mne[:, ii].ravel(), data[:, ii].ravel(),
-            atol=1e-3, rtol=1e-5, err_msg=ch_name)
+    np.testing.assert_allclose(data_mne, data)
 
     epochs = mne.EpochsArray(data, info)
 
