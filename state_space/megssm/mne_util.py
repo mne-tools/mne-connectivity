@@ -17,8 +17,8 @@ Carray = Carray64
 
 
 class ROIToSourceMap(object):
-    """ class for computing ROI-to-source space mapping matrix 
-    
+    """ class for computing ROI-to-source space mapping matrix
+
     Notes
     -----
     The following variables defined here correspond to various matrices
@@ -65,7 +65,7 @@ class ROIToSourceMap(object):
 
                 lverts = clab.get_vertices_used(vertices=src[hi]['vertno'])
 
-                # gets the indices in the source space vertex array, not the 
+                # gets the indices in the source space vertex array, not the
                 # huge array.
                 # use `src[hi]['vertno'][lverts]` to get surface vertex indices
                 # to plot.
@@ -94,7 +94,7 @@ class ROIToSourceMap(object):
         self.n_lhverts = n_lhverts
         self.n_rhverts = n_rhverts
         self.labels = labels
-        
+
         return
 
 def apply_projs(epochs, fwd, cov):
@@ -111,39 +111,13 @@ def apply_projs(epochs, fwd, cov):
     return fwd, cov
 
 
-def _mne_scale_sensor_data(epochs, fwd, cov, roi_to_src, **std):
-    """ apply per-channel-type scaling to epochs, forward, and covariance """
-
-    for s in std:
-          std[s] = 1/std[s]    
-    snsr_cov = cov.data.copy()
-    fwd_src_snsr = fwd['sol']['data'].copy()
-
-    info = epochs.info.copy()
-    data = epochs.get_data().copy()
-
-    rescale_cov = mne.make_ad_hoc_cov(info, std=std)
-    scaler = mne.cov.compute_whitener(rescale_cov, info)
-    del rescale_cov
-    fwd_src_snsr = scaler[0] @ fwd_src_snsr
-    snsr_cov = scaler[0] @ snsr_cov
-    data = scaler[0] @ data
-    
-    fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, 
-    fwd_src_snsr.T).T)
-    
-    epochs = mne.EpochsArray(data, info)
-
-    return fwd_src_snsr, fwd_roi_snsr, snsr_cov, epochs
-
-
-def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1., 
+def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
                        mag_scale=1., grad_scale=1.):
     """ apply per-channel-type scaling to epochs, forward, and covariance """
     Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
     Carray = Carray64
-    
-    
+
+
     # get indices for each channel type
     ch_names = cov['names']  # same as self.fwd['info']['ch_names']
     sel_eeg = pick_types(fwd['info'], meg=False, eeg=True, ref_meg=False)
@@ -178,8 +152,24 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
     data[:,idx_mag,:] *= mag_scale
     data[:,idx_grad,:] *= grad_scale
 
+    data_mne = epochs.get_data().copy()
+    std = dict(grad=1. / grad_scale, mag=1. / mag_scale, eeg=1. / eeg_scale)
+    noproj_info = info.copy()
+    with noproj_info._unlock():
+        noproj_info['projs'] = []
+    rescale_cov = mne.make_ad_hoc_cov(noproj_info, std=std)
+    scaler, ch_names = mne.cov.compute_whitener(rescale_cov, noproj_info)
+    np.testing.assert_array_equal(np.diag(np.diag(scaler)), scaler)
+    assert ch_names == info['ch_names']
+    data_mne = scaler @ data_mne
+    assert len(ch_names) == data_mne.shape[1]
+    for ii, ch_name in enumerate(ch_names):
+        np.testing.assert_allclose(
+            data_mne[:, ii].ravel(), data[:, ii].ravel(),
+            atol=1e-3, rtol=1e-5, err_msg=ch_name)
+
     epochs = mne.EpochsArray(data, info)
-    
+
     return G, GL, Q, epochs
 
 
@@ -192,13 +182,13 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
         raise ValueError("dim_mode must be in {'rank', 'pctvar', 'whiten'}")
 
     print("running pca for subject %s" % subject_name)
-    
-    scales = {'eeg_scale' : 1e8, 'mag_scale' : 1e16, 'grad_scale' : 1e14} 
-    
+
+    scales = {'eeg_scale' : 1e8, 'mag_scale' : 1e16, 'grad_scale' : 1e14}
+
     # compute ROI-to-source map
-    roi_to_src = ROIToSourceMap(fwd, labels, label_flip)    
-    
-    
+    roi_to_src = ROIToSourceMap(fwd, labels, label_flip)
+
+
     if dim_mode == 'whiten':
 
         fwd_src_snsr, fwd_roi_snsr, cov_snsr, epochs = \
@@ -218,16 +208,10 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
               (subject_name, W.shape[0]))
 
     else:
-        
-        scaled_data = _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
-        mne_scaled_data = _mne_scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
-        
-        fwd_src_snsr, fwd_roi_snsr, cov_snsr, epochs = scaled_data#\
-            # _scale_sensor_data(epochs, fwd, cov, roi_to_src, **scales) 
-        
-        # for i in range(len(scaled_data)):
-        #     np.testing.assert_allclose(scaled_data[i], mne_scaled_data[i], atol=1e-3)
-             
+
+        fwd_src_snsr, fwd_roi_snsr, cov_snsr, epochs = _scale_sensor_data(
+            epochs, fwd, cov, roi_to_src, **scales)
+
         dat = epochs.get_data().copy()
         dat = Carray(np.swapaxes(dat, -1, -2))
 
@@ -241,24 +225,24 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
         if dim_mode == 'rank':
             idx = np.linalg.matrix_rank(np.cov(dat_stacked, rowvar=False))
         else:
-            idx = np.where(np.cumsum(pca.explained_variance_ratio_) > 
+            idx = np.where(np.cumsum(pca.explained_variance_ratio_) >
                            pctvar)[0][0]
 
         idx = np.maximum(idx, len(labels))
         W = pca.components_[:idx]
         print("subject %s using %d principal components" % (subject_name, idx))
-    
+
     ntrials, T, _ = dat.shape
     dat_pca = np.dot(dat_stacked, W.T)
     dat_pca = np.reshape(dat_pca, (ntrials, T, -1))
 
     fwd_src_snsr_pca = np.dot(W, fwd_src_snsr)
     fwd_roi_snsr_pca = np.dot(W, fwd_roi_snsr)
-    cov_snsr_pca = np.dot(W,np.dot(cov_snsr, W.T)) 
+    cov_snsr_pca = np.dot(W,np.dot(cov_snsr, W.T))
 
     data = dat_pca
 
-    return (data, fwd_roi_snsr_pca, fwd_src_snsr_pca, cov_snsr_pca, 
+    return (data, fwd_roi_snsr_pca, fwd_src_snsr_pca, cov_snsr_pca,
             roi_to_src.which_roi)
 
 
