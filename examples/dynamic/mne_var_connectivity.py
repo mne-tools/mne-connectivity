@@ -176,7 +176,7 @@ for niter in range(20):  # 1000 or more would be reasonable for a real analysis
 # Visualize significant connections over time with animation
 # ----------------------------------------------------------
 # Let's animate over time to visualize the significant connections at each
-# epoch.
+# epoch. As mentioned in https://openneuro.org/datasets/ds003029 and :footcite:`LiAdam2021`, the ``AST`` channel region was considered epileptic by clinicians for this sample subject and surgically resected. It is interesting to therefore see that there are consistently strong connections from this region to others.
 
 con_data = conn.get_data()
 # collapse across epochs since this is inter-ictal/resting state,
