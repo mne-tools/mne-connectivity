@@ -486,7 +486,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
     sfreq = 50.
     n_signals = 3
     n_epochs = 2
-    n_times = 256
+    n_times = 500
     trans_bandwidth = 2.
     tmin = 0.
     tmax = (n_times - 1) / sfreq
@@ -506,17 +506,16 @@ def test_spectral_connectivity_time_resolved(method, mode):
 
     # run connectivity estimation
     con = spectral_connectivity_time(
-        data, freqs=freqs, method=method, mode=mode)
-    assert con.shape == (n_epochs, n_signals * 2, n_freqs, n_times)
+        data, cwt_freqs=freqs, method=method, mode=mode)
+    assert con.shape == (n_epochs, n_signals * 2, len(con.freqs))
     assert con.get_data(output='dense').shape == \
-        (n_epochs, n_signals, n_signals, n_freqs, n_times)
-
-    # average over time
-    conn_data = con.get_data(output='dense').mean(axis=-1)
-    conn_data = conn_data.mean(axis=-1)
+        (n_epochs, n_signals, n_signals, len(con.freqs))
 
     # test the simulated signal
     triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
+
+    # average over frequencies
+    conn_data = con.get_data(output='dense').mean(axis=-1)
 
     # the indices at which there is a correlation should be greater
     # then the rest of the components
@@ -538,7 +537,7 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     test_file_path_str = str(_resource_path(
         'mne_connectivity.tests',
         f'data/test_frite_dataset_{mode}_{method}.npy'))
-    test_conn = np.load(test_file_path_str)
+    test_conn = np.load(test_file_path_str).mean(axis=-1)
 
     # paths to mne datasets - sample ECoG
     bids_root = mne.datasets.epilepsy_ecog.data_path()
@@ -581,7 +580,7 @@ def test_time_resolved_spectral_conn_regression(method, mode):
     if mode == 'morlet':
         mode = 'cwt_morlet'
     conn = spectral_connectivity_time(
-        epochs, freqs=freqs, n_jobs=1, method=method, mode=mode)
+        epochs, cwt_freqs=freqs, n_jobs=1, method=method, mode=mode)
 
     # frites only stores the upper triangular parts of the raveled array
     row_triu_inds, col_triu_inds = np.triu_indices(len(raw.ch_names), k=1)
