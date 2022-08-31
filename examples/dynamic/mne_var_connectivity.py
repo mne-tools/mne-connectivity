@@ -153,7 +153,7 @@ rescov = np.cov(sampled_residuals)
 # Estimate significant connections using a time-shuffled null distribution
 # ------------------------------------------------------------------------
 # We can maintain autocorrelations by shuffling the channels in time relative
-# to one another as explained in :ref:`RecanatesiEtAl2022`. The pairwise
+# to one another as explained in :footcite:`RecanatesiEtAl2022`. The pairwise
 # correlations will then be an estimate of connectivity under a null model
 # of uncorrelated neural data.
 
