@@ -56,7 +56,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         If None, all connections are computed.
     sfreq : float
         The sampling frequency.
-    fmin : float | tuple of float
+    fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
         If None the frequency corresponding to an epoch length of 5 cycles
