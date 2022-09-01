@@ -70,7 +70,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     faverage : bool
         Average connectivity scores for each frequency band. If True,
         the output freqs will be a list with arrays of the frequencies
-        that were averaged.
+        that were averaged. By default False.
     sm_times : float
         Amount of time to consider for the temporal smoothing in seconds. By
         default, 0.5 sec smoothing is used.
