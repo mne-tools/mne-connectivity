@@ -49,7 +49,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     average : bool
         Average connectivity scores over Epochs. If True, output will be
         an instance of ``SpectralConnectivity`` , otherwise
-        ``EpochSpectralConnectivity``.
+        ``EpochSpectralConnectivity``. By default False.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
