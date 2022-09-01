@@ -61,7 +61,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
         If None the frequency corresponding to an epoch length of 5 cycles
         is used.
-    fmax : float | tuple of float
+    fmax : float | tuple of float | None
         The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
     fskip : int
