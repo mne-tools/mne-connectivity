@@ -62,7 +62,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         If None the frequency corresponding to an epoch length of 5 cycles
         is used.
     fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
+        The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
