@@ -8,7 +8,7 @@ import xarray as xr
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper)
-from mne.utils import logger
+from mne.utils import (logger, warn)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
 from .epochs import _compute_freqs, _compute_freq_mask
@@ -162,9 +162,20 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     # check that method is a list
     if isinstance(method, str):
         method = [method]
-    # check that fmin and fmax are lists
+
+    # check that fmin corresponds to at least 5 cycles
+    dur = float(n_times) / sfreq
+    five_cycle_freq = 5. / dur
     if fmin is None:
-        fmin = 1
+        # we use the 5 cycle freq. as default
+        fmin = five_cycle_freq
+    else:
+        if np.any(fmin < five_cycle_freq):
+            warn('fmin=%0.3f Hz corresponds to %0.3f < 5 cycles '
+                 'based on the epoch length %0.3f sec, need at least %0.3f '
+                 'sec epochs or fmin=%0.3f. Spectrum estimate will be '
+                 'unreliable.' % (np.min(fmin), dur * np.min(fmin), dur,
+                                  5. / np.min(fmin), five_cycle_freq))
     if fmax is None:
         fmax = sfreq / 2
     fmin = np.array((fmin,), dtype=float).ravel()
