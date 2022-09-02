@@ -26,7 +26,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                                block_size=1000, n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
-    This method computes time-resolved connectivity measures for Epochs.
+    This method computes time-resolved connectivity measures from epoched data.
 
     The connectivity method(s) are specified using the "method" parameter.
     All methods are based on estimates of the cross- and power spectral
@@ -39,15 +39,17 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'plv',
-        'sxy']``. These are:
+        'sxy', 'pli', 'wpli']``. These are:
 
             * 'coh' : Coherence
             * 'plv' : Phase-Locking Value (PLV)
             * 'sxy' : Cross-spectrum
+            * 'pli' : Phase-Lag Index
+            * 'wpli': Weighted Phase-Lag Index
 
-        By default, the coherence is used.
+        By default, coherence is used.
     average : bool
-        Average connectivity scores over Epochs. If True, output will be
+        Average connectivity scores over epochs. If True, output will be
         an instance of ``SpectralConnectivity`` , otherwise
         ``EpochSpectralConnectivity``.
     indices : tuple of array | None
