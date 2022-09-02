@@ -51,20 +51,20 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     average : bool
         Average connectivity scores over epochs. If True, output will be
         an instance of ``SpectralConnectivity`` , otherwise
-        ``EpochSpectralConnectivity``.
+        ``EpochSpectralConnectivity``. By default False.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
         If None, all connections are computed.
     sfreq : float
         The sampling frequency.
-    fmin : float | tuple of float
+    fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
         If None the frequency corresponding to an epoch length of 5 cycles
         is used.
-    fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
+    fmax : float | tuple of float | None
+        The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
@@ -72,7 +72,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     faverage : bool
         Average connectivity scores for each frequency band. If True,
         the output freqs will be a list with arrays of the frequencies
-        that were averaged.
+        that were averaged. By default False.
     sm_times : float
         Amount of time to consider for the temporal smoothing in seconds. By
         default, 0.5 sec smoothing is used.
