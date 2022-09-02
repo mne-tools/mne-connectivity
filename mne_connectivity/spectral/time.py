@@ -57,15 +57,16 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
         If None, all connections are computed.
     sfreq : float
-        The sampling frequency.
+        The sampling frequency. Should be specified if data is not ``Epochs``.
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-        If None the frequency corresponding to an epoch length of 5 cycles
+        If None, the frequency corresponding to an epoch length of 5 cycles
         is used.
     fmax : float | tuple of float | None
         The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
+        If None, sfreq/2 is used.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
         domain.
@@ -74,34 +75,40 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         the output freqs will be a list with arrays of the frequencies
         that were averaged. By default False.
     sm_times : float
-        Amount of time to consider for the temporal smoothing in seconds. By
-        default, 0.5 sec smoothing is used.
+        Amount of time to consider for the temporal smoothing in seconds.
+        If zero, no temporal smoothing is applied. By default,
+        0.5 sec smoothing is used.
     sm_freqs : int
         Number of points for frequency smoothing. By default, 1 is used which
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
-        Kernel type to use. Choose either 'square' or 'hanning' (default).
-    mode : str, optional
-        Spectrum estimation mode can be either: 'multitaper', or
-        'cwt_morlet'.
+        Smoothing kernel type. Choose either 'square' or 'hanning' (default).
+    mode : str
+        Time-frequency decomposition method. Can be either: 'multitaper', or
+        'cwt_morlet'. See ``tfr_array_multitaper`` and ``tfr_array_wavelet``
+        for reference.
     mt_bandwidth : float | None
-        The bandwidth of the multitaper windowing function in Hz.
-        Only used in 'multitaper' mode.
+        Multitaper time bandwidth. If None, will be set to 4.0 (3 tapers).
+        Time x (Full) Bandwidth product. The number of good tapers (low-bias)
+        is chosen automatically based on this to equal
+        floor(time_bandwidth - 1). By default None.
     cwt_freqs : array
         Array of frequencies of interest for time-frequency decomposition.
-        Only used in 'cwt_morlet' mode.
+        Only used in 'cwt_morlet' mode. Only the frequencies within
+        the range specified by fmin and fmax are used. Must be specified if
+        `mode='cwt_morlet'`. Not used when `mode='multitaper'`.
     n_cycles : float | array of float
-        Number of cycles for use in time-frequency decomposition method
+        Number of wavelet cycles for use in time-frequency decomposition method
         (specified by ``mode``). Fixed number or one per frequency.
     decim : int | 1
         To reduce memory usage, decimation factor after time-frequency
         decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
         returns tfr[…, decim].
     block_size : int
-        How many epochs to compute at once (higher numbers are faster
+        Number of epochs to compute at once (higher numbers are faster
         but require more memory).
     n_jobs : int
-        How many epochs to process in parallel.
+        Number of connections to compute in parallel.
     %(verbose)s
 
     Returns
@@ -120,14 +127,79 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     --------
     mne_connectivity.spectral_connectivity_epochs
     mne_connectivity.SpectralConnectivity
-    mne_connectivity.SpectroTemporalConnectivity
+    mne_connectivity.EpochSpectralConnectivity
 
     Notes
     -----
+
+    Please note that the interpretation of the measures in this function
+    depends on the data and underlying assumptions and does not necessarily
+    reflect a causal relationship between brain regions.
+
+    The connectivity measures are computed over time within each epoch and
+    optionally averaged over epochs. High connectivity values indicate that
+    the phase differences between signals stay consistent over time.
+
+    The spectral densities can be estimated using a multitaper method with
+    digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet
+    transform using Morlet wavelets. The spectral estimation mode is specified
+    using the "mode" parameter.
+
+    By default, the connectivity between all signals is computed (only
+    connections corresponding to the lower-triangular part of the
+    connectivity matrix). If one is only interested in the connectivity
+    between some signals, the "indices" parameter can be used. For example,
+    to compute the connectivity between the signal with index 0 and signals
+    "2, 3, 4" (a total of 3 connections) one can use the following::
+
+        indices = (np.array([0, 0, 0]),    # row indices
+                   np.array([2, 3, 4]))    # col indices
+
+        con = spectral_connectivity_time(data, method='coh',
+                                         indices=indices, ...)
+
+    In this case con.get_data().shape = (3, n_freqs). The connectivity scores
+    are in the same order as defined indices.
+
+    **Supported Connectivity Measures**
+
+    The connectivity method(s) is specified using the "method" parameter. The
+    following methods are supported (note: ``E[]`` denotes average over
+    epochs). Multiple measures can be computed at once by using a list/tuple,
+    e.g., ``['coh', 'pli']`` to compute coherence and PLI.
+
+        'coh' : Coherence given by::
+
+                     | E[Sxy] |
+            C = ---------------------
+                sqrt(E[Sxx] * E[Syy])
+
+        'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
+        by::
+
+            PLV = |E[Sxy/|Sxy|]|
+
+        'sxy' : Cross spectrum Sxy
+
+        'pli' : Phase Lag Index (PLI) :footcite:`StamEtAl2007` given by::
+
+            PLI = |E[sign(Im(Sxy))]|
+
+        'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011`
+        given by::
+
+                      |E[Im(Sxy)]|
+            WPLI = ------------------
+                      E[|Im(Sxy)|]
+
     This function was originally implemented in ``frites`` and was
     ported over.
 
     .. versionadded:: 0.3
+
+    References
+    ----------
+    .. footbibliography::
     """
     events = None
     event_id = None
@@ -158,6 +230,10 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         times = np.arange(0, n_times)
         names = np.arange(0, n_signals)
         metadata = None
+        if sfreq is None:
+            warn("Sampling frequency (sfreq) was not specified and could not "
+                 "be inferred from data. Using default value 2*numpy.pi. "
+                 "Connectivity results might not be interpretable.")
 
     # check that method is a list
     if isinstance(method, str):
@@ -169,6 +245,8 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     if fmin is None:
         # we use the 5 cycle freq. as default
         fmin = five_cycle_freq
+        logger.info(f'Fmin was not specified. Using fmin={fmin:.2f}, which '
+                    'corresponds to at least five cycles.')
     else:
         if np.any(fmin < five_cycle_freq):
             warn('fmin=%0.3f Hz corresponds to %0.3f < 5 cycles '
@@ -178,6 +256,9 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                                   5. / np.min(fmin), five_cycle_freq))
     if fmax is None:
         fmax = sfreq / 2
+        logger.info(f'Fmax was not specified. Using fmax={fmax:.2f}, which '
+                    f'corresponds to Nyquist.')
+
     fmin = np.array((fmin,), dtype=float).ravel()
     fmax = np.array((fmax,), dtype=float).ravel()
     if len(fmin) != len(fmax):
@@ -234,24 +315,19 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     # sampling rate, specified wavelet frequencies and mode
     freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-    if fmin is not None and fmax is not None:
-        # compute the mask based on specified min/max and decimation factor
-        freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
+    # compute the mask based on specified min/max and decimation factor
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
 
-        # the frequency points where we compute connectivity
-        freqs = freqs[freq_mask]
+    # the frequency points where we compute connectivity
+    freqs = freqs[freq_mask]
 
     # frequency mean
-    if fmin is None or fmax is None:
-        foi_idx = None
-        f_vec = freqs
-    else:
-        _f = xr.DataArray(np.arange(len(freqs)), dims=('freqs',),
-                          coords=(freqs,))
-        foi_s = _f.sel(freqs=fmin, method='nearest').data
-        foi_e = _f.sel(freqs=fmax, method='nearest').data
-        foi_idx = np.c_[foi_s, foi_e]
-        f_vec = freqs[foi_idx].mean(1)
+    _f = xr.DataArray(np.arange(len(freqs)), dims=('freqs',),
+                      coords=(freqs,))
+    foi_s = _f.sel(freqs=fmin, method='nearest').data
+    foi_e = _f.sel(freqs=fmax, method='nearest').data
+    foi_idx = np.c_[foi_s, foi_e]
+    f_vec = freqs[foi_idx].mean(1)
 
     if faverage:
         n_freqs = len(fmin)
@@ -297,7 +373,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
 
     # create a Connectivity container
     indices = 'symmetric'
-
     if average:
         out = [SpectralConnectivity(
                conn[m].mean(axis=0), freqs=out_freqs, n_nodes=n_signals,
@@ -309,6 +384,8 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                conn[m], freqs=out_freqs, n_nodes=n_signals, names=names,
                indices=indices, method=method, spec_method=mode, events=events,
                event_id=event_id, metadata=metadata) for m in method]
+
+    logger.info('[Connectivity computation done]')
 
     # return the object instead of list of length one
     if len(out) == 1:
