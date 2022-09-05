@@ -502,12 +502,11 @@ def test_spectral_connectivity_time_resolved(method, mode):
 
     # define some frequencies for cwt
     freqs = np.arange(3, 20.5, 1)
-    n_freqs = len(freqs)
 
     # run connectivity estimation
     con = spectral_connectivity_time(
         data, cwt_freqs=freqs, method=method, mode=mode)
-    assert con.shape == (n_epochs, n_signals * 2, len(con.freqs))
+    assert con.shape == (n_epochs, n_signals ** 2, len(con.freqs))
     assert con.get_data(output='dense').shape == \
         (n_epochs, n_signals, n_signals, len(con.freqs))
 

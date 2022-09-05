@@ -284,18 +284,14 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     kernel = _create_kernel(sm_times, sm_freqs, kernel=sm_kernel)
 
     # get indices of pairs of (group) regions
-    roi = names  # ch_names
     if indices is None:
-        # roi_gp and roi_idx
-        roi_gp, _ = roi, np.arange(len(roi)).reshape(-1, 1)
-
         # get pairs for directed / undirected conn
-        source_idx, target_idx = np.triu_indices(len(roi_gp), k=0)
+        indices_use = np.tril_indices(n_signals, k=-1)
     else:
         indices_use = check_indices(indices)
-        source_idx = [x[0] for x in indices_use]
-        target_idx = [x[1] for x in indices_use]
-        roi_gp, _ = roi, np.arange(len(roi)).reshape(-1, 1)
+
+    source_idx = indices_use[0]
+    target_idx = indices_use[1]
     n_pairs = len(source_idx)
 
     # frequency checking
@@ -347,10 +343,9 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         blocks = [np.arange(n_epochs)]
 
     # compute connectivity on blocks of trials
-    conn = {}
+    conn = dict()
     for m in method:
-        conn[m] = np.zeros((n_epochs, n_pairs, n_freqs))
-
+        conn[m] = np.zeros((n_epochs, n_pairs,  n_freqs))
     logger.info('Connectivity computation...')
 
     # parameters to pass to the connectivity function
@@ -371,8 +366,19 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
             conn[m][epoch_idx, ...] = np.stack(conn_tr[m],
                                                axis=1).squeeze(axis=-1)
 
+    if indices is None:
+        conn_flat = conn
+        conn = dict()
+        for m in method:
+            this_conn = np.zeros((n_epochs, n_signals, n_signals) +
+                                 conn_flat[m].shape[2:],
+                                 dtype=conn_flat[m].dtype)
+            this_conn[:, source_idx, target_idx] = conn_flat[m][:, ...]
+            this_conn = this_conn.reshape((n_epochs, n_signals ** 2,) +
+                                          conn_flat[m].shape[2:])
+            conn[m] = this_conn
+
     # create a Connectivity container
-    indices = 'symmetric'
     if average:
         out = [SpectralConnectivity(
                conn[m].mean(axis=0), freqs=out_freqs, n_nodes=n_signals,
@@ -411,7 +417,6 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
             decim=decim, n_jobs=n_jobs, **kw_cwt)
         out = np.expand_dims(out, axis=2)  # same dims with multitaper
     elif mode == 'multitaper':
-        print(data.shape)
         out = tfr_array_multitaper(
             data, sfreq, freqs, n_cycles=n_cycles,
             time_bandwidth=mt_bandwidth, output='complex', decim=decim,
