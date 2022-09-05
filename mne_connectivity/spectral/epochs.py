@@ -860,6 +860,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     See Also
     --------
+    mne_connectivity.spectral_connectivity_time
     mne_connectivity.SpectralConnectivity
     mne_connectivity.SpectroTemporalConnectivity
 
@@ -874,7 +875,9 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     connectivity structure. Within each Epoch, it is assumed that the spectral
     measure is stationary. The spectral measures implemented in this function
     are computed across Epochs. **Thus, spectral measures computed with only
-    one Epoch will result in errorful values.**
+    one Epoch will result in errorful values and spectral measures computed
+    with few Epochs will be unreliable.** Please see
+    ``spectral_connectivity_time`` for time-resolved connectivity estimation.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
@@ -892,11 +895,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
 
-        con_flat = spectral_connectivity(data, method='coh',
-                                         indices=indices, ...)
+        con = spectral_connectivity_epochs(data, method='coh',
+                                           indices=indices, ...)
 
-    In this case con_flat.shape = (3, n_freqs). The connectivity scores are
-    in the same order as defined indices.
+    In this case con.get_data().shape = (3, n_freqs). The connectivity scores
+    are in the same order as defined indices.
 
     **Supported Connectivity Measures**
 
