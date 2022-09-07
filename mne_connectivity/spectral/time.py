@@ -335,8 +335,9 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     if block_size > n_epochs:
         block_size = n_epochs
 
-    if isinstance(block_size, int) and (block_size > 1):
-        n_blocks = n_epochs // block_size + n_epochs % block_size
+    if isinstance(block_size, int):
+        n_blocks = n_epochs // block_size + 1 if n_epochs % block_size \
+            else n_epochs // block_size
         blocks = np.array_split(np.arange(n_epochs), n_blocks)
     else:
         blocks = [np.arange(n_epochs)]
