@@ -1,5 +1,4 @@
 import sys
-import os
 import mne
 
 import autograd.numpy as np
@@ -12,19 +11,22 @@ from scipy.linalg import LinAlgError
 from .util import _ensure_ndim, rand_stable, rand_psd
 from .util import linesearch, soft_thresh_At, block_thresh_At
 from .util import relnormdiff
-from .message_passing import kalman_filter, rts_smooth, rts_smooth_fast
-from .message_passing import predict_step, condition, solve_triangular
+from .message_passing import rts_smooth, rts_smooth_fast
 from .numpy_numthreads import numpy_num_threads
 
-from .mne_util import (ROIToSourceMap, _scale_sensor_data, run_pca_on_subject,
-                       apply_projs)
+from .mne_util import run_pca_on_subject, apply_projs 
 
+try:
+    from autograd_linalg import solve_triangular
+except ImportError:
+    raise RuntimeError("must install `autograd_linalg` package")
+    
 from autograd.numpy import einsum
 
 from datetime import datetime
 
 
-class _MEGModel(object):
+class _Model(object):
     """ Base class for any model applied to MEG data that handles storing and
         unpacking data from tuples. """
 
@@ -67,7 +69,7 @@ class _MEGModel(object):
         return Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi
 
 
-class MEGLDS(_MEGModel):
+class LDS(_Model):
     """ State-space model for MEG data, as described in "A state-space model of
         cross-region dynamic connectivity in MEG/EEG", Yang et al., NIPS 2016.
     """
@@ -99,7 +101,7 @@ class MEGLDS(_MEGModel):
                           overwrite=False, validation_set=True):
 
         datasets = ['train', 'validation']
-        use_erm = eq = False
+        # use_erm = eq = False
         independent = False
         if g_nsamples == 0:
             print('nsamples == 0, ensuring independence of samples')
@@ -108,7 +110,7 @@ class MEGLDS(_MEGModel):
             print("using half of trials per sample")
         elif g_nsamples == -2:
             print("using empty room noise at half of trials per sample")
-            use_erm = True
+            # use_erm = True
         elif g_nsamples == -3:
             print("using independent and trial-count equalized samples")
             eq = True
@@ -144,7 +146,7 @@ class MEGLDS(_MEGModel):
         for dataset in datasets:
 
             print('  generating ', dataset, ' set')
-            datadir = './data'
+            # datadir = './data'
 
             condition_map = {'auditory_left':['auditory_left'],
                              'auditory_right': ['auditory_right'],
@@ -247,10 +249,10 @@ class MEGLDS(_MEGModel):
                     cov):
 
         epochs_bs = self.bootstrap_subject(epochs, subject)
-        epochs_bs = epochs_bs.crop(tmin=-0.2, tmax=0.7)
         epochs_bs = epochs_bs[condition]
         epochs = epochs_bs
 
+        # ensure cov and fwd use correct channels
         cov = cov.pick_channels(epochs.ch_names, ordered=True)
         fwd = mne.convert_forward_solution(fwd, force_fixed=True)
         fwd = fwd.pick_channels(epochs.ch_names, ordered=True)
@@ -266,7 +268,8 @@ class MEGLDS(_MEGModel):
         if len(epochs.times) != self._n_times:
             raise ValueError(f'Number of time points ({len(epochs.times)})' /
                              'does not match original count ({self._n_times})')
-
+        
+        # scale cov matrix according to number of bootstraps
         cov_scale = 3 # equal to number of bootstrap trials
         cov['data'] /= cov_scale
         fwd, cov = apply_projs(epochs_bs, fwd, cov)
@@ -274,7 +277,6 @@ class MEGLDS(_MEGModel):
         sdata = run_pca_on_subject(subject, epochs_bs, fwd, cov, labels,
                                    dim_mode='pctvar', mean_center=True)
         data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
-
         subjectdata = (data, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi)
 
         self._all_subject_data.append(subjectdata)
@@ -352,7 +354,7 @@ class MEGLDS(_MEGModel):
             ntrials, n_timepts, _ = Y.shape
 
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
-            R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
+            R = LDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
             L_R = np.linalg.cholesky(R)
 
             if (self._mus_smooth_lst is None or self._sigmas_smooth_lst is None
@@ -470,7 +472,6 @@ class MEGLDS(_MEGModel):
         if diag_roi_cov:
             self.roi_cov_0 = np.diag(np.diag(self.roi_cov_0))
             self.roi_cov = np.diag(np.diag(self.roi_cov))
-
 
         # keeping track of objective value and best parameters
         objvals = np.zeros(niter+1)
@@ -626,7 +627,7 @@ class MEGLDS(_MEGModel):
             for s, sdata in enumerate(self.unpack_all_subject_data()):
                 Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
                 sigsq_vals = np.exp(self.log_sigsq_lst[s])
-                R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
+                R = LDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
                 roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
                 with numpy_num_threads(1):
                     loglik_subject, mus_smooth, _, _, St = \
@@ -680,8 +681,7 @@ class MEGLDS(_MEGModel):
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
 
             sigsq_vals = np.exp(self.log_sigsq_lst[s])
-            R = MEGLDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
-            L_R = np.linalg.cholesky(R)
+            R = LDS.R_(snsr_cov, fwd_src_snsr, sigsq_vals, which_roi)
             roi_cov_t = _ensure_ndim(self.roi_cov, self._n_timepts, 3)
 
             with numpy_num_threads(1):
@@ -823,13 +823,11 @@ class MEGLDS(_MEGModel):
 
             Y, w_s, fwd_roi_snsr, fwd_src_snsr, snsr_cov, which_roi = sdata
             ntrials, n_timepts, _ = Y.shape
-            mus_smooth = self._mus_smooth_lst[s]
-            sigmas_smooth = self._sigmas_smooth_lst[s]
             B4 = self._B4[s]
 
             log_sigsq = self.log_sigsq_lst[s].copy()
             log_sigsq_obj = lambda x: \
-                MEGLDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4,
+                LDS.L3_obj(x, snsr_cov, fwd_src_snsr, which_roi, B4,
                               ntrials, n_timepts)
             log_sigsq_val_and_grad = vgrad(log_sigsq_obj)
 
@@ -878,7 +876,7 @@ class MEGLDS(_MEGModel):
     @staticmethod
     def L3_obj(log_sigsq_vals, snsr_cov, fwd_src_snsr, which_roi, B4, ntrials,
                n_timepts):
-        R = MEGLDS.R_(snsr_cov, fwd_src_snsr, np.exp(log_sigsq_vals),
+        R = LDS.R_(snsr_cov, fwd_src_snsr, np.exp(log_sigsq_vals),
                       which_roi)
         try:
             L_R = np.linalg.cholesky(R)

@@ -3,18 +3,11 @@
 
 import mne
 import numpy as np
-import os.path as op
-
-from mne.io.pick import pick_types
-from mne.utils import logger
 from mne import label_sign_flip
-
-from scipy.sparse import csc_matrix, csr_matrix, diags
+from scipy.sparse import csc_matrix, csr_matrix
 from sklearn.decomposition import PCA
 
-Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
-Carray = Carray64
-
+Carray = lambda X: np.require(X, dtype=np.float64, requirements='C')
 
 class ROIToSourceMap(object):
     """ class for computing ROI-to-source space mapping matrix
@@ -41,9 +34,7 @@ class ROIToSourceMap(object):
         n_rhverts = len(src[1]['vertno'])
         n_verts = n_lhverts + n_rhverts
         offsets = {'lh': 0, 'rh': n_lhverts}
-
-        hemis = {'lh': 0, 'rh': 1}
-
+        
         # index vector of which ROI a source point belongs to
         which_roi = np.zeros(n_verts, dtype=np.int64)
 
@@ -114,45 +105,12 @@ def apply_projs(epochs, fwd, cov):
 def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
                        mag_scale=1., grad_scale=1.):
     """ apply per-channel-type scaling to epochs, forward, and covariance """
-    Carray64 = lambda X: np.require(X, dtype=np.float64, requirements='C')
-    Carray = Carray64
-
-
+    
     # get indices for each channel type
-    ch_names = cov['names']  # same as self.fwd['info']['ch_names']
-    sel_eeg = pick_types(fwd['info'], meg=False, eeg=True, ref_meg=False)
-    sel_mag = pick_types(fwd['info'], meg='mag', eeg=False, ref_meg=False)
-    sel_grad = pick_types(fwd['info'], meg='grad', eeg=False, ref_meg=False)
-    idx_eeg = [ch_names.index(ch_names[c]) for c in sel_eeg]
-    idx_mag = [ch_names.index(ch_names[c]) for c in sel_mag]
-    idx_grad = [ch_names.index(ch_names[c]) for c in sel_grad]
-
-    # retrieve forward and sensor covariance
-    G = fwd['sol']['data'].copy()
-    Q = cov.data.copy()
-
-    # scale forward matrix
-    G[idx_eeg,:] *= eeg_scale
-    G[idx_mag,:] *= mag_scale
-    G[idx_grad,:] *= grad_scale
-
-    # construct GL matrix
-    GL = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, G.T).T)
-
-    # scale sensor covariance
-    Q[np.ix_(idx_eeg, idx_eeg)] *= eeg_scale**2
-    Q[np.ix_(idx_mag, idx_mag)] *= mag_scale**2
-    Q[np.ix_(idx_grad, idx_grad)] *= grad_scale**2
-
-    # scale epochs
+    ch_names = cov['names']
+    
+    # build scaler
     info = epochs.info.copy()
-    data = epochs.get_data().copy()
-
-    data[:,idx_eeg,:] *= eeg_scale
-    data[:,idx_mag,:] *= mag_scale
-    data[:,idx_grad,:] *= grad_scale
-
-    data_mne = epochs.get_data().copy()
     std = dict(grad=1. / grad_scale, mag=1. / mag_scale, eeg=1. / eeg_scale)
     noproj_info = info.copy()
     with noproj_info._unlock():
@@ -161,16 +119,26 @@ def _scale_sensor_data(epochs, fwd, cov, roi_to_src, eeg_scale=1.,
     scaler, ch_names = mne.cov.compute_whitener(rescale_cov, noproj_info)
     np.testing.assert_array_equal(np.diag(np.diag(scaler)), scaler)
     assert ch_names == info['ch_names']
-    data_mne = scaler @ data_mne
-    assert len(ch_names) == data_mne.shape[1]
-    for ii, ch_name in enumerate(ch_names):
-        np.testing.assert_allclose(
-            data_mne[:, ii].ravel(), data[:, ii].ravel(),
-            atol=1e-3, rtol=1e-5, err_msg=ch_name)
+        
+    # retrieve forward and sensor covariance
+    fwd_src_snsr = fwd['sol']['data'].copy()
+    roi_cov = cov.data.copy()
 
+    # scale forward matrix
+    fwd_src_snsr = scaler @ fwd_src_snsr
+
+    # construct fwd_roi_snsr matrix
+    fwd_roi_snsr = Carray(csr_matrix.dot(roi_to_src.fwd_src_roi.T, fwd_src_snsr.T).T)
+
+    # scale sensor covariance
+    roi_cov = scaler.T @ roi_cov @ scaler 
+
+    # scale epochs
+    data = epochs.get_data().copy()
+    data = scaler.T @ data
     epochs = mne.EpochsArray(data, info)
 
-    return G, GL, Q, epochs
+    return fwd_src_snsr, fwd_roi_snsr, roi_cov, epochs
 
 
 def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
@@ -187,7 +155,6 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
 
     # compute ROI-to-source map
     roi_to_src = ROIToSourceMap(fwd, labels, label_flip)
-
 
     if dim_mode == 'whiten':
 
@@ -244,41 +211,3 @@ def run_pca_on_subject(subject_name, epochs, fwd, cov, labels, dim_mode='rank',
 
     return (data, fwd_roi_snsr_pca, fwd_src_snsr_pca, cov_snsr_pca,
             roi_to_src.which_roi)
-
-
-def combine_medial_labels(labels, subject='fsaverage', surf='white',
-                          dist_limit=0.02):
-    """ combine each hemi pair of labels on medial wall into single label """
-    subjects_dir = mne.get_config('SUBJECTS_DIR')
-    rrs = dict((hemi, mne.read_surface(op.join(subjects_dir, subject, 'surf',
-                                       '%s.%s' % (hemi, surf)))[0] / 1000.)
-               for hemi in ('lh', 'rh'))
-    use_labels = list()
-    used = np.zeros(len(labels), bool)
-
-    logger.info('Matching medial regions for %s labels on %s %s, d=%0.1f mm'
-                % (len(labels), subject, surf, 1000 * dist_limit))
-
-    for li1, l1 in enumerate(labels):
-        if used[li1]:
-            continue
-        used[li1] = True
-        use_label = l1.copy()
-        rr1 = rrs[l1.hemi][l1.vertices]
-        for li2 in np.where(~used)[0]:
-            l2 = labels[li2]
-            same_name = (l2.name.replace(l2.hemi, '') ==
-                         l1.name.replace(l1.hemi, ''))
-            if l2.hemi != l1.hemi and same_name:
-                rr2 = rrs[l2.hemi][l2.vertices]
-                mean_min = np.mean(mne.surface._compute_nearest(
-                    rr1, rr2, return_dists=True)[1])
-                if mean_min <= dist_limit:
-                    use_label += l2
-                    used[li2] = True
-                    logger.info('  Matched: ' + l1.name)
-        use_labels.append(use_label)
-
-    logger.info('Total %d labels' % (len(use_labels),))
-
-    return use_labels

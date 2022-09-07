@@ -6,7 +6,7 @@ Authors: Jordan Drew <jadrew43@uw.edu>
 """
 
 '''
-For 'mne-connectivity/examples/' to show usage of LDS
+For 'mne-connectivity' examples to show usage of LDS
 Use MNE-sample-data for auditory/left
 '''
 
@@ -16,15 +16,12 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 
-from megssm.models import MEGLDS as LDS
+from megssm.models import LDS
 from megssm.plotting import plot_A_t_
 
-
 # define paths to sample data
-path = None
-data_path = mne.datasets.sample.data_path(path=path)
+data_path = mne.datasets.sample.data_path()
 sample_folder = data_path / 'MEG/sample'
-subjects_dir = data_path / 'subjects'
 
 ## import raw data and find events
 raw_fname = sample_folder / 'sample_audvis_raw.fif'
@@ -47,16 +44,9 @@ cov_fname = sample_folder / 'sample_audvis-cov.fif'
 cov = mne.read_cov(cov_fname)
 
 ## read labels for analysis
-regexp = '^(G_temp_sup-G_T_transv.*|Pole_occipital)'
-labels = mne.read_labels_from_annot(
-    'sample', 'aparc.a2009s', regexp=regexp, subjects_dir=subjects_dir)
-label_names = [label.name for label in labels]
-assert len(label_names) == 4
-# brain = mne.viz.Brain('sample', surf='inflated', subjects_dir=subjects_dir)
-# for label in labels:
-#     brain.add_label(label)
-# raise RuntimeError
-
+label_names = ['Aud-lh', 'Aud-rh', 'Vis-lh', 'Vis-rh']
+labels = [mne.read_label(sample_folder / 'labels' / f'{label}.label',
+                          subject='sample') for label in label_names]
 
 # initiate model
 model = LDS(lam0=0, lam1=100)
@@ -69,13 +59,12 @@ n_timepts = model.n_timepts
 times = model.times
 A_t_ = model.A_t_
 assert A_t_.shape == (n_timepts, num_roi, num_roi)
-
 with mpl.rc_context():
     {'xtick.labelsize': 'x-small', 'ytick.labelsize': 'x-small'}
     fig, ax = plt.subplots(num_roi, num_roi, constrained_layout=True,
-                           squeeze=False, figsize=(12, 10))
+                            squeeze=False, figsize=(12, 10))
     plot_A_t_(A_t_, labels=label_names, times=times, ax=ax)
-    fig.suptitle('testing_')
+    fig.suptitle('API output_new Q scale_')
     diag_lims = [0, 1]
     off_lims = [-0.6, 0.6]
     for ri, row in enumerate(ax):
