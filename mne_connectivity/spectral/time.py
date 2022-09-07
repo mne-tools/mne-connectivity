@@ -19,7 +19,7 @@ from ..utils import check_indices, fill_doc
 @fill_doc
 def spectral_connectivity_time(data, names=None, method='coh', average=False,
                                indices=None, sfreq=2 * np.pi, fmin=None,
-                               fmax=None, fskip=0, faverage=False, sm_times=.5,
+                               fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning',
                                mode='cwt_morlet', mt_bandwidth=None,
                                cwt_freqs=None, n_cycles=7, decim=1,
