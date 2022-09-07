@@ -108,7 +108,7 @@ brain = psi_stc.plot(surface='inflated', hemi='lh',
                      subjects_dir=subjects_dir,
                      clim=dict(kind='percent', pos_lims=(95, 97.5, 100)))
 brain.show_view('medial')
-brain.add_label(fname_label, color='green', alpha=0.7)
+brain.add_label(str(fname_label), color='green', alpha=0.7)
 
 ###############################################################################
 # References
