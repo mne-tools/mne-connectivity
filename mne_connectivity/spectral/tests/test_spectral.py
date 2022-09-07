@@ -545,7 +545,7 @@ def test_time_resolved_spectral_conn_regression(method, mode):
 
     # first define the BIDS path and load in the dataset
     bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
-                         task='ictal', datatype='ieeg', extension='vhdr')
+                         task='ictal', datatype='ieeg', extension='.vhdr')
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
