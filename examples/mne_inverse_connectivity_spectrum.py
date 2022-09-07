@@ -54,7 +54,7 @@ stcs = apply_inverse_epochs(epochs, inverse_operator, lambda2, method,
 
 # Read some labels
 names = ['Aud-lh', 'Aud-rh', 'Vis-lh', 'Vis-rh']
-labels = [mne.read_label(data_path + f'/MEG/sample/labels/{name}.label')
+labels = [mne.read_label(data_path / f'MEG/sample/labels/{name}.label')
           for name in names]
 
 # Average the source estimates within each label using sign-flips to reduce
