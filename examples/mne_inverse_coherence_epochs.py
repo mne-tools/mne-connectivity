@@ -35,7 +35,7 @@ fname_inv = data_path / 'MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
 fname_raw = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
 fname_event = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
 label_name_lh = 'Aud-lh'
-fname_label_lh = data_path / 'MEG/sample/labels/%s.label' % label_name_lh
+fname_label_lh = data_path / f'MEG/sample/labels/{label_name_lh}.label'
 
 event_id, tmin, tmax = 1, -0.2, 0.5
 method = "dSPM"  # use dSPM method (could also be MNE or sLORETA)
