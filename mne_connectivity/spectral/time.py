@@ -23,7 +23,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                                sm_freqs=1, sm_kernel='hanning',
                                mode='cwt_morlet', mt_bandwidth=None,
                                cwt_freqs=None, n_cycles=7, decim=1,
-                               block_size=1000, n_jobs=1, verbose=None):
+                               block_size=1, n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
     This method computes time-resolved connectivity measures from epoched data.
