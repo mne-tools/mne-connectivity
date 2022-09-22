@@ -561,10 +561,10 @@ def _wpli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
         # smooth
         s_xy = _smooth_spectra(s_xy, kernel)
         # magnitude of the mean of the imaginary part of the cross spectrum
-        s_xy_mean_abs = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
+        con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
         # mean of the magnitudes of the imaginary part of the cross spectrum
-        s_xy_abs_mean = np.abs(s_xy.imag).mean(axis=-1, keepdims=True)
-        out = s_xy_mean_abs / s_xy_abs_mean
+        con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
+        out = con_num / con_den
         # mean inside frequency sliding window (if needed)
         if isinstance(foi_idx, np.ndarray) and faverage:
             return _foi_average(out, foi_idx)
