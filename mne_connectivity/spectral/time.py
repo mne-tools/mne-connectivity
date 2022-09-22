@@ -104,8 +104,14 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
         returns tfr[…, decim].
     block_size : int
-        Number of epochs to compute at once (higher numbers are faster
-        but require more memory).
+        Number of epochs to compute at once. Higher numbers are faster but
+        require more memory. Memory requirement in bytes is proportional to
+            `16*block_size*n_channels*n_tapers*n_freqs*n_times`,
+        where `n_tapers=mt_bandwidth-1` when `mode='multitaper'` and
+        `n_tapers=1` when `mode='cwt_morlet'`, and `n_freqs` is the number
+        of frequencies for connectivity computation, `n_freqs` is determined by
+        ``scipy.fft.rfftfreq`` when `mode='multitaper'`
+        and `n_freqs=len(cwt_freqs)` when `mode='cwt_morlet'`.
     n_jobs : int
         Number of connections to compute in parallel.
     %(verbose)s
