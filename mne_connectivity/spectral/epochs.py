@@ -5,11 +5,10 @@
 # License: BSD (3-clause)
 
 from functools import partial
-from inspect import getmembers
+import inspect
 
 import numpy as np
 from mne.epochs import BaseEpochs
-from mne.fixes import _get_args
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.time_frequency.multitaper import (_csd_from_mt,
@@ -668,9 +667,9 @@ def _get_n_epochs(epochs, n):
 
 def _check_method(method):
     """Test if a method implements the required interface."""
-    interface_members = [m[0] for m in getmembers(_AbstractConEstBase)
+    interface_members = [m[0] for m in inspect.getmembers(_AbstractConEstBase)
                          if not m[0].startswith('_')]
-    method_members = [m[0] for m in getmembers(method)
+    method_members = [m[0] for m in inspect.getmembers(method)
                       if not m[0].startswith('_')]
 
     for member in interface_members:
@@ -749,7 +748,7 @@ def _check_estimators(method, mode):
             con_method_types.append(this_method)
 
     # determine how many arguments the compute_con_function needs
-    n_comp_args = [len(_get_args(mtype.compute_con))
+    n_comp_args = [len(inspect.signature(mtype.compute_con).parameters)
                    for mtype in con_method_types]
 
     # we currently only support 3 arguments
