@@ -72,7 +72,7 @@ jobs:
         - restore_cache:
             keys:
               - user-install-bin-cachev1
-              
+
         - run:
             name: Get Python running and install dependencies
             command: |
@@ -110,8 +110,8 @@ jobs:
               - data-cache-bst-resting
 
         - run:
-            name: Check PyQt5
-            command: LD_DEBUG=libs python -c "from PyQt5.QtWidgets import QApplication, QWidget; app = QApplication([])"
+            name: Check PyQt6
+            command: LD_DEBUG=libs python -c "from PyQt6.QtWidgets import QApplication, QWidget; app = QApplication([])"
 
         # Look at what we have and fail early if there is some library conflict
         - run:
