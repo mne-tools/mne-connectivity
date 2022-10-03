@@ -8,7 +8,6 @@ import pytest
 import os
 import gc
 import warnings
-from distutils.version import LooseVersion
 
 from mne.utils import _check_qt_version
 
@@ -32,6 +31,8 @@ def pytest_configure(config):
     # Epochs class
     ignore:.*There were no Annotations stored in.*:RuntimeWarning
     always::ResourceWarning
+    # pydarkstyle
+    ignore:.*Setting theme='dark' is not yet supported.*:RuntimeWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):
         warning_line = warning_line.strip()
@@ -75,11 +76,8 @@ def matplotlib_config():
     orig = cbook.CallbackRegistry
 
     class CallbackRegistryReraise(orig):
-        def __init__(self, exception_handler=None):
-            args = ()
-            if LooseVersion(matplotlib.__version__) >= LooseVersion('2.1'):
-                args += (exception_handler,)
-            super(CallbackRegistryReraise, self).__init__(*args)
+        def __init__(self, exception_handler=None, signals=None):
+            super(CallbackRegistryReraise, self).__init__(exception_handler)
 
     cbook.CallbackRegistry = CallbackRegistryReraise
 

@@ -252,6 +252,7 @@ try:
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         import pyvista
     pyvista.OFF_SCREEN = False
+    pyvista.BUILDING_GALLERY = True
 except Exception:
     pass
 else:
