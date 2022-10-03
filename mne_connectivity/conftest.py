@@ -8,7 +8,6 @@ import pytest
 import os
 import gc
 import warnings
-from distutils.version import LooseVersion
 
 from mne.utils import _check_qt_version
 
