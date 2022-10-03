@@ -32,6 +32,8 @@ def pytest_configure(config):
     # Epochs class
     ignore:.*There were no Annotations stored in.*:RuntimeWarning
     always::ResourceWarning
+    # pydarkstyle
+    ignore:.*Setting theme='dark' is not yet supported.*:RuntimeWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):
         warning_line = warning_line.strip()
