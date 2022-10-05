@@ -16,10 +16,11 @@ Here we list a changelog of MNE-connectivity.
 
 .. _current:
 
-Version 0.4 (Unreleased)
-------------------------
+Version 0.4
+-----------
 
-...
+There are a few enhancements. Notably, the ``dPLI`` method was added to :func:`mne_connectivity.spectral_connectivity_epochs`. There
+are some bug fixes to the underlying API to make compatible with MNE-Python v1.2+.
 
 Enhancements
 ~~~~~~~~~~~~
