@@ -1,24 +1,28 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.3 documentation</title>
-    
+    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.4.0 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
 
-    
+  
   <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -27,16 +31,19 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.spectral_connectivity_time';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_connectivity.read_connectivity" href="mne_connectivity.read_connectivity.html" />
@@ -45,77 +52,120 @@
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
 
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
 
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">MNE-Connectivity</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+  
+</a>
     
   </div>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+  <div class="col-lg-9 navbar-header-items">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../whats_new.html">
-  What’s new?
- </a>
-</li>
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../install.html">
-  Installation
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../install.html">
+                        Installation
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../api.html">
-  API
- </a>
-</li>
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../api.html">
+                        API
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../auto_examples/index.html">
-  Examples
- </a>
-</li>
-
-    
-</ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="../auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
       </div>
       
     </div>
 
     <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
       
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.3
+        v0.4.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
@@ -130,7 +180,13 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/mne-tools/mne-connectivity" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
       </ul>
@@ -138,21 +194,122 @@
       
     </div>
   </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
 </div>
-    </nav>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../install.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
     
 
-    <div class="container-xl">
-      <div class="row">
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.4.0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
     <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_connectivity.Connectivity.html">
@@ -273,43 +430,32 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
             </div>
             
-          
-
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
             
+            <article class="bd-article" role="main">
               
-              <div class="toc-item">
-                
-
-<nav id="bd-toc-nav">
-    
-</nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
   <section id="mne-connectivity-spectral-connectivity-time">
-<h1>mne_connectivity.spectral_connectivity_time<a class="headerlink" href="#mne-connectivity-spectral-connectivity-time" title="Permalink to this headline">#</a></h1>
+<h1>mne_connectivity.spectral_connectivity_time<a class="headerlink" href="#mne-connectivity-spectral-connectivity-time" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.spectral_connectivity_time">
 <span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hanning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cwt_morlet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral/time.html#spectral_connectivity_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity_time" title="Permalink to this definition">#</a></dt>
@@ -320,11 +466,11 @@ All methods are based on estimates of the cross- and power spectral
 densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></p>
+<dd class="field-odd"><p><strong>data</strong> : <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></p>
 <blockquote>
 <div><p>The data from which to compute connectivity.</p>
 </div></blockquote>
-<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<p><strong>names</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>The names of the nodes of the dataset used to compute
 connectivity. If ‘None’ (default), then names will be
@@ -344,7 +490,7 @@ of names, then it must be equal in length to <code class="docutils literal notra
 </div></blockquote>
 <p>By default, the coherence is used.</p>
 </div></blockquote>
-<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<p><strong>indices</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Two arrays with indices of connections for which to compute
 connectivity. I.e. it is a <code class="docutils literal notranslate"><span class="pre">(n_pairs,</span> <span class="pre">2)</span></code> array essentially.
@@ -354,7 +500,7 @@ If None, all connections are computed.</p>
 <blockquote>
 <div><p>The sampling frequency.</p>
 </div></blockquote>
-<p><strong>foi</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.23.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<p><strong>foi</strong> : <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
 <div><p>Extract frequencies of interest. This parameters should be an array of
 shapes (n_foi, 2) defining where each band of interest start and
@@ -384,12 +530,12 @@ is equivalent to no smoothing.</p>
 <div><p>The bandwidth of the multitaper windowing function in Hz.
 Only used in ‘multitaper’ mode.</p>
 </div></blockquote>
-<p><strong>freqs</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
+<p><strong>freqs</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></p>
 <blockquote>
 <div><p>Array of frequencies of interest for use in time-frequency
 decomposition method (specified by <code class="docutils literal notranslate"><span class="pre">mode</span></code>).</p>
 </div></blockquote>
-<p><strong>n_cycles</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
+<p><strong>n_cycles</strong> : <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <blockquote>
 <div><p>Number of cycles for use in time-frequency decomposition method
 (specified by <code class="docutils literal notranslate"><span class="pre">mode</span></code>). Fixed number or one per frequency.</p>
@@ -411,13 +557,13 @@ but require more memory).</p>
 </div></blockquote>
 <p><strong>verbose</strong> : <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <blockquote>
-<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<div><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 for more info). If used, it should be passed as a
 keyword-argument only.</p>
 </div></blockquote>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
+<dd class="field-even"><p><strong>con</strong> : <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></p>
 <blockquote>
 <div><p>Computed connectivity measure(s). Either an instance of
 <code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code> or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>.
@@ -450,51 +596,105 @@ ported over.</p>
 <div style='clear:both'></div></section>
 
 
-              </div>
-              
-              
-              <!-- Previous / next buttons -->
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="mne_connectivity.spectral_connectivity_epochs.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_connectivity.spectral_connectivity_epochs</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="mne_connectivity.read_connectivity.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.read_connectivity</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
-
+  <a class='left-prev' id="prev-link" href="mne_connectivity.spectral_connectivity_epochs.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">mne_connectivity.spectral_connectivity_epochs</p>
       </div>
-    </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-04-08.<br>
-</p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
+  </a>
+  <a class='right-next' id="next-link" href="mne_connectivity.read_connectivity.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">mne_connectivity.read_connectivity</p>
   </div>
-</footer>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mne_connectivity.spectral_connectivity_time">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spectral_connectivity_time()
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
   </body>
 </html>

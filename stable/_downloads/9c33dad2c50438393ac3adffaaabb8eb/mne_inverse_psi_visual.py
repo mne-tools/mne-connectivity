@@ -29,11 +29,11 @@ from mne_connectivity import seed_target_indices, phase_slope_index
 print(__doc__)
 
 data_path = sample.data_path()
-subjects_dir = data_path + '/subjects'
-fname_inv = data_path + '/MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
-fname_raw = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
-fname_event = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
-fname_label = data_path + '/MEG/sample/labels/Vis-lh.label'
+subjects_dir = data_path / 'subjects'
+fname_inv = data_path / 'MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
+fname_raw = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
+fname_event = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+fname_label = data_path / 'MEG/sample/labels/Vis-lh.label'
 
 event_id, tmin, tmax = 4, -0.2, 0.5
 method = "dSPM"  # use dSPM method (could also be MNE or sLORETA)
@@ -108,7 +108,7 @@ brain = psi_stc.plot(surface='inflated', hemi='lh',
                      subjects_dir=subjects_dir,
                      clim=dict(kind='percent', pos_lims=(95, 97.5, 100)))
 brain.show_view('medial')
-brain.add_label(fname_label, color='green', alpha=0.7)
+brain.add_label(str(fname_label), color='green', alpha=0.7)
 
 ###############################################################################
 # References
