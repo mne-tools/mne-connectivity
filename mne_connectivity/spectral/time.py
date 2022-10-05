@@ -23,7 +23,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                                sm_freqs=1, sm_kernel='hanning',
                                mode='cwt_morlet', mt_bandwidth=None,
                                cwt_freqs=None, n_cycles=7, decim=1,
-                               block_size=1, n_jobs=1, verbose=None):
+                               n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
     This method computes time-resolved connectivity measures from epoched data.
@@ -103,15 +103,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         To reduce memory usage, decimation factor after time-frequency
         decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
         returns tfr[…, decim].
-    block_size : int
-        Number of epochs to compute at once. Higher numbers are faster but
-        require more memory. Memory requirement in bytes is proportional to
-            `16*block_size*n_channels*n_tapers*n_freqs*n_times`,
-        where `n_tapers=mt_bandwidth-1` when `mode='multitaper'` and
-        `n_tapers=1` when `mode='cwt_morlet'`, and `n_freqs` is the number
-        of frequencies for connectivity computation, `n_freqs` is determined by
-        ``scipy.fft.rfftfreq`` when `mode='multitaper'`
-        and `n_freqs=len(cwt_freqs)` when `mode='cwt_morlet'`.
     n_jobs : int
         Number of connections to compute in parallel.
     %(verbose)s
@@ -363,8 +354,8 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
         verbose=verbose)
 
-    for epoch_idx in blocks:
-        # compute time-resolved spectral connectivity
+    for epoch_idx in np.arange(n_epochs):
+        epoch_idx = [epoch_idx]
         conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
 
         # merge results
