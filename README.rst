@@ -20,6 +20,9 @@
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
 
+.. |PyPI_Release| image:: https://img.shields.io/pypi/v/mne-connectivity.svg
+.. _PyPI_Release: https://pypi.org/project/mne-connectivity/
+
 .. _MNE-Connectivity: https://mne.tools/mne-connectivity/dev/
 .. _MNE-Python: https://mne.tools/stable
 .. _MNE-Connectivity documentation: https://mne.tools/mne-connectivity/stable/index.html
