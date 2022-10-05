@@ -213,7 +213,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     # extract data from Epochs object
     if isinstance(data, BaseEpochs):
         names = data.ch_names
-        times = data.times  # input times for Epochs input type
+        times = data.times
         sfreq = data.info['sfreq']
         events = data.events
         event_id = data.event_id
@@ -283,7 +283,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
 
     # temporal decimation
     if isinstance(decim, int):
-        times = times[::decim]
         sm_times = int(np.round(sm_times / decim))
         sm_times = max(sm_times, 1)
 
