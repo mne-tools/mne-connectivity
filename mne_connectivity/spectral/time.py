@@ -51,7 +51,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     average : bool
         Average connectivity scores over epochs. If True, output will be
         an instance of ``SpectralConnectivity`` , otherwise
-        ``EpochSpectralConnectivity``. By default False.
+        ``EpochSpectralConnectivity``. By default, False.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
@@ -95,16 +95,17 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         Array of frequencies of interest for time-frequency decomposition.
         Only used in 'cwt_morlet' mode. Only the frequencies within
         the range specified by fmin and fmax are used. Must be specified if
-        `mode='cwt_morlet'`. Not used when `mode='multitaper'`.
+        ``mode='cwt_morlet'``. Not used when ``mode='multitaper'``.
     n_cycles : float | array of float
         Number of wavelet cycles for use in time-frequency decomposition method
         (specified by ``mode``). Fixed number or one per frequency.
-    decim : int | 1
+    decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
         returns tfr[…, decim].
     n_jobs : int
-        Number of connections to compute in parallel.
+        Number of connections to compute in parallel. Memory mapping must be
+        activated. Please see the Notes section for details.
     %(verbose)s
 
     Returns
@@ -187,6 +188,16 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
                       |E[Im(Sxy)]|
             WPLI = ------------------
                       E[|Im(Sxy)|]
+
+    Parallel computation can be activated by setting the ``n_jobs`` parameter.
+    Under the hood, this utilizes the ``joblib`` library. For effective
+    parallelization, you should activate memory mapping in MNE-Python by
+    setting ``MNE_MEMMAP_MIN_SIZE`` and ``MNE_CACHE_DIR``. For example, in your
+    code, run
+    ```
+    mne.set_config('MNE_MEMMAP_MIN_SIZE', '10M')
+    mne.set_config('MNE_CACHE_DIR', '/dev/shm')
+    ```
 
     This function was originally implemented in ``frites`` and was
     ported over.
@@ -328,18 +339,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         n_freqs = len(freqs)
         out_freqs = freqs
 
-    # build block size indices
-    if block_size > n_epochs:
-        block_size = n_epochs
-
-    if isinstance(block_size, int):
-        n_blocks = n_epochs // block_size + 1 if n_epochs % block_size \
-            else n_epochs // block_size
-        blocks = np.array_split(np.arange(n_epochs), n_blocks)
-    else:
-        blocks = [np.arange(n_epochs)]
-
-    # compute connectivity on blocks of trials
     conn = dict()
     for m in method:
         conn[m] = np.zeros((n_epochs, n_pairs,  n_freqs))
