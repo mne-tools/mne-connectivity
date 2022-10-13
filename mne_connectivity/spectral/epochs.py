@@ -17,6 +17,7 @@ from mne.time_frequency.multitaper import (_csd_from_mt,
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
 from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask)
+from scipy import linalg as spla
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
@@ -611,19 +612,15 @@ class _MIMEst(_MICMIMEstBase):
     ):
         """Computes the multivariate interaction measure between two sets of
         signals"""
-        self.con_scores = np.zeros(self.csd_shape)
+        n_signals = int(np.sqrt(self.n_cons))
+        csd = np.reshape((self._acc / n_epochs), (n_signals, n_signals, self.n_freqs))
 
-        csd = self._acc / n_epochs
-
-        n_nodes = len(seeds)
-        n_freqs = csd.shape[2]
-
-        mim = np.zeros((n_nodes, n_freqs))
+        mim = np.zeros((len(seeds), self.n_freqs))
         node_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(n_freqs))]
-            for freq_i in range(n_freqs):
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs))]
+            for freq_i in range(self.n_freqs):
                 # Eqs. 32 & 33
                 C_bar, U_bar_aa, _ = self.cross_spectra_svd(
                     csd=node_csd[:, :, freq_i],
@@ -652,18 +649,16 @@ class _MICEst(_MICMIMEstBase):
     ):
         """Computes the maximized imaginary coherence between two sets of
         signals"""
-        csd = self._acc / n_epochs
+        n_signals = int(np.sqrt(self.n_cons))
+        csd = np.reshape((self._acc / n_epochs), (n_signals, n_signals, self.n_freqs))
 
-        n_nodes = len(seeds)
-        n_freqs = csd.shape[2]
-
-        mic = np.zeros((n_nodes, n_freqs))
+        mic = np.zeros((len(seeds), self.n_freqs))
         node_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             n_seeds = len(seed_idcs)
             node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(n_freqs))]
-            for freq_i in range(n_freqs):
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs))]
+            for freq_i in range(self.n_freqs):
                 # Eqs. 32 & 33
                 C_bar, U_bar_aa, _ = self.cross_spectra_svd(
                     csd=node_csd[:, :, freq_i],

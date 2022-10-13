@@ -8,14 +8,14 @@
 #
 # License: BSD (3-clause)
 
+from copy import deepcopy
 import numpy as np
 from mne import BaseEpochs
 from mne.parallel import parallel_func
 from mne.utils import logger
-from scipy import linalg as spla
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
-from ..utils import check_indices, fill_doc
+from ..utils import fill_doc
 from .epochs import (_assemble_spectral_params, _check_estimators,
                      _epoch_spectral_connectivity, _get_and_verify_data_sizes,
                      _get_n_epochs, _prepare_connectivity)
@@ -252,14 +252,29 @@ def multivar_spectral_connectivity_epochs(
             sig_idx = np.unique([idx for indices_group in indices for idcs in
                 indices_group for idx in idcs])
 
+            ### UGLY!
             # map indices to unique indices
-            idx_map = [np.searchsorted(sig_idx, idx) for idcs in indices_use for idx in idcs]
+            remapping = {}
+            remapped_indices = deepcopy(indices)
+            for sig_i, ch_i in enumerate(sig_idx):
+                remapping[ch_i] = sig_i
+            for seed_i, seed_idcs in enumerate(indices[0]):
+                remapped_indices[0][seed_i] = [remapping[idx] for idx in seed_idcs]
+            for target_i, target_idcs in enumerate(indices[1]):
+                remapped_indices[1][target_i] = [remapping[idx] for idx in target_idcs]
+
+            # remapped unique signals for which we actually need to compute CSD etc.
+            sig_idx = np.unique([idx for indices_group in remapped_indices for idcs in
+                indices_group for idx in idcs])
+
+            # gets seed-target indices for CSD
+            idx_map = [np.repeat(sig_idx, len(sig_idx)), np.tile(sig_idx, len(sig_idx))]
 
             # None of the implemented multivariate methods need PSD
             psd = None
 
             # create instances of the connectivity estimators
-            con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
+            con_methods = [mtype(len(sig_idx)**2, n_freqs, n_times_spectrum)
                            for mtype in con_method_types]
 
             sep = ', '
@@ -316,7 +331,7 @@ def multivar_spectral_connectivity_epochs(
     con = list()
     for conn_method in con_methods:
         conn_method.compute_con(
-            seeds, targets, n_seed_components, n_target_components, n_epochs
+            remapped_indices[0], remapped_indices[1], n_seed_components, n_target_components, n_epochs
         )
 
         # get the connectivity scores
@@ -362,7 +377,7 @@ def multivar_spectral_connectivity_epochs(
                       method=method,
                       n_nodes=n_nodes,
                       spec_method=mode,
-                      indices=indices,
+                      indices=remapped_indices,
                       n_epochs_used=n_epochs,
                       freqs_used=freqs_used,
                       times_used=times,
