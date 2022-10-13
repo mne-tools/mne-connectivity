@@ -248,11 +248,12 @@ def multivar_spectral_connectivity_epochs(
                 mt_low_bias=mt_low_bias, cwt_n_cycles=cwt_n_cycles,
                 cwt_freqs=cwt_freqs, freqs=freqs, freq_mask=freq_mask)
 
-            # unique signals for which we actually need to compute PSD etc.
-            sig_idx = np.unique(np.r_[indices_use[0], indices_use[1]])
+            # unique signals for which we actually need to compute CSD etc.
+            sig_idx = np.unique([idx for indices_group in indices for idcs in
+                indices_group for idx in idcs])
 
             # map indices to unique indices
-            idx_map = [np.searchsorted(sig_idx, ind) for ind in indices_use]
+            idx_map = [np.searchsorted(sig_idx, idx) for idcs in indices_use for idx in idcs]
 
             # None of the implemented multivariate methods need PSD
             psd = None
