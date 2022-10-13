@@ -172,8 +172,11 @@ def multivar_spectral_connectivity_epochs(
         multiple methods are called, where each object is the results for the
         corresponding entry in "method").
     """
-    if indices is None:
-        raise ValueError("indices must be specified, got `None`.")
+    n_seed_components, n_target_components = _check_inputs(
+        indices,
+        n_seed_components,
+        n_target_components,
+    )
 
     if n_jobs != 1:
         parallel, my_epoch_spectral_connectivity, _ = \
@@ -405,3 +408,82 @@ def multivar_spectral_connectivity_epochs(
         conn_list = conn_list[0]
 
     return conn_list
+
+def _check_inputs(
+    indices,
+    n_seed_components,
+    n_target_components,
+    ):
+    """Checks the format of the input parameters to the
+    "multivar_spectral_connectivity_epochs" function.
+
+    PARAMETERS
+    ----------
+    indices : tuple of tuple of array-like of int
+    -   Two tuples of arrays with indices of connections for which to compute
+        connectivity.
+
+    n_seed_components : tuple of int or None | None; default None
+    -   Dimensionality reduction parameter specifying the number of seed
+        components to extract from the single value decomposition of the seed
+        channels' data for each connectivity node. If None, will be replaced
+        with a tuple of None.
+
+    n_target_components : tuple of int or None | None; default None
+    -   Dimensionality reduction parameter specifying the number of target
+        components to extract from the single value decomposition of the target
+        channels' data for each connectivity node. If None, will be replaced
+        with a tuple of None.
+
+    RETURNS
+    -------
+    n_seed_components : tuple of int or None
+    -   Dimensionality reduction parameter specifying the number of seed
+        components to extract from the single value decomposition of the seed
+        channels' data for each connectivity node.
+
+    n_target_components : tuple of int or None
+    -   Dimensionality reduction parameter specifying the number of target
+        components to extract from the single value decomposition of the target
+        channels' data for each connectivity node.
+    """
+    if indices is None:
+        raise ValueError("indices must be specified, got `None`.")
+    
+    n_seeds = len(indices[0])
+    n_targets = len(indices[1])
+
+    if n_seed_components is None:
+        n_seed_components = tuple([None] * len(indices[0]))
+    elif isinstance(n_seed_components, tuple):
+        if n_seeds != len(n_seed_components):
+            raise ValueError(
+            "n_seed_components must have the same length as specified seeds."
+            f" Got: {len(n_seed_components)} seed components and {n_seeds}"
+            "seeds."
+            )
+    else:
+        raise ValueError(
+            "n_seed_components must be a tuple or None. Got:"
+            f" {n_seed_components}."
+            )
+
+    if n_target_components is None:
+        n_target_components = tuple([None] * len(indices[1]))
+    elif isinstance(n_target_components, tuple):
+        if n_targets != len(n_target_components):
+            raise ValueError(
+            "n_target_components must have the same length as specified"
+            f" targets. Got: {len(n_target_components)} seed components and"
+            f" {n_targets} targets."
+            )
+    else:
+        raise ValueError(
+            "n_target_components must be a tuple or None. Got:"
+            f" {n_target_components}."
+            )
+
+    return (
+        n_seed_components,
+        n_target_components,
+    )
