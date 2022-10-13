@@ -18,6 +18,7 @@ from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
 from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask)
 
+from epochs_multivar import (_MICEst, _MIMEst)
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
 
@@ -726,7 +727,8 @@ _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'plv': _PLVEst, 'ciplv': _ciPLVEst, 'ppc': _PPCEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
                    'dpli': _DPLIEst, 'wpli': _WPLIEst,
-                   'wpli2_debiased': _WPLIDebiasedEst}
+                   'wpli2_debiased': _WPLIDebiasedEst, 'mic': _MICEst,
+                   'mim': _MIMEst}
 
 
 def _check_estimators(method, mode):
@@ -752,9 +754,9 @@ def _check_estimators(method, mode):
                    for mtype in con_method_types]
 
     # we currently only support 3 arguments
-    if any(n not in (3, 5) for n in n_comp_args):
+    if any(n not in (3, 5, 6) for n in n_comp_args):
         raise ValueError('The .compute_con method needs to have either '
-                         '3 or 5 arguments')
+                         '3, 5 or 6 arguments')
     # if none of the comp_con functions needs the PSD, we don't estimate it
     accumulate_psd = any(n == 5 for n in n_comp_args)
     return con_method_types, n_methods, accumulate_psd, n_comp_args
