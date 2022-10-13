@@ -98,9 +98,7 @@ def seed_target_indices(seeds, targets):
 
     return indices
 
-def multivar_seed_target_indices(
-    seeds: ArrayLike, targets: ArrayLike
-) -> tuple[ArrayLike]:
+def multivar_seed_target_indices(seeds, targets):
     """Generates indices parameter for seed-based multivariate connectivity
     analysis.
     PARAMETERS
