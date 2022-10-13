@@ -1,6 +1,6 @@
+from mne.filter import filter_data
 import numpy as np
 from numpy.testing import (
-    assert_allclose, 
     assert_array_almost_equal,
     assert_array_less
     )
@@ -10,9 +10,7 @@ from mne_connectivity import (
     SpectralConnectivity, 
     multivar_spectral_connectivity_epochs
     )
-from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
 
-from .test_spectral import create_test_dataset
 
 def create_test_dataset_multivar(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
                         fstart, fend, trans_bandwidth=2., shift=None):
@@ -87,31 +85,48 @@ def test_multivar_spectral_connectivity(method, mode):
 
     # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
+
+    data, times_data = create_test_dataset_multivar(
+        sfreq, n_signals=2, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth, shift=None)
     
     class _InvalidClass:
         pass
 
     # First we test some invalid parameters:
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs,
-                  data, method='notamethod', 
-                  match='is not a valid connectivity method')
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs,
-                  data, method=_InvalidClass, 
-                  match='The supplied connectivity method does not have the method')
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs, data,
-                  mode='notamode', match='mode has an invalid value')
+    with pytest.raises(ValueError, match='is not a valid connectivity method'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), method='notamethod'
+            )
+    with pytest.raises(
+        ValueError, 
+        match='The supplied connectivity method does not have the method'
+        ):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), method=_InvalidClass,
+            )
+    with pytest.raises(ValueError, match='mode has an invalid value'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), mode='notamode'
+            )
 
     # test invalid fmin fmax settings
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs, data, fmin=10,
-                  fmax=10 + 0.5 * (sfreq / float(n_times)), 
-                  method='There are no frequency points between')
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs,
-                  data, fmin=10, fmax=5, method='fmax must be larger than fmin')
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs, data, fmin=(0, 11),
-                  fmax=(5, 10), method='fmax must be larger than fmin')
-    pytest.raises(ValueError, multivar_spectral_connectivity_epochs, data, fmin=(11,),
-                  fmax=(12, 15), 
-                  method='fmin and fmax must have the same length')
+    with pytest.raises(
+        ValueError, match='There are no frequency points between'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), fmin=10,
+            fmax=10 + 0.5 * (sfreq / float(n_times)) )
+    with pytest.raises(ValueError, match='fmax must be larger than fmin'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), fmin=10, fmax=5)
+    with pytest.raises(ValueError, match='fmax must be larger than fmin'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), fmin=(0, 11), fmax=(5, 10))
+    with pytest.raises(
+        ValueError, match='fmin and fmax must have the same length'):
+        multivar_spectral_connectivity_epochs(
+            data, indices=([[0]], [[1]]), fmin=(11,), fmax=(12, 15))
 
     # define some frequencies for cwt
     cwt_freqs = np.arange(3, 24.5, 1)
@@ -130,22 +145,23 @@ def test_multivar_spectral_connectivity(method, mode):
 
 
     for adaptive in check_adaptive:
-
         if adaptive:
             mt_bandwidth = 1.
         else:
             mt_bandwidth = None
 
-        # indices cannot be None
-        pytest.raises(ValueError, multivar_spectral_connectivity_epochs,
-            data, method=method, mode=mode, indices=None, sfreq=sfreq,
-            mt_adaptive=adaptive, mt_low_bias=True,
-            mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles, match='Please put the matching string here')
+        # Indices cannot be None
+        with pytest.raises(
+            ValueError, match='indices must be specified'):
+            multivar_spectral_connectivity_epochs(
+                data, indices=None,method=method, mode=mode,  sfreq=sfreq,
+                mt_adaptive=adaptive, mt_low_bias=True,
+                mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
+                cwt_n_cycles=cwt_n_cycles
+                )
 
-        indices = ([[0, 1, 2], [3, 4, 5]], [[6, 7, 8], [6, 7, 8]])
         con = multivar_spectral_connectivity_epochs(
-            data, method=method, mode=mode, indices=indices, sfreq=sfreq,
+            data, indices=([[0]], [[1]]), method=method, mode=mode, sfreq=sfreq,
             mt_adaptive=adaptive, mt_low_bias=True,
             mt_bandwidth=mt_bandwidth, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles)
