@@ -16,7 +16,7 @@ from scipy import linalg as spla
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
 from ..utils import check_indices, fill_doc
-from .epochs import (_CohEstBase, _assemble_spectral_params, _check_estimators,
+from .epochs import (_assemble_spectral_params, _check_estimators,
                      _epoch_spectral_connectivity, _get_and_verify_data_sizes,
                      _get_n_epochs, _prepare_connectivity)
 
