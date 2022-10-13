@@ -8,26 +8,23 @@
 #
 # License: BSD (3-clause)
 
-import inspect
-from functools import partial
 from typing import Union
 
 import numpy as np
 from mne import BaseEpochs
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.source_estimate import _BaseSourceEstimate
-from mne.time_frequency.multitaper import (_compute_mt_params, _csd_from_mt,
-                                           _mt_spectra, _psd_from_mt,
-                                           _psd_from_mt_adaptive)
-from mne.time_frequency.tfr import cwt, morlet
-from mne.utils import _arange_div, _check_option, _time_mask, logger, warn
-from numpy.typing import ArrayLike, NDArray
+from mne.utils import logger
+from numpy.typing import ArrayLike
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
 from ..utils import check_indices, fill_doc
+from .epochs import (_assemble_spectral_params, _check_estimators,
+                     _epoch_spectral_connectivity, _get_and_verify_data_sizes,
+                     _get_n_epochs, _prepare_connectivity)
 
 
+@fill_doc
 def multivar_spectral_connectivity_epochs(
     data: Union[ArrayLike, BaseEpochs],
     indices: tuple[tuple[ArrayLike]],
@@ -38,8 +35,10 @@ def multivar_spectral_connectivity_epochs(
     t0: float = 0.0,
     tmin: Union[float, None] = None,
     tmax: Union[float, None] = None,
-    fmt_fmin: float = 0.0,
-    fmt_fmax: float = np.inf,
+    fmin: float = 0.0,
+    fmax: float = np.inf,
+    fskip=0, 
+    faverage=False, 
     cwt_freqs: Union[list[float], None] = None,
     fmt_n_fft: Union[int, None] = None,
     cwt_use_fft: bool = True,
