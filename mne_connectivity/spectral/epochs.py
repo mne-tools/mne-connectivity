@@ -530,6 +530,15 @@ class _PPCEst(_EpochMeanConEstBase):
 class _MICMIMEstBase(_CohEstBase):
     """Base Estimator for MIC and MIM."""
 
+    def reshape_csd(self, n_epochs):
+        """Reshapes CSD into a matrix of signals x signals x freqs or signals x
+        signals x times x freqs"""
+        csd = self._acc/n_epochs
+        n_signals = int(np.sqrt(self.n_cons))
+        if self.n_times == 0:
+            return np.reshape(csd, (n_signals, n_signals, self.n_freqs, 1))
+        return np.reshape(csd, (n_signals, n_signals, self.n_freqs, self.n_times))
+
     def cross_spectra_svd(
         self, csd, n_seeds, n_seed_components, n_target_components
     ):
@@ -600,6 +609,11 @@ class _MICMIMEstBase(_CohEstBase):
         E = np.imag(D[:n_seeds, n_seeds:])
 
         return E
+    
+    def reshape_con_scores(self):
+        """Removes the time dimension from con. scores, if necessary"""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[:,:,0]
 
 
 class _MIMEst(_MICMIMEstBase):
@@ -612,31 +626,30 @@ class _MIMEst(_MICMIMEstBase):
     ):
         """Computes the multivariate interaction measure between two sets of
         signals"""
-        n_signals = int(np.sqrt(self.n_cons))
-        csd = np.reshape((self._acc / n_epochs), (n_signals, n_signals, self.n_freqs))
-
-        mim = np.zeros((len(seeds), self.n_freqs))
+        csd = self.reshape_csd(n_epochs)
+        n_times = csd.shape[3]
+        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
         node_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs))]
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
             for freq_i in range(self.n_freqs):
-                # Eqs. 32 & 33
-                C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                    csd=node_csd[:, :, freq_i],
-                    n_seeds=len(seed_idcs),
-                    n_seed_components=n_seed_components[node_i],
-                    n_target_components=n_target_components[node_i],
-                )
+                for time_i in range(n_times):
+                    # Eqs. 32 & 33
+                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
+                        csd=node_csd[:, :, freq_i, time_i],
+                        n_seeds=len(seed_idcs),
+                        n_seed_components=n_seed_components[node_i],
+                        n_target_components=n_target_components[node_i],
+                    )
 
-                # Eqs. 3 & 4
-                E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
+                    # Eqs. 3 & 4
+                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
 
-                # Equation 14
-                mim[node_i, freq_i] = np.trace(np.matmul(E, np.conj(E).T))
+                    # Equation 14
+                    self.con_scores[node_i, freq_i] = np.trace(np.matmul(E, np.conj(E).T))
             node_i += 1
-
-        self.con_scores = mim
+        self.reshape_con_scores()
 
 
 class _MICEst(_MICMIMEstBase):
@@ -649,41 +662,41 @@ class _MICEst(_MICMIMEstBase):
     ):
         """Computes the maximized imaginary coherence between two sets of
         signals"""
-        n_signals = int(np.sqrt(self.n_cons))
-        csd = np.reshape((self._acc / n_epochs), (n_signals, n_signals, self.n_freqs))
-
-        mic = np.zeros((len(seeds), self.n_freqs))
+        csd = self.reshape_csd(n_epochs)
+        n_times = csd.shape[3]
+        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
         node_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             n_seeds = len(seed_idcs)
             node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs))]
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
             for freq_i in range(self.n_freqs):
-                # Eqs. 32 & 33
-                C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                    csd=node_csd[:, :, freq_i],
-                    n_seeds=n_seeds,
-                    n_seed_components=n_seed_components[node_i],
-                    n_target_components=n_target_components[node_i],
-                )
+                for time_i in range(n_times):
+                    # Eqs. 32 & 33
+                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
+                        csd=node_csd[:, :, freq_i, time_i],
+                        n_seeds=n_seeds,
+                        n_seed_components=n_seed_components[node_i],
+                        n_target_components=n_target_components[node_i],
+                    )
 
-                # Eqs. 3 & 4
-                E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
+                    # Eqs. 3 & 4
+                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
 
-                # Weights for signals in the groups
-                w_a, V_a = np.linalg.eigh(np.matmul(E, np.conj(E).T))
-                w_b, V_b = np.linalg.eigh(np.matmul(np.conj(E).T, E))
-                alpha = V_a[:, w_a.argmax()]
-                beta = V_b[:, w_b.argmax()]
+                    # Weights for signals in the groups
+                    w_a, V_a = np.linalg.eigh(np.matmul(E, np.conj(E).T))
+                    w_b, V_b = np.linalg.eigh(np.matmul(np.conj(E).T, E))
+                    alpha = V_a[:, w_a.argmax()]
+                    beta = V_b[:, w_b.argmax()]
 
-                # Eq. 7
-                mic[node_i, freq_i] = (
-                    np.matmul(np.conj(alpha).T, np.matmul(E, beta))
-                    / np.linalg.norm(alpha)
-                    * np.linalg.norm(beta)
-                )
+                    # Eq. 7
+                    self.con_scores[node_i, freq_i, time_i] = (
+                        np.matmul(np.conj(alpha).T, np.matmul(E, beta))
+                        / np.linalg.norm(alpha)
+                        * np.linalg.norm(beta)
+                    )
             node_i += 1
-        self.con_scores = mic
+        self.reshape_con_scores()
 
 
 ###############################################################################
