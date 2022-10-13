@@ -50,7 +50,8 @@ def multivar_spectral_connectivity_epochs(
     cwt_decim: Union[int, slice] = 1,
     n_seed_components: Union[tuple[Union[int, None]], None] = None,
     n_target_components: Union[tuple[Union[int, None]], None] = None,
-    gc_n_lags: int = 20,
+    gc_n_lags: int = 20, 
+    block_size=1000, 
     n_jobs: int = 1,
     verbose: Union[bool, str, int, None] = None,
 ) -> Union[SpectralConnectivity, list[SpectralConnectivity]]:
@@ -258,15 +259,8 @@ def multivar_spectral_connectivity_epochs(
             # map indices to unique indices
             idx_map = [np.searchsorted(sig_idx, ind) for ind in indices_use]
 
-            # allocate space to accumulate PSD
-            if accumulate_psd:
-                if n_times_spectrum == 0:
-                    psd_shape = (len(sig_idx), n_freqs)
-                else:
-                    psd_shape = (len(sig_idx), n_freqs, n_times_spectrum)
-                psd = np.zeros(psd_shape)
-            else:
-                psd = None
+            # None of the implemented multivariate methods need PSD
+            psd = None
 
             # create instances of the connectivity estimators
             con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
@@ -320,10 +314,7 @@ def multivar_spectral_connectivity_epochs(
 
             epoch_idx += len(epoch_block)
 
-    # normalize
     n_epochs = epoch_idx
-    if accumulate_psd:
-        psd /= n_epochs
 
     # compute final connectivity scores
     con = list()
@@ -373,23 +364,6 @@ def multivar_spectral_connectivity_epochs(
         freqs_used = freqs_bands
         freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
-    if indices is None:
-        # return all-to-all connectivity matrices
-        # raveled into a 1D array
-        logger.info('    assembling connectivity matrix')
-        con_flat = con
-        con = list()
-        for this_con_flat in con_flat:
-            this_con = np.zeros((n_signals, n_signals) +
-                                this_con_flat.shape[1:],
-                                dtype=this_con_flat.dtype)
-            this_con[indices_use] = this_con_flat
-
-            # ravel 2D connectivity into a 1D array
-            # while keeping other dimensions
-            this_con = this_con.reshape((n_signals ** 2,) +
-                                        this_con_flat.shape[1:])
-            con.append(this_con)
     # number of nodes in the original data,
     n_nodes = n_signals
 
