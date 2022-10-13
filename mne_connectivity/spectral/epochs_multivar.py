@@ -35,7 +35,7 @@ def multivar_spectral_connectivity_epochs(
     mode = "multitaper",
     tmin = None,
     tmax = None,
-    fmin = 0.0,
+    fmin = None,
     fmax = np.inf,
     fskip = 0, 
     faverage = False, 
@@ -43,7 +43,7 @@ def multivar_spectral_connectivity_epochs(
     mt_bandwidth = None,
     mt_adaptive = False,
     mt_low_bias = True,
-    cwt_n_cycles = 7.0,
+    cwt_n_cycles = 7,
     n_seed_components = None,
     n_target_components = None,
     block_size = 1000, 
@@ -172,6 +172,9 @@ def multivar_spectral_connectivity_epochs(
         multiple methods are called, where each object is the results for the
         corresponding entry in "method").
     """
+    if indices is None:
+        raise ValueError("indices must be specified, got `None`.")
+
     if n_jobs != 1:
         parallel, my_epoch_spectral_connectivity, _ = \
             parallel_func(_epoch_spectral_connectivity, n_jobs,
