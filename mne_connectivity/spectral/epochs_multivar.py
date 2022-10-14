@@ -376,11 +376,11 @@ def multivar_spectral_connectivity_epochs(
 
     # create a list of connectivity containers
     conn_list = []
-    for _con in con:
+    for _con, _method in zip(con, method):
         kwargs = dict(data=_con,
                       names=names,
                       freqs=freqs,
-                      method=method,
+                      method=_method,
                       n_nodes=n_nodes,
                       spec_method=mode,
                       indices=remapped_indices,
