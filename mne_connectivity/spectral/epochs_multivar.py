@@ -462,6 +462,13 @@ def _check_inputs(
             f" Got: {len(n_seed_components)} seed components and {n_seeds}"
             "seeds."
             )
+        for n_comps, chs in zip(n_seed_components, indices[0]):
+            if n_comps > len(chs):
+                raise ValueError(
+                    f"The number of components to take ({n_comps}) cannot be "
+                    "greater than the number of channels in that seed "
+                    f"({len(chs)})."
+                )
     else:
         raise ValueError(
             "n_seed_components must be a tuple or None. Got:"
@@ -477,6 +484,13 @@ def _check_inputs(
             f" targets. Got: {len(n_target_components)} seed components and"
             f" {n_targets} targets."
             )
+        for n_comps, chs in zip(n_target_components, indices[1]):
+            if n_comps > len(chs):
+                raise ValueError(
+                    f"The number of components to take ({n_comps}) cannot be "
+                    "greater than the number of channels in that target "
+                    f"({len(chs)})."
+                )
     else:
         raise ValueError(
             "n_target_components must be a tuple or None. Got:"
