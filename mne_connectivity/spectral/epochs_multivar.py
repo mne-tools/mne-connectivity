@@ -326,8 +326,6 @@ def multivar_spectral_connectivity_epochs(
             for this_out in out:
                 for _method, parallel_method in zip(con_methods, this_out[0]):
                     _method.combine(parallel_method)
-                if accumulate_psd:
-                    psd += this_out[1]
 
             epoch_idx += len(epoch_block)
 
@@ -343,13 +341,16 @@ def multivar_spectral_connectivity_epochs(
         # get the connectivity scores
         this_con = conn_method.con_scores
 
-        if this_con.shape[0] != n_cons:
-            raise ValueError('First dimension of connectivity scores must be '
-                             'the same as the number of connections')
+        assert (this_con.shape[0] == n_cons), \
+            ('The first dimension of connectivity scores does not match the'
+            ' number of connections. Please contact the mne-connectivity' 
+            ' developers.')
+
         if faverage:
-            if this_con.shape[1] != n_freqs:
-                raise ValueError('2nd dimension of connectivity scores must '
-                                 'be the same as the number of frequencies')
+            assert (this_con.shape[1] == n_freqs), \
+            ('The second dimension of connectivity scores does not match the'
+            ' number of frequencies. Please contact the mne-connectivity' 
+            ' developers.')
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)
             for band_idx in range(n_bands):
