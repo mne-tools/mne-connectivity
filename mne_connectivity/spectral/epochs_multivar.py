@@ -456,7 +456,7 @@ def _check_inputs(
 
     if n_seed_components is None:
         n_seed_components = tuple([None] * len(indices[0]))
-    elif isinstance(n_seed_components, tuple):
+    else:
         if n_seeds != len(n_seed_components):
             raise ValueError(
             "n_seed_components must have the same length as specified seeds."
@@ -470,15 +470,10 @@ def _check_inputs(
                     "greater than the number of channels in that seed "
                     f"({len(chs)})."
                 )
-    else:
-        raise ValueError(
-            "n_seed_components must be a tuple or None. Got:"
-            f" {n_seed_components}."
-            )
 
     if n_target_components is None:
         n_target_components = tuple([None] * len(indices[1]))
-    elif isinstance(n_target_components, tuple):
+    else:
         if n_targets != len(n_target_components):
             raise ValueError(
             "n_target_components must have the same length as specified"
@@ -492,11 +487,6 @@ def _check_inputs(
                     "greater than the number of channels in that target "
                     f"({len(chs)})."
                 )
-    else:
-        raise ValueError(
-            "n_target_components must be a tuple or None. Got:"
-            f" {n_target_components}."
-            )
 
     return (
         n_seed_components,
