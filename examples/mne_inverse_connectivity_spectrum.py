@@ -21,10 +21,10 @@ from mne_connectivity import spectral_connectivity_epochs
 print(__doc__)
 
 data_path = sample.data_path()
-subjects_dir = data_path + '/subjects'
-fname_inv = data_path + '/MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
-fname_raw = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw.fif'
-fname_event = data_path + '/MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+subjects_dir = data_path / 'subjects'
+fname_inv = data_path / 'MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
+fname_raw = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
+fname_event = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
 
 # Load data
 inverse_operator = read_inverse_operator(fname_inv)
@@ -54,7 +54,7 @@ stcs = apply_inverse_epochs(epochs, inverse_operator, lambda2, method,
 
 # Read some labels
 names = ['Aud-lh', 'Aud-rh', 'Vis-lh', 'Vis-rh']
-labels = [mne.read_label(data_path + '/MEG/sample/labels/%s.label' % name)
+labels = [mne.read_label(data_path / f'MEG/sample/labels/{name}.label')
           for name in names]
 
 # Average the source estimates within each label using sign-flips to reduce

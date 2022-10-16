@@ -17,7 +17,10 @@ clean-so:
 	find . -name "*.pyd" | xargs rm -f
 
 clean-build:
-	rm -rf _build
+	rm -rf build
+	rm -rf dist
+	rm -rf mne_connectivity.egg-info
+
 
 clean-ctags:
 	rm -f tags

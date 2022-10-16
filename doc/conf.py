@@ -228,7 +228,7 @@ intersphinx_mapping = {
     'pyvista': ('https://docs.pyvista.org', None),
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
     'nibabel': ('https://nipy.org/nibabel', None),
-    'nilearn': ('http://nilearn.github.io', None),
+    'nilearn': ('http://nilearn.github.io/stable', None),
     'dipy': ('https://dipy.org/documentation/1.4.0./',
              'https://dipy.org/documentation/1.4.0./objects.inv/'),
 }
@@ -252,6 +252,7 @@ try:
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         import pyvista
     pyvista.OFF_SCREEN = False
+    pyvista.BUILDING_GALLERY = True
 except Exception:
     pass
 else:
