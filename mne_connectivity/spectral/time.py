@@ -213,7 +213,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     # extract data from Epochs object
     if isinstance(data, BaseEpochs):
         names = data.ch_names
-        times = data.times
         sfreq = data.info['sfreq']
         events = data.events
         event_id = data.event_id
@@ -234,7 +233,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     else:
         data = np.asarray(data)
         n_epochs, n_signals, n_times = data.shape
-        times = np.arange(0, n_times)
         names = np.arange(0, n_signals)
         metadata = None
         if sfreq is None:

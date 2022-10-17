@@ -2,15 +2,8 @@ import numpy as np
 from numpy.testing import (assert_allclose, assert_array_almost_equal,
                            assert_array_less)
 import pytest
-import scipy
-import warnings
-
-import mne
-from mne import (EpochsArray, SourceEstimate, create_info,
-                 make_fixed_length_epochs)
+from mne import (EpochsArray, SourceEstimate, create_info)
 from mne.filter import filter_data
-from mne.utils import _resource_path
-from mne_bids import BIDSPath, read_raw_bids
 
 from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
@@ -498,16 +491,17 @@ def test_spectral_connectivity_time_sim(method, mode, data_option):
         # Data consists of phase-locked 10Hz sine waves with constant phase
         # difference within each epoch.
         wave_freq = 10
-        epoch_length = n_times/sfreq
+        epoch_length = n_times / sfreq
         for i in range(n_epochs):
             for c in range(n_channels):
                 phase = rng.random() * 10
-                x = np.linspace(-wave_freq*epoch_length*np.pi+phase,
-                                wave_freq*epoch_length*np.pi+phase, n_times)
+                x = np.linspace(-wave_freq * epoch_length * np.pi + phase,
+                                wave_freq * epoch_length * np.pi + phase,
+                                n_times)
                 data[i, c] = np.squeeze(np.sin(x))
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
-    cwt_freqs = np.arange(freq_band_low_limit, freq_band_high_limit+1)
+    cwt_freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
     con = spectral_connectivity_time(data, method=method, mode=mode,
                                      sfreq=sfreq, fmin=freq_band_low_limit,
                                      fmax=freq_band_high_limit,
@@ -516,10 +510,13 @@ def test_spectral_connectivity_time_sim(method, mode, data_option):
     assert con.shape == (n_channels ** 2, len(con.freqs))
     con_matrix = con.get_data('dense')[..., 0]
     if data_option == 'sync':
-        assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1),
+        assert np.allclose(con_matrix,
+                           np.tril(np.ones(con_matrix.shape),
+                                   k=-1),
                            atol=0.01)
     if data_option == 'random':
         assert np.all(con_matrix) <= 0.5
+
 
 @pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
 @pytest.mark.parametrize(
