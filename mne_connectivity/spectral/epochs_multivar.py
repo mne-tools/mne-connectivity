@@ -240,7 +240,7 @@ def multivar_spectral_connectivity_epochs(
             # initialize everything times and frequencies
             (n_cons, times, n_times, times_in, n_times_in, tmin_idx,
              tmax_idx, n_freqs, freq_mask, freqs, freqs_bands, freq_idx_bands,
-             n_signals, indices_use, warn_times) = _prepare_connectivity(
+             n_signals, _, warn_times) = _prepare_connectivity(
                 epoch_block=epoch_block, times_in=times_in,
                 tmin=tmin, tmax=tmax, fmin=fmin, fmax=fmax, sfreq=sfreq,
                 indices=indices, mode=mode, fskip=fskip, n_bands=n_bands,
@@ -254,24 +254,14 @@ def multivar_spectral_connectivity_epochs(
                 mt_low_bias=mt_low_bias, cwt_n_cycles=cwt_n_cycles,
                 cwt_freqs=cwt_freqs, freqs=freqs, freq_mask=freq_mask)
 
-            # unique signals for which we actually need to compute CSD etc.
-            sig_idx = np.unique([idx for indices_group in indices for idcs in
-                indices_group for idx in idcs])
-
-            ### UGLY!
             # map indices to unique indices
-            remapping = {}
-            remapped_indices = deepcopy(indices)
-            for sig_i, ch_i in enumerate(sig_idx):
-                remapping[ch_i] = sig_i
-            for seed_i, seed_idcs in enumerate(indices[0]):
-                remapped_indices[0][seed_i] = [remapping[idx] for idx in seed_idcs]
-            for target_i, target_idcs in enumerate(indices[1]):
-                remapped_indices[1][target_i] = [remapping[idx] for idx in target_idcs]
+            unique_indices = np.unique(sum(sum(indices, []), []))
+            remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
+            remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in indices_group] for indices_group in indices]
 
-            # remapped unique signals for which we actually need to compute CSD etc.
-            sig_idx = np.unique([idx for indices_group in remapped_indices for idcs in
-                indices_group for idx in idcs])
+            # unique signals for which we actually need to compute CSD etc.
+            sig_idx = np.unique(sum(sum(remapped_indices, []), []))
+            n_signals = len(sig_idx)
 
             # gets seed-target indices for CSD
             idx_map = [np.repeat(sig_idx, len(sig_idx)), np.tile(sig_idx, len(sig_idx))]
@@ -280,7 +270,7 @@ def multivar_spectral_connectivity_epochs(
             psd = None
 
             # create instances of the connectivity estimators
-            con_methods = [mtype(len(sig_idx)**2, n_freqs, n_times_spectrum)
+            con_methods = [mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
                            for mtype in con_method_types]
 
             sep = ', '
@@ -464,11 +454,11 @@ def _check_inputs(
             "seeds."
             )
         for n_comps, chs in zip(n_seed_components, indices[0]):
-            if n_comps > len(chs):
+            if n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
                     f"The number of components to take ({n_comps}) cannot be "
                     "greater than the number of channels in that seed "
-                    f"({len(chs)})."
+                    f"({len(chs)}) and must be greater than 0."
                 )
 
     if n_target_components is None:
@@ -477,15 +467,15 @@ def _check_inputs(
         if n_targets != len(n_target_components):
             raise ValueError(
             "n_target_components must have the same length as specified"
-            f" targets. Got: {len(n_target_components)} seed components and"
+            f" targets. Got: {len(n_target_components)} target components and"
             f" {n_targets} targets."
             )
         for n_comps, chs in zip(n_target_components, indices[1]):
-            if n_comps > len(chs):
+            if n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
                     f"The number of components to take ({n_comps}) cannot be "
                     "greater than the number of channels in that target "
-                    f"({len(chs)})."
+                    f"({len(chs)}) and must be greater than 0."
                 )
 
     return (
