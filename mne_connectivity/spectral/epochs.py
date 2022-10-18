@@ -243,6 +243,31 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
         self._acc += other._acc
 
 
+class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
+    """Base class for methods that estimate connectivity as mean epoch-wise."""
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times):
+        self.n_signals = n_signals
+        self.n_cons = n_cons
+        self.n_freqs = n_freqs
+        self.n_times = n_times
+
+        if n_times == 0:
+            self.csd_shape = (n_signals**2, n_freqs)
+            self.con_scores_shape = (n_cons, n_freqs, 1)
+        else:
+            self.csd_shape = (n_signals**2, n_freqs, n_times)
+            self.con_scores_shape = (n_cons, n_freqs, n_times)
+
+    def start_epoch(self):  # noqa: D401
+        """Called at the start of each epoch."""
+        pass  # for this type of con. method we don't do anything
+
+    def combine(self, other):
+        """Include con. accumated for some epochs in this estimate."""
+        self._acc += other._acc
+
+
 class _CohEstBase(_EpochMeanConEstBase):
     """Base Estimator for Coherence, Coherency, Imag. Coherence."""
 
@@ -256,6 +281,84 @@ class _CohEstBase(_EpochMeanConEstBase):
         """Accumulate CSD for some connections."""
         self._acc[con_idx] += csd_xy
 
+class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
+    """Base Estimator for coherenc-based multivariate methods."""
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times):
+        super(_MultivarCohEstBase, self).__init__(n_signals, n_cons, n_freqs, n_times)
+
+        # allocate space for accumulation of CSD
+        self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
+
+    def accumulate(self, con_idx, csd_xy):
+        """Accumulate CSD for some connections."""
+        self._acc[con_idx] += csd_xy
+
+    def reshape_csd(self):
+        """Reshapes CSD into a matrix of signals x signals x freqs or signals x
+        signals x times x freqs"""
+        if self.n_times == 0:
+            return np.reshape(self._acc, (self.n_signals, self.n_signals, self.n_freqs, 1))
+        return np.reshape(self._acc, (self.n_signals, self.n_signals, self.n_freqs, self.n_times))
+
+    def cross_spectra_svd(
+        self, csd, n_seeds, n_seed_components, n_target_components
+    ):
+        """Performs dimensionality reduction on a cross-spectral density using
+        singular value decomposition (SVD)."""
+        C_aa = csd[:n_seeds, :n_seeds]
+        C_ab = csd[:n_seeds, n_seeds:]
+        C_bb = csd[n_seeds:, n_seeds:]
+        C_ba = csd[n_seeds:, :n_seeds]
+
+        # Eq. 32
+        if n_seed_components is not None:
+            U_aa, _, _ = np.linalg.svd(np.real(C_aa), full_matrices=False)
+            U_bar_aa = U_aa[:, :n_seed_components]
+        else:
+            U_bar_aa = np.identity(C_aa.shape[0])
+        if n_target_components is not None:
+            U_bb, _, _ = np.linalg.svd(np.real(C_bb), full_matrices=False)
+            U_bar_bb = U_bb[:, :n_target_components]
+        else:
+            U_bar_bb = np.identity(C_bb.shape[0])
+
+        # Eq. 33
+        C_bar_aa = np.matmul(U_bar_aa.T, np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(U_bar_aa.T, np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(U_bar_bb.T, np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(U_bar_bb.T, np.matmul(C_ba, U_bar_aa))
+        C_bar = np.vstack(
+            (np.hstack((C_bar_aa, C_bar_ab)), np.hstack((C_bar_ba, C_bar_bb)))
+        )
+
+        return C_bar, U_bar_aa, U_bar_bb
+
+    def mim_mic_compute_e(self, csd, n_seeds):
+        """Computes E as the imaginary part of the transformed cross-spectra D
+        derived from the original cross-spectra "csd" between the seed and target
+        signals."""
+        # Equation 3
+        T = np.zeros(csd.shape)
+        T[:n_seeds, :n_seeds] = spla.fractional_matrix_power(
+            np.real(csd[:n_seeds, :n_seeds]), -0.5
+        )  # real(C_aa)^-1/2
+        T[n_seeds:, n_seeds:] = spla.fractional_matrix_power(
+            np.real(csd[n_seeds:, n_seeds:]), -0.5
+        )  # real(C_bb)^-1/2
+
+        # Equation 4
+        D = np.matmul(T, np.matmul(csd, T))
+
+        # E as the imaginary part of D between seeds and targets
+        E = np.imag(D[:n_seeds, n_seeds:])
+
+        return E
+    
+    def reshape_con_scores(self):
+        """Removes the time dimension from con. scores, if necessary"""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[:,:,0]
 
 class _CohEst(_CohEstBase):
     """Coherence Estimator."""
@@ -296,6 +399,87 @@ class _ImCohEst(_CohEstBase):
         csd_mean = self._acc[con_idx] / n_epochs
         self.con_scores[con_idx] = np.imag(csd_mean) / np.sqrt(psd_xx * psd_yy)
 
+class _MIMEst(_MultivarCohEstBase):
+    """Estimator for MIM (multivariate interaction measure)"""
+
+    name = "MIM"
+
+    def compute_con(
+        self, seeds, targets, n_seed_components, n_target_components, n_epochs
+    ):
+        """Computes the multivariate interaction measure between two sets of
+        signals"""
+        csd = self.reshape_csd()/n_epochs
+        n_times = csd.shape[3]
+        self.con_scores = np.zeros(self.con_scores_shape)
+        node_i = 0
+        for seed_idcs, target_idcs in zip(seeds, targets):
+            node_idcs = [*seed_idcs, *target_idcs]
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
+            for freq_i in range(self.n_freqs):
+                for time_i in range(n_times):
+                    # Eqs. 32 & 33
+                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
+                        csd=node_csd[:, :, freq_i, time_i],
+                        n_seeds=len(seed_idcs),
+                        n_seed_components=n_seed_components[node_i],
+                        n_target_components=n_target_components[node_i],
+                    )
+
+                    # Eqs. 3 & 4
+                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
+
+                    # Equation 14
+                    self.con_scores[node_i, freq_i] = np.trace(np.matmul(E, np.conj(E).T))
+            node_i += 1
+        self.reshape_con_scores()
+
+
+class _MICEst(_MultivarCohEstBase):
+    """Estimator for MIC (maximized imaginary coherence)"""
+
+    name = "MIC"
+
+    def compute_con(
+        self, seeds, targets, n_seed_components, n_target_components, n_epochs
+    ):
+        """Computes the maximized imaginary coherence between two sets of
+        signals"""
+        csd = self.reshape_csd()/n_epochs
+        n_times = csd.shape[3]
+        self.con_scores = np.zeros(self.con_scores_shape)
+        node_i = 0
+        for seed_idcs, target_idcs in zip(seeds, targets):
+            n_seeds = len(seed_idcs)
+            node_idcs = [*seed_idcs, *target_idcs]
+            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
+            for freq_i in range(self.n_freqs):
+                for time_i in range(n_times):
+                    # Eqs. 32 & 33
+                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
+                        csd=node_csd[:, :, freq_i, time_i],
+                        n_seeds=n_seeds,
+                        n_seed_components=n_seed_components[node_i],
+                        n_target_components=n_target_components[node_i],
+                    )
+
+                    # Eqs. 3 & 4
+                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
+
+                    # Weights for signals in the groups
+                    w_a, V_a = np.linalg.eigh(np.matmul(E, np.conj(E).T))
+                    w_b, V_b = np.linalg.eigh(np.matmul(np.conj(E).T, E))
+                    alpha = V_a[:, w_a.argmax()]
+                    beta = V_b[:, w_b.argmax()]
+
+                    # Eq. 7
+                    self.con_scores[node_i, freq_i, time_i] = (
+                        np.matmul(np.conj(alpha).T, np.matmul(E, beta))
+                        / np.linalg.norm(alpha)
+                        * np.linalg.norm(beta)
+                    )
+            node_i += 1
+        self.reshape_con_scores()
 
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
@@ -527,176 +711,6 @@ class _PPCEst(_EpochMeanConEstBase):
 
         self.con_scores[con_idx] = np.real(con)
 
-class _MICMIMEstBase(_CohEstBase):
-    """Base Estimator for MIC and MIM."""
-
-    def reshape_csd(self, n_epochs):
-        """Reshapes CSD into a matrix of signals x signals x freqs or signals x
-        signals x times x freqs"""
-        csd = self._acc/n_epochs
-        n_signals = int(np.sqrt(self.n_cons))
-        if self.n_times == 0:
-            return np.reshape(csd, (n_signals, n_signals, self.n_freqs, 1))
-        return np.reshape(csd, (n_signals, n_signals, self.n_freqs, self.n_times))
-
-    def cross_spectra_svd(
-        self, csd, n_seeds, n_seed_components, n_target_components
-    ):
-        """Performs dimensionality reduction on a cross-spectral density using
-        singular value decomposition (SVD)."""
-        C_aa = csd[:n_seeds, :n_seeds]
-        C_ab = csd[:n_seeds, n_seeds:]
-        C_bb = csd[n_seeds:, n_seeds:]
-        C_ba = csd[n_seeds:, :n_seeds]
-
-        # Eq. 32
-        if n_seed_components is not None:
-            self.check_svd_params(n_seeds, n_seed_components)
-            U_aa, _, _ = np.linalg.svd(np.real(C_aa), full_matrices=False)
-            U_bar_aa = U_aa[:, :n_seed_components]
-        else:
-            U_bar_aa = np.identity(C_aa.shape[0])
-        if n_target_components is not None:
-            self.check_svd_params(csd.shape[0] - n_seeds, n_target_components)
-            U_bb, _, _ = np.linalg.svd(np.real(C_bb), full_matrices=False)
-            U_bar_bb = U_bb[:, :n_target_components]
-        else:
-            U_bar_bb = np.identity(C_bb.shape[0])
-
-        # Eq. 33
-        C_bar_aa = np.matmul(U_bar_aa.T, np.matmul(C_aa, U_bar_aa))
-        C_bar_ab = np.matmul(U_bar_aa.T, np.matmul(C_ab, U_bar_bb))
-        C_bar_bb = np.matmul(U_bar_bb.T, np.matmul(C_bb, U_bar_bb))
-        C_bar_ba = np.matmul(U_bar_bb.T, np.matmul(C_ba, U_bar_aa))
-        C_bar = np.vstack(
-            (np.hstack((C_bar_aa, C_bar_ab)), np.hstack((C_bar_ba, C_bar_bb)))
-        )
-
-        return C_bar, U_bar_aa, U_bar_bb
-
-    def check_svd_params(self, n_signals, take_n_components):
-        """Checks that the parameters used for a singular value decomposition"
-        are compatible with the data being used."""
-        if take_n_components == 0:
-            raise ValueError(
-                "0 components are being taken from the singular value "
-                "decomposition, but this must be at least 1."
-            )
-        if take_n_components > n_signals:
-            raise ValueError(
-                f"At most {n_signals} components can be taken from the "
-                f"singular value decomposition, but {take_n_components} are "
-                "being taken."
-            )
-
-    def mim_mic_compute_e(self, csd, n_seeds):
-        """Computes E as the imaginary part of the transformed cross-spectra D
-        derived from the original cross-spectra "csd" between the seed and target
-        signals."""
-        # Equation 3
-        T = np.zeros(csd.shape)
-        T[:n_seeds, :n_seeds] = spla.fractional_matrix_power(
-            np.real(csd[:n_seeds, :n_seeds]), -0.5
-        )  # real(C_aa)^-1/2
-        T[n_seeds:, n_seeds:] = spla.fractional_matrix_power(
-            np.real(csd[n_seeds:, n_seeds:]), -0.5
-        )  # real(C_bb)^-1/2
-
-        # Equation 4
-        D = np.matmul(T, np.matmul(csd, T))
-
-        # E as the imaginary part of D between seeds and targets
-        E = np.imag(D[:n_seeds, n_seeds:])
-
-        return E
-    
-    def reshape_con_scores(self):
-        """Removes the time dimension from con. scores, if necessary"""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[:,:,0]
-
-
-class _MIMEst(_MICMIMEstBase):
-    """Estimator for MIM (multivariate interaction measure)"""
-
-    name = "MIM"
-
-    def compute_con(
-        self, seeds, targets, n_seed_components, n_target_components, n_epochs
-    ):
-        """Computes the multivariate interaction measure between two sets of
-        signals"""
-        csd = self.reshape_csd(n_epochs)
-        n_times = csd.shape[3]
-        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
-        node_i = 0
-        for seed_idcs, target_idcs in zip(seeds, targets):
-            node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
-            for freq_i in range(self.n_freqs):
-                for time_i in range(n_times):
-                    # Eqs. 32 & 33
-                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                        csd=node_csd[:, :, freq_i, time_i],
-                        n_seeds=len(seed_idcs),
-                        n_seed_components=n_seed_components[node_i],
-                        n_target_components=n_target_components[node_i],
-                    )
-
-                    # Eqs. 3 & 4
-                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
-
-                    # Equation 14
-                    self.con_scores[node_i, freq_i] = np.trace(np.matmul(E, np.conj(E).T))
-            node_i += 1
-        self.reshape_con_scores()
-
-
-class _MICEst(_MICMIMEstBase):
-    """Estimator for MIC (maximized imaginary coherence)"""
-
-    name = "MIC"
-
-    def compute_con(
-        self, seeds, targets, n_seed_components, n_target_components, n_epochs
-    ):
-        """Computes the maximized imaginary coherence between two sets of
-        signals"""
-        csd = self.reshape_csd(n_epochs)
-        n_times = csd.shape[3]
-        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
-        node_i = 0
-        for seed_idcs, target_idcs in zip(seeds, targets):
-            n_seeds = len(seed_idcs)
-            node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(node_idcs, node_idcs, np.arange(self.n_freqs), np.arange(n_times))]
-            for freq_i in range(self.n_freqs):
-                for time_i in range(n_times):
-                    # Eqs. 32 & 33
-                    C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                        csd=node_csd[:, :, freq_i, time_i],
-                        n_seeds=n_seeds,
-                        n_seed_components=n_seed_components[node_i],
-                        n_target_components=n_target_components[node_i],
-                    )
-
-                    # Eqs. 3 & 4
-                    E = self.mim_mic_compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[1])
-
-                    # Weights for signals in the groups
-                    w_a, V_a = np.linalg.eigh(np.matmul(E, np.conj(E).T))
-                    w_b, V_b = np.linalg.eigh(np.matmul(np.conj(E).T, E))
-                    alpha = V_a[:, w_a.argmax()]
-                    beta = V_b[:, w_b.argmax()]
-
-                    # Eq. 7
-                    self.con_scores[node_i, freq_i, time_i] = (
-                        np.matmul(np.conj(alpha).T, np.matmul(E, beta))
-                        / np.linalg.norm(alpha)
-                        * np.linalg.norm(beta)
-                    )
-            node_i += 1
-        self.reshape_con_scores()
 
 
 ###############################################################################
@@ -715,11 +729,17 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
     else:
         n_times_spectrum = 0
         n_freqs = np.sum(freq_mask)
+    
+    n_signals = len(np.unique(idx_map[0]))
 
     if not accumulate_inplace:
         # instantiate methods only for this epoch (used in parallel mode)
-        con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
-                       for mtype in con_method_types]
+        con_methods = []
+        for mtype in con_method_types:
+            if "n_signals" in list(inspect.signature(mtype).parameters):
+                con_methods.append(mtype(n_signals, n_cons, n_freqs, n_times_spectrum))
+            else:
+                con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
 
     _check_option('mode', mode, ('cwt_morlet', 'multitaper', 'fourier'))
     if len(sig_idx) == n_signals:
