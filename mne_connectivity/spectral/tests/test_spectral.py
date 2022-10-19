@@ -510,11 +510,16 @@ def test_spectral_connectivity_time_sim(method, mode, data_option):
     assert con.shape == (n_channels ** 2, len(con.freqs))
     con_matrix = con.get_data('dense')[..., 0]
     if data_option == 'sync':
+        # signals are perfectly phase-locked, connectivity matrix should be
+        # a lower triangular matrix of ones
         assert np.allclose(con_matrix,
                            np.tril(np.ones(con_matrix.shape),
                                    k=-1),
                            atol=0.01)
     if data_option == 'random':
+        # signals are random, all connectivity values should be small
+        # 0.5 is picked rather arbitrarily such that the obsolete wrong
+        # implementation fails
         assert np.all(con_matrix) <= 0.5
 
 
