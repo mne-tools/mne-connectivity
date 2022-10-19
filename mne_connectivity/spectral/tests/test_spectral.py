@@ -499,6 +499,7 @@ def test_spectral_connectivity_time_sim(method, mode, data_option):
                                 wave_freq * epoch_length * np.pi + phase,
                                 n_times)
                 data[i, c] = np.squeeze(np.sin(x))
+    # the frequency band should contain the frequency at which there is a hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
     cwt_freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
