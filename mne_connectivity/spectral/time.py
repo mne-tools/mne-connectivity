@@ -84,7 +84,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         Smoothing kernel type. Choose either 'square' or 'hanning' (default).
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See ``tfr_array_multitaper`` and ``tfr_array_wavelet``
+        'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and `mne.time_frequency.tfr_array_wavelet`
         for reference.
     mt_bandwidth : float | None
         Multitaper time bandwidth. If None, will be set to 4.0 (3 tapers).
