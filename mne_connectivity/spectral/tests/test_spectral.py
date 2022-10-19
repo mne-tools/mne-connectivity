@@ -476,7 +476,7 @@ def test_epochs_tmin_tmax(kind):
 @pytest.mark.parametrize(
     'mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('data_option', ['sync', 'random'])
-def test_spectral_connectivity_time_sim(method, mode, data_option):
+def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     """Test time-resolved spectral connectivity with simulated phase-locked data."""
     rng = np.random.default_rng(0)
     n_epochs = 5
