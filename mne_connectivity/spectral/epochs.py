@@ -435,7 +435,7 @@ class _MIMEst(_MultivarCohEstBase):
             E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
 
             # Equation 14
-            self.con_scores[node_i, :, :] = np.matmul(E, np.conj(E).transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).transpose(1, 0)
+            self.con_scores[node_i, :, :] = np.matmul(E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).transpose(1, 0)
             node_i += 1
         self.reshape_con_scores()
 
@@ -471,8 +471,8 @@ class _MICEst(_MultivarCohEstBase):
             E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
 
             # Weights for signals in the groups
-            w_a, V_a = np.linalg.eigh(np.matmul(E, np.conj(E).transpose(0, 1, 3, 2)))
-            w_b, V_b = np.linalg.eigh(np.matmul(np.conj(E).transpose(0, 1, 3, 2), E))
+            w_a, V_a = np.linalg.eigh(np.matmul(E, E.transpose(0, 1, 3, 2)))
+            w_b, V_b = np.linalg.eigh(np.matmul(E.transpose(0, 1, 3, 2), E))
             alpha = V_a[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_a.argmax(axis=2)]
             beta = V_b[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_b.argmax(axis=2)]
 
