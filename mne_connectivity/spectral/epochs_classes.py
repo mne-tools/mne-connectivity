@@ -64,10 +64,10 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
 
         if n_times == 0:
             self.csd_shape = (n_signals**2, n_freqs)
-            self.con_scores = np.zeros(n_cons, n_freqs, 1)
+            self.con_scores = np.zeros((n_cons, n_freqs, 1))
         else:
             self.csd_shape = (n_signals**2, n_freqs, n_times)
-            self.con_scores = np.zeros(n_cons, n_freqs, n_times)
+            self.con_scores = np.zeros((n_cons, n_freqs, n_times))
 
     def start_epoch(self):  # noqa: D401
         """Called at the start of each epoch."""
