@@ -266,9 +266,6 @@ def multivar_spectral_connectivity_epochs(
             # gets seed-target indices for CSD
             idx_map = [np.repeat(sig_idx, len(sig_idx)), np.tile(sig_idx, len(sig_idx))]
 
-            # None of the implemented multivariate methods need PSD
-            psd = None
-
             # create instances of the connectivity estimators
             con_methods = [mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
                            for mtype in con_method_types]
