@@ -8,6 +8,7 @@
 #
 # License: BSD (3-clause)
 
+from copy import deepcopy
 import numpy as np
 from mne import BaseEpochs
 from mne.parallel import parallel_func
@@ -159,14 +160,28 @@ def multivar_spectral_connectivity_epochs(
         n_seed_components, n_target_components, n_jobs, verbose
     )
 
+    remaining_method_types = deepcopy(con_method_types)
     if present_gc_methods and perform_svd:
         # if singular value decomposition is being performed with Granger
         # causality, this has to be performed on the timeseries data for each
         # seed-target group separately.
-        con = []
+
+        # finds the GC methods to compute
+        use_method_types = [
+            con_method for con_method in con_method_types if con_method.name in
+            ["GC", "Net GC", "TRGC", "Net TRGC"]
+        ]
+
+        # creates an empty placeholder for non-GC connectivity results
+        if use_method_types == con_method_types:
+            con = []
+
+        # performs SVD on the timeseries data for each seed-target group
         seed_target_data = _time_series_svd(
             data, indices, n_seed_components, n_target_components
         )
+
+        # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
         gc_con = [[]*n_gc_methods]
         for group, gc_node_data in enumerate(seed_target_data):
@@ -181,37 +196,51 @@ def multivar_spectral_connectivity_epochs(
                 gc_node_data, node_indices, sfreq, mode, tmin, tmax, fmin, fmax,
                 fskip, faverage, cwt_freqs, mt_bandwidth, mt_adaptive,
                 mt_low_bias, cwt_n_cycles, block_size, n_jobs, n_bands,
-                con_method_types, parallel, my_epoch_spectral_connectivity,
+                use_method_types, parallel, my_epoch_spectral_connectivity,
                 times_in
             )
-            node_con, freqs_used, n_nodes = _compute_connectivity(
-                con_methods, node_indices, n_seed_components,
+            group_con, freqs_used, n_nodes = _compute_connectivity(
+                con_methods, remapped_indices, n_seed_components,
                 n_target_components, n_epochs, n_cons, faverage, n_freqs,
-                n_bands, freq_idx_bands, freqs_bands, n_signals
+                n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
-            [gc_con[i].append(node_con[i]) for i in range(n_gc_methods)]
-    else:
+            [gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
+        gc_con = [np.array(method_con) for method_con in gc_con]
+
+        # finds the methods still needing to be computed
+        remaining_method_types = [
+            con_method for con_method in con_method_types if con_method not in
+            use_method_types
+        ]
+    
+    if remaining_method_types:
         # if no singular value decomposition is being performed or Granger
         # causality is not being computed, the cross-spectral density can be
         # computed as normal on all channels and used for the connectivity
         # computations of each seed-target group.
-        gc_con = []
+
+        # creates an empty placeholder for SVD GC connectivity results
+        if remaining_method_types == con_method_types:
+            gc_con = []
+
+        # computes connectivity
         (
             con_methods, times, freqs_bands, freq_idx_bands, n_tapers,
             n_epochs, n_cons, n_freqs, n_signals, freqs, remapped_indices
         ) = _compute_csd(
             data, indices, sfreq, mode, tmin, tmax, fmin, fmax, fskip, faverage,
             cwt_freqs, mt_bandwidth, mt_adaptive, mt_low_bias, cwt_n_cycles,
-            block_size, n_jobs, n_bands, con_method_types, parallel,
+            block_size, n_jobs, n_bands, remaining_method_types, parallel,
             my_epoch_spectral_connectivity, times_in
         )
         con, freqs_used, n_nodes = _compute_connectivity(
-            con_methods, node_indices, n_seed_components, n_target_components,
+            con_methods, remapped_indices, n_seed_components, n_target_components,
             n_epochs, n_cons, faverage, n_freqs, n_bands, freq_idx_bands,
-            freqs_bands, n_signals
+            freqs_bands, n_signals, freqs
         )
     
-    con = con.extend(gc_con)
+    # combines possible connectivity results
+    con.extend(gc_con)
 
     return _store_connectivity(
         con, method, names, freqs, n_nodes, mode, remapped_indices, n_epochs,
@@ -341,13 +370,22 @@ def _check_inputs(
 def _time_series_svd(data, indices, n_seed_components, n_target_components):
     """Performs a single value decomposition on the timeseries data for each set
     of seed-target pairs."""
+    if isinstance(data, BaseEpochs):
+        epochs = data.get_data(picks=data.ch_names)
+    else:
+        epochs = data
+
     seed_target_data = []
-    for seeds, targets, n_seed_comp, n_target_comp in \
+    for seeds, targets, n_seed_comps, n_target_comps in \
         zip(indices[0], indices[1], n_seed_components, n_target_components):
-        v_seeds = np.linalg.svd(data[:, seeds, :], full_matrices=False)[2] \
-            [:, :n_seed_comp, :]
-        v_targets = np.linalg.svd(data[:, targets, :], full_matrices=False)[2] \
-            [:, :n_target_comp, :]
+        v_seeds = (
+            np.linalg.svd(epochs[:, seeds, :], full_matrices=False)[2]
+            [:, :n_seed_comps, :]
+        )
+        v_targets = (
+            np.linalg.svd(epochs[:, targets, :], full_matrices=False)[2]
+            [:, :n_target_comps, :]
+        )
         seed_target_data.append(np.append(v_seeds, v_targets, axis=1))
 
     return seed_target_data
@@ -457,7 +495,8 @@ def _compute_csd(
 
 def _compute_connectivity(
     con_methods, indices, n_seed_components, n_target_components, n_epochs,
-    n_cons, faverage, n_freqs, n_bands, freq_idx_bands, freqs_bands, n_signals
+    n_cons, faverage, n_freqs, n_bands, freq_idx_bands, freqs_bands, n_signals,
+    freqs
 ):
     """Computes the multivariate connectivity results."""
     # compute final connectivity scores
