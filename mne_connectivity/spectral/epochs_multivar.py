@@ -8,7 +8,6 @@
 #
 # License: BSD (3-clause)
 
-from copy import deepcopy
 import numpy as np
 from mne import BaseEpochs
 from mne.parallel import parallel_func
