@@ -6,21 +6,21 @@ Compute vector autoregressive model (linear system)
 ===================================================
 
 Compute a VAR (linear system) model from time-series
-activity :footcite:`li_linear_2017` using a
-continuous iEEG recording.
+activity :footcite:`LiEtAl2017`.
 
 In this example, we will demonstrate how to compute
 a VAR model with different statistical assumptions.
 """
 
 # Authors: Adam Li <adam2392@gmail.com>
+#          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD (3-clause)
+
 import numpy as np
 
 import mne
-from mne import make_fixed_length_epochs
-from mne_bids import BIDSPath, read_raw_bids
+from mne.datasets import sample
 
 import matplotlib.pyplot as plt
 
@@ -29,80 +29,31 @@ from mne_connectivity import vector_auto_regression
 # %%
 # Load the data
 # -------------
-# Here, we first download an ECoG dataset that was recorded from a patient with
-# epilepsy. To facilitate loading the data, we use `mne-bids
-# <https://mne.tools/mne-bids/>`_.
+# Here, we first download a somatosensory dataset.
 #
 # Then, we will do some basic filtering and preprocessing using MNE-Python.
 
-# paths to mne datasets - sample ECoG
-bids_root = mne.datasets.epilepsy_ecog.data_path()
+data_path = sample.data_path()
+raw_fname = data_path / 'MEG' / 'sample' / \
+    'sample_audvis_filt-0-40_raw.fif'
+event_fname = data_path / 'MEG' / 'sample' / \
+    'sample_audvis_filt-0-40_raw-eve.fif'
 
-# first define the BIDS path
-bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
-                     task='ictal', datatype='ieeg', extension='vhdr')
+# Setup for reading the raw data
+raw = mne.io.read_raw_fif(raw_fname)
+events = mne.read_events(event_fname)
 
-# Then we'll use it to load in the sample dataset. Here we use a format (iEEG)
-# that is only available in MNE-BIDS 0.7+, so it will emit a warning on
-# versions <= 0.6
-raw = read_raw_bids(bids_path=bids_path, verbose=False)
+# Add a bad channel
+raw.info['bads'] += ['MEG 2443']
 
-line_freq = raw.info['line_freq']
-print(f'Data has a power line frequency at {line_freq}.')
+# Pick MEG gradiometers
+picks = mne.pick_types(raw.info, meg='grad', eeg=False, stim=False, eog=True,
+                       exclude='bads')
 
-# Pick only the ECoG channels, removing the ECG channels
-raw.pick_types(ecog=True)
-
-# Load the data
-raw.load_data()
-
-# Then we remove line frequency interference
-raw.notch_filter(line_freq)
-
-# drop bad channels
-raw.drop_channels(raw.info['bads'])
-
-# %%
-# Crop the data for this example
-# ------------------------------
-#
-# We find the onset time of the seizure and remove all data after that time.
-# In this example, we are only interested in analyzing the interictal
-# (non-seizure) data period.
-#
-# One might be interested in analyzing the seizure period also, which we
-# leave as an exercise for our readers!
-
-# Find the annotated events
-events, event_id = mne.events_from_annotations(raw)
-
-# get sample at which seizure starts
-onset_id = event_id['onset']
-onset_idx = np.argwhere(events[:, 2] == onset_id)
-onset_sample = events[onset_idx, 0].squeeze()
-onset_sec = onset_sample / raw.info['sfreq']
-
-# remove all data after the seizure onset
-raw = raw.crop(tmin=0, tmax=onset_sec, include_tmax=False)
-
-# %%
-# Create Windows of Data (Epochs) Using MNE-Python
-# ------------------------------------------------
-# We have a continuous iEEG snapshot that is about 60 seconds long
-# (after cropping). We would like to estimate a VAR model over a sliding window
-# of 500 milliseconds with a 250 millisecond step size.
-#
-# We can use `mne.make_fixed_length_epochs` to create an Epochs data structure
-# representing this sliding window.
-
-epochs = make_fixed_length_epochs(raw=raw, duration=0.5, overlap=0.25)
-times = epochs.times
-ch_names = epochs.ch_names
-
-print(epochs)
-print(epochs.times)
-print(epochs.event_id)
-print(epochs.events)
+# Create epochs for the visual condition
+event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
+epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
+                    baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
 
 
 # %%
@@ -114,7 +65,7 @@ print(epochs.events)
 # time-varying linear system.
 
 conn = vector_auto_regression(
-    data=epochs.get_data(), times=times, names=ch_names)
+    data=epochs.get_data(), times=epochs.times, names=epochs.ch_names)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -149,6 +100,15 @@ sampled_residuals = np.concatenate(
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
+# Next, we visualize the covariance of residuals.
+# Here we will see that because we use ordinary
+# least-squares as an estimation method, the residuals
+# should come with low covariances.
+fig, ax = plt.subplots()
+cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
+im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
+fig.colorbar(im, cax=cax, orientation='horizontal')
+
 # %%
 # Estimate significant connections using a time-shuffled null distribution
 # ------------------------------------------------------------------------
@@ -160,7 +120,7 @@ rescov = np.cov(sampled_residuals)
 null_dist = list()
 data = epochs.get_data()
 rng = np.random.default_rng(99)
-for niter in range(20):  # 1000 or more would be reasonable for a real analysis
+for niter in range(10):  # 1000 or more would be reasonable for a real analysis
     print(f'Computing null connectivity {niter}')
     for epo_idx in range(data.shape[0]):
         for ch_idx in range(data.shape[1]):
@@ -170,31 +130,27 @@ for niter in range(20):  # 1000 or more would be reasonable for a real analysis
                 [data[epo_idx, ch_idx, start_idx:],
                  data[epo_idx, ch_idx, :start_idx]])
     null_dist.append(vector_auto_regression(
-        data=data, times=times, names=ch_names).get_data())
+        data=data, times=epochs.times, names=epochs.ch_names).get_data())
+
+null_dist = np.array(null_dist)
 
 # %%
 # Visualize significant connections over time with animation
 # ----------------------------------------------------------
 # Let's animate over time to visualize the significant connections at each
-# epoch. As mentioned in https://openneuro.org/datasets/ds003029 and :footcite:`LiAdam2021`, the ``AST`` channel region was considered epileptic by clinicians for this sample subject and surgically resected. It is interesting to therefore see that there are consistently strong connections from this region to others.
+# epoch.
 
 con_data = conn.get_data()
-# collapse across epochs since this is inter-ictal/resting state,
-# bonferroni correct across epochs
-threshes = np.quantile(abs(np.array(null_dist)),
-                       1 - (0.05 / con_data.shape[0]),
-                       axis=(0, 1))
-n_lines = np.sum(abs(con_data) > threshes, axis=(1, 2))
-anim, ax = conn.plot_circle(n_lines=n_lines)
 
-# Next, we visualize the covariance of residuals.
-# Here we will see that because we use ordinary
-# least-squares as an estimation method, the residuals
-# should come with low covariances.
-fig, ax = plt.subplots()
-cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
-im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
-fig.colorbar(im, cax=cax, orientation='horizontal')
+# to bonferroni correct across epochs, use the following:
+threshes = np.quantile(abs(null_dist), 1 - (0.05 / con_data.shape[0]),
+                       axis=(0, 1))
+
+# now, plot the connectivity as it changes for each epoch
+n_lines = np.sum(abs(con_data) > threshes, axis=(1, 2))
+fig, ax = plt.subplots(subplot_kw=dict(projection='polar'), figsize=(10, 10))
+anim, ax = conn.plot_circle(n_lines=n_lines, fontsize_names=4,
+                            fig=fig, ax=ax)
 
 # %%
 # Compute one VAR model using all epochs
@@ -205,7 +161,7 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # epochs.
 
 conn = vector_auto_regression(
-    data=epochs.get_data(), times=times, names=ch_names,
+    data=epochs.get_data(), times=epochs.times, names=epochs.ch_names,
     model='avg-epochs')
 
 # this returns a connectivity structure over time

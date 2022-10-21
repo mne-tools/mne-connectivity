@@ -169,7 +169,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
                 interactive=interactive, node_linewidth=node_linewidth,
                 show=show)
             # circle is size 10
-            ax.text(3 * np.pi / 4, 25, f't = {i}', color='white',
+            ax.text(3 * np.pi / 4, 25, f'epoch = {i}', color='white',
                     clip_on=False)
 
         anim = FuncAnimation(fig, update_connectivity,
