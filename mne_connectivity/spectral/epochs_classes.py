@@ -68,6 +68,9 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
         else:
             self.csd_shape = (n_signals**2, n_freqs, n_times)
             self.con_scores = np.zeros((n_cons, n_freqs, n_times))
+        
+        # allocate space for accumulation of CSD
+        self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
 
     def start_epoch(self):  # noqa: D401
         """Called at the start of each epoch."""
@@ -76,6 +79,27 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     def combine(self, other):
         """Include con. accumated for some epochs in this estimate."""
         self._acc += other._acc
+
+    def accumulate(self, con_idx, csd_xy):
+        """Accumulate CSD for some connections."""
+        self._acc[con_idx] += csd_xy
+
+    def reshape_csd(self):
+        """Reshapes CSD into a matrix of times x freqs x signals x signals."""
+        if self.n_times == 0:
+            return (
+                np.reshape(self._acc, (self.n_signals, self.n_signals,
+                self.n_freqs, 1)).transpose(3, 2, 0, 1)
+            )
+        return (
+            np.reshape(self._acc, (self.n_signals, self.n_signals, self.n_freqs,
+            self.n_times)).transpose(3, 2, 0, 1)
+        )
+
+    def reshape_con_scores(self):
+        """Removes the time dimension from con. scores, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[:,:,0]
 
 
 class _CohEstBase(_EpochMeanConEstBase):
@@ -92,23 +116,7 @@ class _CohEstBase(_EpochMeanConEstBase):
         self._acc[con_idx] += csd_xy
 
 class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
-    """Base Estimator for coherenc-based multivariate methods."""
-
-    def __init__(self, n_signals, n_cons, n_freqs, n_times):
-        super(_MultivarCohEstBase, self).__init__(n_signals, n_cons, n_freqs, n_times)
-
-        # allocate space for accumulation of CSD
-        self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
-
-    def accumulate(self, con_idx, csd_xy):
-        """Accumulate CSD for some connections."""
-        self._acc[con_idx] += csd_xy
-
-    def reshape_csd(self):
-        """Reshapes CSD into a matrix of times x freqs x signals x signals."""
-        if self.n_times == 0:
-            return np.reshape(self._acc, (self.n_signals, self.n_signals, self.n_freqs, 1)).transpose(3, 2, 0, 1)
-        return np.reshape(self._acc, (self.n_signals, self.n_signals, self.n_freqs, self.n_times)).transpose(3, 2, 0, 1)
+    """Base Estimator for coherence-based multivariate methods."""
 
     def cross_spectra_svd(
         self, csd, n_seeds, n_seed_components, n_target_components
@@ -155,12 +163,14 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         T = np.zeros(csd.shape)
         # No clear way to do this without list comprehension (function only accepts square matrices)
         # Could be a good place for parallelisation
+        # real(C_aa)^-1/2
         T[:, :, :n_seeds, :n_seeds] = np.array([[spla.fractional_matrix_power(
             np.real(csd[time_i, freq_i, :n_seeds, :n_seeds]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])  # real(C_aa)^-1/2
+        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
+        # real(C_bb)^-1/2
         T[:, :, n_seeds:, n_seeds:] = np.array([[spla.fractional_matrix_power(
             np.real(csd[time_i, freq_i, n_seeds:, n_seeds:]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)]) # real(C_bb)^-1/2
+        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
 
         # Equation 4
         D = np.matmul(T, np.matmul(csd, T))
@@ -169,11 +179,10 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         E = np.imag(D[:, :, :n_seeds, n_seeds:])
 
         return E
-    
-    def reshape_con_scores(self):
-        """Removes the time dimension from con. scores, if necessary"""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[:,:,0]
+
+
+class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
+    """Base Estimator for Granger causality multivariate methods."""
 
 class _CohEst(_CohEstBase):
     """Coherence Estimator."""
@@ -293,6 +302,26 @@ class _MICEst(_MultivarCohEstBase):
             node_i += 1
         self.reshape_con_scores()
 
+
+class _GCEst(_MultivarGCEstBase):
+    """GC Estimator."""
+
+    name = "GC"
+
+class _NetGCEst(_MultivarGCEstBase):
+    """Net GC Estimator."""
+
+    name = "Net GC"
+
+class _TRGCGCEst(_MultivarGCEstBase):
+    """TRGC Estimator."""
+
+    name = "TRGC"
+
+class _NetTRGCEst(_MultivarGCEstBase):
+    """Net TRGC Estimator."""
+
+    name = "Net TRGC"
 
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
