@@ -155,7 +155,7 @@ def multivar_spectral_connectivity_epochs(
         parallel, my_epoch_spectral_connectivity, n_bands, con_method_types,
         events, event_id, times_in, metadata, sfreq, present_gc_methods,
         perform_svd
-    ) = _check_inputs(
+    ) = _sort_inputs(
         data, indices, names, method, sfreq, mode, fmin, fmax,
         n_seed_components, n_target_components, n_jobs, verbose
     )
@@ -248,7 +248,7 @@ def multivar_spectral_connectivity_epochs(
     )
 
 
-def _check_inputs(
+def _sort_inputs(
     data, indices, names, method, sfreq, mode, fmin, fmax, n_seed_components,
     n_target_components, n_jobs, verbose
 ):
