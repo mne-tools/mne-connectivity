@@ -8,6 +8,7 @@
 #
 # License: BSD (3-clause)
 
+import inspect
 from copy import deepcopy
 import numpy as np
 from mne import BaseEpochs
@@ -25,8 +26,8 @@ def multivar_spectral_connectivity_epochs(
     mode = "multitaper", tmin = None, tmax = None, fmin = None, fmax = np.inf,
     fskip = 0, faverage = False, cwt_freqs = None, mt_bandwidth = None,
     mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7,
-    n_seed_components = None, n_target_components = None, block_size = 1000,
-    n_jobs = 1, verbose = None,
+    n_seed_components = None, n_target_components = None, gc_n_lags = 20,
+    block_size = 1000, n_jobs = 1, verbose = None,
 ):
     """Compute frequency-domain multivariate connectivity measures.
 
@@ -197,7 +198,7 @@ def multivar_spectral_connectivity_epochs(
                 fskip, faverage, cwt_freqs, mt_bandwidth, mt_adaptive,
                 mt_low_bias, cwt_n_cycles, block_size, n_jobs, n_bands,
                 use_method_types, parallel, my_epoch_spectral_connectivity,
-                times_in
+                times_in, gc_n_lags
             )
             group_con, freqs_used, n_nodes = _compute_connectivity(
                 con_methods, remapped_indices, n_seed_components,
@@ -231,7 +232,7 @@ def multivar_spectral_connectivity_epochs(
             data, indices, sfreq, mode, tmin, tmax, fmin, fmax, fskip, faverage,
             cwt_freqs, mt_bandwidth, mt_adaptive, mt_low_bias, cwt_n_cycles,
             block_size, n_jobs, n_bands, remaining_method_types, parallel,
-            my_epoch_spectral_connectivity, times_in
+            my_epoch_spectral_connectivity, times_in, gc_n_lags
         )
         con, freqs_used, n_nodes = _compute_connectivity(
             con_methods, remapped_indices, n_seed_components, n_target_components,
@@ -395,7 +396,7 @@ def _compute_csd(
     data, indices, sfreq, mode, tmin, tmax, fmin, fmax, fskip, faverage,
     cwt_freqs, mt_bandwidth, mt_adaptive, mt_low_bias, cwt_n_cycles, block_size,
     n_jobs, n_bands, con_method_types, parallel, my_epoch_spectral_connectivity,
-    times_in
+    times_in, gc_n_lags
 ):
     """Computes the cross-spectral density of the data in preparation for the
     multivariate connectivity computations."""
@@ -439,8 +440,17 @@ def _compute_csd(
                        np.tile(sig_idx, len(sig_idx))]
 
             # create instances of the connectivity estimators
-            con_methods = [mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
-                           for mtype in con_method_types]
+            con_methods = []
+            for mtype in con_method_types:
+                if "n_lags" in list(inspect.signature(mtype).parameters):
+                    con_methods.append(
+                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum,
+                              gc_n_lags)
+                    )
+                else:
+                    con_methods.append(
+                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
+                    )
 
             metrics_str = ', '.join([meth.name for meth in con_methods])
             logger.info('    the following metrics will be computed: %s'
