@@ -213,7 +213,7 @@ def multivar_spectral_connectivity_epochs(
             con_method for con_method in con_method_types if con_method not in
             use_method_types
         ]
-    
+
     if remaining_method_types:
         # if no singular value decomposition is being performed or Granger
         # causality is not being computed, the cross-spectral density can be
@@ -239,7 +239,7 @@ def multivar_spectral_connectivity_epochs(
             n_epochs, n_cons, faverage, n_freqs, n_bands, freq_idx_bands,
             freqs_bands, n_signals, freqs
         )
-    
+
     # combines possible connectivity results
     con.extend(gc_con)
 
@@ -317,8 +317,21 @@ def _sort_inputs(
 
     n_seeds = len(indices[0])
     n_targets = len(indices[1])
-    perform_svd = False
+    if n_seeds != n_targets:
+        raise ValueError(
+            f"The number of seeds ({n_seeds}) and targets ({n_targets}) must  "
+            "match."
+        )
 
+    for seeds, targets in zip(indices[0], indices[1]):
+        if set.intersection(set(seeds), set(targets)):
+            raise ValueError(
+                "There are common indices present in the seeds and targets for "
+                "a single connectivity index, however multivariate "
+                "connectivity between shared channels is not allowed."
+            )
+
+    perform_svd = False
     if n_seed_components is None:
         n_seed_components = tuple([None] * len(indices[0]))
     else:
