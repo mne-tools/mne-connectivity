@@ -21,7 +21,8 @@ from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask)
 from .epochs_classes import (_AbstractConEstBase, _CohEst, _CohyEst, _ImCohEst,
                             _PLVEst, _ciPLVEst, _PPCEst, _PLIEst,
                             _PLIUnbiasedEst, _DPLIEst, _WPLIEst,
-                            _WPLIDebiasedEst, _MICEst, _MIMEst)
+                            _WPLIDebiasedEst, _MICEst, _MIMEst, _GCEst,
+                            _NetGCEst, _TRGCEst, _NetTRGCEst)
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
 
@@ -208,7 +209,7 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
                                  mode, window_fun, eigvals, wavelets,
                                  freq_mask, mt_adaptive, idx_map, block_size,
                                  psd, accumulate_psd, con_method_types,
-                                 con_methods, n_signals, n_times,
+                                 con_methods, n_signals, n_times, gc_n_lags,
                                  accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
     n_cons = len(idx_map[0])
@@ -226,8 +227,17 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
         # instantiate methods only for this epoch (used in parallel mode)
         con_methods = []
         for mtype in con_method_types:
-            if "n_signals" in list(inspect.signature(mtype).parameters):
-                con_methods.append(mtype(n_signals, n_cons, n_freqs, n_times_spectrum))
+            method_params = list(inspect.signature(mtype).parameters)
+            if "n_signals" in method_params:
+                if "n_lags" in method_params:
+                    con_methods.append(
+                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum,
+                              gc_n_lags)
+                    )
+                else:
+                    con_methods.append(
+                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
+                    )
             else:
                 con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
 
@@ -409,7 +419,8 @@ _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
                    'dpli': _DPLIEst, 'wpli': _WPLIEst,
                    'wpli2_debiased': _WPLIDebiasedEst, 'mic': _MICEst,
-                   'mim': _MIMEst}
+                   'mim': _MIMEst, 'gc': _GCEst, 'net_gc': _NetGCEst,
+                   'trgc': _TRGCEst, 'net_trgc': _NetTRGCEst}
 
 
 def _check_estimators(method, mode):
@@ -434,13 +445,9 @@ def _check_estimators(method, mode):
     n_comp_args = [len(inspect.signature(mtype.compute_con).parameters)
                    for mtype in con_method_types]
 
-    # we currently only support 3 arguments
-    assert all(n in (3, 5, 6) for n in n_comp_args), \
-        ('The number of arguments for the .compute_con method is not '
-        'supported. Please contact the mne-connectivity developers.')
-
     # if none of the comp_con functions needs the PSD, we don't estimate it
-    accumulate_psd = any(n == 5 for n in n_comp_args)
+    accumulate_psd = any([mtype.accumulate_psd for mtype in con_method_types])
+    
     return con_method_types, n_methods, accumulate_psd, n_comp_args
 
 

@@ -169,7 +169,7 @@ def multivar_spectral_connectivity_epochs(
 
         # finds the GC methods to compute
         use_method_types = [
-            con_method for con_method in con_method_types if con_method.name in
+            mtype for mtype in con_method_types if mtype.name in
             ["GC", "Net GC", "TRGC", "Net TRGC"]
         ]
 
@@ -178,18 +178,18 @@ def multivar_spectral_connectivity_epochs(
             con = []
 
         # performs SVD on the timeseries data for each seed-target group
-        seed_target_data = _time_series_svd(
+        seed_target_data, n_seeds = _time_series_svd(
             data, indices, n_seed_components, n_target_components
         )
 
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
         gc_con = [[]*n_gc_methods]
-        for group, gc_node_data in enumerate(seed_target_data):
-            node_indices = [
-                np.arange(n_seed_components[group]),
-                np.arange(n_seed_components[group], gc_node_data.shape[0])
-            ]
+        for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
+            node_indices = (
+                [np.arange(n_seed_comps).tolist()],
+                [np.arange(n_seed_comps, gc_node_data.shape[1]).tolist()]
+            )
             (
                 con_methods, times, freqs_bands, freq_idx_bands, n_tapers,
                 n_epochs, n_cons, n_freqs, n_signals, freqs, remapped_indices
@@ -206,12 +206,11 @@ def multivar_spectral_connectivity_epochs(
                 n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
             [gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
-        gc_con = [np.array(method_con) for method_con in gc_con]
+        gc_con = [np.squeeze(np.array(method_con), 1) for method_con in gc_con]
 
         # finds the methods still needing to be computed
         remaining_method_types = [
-            con_method for con_method in con_method_types if con_method not in
-            use_method_types
+            mtype for mtype in con_method_types if mtype not in use_method_types
         ]
 
     if remaining_method_types:
@@ -223,6 +222,7 @@ def multivar_spectral_connectivity_epochs(
         # creates an empty placeholder for SVD GC connectivity results
         if remaining_method_types == con_method_types:
             gc_con = []
+            use_method_types = []
 
         # computes connectivity
         (
@@ -240,8 +240,14 @@ def multivar_spectral_connectivity_epochs(
             freqs_bands, n_signals, freqs
         )
 
-    # combines possible connectivity results
-    con.extend(gc_con)
+    # combines connectivity results and gives them the correct order
+    if gc_con:
+        con.extend(gc_con)
+        methods_order = [
+            *[mtype.name for mtype in use_method_types],
+            *[mtype.name for mtype in remaining_method_types]
+        ]
+        con = [con[methods_order.index(mtype.name)] for mtype in con_method_types]
 
     return _store_connectivity(
         con, method, names, freqs, n_nodes, mode, remapped_indices, n_epochs,
@@ -342,7 +348,7 @@ def _sort_inputs(
             "seeds."
             )
         for n_comps, chs in zip(n_seed_components, indices[0]):
-            if n_comps > len(chs) and n_comps <= 0:
+            if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
                     f"The number of components to take ({n_comps}) cannot be "
                     "greater than the number of channels in that seed "
@@ -360,7 +366,7 @@ def _sort_inputs(
             f" {n_targets} targets."
             )
         for n_comps, chs in zip(n_target_components, indices[1]):
-            if n_comps > len(chs) and n_comps <= 0:
+            if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
                     f"The number of components to take ({n_comps}) cannot be "
                     "greater than the number of channels in that target "
@@ -390,19 +396,30 @@ def _time_series_svd(data, indices, n_seed_components, n_target_components):
         epochs = data
 
     seed_target_data = []
+    n_seeds = []
     for seeds, targets, n_seed_comps, n_target_comps in \
         zip(indices[0], indices[1], n_seed_components, n_target_components):
-        v_seeds = (
-            np.linalg.svd(epochs[:, seeds, :], full_matrices=False)[2]
-            [:, :n_seed_comps, :]
-        )
-        v_targets = (
-            np.linalg.svd(epochs[:, targets, :], full_matrices=False)[2]
-            [:, :n_target_comps, :]
-        )
+
+        if n_seed_comps: # SVD seed data
+            v_seeds = (
+                np.linalg.svd(epochs[:, seeds, :], full_matrices=False)[2]
+                [:, :n_seed_comps, :]
+            )
+        else: # use unaltered seed data
+            v_seeds = epochs[:, seeds, :]
+        n_seeds.append(len(seeds))
+
+        if n_target_comps: # SVD target data
+            v_targets = (
+                np.linalg.svd(epochs[:, targets, :], full_matrices=False)[2]
+                [:, :n_target_comps, :]
+            )
+        else: # use unaltered target data
+            v_targets = epochs[:, targets, :]
+
         seed_target_data.append(np.append(v_seeds, v_targets, axis=1))
 
-    return seed_target_data
+    return seed_target_data, n_seeds
 
 
 def _compute_csd(
@@ -481,7 +498,7 @@ def _compute_csd(
             block_size=block_size, psd=None, accumulate_psd=False,
             mt_adaptive=mt_adaptive, con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
-            n_signals=n_signals, n_times=n_times,
+            n_signals=n_signals, n_times=n_times, gc_n_lags=gc_n_lags,
             accumulate_inplace=True if n_jobs == 1 else False
         )
         call_params.update(**spectral_params)
@@ -525,10 +542,13 @@ def _compute_connectivity(
     # compute final connectivity scores
     con = list()
     for conn_method in con_methods:
-        conn_method.compute_con(
-            indices[0], indices[1], n_seed_components, n_target_components,
-            n_epochs
-        )
+        if conn_method.name in ["GC", "Net GC", "TRGC", "Net TRGC"]:
+            conn_method.compute_con(indices[0], indices[1], n_epochs)
+        else:
+            conn_method.compute_con(
+                indices[0], indices[1], n_seed_components, n_target_components,
+                n_epochs
+            )
 
         # get the connectivity scores
         this_con = conn_method.con_scores

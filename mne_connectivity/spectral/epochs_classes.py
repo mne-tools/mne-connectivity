@@ -200,47 +200,74 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         else:
             self.n_lags = self.n_freqs - 2 # freq. resolution - 1
 
+    def compute_con(self, seeds, targets, n_epochs):
+        """Computes Granger causality between sets of signals."""
+        csd = self.reshape_csd()/n_epochs
+        csd = csd.transpose(2, 3, 1, 0) # signals x signals x freqs x time
+
+        # GC from seeds -> targets (subtracting GC from targets -> seeds if
+        # self.net == True)
+        autocov = self.csd_to_autocov(csd, seeds, targets)
+        con = self.autocov_to_gc(autocov, seeds, targets, self.net)
+
+        # GC from seeds -> targets (subtracting GC from targets -> seeds if
+        # self.net == True), subtracting GC from time-reversed seeds -> targets
+        # (subtracting GC from time-reversed targets -> seeds if self.net ==
+        # True)
+        if self.time_reversed:
+            autocov_time_rev = [
+                np.transpose(con_autocov, (1, 0, 2)) for con_autocov in autocov
+            ]
+            con -= self.autocov_to_gc(
+                autocov_time_rev, seeds, targets, self.net
+            )
+
+        self.reshape_con_scores()
+
     def csd_to_autocov(
         self, csd, seeds, targets
     ):
         """Computes the autocovariance sequence from the cross-spectral
         density."""
-        autocov = []
-        for seed_idcs, target_idcs in zip(seeds, targets):
+        n_times = csd.shape[3]
+        autocov = [[]*len(seeds)]
+        for group_i, seed_idcs, target_idcs in zip(
+            range(len(seeds)), seeds, targets
+        ):
             all_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[
-                np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs))
+            n_signals = len(all_idcs)
+            autocov[group_i] = np.zeros(
+                (n_signals, n_signals, self.n_lags + 1, n_times)
+            )
+            con_csd = csd[
+                np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs), np.arange(n_times))
             ]
-
-            circular_shifted_csd = np.concatenate(
-                [np.flip(np.conj(node_csd[:, :, 1:]), axis=2),
-                node_csd[:, :, :-1]],
-                axis=2,
-            )
-            ifft_shifted_csd = self.block_ifft(
-                circular_shifted_csd, (self.n_freqs - 1) * 2
-            )
-
-            lags_ifft_shifted_csd = np.reshape(
-                ifft_shifted_csd[:, :, : self.n_lags + 1],
-                (node_csd.shape[0] ** 2, self.n_lags + 1),
-                order="F"
-            )
-            signs = [1] * (self.n_lags + 1)
-            signs[1::2] = [x * -1 for x in signs[1::2]]
-            sign_matrix = np.tile(
-                np.asarray(signs), (node_csd.shape[0] ** 2, 1)
-            )
-
-            autocov.append(
-                np.real(
-                    np.reshape(
-                        sign_matrix * lags_ifft_shifted_csd,
-                        (node_csd.shape[0], node_csd.shape[0], self.n_lags + 1),
-                        order="F"
-                    )
+            for time_i in range(n_times):
+                circular_shifted_csd = np.concatenate(
+                    [np.flip(np.conj(con_csd[:, :, 1:, time_i]), axis=2),
+                    con_csd[:, :, :-1, time_i]],
+                    axis=2,
                 )
-            )
+                ifft_shifted_csd = self.block_ifft(
+                    circular_shifted_csd, (self.n_freqs - 1) * 2
+                )
+
+                lags_ifft_shifted_csd = np.reshape(
+                    ifft_shifted_csd[:, :, :self.n_lags + 1],
+                    (n_signals ** 2, self.n_lags + 1),
+                    order="F"
+                )
+                signs = [1] * (self.n_lags + 1)
+                signs[1::2] = [x * -1 for x in signs[1::2]]
+                sign_matrix = np.tile(
+                    np.asarray(signs), (n_signals ** 2, 1)
+                )
+
+                autocov[group_i][:, :, :, time_i] += (np.real(np.reshape(
+                            sign_matrix * lags_ifft_shifted_csd,
+                            (n_signals, n_signals, self.n_lags + 1),
+                            order="F"))
+                )
 
         return autocov
 
@@ -257,39 +284,38 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     def autocov_to_gc(self, autocov, seeds, targets, net):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
-        con = np.zeros(len(seeds), self.n_freqs)
+        n_times = autocov[0].shape[3]
+        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
         for con_i, con_autocov in enumerate(autocov):
+            for time_i in range(n_times):
+                AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
+                AF_2d = np.reshape(
+                    AF,
+                    (AF.shape[0], AF.shape[0] * AF.shape[2]),
+                    order="F"
+                )
+                A, K = self.full_var_to_iss(AF=AF_2d)
 
-            AF, V = self.autocov_to_full_var(con_autocov)
-            AF_2d = np.reshape(
-                AF,
-                (AF.shape[0], AF.shape[0] * AF.shape[2]),
-                order="F"
-            )
-            A, K = self.full_var_to_iss(AF=AF_2d)
-
-            # GC from seeds -> targets
-            con[con_i, :] = self.iss_to_usgc(
-                A=A,
-                C=AF_2d,
-                K=K,
-                V=V,
-                seeds=seeds[con_i],
-                targets=targets[con_i],
-            )
-            
-            # GC from targets -> seeds
-            if net:
-                con[con_i, :] -= self.iss_to_usgc(
+                # GC from seeds -> targets
+                self.con_scores[con_i, :, time_i] = self.iss_to_usgc(
                     A=A,
                     C=AF_2d,
                     K=K,
                     V=V,
-                    seeds=targets[con_i],
-                    targets=seeds[con_i],
+                    seeds=seeds[con_i],
+                    targets=targets[con_i],
                 )
 
-        return con
+                # GC from targets -> seeds
+                if net:
+                    self.con_scores[con_i, :, time_i] -= self.iss_to_usgc(
+                        A=A,
+                        C=AF_2d,
+                        K=K,
+                        V=V,
+                        seeds=targets[con_i],
+                        targets=seeds[con_i],
+                    )
 
     def autocov_to_full_var(self, autocov):
         """Computes the full vector autoregressive (VAR) model from an
@@ -489,14 +515,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         return V[np.ix_(seeds, seeds)] - W
 
 
-    def compute_con(self):
-        """"""
-        #PLACEHOLDER
-
 class _CohEst(_CohEstBase):
     """Coherence Estimator."""
 
     name = 'Coherence'
+    accumulate_psd = True
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
@@ -510,6 +533,7 @@ class _CohyEst(_CohEstBase):
     """Coherency Estimator."""
 
     name = 'Coherency'
+    accumulate_psd = True
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
@@ -524,6 +548,7 @@ class _ImCohEst(_CohEstBase):
     """Imaginary Coherence Estimator."""
 
     name = 'Imaginary Coherence'
+    accumulate_psd = True
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
@@ -536,6 +561,7 @@ class _MIMEst(_MultivarCohEstBase):
     """Estimator for MIM (multivariate interaction measure)"""
 
     name = "MIM"
+    accumulate_psd = False
 
     def compute_con(
         self, seeds, targets, n_seed_components, n_target_components, n_epochs
@@ -571,6 +597,7 @@ class _MICEst(_MultivarCohEstBase):
     """Estimator for MIC (maximized imaginary coherence)"""
 
     name = "MIC"
+    accumulate_psd = False
 
     def compute_con(
         self, seeds, targets, n_seed_components, n_target_components, n_epochs
@@ -612,85 +639,47 @@ class _MICEst(_MultivarCohEstBase):
 
 
 class _GCEst(_MultivarGCEstBase):
-    """GC Estimator."""
+    """GC Estimator; causality from: [seeds -> targets]."""
 
     name = "GC"
-
-    def compute_con(self, seeds, targets, n_epochs):
-        """Computes Granger causality between sets of signals, i.e. causality
-        from (seeds -> targets)."""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-
-        autocov = self.csd_to_autocov(csd, seeds, targets)
-
-        return self.autocov_to_gc(autocov, seeds, targets, net=False)
+    accumulate_psd = False
+    net = False
+    time_reversed = False
 
 
 class _NetGCEst(_MultivarGCEstBase):
-    """Net GC Estimator."""
+    """Net GC Estimator; causality from: [seeds -> targets] - [targets ->
+    seeds]."""
 
     name = "Net GC"
+    accumulate_psd = False
+    net = True
+    time_reversed = False
 
-    def compute_con(self, seeds, targets, n_epochs):
-        """Computes net Granger causality between sets of signals, i.e.
-        causality from (seeds -> targets) - (targets -> seeds)."""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-
-        autocov = self.csd_to_autocov(csd, seeds, targets)
-
-        return self.autocov_to_gc(autocov, seeds, targets, net=True)
-
-class _TRGCGCEst(_MultivarGCEstBase):
-    """TRGC Estimator."""
+class _TRGCEst(_MultivarGCEstBase):
+    """TRGC Estimator; causality from: [seeds -> targets] - time-reversed[seeds
+    -> targets]."""
 
     name = "TRGC"
-
-    def compute_con(self, seeds, targets, n_epochs):
-        """Computes time-reversed Granger causality between sets of signals,
-        i.e. causality from (seeds -> targets) - (time-reversed[seeds ->
-        targets])."""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-
-        autocov = self.csd_to_autocov(csd, seeds, targets)
-        tr_autocov = [
-            np.transpose(con_autocov, (1, 0, 2)) for con_autocov in autocov
-        ]
-
-        return (
-            self.autocov_to_gc(autocov, seeds, targets, net=False) -
-            self.autocov_to_gc(tr_autocov, seeds, targets, net=False)
-        )
+    accumulate_psd = False
+    net = False
+    time_reversed = True
 
 class _NetTRGCEst(_MultivarGCEstBase):
-    """Net TRGC Estimator."""
+    """Net TRGC Estimator; causality from: ([seeds -> targets] - [targets ->
+    seeds]) - (time-reversed[seeds -> targets] - time-reversed[targets ->
+    seeds])."""
 
     name = "Net TRGC"
-
-    def compute_con(self, seeds, targets, n_epochs):
-        """Computes time-reversed Granger causality between sets of signals,
-        i.e. causality from (seeds -> targets) - (targets -> seeds) -
-        (time-reversed[seeds -> targets]) - (time-reversed[targets ->
-        seeds])."""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-
-        autocov = self.csd_to_autocov(csd, seeds, targets)
-        tr_autocov = [
-            np.transpose(con_autocov, (1, 0, 2)) for con_autocov in autocov
-        ]
-
-        return (
-            self.autocov_to_gc(autocov, seeds, targets, net=True) -
-            self.autocov_to_gc(tr_autocov, seeds, targets, net=True)
-        )
+    accumulate_psd = False
+    net = True
+    time_reversed = True
 
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
 
     name = 'PLV'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PLVEst, self).__init__(n_cons, n_freqs, n_times)
@@ -714,6 +703,7 @@ class _ciPLVEst(_EpochMeanConEstBase):
     """corrected imaginary PLV Estimator."""
 
     name = 'ciPLV'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_ciPLVEst, self).__init__(n_cons, n_freqs, n_times)
@@ -742,6 +732,7 @@ class _PLIEst(_EpochMeanConEstBase):
     """PLI Estimator."""
 
     name = 'PLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -765,6 +756,7 @@ class _PLIUnbiasedEst(_PLIEst):
     """Unbiased PLI Square Estimator."""
 
     name = 'Unbiased PLI Square'
+    accumulate_psd = False
 
     def compute_con(self, con_idx, n_epochs):
         """Compute final con. score for some connections."""
@@ -782,6 +774,7 @@ class _DPLIEst(_EpochMeanConEstBase):
     """DPLI Estimator."""
 
     name = 'DPLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_DPLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -807,6 +800,7 @@ class _WPLIEst(_EpochMeanConEstBase):
     """WPLI Estimator."""
 
     name = 'WPLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_WPLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -845,6 +839,7 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
     """Debiased WPLI Square Estimator."""
 
     name = 'Debiased WPLI Square'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_WPLIDebiasedEst, self).__init__(n_cons, n_freqs, n_times)
@@ -888,6 +883,7 @@ class _PPCEst(_EpochMeanConEstBase):
     """Pairwise Phase Consistency (PPC) Estimator."""
 
     name = 'PPC'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PPCEst, self).__init__(n_cons, n_freqs, n_times)
