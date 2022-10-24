@@ -190,11 +190,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         )
 
         if n_lags:
-            if n_lags > (self.n_freqs - 1) * 2:
+            if n_lags >= (self.n_freqs - 1) * 2:
                 raise ValueError(
-                    f'The number of lags ({n_lags}) cannot be greater than the '
-                    'frequency resolution of the cross-spectral density '
-                    f'({self.n_freqs - 1}).'
+                    f"The number of lags ({n_lags}) must be less than double "
+                    "the frequency resolution of the cross-spectral density "
+                    f"({(self.n_freqs - 1) * 2})."
                 )
             self.n_lags = n_lags
         else:
