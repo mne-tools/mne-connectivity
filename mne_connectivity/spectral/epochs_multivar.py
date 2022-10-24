@@ -339,7 +339,7 @@ def _sort_inputs(
 
     perform_svd = False
     if n_seed_components is None:
-        n_seed_components = tuple([None] * len(indices[0]))
+        n_seed_components = tuple([None] * n_seeds)
     else:
         if n_seeds != len(n_seed_components):
             raise ValueError(
@@ -348,16 +348,17 @@ def _sort_inputs(
             "seeds."
             )
         for n_comps, chs in zip(n_seed_components, indices[0]):
-            if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
+            if n_comps:
+                if n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
-                    f"The number of components to take ({n_comps}) cannot be "
-                    "greater than the number of channels in that seed "
+                        f"The number of components to take ({n_comps}) cannot "
+                        "be greater than the number of channels in that seed "
                     f"({len(chs)}) and must be greater than 0."
                 )
         perform_svd = True
 
     if n_target_components is None:
-        n_target_components = tuple([None] * len(indices[1]))
+        n_target_components = tuple([None] * n_targets)
     else:
         if n_targets != len(n_target_components):
             raise ValueError(
@@ -366,10 +367,11 @@ def _sort_inputs(
             f" {n_targets} targets."
             )
         for n_comps, chs in zip(n_target_components, indices[1]):
+            if n_comps:
             if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
                 raise ValueError(
-                    f"The number of components to take ({n_comps}) cannot be "
-                    "greater than the number of channels in that target "
+                        f"The number of components to take ({n_comps}) cannot "
+                        "be greater than the number of channels in that target "
                     f"({len(chs)}) and must be greater than 0."
                 )
         perform_svd = True
