@@ -208,7 +208,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         # GC from seeds -> targets (subtracting GC from targets -> seeds if
         # self.net == True)
         autocov = self.csd_to_autocov(csd, seeds, targets)
-        con = self.autocov_to_gc(autocov, seeds, targets, self.net)
+        con_scores = self.autocov_to_gc(autocov, seeds, targets, self.net)
 
         # GC from seeds -> targets (subtracting GC from targets -> seeds if
         # self.net == True), subtracting GC from time-reversed seeds -> targets
@@ -216,12 +216,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         # True)
         if self.time_reversed:
             autocov_time_rev = [
-                np.transpose(con_autocov, (1, 0, 2)) for con_autocov in autocov
+                np.transpose(con_autocov, (1, 0, 2, 3)) for con_autocov in autocov
             ]
-            con -= self.autocov_to_gc(
+            con_scores -= self.autocov_to_gc(
                 autocov_time_rev, seeds, targets, self.net
             )
 
+        self.con_scores = con_scores
         self.reshape_con_scores()
 
     def csd_to_autocov(
@@ -285,7 +286,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
         n_times = autocov[0].shape[3]
-        self.con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
+        con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
         for con_i, con_autocov in enumerate(autocov):
             for time_i in range(n_times):
                 AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
@@ -297,7 +298,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 A, K = self.full_var_to_iss(AF=AF_2d)
 
                 # GC from seeds -> targets
-                self.con_scores[con_i, :, time_i] = self.iss_to_usgc(
+                con_scores[con_i, :, time_i] = self.iss_to_usgc(
                     A=A,
                     C=AF_2d,
                     K=K,
@@ -308,7 +309,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
                 # GC from targets -> seeds
                 if net:
-                    self.con_scores[con_i, :, time_i] -= self.iss_to_usgc(
+                    con_scores[con_i, :, time_i] -= self.iss_to_usgc(
                         A=A,
                         C=AF_2d,
                         K=K,
@@ -316,6 +317,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                         seeds=targets[con_i],
                         targets=seeds[con_i],
                     )
+        
+        return con_scores
 
     def autocov_to_full_var(self, autocov):
         """Computes the full vector autoregressive (VAR) model from an
