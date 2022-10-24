@@ -186,27 +186,33 @@ def multivar_spectral_connectivity_epochs(
         n_gc_methods = len(present_gc_methods)
         gc_con = [[]*n_gc_methods]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
-            node_indices = (
+            new_indices = (
                 [np.arange(n_seed_comps).tolist()],
                 [np.arange(n_seed_comps, gc_node_data.shape[1]).tolist()]
             )
             (
                 con_methods, times, freqs_bands, freq_idx_bands, n_tapers,
-                n_epochs, n_cons, n_freqs, n_signals, freqs, remapped_indices
+                n_epochs, n_cons, n_freqs, n_signals, freqs, _
             ) = _compute_csd(
-                gc_node_data, node_indices, sfreq, mode, tmin, tmax, fmin, fmax,
+                gc_node_data, new_indices, sfreq, mode, tmin, tmax, fmin, fmax,
                 fskip, faverage, cwt_freqs, mt_bandwidth, mt_adaptive,
                 mt_low_bias, cwt_n_cycles, block_size, n_jobs, n_bands,
                 use_method_types, parallel, my_epoch_spectral_connectivity,
                 times_in, gc_n_lags
             )
             group_con, freqs_used, n_nodes = _compute_connectivity(
-                con_methods, remapped_indices, n_seed_components,
+                con_methods, new_indices, n_seed_components,
                 n_target_components, n_epochs, n_cons, faverage, n_freqs,
                 n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
             [gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
         gc_con = [np.squeeze(np.array(method_con), 1) for method_con in gc_con]
+
+        # finds the remapped indices of non-SVD data
+        unique_indices = np.unique(sum(sum(indices, []), []))
+        remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
+        remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
+                             indices_group] for indices_group in indices]
 
         # finds the methods still needing to be computed
         remaining_method_types = [
@@ -350,12 +356,12 @@ def _sort_inputs(
         for n_comps, chs in zip(n_seed_components, indices[0]):
             if n_comps:
                 if n_comps > len(chs) and n_comps <= 0:
-                raise ValueError(
+                    raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
                         "be greater than the number of channels in that seed "
-                    f"({len(chs)}) and must be greater than 0."
-                )
-        perform_svd = True
+                        f"({len(chs)}) and must be greater than 0."
+                    )
+                perform_svd = True
 
     if n_target_components is None:
         n_target_components = tuple([None] * n_targets)
@@ -368,13 +374,13 @@ def _sort_inputs(
             )
         for n_comps, chs in zip(n_target_components, indices[1]):
             if n_comps:
-            if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
-                raise ValueError(
+                if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
+                    raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
                         "be greater than the number of channels in that target "
-                    f"({len(chs)}) and must be greater than 0."
-                )
-        perform_svd = True
+                        f"({len(chs)}) and must be greater than 0."
+                    )
+                perform_svd = True
 
     # handle Granger causality methods
     present_gc_methods = [
