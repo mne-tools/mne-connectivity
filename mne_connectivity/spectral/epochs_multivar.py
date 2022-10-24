@@ -418,7 +418,7 @@ def _time_series_svd(data, indices, n_seed_components, n_target_components):
             )
         else: # use unaltered seed data
             v_seeds = epochs[:, seeds, :]
-        n_seeds.append(len(seeds))
+        n_seeds.append(v_seeds.shape[1])
 
         if n_target_comps: # SVD target data
             v_targets = (
