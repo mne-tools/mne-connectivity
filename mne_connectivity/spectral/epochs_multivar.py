@@ -184,7 +184,7 @@ def multivar_spectral_connectivity_epochs(
 
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
-        svd_gc_con = [[]*n_gc_methods]
+        svd_gc_con = [[] for x in range(n_gc_methods)]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
@@ -206,13 +206,7 @@ def multivar_spectral_connectivity_epochs(
                 n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
             [svd_gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
-        svd_gc_con = [np.squeeze(np.array(method_con), 1) for method_con in vsd_gc_con]
-
-        # finds the remapped indices of non-SVD data
-        unique_indices = np.unique(sum(sum(indices, []), []))
-        remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
-        remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
-                             indices_group] for indices_group in indices]
+        svd_gc_con = [np.squeeze(np.array(method_con), 1) for method_con in svd_gc_con]
 
         # finds the methods still needing to be computed
         remaining_method_types = [
@@ -227,7 +221,7 @@ def multivar_spectral_connectivity_epochs(
 
         # creates an empty placeholder for SVD GC connectivity results
         if remaining_method_types == con_method_types:
-            gc_con = []
+            svd_gc_con = []
             use_method_types = []
 
         # computes connectivity
@@ -246,14 +240,23 @@ def multivar_spectral_connectivity_epochs(
             freqs_bands, n_signals, freqs
         )
 
-    # combines connectivity results and gives them the correct order
-    if gc_con:
-        con.extend(gc_con)
+    if svd_gc_con and con:
+        # combines SVD GC and non-SVD GC results
+        con.extend(svd_gc_con)
+        # orders the results according to the order they were called
         methods_order = [
             *[mtype.name for mtype in use_method_types],
             *[mtype.name for mtype in remaining_method_types]
         ]
         con = [con[methods_order.index(mtype.name)] for mtype in con_method_types]
+    elif svd_gc_con and not con:
+        # stored SVD GC results
+        con = svd_gc_con
+        # finds the remapped indices of non-SVD data
+        unique_indices = np.unique(sum(sum(indices, []), []))
+        remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
+        remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
+                             indices_group] for indices_group in indices]
 
     return _store_connectivity(
         con, method, names, freqs, n_nodes, mode, remapped_indices, n_epochs,
