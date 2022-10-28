@@ -472,7 +472,7 @@ def test_epochs_tmin_tmax(kind):
     assert len(w) == 1  # just one even though there were multiple epochs
 
 
-@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
 @pytest.mark.parametrize(
     'mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('data_option', ['sync', 'random'])
@@ -524,7 +524,7 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
         assert np.all(con_matrix) <= 0.5
 
 
-@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
 @pytest.mark.parametrize(
     'mode', ['cwt_morlet', 'multitaper'])
 def test_spectral_connectivity_time_resolved(method, mode):
