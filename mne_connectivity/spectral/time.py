@@ -183,6 +183,13 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
             PLV = |E[Sxy/|Sxy|]|
 
+        'ciplv' : corrected imaginary PLV (icPLV)
+        :footcite:`BrunaEtAl2018` given by::
+
+                             |E[Im(Sxy/|Sxy|)]|
+            ciPLV = ------------------------------------
+                     sqrt(1 - |E[real(Sxy/|Sxy|)]| ** 2)
+
         'sxy' : Cross spectrum Sxy
 
         'pli' : Phase Lag Index (PLI) :footcite:`StamEtAl2007` given by::
@@ -440,7 +447,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     # compute for each connectivity method
     this_conn = {}
     conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs, 'pli': _pli,
-                 'wpli': _wpli}
+                 'wpli': _wpli, 'ciplv': _ciplv}
     for m in method:
         c_func = conn_func[m]
         this_conn[m] = c_func(out, kernel, foi_idx, source_idx,
@@ -519,6 +526,35 @@ def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
     # define the function to compute in parallel
     parallel, p_fun, n_jobs = parallel_func(
         pairwise_plv, n_jobs=n_jobs, verbose=verbose, total=total)
+
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _ciplv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+           faverage):
+    """Pairwise corrected imaginary phase-locking value.
+
+    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
+    n_times)."""
+
+    def pairwise_ciplv(w_x, w_y):
+        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        exp_dphi = s_xy / np.abs(s_xy)
+        exp_dphi = _smooth_spectra(exp_dphi, kernel)
+
+        rplv = np.abs(np.mean(np.real(exp_dphi), axis=-1, keepdims=True))
+        iplv = np.abs(np.mean(np.imag(exp_dphi), axis=-1, keepdims=True))
+
+        out = iplv / (np.sqrt(1 - rplv ** 2))
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
+
+    # define the function to compute in parallel
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_ciplv, n_jobs=n_jobs, verbose=verbose, total=total)
 
     return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
