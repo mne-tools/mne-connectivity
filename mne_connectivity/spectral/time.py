@@ -367,6 +367,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         verbose=verbose)
 
     for epoch_idx in np.arange(n_epochs):
+        logger.info(f'   Processing epoch {epoch_idx+1} / {n_epochs} ...')
         conn_tr = _spectral_connectivity(data[epoch_idx], **call_params)
         for m in method:
             conn[m][epoch_idx] = np.stack(conn_tr[m], axis=0)
