@@ -492,72 +492,91 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
 
         # smooth
         psd = _smooth_spectra(psd, kernel)
-
-    def pairwise_con(w_x, w_y):
-        # csd
-        if weights is not None:
-            s_xy = np.sum(weights * w[w_x] * np.conj(weights * w[w_y]), axis=0)
-            s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
-        else:
-            s_xy = w[w_x] * np.conj(w[w_y])
-            s_xy = np.squeeze(s_xy, axis=0)
-
-        dphi = s_xy / np.abs(s_xy)
-        dphi = _smooth_spectra(dphi, kernel)
-        s_xy = _smooth_spectra(s_xy, kernel)
-        out = []
-        for m in method:
-            if m == 'coh':
-                s_xx = psd[w_x]
-                s_yy = psd[w_y]
-                coh = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
-                    np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
-                            s_yy.mean(axis=-1, keepdims=True))
-                out.append(coh)
-
-            if m == 'plv':
-                dphi_mean = dphi.mean(axis=-1, keepdims=True)
-                plv = np.abs(dphi_mean)
-                out.append(plv)
-
-            if m == 'ciplv':
-                rplv = np.abs(np.mean(np.real(dphi), axis=-1, keepdims=True))
-                iplv = np.abs(np.mean(np.imag(dphi), axis=-1, keepdims=True))
-                ciplv = iplv / (np.sqrt(1 - rplv ** 2))
-                out.append(ciplv)
-
-            if m == 'pli':
-                pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
-                                     axis=-1, keepdims=True))
-                out.append(pli)
-
-            if m == 'wpli':
-                con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
-                con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
-                wpli = con_num / con_den
-                out.append(wpli)
-
-            if m == 'cs':
-                out.append(s_xy)
-
-        for i, _ in enumerate(out):
-            # mean inside frequency sliding window (if needed)
-            if isinstance(foi_idx, np.ndarray) and faverage:
-                out[i] = _foi_average(out[i], foi_idx)
-            # squeeze time dimension
-            out[i] = out[i].squeeze(axis=-1)
-
-        return out
+    else:
+        psd = None
 
     # only show progress if verbosity level is DEBUG
     if verbose != 'DEBUG' and verbose != 'debug' and verbose != 10:
         total = None
 
     # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
+    parallel, my_pairwise_con, n_jobs = parallel_func(
+        _pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
 
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+    return parallel(
+        my_pairwise_con(w[s], w[t], s, t, psd, method, kernel,
+                        foi_idx, faverage, weights)
+        for s, t in zip(source_idx, target_idx))
+
+
+def _pairwise_con(w_x, w_y, x, y, psd, method, kernel, foi_idx,
+                 faverage, weights):
+    # csd
+    if weights is not None:
+        s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
+        s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
+    else:
+        s_xy = w_x * np.conj(w_y)
+        s_xy = np.squeeze(s_xy, axis=0)
+    s_xy = _smooth_spectra(s_xy, kernel)
+    out = []
+    conn_func = {'plv': _plv, 'ciplv': _ciplv, 'pli': _pli, 'wpli': _wpli,
+                 'coh': _coh, 'cs': _cs}
+    for m in method:
+        if m == 'coh':
+            s_xx = psd[x]
+            s_yy = psd[y]
+            out.append(conn_func[m](s_xx, s_yy, s_xy))
+        else:
+            out.append(conn_func[m](s_xy))
+
+    for i, _ in enumerate(out):
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            out[i] = _foi_average(out[i], foi_idx)
+        # squeeze time dimension
+        out[i] = out[i].squeeze(axis=-1)
+
+    return out
+
+
+def _plv(s_xy):
+    s_xy = s_xy / np.abs(s_xy)
+    plv = np.abs(s_xy.mean(axis=-1, keepdims=True))
+    return plv
+
+
+def _ciplv(s_xy):
+    s_xy = s_xy / np.abs(s_xy)
+    rplv = np.abs(np.mean(np.real(s_xy), axis=-1, keepdims=True))
+    iplv = np.abs(np.mean(np.imag(s_xy), axis=-1, keepdims=True))
+    ciplv = iplv / (np.sqrt(1 - rplv ** 2))
+    return ciplv
+
+
+def _pli(s_xy):
+    pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
+                         axis=-1, keepdims=True))
+    return pli
+
+
+def _wpli(s_xy):
+    con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
+    con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
+    wpli = con_num / con_den
+    return wpli
+
+
+def _coh(s_xx, s_yy, s_xy):
+    con_num = np.abs(s_xy.mean(axis=-1, keepdims=True))
+    con_den = np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
+                      s_yy.mean(axis=-1, keepdims=True))
+    coh = con_num / con_den
+    return coh
+
+
+def _cs(s_xy):
+    return s_xy.mean(axis=-1, keepdims=True)
 
 
 def _compute_csd(x, y, weights):
