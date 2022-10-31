@@ -356,11 +356,9 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         verbose=verbose)
 
     for epoch_idx in np.arange(n_epochs):
-        epoch_idx = [epoch_idx]
-        conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
+        conn_tr = _spectral_connectivity(data[epoch_idx], **call_params)
         for m in method:
-            conn[m][epoch_idx, ...] = np.stack(conn_tr[m],
-                                               axis=1).squeeze(axis=-1)
+            conn[m][epoch_idx] = np.stack(conn_tr[m], axis=0)
 
     if indices is None:
         conn_flat = conn
@@ -369,7 +367,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
             this_conn = np.zeros((n_epochs, n_signals, n_signals) +
                                  conn_flat[m].shape[2:],
                                  dtype=conn_flat[m].dtype)
-            this_conn[:, source_idx, target_idx] = conn_flat[m][:, ...]
+            this_conn[:, source_idx, target_idx] = conn_flat[m]
             this_conn = this_conn.reshape((n_epochs, n_signals ** 2,) +
                                           conn_flat[m].shape[2:])
             conn[m] = this_conn
@@ -405,7 +403,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 
     See spectral_connectivity_epochs."""
     n_pairs = len(source_idx)
-
+    data = np.expand_dims(data, axis=0)
     if mode == 'cwt_morlet':
         out = tfr_array_morlet(
             data, sfreq, freqs, n_cycles=n_cycles, output='complex',
@@ -419,18 +417,14 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     else:
         raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
 
+    out = np.squeeze(out, axis=0)
+
     # compute for each connectivity method
     this_conn = {}
-    conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs, 'pli': _pli,
-                 'wpli': _wpli, 'ciplv': _ciplv}
-    for m in method:
-        c_func = conn_func[m]
-        this_conn[m] = c_func(out, kernel, foi_idx, source_idx,
-                              target_idx, n_jobs=n_jobs,
-                              verbose=verbose, total=n_pairs,
-                              faverage=faverage)
-        # mean over tapers
-        this_conn[m] = [c.mean(axis=1) for c in this_conn[m]]
+    conn = _parallel_con(out, method, kernel, foi_idx, source_idx, target_idx,
+                         n_jobs, verbose, n_pairs, faverage)
+    for i, m in enumerate(method):
+        this_conn[m] = [out[i] for out in conn]
 
     return this_conn
 
@@ -441,157 +435,73 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 ###############################################################################
 ###############################################################################
 
-def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
-    """Pairwise coherence.
+def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
+                  verbose, total, faverage):
+    """Compute spectral connectivity in parallel.
 
-    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
-    n_times)."""
-    # auto spectra (faster than w * w.conj())
-    s_auto = w.real ** 2 + w.imag ** 2
+    Input signal w is of shape (n_chans, n_tapers, n_freqs, n_times)."""
 
-    # smooth the auto spectra
-    s_auto = _smooth_spectra(s_auto, kernel)
+    if 'coh' in method:
+        # auto spectra (faster than w * w.conj())
+        s_auto = w.real ** 2 + w.imag ** 2
 
-    def pairwise_coh(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        # smooth the auto spectra
+        s_auto = _smooth_spectra(s_auto, kernel)
+
+    def pairwise_con(w_x, w_y):
+        s_xy = w[w_y] * np.conj(w[w_x])
+        dphi = s_xy / np.abs(s_xy)
+        dphi = _smooth_spectra(dphi, kernel)
         s_xy = _smooth_spectra(s_xy, kernel)
-        s_xx = s_auto[:, w_x]
-        s_yy = s_auto[:, w_y]
-        out = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
-            np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
-                    s_yy.mean(axis=-1, keepdims=True))
-        # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
+        out = []
+        for m in method:
+            if m == 'coh':
+                s_xx = s_auto[w_x]
+                s_yy = s_auto[w_y]
+                coh = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
+                      np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
+                              s_yy.mean(axis=-1, keepdims=True))
+                out.append(coh)
+
+            if m == 'plv':
+                dphi_mean = dphi.mean(axis=-1, keepdims=True)
+                plv = np.abs(dphi_mean)
+                out.append(plv)
+
+            if m == 'ciplv':
+                rplv = np.abs(np.mean(np.real(dphi), axis=-1, keepdims=True))
+                iplv = np.abs(np.mean(np.imag(dphi), axis=-1, keepdims=True))
+                ciplv = iplv / (np.sqrt(1 - rplv ** 2))
+                out.append(ciplv)
+
+            if m == 'pli':
+                pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
+                                     axis=-1, keepdims=True))
+                out.append(pli)
+
+            if m == 'wpli':
+                con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
+                con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
+                wpli = con_num / con_den
+                out.append(wpli)
+
+            if m == 'cs':
+                out.append(s_xy)
+
+        for i, _ in enumerate(out):
+            # mean over tapers
+            out[i] = np.mean(out[i], axis=0)
+            # mean inside frequency sliding window (if needed)
+            if isinstance(foi_idx, np.ndarray) and faverage:
+                out[i] = _foi_average(out[i], foi_idx)
+            # squeeze time dimension
+            out[i] = out[i].squeeze(axis=-1)
+
+        return out
 
     # define the function to compute in parallel
     parallel, p_fun, n_jobs = parallel_func(
-        pairwise_coh, n_jobs=n_jobs, verbose=verbose, total=total)
-
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
-
-
-def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
-    """Pairwise phase-locking value.
-
-    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
-    n_times)."""
-    def pairwise_plv(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
-        exp_dphi = s_xy / np.abs(s_xy)
-        exp_dphi = _smooth_spectra(exp_dphi, kernel)
-        # mean over time
-        exp_dphi_mean = exp_dphi.mean(axis=-1, keepdims=True)
-        out = np.abs(exp_dphi_mean)
-        # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
-
-    # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_plv, n_jobs=n_jobs, verbose=verbose, total=total)
-
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
-
-
-def _ciplv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-           faverage):
-    """Pairwise corrected imaginary phase-locking value.
-
-    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
-    n_times)."""
-
-    def pairwise_ciplv(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
-        exp_dphi = s_xy / np.abs(s_xy)
-        exp_dphi = _smooth_spectra(exp_dphi, kernel)
-
-        rplv = np.abs(np.mean(np.real(exp_dphi), axis=-1, keepdims=True))
-        iplv = np.abs(np.mean(np.imag(exp_dphi), axis=-1, keepdims=True))
-
-        out = iplv / (np.sqrt(1 - rplv ** 2))
-        # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
-
-    # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_ciplv, n_jobs=n_jobs, verbose=verbose, total=total)
-
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
-
-
-def _pli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
-    """Pairwise phase-lag index.
-
-    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
-    n_times)."""
-    def pairwise_pli(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
-        s_xy = _smooth_spectra(s_xy, kernel)
-        out = np.abs(np.mean(np.sign(np.imag(s_xy)),
-                             axis=-1, keepdims=True))
-        # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
-
-    # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_pli, n_jobs=n_jobs, verbose=verbose, total=total)
-
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
-
-
-def _wpli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-          faverage):
-    """Pairwise weighted phase-lag index.
-
-    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
-    n_times)."""
-    def pairwise_wpli(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
-        s_xy = _smooth_spectra(s_xy, kernel)
-        con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
-        con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
-        out = con_num / con_den
-        # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
-
-    # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_wpli, n_jobs=n_jobs, verbose=verbose, total=total)
-
-    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
-
-
-def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-        faverage):
-    """Pairwise cross-spectra."""
-    def pairwise_cs(w_x, w_y):
-        out = w[:, w_x] * np.conj(w[:, w_y])
-        out = _smooth_spectra(out, kernel)
-        if isinstance(foi_idx, np.ndarray) and faverage:
-            return _foi_average(out, foi_idx)
-        else:
-            return out
-
-    # define the function to compute in parallel
-    parallel, p_fun, n_jobs = parallel_func(
-        pairwise_cs, n_jobs=n_jobs, verbose=verbose, total=total)
+        pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
 
     return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
