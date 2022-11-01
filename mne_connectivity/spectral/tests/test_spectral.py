@@ -504,11 +504,11 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     # hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
-    cwt_freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
+    freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1) if mode == 'cwt_morlet' else None
     con = spectral_connectivity_time(data, method=method, mode=mode,
                                      sfreq=sfreq, fmin=freq_band_low_limit,
                                      fmax=freq_band_high_limit,
-                                     cwt_freqs=cwt_freqs, n_jobs=1,
+                                     freqs=freqs, n_jobs=1,
                                      faverage=True, average=True, sm_times=0)
     assert con.shape == (n_channels ** 2, len(con.freqs))
     con_matrix = con.get_data('dense')[..., 0]
@@ -589,11 +589,11 @@ def test_spectral_connectivity_time_resolved(method, mode):
     data = EpochsArray(data, info)
 
     # define some frequencies for cwt
-    freqs = np.arange(3, 20.5, 1)
+    freqs = np.arange(3, 20.5, 1) if mode == 'cwt_morlet' else None
 
     # run connectivity estimation
     con = spectral_connectivity_time(
-        data, sfreq=sfreq, cwt_freqs=freqs, method=method, mode=mode,
+        data, sfreq=sfreq, freqs=freqs, method=method, mode=mode,
         n_cycles=5)
     assert con.shape == (n_epochs, n_signals ** 2, len(con.freqs))
     assert con.get_data(output='dense').shape == \

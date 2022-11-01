@@ -12,7 +12,7 @@ from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
 from mne.utils import (logger, warn)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
-from .epochs import _compute_freqs, _compute_freq_mask
+from .epochs import _compute_freq_mask
 from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, fill_doc
 
@@ -22,9 +22,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning',
-                               mode='cwt_morlet', mt_bandwidth=None,
-                               cwt_freqs=None, n_cycles=7, decim=1,
-                               n_jobs=1, verbose=None):
+                               mode='cwt_morlet', mt_bandwidth=None, freqs=None,
+                               n_cycles=7, decim=1, n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
     This method computes time-resolved connectivity measures from epoched data.
@@ -92,11 +91,12 @@ def spectral_connectivity_time(data, method='coh', average=False,
         bandwidth (thus the frequency resolution) and the number of good
         tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
         documentation.
-    cwt_freqs : array_like
+    freqs : array_like
         Array of frequencies of interest for time-frequency decomposition.
-        Only used in 'cwt_morlet' mode. Only the frequencies within
-        the range specified by ``fmin`` and ``fmax`` are used. Required if
-        ``mode='cwt_morlet'``. Not used when ``mode='multitaper'``.
+        Required in ``cwt_morlet`` mode. Only the frequencies within
+        the range specified by ``fmin``  and ``fmax`` are used. Required if
+        ``mode='cwt_morlet'``. If set when ``mode='multitaper'``, overrides the
+        automatically determined frequencies of interest.
     n_cycles : float | array_like of float
         Number of cycles in the wavelet, either a fixed number or one per
         frequency. The number of cycles ``n_cycles`` and the frequencies of
@@ -314,22 +314,22 @@ def spectral_connectivity_time(data, method='coh', average=False,
     target_idx = indices_use[1]
     n_pairs = len(source_idx)
 
-    # check cwt_freqs
-    if cwt_freqs is not None:
+    # check freqs
+    if freqs is not None:
         # check for single frequency
-        if isinstance(cwt_freqs, (int, float)):
-            cwt_freqs = [cwt_freqs]
+        if isinstance(freqs, (int, float)):
+            freqs = [freqs]
         # array conversion
-        cwt_freqs = np.asarray(cwt_freqs)
+        freqs = np.asarray(freqs)
         # check order for multiple frequencies
-        if len(cwt_freqs) >= 2:
-            delta_f = np.diff(cwt_freqs)
+        if len(freqs) >= 2:
+            delta_f = np.diff(freqs)
             increase = np.all(delta_f > 0)
             assert increase, "Frequencies should be in increasing order"
 
     # compute frequencies to analyze based on number of samples,
     # sampling rate, specified wavelet frequencies and mode
-    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+    freqs = _compute_freqs(n_times, sfreq, freqs, mode)
 
     # compute the mask based on specified min/max and decimation factor
     freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
@@ -573,3 +573,25 @@ def _foi_average(conn, foi_idx):
         f_e += 1 if f_s == f_e else f_e
         conn_f[..., n_f, :] = conn[..., f_s:f_e, :].mean(-2)
     return conn_f
+
+
+def _compute_freqs(n_times, sfreq, freqs, mode):
+    from scipy.fft import rfftfreq
+    # get frequencies of interest for the different modes
+    if freqs is not None:
+        if any(freqs > (sfreq / 2.)):
+            raise ValueError('entries in freqs cannot be '
+                             'larger than Nyquist (sfreq / 2)')
+        else:
+            return freqs.astype(np.float64)
+    if mode in ('multitaper', 'fourier'):
+        # fmin fmax etc is only supported for these modes
+        # decide which frequencies to keep
+        return rfftfreq(n_times, 1. / sfreq)
+    elif mode == 'cwt_morlet':
+        # cwt_morlet mode
+        if freqs is None:
+            raise ValueError('define frequencies of interest using '
+                             'cwt_freqs')
+    else:
+        raise ValueError('mode has an invalid value')
