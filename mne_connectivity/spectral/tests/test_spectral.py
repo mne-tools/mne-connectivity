@@ -7,7 +7,8 @@ from mne.filter import filter_data
 
 from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
-    read_connectivity, spectral_connectivity_time)
+    read_connectivity, spectral_connectivity_time,
+    spectral_connectivity_time_hilbert)
 from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
 from mne_connectivity.spectral.epochs import (
     _compute_freq_mask, _compute_freqs)
@@ -553,6 +554,94 @@ def test_spectral_connectivity_time_resolved(method, mode):
     con = spectral_connectivity_time(
         data, sfreq=sfreq, cwt_freqs=freqs, method=method, mode=mode,
         n_cycles=5)
+    assert con.shape == (n_epochs, n_signals ** 2, len(con.freqs))
+    assert con.get_data(output='dense').shape == \
+        (n_epochs, n_signals, n_signals, len(con.freqs))
+
+    # test the simulated signal
+    triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
+
+    # average over frequencies
+    conn_data = con.get_data(output='dense').mean(axis=-1)
+
+    # the indices at which there is a correlation should be greater
+    # then the rest of the components
+    for epoch_idx in range(n_epochs):
+        high_conn_val = conn_data[epoch_idx, 0, 1]
+        assert all(high_conn_val >= conn_data[epoch_idx, idx, jdx]
+                   for idx, jdx in triu_inds)
+
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
+@pytest.mark.parametrize('data_option', ['sync', 'random'])
+def test_spectral_connectivity_time_phaselocked_hilbert(method,  data_option):
+    """Test time-resolved spectral connectivity with simulated
+    phase-locked data."""
+    rng = np.random.default_rng(0)
+    n_epochs = 5
+    n_channels = 3
+    n_times = 1000
+    sfreq = 250
+    data = np.zeros((n_epochs, n_channels, n_times))
+    if data_option == 'random':
+        # Data is random, there should be no consistent phase differences.
+        data = rng.random((n_epochs, n_channels, n_times))
+    if data_option == 'sync':
+        # Data consists of phase-locked 10Hz sine waves with constant phase
+        # difference within each epoch.
+        wave_freq = 10
+        epoch_length = n_times / sfreq
+        for i in range(n_epochs):
+            for c in range(n_channels):
+                phase = rng.random() * 10
+                x = np.linspace(-wave_freq * epoch_length * np.pi + phase,
+                                wave_freq * epoch_length * np.pi + phase,
+                                n_times)
+                data[i, c] = np.squeeze(np.sin(x))
+    # the frequency band should contain the frequency at which there is a hypothesized "connection"
+    freq_band_low_limit = (8.)
+    freq_band_high_limit = (13.)
+    con = spectral_connectivity_time_hilbert(data, method=method, sfreq=sfreq,
+                                     fmin=freq_band_low_limit,
+                                     fmax=freq_band_high_limit,
+                                     n_jobs=1, average=True)
+    assert con.shape == (n_channels ** 2, len(con.freqs))
+    con_matrix = con.get_data('dense')[..., 0]
+    if data_option == 'sync':
+        # signals are perfectly phase-locked, connectivity matrix should be
+        # a lower triangular matrix of ones
+        assert np.allclose(con_matrix,
+                           np.tril(np.ones(con_matrix.shape),
+                                   k=-1),
+                           atol=0.1)
+    if data_option == 'random':
+        # signals are random, all connectivity values should be small
+        # 0.5 is picked rather arbitrarily such that the obsolete wrong
+        # implementation fails
+        assert np.all(con_matrix) <= 0.5
+
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
+def test_spectral_connectivity_time_resolved_hilbert(method):
+    """Test time-resolved spectral connectivity."""
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 2
+    n_times = 1000
+    trans_bandwidth = 2.
+    tmin = 0.
+    tmax = (n_times - 1) / sfreq
+    # 5Hz..15Hz
+    fstart, fend = 5.0, 15.0
+    data, _ = create_test_dataset(
+        sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
+    ch_names = np.arange(n_signals).astype(str).tolist()
+    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types='eeg')
+    data = EpochsArray(data, info)
+
+    # run connectivity estimation
+    con = spectral_connectivity_time_hilbert(
+        data, sfreq=sfreq, method=method, fmin=fstart, fmax=fend)
     assert con.shape == (n_epochs, n_signals ** 2, len(con.freqs))
     assert con.get_data(output='dense').shape == \
         (n_epochs, n_signals, n_signals, len(con.freqs))
