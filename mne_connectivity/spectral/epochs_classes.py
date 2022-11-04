@@ -238,7 +238,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             all_idcs = [*seed_idcs, *target_idcs]
             n_signals = len(all_idcs)
             autocov[group_i] = np.zeros(
-                (n_signals, n_signals, self.n_lags + 1)
+                (n_signals, n_signals, self.n_lags + 1, n_times)
             )
             con_csd = csd[
                 np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs), np.arange(n_times))
@@ -264,13 +264,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             )
             sign_matrix = sign_matrix[:, :, np.newaxis]
 
-            autocov_t = (np.real(np.reshape(
-                        sign_matrix * lags_ifft_shifted_csd,
-                        (n_signals, n_signals, self.n_lags + 1, n_times),
-                        order="F"))
-                        )
-            autocov[group_i][:, :, :] = np.sum(autocov_t, axis=3)
+            autocov[group_i] += (np.real(np.reshape(
+                                sign_matrix * lags_ifft_shifted_csd,
+                                (n_signals, n_signals, self.n_lags + 1, n_times),
+                                order="F"))
+                                )
 
+        np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/autocov_v4.npy', autocov)
         return autocov
 
     def block_ifft(self, csd, n_points):
