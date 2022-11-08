@@ -241,8 +241,10 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 (n_signals, n_signals, self.n_lags + 1, n_times)
             )
             con_csd = csd[
-                np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs), np.arange(n_times))
+                np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs),
+                       np.arange(n_times))
             ]
+
             circular_shifted_csd = np.concatenate(
                 [np.flip(np.conj(con_csd[:, :, 1:, :]), axis=2),
                 con_csd[:, :, :-1, :]],
@@ -251,35 +253,41 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             ifft_shifted_csd = self.block_ifft(
                 circular_shifted_csd, (self.n_freqs - 1) * 2
             )
-
             lags_ifft_shifted_csd = np.reshape(
-                ifft_shifted_csd[:, :, :self.n_lags + 1],
+                ifft_shifted_csd[:, :, :self.n_lags + 1, :],
                 (n_signals ** 2, self.n_lags + 1, n_times),
                 order="F"
             )
+
             signs = [1] * (self.n_lags + 1)
             signs[1::2] = [x * -1 for x in signs[1::2]]
-            sign_matrix = np.tile(
-                np.asarray(signs), (n_signals ** 2, 1)
+            sign_matrix = np.repeat(
+                np.tile(
+                    np.asarray(signs), (n_signals ** 2, 1)
+                )[:, :, np.newaxis],
+                n_times,
+                axis=2
             )
-            sign_matrix = sign_matrix[:, :, np.newaxis]
 
-            autocov[group_i] += (np.real(np.reshape(
-                                sign_matrix * lags_ifft_shifted_csd,
-                                (n_signals, n_signals, self.n_lags + 1, n_times),
-                                order="F"))
-                                )
-
-        np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/autocov_v4.npy', autocov)
-        return autocov
+            autocov[group_i] += (
+                np.real(
+                    np.reshape(
+                        sign_matrix * lags_ifft_shifted_csd,
+                        (n_signals, n_signals, self.n_lags + 1, n_times),
+                        order="F"
+                    )
+                )
+            )
 
     def block_ifft(self, csd, n_points):
         """Performs a 'block' inverse fast Fourier transform on the data,
         involving an n-point inverse Fourier transform."""
-        csd_2d = np.reshape(
-            csd, (csd.shape[0] * csd.shape[1], csd.shape[2]), order="F"
-        ).T
-        csd_ifft = np.fft.ifft(csd_2d, n=n_points, axis=0).T
+        csd_3d = np.reshape(
+            csd,
+            (csd.shape[0] * csd.shape[1], csd.shape[2], csd.shape[3]),
+            order="F"
+        )
+        csd_ifft = np.fft.ifft(csd_3d, n=n_points, axis=1)
 
         return np.reshape(csd_ifft, csd.shape, order="F")
 
