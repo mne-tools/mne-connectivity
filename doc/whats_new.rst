@@ -29,7 +29,7 @@ Enhancements
 Bug
 ~~~
 
-- 
+- Allow loading files that don't have ``event_id_keys`` and ``event_id_values`` defined, by `Daniel McCloy`_ (:gh:`110`)
 
 API
 ~~~
