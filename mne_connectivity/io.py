@@ -44,6 +44,7 @@ def _xarray_to_conn(array, cls_func):
     metadata = _prepare_read_metadata(metadata)
 
     # write event IDs
+    # storing events is optional, not all files will have them
     if 'event_id_keys' in array.attrs and 'event_id_vals' in array.attrs:
         event_id_keys = np.atleast_1d(
             array.attrs.pop('event_id_keys')).tolist()
