@@ -278,6 +278,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                     )
                 )
             )
+        
+        return autocov
 
     def block_ifft(self, csd, n_points):
         """Performs a 'block' inverse fast Fourier transform on the data,
