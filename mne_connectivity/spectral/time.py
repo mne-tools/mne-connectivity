@@ -18,7 +18,7 @@ from ..utils import check_indices, fill_doc
 
 @fill_doc
 def spectral_connectivity_time(data, method='coh', average=False,
-                               indices=None, sfreq=2 * np.pi, fmin=None,
+                               indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning',
                                mode='cwt_morlet', mt_bandwidth=None,
@@ -56,7 +56,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
         If None, all connections are computed.
     sfreq : float
-        The sampling frequency. Should be specified if data is not ``Epochs``.
+        The sampling frequency. Required if data is not ``Epochs``.
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
@@ -236,9 +236,8 @@ When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation results 
         names = np.arange(0, n_signals)
         metadata = None
         if sfreq is None:
-            warn("Sampling frequency (sfreq) was not specified and could not "
-                 "be inferred from data. Using default value 2*numpy.pi. "
-                 "Connectivity results might not be interpretable.")
+            raise ValueError('Sampling frequency (sfreq) is required with '
+                             'array input.')
 
     # check that method is a list
     if isinstance(method, str):
