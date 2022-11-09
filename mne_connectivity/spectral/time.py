@@ -199,6 +199,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     mne.set_config('MNE_CACHE_DIR', '/dev/shm')
     ```
 
+When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation results in pickling and unpickling the whole array each time a pair of indices is accessed, which is slow, compared to memory mapping the array.
     This function was originally implemented in ``frites`` and was
     ported over.
 
