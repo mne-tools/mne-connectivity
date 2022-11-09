@@ -83,21 +83,23 @@ def spectral_connectivity_time(data, method='coh', average=False,
         Smoothing kernel type. Choose either 'square' or 'hanning' (default).
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and `mne.time_frequency.tfr_array_wavelet`
-        for reference.
+        'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and
+        `mne.time_frequency.tfr_array_wavelet` for reference.
     mt_bandwidth : float | None
-        Multitaper time bandwidth. If None, will be set to 4.0 (3 tapers).
-        Time x (Full) Bandwidth product. The number of good tapers (low-bias)
-        is chosen automatically based on this to equal
-        floor(time_bandwidth - 1). By default None.
+        Product between the temporal window length (in seconds) and the full
+         frequency bandwidth (in Hz). This product can be seen as the surface
+         of the window on the time/frequency plane and controls the frequency
+         bandwidth (thus the frequency resolution) and the number of good
+         tapers. See `mne.time_frequency.tfr_array_multitaper` documentation.
     cwt_freqs : array
         Array of frequencies of interest for time-frequency decomposition.
         Only used in 'cwt_morlet' mode. Only the frequencies within
-        the range specified by fmin and fmax are used. Must be specified if
+        the range specified by fmin and fmax are used. Required if
         ``mode='cwt_morlet'``. Not used when ``mode='multitaper'``.
     n_cycles : float | array of float
-        Number of wavelet cycles for use in time-frequency decomposition method
-        (specified by ``mode``). Fixed number or one per frequency.
+        Number of cycles in the wavelet, either a fixed number or one per
+        frequency. The number of cycles n_cycles and the frequencies of
+        interest freqs define the temporal window length.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Default to 1. If int, returns tfr[…, ::decim]. If slice,
@@ -134,7 +136,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     The connectivity measures are computed over time within each epoch and
     optionally averaged over epochs. High connectivity values indicate that
-    the phase coupling (interpreted as estimated connectivity) differences between signals stay consistent over time.
+    the phase coupling (interpreted as estimated connectivity) differences
+    between signals stay consistent over time.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet
@@ -191,16 +194,20 @@ def spectral_connectivity_time(data, method='coh', average=False,
     Parallel computation can be activated by setting the ``n_jobs`` parameter.
     Under the hood, this utilizes the ``joblib`` library. For effective
     parallelization, you should activate memory mapping in MNE-Python by
-    setting ``MNE_MEMMAP_MIN_SIZE`` and ``MNE_CACHE_DIR``. For example, in your
-    code, run
+    setting ``MNE_MEMMAP_MIN_SIZE`` and ``MNE_CACHE_DIR``. Activating memory
+    mapping will make ``joblib`` store arrays greater than the minimum size on
+    disc, and forego direct RAM access for more efficient processing.
+    For example, in your code, run
     ```
     mne.set_config('MNE_MEMMAP_MIN_SIZE', '10M')
     mne.set_config('MNE_CACHE_DIR', '/dev/shm')
     ```
 
-When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation results in pickling and unpickling the whole array each time a pair of indices is accessed, which is slow, compared to memory mapping the array.
-    This function was originally implemented in ``frites`` and was
-    ported over.
+    When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation
+    results in pickling and unpickling the whole array each time a pair of
+    indices is accessed, which is slow, compared to memory mapping the array.
+
+    This function is based on ``conn_spec`` implementation in Frites.
 
     .. versionadded:: 0.3
 
