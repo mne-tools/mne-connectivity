@@ -593,5 +593,6 @@ def _foi_average(conn, foi_idx):
     # compute average
     conn_f = np.zeros(sh, dtype=conn.dtype)
     for n_f, (f_s, f_e) in enumerate(foi_idx):
+        f_e += 1 if f_s == f_e else f_e
         conn_f[..., n_f, :] = conn[..., f_s:f_e, :].mean(-2)
     return conn_f
