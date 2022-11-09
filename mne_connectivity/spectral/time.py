@@ -135,7 +135,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
 
     The connectivity measures are computed over time within each epoch and
     optionally averaged over epochs. High connectivity values indicate that
-    the phase differences between signals stay consistent over time.
+    the phase coupling (interpreted as estimated connectivity) differences between signals stay consistent over time.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet
