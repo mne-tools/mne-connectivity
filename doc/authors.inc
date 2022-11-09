@@ -7,3 +7,4 @@
 .. _Szonja Weigl: https://github.com/weiglszonja
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Sezan Mert: https://github.com/SezanMert
+.. _Daniel McCloy: https://dan.mccloy.info
