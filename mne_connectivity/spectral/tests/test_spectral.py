@@ -526,6 +526,46 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
 
 @pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
 @pytest.mark.parametrize(
+    'cwt_freqs', [[8., 10.], [8, 10], 10., 10])
+def test_spectral_connectivity_time_cwt_freqs(method, cwt_freqs):
+    """Test time-resolved spectral connectivity with int and float values for
+    cwt_freqs."""
+    rng = np.random.default_rng(0)
+    n_epochs = 5
+    n_channels = 3
+    n_times = 1000
+    sfreq = 250
+    data = np.zeros((n_epochs, n_channels, n_times))
+
+    # Data consists of phase-locked 10Hz sine waves with constant phase
+    # difference within each epoch.
+    wave_freq = 10
+    epoch_length = n_times / sfreq
+    for i in range(n_epochs):
+        for c in range(n_channels):
+            phase = rng.random() * 10
+            x = np.linspace(-wave_freq * epoch_length * np.pi + phase,
+                            wave_freq * epoch_length * np.pi + phase,
+                            n_times)
+            data[i, c] = np.squeeze(np.sin(x))
+    # the frequency band should contain the frequency at which there is a
+    # hypothesized "connection"
+    con = spectral_connectivity_time(data, method=method, mode='cwt_morlet',
+                                     sfreq=sfreq, fmin=np.min(cwt_freqs),
+                                     fmax=np.max(cwt_freqs),
+                                     cwt_freqs=cwt_freqs, n_jobs=1,
+                                     faverage=True, average=True, sm_times=0)
+    assert con.shape == (n_channels ** 2, len(con.freqs))
+    con_matrix = con.get_data('dense')[..., 0]
+
+    # signals are perfectly phase-locked, connectivity matrix should be
+    # a lower triangular matrix of ones
+    assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1),
+                       atol=0.01)
+
+
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
+@pytest.mark.parametrize(
     'mode', ['cwt_morlet', 'multitaper'])
 def test_spectral_connectivity_time_resolved(method, mode):
     """Test time-resolved spectral connectivity."""
