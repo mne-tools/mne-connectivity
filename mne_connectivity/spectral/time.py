@@ -101,7 +101,7 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
         (specified by ``mode``). Fixed number or one per frequency.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
-        decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,
+        decomposition. Default to 1. If int, returns tfr[…, ::decim]. If slice,
         returns tfr[…, decim].
     n_jobs : int
         Number of connections to compute in parallel. Memory mapping must be
