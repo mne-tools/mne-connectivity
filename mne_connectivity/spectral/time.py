@@ -17,7 +17,7 @@ from ..utils import check_indices, fill_doc
 
 
 @fill_doc
-def spectral_connectivity_time(data, names=None, method='coh', average=False,
+def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=2 * np.pi, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning',
@@ -36,7 +36,6 @@ def spectral_connectivity_time(data, names=None, method='coh', average=False,
     ----------
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
         The data from which to compute connectivity.
-    %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'plv',
         'sxy', 'pli', 'wpli']``. These are:
