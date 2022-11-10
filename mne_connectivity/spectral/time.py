@@ -413,7 +413,8 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                            n_jobs, verbose):
     """Estimate time-resolved connectivity for one epoch.
 
-    See spectral_connectivity_epochs."""
+    Data is of shape (n_channels, n_times)."""
+
     n_pairs = len(source_idx)
     data = np.expand_dims(data, axis=0)
     if mode == 'cwt_morlet':
@@ -448,7 +449,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     # compute for each connectivity method
     this_conn = {}
     conn = _parallel_con(out, method, kernel, foi_idx, source_idx, target_idx,
-                         n_jobs, verbose, n_pairs, faverage)
+                         n_jobs, verbose, n_pairs, faverage, weights)
     for i, m in enumerate(method):
         this_conn[m] = [out[i] for out in conn]
 
@@ -462,28 +463,42 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 ###############################################################################
 
 def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
-                  verbose, total, faverage):
+                  verbose, total, faverage, weights):
     """Compute spectral connectivity in parallel.
 
     Input signal w is of shape (n_chans, n_tapers, n_freqs, n_times)."""
 
     if 'coh' in method:
-        # auto spectra (faster than w * w.conj())
-        s_auto = w.real ** 2 + w.imag ** 2
+        # psd
+        if weights is not None:
+            psd = weights * w
+            psd = psd * np.conj(psd)
+            psd = psd.real.sum(axis=1)
+            psd = psd * 2 / (weights*weights.conj()).real.sum(axis=0)
+        else:
+            psd = w.real ** 2 + w.imag ** 2
+            psd = np.squeeze(psd, axis=1)
 
-        # smooth the auto spectra
-        s_auto = _smooth_spectra(s_auto, kernel)
+        # smooth
+        psd = _smooth_spectra(psd, kernel)
 
     def pairwise_con(w_x, w_y):
-        s_xy = w[w_y] * np.conj(w[w_x])
+        # csd
+        if weights is not None:
+            s_xy = np.sum(weights * w[w_x] * np.conj(weights * w[w_y]), axis=0)
+            s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
+        else:
+            s_xy = w[w_x] * np.conj(w[w_y])
+            s_xy = np.squeeze(s_xy, axis=0)
+
         dphi = s_xy / np.abs(s_xy)
         dphi = _smooth_spectra(dphi, kernel)
         s_xy = _smooth_spectra(s_xy, kernel)
         out = []
         for m in method:
             if m == 'coh':
-                s_xx = s_auto[w_x]
-                s_yy = s_auto[w_y]
+                s_xx = psd[w_x]
+                s_yy = psd[w_y]
                 coh = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
                       np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
                               s_yy.mean(axis=-1, keepdims=True))
@@ -515,8 +530,6 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
                 out.append(s_xy)
 
         for i, _ in enumerate(out):
-            # mean over tapers
-            out[i] = np.mean(out[i], axis=0)
             # mean inside frequency sliding window (if needed)
             if isinstance(foi_idx, np.ndarray) and faverage:
                 out[i] = _foi_average(out[i], foi_idx)
