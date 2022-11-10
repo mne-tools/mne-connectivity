@@ -769,7 +769,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             mt_adaptive=mt_adaptive,
             con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
-            n_signals=n_signals, n_times=n_times,
+            n_signals=n_signals, n_times=n_times, gc_n_lags=None,
             accumulate_inplace=True if n_jobs == 1 else False)
         call_params.update(**spectral_params)
 
