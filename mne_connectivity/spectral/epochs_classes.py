@@ -231,7 +231,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """Computes the autocovariance sequence from the cross-spectral
         density."""
         n_times = csd.shape[3]
-        autocov = [[] for con_i in range(len(seeds))]
+        autocov = [[] for _ in range(len(seeds))]
         for group_i, seed_idcs, target_idcs in zip(
             range(len(seeds)), seeds, targets
         ):
