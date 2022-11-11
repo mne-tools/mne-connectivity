@@ -184,7 +184,7 @@ def multivar_spectral_connectivity_epochs(
 
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
-        svd_gc_con = [[]] * n_gc_methods
+        svd_gc_con = [[] for method_i in range(n_gc_methods)]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
