@@ -184,7 +184,7 @@ def multivar_spectral_connectivity_epochs(
 
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
-        svd_gc_con = [[] for x in range(n_gc_methods)]
+        svd_gc_con = [[]] * n_gc_methods
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
@@ -253,7 +253,7 @@ def multivar_spectral_connectivity_epochs(
         # stored SVD GC results
         con = svd_gc_con
         # finds the remapped indices of non-SVD data
-        unique_indices = np.unique(sum(sum(indices, []), []))
+        unique_indices = np.unique(np.concatenate(sum(indices, [])))
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
         remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
                              indices_group] for indices_group in indices]
@@ -466,7 +466,7 @@ def _compute_csd(
                 cwt_freqs=cwt_freqs, freqs=freqs, freq_mask=freq_mask)
 
             # map indices to unique indices
-            unique_indices = np.unique(sum(sum(indices, []), []))
+            unique_indices = np.unique(np.concatenate(sum(indices, [])))
             remapping = {ch_i: sig_i for sig_i, ch_i in
                          enumerate(unique_indices)}
             remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
