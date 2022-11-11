@@ -334,7 +334,7 @@ def _sort_inputs(
     n_targets = len(indices[1])
     if n_seeds != n_targets:
         raise ValueError(
-            f"The number of seeds ({n_seeds}) and targets ({n_targets}) must  "
+            f"The number of seeds ({n_seeds}) and targets ({n_targets}) must "
             "match."
         )
 
@@ -352,8 +352,8 @@ def _sort_inputs(
     else:
         if n_seeds != len(n_seed_components):
             raise ValueError(
-            "n_seed_components must have the same length as specified seeds."
-            f" Got: {len(n_seed_components)} seed components and {n_seeds}"
+            "n_seed_components must have the same length as specified seeds. "
+            f"Got: {len(n_seed_components)} seed components and {n_seeds} "
             "seeds."
             )
         for n_comps, chs in zip(n_seed_components, indices[0]):
