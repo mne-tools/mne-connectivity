@@ -7,7 +7,8 @@ import numpy as np
 import xarray as xr
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper)
+from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
+                                dpss_windows)
 from mne.utils import (logger, warn)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
@@ -410,11 +411,25 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
             data, sfreq, freqs, n_cycles=n_cycles, output='complex',
             decim=decim, n_jobs=n_jobs, **kw_cwt)
         out = np.expand_dims(out, axis=2)  # same dims with multitaper
+        weights = None
     elif mode == 'multitaper':
         out = tfr_array_multitaper(
             data, sfreq, freqs, n_cycles=n_cycles,
             time_bandwidth=mt_bandwidth, output='complex', decim=decim,
             n_jobs=n_jobs, **kw_mt)
+        if isinstance(n_cycles, (int, float)):
+            n_cycles = [n_cycles] * len(freqs)
+        mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
+        n_tapers = int(np.floor(mt_bandwidth - 1))
+        weights = np.zeros((n_tapers, len(freqs), out.shape[-1]))
+        for i, (f, n_c) in enumerate(zip(freqs, n_cycles)):
+            window_length = np.arange(0., n_c / float(f), 1.0 / sfreq).shape[0]
+            half_nbw = mt_bandwidth / 2.
+            n_tapers = int(np.floor(mt_bandwidth - 1))
+            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers,
+                                      sym=False)
+            weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
+            # weights have shape (n_tapers, n_freqs, n_times)
     else:
         raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
 
@@ -427,9 +442,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         this_conn[m] = c_func(out, kernel, foi_idx, source_idx,
                               target_idx, n_jobs=n_jobs,
                               verbose=verbose, total=n_pairs,
-                              faverage=faverage)
-        # mean over tapers
-        this_conn[m] = [c.mean(axis=1) for c in this_conn[m]]
+                              faverage=faverage, weights=weights)
 
     return this_conn
 
@@ -441,22 +454,29 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 ###############################################################################
 
 def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
+         faverage, weights):
     """Pairwise coherence.
 
     Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
     n_times)."""
-    # auto spectra (faster than w * w.conj())
-    s_auto = w.real ** 2 + w.imag ** 2
 
-    # smooth the auto spectra
-    s_auto = _smooth_spectra(s_auto, kernel)
+    if weights is not None:
+        psd = weights * w
+        psd = psd * np.conj(psd)
+        psd = psd.real.sum(axis=2)
+        psd = psd * 2 / (weights * weights.conj()).real.sum(axis=0)
+    else:
+        psd = w.real ** 2 + w.imag ** 2
+        psd = np.squeeze(psd, axis=2)
+
+    # smooth the psd
+    psd = _smooth_spectra(psd, kernel)
 
     def pairwise_coh(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
         s_xy = _smooth_spectra(s_xy, kernel)
-        s_xx = s_auto[:, w_x]
-        s_yy = s_auto[:, w_y]
+        s_xx = psd[:, w_x]
+        s_yy = psd[:, w_y]
         out = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
             np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
                     s_yy.mean(axis=-1, keepdims=True))
@@ -474,13 +494,13 @@ def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
 
 
 def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
+         faverage, weights):
     """Pairwise phase-locking value.
 
     Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
     n_times)."""
     def pairwise_plv(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
         exp_dphi = s_xy / np.abs(s_xy)
         exp_dphi = _smooth_spectra(exp_dphi, kernel)
         # mean over time
@@ -500,13 +520,13 @@ def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
 
 
 def _pli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-         faverage):
+         faverage, weights):
     """Pairwise phase-lag index.
 
     Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
     n_times)."""
     def pairwise_pli(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
         s_xy = _smooth_spectra(s_xy, kernel)
         out = np.abs(np.mean(np.sign(np.imag(s_xy)),
                              axis=-1, keepdims=True))
@@ -524,13 +544,13 @@ def _pli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
 
 
 def _wpli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-          faverage):
+          faverage, weights):
     """Pairwise weighted phase-lag index.
 
     Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
     n_times)."""
     def pairwise_wpli(w_x, w_y):
-        s_xy = w[:, w_y] * np.conj(w[:, w_x])
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
         s_xy = _smooth_spectra(s_xy, kernel)
         con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
         con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
@@ -549,10 +569,10 @@ def _wpli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
 
 
 def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
-        faverage):
+        faverage, weights):
     """Pairwise cross-spectra."""
     def pairwise_cs(w_x, w_y):
-        out = w[:, w_x] * np.conj(w[:, w_y])
+        out = _compute_csd(w[:, w_y], w[:, w_x], weights)
         out = _smooth_spectra(out, kernel)
         if isinstance(foi_idx, np.ndarray) and faverage:
             return _foi_average(out, foi_idx)
@@ -564,6 +584,17 @@ def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
         pairwise_cs, n_jobs=n_jobs, verbose=verbose, total=total)
 
     return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _compute_csd(x, y, weights):
+    """Compute cross spectral density of signals x and y."""
+    if weights is not None:
+        s_xy = np.sum(weights * x * np.conj(weights * y), axis=-3)
+        s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=-3)
+    else:
+        s_xy = x * np.conj(y)
+        s_xy = np.squeeze(s_xy, axis=-3)
+    return s_xy
 
 
 def _foi_average(conn, foi_idx):
