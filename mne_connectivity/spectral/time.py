@@ -21,7 +21,7 @@ from ..utils import check_indices, fill_doc
 def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
-                               sm_freqs=1, sm_kernel='hanning',
+                               sm_freqs=1, sm_kernel='hanning', padding=0,
                                mode='cwt_morlet', mt_bandwidth=None, freqs=None,
                                n_cycles=7, decim=1, n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
@@ -80,6 +80,9 @@ def spectral_connectivity_time(data, method='coh', average=False,
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
         Smoothing kernel type. Choose either 'square' or 'hanning'.
+    padding: float
+        Amount of time to consider as padding at the beginning and end of each
+        epoch in seconds.
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
         'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
@@ -363,7 +366,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         source_idx=source_idx, target_idx=target_idx,
         mode=mode, sfreq=sfreq, freqs=freqs, faverage=faverage,
         n_cycles=n_cycles, mt_bandwidth=mt_bandwidth,
-        decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
+        decim=decim, padding=padding, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
         verbose=verbose)
 
     for epoch_idx in np.arange(n_epochs):
@@ -409,7 +412,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 def _spectral_connectivity(data, method, kernel, foi_idx,
                            source_idx, target_idx,
                            mode, sfreq, freqs, faverage, n_cycles,
-                           mt_bandwidth, decim, kw_cwt, kw_mt,
+                           mt_bandwidth, decim, padding, kw_cwt, kw_mt,
                            n_jobs, verbose):
     """Estimate time-resolved connectivity for one epoch.
 
@@ -445,6 +448,11 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
 
     out = np.squeeze(out, axis=0)
+
+    if padding:
+        pad_idx = int(np.floor(padding * sfreq / decim))
+        out = out[..., pad_idx:-pad_idx]
+        weights = weights[..., pad_idx:-pad_idx]
 
     # compute for each connectivity method
     this_conn = {}
