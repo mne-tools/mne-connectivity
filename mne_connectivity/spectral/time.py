@@ -29,7 +29,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     This method computes time-resolved connectivity measures from epoched data.
 
-    The connectivity method(s) are specified using the "method" parameter.
+    The connectivity method(s) are specified using the ``method`` parameter.
     All methods are based on estimates of the cross- and power spectral
     densities (CSD/PSD) Sxy and Sxx, Syy.
 
@@ -46,65 +46,64 @@ def spectral_connectivity_time(data, method='coh', average=False,
             * 'sxy' : Cross-spectrum
             * 'pli' : Phase-Lag Index
             * 'wpli': Weighted Phase-Lag Index
-
-        By default, coherence is used.
     average : bool
         Average connectivity scores over epochs. If True, output will be
-        an instance of ``SpectralConnectivity`` , otherwise
-        ``EpochSpectralConnectivity``. By default, False.
-    indices : tuple of array | None
+        an instance of :class:`SpectralConnectivity` , otherwise
+        :class:`EpochSpectralConnectivity`.
+    indices : tuple of array_like | None
         Two arrays with indices of connections for which to compute
         connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
-        If None, all connections are computed.
+        If `None`, all connections are computed.
     sfreq : float
-        The sampling frequency. Required if data is not ``Epochs``.
+        The sampling frequency. Required if data is not
+        :class:`Epochs <mne.Epochs>`.
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-        If None, the frequency corresponding to an epoch length of 5 cycles
-        is used.
+        a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower
+        bounds. If `None`, the frequency corresponding to an epoch length of
+        5 cycles is used.
     fmax : float | tuple of float | None
         The upper frequency of interest. Multiple bands are defined using
-        a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
-        If None, sfreq/2 is used.
+        a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper
+        bounds. If `None`, ``sfreq/2`` is used.
     fskip : int
-        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
+        Omit every ``(fskip + 1)``th frequency bin to decimate in frequency
         domain.
     faverage : bool
-        Average connectivity scores for each frequency band. If True,
-        the output freqs will be a list with arrays of the frequencies
-        that were averaged. By default, False.
+        Average connectivity scores for each frequency band. If `True`,
+        the output ``freqs`` will be an array of the median frequencies of each
+        band.
     sm_times : float
         Amount of time to consider for the temporal smoothing in seconds.
-        If zero, no temporal smoothing is applied. By default, 0.
+        If zero, no temporal smoothing is applied.
     sm_freqs : int
         Number of points for frequency smoothing. By default, 1 is used which
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
-        Smoothing kernel type. Choose either 'square' or 'hanning' (default).
+        Smoothing kernel type. Choose either 'square' or 'hanning'.
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
         'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and
-        `mne.time_frequency.tfr_array_wavelet` for reference.
+        `mne.time_frequency.tfr_array_morlet` for reference.
     mt_bandwidth : float | None
         Product between the temporal window length (in seconds) and the full
-         frequency bandwidth (in Hz). This product can be seen as the surface
-         of the window on the time/frequency plane and controls the frequency
-         bandwidth (thus the frequency resolution) and the number of good
-         tapers. See `mne.time_frequency.tfr_array_multitaper` documentation.
-    cwt_freqs : array
+        frequency bandwidth (in Hz). This product can be seen as the surface
+        of the window on the time/frequency plane and controls the frequency
+        bandwidth (thus the frequency resolution) and the number of good
+        tapers. See `mne.time_frequency.tfr_array_multitaper` documentation.
+    cwt_freqs : array_like
         Array of frequencies of interest for time-frequency decomposition.
         Only used in 'cwt_morlet' mode. Only the frequencies within
-        the range specified by fmin and fmax are used. Required if
+        the range specified by ``fmin`` and ``fmax`` are used. Required if
         ``mode='cwt_morlet'``. Not used when ``mode='multitaper'``.
-    n_cycles : float | array of float
+    n_cycles : float | array_like of float
         Number of cycles in the wavelet, either a fixed number or one per
-        frequency. The number of cycles n_cycles and the frequencies of
-        interest freqs define the temporal window length.
+        frequency. The number of cycles ``n_cycles`` and the frequencies of
+        interest ``cwt_freqs`` define the temporal window length. For details,
+        see `mne.time_frequency.tfr_array_morlet` documentation.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
-        decomposition. Default to 1. If int, returns tfr[…, ::decim]. If slice,
-        returns tfr[…, decim].
+        decomposition. Returns ``tfr[…, ::decim]``.
     n_jobs : int
         Number of connections to compute in parallel. Memory mapping must be
         activated. Please see the Notes section for details.
@@ -114,13 +113,13 @@ def spectral_connectivity_time(data, method='coh', average=False,
     -------
     con : instance of Connectivity | list
         Computed connectivity measure(s). An instance of
-        ``EpochSpectralConnectivity``, ``SpectralConnectivity``
+        `EpochSpectralConnectivity`, `SpectralConnectivity`
         or a list of instances corresponding to connectivity measures if
         several connectivity measures are specified.
         The shape of each connectivity dataset is
-        (n_epochs, n_signals, n_signals, n_freqs) when indices is None
-        and (n_epochs, n_nodes, n_nodes, n_freqs) when "indices" is specified
-        and "n_nodes = len(indices[0])".
+        (n_epochs, n_signals, n_signals, n_freqs) when ``indices`` is `None`
+        and (n_epochs, n_nodes, n_nodes, n_freqs) when ``indices`` is specified
+        and ``n_nodes = len(indices[0])``.
 
     See Also
     --------
@@ -143,14 +142,19 @@ def spectral_connectivity_time(data, method='coh', average=False,
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet
     transform using Morlet wavelets. The spectral estimation mode is specified
-    using the "mode" parameter.
+    using the ``mode`` parameter.
+
+    When using the multitaper spectral estimation method, the
+    cross-spectral density is computed separately for each taper and aggregated
+    using a weighted average, where the weights correspond to the concentration
+    ratios between the DPSS windows.
 
     By default, the connectivity between all signals is computed (only
     connections corresponding to the lower-triangular part of the
     connectivity matrix). If one is only interested in the connectivity
-    between some signals, the "indices" parameter can be used. For example,
+    between some signals, the ``indices`` parameter can be used. For example,
     to compute the connectivity between the signal with index 0 and signals
-    "2, 3, 4" (a total of 3 connections) one can use the following::
+    2, 3, 4 (a total of 3 connections), one can use the following::
 
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
@@ -158,12 +162,12 @@ def spectral_connectivity_time(data, method='coh', average=False,
         con = spectral_connectivity_time(data, method='coh',
                                          indices=indices, ...)
 
-    In this case con.get_data().shape = (3, n_freqs). The connectivity scores
-    are in the same order as defined indices.
+    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity
+    scores are in the same order as defined indices.
 
     **Supported Connectivity Measures**
 
-    The connectivity method(s) is specified using the "method" parameter. The
+    The connectivity method(s) is specified using the ``method`` parameter. The
     following methods are supported (note: ``E[]`` denotes average over
     epochs). Multiple measures can be computed at once by using a list/tuple,
     e.g., ``['coh', 'pli']`` to compute coherence and PLI.
@@ -199,16 +203,16 @@ def spectral_connectivity_time(data, method='coh', average=False,
     mapping will make ``joblib`` store arrays greater than the minimum size on
     disc, and forego direct RAM access for more efficient processing.
     For example, in your code, run
-    ```
-    mne.set_config('MNE_MEMMAP_MIN_SIZE', '10M')
-    mne.set_config('MNE_CACHE_DIR', '/dev/shm')
-    ```
+
+        mne.set_config('MNE_MEMMAP_MIN_SIZE', '10M')
+        mne.set_config('MNE_CACHE_DIR', '/dev/shm')
 
     When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation
     results in pickling and unpickling the whole array each time a pair of
     indices is accessed, which is slow, compared to memory mapping the array.
 
-    This function is based on ``conn_spec`` implementation in Frites.
+    This function is based on the ``frites.conn.conn_spec`` implementation in
+    Frites.
 
     .. versionadded:: 0.3
 
