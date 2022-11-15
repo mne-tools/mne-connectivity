@@ -207,7 +207,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         # GC from seeds -> targets (subtracting GC from targets -> seeds if
         # self.net == True)
-        autocov = self.csd_to_autocov(csd, seeds, targets)
+        autocov = self.csd_to_autocov(csd)
         con_scores = self.autocov_to_gc(autocov, seeds, targets, self.net)
 
         # GC from seeds -> targets (subtracting GC from targets -> seeds if
@@ -215,60 +215,49 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         # (subtracting GC from time-reversed targets -> seeds if self.net ==
         # True)
         if self.time_reversed:
-            autocov_time_rev = [
-                np.transpose(con_autocov, (1, 0, 2, 3)) for con_autocov in autocov
-            ]
             con_scores -= self.autocov_to_gc(
-                autocov_time_rev, seeds, targets, self.net
+                autocov.transpose(1, 0, 2, 3), seeds, targets, self.net
             )
 
         self.con_scores = con_scores
         self.reshape_con_scores()
 
     def csd_to_autocov(
-        self, csd, seeds, targets
+        self, csd
     ):
         """Computes the autocovariance sequence from the cross-spectral
         density."""
         n_times = csd.shape[3]
-        autocov = [[] for _ in range(len(seeds))]
-        for group_i, seed_idcs, target_idcs in zip(
-            range(len(seeds)), seeds, targets
-        ):
-            all_idcs = [*seed_idcs, *target_idcs]
-            n_signals = len(all_idcs)
-            autocov[group_i] = np.zeros(
-                (n_signals, n_signals, self.n_lags + 1, n_times)
+        n_signals = csd.shape[0]
+        autocov = np.zeros(
+            (n_signals, n_signals, self.n_lags + 1, n_times)
+        )
+        for time_i in range(n_times):
+            circular_shifted_csd = np.concatenate(
+                [np.flip(csd[:, :, 1:, time_i].conj(), axis=2),
+                csd[:, :, :-1, time_i]],
+                axis=2,
             )
-            con_csd = csd[
-                np.ix_(all_idcs, all_idcs, np.arange(self.n_freqs), np.arange(n_times))
-            ]
-            for time_i in range(n_times):
-                circular_shifted_csd = np.concatenate(
-                    [np.flip(np.conj(con_csd[:, :, 1:, time_i]), axis=2),
-                    con_csd[:, :, :-1, time_i]],
-                    axis=2,
-                )
-                ifft_shifted_csd = self.block_ifft(
-                    circular_shifted_csd, (self.n_freqs - 1) * 2
-                )
+            ifft_shifted_csd = self.block_ifft(
+                circular_shifted_csd, (self.n_freqs - 1) * 2
+            )
 
-                lags_ifft_shifted_csd = np.reshape(
-                    ifft_shifted_csd[:, :, :self.n_lags + 1],
-                    (n_signals ** 2, self.n_lags + 1),
-                    order="F"
-                )
-                signs = [1] * (self.n_lags + 1)
-                signs[1::2] = [x * -1 for x in signs[1::2]]
-                sign_matrix = np.tile(
-                    np.asarray(signs), (n_signals ** 2, 1)
-                )
+            lags_ifft_shifted_csd = np.reshape(
+                ifft_shifted_csd[:, :, :self.n_lags + 1],
+                (n_signals ** 2, self.n_lags + 1),
+                order="F"
+            )
+            signs = [1] * (self.n_lags + 1)
+            signs[1::2] = [x * -1 for x in signs[1::2]]
+            sign_matrix = np.tile(
+                np.asarray(signs), (n_signals ** 2, 1)
+            )
 
-                autocov[group_i][:, :, :, time_i] += (np.real(np.reshape(
-                            sign_matrix * lags_ifft_shifted_csd,
-                            (n_signals, n_signals, self.n_lags + 1),
-                            order="F"))
-                )
+            autocov[:, :, :, time_i] += (np.real(np.reshape(
+                        sign_matrix * lags_ifft_shifted_csd,
+                        (n_signals, n_signals, self.n_lags + 1),
+                        order="F"))
+            )
 
         return autocov
 
@@ -285,9 +274,15 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     def autocov_to_gc(self, autocov, seeds, targets, net):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
-        n_times = autocov[0].shape[3]
+        n_lags = autocov.shape[2]
+        n_times = autocov.shape[3]
         con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
-        for con_i, con_autocov in enumerate(autocov):
+        con_i = 0
+        for con_seeds, con_targets in zip(seeds, targets):
+            all_idcs = [*con_seeds, *con_targets]
+            con_autocov = autocov[np.ix_(all_idcs, all_idcs, np.arange(n_lags), np.arange(n_times))]
+            new_seeds = np.arange(len(con_seeds))
+            new_targets = np.arange(len(con_targets))+len(con_seeds)
             for time_i in range(n_times):
                 AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
                 AF_2d = np.reshape(
@@ -303,8 +298,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                     C=AF_2d,
                     K=K,
                     V=V,
-                    seeds=seeds[con_i],
-                    targets=targets[con_i],
+                    seeds=new_seeds,
+                    targets=new_targets,
                 )
 
                 # GC from targets -> seeds
@@ -314,9 +309,10 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                         C=AF_2d,
                         K=K,
                         V=V,
-                        seeds=targets[con_i],
-                        targets=seeds[con_i],
+                        seeds=new_targets,
+                        targets=new_seeds,
                     )
+            con_i += 1
         
         return con_scores
 
@@ -439,7 +435,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         10.1103/PhysRevE.91.040101.
         """
         f = np.zeros(self.n_freqs) # placeholder for GC results
-        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs)) # points on a
+        z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs)) # points on a
             # unit circle in the complex plane, one for each frequency
         H = self.iss_to_tf(A, C, K, z) # spectral transfer function
         V_sqrt = np.linalg.cholesky(V)
