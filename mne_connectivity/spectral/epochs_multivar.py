@@ -352,12 +352,37 @@ def _sort_inputs(
     else:
         if n_seeds != len(n_seed_components):
             raise ValueError(
-            "n_seed_components must have the same length as specified seeds. "
-            f"Got: {len(n_seed_components)} seed components and {n_seeds} "
-            "seeds."
+                "n_seed_components must have the same length as specified "
+                f"seeds. Got: {len(n_seed_components)} seed components and "
+                f"{n_seeds} seeds."
             )
+        if any(n_comps is not None for n_comps in n_seed_components):
+            perform_svd = True
+    if n_target_components is None:
+        n_target_components = tuple([None] * n_targets)
+    else:
+        if n_targets != len(n_target_components):
+            raise ValueError(
+                "n_target_components must have the same length as specified "
+                f"targets. Got: {len(n_target_components)} target components "
+                f"and {n_targets} targets."
+            )
+        if not perform_svd and any(
+            n_comps is not None for n_comps in n_target_components
+        ):
+            perform_svd = True
+
+    if perform_svd:
+        if isinstance(data, BaseEpochs):
+            epochs = data.get_data(picks=data.ch_names)
+        else:
+            epochs = data
+        timeseries_data = np.concatenate(epochs, axis=1) # channels x times
+
+    if any(n_comps is not None for n_comps in n_seed_components):
+        index_i = 0
         for n_comps, chs in zip(n_seed_components, indices[0]):
-            if n_comps:
+            if isinstance(n_comps, int):
                 if n_comps > len(chs) and n_comps <= 0:
                     raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
@@ -365,25 +390,40 @@ def _sort_inputs(
                         f"({len(chs)}) and must be greater than 0."
                     )
                 perform_svd = True
-
-    if n_target_components is None:
-        n_target_components = tuple([None] * n_targets)
-    else:
-        if n_targets != len(n_target_components):
+            elif isinstance(n_comps, str):
+                if n_comps != "rank":
             raise ValueError(
-            "n_target_components must have the same length as specified"
-            f" targets. Got: {len(n_target_components)} target components and"
-            f" {n_targets} targets."
+                        "The entries of n_seed_components can only be None, an "
+                        "int, or a string with value 'rank'."
             )
+                else:
+                    n_seed_components[index_i] = np.linalg.matrix_rank(
+                        timeseries_data[chs, :]
+                    )
+            index_i += 1
+    
+    if any(n_comps is not None for n_comps in n_target_components):
+        index_i = 0
         for n_comps, chs in zip(n_target_components, indices[1]):
-            if n_comps:
-                if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
+            if isinstance(n_comps, int):
+                if n_comps > len(chs) and n_comps <= 0:
                     raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
                         "be greater than the number of channels in that target "
                         f"({len(chs)}) and must be greater than 0."
                     )
                 perform_svd = True
+            elif isinstance(n_comps, str):
+                if n_comps != "rank":
+                    raise ValueError(
+                        "The entries of n_target_components can only be None, "
+                        "an int, or a string with value 'rank'."
+                    )
+                else:
+                    n_target_components[index_i] = np.linalg.matrix_rank(
+                        timeseries_data[chs, :]
+                    )
+            index_i += 1
 
     # handle Granger causality methods
     present_gc_methods = [
