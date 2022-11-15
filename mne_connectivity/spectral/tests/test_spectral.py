@@ -477,7 +477,8 @@ def test_epochs_tmin_tmax(kind):
     'mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('data_option', ['sync', 'random'])
 def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
-    """Test time-resolved spectral connectivity with simulated phase-locked data."""
+    """Test time-resolved spectral connectivity with simulated phase-locked
+    data."""
     rng = np.random.default_rng(0)
     n_epochs = 5
     n_channels = 3
@@ -499,7 +500,8 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
                                 wave_freq * epoch_length * np.pi + phase,
                                 n_times)
                 data[i, c] = np.squeeze(np.sin(x))
-    # the frequency band should contain the frequency at which there is a hypothesized "connection"
+    # the frequency band should contain the frequency at which there is a
+    # hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
     cwt_freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
