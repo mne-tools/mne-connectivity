@@ -403,8 +403,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
 def _spectral_connectivity(data, method, kernel, foi_idx,
                            source_idx, target_idx,
                            mode, sfreq, freqs, faverage, n_cycles,
-                           mt_bandwidth=None, decim=1, kw_cwt={}, kw_mt={},
-                           n_jobs=1, verbose=False):
+                           mt_bandwidth, decim, kw_cwt, kw_mt,
+                           n_jobs, verbose):
     """Estimate time-resolved connectivity for one epoch.
 
     See spectral_connectivity_epochs."""
