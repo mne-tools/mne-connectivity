@@ -509,8 +509,8 @@ def _compute_csd(
             unique_indices = np.unique(np.concatenate(sum(indices, [])))
             remapping = {ch_i: sig_i for sig_i, ch_i in
                          enumerate(unique_indices)}
-            remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
-                                indices_group] for indices_group in indices]
+            remapped_indices = tuple([[[remapping[idx] for idx in idcs] for idcs in
+                                indices_group] for indices_group in indices])
 
             # unique signals for which we actually need to compute CSD etc.
             sig_idx = np.unique(sum(sum(remapped_indices, []), []))
