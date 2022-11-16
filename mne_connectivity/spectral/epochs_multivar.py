@@ -377,7 +377,6 @@ def _sort_inputs(
             epochs = data.get_data(picks=data.ch_names)
         else:
             epochs = data
-        timeseries_data = np.concatenate(epochs, axis=1) # channels x times
 
     if any(n_comps is not None for n_comps in n_seed_components):
         index_i = 0
