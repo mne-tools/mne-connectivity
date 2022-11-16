@@ -437,13 +437,15 @@ def _sort_inputs(
         perform_svd
     )
 
-def _time_series_svd(data, indices, n_seed_components, n_target_components):
-    """Performs a single value decomposition on the timeseries data for each set
-    of seed-target pairs."""
+def _reduce_epochs_dims(data, indices, n_seed_components, n_target_components):
+    """Performs a single value decomposition on the epoched data separately for
+    the seeds and targets of each set of seed-target pairs according to the
+    specified number of seed and target components. If the number of components
+    for a given instance is 'None', the original data is returned."""
     if isinstance(data, BaseEpochs):
-        epochs = data.get_data(picks=data.ch_names)
+        epochs = data.get_data(picks=data.ch_names).copy()
     else:
-        epochs = data
+        epochs = data.copy()
 
     seed_target_data = []
     n_seeds = []
@@ -451,25 +453,38 @@ def _time_series_svd(data, indices, n_seed_components, n_target_components):
         zip(indices[0], indices[1], n_seed_components, n_target_components):
 
         if n_seed_comps: # SVD seed data
-            v_seeds = (
-                np.linalg.svd(epochs[:, seeds, :], full_matrices=False)[2]
-                [:, :n_seed_comps, :]
-            )
+            seed_data = _epochs_svd(epochs[:, seeds, :], n_seed_comps)
         else: # use unaltered seed data
-            v_seeds = epochs[:, seeds, :]
-        n_seeds.append(v_seeds.shape[1])
+            seed_data = epochs[:, seeds, :]
+        n_seeds.append(seed_data.shape[1])
 
         if n_target_comps: # SVD target data
-            v_targets = (
-                np.linalg.svd(epochs[:, targets, :], full_matrices=False)[2]
-                [:, :n_target_comps, :]
-            )
+            target_data = _epochs_svd(epochs[:, targets, :], n_target_comps)
         else: # use unaltered target data
-            v_targets = epochs[:, targets, :]
+            target_data = epochs[:, targets, :]
 
-        seed_target_data.append(np.append(v_seeds, v_targets, axis=1))
+        seed_target_data.append(np.append(seed_data, target_data, axis=1))
 
     return seed_target_data, n_seeds
+
+def _epochs_svd(epochs, n_comps):
+    """Performs an SVD on epoched data and selects the first k components for
+    dimensionality reduction before reconstructing the data with U_k@S_k@V_k."""
+    # mean-centre the data epoch-wise
+    centred_epochs = np.array([epoch - epoch.mean() for epoch in epochs])
+
+    # compute the SVD (transposition so that the channels are the columns of
+    # each epoch)
+    U, S, V = np.linalg.svd(centred_epochs.transpose(0, 2, 1), full_matrices=False)
+
+    # take the first k components
+    U_k = U[:, :, :n_comps]
+    S_k = np.eye(n_comps)*S[:, np.newaxis][:, :n_comps, :n_comps]
+    V_k = V[:, :n_comps, :n_comps]
+
+    # reconstruct the dimensionality-reduced data (have to tranpose the data
+    # back into [epochs x channels x timepoints])
+    return (U_k @ (S_k @ V_k)).transpose(0, 2, 1)
 
 
 def _compute_csd(
