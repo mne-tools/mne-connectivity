@@ -397,9 +397,9 @@ def _sort_inputs(
                         "int, or a string with value 'rank'."
             )
                 else:
-                    n_seed_components[index_i] = np.linalg.matrix_rank(
-                        timeseries_data[chs, :]
-                    )
+                    n_seed_components[index_i] = np.min(np.linalg.matrix_rank(
+                        epochs[:, chs, :], tol=1e-9
+                    ))
             index_i += 1
     
     if any(n_comps is not None for n_comps in n_target_components):
@@ -420,9 +420,9 @@ def _sort_inputs(
                         "an int, or a string with value 'rank'."
                     )
                 else:
-                    n_target_components[index_i] = np.linalg.matrix_rank(
-                        timeseries_data[chs, :]
-                    )
+                    n_target_components[index_i] = np.min(np.linalg.matrix_rank(
+                        epochs[:, chs, :], tol=1e-9
+                    ))
             index_i += 1
 
     # handle Granger causality methods
