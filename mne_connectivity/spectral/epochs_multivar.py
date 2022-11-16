@@ -178,7 +178,7 @@ def multivar_spectral_connectivity_epochs(
             con = []
 
         # performs SVD on the timeseries data for each seed-target group
-        seed_target_data, n_seeds = _time_series_svd(
+        seed_target_data, n_seeds = _reduce_epochs_dims(
             data, indices, n_seed_components, n_target_components
         )
 
