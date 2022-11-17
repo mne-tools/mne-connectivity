@@ -6,7 +6,7 @@ import numpy as np
 import xarray as xr
 from mne.parallel import parallel_func
 from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper)
-from mne.utils import logger
+from mne.utils import logger, verbose
 
 from ..base import (EpochSpectroTemporalConnectivity)
 from .smooth import _create_kernel, _smooth_spectra

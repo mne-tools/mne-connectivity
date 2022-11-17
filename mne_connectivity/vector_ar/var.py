@@ -4,7 +4,7 @@ from scipy.linalg import sqrtm
 from tqdm import tqdm
 from mne import BaseEpochs
 
-from mne.utils import logger
+from mne.utils import logger, verbose
 
 from ..utils import fill_doc
 from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
