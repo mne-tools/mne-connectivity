@@ -556,7 +556,7 @@ def test_spectral_connectivity_time_cwt_freqs(method, cwt_freqs):
     con = spectral_connectivity_time(data, method=method, mode='cwt_morlet',
                                      sfreq=sfreq, fmin=np.min(cwt_freqs),
                                      fmax=np.max(cwt_freqs),
-                                     cwt_freqs=cwt_freqs, n_jobs=1,
+                                     freqs=cwt_freqs, n_jobs=1,
                                      faverage=True, average=True, sm_times=0)
     assert con.shape == (n_channels ** 2, len(con.freqs))
     con_matrix = con.get_data('dense')[..., 0]
