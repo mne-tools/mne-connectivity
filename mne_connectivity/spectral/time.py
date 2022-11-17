@@ -13,6 +13,7 @@ from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, fill_doc
 
 
+@verbose
 @fill_doc
 def spectral_connectivity_time(data, names=None, method='coh', indices=None,
                                sfreq=2 * np.pi, foi=None, sm_times=.5,

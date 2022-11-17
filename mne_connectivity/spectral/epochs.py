@@ -760,6 +760,7 @@ def _check_estimators(method, mode):
     return con_method_types, n_methods, accumulate_psd, n_comp_args
 
 
+@verbose
 @fill_doc
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=2 * np.pi,
