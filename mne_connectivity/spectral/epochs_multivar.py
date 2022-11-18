@@ -401,7 +401,7 @@ def _sort_inputs(
                     )
                 else:
                     n_seed_components[index_i] = np.min(np.linalg.matrix_rank(
-                        epochs[:, chs, :], tol=1e-9
+                        epochs[:, chs, :], tol=1e-10
                     ))
             index_i += 1
     
@@ -424,7 +424,7 @@ def _sort_inputs(
                     )
                 else:
                     n_target_components[index_i] = np.min(np.linalg.matrix_rank(
-                        epochs[:, chs, :], tol=1e-9
+                        epochs[:, chs, :], tol=1e-10
                     ))
             index_i += 1
 
