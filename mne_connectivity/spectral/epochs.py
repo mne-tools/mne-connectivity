@@ -17,7 +17,7 @@ from mne.time_frequency.multitaper import (_csd_from_mt,
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
 from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask,
-                                      verbose)
+                       verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
