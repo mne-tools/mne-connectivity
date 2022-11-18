@@ -392,7 +392,6 @@ def _sort_inputs(
                         "be greater than the number of channels in that seed "
                         f"({len(chs)}) and must be greater than 0."
                     )
-                perform_svd = True
             elif isinstance(n_comps, str):
                 if n_comps != "rank":
                     raise ValueError(
@@ -415,7 +414,6 @@ def _sort_inputs(
                         "be greater than the number of channels in that target "
                         f"({len(chs)}) and must be greater than 0."
                     )
-                perform_svd = True
             elif isinstance(n_comps, str):
                 if n_comps != "rank":
                     raise ValueError(
