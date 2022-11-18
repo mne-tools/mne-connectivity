@@ -118,17 +118,21 @@ def multivar_spectral_connectivity_epochs(
         tfr[..., ::"decim"]. If slice, used tfr[..., "decim"]. Only used if
         "mode" is 'cwt_morlet'.
 
-    n_seed_components : tuple of int or None | None; default None
+    n_seed_components : tuple of int or str or None | None; default None
     -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the seed
-        channels' data for each connectivity node. If None, or if an individual
-        entry is None, no dimensionality reduction is performed.
+        channels' data for each connectivity node. If an individual entry is a
+        str with value "rank", the rank of the seed data will be computed and
+        this number of components taken. If None, or if an individual entry is
+        None, no dimensionality reduction is performed.
 
-    n_target_components : tuple of int or None | None; default None
-    -   Dimensionality reduction parameter specifying the number of target
+    n_target_components : tuple of int or str or None | None; default None
+    -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the target
-        channels' data for each connectivity node. If None, or if an individual
-        entry is None, no dimensionality reduction is performed.
+        channels' data for each connectivity node. If an individual entry is a
+        str with value "rank", the rank of the target data will be computed and
+        this number of components taken. If None, or if an individual entry is
+        None, no dimensionality reduction is performed.
 
     gc_n_lags : int; default 20
     -   The number of lags to use when computing the autocovariance sequence
