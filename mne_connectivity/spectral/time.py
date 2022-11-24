@@ -440,8 +440,7 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
             window_length = np.arange(0., n_c / float(f), 1.0 / sfreq).shape[0]
             half_nbw = mt_bandwidth / 2.
             n_tapers = int(np.floor(mt_bandwidth - 1))
-            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers,
-                                      sym=False)
+            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers)
             weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
             # weights have shape (n_tapers, n_freqs, n_times)
     else:
