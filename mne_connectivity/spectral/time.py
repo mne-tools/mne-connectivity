@@ -83,7 +83,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
         Smoothing kernel type. Choose either 'square' or 'hanning'.
-    padding: float
+    padding : float
         Amount of time to consider as padding at the beginning and end of each
         epoch in seconds.
     mode : str
