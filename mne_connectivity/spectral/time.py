@@ -22,8 +22,9 @@ def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning', padding=0,
-                               mode='cwt_morlet', mt_bandwidth=None, freqs=None,
-                               n_cycles=7, decim=1, n_jobs=1, verbose=None):
+                               mode='cwt_morlet', mt_bandwidth=None,
+                               freqs=None, n_cycles=7, decim=1, n_jobs=1,
+                               verbose=None):
     """Compute time-frequency-domain connectivity measures.
 
     This function computes spectral connectivity over time from epoched data.
@@ -483,7 +484,7 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
             psd = weights * w
             psd = psd * np.conj(psd)
             psd = psd.real.sum(axis=1)
-            psd = psd * 2 / (weights*weights.conj()).real.sum(axis=0)
+            psd = psd * 2 / (weights * weights.conj()).real.sum(axis=0)
         else:
             psd = w.real ** 2 + w.imag ** 2
             psd = np.squeeze(psd, axis=1)
@@ -509,8 +510,8 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
                 s_xx = psd[w_x]
                 s_yy = psd[w_y]
                 coh = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
-                      np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
-                              s_yy.mean(axis=-1, keepdims=True))
+                    np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
+                            s_yy.mean(axis=-1, keepdims=True))
                 out.append(coh)
 
             if m == 'plv':
