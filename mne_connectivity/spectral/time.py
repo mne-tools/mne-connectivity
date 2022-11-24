@@ -545,6 +545,10 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
 
         return out
 
+    # only show progress if verbosity level is DEBUG
+    if verbose != 'DEBUG' and verbose != 'debug' and verbose != 10:
+        total = None
+
     # define the function to compute in parallel
     parallel, p_fun, n_jobs = parallel_func(
         pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
