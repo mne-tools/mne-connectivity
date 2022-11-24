@@ -24,13 +24,14 @@ def spectral_connectivity_time(data, method='coh', average=False,
                                sm_freqs=1, sm_kernel='hanning', padding=0,
                                mode='cwt_morlet', mt_bandwidth=None, freqs=None,
                                n_cycles=7, decim=1, n_jobs=1, verbose=None):
-    """Compute frequency- and time-frequency-domain connectivity measures.
+    """Compute time-frequency-domain connectivity measures.
 
-    This method computes time-resolved connectivity measures from epoched data.
+    This function computes spectral connectivity over time from epoched data.
+    The data may consist of a single epoch.
 
     The connectivity method(s) are specified using the ``method`` parameter.
-    All methods are based on estimates of the cross- and power spectral
-    densities (CSD/PSD) Sxy and Sxx, Syy.
+    All methods are based on time-resolved estimates of the cross- and
+    power spectral densities (CSD/PSD) Sxy and Sxx, Syy.
 
     Parameters
     ----------
@@ -42,11 +43,12 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
             * 'coh' : Coherence
             * 'plv' : Phase-Locking Value (PLV)
+            * 'ciplv' : Corrected imaginary Phase-Locking Value
             * 'sxy' : Cross-spectrum
             * 'pli' : Phase-Lag Index
             * 'wpli': Weighted Phase-Lag Index
     average : bool
-        Average connectivity scores over epochs. If True, output will be
+        Average connectivity scores over epochs. If ``True``, output will be
         an instance of :class:`SpectralConnectivity`, otherwise
         :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
@@ -186,7 +188,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : corrected imaginary PLV (icPLV)
+        'ciplv' : Corrected imaginary PLV (icPLV)
         :footcite:`BrunaEtAl2018` given by::
 
                              |E[Im(Sxy/|Sxy|)]|
