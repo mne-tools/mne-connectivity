@@ -95,7 +95,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
         frequency bandwidth (in Hz). This product can be seen as the surface
         of the window on the time/frequency plane and controls the frequency
         bandwidth (thus the frequency resolution) and the number of good
-        tapers. See `mne.time_frequency.tfr_array_multitaper` documentation.
+        tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
+        documentation.
     freqs : array_like
         Array of frequencies of interest for time-frequency decomposition.
         Required in 'cwt_morlet' mode. Only the frequencies within
