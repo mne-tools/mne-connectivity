@@ -151,6 +151,6 @@ def _check_skip_backend(name):
         if not has_imageio_ffmpeg():
             pytest.skip("Test skipped, requires imageio-ffmpeg")
     if name == 'pyvistaqt' and not _check_qt_version():
-        pytest.skip("Test skipped, requires PyQt5.")
+        pytest.skip("Test skipped, requires Python Qt bindings.")
     if name == 'pyvistaqt' and not has_pyvistaqt():
         pytest.skip("Test skipped, requires pyvistaqt")

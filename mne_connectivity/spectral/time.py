@@ -21,9 +21,10 @@ from ..utils import check_indices, fill_doc
 def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
-                               sm_freqs=1, sm_kernel='hanning', padding=0,
-                               mode='cwt_morlet', mt_bandwidth=None, freqs=None,
-                               n_cycles=7, decim=1, n_jobs=1, verbose=None):
+                               sm_freqs=1, sm_kernel='hanning',
+                               mode='cwt_morlet', mt_bandwidth=None,
+                               cwt_freqs=None, n_cycles=7, decim=1,
+                               n_jobs=1, verbose=None):
     """Compute frequency- and time-frequency-domain connectivity measures.
 
     This method computes time-resolved connectivity measures from epoched data.
@@ -37,8 +38,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
         The data from which to compute connectivity.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'plv',
-        'sxy', 'pli', 'wpli']``. These are:
+        Connectivity measure(s) to compute. These can be
+        ``['coh', 'plv', 'sxy', 'pli', 'wpli']``. These are:
 
             * 'coh' : Coherence
             * 'plv' : Phase-Locking Value (PLV)
@@ -47,7 +48,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
             * 'wpli': Weighted Phase-Lag Index
     average : bool
         Average connectivity scores over epochs. If True, output will be
-        an instance of :class:`SpectralConnectivity` , otherwise
+        an instance of :class:`SpectralConnectivity`, otherwise
         :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
         Two arrays with indices of connections for which to compute
@@ -66,7 +67,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper
         bounds. If `None`, ``sfreq/2`` is used.
     fskip : int
-        Omit every ``(fskip + 1)``th frequency bin to decimate in frequency
+        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency
         domain.
     faverage : bool
         Average connectivity scores for each frequency band. If `True`,
@@ -80,30 +81,27 @@ def spectral_connectivity_time(data, method='coh', average=False,
         is equivalent to no smoothing.
     sm_kernel : {'square', 'hanning'}
         Smoothing kernel type. Choose either 'square' or 'hanning'.
-    padding: float
-        Amount of time to consider as padding at the beginning and end of each
-        epoch in seconds.
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and
-        `mne.time_frequency.tfr_array_morlet` for reference.
+        'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` for reference.
     mt_bandwidth : float | None
         Product between the temporal window length (in seconds) and the full
         frequency bandwidth (in Hz). This product can be seen as the surface
         of the window on the time/frequency plane and controls the frequency
         bandwidth (thus the frequency resolution) and the number of good
-        tapers. See `mne.time_frequency.tfr_array_multitaper` documentation.
-    freqs : array_like
+        tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
+        documentation.
+    cwt_freqs : array_like
         Array of frequencies of interest for time-frequency decomposition.
-        Required in 'cwt_morlet' mode. Only the frequencies within
-        the range specified by fmin and fmax are used. Must be specified if
-        ``mode='cwt_morlet'``. If set when mode='multitaper', overrides the
-        automatically determined frequencies of interest.
+        Only used in 'cwt_morlet' mode. Only the frequencies within
+        the range specified by ``fmin`` and ``fmax`` are used. Required if
+        ``mode='cwt_morlet'``. Not used when ``mode='multitaper'``.
     n_cycles : float | array_like of float
         Number of cycles in the wavelet, either a fixed number or one per
         frequency. The number of cycles ``n_cycles`` and the frequencies of
         interest ``cwt_freqs`` define the temporal window length. For details,
-        see `mne.time_frequency.tfr_array_morlet` documentation.
+        see :func:`mne.time_frequency.tfr_array_morlet` documentation.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
@@ -116,7 +114,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
     -------
     con : instance of Connectivity | list
         Computed connectivity measure(s). An instance of
-        `EpochSpectralConnectivity`, `SpectralConnectivity`
+        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`
         or a list of instances corresponding to connectivity measures if
         several connectivity measures are specified.
         The shape of each connectivity dataset is
@@ -132,7 +130,6 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     Notes
     -----
-
     Please note that the interpretation of the measures in this function
     depends on the data and underlying assumptions and does not necessarily
     reflect a causal relationship between brain regions.
@@ -185,13 +182,6 @@ def spectral_connectivity_time(data, method='coh', average=False,
         by::
 
             PLV = |E[Sxy/|Sxy|]|
-
-        'ciplv' : corrected imaginary PLV (icPLV)
-        :footcite:`BrunaEtAl2018` given by::
-
-                             |E[Im(Sxy/|Sxy|)]|
-            ciPLV = ------------------------------------
-                     sqrt(1 - |E[real(Sxy/|Sxy|)]| ** 2)
 
         'sxy' : Cross spectrum Sxy
 
@@ -317,22 +307,22 @@ def spectral_connectivity_time(data, method='coh', average=False,
     target_idx = indices_use[1]
     n_pairs = len(source_idx)
 
-    # check freqs
-    if freqs is not None:
+    # check cwt_freqs
+    if cwt_freqs is not None:
         # check for single frequency
-        if isinstance(freqs, (int, float)):
-            freqs = [freqs]
+        if isinstance(cwt_freqs, (int, float)):
+            cwt_freqs = [cwt_freqs]
         # array conversion
-        freqs = np.asarray(freqs)
+        cwt_freqs = np.asarray(cwt_freqs)
         # check order for multiple frequencies
-        if len(freqs) >= 2:
-            delta_f = np.diff(freqs)
+        if len(cwt_freqs) >= 2:
+            delta_f = np.diff(cwt_freqs)
             increase = np.all(delta_f > 0)
             assert increase, "Frequencies should be in increasing order"
 
     # compute frequencies to analyze based on number of samples,
     # sampling rate, specified wavelet frequencies and mode
-    freqs = _compute_freqs(n_times, sfreq, freqs, mode)
+    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
     # compute the mask based on specified min/max and decimation factor
     freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
@@ -366,14 +356,15 @@ def spectral_connectivity_time(data, method='coh', average=False,
         source_idx=source_idx, target_idx=target_idx,
         mode=mode, sfreq=sfreq, freqs=freqs, faverage=faverage,
         n_cycles=n_cycles, mt_bandwidth=mt_bandwidth,
-        decim=decim, padding=padding, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
+        decim=decim, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
         verbose=verbose)
 
     for epoch_idx in np.arange(n_epochs):
-        logger.info(f'   Processing epoch {epoch_idx+1} / {n_epochs} ...')
-        conn_tr = _spectral_connectivity(data[epoch_idx], **call_params)
+        epoch_idx = [epoch_idx]
+        conn_tr = _spectral_connectivity(data[epoch_idx, ...], **call_params)
         for m in method:
-            conn[m][epoch_idx] = np.stack(conn_tr[m], axis=0)
+            conn[m][epoch_idx, ...] = np.stack(conn_tr[m],
+                                               axis=1).squeeze(axis=-1)
 
     if indices is None:
         conn_flat = conn
@@ -382,7 +373,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
             this_conn = np.zeros((n_epochs, n_signals, n_signals) +
                                  conn_flat[m].shape[2:],
                                  dtype=conn_flat[m].dtype)
-            this_conn[:, source_idx, target_idx] = conn_flat[m]
+            this_conn[:, source_idx, target_idx] = conn_flat[m][:, ...]
             this_conn = this_conn.reshape((n_epochs, n_signals ** 2,) +
                                           conn_flat[m].shape[2:])
             conn[m] = this_conn
@@ -412,14 +403,13 @@ def spectral_connectivity_time(data, method='coh', average=False,
 def _spectral_connectivity(data, method, kernel, foi_idx,
                            source_idx, target_idx,
                            mode, sfreq, freqs, faverage, n_cycles,
-                           mt_bandwidth, decim, padding, kw_cwt, kw_mt,
+                           mt_bandwidth, decim, kw_cwt, kw_mt,
                            n_jobs, verbose):
     """Estimate time-resolved connectivity for one epoch.
 
-    Data is of shape (n_channels, n_times)."""
-
+    See spectral_connectivity_epochs."""
     n_pairs = len(source_idx)
-    data = np.expand_dims(data, axis=0)
+
     if mode == 'cwt_morlet':
         out = tfr_array_morlet(
             data, sfreq, freqs, n_cycles=n_cycles, output='complex',
@@ -447,19 +437,16 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     else:
         raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
 
-    out = np.squeeze(out, axis=0)
-
-    if padding:
-        pad_idx = int(np.floor(padding * sfreq / decim))
-        out = out[..., pad_idx:-pad_idx]
-        weights = weights[..., pad_idx:-pad_idx]
-
     # compute for each connectivity method
     this_conn = {}
-    conn = _parallel_con(out, method, kernel, foi_idx, source_idx, target_idx,
-                         n_jobs, verbose, n_pairs, faverage, weights)
-    for i, m in enumerate(method):
-        this_conn[m] = [out[i] for out in conn]
+    conn_func = {'coh': _coh, 'plv': _plv, 'sxy': _cs, 'pli': _pli,
+                 'wpli': _wpli}
+    for m in method:
+        c_func = conn_func[m]
+        this_conn[m] = c_func(out, kernel, foi_idx, source_idx,
+                              target_idx, n_jobs=n_jobs,
+                              verbose=verbose, total=n_pairs,
+                              faverage=faverage, weights=weights)
 
     return this_conn
 
@@ -470,85 +457,135 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 ###############################################################################
 ###############################################################################
 
-def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
-                  verbose, total, faverage, weights):
-    """Compute spectral connectivity in parallel.
+def _coh(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+         faverage, weights):
+    """Pairwise coherence.
 
-    Input signal w is of shape (n_chans, n_tapers, n_freqs, n_times)."""
+    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
+    n_times)."""
 
-    if 'coh' in method:
-        # psd
-        if weights is not None:
-            psd = weights * w
-            psd = psd * np.conj(psd)
-            psd = psd.real.sum(axis=1)
-            psd = psd * 2 / (weights*weights.conj()).real.sum(axis=0)
-        else:
-            psd = w.real ** 2 + w.imag ** 2
-            psd = np.squeeze(psd, axis=1)
+    if weights is not None:
+        psd = weights * w
+        psd = psd * np.conj(psd)
+        psd = psd.real.sum(axis=2)
+        psd = psd * 2 / (weights * weights.conj()).real.sum(axis=0)
+    else:
+        psd = w.real ** 2 + w.imag ** 2
+        psd = np.squeeze(psd, axis=2)
 
-        # smooth
-        psd = _smooth_spectra(psd, kernel)
+    # smooth the psd
+    psd = _smooth_spectra(psd, kernel)
 
-    def pairwise_con(w_x, w_y):
-        # csd
-        if weights is not None:
-            s_xy = np.sum(weights * w[w_x] * np.conj(weights * w[w_y]), axis=0)
-            s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
-        else:
-            s_xy = w[w_x] * np.conj(w[w_y])
-            s_xy = np.squeeze(s_xy, axis=0)
-
-        dphi = s_xy / np.abs(s_xy)
-        dphi = _smooth_spectra(dphi, kernel)
+    def pairwise_coh(w_x, w_y):
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
         s_xy = _smooth_spectra(s_xy, kernel)
-        out = []
-        for m in method:
-            if m == 'coh':
-                s_xx = psd[w_x]
-                s_yy = psd[w_y]
-                coh = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
-                      np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
-                              s_yy.mean(axis=-1, keepdims=True))
-                out.append(coh)
-
-            if m == 'plv':
-                dphi_mean = dphi.mean(axis=-1, keepdims=True)
-                plv = np.abs(dphi_mean)
-                out.append(plv)
-
-            if m == 'ciplv':
-                rplv = np.abs(np.mean(np.real(dphi), axis=-1, keepdims=True))
-                iplv = np.abs(np.mean(np.imag(dphi), axis=-1, keepdims=True))
-                ciplv = iplv / (np.sqrt(1 - rplv ** 2))
-                out.append(ciplv)
-
-            if m == 'pli':
-                pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
-                                     axis=-1, keepdims=True))
-                out.append(pli)
-
-            if m == 'wpli':
-                con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
-                con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
-                wpli = con_num / con_den
-                out.append(wpli)
-
-            if m == 'cs':
-                out.append(s_xy)
-
-        for i, _ in enumerate(out):
-            # mean inside frequency sliding window (if needed)
-            if isinstance(foi_idx, np.ndarray) and faverage:
-                out[i] = _foi_average(out[i], foi_idx)
-            # squeeze time dimension
-            out[i] = out[i].squeeze(axis=-1)
-
-        return out
+        s_xx = psd[:, w_x]
+        s_yy = psd[:, w_y]
+        out = np.abs(s_xy.mean(axis=-1, keepdims=True)) / \
+            np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
+                    s_yy.mean(axis=-1, keepdims=True))
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
 
     # define the function to compute in parallel
     parallel, p_fun, n_jobs = parallel_func(
-        pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
+        pairwise_coh, n_jobs=n_jobs, verbose=verbose, total=total)
+
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _plv(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+         faverage, weights):
+    """Pairwise phase-locking value.
+
+    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
+    n_times)."""
+    def pairwise_plv(w_x, w_y):
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
+        exp_dphi = s_xy / np.abs(s_xy)
+        exp_dphi = _smooth_spectra(exp_dphi, kernel)
+        # mean over time
+        exp_dphi_mean = exp_dphi.mean(axis=-1, keepdims=True)
+        out = np.abs(exp_dphi_mean)
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
+
+    # define the function to compute in parallel
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_plv, n_jobs=n_jobs, verbose=verbose, total=total)
+
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _pli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+         faverage, weights):
+    """Pairwise phase-lag index.
+
+    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
+    n_times)."""
+    def pairwise_pli(w_x, w_y):
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
+        s_xy = _smooth_spectra(s_xy, kernel)
+        out = np.abs(np.mean(np.sign(np.imag(s_xy)),
+                             axis=-1, keepdims=True))
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
+
+    # define the function to compute in parallel
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_pli, n_jobs=n_jobs, verbose=verbose, total=total)
+
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _wpli(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+          faverage, weights):
+    """Pairwise weighted phase-lag index.
+
+    Input signal w is of shape (n_epochs, n_chans, n_tapers, n_freqs,
+    n_times)."""
+    def pairwise_wpli(w_x, w_y):
+        s_xy = _compute_csd(w[:, w_y], w[:, w_x], weights)
+        s_xy = _smooth_spectra(s_xy, kernel)
+        con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
+        con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
+        out = con_num / con_den
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
+
+    # define the function to compute in parallel
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_wpli, n_jobs=n_jobs, verbose=verbose, total=total)
+
+    return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
+
+
+def _cs(w, kernel, foi_idx, source_idx, target_idx, n_jobs, verbose, total,
+        faverage, weights):
+    """Pairwise cross-spectra."""
+    def pairwise_cs(w_x, w_y):
+        out = _compute_csd(w[:, w_y], w[:, w_x], weights)
+        out = _smooth_spectra(out, kernel)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            return _foi_average(out, foi_idx)
+        else:
+            return out
+
+    # define the function to compute in parallel
+    parallel, p_fun, n_jobs = parallel_func(
+        pairwise_cs, n_jobs=n_jobs, verbose=verbose, total=total)
 
     return parallel(p_fun(s, t) for s, t in zip(source_idx, target_idx))
 
@@ -594,25 +631,3 @@ def _foi_average(conn, foi_idx):
         f_e += 1 if f_s == f_e else f_e
         conn_f[..., n_f, :] = conn[..., f_s:f_e, :].mean(-2)
     return conn_f
-
-
-def _compute_freqs(n_times, sfreq, freqs, mode):
-    from scipy.fft import rfftfreq
-    # get frequencies of interest for the different modes
-    if freqs is not None:
-        if any(freqs > (sfreq / 2.)):
-            raise ValueError('entries in freqs cannot be '
-                             'larger than Nyquist (sfreq / 2)')
-        else:
-            return freqs.astype(np.float64)
-    if mode in ('multitaper', 'fourier'):
-        # fmin fmax etc is only supported for these modes
-        # decide which frequencies to keep
-        return rfftfreq(n_times, 1. / sfreq)
-    elif mode == 'cwt_morlet':
-        # cwt_morlet mode
-        if freqs is None:
-            raise ValueError('define frequencies of interest using '
-                             'cwt_freqs')
-    else:
-        raise ValueError('mode has an invalid value')
