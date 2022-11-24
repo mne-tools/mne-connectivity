@@ -504,7 +504,8 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     # hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
-    freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1) if mode == 'cwt_morlet' else None
+    freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1) \
+        if mode == 'cwt_morlet' else None
     con = spectral_connectivity_time(data, method=method, mode=mode,
                                      sfreq=sfreq, fmin=freq_band_low_limit,
                                      fmax=freq_band_high_limit,

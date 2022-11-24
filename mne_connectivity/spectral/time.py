@@ -37,8 +37,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
         The data from which to compute connectivity.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'plv',
-        'sxy', 'pli', 'wpli']``. These are:
+        Connectivity measure(s) to compute. These can be
+        ``['coh', 'plv', 'sxy', 'pli', 'wpli']``. These are:
 
             * 'coh' : Coherence
             * 'plv' : Phase-Locking Value (PLV)
@@ -47,7 +47,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
             * 'wpli': Weighted Phase-Lag Index
     average : bool
         Average connectivity scores over epochs. If True, output will be
-        an instance of :class:`SpectralConnectivity` , otherwise
+        an instance of :class:`SpectralConnectivity`, otherwise
         :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
         Two arrays with indices of connections for which to compute
@@ -66,7 +66,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper
         bounds. If `None`, ``sfreq/2`` is used.
     fskip : int
-        Omit every ``(fskip + 1)``th frequency bin to decimate in frequency
+        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency
         domain.
     faverage : bool
         Average connectivity scores for each frequency band. If `True`,
@@ -85,8 +85,8 @@ def spectral_connectivity_time(data, method='coh', average=False,
         epoch in seconds.
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See `mne.time_frequency.tfr_array_multitaper` and
-        `mne.time_frequency.tfr_array_morlet` for reference.
+        'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` for reference.
     mt_bandwidth : float | None
         Product between the temporal window length (in seconds) and the full
         frequency bandwidth (in Hz). This product can be seen as the surface
@@ -103,7 +103,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
         Number of cycles in the wavelet, either a fixed number or one per
         frequency. The number of cycles ``n_cycles`` and the frequencies of
         interest ``cwt_freqs`` define the temporal window length. For details,
-        see `mne.time_frequency.tfr_array_morlet` documentation.
+        see :func:`mne.time_frequency.tfr_array_morlet` documentation.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
@@ -116,7 +116,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
     -------
     con : instance of Connectivity | list
         Computed connectivity measure(s). An instance of
-        `EpochSpectralConnectivity`, `SpectralConnectivity`
+        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`
         or a list of instances corresponding to connectivity measures if
         several connectivity measures are specified.
         The shape of each connectivity dataset is
@@ -132,7 +132,6 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     Notes
     -----
-
     Please note that the interpretation of the measures in this function
     depends on the data and underlying assumptions and does not necessarily
     reflect a causal relationship between brain regions.
@@ -186,7 +185,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : corrected imaginary PLV (icPLV)
+        'ciplv' : Corrected imaginary PLV (icPLV)
         :footcite:`BrunaEtAl2018` given by::
 
                              |E[Im(Sxy/|Sxy|)]|
