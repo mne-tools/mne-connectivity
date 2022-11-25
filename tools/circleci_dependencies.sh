@@ -2,7 +2,7 @@
 
 echo "Installing setuptools and sphinx"
 python -m pip install --progress-bar off --upgrade "pip!=20.3.0" setuptools wheel
-python -m pip install --upgrade --progress-bar off --pre sphinx
+python -m pip install --upgrade --progress-bar off sphinx
 
 echo "Installing doc build dependencies"
 python -m pip uninstall -y pydata-sphinx-theme
