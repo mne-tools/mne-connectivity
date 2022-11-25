@@ -432,6 +432,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         GF = np.reshape(G[:, :, 1:, :].transpose(3, 0, 1, 2), (n_times, n, qn), order="F").conj().transpose(0, 2, 1)  # forward
         GB = np.reshape(
             np.flip(G[:, :, 1:, :], 2).transpose((3, 0, 2, 1)), (n_times, qn, n), order="F")  # backward autocovariance sequence
+            
         AF = np.zeros((n_times, n, qn))  # forward coefficients
         AB = np.zeros((n_times, n, qn))  # backward coefficients
 
