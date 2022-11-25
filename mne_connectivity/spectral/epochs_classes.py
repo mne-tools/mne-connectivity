@@ -355,7 +355,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         qn = n * q
 
         G0 = G[:, :, 0]  # covariance
-        GF = (np.reshape(G[:, :, 1:], (n, qn), order="F").conj().T)  # forward
+        GF = (np.reshape(G[:, :, 1:], (n, qn), order="F").T)  # forward
         # autocovariance sequence
         GB = np.reshape(
             np.flip(G[:, :, 1:], 2).transpose((0, 2, 1)), (qn, n), order="F"
@@ -370,22 +370,18 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         kb = np.arange(r * n, qn)  # backward indices
 
         # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-        AF[:, kf] = spla.solve(
-            G0.conj().T, GB[kb, :].conj().T, transposed=True
-        ).conj().T
-        AB[:, kb] = spla.solve(
-            G0.conj().T, GF[kf, :].conj().T, transposed=True
-        ).conj().T
+        AF[:, kf] = spla.solve(G0.T, GB[kb, :].T, transposed=True).T
+        AB[:, kb] = spla.solve(G0.T, GF[kf, :].T, transposed=True).T
 
         ### Perform recursion
         for k in np.arange(2, q + 1):
             # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
             var_A = GB[(r - 1) * n : r * n, :] - np.matmul(AF[:, kf], GB[kb, :])
             var_B = G0 - np.matmul(AB[:, kb], GB[kb, :])
-            AAF = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
+            AAF = spla.solve(var_B, var_A.T, transposed=True).T
             var_A = GF[(k - 1) * n : k * n, :] - np.matmul(AB[:, kb], GF[kf, :])
             var_B = G0 - np.matmul(AF[:, kf], GF[kf, :])
-            AAB = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
+            AAB = spla.solve(var_B, var_A.T, transposed=True).T
 
             AF_previous = AF[:, kf]
             AB_previous = AB[:, kb]
@@ -503,13 +499,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """
         if len(targets) == 1:
             W = (1 / np.sqrt(V[targets, targets])) * V[targets, seeds]
-            W = np.outer(W.conj().T, W)
+            W = np.outer(W.T, W)
         else:
             W = np.linalg.solve(
                 np.linalg.cholesky(V[np.ix_(targets, targets)]),
                 V[np.ix_(targets, seeds)],
             )
-            W = W.conj().T.dot(W)
+            W = W.T.dot(W)
 
         return V[np.ix_(seeds, seeds)] - W
 
