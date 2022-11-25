@@ -297,10 +297,10 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
         n_times = autocov[0].shape[3]
-        con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
+        con_scores = np.zeros((len(seeds), self.n_freqs, n_times))  
         for con_i, con_autocov in enumerate(autocov):
             for time_i in range(n_times):
-                AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
+                AF, V = self.autocov_to_full_var(con_autocov[:, :, :, :])
                 AF_2d = np.reshape(
                     AF,
                     (AF.shape[0], AF.shape[0] * AF.shape[2]),
@@ -338,6 +338,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Whittle P., 1963. Biometrika, DOI: 10.1093/biomet/50.1-2.129.
         """
         AF, V = self.whittle_lwr_recursion(autocov)
+        np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/AF_v4_pipe2.npy', AF)
+        np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/V_v4_pipe2.npy', V)
 
         if not np.isfinite(AF).all():
             raise ValueError(
@@ -367,17 +369,23 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         ### Initialise recursion
         n = G.shape[0]  # number of signals
         q = G.shape[2] - 1  # number of lags
+        n_times = G.shape[3] 
         qn = n * q
 
         G0 = G[:, :, 0]  # covariance
-        GF = (np.reshape(G[:, :, 1:], (n, qn), order="F").conj().T)  # forward
+        # GF = (np.reshape(G[:, :, 1:], (n, qn), order="F").conj().T)  # forward
+        GF = np.reshape(G[:, :, 1:, :].transpose(3, 0, 1, 2), (n_times, n, qn), order="F").conj().transpose(0, 2, 1)  # forward
         # autocovariance sequence
+        # GB = np.reshape(
+        #     np.flip(G[:, :, 1:], 2).transpose((0, 2, 1)), (qn, n), order="F"
+        # )  # backward autocovariance sequence
         GB = np.reshape(
-            np.flip(G[:, :, 1:], 2).transpose((0, 2, 1)), (qn, n), order="F"
+            np.flip(G[:, :, 1:, :], 2).transpose((3, 0, 2, 1)), (n_times, qn, n), order="F"
         )  # backward autocovariance sequence
-
-        AF = np.zeros((n, qn))  # forward coefficients
-        AB = np.zeros((n, qn))  # backward coefficients
+        # AF = np.zeros((n, qn))  # forward coefficients
+        AF = np.zeros((n_times, n, qn))  # forward coefficients
+        # AB = np.zeros((n, qn))  # backward coefficients
+        AB = np.zeros((n_times, n, qn))  # backward coefficients
 
         k = 1  # model order
         r = q - k
@@ -385,41 +393,62 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         kb = np.arange(r * n, qn)  # backward indices
 
         # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-        AF[:, kf] = spla.solve(
-            G0.conj().T, GB[kb, :].conj().T, transposed=True
-        ).conj().T
-        AB[:, kb] = spla.solve(
-            G0.conj().T, GF[kf, :].conj().T, transposed=True
-        ).conj().T
+        # AF[:, kf] = spla.solve(
+        #     G0.conj().T, GB[kb, :].conj().T, transposed=True
+        # ).conj().T
+        AF[:, :, kf] = np.linalg.solve(
+            G0.conj().transpose(2, 1, 0), GB[:, kb, :].transpose(0, 2, 1)
+        ).transpose(0, 2, 1) 
+        # AB[:, kb] = spla.solve(
+        #     G0.conj().T, GF[kf, :].conj().T, transposed=True
+        # ).conj().T
+        AB[:, :, kb] = np.linalg.solve(
+            G0.conj().transpose(2, 1, 0), GF[:, kf, :].transpose(0, 2, 1)
+        ).transpose(0, 2, 1)
 
-        ### Perform recursion
+        ## Perform recursion
         for k in np.arange(2, q + 1):
             # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-            var_A = GB[(r - 1) * n : r * n, :] - np.matmul(AF[:, kf], GB[kb, :])
-            var_B = G0 - np.matmul(AB[:, kb], GB[kb, :])
-            AAF = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
-            var_A = GF[(k - 1) * n : k * n, :] - np.matmul(AB[:, kb], GF[kf, :])
-            var_B = G0 - np.matmul(AF[:, kf], GF[kf, :])
-            AAB = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
+            # var_A = GB[(r - 1) * n : r * n, :] - np.matmul(AF[:, kf], GB[kb, :])
+            var_A = GB[:, (r - 1) * n : r * n, :] - np.matmul(AF[:, :, kf], GB[:, kb, :])
+            # var_B = G0 - np.matmul(AB[:, kb], GB[kb, :])
+            var_B = G0.transpose(2, 0, 1) - np.matmul(AB[:, :, kb], GB[:, kb, :])
+            # AAF = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
+            AAF = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).conj().transpose(0, 2, 1)
+            # var_A = GF[(k - 1) * n : k * n, :] - np.matmul(AB[:, kb], GF[kf, :])
+            var_A = GF[:, (k - 1) * n : k * n, :] - np.matmul(AB[:, :, kb], GF[:, kf, :])
+            # var_B = G0 - np.matmul(AF[:, kf], GF[kf, :])
+            var_B = G0.transpose(2, 0, 1) - np.matmul(AF[:, :, kf], GF[:, kf, :])
+            # AAB = spla.solve(var_B, var_A.conj().T, transposed=True).conj().T
+            AAB = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).transpose(0, 2, 1)
 
-            AF_previous = AF[:, kf]
-            AB_previous = AB[:, kb]
+            # AF_previous = AF[:, kf]
+            AF_previous = AF[:, :, kf]
+            # AB_previous = AB[:, kb]
+            AB_previous = AB[:, :, kb]
 
             r = q - k
             kf = np.arange(k * n)
             kb = np.arange(r * n, qn)
 
-            AF[:, kf] = np.hstack(
+            # AF[:, kf] = np.hstack(
+            #     (AF_previous - np.matmul(AAF, AB_previous), AAF)
+            # )
+            AF[:, :, kf] = np.dstack(
                 (AF_previous - np.matmul(AAF, AB_previous), AAF)
             )
-            AB[:, kb] = np.hstack(
+            # AB[:, kb] = np.hstack(
+            #     (AAB, AB_previous - np.matmul(AAB, AF_previous))
+            # )
+            AB[:, :, kb] = np.dstack(
                 (AAB, AB_previous - np.matmul(AAB, AF_previous))
             )
 
-        V = G0 - np.matmul(AF, GF)
-        AF = np.reshape(AF, (n, n, q), order="F")
+        V = G0.transpose(2, 0, 1) - np.matmul(AF, GF)
+        AF = np.reshape(AF, (n_times, n, n, q), order="F")
 
         return AF, V
+
 
     def full_var_to_iss(self, AF):
         """Computes innovations-form parameters for a state-space model from a
