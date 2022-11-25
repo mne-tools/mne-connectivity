@@ -38,6 +38,7 @@ Bug
 - Fix support for multiple connectivity methods in calls to :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:gh:`104`).
 - Fix bug with the ``indices`` parameter in :func:`mne_connectivity.spectral_connectivity_time`, the behavior is now as expected by `Santeri Ruuskanen`_ (:gh:`104`).
 - Fix bug with parallel computation in :func:`mne_connectivity.spectral_connectivity_time`, add instructions for memory mapping in doc by `Santeri Ruuskanen`_ (:gh:`104`).
+- Allow loading files that don't have ``event_id_keys`` and ``event_id_values`` defined, by `Daniel McCloy`_ (:gh:`110`)
 - Fix handling of the ``verbose`` argument by :func:`spectral_connectivity_epochs`, :func:`spectral_connectivity_time`, :func:`vector_auto_regression` by `Sam Steingold`_ (:gh:`111`)
 
 API
@@ -49,6 +50,7 @@ Authors
 ~~~~~~~
 
 * `Santeri Ruuskanen`_
+* `Daniel McCloy`_
 * `Sam Steingold`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
