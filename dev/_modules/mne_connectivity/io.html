@@ -385,10 +385,14 @@
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">_prepare_read_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="c1"># write event IDs</span>
-    <span class="n">event_id_keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_keys&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="n">event_id_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_vals&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">event_id_keys</span><span class="p">,</span> <span class="n">event_id_vals</span><span class="p">)}</span>
-    <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
+    <span class="c1"># storing events is optional, not all files will have them</span>
+    <span class="k">if</span> <span class="s1">&#39;event_id_keys&#39;</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span> <span class="ow">and</span> <span class="s1">&#39;event_id_vals&#39;</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+        <span class="n">event_id_keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_keys&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">event_id_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;event_id_vals&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">event_id_keys</span><span class="p">,</span> <span class="n">event_id_vals</span><span class="p">))</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
 
     <span class="c1"># create the connectivity class</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">cls_func</span><span class="p">(</span>
@@ -480,7 +484,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-11-21.<br>
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-11-25.<br>
 
 </p>
 
