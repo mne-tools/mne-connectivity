@@ -198,7 +198,6 @@ html_theme_options = {
     'navigation_with_keys': False,
     'show_toc_level': 1,
     'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
-    'secondary_sidebar_items': ['page-toc'],
 }
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
