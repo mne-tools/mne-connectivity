@@ -348,7 +348,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     conn = dict()
     for m in method:
-        conn[m] = np.zeros((n_epochs, n_pairs,  n_freqs))
+        conn[m] = np.zeros((n_epochs, n_pairs, n_freqs))
     logger.info('Connectivity computation...')
 
     # parameters to pass to the connectivity function

@@ -16,7 +16,8 @@ from mne.time_frequency.multitaper import (_csd_from_mt,
                                            _psd_from_mt_adaptive)
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
-from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask, verbose)
+from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask,
+                       verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
@@ -831,8 +832,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         Use adaptive weights to combine the tapered spectra into PSD.
         Only used in 'multitaper' mode.
     mt_low_bias : bool
-        Only use tapers with more than 90 percent spectral concentration within bandwidth.
-        Only used in 'multitaper' mode.
+        Only use tapers with more than 90 percent spectral concentration
+        within bandwidth. Only used in 'multitaper' mode.
     cwt_freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode.
     cwt_n_cycles : float | array of float
