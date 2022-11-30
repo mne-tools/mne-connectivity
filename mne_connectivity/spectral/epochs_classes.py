@@ -302,12 +302,21 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             for time_i in range(n_times):
                 # AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
                 AF, V = self.autocov_to_full_var(con_autocov[:, :, :, :])
-                AF_2d = np.reshape(
+                # AF_2d = np.reshape(
+                #     AF,
+                #     (AF.shape[0], AF.shape[0] * AF.shape[2]),
+                #     order="F"
+                # )
+                AF_3d = np.reshape(
                     AF,
-                    (AF.shape[0], AF.shape[0] * AF.shape[2]),
+                    (n_times, AF.shape[1], AF.shape[1] * AF.shape[3]),
                     order="F"
                 )
-                A, K = self.full_var_to_iss(AF=AF_2d)
+
+                # A, K = self.full_var_to_iss(AF=AF_2d)
+                A, K = self.full_var_to_iss(AF=AF_3d)
+                np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/A_v1.npy', A)
+                np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/K_v1.npy', K)
 
                 # GC from seeds -> targets
                 con_scores[con_i, :, time_i] = self.iss_to_usgc(
@@ -489,14 +498,26 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        m = AF.shape[0]  # number of signals
-        p = AF.shape[1] // m  # number of autoregressive lags
+        # m = AF.shape[0]  # number of signals
+        # p = AF.shape[1] // m  # number of autoregressive lags
 
-        Ip = np.eye(m * p)
+        # Ip = np.eye(m * p)
         # state transition matrix
-        A = np.vstack((AF, Ip[: (len(Ip) - m), :]))
+        # A = np.vstack((AF, Ip[: (len(Ip) - m), :]))
         # Kalman gain matrix
-        K = np.vstack((np.eye(m), np.zeros(((m * (p - 1)), m))))
+        # K = np.vstack((np.eye(m), np.zeros(((m * (p - 1)), m))))
+
+        # return A, K
+
+        n_times = AF.shape[0]
+        m = AF.shape[1]  # number of signals
+        p = AF.shape[2] // m  # number of autoregressive lags
+
+        Ip = np.dstack(n_times * [np.eye(m * p)]).transpose(2, 0, 1)
+        # state transition matrix
+        A = np.hstack((AF, Ip[:, : (m * p - m), :]))
+        # Kalman gain matrix
+        K = np.hstack((np.dstack(n_times * [np.eye(m)]).transpose(2, 0, 1), np.zeros((n_times, (m * (p - 1)), m))))
 
         return A, K
 
