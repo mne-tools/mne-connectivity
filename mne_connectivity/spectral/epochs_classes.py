@@ -315,8 +315,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
                 # A, K = self.full_var_to_iss(AF=AF_2d)
                 A, K = self.full_var_to_iss(AF=AF_3d)
-                np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/A_v1.npy', A)
-                np.save('/Users/nguyentiendung/Desktop/Studium/Charite/Hackathon/hackathon_mne_mvc/K_v1.npy', K)
 
                 # GC from seeds -> targets
                 con_scores[con_i, :, time_i] = self.iss_to_usgc(
