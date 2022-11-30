@@ -25,7 +25,7 @@ def multivar_spectral_connectivity_epochs(
     data, indices, names = None, method = "mic", sfreq = 2 * np.pi,
     mode = "multitaper", tmin = None, tmax = None, fmin = None, fmax = np.inf,
     fskip = 0, faverage = False, cwt_freqs = None, mt_bandwidth = None,
-    mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7,
+    mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7.0,
     n_seed_components = None, n_target_components = None, gc_n_lags = 20,
     block_size = 1000, n_jobs = 1, verbose = None,
 ):
@@ -55,16 +55,12 @@ def multivar_spectral_connectivity_epochs(
     -   Connectivity measure(s) to compute. These can be ['mic', 'mim', 'gc',
         'net_gc', 'trgc', 'net_trgc'].
 
-    sfreq : float; default 6.283185307179586
+    sfreq : float; default 2 * pi
     -   Sampling frequency of the data. Only used if "data" is array-like.
 
     mode : str; default "multitaper"
     -   Cross-spectral estimation method. Can be 'fourier', 'multitaper', or
         'cwt_wavelet'.
-
-    t0 : float; default 0.0
-    -   Time of the first sample relative to the onset of the epoch, in seconds.
-        Only used if "data" is an array.
 
     tmin : float | None; default None
     -   The time at which to start computing connectivity, in seconds. If None,
@@ -74,26 +70,25 @@ def multivar_spectral_connectivity_epochs(
     -   The time at which to stop computing connectivity, in seconds. If None,
         ends with the final sample.
 
-    fmt_fmin : float; default 0.0
+    fmin : float; default 0.0
     -   Minumum frequency of interest, in Hz. Only used if "mode" is 'fourier'
         or 'multitaper'.
 
-    fmt_fmax : float; default infinity
+    fmax : float; default infinity
     -   Maximum frequency of interest, in Hz. Only used if "mode" is 'fourier'
         or 'multitaper'.
+    
+    fskip : int; default 0
+    -   Omit every “(fskip + 1)-th” frequency bin to decimate in frequency
+        domain.
+    
+    faverage : bool; default False
+    -   Average connectivity scores for each frequency band. If True, the output
+        freqs will be a list with arrays of the frequencies that were averaged.
 
     cwt_freqs : list of float | None; default None
     -   The frequencies of interest, in Hz. If "mode" is 'cwt_morlet', this
         cannot be None. Only used if "mode" if 'cwt_morlet'.
-
-    fmt_n_fft : int | None; default None
-    -   Length of the FFT. If None, the exact number of samples between "tmin"
-        and "tmax" will be used. Only used if "mode" is 'fourier' or
-        'multitaper'.
-
-    cwt_use_fft : bool; default True
-    -   Whether to use FFT-based convolution to compute the wavelet transform.
-        Only used if "mode" is 'cwt_morlet'.
 
     mt_bandwidth : float | None; default None
     -   Bandwidth of the multitaper windowing function, in Hz. Only used if
@@ -111,12 +106,6 @@ def multivar_spectral_connectivity_epochs(
     -   Number of cycles to use when constructing the Morlet wavelets. Can be a
         single number, or one per frequency. Only used if "mode" if
         'cwt_morlet'.
-
-    cwt_decim : int | slice; default 1
-    -   To redice memory usage, decimation factor during time-frequency
-        decomposition. Default to 1 (no decimation). If int, uses
-        tfr[..., ::"decim"]. If slice, used tfr[..., "decim"]. Only used if
-        "mode" is 'cwt_morlet'.
 
     n_seed_components : tuple of int or str or None | None; default None
     -   Dimensionality reduction parameter specifying the number of seed
@@ -138,6 +127,10 @@ def multivar_spectral_connectivity_epochs(
     -   The number of lags to use when computing the autocovariance sequence
         from the cross-spectral density. Only used if "method" is 'gc',
         'net_gc', 'trgc', or 'net_trgc'.
+    
+    block_size : int; default 1000
+    -   How many cross-spectral density entries to compute at once (higher
+        numbers are faster but require more memory).
 
     n_jobs : int; default 1
     -   Number of jobs to run in parallel when computing the cross-spectral
