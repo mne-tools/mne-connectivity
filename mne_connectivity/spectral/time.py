@@ -9,7 +9,7 @@ from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
                                 dpss_windows)
-from mne.utils import (logger, warn)
+from mne.utils import (logger, warn, verbose)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
 from .epochs import _compute_freq_mask
@@ -17,6 +17,7 @@ from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, fill_doc
 
 
+@verbose
 @fill_doc
 def spectral_connectivity_time(data, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
@@ -360,7 +361,7 @@ def spectral_connectivity_time(data, method='coh', average=False,
 
     conn = dict()
     for m in method:
-        conn[m] = np.zeros((n_epochs, n_pairs,  n_freqs))
+        conn[m] = np.zeros((n_epochs, n_pairs, n_freqs))
     logger.info('Connectivity computation...')
 
     # parameters to pass to the connectivity function
