@@ -299,44 +299,61 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         n_times = autocov[0].shape[3]
         con_scores = np.zeros((len(seeds), self.n_freqs, n_times))  
         for con_i, con_autocov in enumerate(autocov):
-            for time_i in range(n_times):
-                # AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
-                AF, V = self.autocov_to_full_var(con_autocov[:, :, :, :])
-                # AF_2d = np.reshape(
-                #     AF,
-                #     (AF.shape[0], AF.shape[0] * AF.shape[2]),
-                #     order="F"
-                # )
-                AF_3d = np.reshape(
-                    AF,
-                    (n_times, AF.shape[1], AF.shape[1] * AF.shape[3]),
-                    order="F"
-                )
+            # for time_i in range(n_times):
+            # AF, V = self.autocov_to_full_var(con_autocov[:, :, :, time_i])
+            AF, V = self.autocov_to_full_var(con_autocov[:, :, :, :])
+            # AF_2d = np.reshape(
+            #     AF,
+            #     (AF.shape[0], AF.shape[0] * AF.shape[2]),
+            #     order="F"
+            # )
+            AF_3d = np.reshape(
+                AF,
+                (n_times, AF.shape[1], AF.shape[1] * AF.shape[3]),
+                order="F"
+            )
 
-                # A, K = self.full_var_to_iss(AF=AF_2d)
-                A, K = self.full_var_to_iss(AF=AF_3d)
+            # A, K = self.full_var_to_iss(AF=AF_2d)
+            A, K = self.full_var_to_iss(AF=AF_3d)
 
-                # GC from seeds -> targets
-                con_scores[con_i, :, time_i] = self.iss_to_usgc(
+            # GC from seeds -> targets
+            # con_scores[con_i, :, time_i] = self.iss_to_usgc(
+            #     A=A,
+            #     C=AF_2d,
+            #     K=K,
+            #     V=V,
+            #     seeds=seeds[con_i],
+            #     targets=targets[con_i],
+            # )
+            con_scores[con_i] = self.iss_to_usgc(  # placeholder for now
+                A=A,
+                C=AF_3d,
+                K=K,
+                V=V,
+                seeds=seeds[con_i],
+                targets=targets[con_i],
+            )
+
+            # GC from targets -> seeds
+            # if net:
+            #     con_scores[con_i, :, time_i] -= self.iss_to_usgc(
+            #         A=A,
+            #         C=AF_2d,
+            #         K=K,
+            #         V=V,
+            #         seeds=targets[con_i],
+            #         targets=seeds[con_i],
+            #     )
+            if net:
+                con_scores[con_i] -= self.iss_to_usgc(
                     A=A,
-                    C=AF_2d,
+                    C=AF_3d,
                     K=K,
                     V=V,
-                    seeds=seeds[con_i],
-                    targets=targets[con_i],
+                    seeds=targets[con_i],
+                    targets=seeds[con_i],
                 )
 
-                # GC from targets -> seeds
-                if net:
-                    con_scores[con_i, :, time_i] -= self.iss_to_usgc(
-                        A=A,
-                        C=AF_2d,
-                        K=K,
-                        V=V,
-                        seeds=targets[con_i],
-                        targets=seeds[con_i],
-                    )
-        
         return con_scores
 
     def autocov_to_full_var(self, autocov):
@@ -500,9 +517,9 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         # p = AF.shape[1] // m  # number of autoregressive lags
 
         # Ip = np.eye(m * p)
-        # state transition matrix
+        # # state transition matrix
         # A = np.vstack((AF, Ip[: (len(Ip) - m), :]))
-        # Kalman gain matrix
+        # # Kalman gain matrix
         # K = np.vstack((np.eye(m), np.zeros(((m * (p - 1)), m))))
 
         # return A, K
@@ -526,35 +543,67 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        f = np.zeros(self.n_freqs) # placeholder for GC results
-        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs)) # points on a
-            # unit circle in the complex plane, one for each frequency
-        H = self.iss_to_tf(A, C, K, z) # spectral transfer function
+        # f = np.zeros(self.n_freqs) # placeholder for GC results
+        # z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs)) # points on a
+        #     # unit circle in the complex plane, one for each frequency
+        # H = self.iss_to_tf(A, C, K, z) # spectral transfer function
+        # V_sqrt = np.linalg.cholesky(V)
+        # PV_sqrt = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
+
+        # for freq_i in range(self.n_freqs):
+        #     HV = np.matmul(H[:, :, freq_i], V_sqrt)
+        #     S = np.matmul(HV, HV.conj().T) # CSD of the projected state
+        #         # variable (Eq. 6)
+        #     S_tt = S[np.ix_(targets, targets)] # CSD between targets
+        #     if len(PV_sqrt) == 1:
+        #         HV_ts = H[targets, seeds, freq_i] * PV_sqrt
+        #         HVH_ts = np.outer(HV_ts, HV_ts.conj().T)
+        #     else:
+        #         HV_ts = np.matmul(
+        #             H[np.ix_(targets, seeds)][:, :, freq_i], PV_sqrt
+        #         )
+        #         HVH_ts = np.matmul(HV_ts, HV_ts.conj().T)
+        #     if len(targets) == 1:
+        #         numerator = np.real(S_tt)
+        #         denominator = np.real(S_tt - HVH_ts)
+        #     else:
+        #         numerator = np.real(np.linalg.det(S_tt))
+        #         denominator = np.real(np.linalg.det(S_tt - HVH_ts))
+        #     f[freq_i] = np.log(numerator) - np.log(denominator) # Eq. 11
+
+        # return f
+
+        n_times = A.shape[0]
+        f = np.zeros((n_times, self.n_freqs)) # placeholder for GC results
+        z = np.vstack(
+            n_times * [np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))]
+        ) # points on a unit circle in the complex plane, one for each frequency
+        H = np.array([self.iss_to_tf(A[time_i], C[time_i], K[time_i], z[time_i]) for time_i in range(n_times)], dtype=np.complex128) # spectral transfer function
         V_sqrt = np.linalg.cholesky(V)
         PV_sqrt = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
 
         for freq_i in range(self.n_freqs):
-            HV = np.matmul(H[:, :, freq_i], V_sqrt)
-            S = np.matmul(HV, HV.conj().T) # CSD of the projected state
+            HV = np.matmul(H[:, :, :, freq_i], V_sqrt)
+            S = np.matmul(HV, HV.conj().transpose(0, 2, 1)) # CSD of the projected state
                 # variable (Eq. 6)
-            S_tt = S[np.ix_(targets, targets)] # CSD between targets
-            if len(PV_sqrt) == 1:
-                HV_ts = H[targets, seeds, freq_i] * PV_sqrt
-                HVH_ts = np.outer(HV_ts, HV_ts.conj().T)
+            S_tt = (S.transpose(1, 2 ,0)[np.ix_(targets, targets)]).transpose(2, 0, 1) # CSD between targets
+            if len(PV_sqrt[0]) == 1:
+                HV_ts = H[:, targets, seeds, freq_i] * PV_sqrt
+                HVH_ts = np.asarray([np.outer(HV_ts[time_idx], HV_ts[time_idx].conj().T) for time_idx in range(n_times)])
             else:
                 HV_ts = np.matmul(
-                    H[np.ix_(targets, seeds)][:, :, freq_i], PV_sqrt
+                    (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i], PV_sqrt
                 )
-                HVH_ts = np.matmul(HV_ts, HV_ts.conj().T)
+                HVH_ts = np.matmul(HV_ts, HV_ts.conj().transpose(0, 2, 1))
             if len(targets) == 1:
                 numerator = np.real(S_tt)
                 denominator = np.real(S_tt - HVH_ts)
             else:
                 numerator = np.real(np.linalg.det(S_tt))
                 denominator = np.real(np.linalg.det(S_tt - HVH_ts))
-            f[freq_i] = np.log(numerator) - np.log(denominator) # Eq. 11
-
-        return f
+            f[:, freq_i] = np.log(numerator) - np.log(denominator) # Eq. 11
+        
+        return f.T
 
     def iss_to_tf(self, A, C, K, z):
         """Computes a transfer function (moving-average representation) for
@@ -593,17 +642,30 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
+        # if len(targets) == 1:
+        #     W = (1 / np.sqrt(V[targets, targets])) * V[targets, seeds]
+        #     W = np.outer(W.conj().T, W)
+        # else:
+        #     W = np.linalg.solve(
+        #         np.linalg.cholesky(V[np.ix_(targets, targets)]),
+        #         V[np.ix_(targets, seeds)],
+        #     )
+        #     W = W.conj().T.dot(W)
+
+        # return V[np.ix_(seeds, seeds)] - W
+
+        n_times = V.shape[0]
         if len(targets) == 1:
-            W = (1 / np.sqrt(V[targets, targets])) * V[targets, seeds]
-            W = np.outer(W.conj().T, W)
+            W = (1 / np.sqrt(V[:, targets, targets])) * V[:, targets, seeds]
+            W = np.outer(W.T, W)
         else:
             W = np.linalg.solve(
-                np.linalg.cholesky(V[np.ix_(targets, targets)]),
-                V[np.ix_(targets, seeds)],
+                np.linalg.cholesky((V.transpose(1, 2, 0)[np.ix_(targets, targets)]).transpose(2, 0, 1)),
+                (V.transpose(1, 2, 0)[np.ix_(targets, seeds)]).transpose(2, 0, 1),
             )
-            W = W.conj().T.dot(W)
+            W = np.matmul(W.transpose(0, 2, 1), W)
 
-        return V[np.ix_(seeds, seeds)] - W
+        return (V.transpose(1, 2, 0)[np.ix_(seeds, seeds)]).transpose(2, 0, 1) - W
 
 
 class _CohEst(_CohEstBase):
