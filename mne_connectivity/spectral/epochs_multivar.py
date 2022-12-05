@@ -25,7 +25,7 @@ def multivar_spectral_connectivity_epochs(
     data, indices, names = None, method = "mic", sfreq = 2 * np.pi,
     mode = "multitaper", tmin = None, tmax = None, fmin = None, fmax = np.inf,
     fskip = 0, faverage = False, cwt_freqs = None, mt_bandwidth = None,
-    mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7,
+    mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7.0,
     n_seed_components = None, n_target_components = None, gc_n_lags = 20,
     block_size = 1000, n_jobs = 1, verbose = None,
 ):
@@ -55,16 +55,12 @@ def multivar_spectral_connectivity_epochs(
     -   Connectivity measure(s) to compute. These can be ['mic', 'mim', 'gc',
         'net_gc', 'trgc', 'net_trgc'].
 
-    sfreq : float; default 6.283185307179586
+    sfreq : float; default 2 * pi
     -   Sampling frequency of the data. Only used if "data" is array-like.
 
     mode : str; default "multitaper"
     -   Cross-spectral estimation method. Can be 'fourier', 'multitaper', or
         'cwt_wavelet'.
-
-    t0 : float; default 0.0
-    -   Time of the first sample relative to the onset of the epoch, in seconds.
-        Only used if "data" is an array.
 
     tmin : float | None; default None
     -   The time at which to start computing connectivity, in seconds. If None,
@@ -74,26 +70,25 @@ def multivar_spectral_connectivity_epochs(
     -   The time at which to stop computing connectivity, in seconds. If None,
         ends with the final sample.
 
-    fmt_fmin : float; default 0.0
+    fmin : float; default 0.0
     -   Minumum frequency of interest, in Hz. Only used if "mode" is 'fourier'
         or 'multitaper'.
 
-    fmt_fmax : float; default infinity
+    fmax : float; default infinity
     -   Maximum frequency of interest, in Hz. Only used if "mode" is 'fourier'
         or 'multitaper'.
+    
+    fskip : int; default 0
+    -   Omit every “(fskip + 1)-th” frequency bin to decimate in frequency
+        domain.
+    
+    faverage : bool; default False
+    -   Average connectivity scores for each frequency band. If True, the output
+        freqs will be a list with arrays of the frequencies that were averaged.
 
     cwt_freqs : list of float | None; default None
     -   The frequencies of interest, in Hz. If "mode" is 'cwt_morlet', this
         cannot be None. Only used if "mode" if 'cwt_morlet'.
-
-    fmt_n_fft : int | None; default None
-    -   Length of the FFT. If None, the exact number of samples between "tmin"
-        and "tmax" will be used. Only used if "mode" is 'fourier' or
-        'multitaper'.
-
-    cwt_use_fft : bool; default True
-    -   Whether to use FFT-based convolution to compute the wavelet transform.
-        Only used if "mode" is 'cwt_morlet'.
 
     mt_bandwidth : float | None; default None
     -   Bandwidth of the multitaper windowing function, in Hz. Only used if
@@ -112,28 +107,30 @@ def multivar_spectral_connectivity_epochs(
         single number, or one per frequency. Only used if "mode" if
         'cwt_morlet'.
 
-    cwt_decim : int | slice; default 1
-    -   To redice memory usage, decimation factor during time-frequency
-        decomposition. Default to 1 (no decimation). If int, uses
-        tfr[..., ::"decim"]. If slice, used tfr[..., "decim"]. Only used if
-        "mode" is 'cwt_morlet'.
-
-    n_seed_components : tuple of int or None | None; default None
+    n_seed_components : tuple of int or str or None | None; default None
     -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the seed
-        channels' data for each connectivity node. If None, or if an individual
-        entry is None, no dimensionality reduction is performed.
+        channels' data for each connectivity node. If an individual entry is a
+        str with value "rank", the rank of the seed data will be computed and
+        this number of components taken. If None, or if an individual entry is
+        None, no dimensionality reduction is performed.
 
-    n_target_components : tuple of int or None | None; default None
-    -   Dimensionality reduction parameter specifying the number of target
+    n_target_components : tuple of int or str or None | None; default None
+    -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the target
-        channels' data for each connectivity node. If None, or if an individual
-        entry is None, no dimensionality reduction is performed.
+        channels' data for each connectivity node. If an individual entry is a
+        str with value "rank", the rank of the target data will be computed and
+        this number of components taken. If None, or if an individual entry is
+        None, no dimensionality reduction is performed.
 
     gc_n_lags : int; default 20
     -   The number of lags to use when computing the autocovariance sequence
         from the cross-spectral density. Only used if "method" is 'gc',
         'net_gc', 'trgc', or 'net_trgc'.
+    
+    block_size : int; default 1000
+    -   How many cross-spectral density entries to compute at once (higher
+        numbers are faster but require more memory).
 
     n_jobs : int; default 1
     -   Number of jobs to run in parallel when computing the cross-spectral
@@ -178,13 +175,13 @@ def multivar_spectral_connectivity_epochs(
             con = []
 
         # performs SVD on the timeseries data for each seed-target group
-        seed_target_data, n_seeds = _time_series_svd(
+        seed_target_data, n_seeds = _reduce_epochs_dims(
             data, indices, n_seed_components, n_target_components
         )
 
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
-        svd_gc_con = [[] for x in range(n_gc_methods)]
+        svd_gc_con = [[] for _ in range(n_gc_methods)]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
@@ -253,7 +250,7 @@ def multivar_spectral_connectivity_epochs(
         # stored SVD GC results
         con = svd_gc_con
         # finds the remapped indices of non-SVD data
-        unique_indices = np.unique(sum(sum(indices, []), []))
+        unique_indices = np.unique(np.concatenate(sum(indices, [])))
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
         remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
                              indices_group] for indices_group in indices]
@@ -334,7 +331,7 @@ def _sort_inputs(
     n_targets = len(indices[1])
     if n_seeds != n_targets:
         raise ValueError(
-            f"The number of seeds ({n_seeds}) and targets ({n_targets}) must  "
+            f"The number of seeds ({n_seeds}) and targets ({n_targets}) must "
             "match."
         )
 
@@ -352,38 +349,75 @@ def _sort_inputs(
     else:
         if n_seeds != len(n_seed_components):
             raise ValueError(
-            "n_seed_components must have the same length as specified seeds."
-            f" Got: {len(n_seed_components)} seed components and {n_seeds}"
-            "seeds."
+                "n_seed_components must have the same length as specified "
+                f"seeds. Got: {len(n_seed_components)} seed components and "
+                f"{n_seeds} seeds."
             )
+        if any(n_comps is not None for n_comps in n_seed_components):
+            perform_svd = True
+    if n_target_components is None:
+        n_target_components = tuple([None] * n_targets)
+    else:
+        if n_targets != len(n_target_components):
+            raise ValueError(
+                "n_target_components must have the same length as specified "
+                f"targets. Got: {len(n_target_components)} target components "
+                f"and {n_targets} targets."
+            )
+        if not perform_svd and any(
+            n_comps is not None for n_comps in n_target_components
+        ):
+            perform_svd = True
+
+    if perform_svd:
+        if isinstance(data, BaseEpochs):
+            epochs = data.get_data(picks=data.ch_names)
+        else:
+            epochs = data
+
+    if any(n_comps is not None for n_comps in n_seed_components):
+        index_i = 0
         for n_comps, chs in zip(n_seed_components, indices[0]):
-            if n_comps:
+            if isinstance(n_comps, int):
                 if n_comps > len(chs) and n_comps <= 0:
                     raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
                         "be greater than the number of channels in that seed "
                         f"({len(chs)}) and must be greater than 0."
                     )
-                perform_svd = True
-
-    if n_target_components is None:
-        n_target_components = tuple([None] * n_targets)
-    else:
-        if n_targets != len(n_target_components):
-            raise ValueError(
-            "n_target_components must have the same length as specified"
-            f" targets. Got: {len(n_target_components)} target components and"
-            f" {n_targets} targets."
-            )
+            elif isinstance(n_comps, str):
+                if n_comps != "rank":
+                    raise ValueError(
+                        "The entries of n_seed_components can only be None, an "
+                        "int, or a string with value 'rank'."
+                    )
+                else:
+                    n_seed_components[index_i] = np.min(np.linalg.matrix_rank(
+                        epochs[:, chs, :], tol=1e-10
+                    ))
+            index_i += 1
+    
+    if any(n_comps is not None for n_comps in n_target_components):
+        index_i = 0
         for n_comps, chs in zip(n_target_components, indices[1]):
-            if n_comps:
-                if n_comps is not None and n_comps > len(chs) and n_comps <= 0:
+            if isinstance(n_comps, int):
+                if n_comps > len(chs) and n_comps <= 0:
                     raise ValueError(
                         f"The number of components to take ({n_comps}) cannot "
                         "be greater than the number of channels in that target "
                         f"({len(chs)}) and must be greater than 0."
                     )
-                perform_svd = True
+            elif isinstance(n_comps, str):
+                if n_comps != "rank":
+                    raise ValueError(
+                        "The entries of n_target_components can only be None, "
+                        "an int, or a string with value 'rank'."
+                    )
+                else:
+                    n_target_components[index_i] = np.min(np.linalg.matrix_rank(
+                        epochs[:, chs, :], tol=1e-10
+                    ))
+            index_i += 1
 
     # handle Granger causality methods
     present_gc_methods = [
@@ -398,13 +432,15 @@ def _sort_inputs(
         perform_svd
     )
 
-def _time_series_svd(data, indices, n_seed_components, n_target_components):
-    """Performs a single value decomposition on the timeseries data for each set
-    of seed-target pairs."""
+def _reduce_epochs_dims(data, indices, n_seed_components, n_target_components):
+    """Performs a single value decomposition on the epoched data separately for
+    the seeds and targets of each set of seed-target pairs according to the
+    specified number of seed and target components. If the number of components
+    for a given instance is 'None', the original data is returned."""
     if isinstance(data, BaseEpochs):
-        epochs = data.get_data(picks=data.ch_names)
+        epochs = data.get_data(picks=data.ch_names).copy()
     else:
-        epochs = data
+        epochs = data.copy()
 
     seed_target_data = []
     n_seeds = []
@@ -412,25 +448,38 @@ def _time_series_svd(data, indices, n_seed_components, n_target_components):
         zip(indices[0], indices[1], n_seed_components, n_target_components):
 
         if n_seed_comps: # SVD seed data
-            v_seeds = (
-                np.linalg.svd(epochs[:, seeds, :], full_matrices=False)[2]
-                [:, :n_seed_comps, :]
-            )
+            seed_data = _epochs_svd(epochs[:, seeds, :], n_seed_comps)
         else: # use unaltered seed data
-            v_seeds = epochs[:, seeds, :]
-        n_seeds.append(v_seeds.shape[1])
+            seed_data = epochs[:, seeds, :]
+        n_seeds.append(seed_data.shape[1])
 
         if n_target_comps: # SVD target data
-            v_targets = (
-                np.linalg.svd(epochs[:, targets, :], full_matrices=False)[2]
-                [:, :n_target_comps, :]
-            )
+            target_data = _epochs_svd(epochs[:, targets, :], n_target_comps)
         else: # use unaltered target data
-            v_targets = epochs[:, targets, :]
+            target_data = epochs[:, targets, :]
 
-        seed_target_data.append(np.append(v_seeds, v_targets, axis=1))
+        seed_target_data.append(np.append(seed_data, target_data, axis=1))
 
     return seed_target_data, n_seeds
+
+def _epochs_svd(epochs, n_comps):
+    """Performs an SVD on epoched data and selects the first k components for
+    dimensionality reduction before reconstructing the data with U_k@S_k@V_k."""
+    # mean-centre the data epoch-wise
+    centred_epochs = np.array([epoch - epoch.mean() for epoch in epochs])
+
+    # compute the SVD (transposition so that the channels are the columns of
+    # each epoch)
+    U, S, V = np.linalg.svd(centred_epochs.transpose(0, 2, 1), full_matrices=False)
+
+    # take the first k components
+    U_k = U[:, :, :n_comps]
+    S_k = np.eye(n_comps)*S[:, np.newaxis][:, :n_comps, :n_comps]
+    V_k = V[:, :n_comps, :n_comps]
+
+    # reconstruct the dimensionality-reduced data (have to tranpose the data
+    # back into [epochs x channels x timepoints])
+    return (U_k @ (S_k @ V_k)).transpose(0, 2, 1)
 
 
 def _compute_csd(
@@ -466,11 +515,11 @@ def _compute_csd(
                 cwt_freqs=cwt_freqs, freqs=freqs, freq_mask=freq_mask)
 
             # map indices to unique indices
-            unique_indices = np.unique(sum(sum(indices, []), []))
+            unique_indices = np.unique(np.concatenate(sum(indices, [])))
             remapping = {ch_i: sig_i for sig_i, ch_i in
                          enumerate(unique_indices)}
-            remapped_indices = [[[remapping[idx] for idx in idcs] for idcs in
-                                indices_group] for indices_group in indices]
+            remapped_indices = tuple([[[remapping[idx] for idx in idcs] for idcs in
+                                indices_group] for indices_group in indices])
 
             # unique signals for which we actually need to compute CSD etc.
             sig_idx = np.unique(sum(sum(remapped_indices, []), []))
