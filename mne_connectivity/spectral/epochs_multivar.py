@@ -523,7 +523,7 @@ def _compute_csd(
 
             # unique signals for which we actually need to compute CSD etc.
             sig_idx = np.unique(sum(sum(remapped_indices, []), []))
-            n_signals = len(sig_idx)
+            use_n_signals = len(sig_idx)
 
             # gets seed-target indices for CSD
             idx_map = [np.repeat(sig_idx, len(sig_idx)),
@@ -534,12 +534,12 @@ def _compute_csd(
             for mtype in con_method_types:
                 if "n_lags" in list(inspect.signature(mtype).parameters):
                     con_methods.append(
-                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum,
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
                               gc_n_lags)
                     )
                 else:
                     con_methods.append(
-                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum)
                     )
 
             metrics_str = ', '.join([meth.name for meth in con_methods])
@@ -558,7 +558,8 @@ def _compute_csd(
             block_size=block_size, psd=None, accumulate_psd=False,
             mt_adaptive=mt_adaptive, con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
-            n_signals=n_signals, n_times=n_times, gc_n_lags=gc_n_lags,
+            n_signals=n_signals, use_n_signals=use_n_signals, n_times=n_times,
+            gc_n_lags=gc_n_lags,
             accumulate_inplace=True if n_jobs == 1 else False
         )
         call_params.update(**spectral_params)

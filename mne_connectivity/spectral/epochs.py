@@ -209,8 +209,8 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
                                  mode, window_fun, eigvals, wavelets,
                                  freq_mask, mt_adaptive, idx_map, block_size,
                                  psd, accumulate_psd, con_method_types,
-                                 con_methods, n_signals, n_times, gc_n_lags,
-                                 accumulate_inplace=True):
+                                 con_methods, n_signals, use_n_signals, n_times,
+                                 gc_n_lags, accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
     n_cons = len(idx_map[0])
 
@@ -221,8 +221,6 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
         n_times_spectrum = 0
         n_freqs = np.sum(freq_mask)
 
-    n_signals = len(np.unique(idx_map[0]))
-
     if not accumulate_inplace:
         # instantiate methods only for this epoch (used in parallel mode)
         con_methods = []
@@ -231,12 +229,12 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
             if "n_signals" in method_params:
                 if "n_lags" in method_params:
                     con_methods.append(
-                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum,
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
                               gc_n_lags)
                     )
                 else:
                     con_methods.append(
-                        mtype(n_signals, n_cons, n_freqs, n_times_spectrum)
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum)
                     )
             else:
                 con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
