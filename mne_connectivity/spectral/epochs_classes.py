@@ -297,29 +297,18 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 C=AF_3d,
                 K=K,
                 V=V,
-                seeds=seeds[con_i],
-                targets=targets[con_i],
-            )
+                seeds=new_seeds,
+                targets=new_targets,
+            ) # GC from seeds -> targets
             if net:
                 con_scores[con_i] -= self.iss_to_usgc(
                     A=A,
                     C=AF_3d,
                     K=K,
                     V=V,
-                    seeds=new_seeds,
-                    targets=new_targets,
-                )
-
-                # GC from targets -> seeds
-                if net:
-                    con_scores[con_i] -= self.iss_to_usgc(
-                        A=A,
-                        C=AF_3d,
-                        K=K,
-                        V=V,
-                        seeds=new_targets,
-                        targets=new_seeds,
-                    )
+                    seeds=new_targets,
+                    targets=new_seeds,
+                ) # GC from targets -> seeds
             con_i += 1
         
         return con_scores
