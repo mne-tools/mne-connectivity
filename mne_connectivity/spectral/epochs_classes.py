@@ -457,21 +457,14 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             S = np.matmul(HV, HV.conj().transpose(0, 2, 1)) # CSD of the projected state
                 # variable (Eq. 6)
             S_tt = (S.transpose(1, 2 ,0)[np.ix_(targets, targets)]).transpose(2, 0, 1) # CSD between targets
-            if len(PV_sqrt[0]) == 1:
-                HV_ts = H[:, targets, seeds, freq_i] * PV_sqrt
-                HVH_ts = np.asarray([np.outer(HV_ts[time_idx], HV_ts[time_idx].conj().T) for time_idx in range(n_times)])
-            else:
-                HV_ts = np.matmul(
-                    (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i], PV_sqrt
-                )
-                HVH_ts = np.matmul(HV_ts, HV_ts.conj().transpose(0, 2, 1))
-            if len(targets) == 1:
-                numerator = np.real(S_tt)
-                denominator = np.real(S_tt - HVH_ts)
-            else:
-                numerator = np.real(np.linalg.det(S_tt))
-                denominator = np.real(np.linalg.det(S_tt - HVH_ts))
-            f[:, freq_i] = np.log(numerator) - np.log(denominator) # Eq. 11
+            HV_ts = np.matmul(
+                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i], PV_sqrt
+            )
+            HVH_ts = np.matmul(HV_ts, HV_ts.conj().transpose(0, 2, 1))
+            f[:, freq_i] = np.real(
+                np.log(np.linalg.det(S_tt)) -
+                np.log(np.linalg.det(S_tt - HVH_ts))
+             ) # Eq. 11
         
         return f.T
 
