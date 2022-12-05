@@ -222,9 +222,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         self.con_scores = con_scores
         self.reshape_con_scores()
 
-    def csd_to_autocov(
-        self, csd
-    ):
+    def csd_to_autocov(self, csd):
         """Computes the autocovariance sequence from the cross-spectral
         density."""
         n_times = csd.shape[3]
@@ -514,19 +512,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        # if len(targets) == 1:
-        #     W = (1 / np.sqrt(V[targets, targets])) * V[targets, seeds]
-        #     W = np.outer(W.conj().T, W)
-        # else:
-        #     W = np.linalg.solve(
-        #         np.linalg.cholesky(V[np.ix_(targets, targets)]),
-        #         V[np.ix_(targets, seeds)],
-        #     )
-        #     W = W.conj().T.dot(W)
-
-        # return V[np.ix_(seeds, seeds)] - W
-
-        n_times = V.shape[0]
         if len(targets) == 1:
             W = (1 / np.sqrt(V[:, targets, targets])) * V[:, targets, seeds]
             W = np.outer(W.T, W)
