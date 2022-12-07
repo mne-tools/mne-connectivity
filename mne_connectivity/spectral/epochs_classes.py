@@ -56,11 +56,12 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
 class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     """Base class for methods that estimate connectivity as mean epoch-wise."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
+        self.n_jobs = n_jobs
 
         if n_times == 0:
             self.csd_shape = (n_signals**2, n_freqs)

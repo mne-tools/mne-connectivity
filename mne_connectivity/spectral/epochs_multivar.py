@@ -535,11 +535,12 @@ def _compute_csd(
                 if "n_lags" in list(inspect.signature(mtype).parameters):
                     con_methods.append(
                         mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
-                              gc_n_lags)
+                              gc_n_lags, n_jobs)
                     )
                 else:
                     con_methods.append(
-                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum)
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
+                        n_jobs)
                     )
 
             metrics_str = ', '.join([meth.name for meth in con_methods])
