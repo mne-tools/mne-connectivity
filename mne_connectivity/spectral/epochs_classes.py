@@ -494,15 +494,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        if len(targets) == 1:
-            W = (1 / np.sqrt(V[:, targets, targets])) * V[:, targets, seeds]
-            W = np.outer(W.T, W)
-        else:
-            W = np.linalg.solve(
-                np.linalg.cholesky((V.transpose(1, 2, 0)[np.ix_(targets, targets)]).transpose(2, 0, 1)),
-                (V.transpose(1, 2, 0)[np.ix_(targets, seeds)]).transpose(2, 0, 1),
-            )
-            W = np.matmul(W.transpose(0, 2, 1), W)
+        W = np.linalg.solve(
+            np.linalg.cholesky((V.transpose(1, 2, 0)[np.ix_(targets, targets)]).transpose(2, 0, 1)),
+            (V.transpose(1, 2, 0)[np.ix_(targets, seeds)]).transpose(2, 0, 1),
+        )
+        W = np.matmul(W.transpose(0, 2, 1), W)
 
         return (V.transpose(1, 2, 0)[np.ix_(seeds, seeds)]).transpose(2, 0, 1) - W
 
