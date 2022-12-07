@@ -7,6 +7,7 @@
 
 import numpy as np
 from scipy import linalg as spla
+from mne.parallel import parallel_func
 
 
 ########################################################################
@@ -159,19 +160,22 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         derived from the original cross-spectra "csd" between the seed and target
         signals."""
         # Equation 3
-        n_times = csd.shape[0]
         n_freqs = csd.shape[1]
-        T = np.zeros(csd.shape)
-        # No clear way to do this without list comprehension (function only accepts square matrices)
-        # Could be a good place for parallelisation
-        # real(C_aa)^-1/2
-        T[:, :, :n_seeds, :n_seeds] = np.array([[spla.fractional_matrix_power(
-            np.real(csd[time_i, freq_i, :n_seeds, :n_seeds]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
-        # real(C_bb)^-1/2
-        T[:, :, n_seeds:, n_seeds:] = np.array([[spla.fractional_matrix_power(
-            np.real(csd[time_i, freq_i, n_seeds:, n_seeds:]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
+        real_csd = np.real(csd)
+        if self.n_jobs > 1:
+            parallel, parallel_compute_t, _ = parallel_func(
+                _compute_t, self.n_jobs, verbose=False
+            )
+            T = np.array(parallel(
+                parallel_compute_t(real_csd[:, freq_i, :, :], n_seeds)
+                for freq_i in range(n_freqs)
+            ))
+        else:
+            T = np.array([
+                _compute_t(real_csd[:, freq_i, :, :], n_seeds)
+                 for freq_i in range(n_freqs)
+            ])
+        T = T.transpose(1, 0, 2, 3)
 
         # Equation 4
         D = np.matmul(T, np.matmul(csd, T))
@@ -180,6 +184,20 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         E = np.imag(D[:, :, :n_seeds, n_seeds:])
 
         return E
+
+def _compute_t(csd, n_seeds):
+    """Compute T as the real-valued cross-spectra of seeds and targets to the
+    power -0.5."""
+    T = np.zeros_like(csd)
+    for time_i in range(csd.shape[0]):
+        T[time_i, :n_seeds, :n_seeds] = spla.fractional_matrix_power(
+            csd[time_i, :n_seeds, :n_seeds], -0.5
+        ) # real(C_aa)^-1/2
+        T[time_i, n_seeds:, n_seeds:] = spla.fractional_matrix_power(
+            csd[time_i, n_seeds:, n_seeds:], -0.5
+        ) # real(C_bb)^-1/2
+    
+    return T
 
 
 class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
