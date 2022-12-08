@@ -450,28 +450,23 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         10.1103/PhysRevE.91.040101.
         """
         n_times = A.shape[0]
-        f = np.zeros((self.n_freqs, n_times)) # placeholder for GC results
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
         z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))  # points
         # on a unit circle in the complex plane, one for each frequency
-        H = self.iss_to_tf(A, C, K, z)  # spectral transfer function
-        V_sst = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
-        V = np.linalg.cholesky(V)
 
-        for freq_i in range(self.n_freqs):
-            HV = H[:, :, :, freq_i] @ V
-            S = HV @ HV.conj().transpose(0, 2, 1) # CSD of the projected state
-                # variable (Eq. 6)
-            S_tt = (S.transpose(1, 2 ,0)[np.ix_(targets, targets)]).transpose(2, 0, 1) # CSD between targets
-            HV_ts = (
-                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i] @ V_sst
-            )
-            HVH_ts = HV_ts @ HV_ts.conj().transpose(0, 2, 1)
-            f[freq_i, :] = np.real(
-                np.log(np.linalg.det(S_tt)) -
-                np.log(np.linalg.det(S_tt - HVH_ts))
-             ) # Eq. 11
+        H = self.iss_to_tf(A, C, K, z)  # spectral transfer function
+        V_22_1 = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
+        HV = H @ np.linalg.cholesky(V)
+        S = HV @ HV.conj().transpose(0, 1, 3, 2)  # Eq. 6
+        S_11 = S[np.ix_(freqs, times, targets, targets)]
+        HV_12 = H[np.ix_(freqs, times, targets, seeds)] @ V_22_1
+        HVH = HV_12 @ HV_12.conj().transpose(0, 1, 3, 2)
         
-        return f
+        return np.real(
+            np.log(np.linalg.det(S_11)) -
+            np.log(np.linalg.det(S_11 - HVH))
+        )  # Eq. 11
 
     def iss_to_tf(self, A, C, K, z):
         """Computes a transfer function (moving-average representation) for
@@ -490,11 +485,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         m = A.shape[1]
         I_n = np.eye(n)
         I_m = np.eye(m)
-        H = np.zeros((n_times, n, n, h), dtype=np.complex128)
+        H = np.zeros((h, n_times, n, n), dtype=np.complex128)
 
         for time_i in range(n_times):
             for k in range(h): # compute transfer function; Eq. 4
-                H[time_i, :, :, k] = I_n + (
+                H[k, time_i, :, :] = I_n + (
                     C[time_i]
                     @ spla.lu_solve(
                         spla.lu_factor(z[k] * I_m - A[time_i]), K[time_i]
