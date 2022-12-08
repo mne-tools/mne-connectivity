@@ -453,6 +453,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         f = np.zeros((self.n_freqs, n_times)) # placeholder for GC results
         z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))  # points
         # on a unit circle in the complex plane, one for each frequency
+        H = self.iss_to_tf(A, C, K, z)  # spectral transfer function
         V_sst = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
         V = np.linalg.cholesky(V)
 
@@ -483,18 +484,22 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
+        n_times = A.shape[0]
         h = self.n_freqs
-        n = C.shape[0]
-        m = A.shape[0]
+        n = C.shape[1]
+        m = A.shape[1]
         I_n = np.eye(n)
         I_m = np.eye(m)
-        H = np.zeros((n, n, h), dtype=np.complex128)
+        H = np.zeros((n_times, n, n, h), dtype=np.complex128)
 
-        # compute transfer function; Eq. 4
-        for k in range(h):
-            H[:, :, k] = I_n + (
-                C @ spla.lu_solve(spla.lu_factor(z[k] * I_m - A), K)
-            )
+        for time_i in range(n_times):
+            for k in range(h): # compute transfer function; Eq. 4
+                H[time_i, :, :, k] = I_n + (
+                    C[time_i]
+                    @ spla.lu_solve(
+                        spla.lu_factor(z[k] * I_m - A[time_i]), K[time_i]
+                    )
+                )
 
         return H
 
