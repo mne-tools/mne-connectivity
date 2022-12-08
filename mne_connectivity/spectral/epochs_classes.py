@@ -392,7 +392,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         k_f = np.arange(k * n)  # forward indices
         k_b = np.arange(r * n, qn)  # backward indices
 
-        # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
         A_f[:, :, k_f] = np.linalg.solve(
             cov, G_b[:, k_b, :].transpose(0, 2, 1)
         ).transpose(0, 2, 1) 
@@ -402,13 +401,22 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         ## Perform recursion
         for k in np.arange(2, q + 1):
-            # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-            var_A = G_b[:, (r - 1) * n : r * n, :] - (A_f[:, :, k_f] @ G_b[:, k_b, :])
+            var_A = (
+                G_b[:, (r - 1) * n : r * n, :] -
+                (A_f[:, :, k_f] @ G_b[:, k_b, :])
+            )
             var_B = cov - (A_b[:, :, k_b] @ G_b[:, k_b, :])
-            AA_f = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
-            var_A = G_f[:, (k - 1) * n : k * n, :] - (A_b[:, :, k_b] @ G_f[:, k_f, :])
+            AA_f = np.linalg.solve(
+                var_B, var_A.transpose(0, 2, 1)
+            ).transpose(0, 2, 1)
+            var_A = (
+                G_f[:, (k - 1) * n : k * n, :] -
+                (A_b[:, :, k_b] @ G_f[:, k_f, :])
+            )
             var_B = cov - (A_f[:, :, k_f] @ G_f[:, k_f, :])
-            AA_b = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
+            AA_b = np.linalg.solve(
+                var_B, var_A.transpose(0, 2, 1)
+            ).transpose(0, 2, 1)
 
             A_f_previous = A_f[:, :, k_f]
             A_b_previous = A_b[:, :, k_b]
@@ -440,13 +448,17 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        n_times = A_f.shape[0]
+        t = A_f.shape[0]
         m = A_f.shape[1]  # number of signals
         p = A_f.shape[2] // m  # number of autoregressive lags
 
-        I_p = np.dstack(n_times * [np.eye(m * p)]).transpose(2, 0, 1)
-        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition matrix
-        K = np.hstack((np.dstack(n_times * [np.eye(m)]).transpose(2, 0, 1), np.zeros((n_times, (m * (p - 1)), m))))  # Kalman gain matrix
+        I_p = np.dstack(t * [np.eye(m * p)]).transpose(2, 0, 1)
+        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition
+        # matrix
+        K = np.hstack((
+            np.dstack(t * [np.eye(m)]).transpose(2, 0, 1),
+            np.zeros((t, (m * (p - 1)), m))
+        ))  # Kalman gain matrix
 
         return A, K
 
@@ -457,8 +469,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        n_times = A.shape[0]
-        times = np.arange(n_times)
+        times = np.arange(A.shape[0])
         freqs = np.arange(self.n_freqs)
         z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))  # points
         # on a unit circle in the complex plane, one for each frequency
