@@ -222,7 +222,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     def compute_con(self, seeds, targets, n_epochs):
         """Computes Granger causality between sets of signals."""
         csd = self.reshape_csd()/n_epochs
-        csd = csd.transpose(2, 3, 1, 0) # signals x signals x freqs x time
 
         # GC from seeds -> targets (subtracting GC from targets -> seeds if
         # self.net == True)
@@ -235,7 +234,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         # True)
         if self.time_reversed:
             con_scores -= self.autocov_to_gc(
-                autocov.transpose(1, 0, 2, 3), seeds, targets, self.net
+                autocov.transpose(0, 1, 3, 2), seeds, targets, self.net
             )
 
         self.con_scores = con_scores
@@ -244,19 +243,18 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     def csd_to_autocov(self, csd):
         """Computes the autocovariance sequence from the cross-spectral
         density."""
-        n_times = csd.shape[3]
-        n_signals = csd.shape[0]
+        n_times = csd.shape[0]
         circular_shifted_csd = np.concatenate(
-            [np.flip(np.conj(csd[:, :, 1:, :]), axis=2),
-            csd[:, :, :-1, :]],
-            axis=2,
+            [np.flip(np.conj(csd[:, 1:, :, :]), axis=1),
+            csd[:, :-1, :, :]],
+            axis=1,
         )
         ifft_shifted_csd = self.block_ifft(
             circular_shifted_csd, (self.n_freqs - 1) * 2
         )
         lags_ifft_shifted_csd = np.reshape(
-            ifft_shifted_csd[:, :, :self.n_lags + 1, :],
-            (n_signals ** 2, self.n_lags + 1, n_times),
+            ifft_shifted_csd[:, :self.n_lags + 1, :, :],
+            (n_times, self.n_lags + 1, self.n_signals ** 2),
             order="F"
         )
 
@@ -264,17 +262,17 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         signs[1::2] = [x * -1 for x in signs[1::2]]
         sign_matrix = np.repeat(
             np.tile(
-                np.asarray(signs), (n_signals ** 2, 1)
-            )[:, :, np.newaxis],
+                np.asarray(signs), (self.n_signals ** 2, 1)
+            )[np.newaxis, :, :],
             n_times,
-            axis=2
-        )
+            axis=0
+        ).transpose(0, 2, 1)
 
         return (
             np.real(
                 np.reshape(
                     sign_matrix * lags_ifft_shifted_csd,
-                    (n_signals, n_signals, self.n_lags + 1, n_times),
+                    (n_times, self.n_lags + 1, self.n_signals, self.n_signals),
                     order="F"
                 )
             )
@@ -285,7 +283,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         involving an n-point inverse Fourier transform."""
         csd_3d = np.reshape(
             csd,
-            (csd.shape[0] * csd.shape[1], csd.shape[2], csd.shape[3]),
+            (csd.shape[0], csd.shape[1], csd.shape[2] * csd.shape[3]),
             order="F"
         )
         csd_ifft = np.fft.ifft(csd_3d, n=n_points, axis=1)
@@ -295,22 +293,26 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     def autocov_to_gc(self, autocov, seeds, targets, net):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
-        n_lags = autocov.shape[2]
-        n_times = autocov.shape[3]
+        n_times = autocov.shape[0]
+        lags = np.arange(autocov.shape[1])
+        times = np.arange(n_times)
         con_scores = np.zeros((len(seeds), self.n_freqs, n_times))
+
         con_i = 0
         for con_seeds, con_targets in zip(seeds, targets):
             all_idcs = [*con_seeds, *con_targets]
-            con_autocov = autocov[np.ix_(all_idcs, all_idcs, np.arange(n_lags), np.arange(n_times))]
+            con_autocov = autocov[np.ix_(times, lags, all_idcs, all_idcs)]
             new_seeds = np.arange(len(con_seeds))
             new_targets = np.arange(len(con_targets))+len(con_seeds)
+
             A_f, V = self.autocov_to_full_var(con_autocov)
             A_f_3d = np.reshape(
                 A_f,
-                (n_times, A_f.shape[1], A_f.shape[1] * A_f.shape[3]),
+                (n_times, self.n_signals, self.n_signals * self.n_lags),
                 order="F"
             )
             A, K = self.full_var_to_iss(A_f_3d)
+
             con_scores[con_i] = self.iss_to_usgc(
                 A=A,
                 C=A_f_3d,
@@ -319,6 +321,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 seeds=new_seeds,
                 targets=new_targets,
             ) # GC from seeds -> targets
+
             if net:
                 con_scores[con_i] -= self.iss_to_usgc(
                     A=A,
@@ -328,6 +331,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                     seeds=new_targets,
                     targets=new_seeds,
                 ) # GC from targets -> seeds
+
             con_i += 1
         
         return con_scores
@@ -366,18 +370,22 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Whittle P., 1963. Biometrika, DOI: 10.1093/biomet/50.1-2.129.
         """
         ### Initialise recursion
-        n = G.shape[0]  # number of signals
-        q = G.shape[2] - 1  # number of lags
-        n_times = G.shape[3] 
+        n = G.shape[2]  # number of signals
+        q = G.shape[1] - 1  # number of lags
+        t = G.shape[0]  # number of times
         qn = n * q
 
-        cov = G[:, :, 0]  # covariance
-        G_f = np.reshape(G[:, :, 1:, :].transpose(3, 0, 1, 2), (n_times, n, qn), order="F").conj().transpose(0, 2, 1)  # forward autocovariance sequence
+        cov = G[:, 0, :, :]  # covariance
+        G_f = np.reshape(
+            G[:, 1:, :, :].transpose(0, 3, 1, 2), (t, qn, n), order="F"
+        )  # forward autocovariance sequence
         G_b = np.reshape(
-            np.flip(G[:, :, 1:, :], 2).transpose(3, 0, 2, 1), (n_times, qn, n), order="F")  # backward autocovariance sequence
+            np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn),
+            order="F"
+        ).transpose(0, 2, 1)  # backward autocovariance sequence
             
-        A_f = np.zeros((n_times, n, qn))  # forward coefficients
-        A_b = np.zeros((n_times, n, qn))  # backward coefficients
+        A_f = np.zeros((t, n, qn))  # forward coefficients
+        A_b = np.zeros((t, n, qn))  # backward coefficients
 
         k = 1  # model order
         r = q - k
@@ -386,21 +394,21 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
         A_f[:, :, k_f] = np.linalg.solve(
-            cov.conj().transpose(2, 1, 0), G_b[:, k_b, :].transpose(0, 2, 1)
+            cov, G_b[:, k_b, :].transpose(0, 2, 1)
         ).transpose(0, 2, 1) 
         A_b[:, :, k_b] = np.linalg.solve(
-            cov.conj().transpose(2, 1, 0), G_f[:, k_f, :].transpose(0, 2, 1)
+            cov, G_f[:, k_f, :].transpose(0, 2, 1)
         ).transpose(0, 2, 1)
 
         ## Perform recursion
         for k in np.arange(2, q + 1):
             # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
             var_A = G_b[:, (r - 1) * n : r * n, :] - (A_f[:, :, k_f] @ G_b[:, k_b, :])
-            var_B = cov.transpose(2, 0, 1) - (A_b[:, :, k_b] @ G_b[:, k_b, :])
-            AA_f = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).conj().transpose(0, 2, 1)
+            var_B = cov - (A_b[:, :, k_b] @ G_b[:, k_b, :])
+            AA_f = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
             var_A = G_f[:, (k - 1) * n : k * n, :] - (A_b[:, :, k_b] @ G_f[:, k_f, :])
-            var_B = cov.transpose(2, 0, 1) - (A_f[:, :, k_f] @ G_f[:, k_f, :])
-            AA_b = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).transpose(0, 2, 1)
+            var_B = cov - (A_f[:, :, k_f] @ G_f[:, k_f, :])
+            AA_b = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
 
             A_f_previous = A_f[:, :, k_f]
             A_b_previous = A_b[:, :, k_b]
@@ -416,8 +424,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 (AA_b, A_b_previous - (AA_b @ A_f_previous))
             )
 
-        V = cov.transpose(2, 0, 1) - (A_f @ G_f)
-        A_f = np.reshape(A_f, (n_times, n, n, q), order="F")
+        V = cov - (A_f @ G_f)
+        A_f = np.reshape(A_f, (t, n, n, q), order="F")
 
         return A_f, V
 
@@ -509,13 +517,14 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
+        times = np.arange(V.shape[0])
         W = np.linalg.solve(
-            np.linalg.cholesky((V.transpose(1, 2, 0)[np.ix_(targets, targets)]).transpose(2, 0, 1)),
-            (V.transpose(1, 2, 0)[np.ix_(targets, seeds)]).transpose(2, 0, 1),
+            np.linalg.cholesky(V[np.ix_(times, targets, targets)]),
+            V[np.ix_(times, targets, seeds)],
         )
         W = W.transpose(0, 2, 1) @ W
 
-        return (V.transpose(1, 2, 0)[np.ix_(seeds, seeds)]).transpose(2, 0, 1) - W
+        return V[np.ix_(times, seeds, seeds)] - W
 
 
 class _CohEst(_CohEstBase):
