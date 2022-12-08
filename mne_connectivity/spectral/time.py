@@ -511,6 +511,7 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
 
 def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
                   faverage, weights):
+    """Compute spectral connectivity metrics between two signals."""
     w_x, w_y = w[x], w[y]
     if weights is not None:
         s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
