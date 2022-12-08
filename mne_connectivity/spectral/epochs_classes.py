@@ -285,16 +285,16 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             con_autocov = autocov[np.ix_(all_idcs, all_idcs, np.arange(n_lags), np.arange(n_times))]
             new_seeds = np.arange(len(con_seeds))
             new_targets = np.arange(len(con_targets))+len(con_seeds)
-            AF, V = self.autocov_to_full_var(con_autocov)
-            AF_3d = np.reshape(
-                AF,
-                (n_times, AF.shape[1], AF.shape[1] * AF.shape[3]),
+            A_f, V = self.autocov_to_full_var(con_autocov)
+            A_f_3d = np.reshape(
+                A_f,
+                (n_times, A_f.shape[1], A_f.shape[1] * A_f.shape[3]),
                 order="F"
             )
-            A, K = self.full_var_to_iss(AF_3d)
+            A, K = self.full_var_to_iss(A_f_3d)
             con_scores[con_i] = self.iss_to_usgc(
                 A=A,
-                C=AF_3d,
+                C=A_f_3d,
                 K=K,
                 V=V,
                 seeds=new_seeds,
@@ -303,7 +303,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             if net:
                 con_scores[con_i] -= self.iss_to_usgc(
                     A=A,
-                    C=AF_3d,
+                    C=A_f_3d,
                     K=K,
                     V=V,
                     seeds=new_targets,
@@ -319,9 +319,9 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         Ref.: Whittle P., 1963. Biometrika, DOI: 10.1093/biomet/50.1-2.129.
         """
-        AF, V = self.whittle_lwr_recursion(autocov)
+        A_f, V = self.whittle_lwr_recursion(autocov)
 
-        if not np.isfinite(AF).all():
+        if not np.isfinite(A_f).all():
             raise ValueError(
                 "Some or all VAR model coefficients are infinite or NaNs. "
                 "Please check the data you are computing Granger causality on."
@@ -336,7 +336,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
                 "that is full rank."
             ) from np_error
 
-        return AF, V
+        return A_f, V
 
     def whittle_lwr_recursion(self, G):
         """Calculates regression coefficients and the residuals' covariance
@@ -352,58 +352,58 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         n_times = G.shape[3] 
         qn = n * q
 
-        G0 = G[:, :, 0]  # covariance
-        GF = np.reshape(G[:, :, 1:, :].transpose(3, 0, 1, 2), (n_times, n, qn), order="F").conj().transpose(0, 2, 1)  # forward
-        GB = np.reshape(
-            np.flip(G[:, :, 1:, :], 2).transpose((3, 0, 2, 1)), (n_times, qn, n), order="F")  # backward autocovariance sequence
+        cov = G[:, :, 0]  # covariance
+        G_f = np.reshape(G[:, :, 1:, :].transpose(3, 0, 1, 2), (n_times, n, qn), order="F").conj().transpose(0, 2, 1)  # forward autocovariance sequence
+        G_b = np.reshape(
+            np.flip(G[:, :, 1:, :], 2).transpose(3, 0, 2, 1), (n_times, qn, n), order="F")  # backward autocovariance sequence
             
-        AF = np.zeros((n_times, n, qn))  # forward coefficients
-        AB = np.zeros((n_times, n, qn))  # backward coefficients
+        A_f = np.zeros((n_times, n, qn))  # forward coefficients
+        A_b = np.zeros((n_times, n, qn))  # backward coefficients
 
         k = 1  # model order
         r = q - k
-        kf = np.arange(k * n)  # forward indices
-        kb = np.arange(r * n, qn)  # backward indices
+        k_f = np.arange(k * n)  # forward indices
+        k_b = np.arange(r * n, qn)  # backward indices
 
         # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-        AF[:, :, kf] = np.linalg.solve(
-            G0.conj().transpose(2, 1, 0), GB[:, kb, :].transpose(0, 2, 1)
+        A_f[:, :, k_f] = np.linalg.solve(
+            cov.conj().transpose(2, 1, 0), G_b[:, k_b, :].transpose(0, 2, 1)
         ).transpose(0, 2, 1) 
-        AB[:, :, kb] = np.linalg.solve(
-            G0.conj().transpose(2, 1, 0), GF[:, kf, :].transpose(0, 2, 1)
+        A_b[:, :, k_b] = np.linalg.solve(
+            cov.conj().transpose(2, 1, 0), G_f[:, k_f, :].transpose(0, 2, 1)
         ).transpose(0, 2, 1)
 
         ## Perform recursion
         for k in np.arange(2, q + 1):
             # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-            var_A = GB[:, (r - 1) * n : r * n, :] - (AF[:, :, kf] @ GB[:, kb, :])
-            var_B = G0.transpose(2, 0, 1) - (AB[:, :, kb] @ GB[:, kb, :])
-            AAF = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).conj().transpose(0, 2, 1)
-            var_A = GF[:, (k - 1) * n : k * n, :] - (AB[:, :, kb] @ GF[:, kf, :])
-            var_B = G0.transpose(2, 0, 1) - (AF[:, :, kf] @ GF[:, kf, :])
-            AAB = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).transpose(0, 2, 1)
+            var_A = G_b[:, (r - 1) * n : r * n, :] - (A_f[:, :, k_f] @ G_b[:, k_b, :])
+            var_B = cov.transpose(2, 0, 1) - (A_b[:, :, k_b] @ G_b[:, k_b, :])
+            AA_f = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).conj().transpose(0, 2, 1)
+            var_A = G_f[:, (k - 1) * n : k * n, :] - (A_b[:, :, k_b] @ G_f[:, k_f, :])
+            var_B = cov.transpose(2, 0, 1) - (A_f[:, :, k_f] @ G_f[:, k_f, :])
+            AA_b = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).transpose(0, 2, 1)
 
-            AF_previous = AF[:, :, kf]
-            AB_previous = AB[:, :, kb]
+            A_f_previous = A_f[:, :, k_f]
+            A_b_previous = A_b[:, :, k_b]
 
             r = q - k
-            kf = np.arange(k * n)
-            kb = np.arange(r * n, qn)
+            k_f = np.arange(k * n)
+            k_b = np.arange(r * n, qn)
 
-            AF[:, :, kf] = np.dstack(
-                (AF_previous - (AAF @ AB_previous), AAF)
+            A_f[:, :, k_f] = np.dstack(
+                (A_f_previous - (AA_f @ A_b_previous), AA_f)
             )
-            AB[:, :, kb] = np.dstack(
-                (AAB, AB_previous - (AAB @ AF_previous))
+            A_b[:, :, k_b] = np.dstack(
+                (AA_b, A_b_previous - (AA_b @ A_f_previous))
             )
 
-        V = G0.transpose(2, 0, 1) - (AF @ GF)
-        AF = np.reshape(AF, (n_times, n, n, q), order="F")
+        V = cov.transpose(2, 0, 1) - (A_f @ G_f)
+        A_f = np.reshape(A_f, (n_times, n, n, q), order="F")
 
-        return AF, V
+        return A_f, V
 
 
-    def full_var_to_iss(self, AF):
+    def full_var_to_iss(self, A_f):
         """Computes innovations-form parameters for a state-space model from a
         full vector autoregressive (VAR) model using Aoki's method.
 
@@ -413,15 +413,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        n_times = AF.shape[0]
-        m = AF.shape[1]  # number of signals
-        p = AF.shape[2] // m  # number of autoregressive lags
+        n_times = A_f.shape[0]
+        m = A_f.shape[1]  # number of signals
+        p = A_f.shape[2] // m  # number of autoregressive lags
 
-        Ip = np.dstack(n_times * [np.eye(m * p)]).transpose(2, 0, 1)
-        # state transition matrix
-        A = np.hstack((AF, Ip[:, : (m * p - m), :]))
-        # Kalman gain matrix
-        K = np.hstack((np.dstack(n_times * [np.eye(m)]).transpose(2, 0, 1), np.zeros((n_times, (m * (p - 1)), m))))
+        I_p = np.dstack(n_times * [np.eye(m * p)]).transpose(2, 0, 1)
+        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition matrix
+        K = np.hstack((np.dstack(n_times * [np.eye(m)]).transpose(2, 0, 1), np.zeros((n_times, (m * (p - 1)), m))))  # Kalman gain matrix
 
         return A, K
 
@@ -433,29 +431,29 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         10.1103/PhysRevE.91.040101.
         """
         n_times = A.shape[0]
-        f = np.zeros((n_times, self.n_freqs)) # placeholder for GC results
+        f = np.zeros((self.n_freqs, n_times)) # placeholder for GC results
         z = np.vstack(
             n_times * [np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))]
         ) # points on a unit circle in the complex plane, one for each frequency
         H = np.array([self.iss_to_tf(A[time_i], C[time_i], K[time_i], z[time_i]) for time_i in range(n_times)], dtype=np.complex128) # spectral transfer function
-        V_sqrt = np.linalg.cholesky(V)
-        PV_sqrt = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
+        V_sst = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
+        V = np.linalg.cholesky(V)
 
         for freq_i in range(self.n_freqs):
-            HV = H[:, :, :, freq_i] @ V_sqrt
+            HV = H[:, :, :, freq_i] @ V
             S = HV @ HV.conj().transpose(0, 2, 1) # CSD of the projected state
                 # variable (Eq. 6)
             S_tt = (S.transpose(1, 2 ,0)[np.ix_(targets, targets)]).transpose(2, 0, 1) # CSD between targets
             HV_ts = (
-                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i] @ PV_sqrt
+                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i] @ V_sst
             )
             HVH_ts = HV_ts @ HV_ts.conj().transpose(0, 2, 1)
-            f[:, freq_i] = np.real(
+            f[freq_i, :] = np.real(
                 np.log(np.linalg.det(S_tt)) -
                 np.log(np.linalg.det(S_tt - HVH_ts))
              ) # Eq. 11
         
-        return f.T
+        return f
 
     def iss_to_tf(self, A, C, K, z):
         """Computes a transfer function (moving-average representation) for
