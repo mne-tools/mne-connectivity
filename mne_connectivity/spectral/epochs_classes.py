@@ -57,7 +57,7 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
 class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     """Base class for methods that estimate connectivity as mean epoch-wise."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
@@ -203,9 +203,9 @@ def _compute_t(csd, n_seeds):
 class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     """Base Estimator for Granger causality multivariate methods."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs):
         super(_MultivarGCEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times
+            n_signals, n_cons, n_freqs, n_times, n_jobs
         )
 
         if n_lags:
