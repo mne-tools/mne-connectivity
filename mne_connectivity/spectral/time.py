@@ -504,14 +504,14 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
         _pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
 
     return parallel(
-        my_pairwise_con(w[s], w[t], s, t, psd, method, kernel,
+        my_pairwise_con(w, psd, s, t, method, kernel,
                         foi_idx, faverage, weights)
         for s, t in zip(source_idx, target_idx))
 
 
-def _pairwise_con(w_x, w_y, x, y, psd, method, kernel, foi_idx,
-                 faverage, weights):
-    # csd
+def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
+                  faverage, weights):
+    w_x, w_y = w[x], w[y]
     if weights is not None:
         s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
         s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
