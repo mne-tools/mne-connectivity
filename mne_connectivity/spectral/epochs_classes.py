@@ -143,10 +143,10 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             U_bar_bb = np.broadcast_to(np.identity(n_targets), (n_times, self.n_freqs)+(n_targets, n_targets))
 
         # Eq. 33
-        C_bar_aa = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
-        C_bar_ab = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
-        C_bar_bb = np.matmul(U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
-        C_bar_ba = np.matmul(U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_ba, U_bar_aa))
+        C_bar_aa = U_bar_aa.transpose(0, 1, 3, 2) @ (C_aa @ U_bar_aa)
+        C_bar_ab = U_bar_aa.transpose(0, 1, 3, 2) @ (C_ab @ U_bar_bb)
+        C_bar_bb = U_bar_bb.transpose(0, 1, 3, 2) @ (C_bb @ U_bar_bb)
+        C_bar_ba = U_bar_bb.transpose(0, 1, 3, 2) @ (C_ba @ U_bar_aa)
         C_bar = np.append(
             np.append(C_bar_aa, C_bar_ab, axis=3), np.append(C_bar_ba, C_bar_bb, axis=3), axis=2
         )
@@ -173,7 +173,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
 
         # Equation 4
-        D = np.matmul(T, np.matmul(csd, T))
+        D = T @ (csd @ T)
 
         # E as the imaginary part of D between seeds and targets
         E = np.imag(D[:, :, :n_seeds, n_seeds:])
@@ -376,11 +376,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         ## Perform recursion
         for k in np.arange(2, q + 1):
             # equivalent to A/B or linsolve(B',A',opts.TRANSA=true)' in MATLAB
-            var_A = GB[:, (r - 1) * n : r * n, :] - np.matmul(AF[:, :, kf], GB[:, kb, :])
-            var_B = G0.transpose(2, 0, 1) - np.matmul(AB[:, :, kb], GB[:, kb, :])
+            var_A = GB[:, (r - 1) * n : r * n, :] - (AF[:, :, kf] @ GB[:, kb, :])
+            var_B = G0.transpose(2, 0, 1) - (AB[:, :, kb] @ GB[:, kb, :])
             AAF = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).conj().transpose(0, 2, 1)
-            var_A = GF[:, (k - 1) * n : k * n, :] - np.matmul(AB[:, :, kb], GF[:, kf, :])
-            var_B = G0.transpose(2, 0, 1) - np.matmul(AF[:, :, kf], GF[:, kf, :])
+            var_A = GF[:, (k - 1) * n : k * n, :] - (AB[:, :, kb] @ GF[:, kf, :])
+            var_B = G0.transpose(2, 0, 1) - (AF[:, :, kf] @ GF[:, kf, :])
             AAB = np.linalg.solve(var_B, var_A.conj().transpose(0, 2, 1)).transpose(0, 2, 1)
 
             AF_previous = AF[:, :, kf]
@@ -391,13 +391,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             kb = np.arange(r * n, qn)
 
             AF[:, :, kf] = np.dstack(
-                (AF_previous - np.matmul(AAF, AB_previous), AAF)
+                (AF_previous - (AAF @ AB_previous), AAF)
             )
             AB[:, :, kb] = np.dstack(
-                (AAB, AB_previous - np.matmul(AAB, AF_previous))
+                (AAB, AB_previous - (AAB @ AF_previous))
             )
 
-        V = G0.transpose(2, 0, 1) - np.matmul(AF, GF)
+        V = G0.transpose(2, 0, 1) - (AF @ GF)
         AF = np.reshape(AF, (n_times, n, n, q), order="F")
 
         return AF, V
@@ -442,14 +442,14 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         PV_sqrt = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
 
         for freq_i in range(self.n_freqs):
-            HV = np.matmul(H[:, :, :, freq_i], V_sqrt)
-            S = np.matmul(HV, HV.conj().transpose(0, 2, 1)) # CSD of the projected state
+            HV = H[:, :, :, freq_i] @ V_sqrt
+            S = HV @ HV.conj().transpose(0, 2, 1) # CSD of the projected state
                 # variable (Eq. 6)
             S_tt = (S.transpose(1, 2 ,0)[np.ix_(targets, targets)]).transpose(2, 0, 1) # CSD between targets
-            HV_ts = np.matmul(
-                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i], PV_sqrt
+            HV_ts = (
+                (H.transpose(1, 2, 3, 0)[np.ix_(targets, seeds)]).transpose(3, 0, 1, 2)[:, :, :, freq_i] @ PV_sqrt
             )
-            HVH_ts = np.matmul(HV_ts, HV_ts.conj().transpose(0, 2, 1))
+            HVH_ts = HV_ts @ HV_ts.conj().transpose(0, 2, 1)
             f[:, freq_i] = np.real(
                 np.log(np.linalg.det(S_tt)) -
                 np.log(np.linalg.det(S_tt - HVH_ts))
@@ -477,8 +477,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         # compute transfer function; Eq. 4
         for k in range(h):
-            H[:, :, k] = I_n + np.matmul(
-                C, spla.lu_solve(spla.lu_factor(z[k] * I_m - A), K)
+            H[:, :, k] = I_n + (
+                C @ spla.lu_solve(spla.lu_factor(z[k] * I_m - A), K)
             )
 
         return H
@@ -498,7 +498,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             np.linalg.cholesky((V.transpose(1, 2, 0)[np.ix_(targets, targets)]).transpose(2, 0, 1)),
             (V.transpose(1, 2, 0)[np.ix_(targets, seeds)]).transpose(2, 0, 1),
         )
-        W = np.matmul(W.transpose(0, 2, 1), W)
+        W = W.transpose(0, 2, 1) @ W
 
         return (V.transpose(1, 2, 0)[np.ix_(seeds, seeds)]).transpose(2, 0, 1) - W
 
@@ -576,7 +576,7 @@ class _MIMEst(_MultivarCohEstBase):
             E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
 
             # Equation 14
-            self.con_scores[node_i, :, :] = np.matmul(E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).transpose(1, 0)
+            self.con_scores[node_i, :, :] = (E @ E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).transpose(1, 0)
             node_i += 1
         self.reshape_con_scores()
 
@@ -611,8 +611,8 @@ class _MICEst(_MultivarCohEstBase):
             E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
 
             # Weights for signals in the groups
-            w_a, V_a = np.linalg.eigh(np.matmul(E, E.transpose(0, 1, 3, 2)))
-            w_b, V_b = np.linalg.eigh(np.matmul(E.transpose(0, 1, 3, 2), E))
+            w_a, V_a = np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))
+            w_b, V_b = np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)
             alpha = V_a[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_a.argmax(axis=2)]
             beta = V_b[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_b.argmax(axis=2)]
 
@@ -620,7 +620,7 @@ class _MICEst(_MultivarCohEstBase):
             self.con_scores[node_i, :, :] = (np.einsum(
                 "ijk,ijk->ij",
                 alpha,
-                np.matmul(E, np.expand_dims(beta, 3))[:, :, :, 0]) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
+                (E @ np.expand_dims(beta, 3))[:, :, :, 0]) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
             ).transpose(1, 0)
             node_i += 1
         self.reshape_con_scores()
