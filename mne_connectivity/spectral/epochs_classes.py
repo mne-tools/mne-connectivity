@@ -432,10 +432,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """
         n_times = A.shape[0]
         f = np.zeros((self.n_freqs, n_times)) # placeholder for GC results
-        z = np.vstack(
-            n_times * [np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))]
-        ) # points on a unit circle in the complex plane, one for each frequency
-        H = np.array([self.iss_to_tf(A[time_i], C[time_i], K[time_i], z[time_i]) for time_i in range(n_times)], dtype=np.complex128) # spectral transfer function
+        z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))  # points
+        # on a unit circle in the complex plane, one for each frequency
         V_sst = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
         V = np.linalg.cholesky(V)
 
