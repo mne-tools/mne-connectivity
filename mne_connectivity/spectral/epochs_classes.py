@@ -203,7 +203,7 @@ def _compute_t(csd, n_seeds):
 class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     """Base Estimator for Granger causality multivariate methods."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
         super(_MultivarGCEstBase, self).__init__(
             n_signals, n_cons, n_freqs, n_times, n_jobs
         )
