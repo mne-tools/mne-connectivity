@@ -186,7 +186,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         return E
 
 def _compute_t(csd, n_seeds):
-    """Compute T as the real-valued cross-spectra of seeds and targets to the
+    """Compute T for a single frequency as the real-valued cross-spectra of
     seeds and targets to the power -0.5."""
     T = np.zeros_like(csd)
     for time_i in range(csd.shape[0]):
