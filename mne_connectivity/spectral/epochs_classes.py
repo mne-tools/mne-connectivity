@@ -498,13 +498,13 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        n_times = A.shape[0]
+        t = A.shape[0]
         h = self.n_freqs
         n = C.shape[1]
         m = A.shape[1]
         I_n = np.eye(n)
         I_m = np.eye(m)
-        H = np.zeros((h, n_times, n, n), dtype=np.complex128)
+        H = np.zeros((h, t, n, n), dtype=np.complex128)
 
         for time_i in range(n_times):
             for k in range(h): # compute transfer function; Eq. 4
