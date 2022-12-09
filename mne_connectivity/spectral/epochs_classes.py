@@ -187,7 +187,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 
 def _compute_t(csd, n_seeds):
     """Compute T as the real-valued cross-spectra of seeds and targets to the
-    power -0.5."""
+    seeds and targets to the power -0.5."""
     T = np.zeros_like(csd)
     for time_i in range(csd.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = spla.fractional_matrix_power(
