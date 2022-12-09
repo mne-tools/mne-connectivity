@@ -506,14 +506,18 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         I_m = np.eye(m)
         H = np.zeros((h, t, n, n), dtype=np.complex128)
 
-        for time_i in range(n_times):
-            for k in range(h): # compute transfer function; Eq. 4
-                H[k, time_i, :, :] = I_n + (
-                    C[time_i]
-                    @ spla.lu_solve(
-                        spla.lu_factor(z[k] * I_m - A[time_i]), K[time_i]
-                    )
-                )
+        if self.n_jobs > 1:
+            parallel, parallel_compute_H, _ = parallel_func(
+                _compute_H, self.n_jobs, verbose=False
+            )
+            H = np.array(parallel(
+                parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in range(h)
+            ), dtype=np.complex128)
+        else:
+            H = np.array(
+                [_compute_H(A, C, K, z[k], I_n, I_m) for k in range(h)],
+                dtype=np.complex128
+            )
 
         return H
 
@@ -536,6 +540,23 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         W = W.transpose(0, 2, 1) @ W
 
         return V[np.ix_(times, seeds, seeds)] - W
+
+def _compute_H(A, C, K, z_k, I_n, I_m):
+    """Compute the spectral transfer function H for innovations-form state-space
+    model parameters according to Eq. 4 of the reference.
+    
+    Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+    10.1103/PhysRevE.91.040101.
+    """
+    t = A.shape[0]
+    n = C.shape[1]
+    H = np.zeros((t, n, n), dtype=np.complex128)
+    for time_i in range(A.shape[0]):
+        H[time_i] = I_n + (C[time_i] @ spla.lu_solve(
+                spla.lu_factor(z_k * I_m - A[time_i]), K[time_i]
+        ))
+    
+    return H
 
 
 class _CohEst(_CohEstBase):
