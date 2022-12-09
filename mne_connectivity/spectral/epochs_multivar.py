@@ -535,11 +535,12 @@ def _compute_csd(
                 if "n_lags" in list(inspect.signature(mtype).parameters):
                     con_methods.append(
                         mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
-                              gc_n_lags)
+                              gc_n_lags, n_jobs)
                     )
                 else:
                     con_methods.append(
-                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum)
+                        mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
+                        n_jobs)
                     )
 
             metrics_str = ', '.join([meth.name for meth in con_methods])
@@ -567,14 +568,14 @@ def _compute_csd(
         if n_jobs == 1:
             # no parallel processing
             for this_epoch in epoch_block:
-                logger.info('    computing connectivity for epoch %d'
+                logger.info('    computing cross-spectral density for epoch %d'
                             % (epoch_idx + 1))
                 # con methods and psd are updated inplace
                 _epoch_spectral_connectivity(data=this_epoch, **call_params)
                 epoch_idx += 1
         else:
             # process epochs in parallel
-            logger.info('    computing connectivity for epochs %d..%d'
+            logger.info('    computing cross-spectral density for epochs %d..%d'
                         % (epoch_idx + 1, epoch_idx + len(epoch_block)))
 
             out = parallel(my_epoch_spectral_connectivity(

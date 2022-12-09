@@ -7,6 +7,7 @@
 
 import numpy as np
 from scipy import linalg as spla
+from mne.parallel import parallel_func
 
 
 ########################################################################
@@ -56,11 +57,12 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
 class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     """Base class for methods that estimate connectivity as mean epoch-wise."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
+        self.n_jobs = n_jobs
 
         if n_times == 0:
             self.csd_shape = (n_signals**2, n_freqs)
@@ -158,19 +160,22 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         derived from the original cross-spectra "csd" between the seed and target
         signals."""
         # Equation 3
-        n_times = csd.shape[0]
         n_freqs = csd.shape[1]
-        T = np.zeros(csd.shape)
-        # No clear way to do this without list comprehension (function only accepts square matrices)
-        # Could be a good place for parallelisation
-        # real(C_aa)^-1/2
-        T[:, :, :n_seeds, :n_seeds] = np.array([[spla.fractional_matrix_power(
-            np.real(csd[time_i, freq_i, :n_seeds, :n_seeds]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
-        # real(C_bb)^-1/2
-        T[:, :, n_seeds:, n_seeds:] = np.array([[spla.fractional_matrix_power(
-            np.real(csd[time_i, freq_i, n_seeds:, n_seeds:]), -0.5
-        ) for freq_i in range(n_freqs)] for time_i in range(n_times)])
+        real_csd = np.real(csd)
+        if self.n_jobs > 1:
+            parallel, parallel_compute_t, _ = parallel_func(
+                _compute_t, self.n_jobs, verbose=False
+            )
+            T = np.array(parallel(
+                parallel_compute_t(real_csd[:, freq_i, :, :], n_seeds)
+                for freq_i in range(n_freqs)
+            ))
+        else:
+            T = np.array([
+                _compute_t(real_csd[:, freq_i, :, :], n_seeds)
+                 for freq_i in range(n_freqs)
+            ])
+        T = T.transpose(1, 0, 2, 3)
 
         # Equation 4
         D = T @ (csd @ T)
@@ -180,13 +185,27 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 
         return E
 
+def _compute_t(csd, n_seeds):
+    """Compute T for a single frequency as the real-valued cross-spectra of
+    seeds and targets to the power -0.5."""
+    T = np.zeros_like(csd)
+    for time_i in range(csd.shape[0]):
+        T[time_i, :n_seeds, :n_seeds] = spla.fractional_matrix_power(
+            csd[time_i, :n_seeds, :n_seeds], -0.5
+        ) # real(C_aa)^-1/2
+        T[time_i, n_seeds:, n_seeds:] = spla.fractional_matrix_power(
+            csd[time_i, n_seeds:, n_seeds:], -0.5
+        ) # real(C_bb)^-1/2
+    
+    return T
+
 
 class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     """Base Estimator for Granger causality multivariate methods."""
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags):
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
         super(_MultivarGCEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times
+            n_signals, n_cons, n_freqs, n_times, n_jobs
         )
 
         if n_lags:
@@ -479,22 +498,26 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        n_times = A.shape[0]
+        t = A.shape[0]
         h = self.n_freqs
         n = C.shape[1]
         m = A.shape[1]
         I_n = np.eye(n)
         I_m = np.eye(m)
-        H = np.zeros((h, n_times, n, n), dtype=np.complex128)
+        H = np.zeros((h, t, n, n), dtype=np.complex128)
 
-        for time_i in range(n_times):
-            for k in range(h): # compute transfer function; Eq. 4
-                H[k, time_i, :, :] = I_n + (
-                    C[time_i]
-                    @ spla.lu_solve(
-                        spla.lu_factor(z[k] * I_m - A[time_i]), K[time_i]
-                    )
-                )
+        if self.n_jobs > 1:
+            parallel, parallel_compute_H, _ = parallel_func(
+                _compute_H, self.n_jobs, verbose=False
+            )
+            H = np.array(parallel(
+                parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in range(h)
+            ), dtype=np.complex128)
+        else:
+            H = np.array(
+                [_compute_H(A, C, K, z[k], I_n, I_m) for k in range(h)],
+                dtype=np.complex128
+            )
 
         return H
 
@@ -517,6 +540,23 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         W = W.transpose(0, 2, 1) @ W
 
         return V[np.ix_(times, seeds, seeds)] - W
+
+def _compute_H(A, C, K, z_k, I_n, I_m):
+    """Compute the spectral transfer function H for innovations-form state-space
+    model parameters according to Eq. 4 of the reference.
+    
+    Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+    10.1103/PhysRevE.91.040101.
+    """
+    t = A.shape[0]
+    n = C.shape[1]
+    H = np.zeros((t, n, n), dtype=np.complex128)
+    for time_i in range(A.shape[0]):
+        H[time_i] = I_n + (C[time_i] @ spla.lu_solve(
+                spla.lu_factor(z_k * I_m - A[time_i]), K[time_i]
+        ))
+    
+    return H
 
 
 class _CohEst(_CohEstBase):
