@@ -660,29 +660,30 @@ def _store_connectivity(
     # create a list of connectivity containers
     conn_list = []
     for _con, _method in zip(con, method):
-        kwargs = dict(data=_con,
-                      names=names,
-                      freqs=freqs,
-                      method=_method,
-                      n_nodes=n_nodes,
-                      spec_method=mode,
-                      indices=indices,
-                      n_epochs_used=n_epochs,
-                      freqs_used=freqs_used,
-                      times_used=times,
-                      n_tapers=n_tapers,
-                      metadata=metadata,
-                      events=events,
-                      event_id=event_id
-                      )
+        kwargs = dict(
+            data=_con,
+            names=names,
+            freqs=freqs,
+            method=_method,
+            n_nodes=n_nodes,
+            spec_method=mode,
+            indices=indices,
+            n_epochs_used=n_epochs,
+            freqs_used=freqs_used,
+            times_used=times,
+            n_tapers=n_tapers,
+            metadata=metadata,
+            events=events,
+            event_id=event_id
+        )
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
-            klass = SpectralConnectivity
+            conn_class = SpectralConnectivity
         else:
             assert mode == 'cwt_morlet'
-            klass = SpectroTemporalConnectivity
+            conn_class = SpectroTemporalConnectivity
             kwargs.update(times=times)
-        conn_list.append(klass(**kwargs))
+        conn_list.append(conn_class(**kwargs))
 
     logger.info('[Connectivity computation done]')
 
