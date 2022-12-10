@@ -1038,6 +1038,95 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
             n_nodes=n_nodes, method=method, spec_method=spec_method,
             **kwargs)
 
+class MultivariateConnectivity(BaseConnectivity):
+    """"""
+
+    def __init__(self, topographies, indices, data):
+        if topographies is not None:
+            self._check_data_consistency(topographies, indices, data)
+        self.attrs['topographies'] = topographies
+
+    def _check_topographies_consistency(
+        self, topographies, data, indices
+    ):
+        """Perform topographies input checks."""
+        if not isinstance(topographies, np.ndarray):
+            raise TypeError(
+                'Topographies must be passed in as a numpy array.'
+            )
+
+        for topographies_group in topographies:
+            for conn_data in topographies_group:
+                if conn_data.ndim not in [2, 3]:
+                    raise RuntimeError(
+                        'Topographies should have either 3 or 4 dimensions '
+                        '(connections, channels, frequencies, [timepoints]). '
+                        f'Your topographies have {conn_data.ndim + 1} '
+                        'dimensions.'
+                    )
+        
+        if len(topographies[0]) != len(topographies[1]):
+            raise ValueError(
+                'If topographies are passed in then they must be the same '
+                f'length. They are right now {len(topographies[0])} and '
+                f'{len(topographies[1])}.'
+            )
+        
+        group_names = ["seeds", "targets"]
+        for group_i, topographies_group in enumerate(topographies):
+            if len(topographies_group) != len(data):
+                raise ValueError(
+                    'If topographies are passed in then they must have the '
+                    f'same number of connections ({len(topographies_group)}) '
+                    f'as the connectivity data ({len(data)}).'
+                )
+            for conn_i, conn_data in enumerate(topographies_group):
+                if indices is not None and conn_data.shape[0] != \
+                len(indices[group_i][conn_i]):
+                    raise ValueError(
+                        'If topographies are passed in then the values for '
+                        'each connection must have the same number of entries '
+                        'as there are channels in the corresponding indices. '
+                        f'For the {group_names[group_i]}, connection {conn_i}, '
+                        f'the topographies have {conn_data.shape[0]} entries, '
+                        'but the indices contain '
+                        f'{len(indices[group_i][conn_i])} channels.'
+                    )
+                for channel_data in conn_data:
+                    if channel_data.shape != data[0].shape:
+                        raise ValueError(
+                            'If topographies are passed in then the values for '
+                            'each channel of each connection must have the '
+                            'same dimensions as the connectivity data. For the '
+                            f'For the {group_names[group_i]}, connection '
+                            f'{conn_i}, a channel has dimensions '
+                            f'{channel_data.shape}, but the connectivity data '
+                            f'has dimensions {data[0].shape}.'
+                        )
+
+    @property
+    def topographies(self):
+        """Connectivity topographies."""
+        return self.attrs['topographies']
+
+class MultivariateSpectralConnectivity(
+    MultivariateConnectivity, SpectralConnectivity
+):
+    """"""
+
+    def __init__(self, data, freqs, n_nodes, names=None,
+                 indices=None, method=None, spec_method=None,
+                 n_epochs_used=None, topographies=None, **kwargs):
+        SpectralConnectivity.__init__(
+            data, names=names, method=method, indices=indices, n_nodes=n_nodes,
+            freqs=freqs, spec_method=spec_method, n_epochs_used=n_epochs_used,
+            **kwargs
+        )
+        MultivariateConnectivity.__init__(
+            topographies, self.get_data(), indices
+        )
+        
+
 
 @fill_doc
 class Connectivity(BaseConnectivity):

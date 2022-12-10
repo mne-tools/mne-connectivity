@@ -15,7 +15,7 @@ from mne import BaseEpochs
 from mne.parallel import parallel_func
 from mne.utils import logger
 
-from ..base import SpectralConnectivity, SpectroTemporalConnectivity
+from ..base import MultivariateSpectralConnectivity, SpectroTemporalConnectivity
 from .epochs import (_assemble_spectral_params, _check_estimators,
                      _epoch_spectral_connectivity, _get_and_verify_data_sizes,
                      _get_n_epochs, _prepare_connectivity)
@@ -678,7 +678,7 @@ def _store_connectivity(
         )
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
-            conn_class = SpectralConnectivity
+            conn_class = MultivariateSpectralConnectivity
         else:
             assert mode == 'cwt_morlet'
             conn_class = SpectroTemporalConnectivity
