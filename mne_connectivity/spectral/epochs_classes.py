@@ -471,7 +471,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         """
         times = np.arange(A.shape[0])
         freqs = np.arange(self.n_freqs)
-        z = np.exp(-1j * np.pi * np.linspace(0, 0.99, self.n_freqs))  # points
+        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))  # points
         # on a unit circle in the complex plane, one for each frequency
 
         H = self.iss_to_tf(A, C, K, z)  # spectral transfer function
