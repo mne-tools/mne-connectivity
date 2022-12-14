@@ -336,6 +336,11 @@ def _sort_inputs(
         )
 
     for seeds, targets in zip(indices[0], indices[1]):
+        if not isinstance(seeds, list) or not isinstance(targets, list):
+            raise TypeError(
+                "Seeds and targets for each connection must be given as a list "
+                "of ints."
+            )
         if set.intersection(set(seeds), set(targets)):
             raise ValueError(
                 "There are common indices present in the seeds and targets for "
@@ -347,6 +352,10 @@ def _sort_inputs(
     if n_seed_components is None:
         n_seed_components = tuple([None] * n_seeds)
     else:
+        if not isinstance(n_seed_components, tuple):
+            raise TypeError(
+                "'n_seed_components' must be a tuple."
+            )
         if n_seeds != len(n_seed_components):
             raise ValueError(
                 "n_seed_components must have the same length as specified "
@@ -358,6 +367,10 @@ def _sort_inputs(
     if n_target_components is None:
         n_target_components = tuple([None] * n_targets)
     else:
+        if not isinstance(n_target_components, tuple):
+            raise TypeError(
+                "'n_target_components' must be a tuple."
+            )
         if n_targets != len(n_target_components):
             raise ValueError(
                 "n_target_components must have the same length as specified "
