@@ -107,7 +107,7 @@ def multivar_spectral_connectivity_epochs(
         single number, or one per frequency. Only used if "mode" if
         'cwt_morlet'.
 
-    n_seed_components : tuple of int or str or None | None; default None
+    n_seed_components : list of int or str or None | None; default None
     -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the seed
         channels' data for each connectivity node. If an individual entry is a
@@ -115,7 +115,7 @@ def multivar_spectral_connectivity_epochs(
         this number of components taken. If None, or if an individual entry is
         None, no dimensionality reduction is performed.
 
-    n_target_components : tuple of int or str or None | None; default None
+    n_target_components : list of int or str or None | None; default None
     -   Dimensionality reduction parameter specifying the number of seed
         components to extract from the single value decomposition of the target
         channels' data for each connectivity node. If an individual entry is a
@@ -350,11 +350,11 @@ def _sort_inputs(
 
     perform_svd = False
     if n_seed_components is None:
-        n_seed_components = tuple([None] * n_seeds)
+        n_seed_components = [None] * n_seeds
     else:
-        if not isinstance(n_seed_components, tuple):
+        if not isinstance(n_seed_components, list):
             raise TypeError(
-                "'n_seed_components' must be a tuple."
+                "'n_seed_components' must be a list."
             )
         if n_seeds != len(n_seed_components):
             raise ValueError(
@@ -365,11 +365,11 @@ def _sort_inputs(
         if any(n_comps is not None for n_comps in n_seed_components):
             perform_svd = True
     if n_target_components is None:
-        n_target_components = tuple([None] * n_targets)
+        n_target_components = [None] * n_targets
     else:
-        if not isinstance(n_target_components, tuple):
+        if not isinstance(n_target_components, list):
             raise TypeError(
-                "'n_target_components' must be a tuple."
+                "'n_target_components' must be a list."
             )
         if n_targets != len(n_target_components):
             raise ValueError(
