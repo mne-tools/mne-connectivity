@@ -3,12 +3,12 @@ import mne
 import numpy as np
 import pytest
 from mne.filter import filter_data
-from mne_connectivity import (SpectralConnectivity,
-                              multivar_spectral_connectivity_epochs)
+from mne_connectivity import (MultivariateSpectralConnectivity,
+                              multivariate_spectral_connectivity_epochs)
 from numpy.testing import assert_array_almost_equal, assert_array_less
 
 
-def create_test_dataset_multivar(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
+def create_test_dataset_multivariate(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
                         fstart, fend, trans_bandwidth=2., shift=None):
     """Create test dataset with no spurious correlations.
 
@@ -77,7 +77,7 @@ class TestMultivarSpectralConnectivity:
     tmax = (n_times - 1) / sfreq
     fstart = 5.0
     fend = 15.0
-    test_data, test_times = create_test_dataset_multivar(
+    test_data, test_times = create_test_dataset_multivariate(
                 sfreq, n_signals=n_signals, n_epochs=n_epochs, 
                 n_times=n_times, tmin=tmin, tmax=tmax, 
                 fstart=fstart, fend=fend, 
@@ -92,7 +92,7 @@ class TestMultivarSpectralConnectivity:
             ValueError, 
             match='is not a valid connectivity method'
             ):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), method='notamethod'
                 )
 
@@ -100,7 +100,7 @@ class TestMultivarSpectralConnectivity:
             ValueError, 
             match='The supplied connectivity method does not have the method'
             ):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), method=_InvalidClass,
                 )
 
@@ -108,7 +108,7 @@ class TestMultivarSpectralConnectivity:
             ValueError, 
             match='mode has an invalid value'
             ):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), mode='notamode'
                 )
 
@@ -118,18 +118,18 @@ class TestMultivarSpectralConnectivity:
             ValueError, 
             match='There are no frequency points between'
             ):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), fmin=10,
                 fmax=10 + 0.5 * (self.sfreq / float(self.n_times))
                 )
 
         with pytest.raises(ValueError, match='fmax must be larger than fmin'):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), fmin=10, fmax=5
                 )
 
         with pytest.raises(ValueError, match='fmax must be larger than fmin'):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, 
                 indices=([[0,2]], [[1,3]]), fmin=(0, 11), fmax=(5, 10)
                 )
@@ -138,7 +138,7 @@ class TestMultivarSpectralConnectivity:
             ValueError, 
             match='fmin and fmax must have the same length'
             ):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), fmin=(11,), 
                 fmax=(12, 15)
                 )
@@ -147,18 +147,18 @@ class TestMultivarSpectralConnectivity:
         # Indices cannot be None
         with pytest.raises(
             ValueError, match='indices must be specified'):
-            multivar_spectral_connectivity_epochs(self.test_data, indices=None)
+            multivariate_spectral_connectivity_epochs(self.test_data, indices=None)
 
     def test_n_seed_or_target_components(self):
 
         # Check 1 seed, 1 target component
-        _ = multivar_spectral_connectivity_epochs(
+        _ = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
             n_seed_components=(1,), n_target_components=(1,)
             )
 
         # Check 2 seed, 2 target components
-        _ = multivar_spectral_connectivity_epochs(
+        _ = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
             n_seed_components=(2,), n_target_components=(2,)
             )
@@ -166,7 +166,7 @@ class TestMultivarSpectralConnectivity:
         # Check too many seed components
         with pytest.raises(ValueError, 
             match="The number of components to take"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=(3,), n_target_components=(2,)
                 )
@@ -174,7 +174,7 @@ class TestMultivarSpectralConnectivity:
         # Check to many target components
         with pytest.raises(ValueError, 
             match="The number of components to take"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=(2,), n_target_components=(3,)
                 )
@@ -182,7 +182,7 @@ class TestMultivarSpectralConnectivity:
         # Check wrong length of n_seed_components
         with pytest.raises(ValueError,
             match="n_seed_components must have the same length as"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=(2, 2), n_target_components=(2,)
                 )
@@ -190,7 +190,7 @@ class TestMultivarSpectralConnectivity:
         # Check wrong length of n_target_components
         with pytest.raises(ValueError,
             match="n_target_components must have the same length as"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=(2,), n_target_components=(2, 2)
                 )
@@ -198,7 +198,7 @@ class TestMultivarSpectralConnectivity:
         # Check n_seed_components is not a tuple or None
         with pytest.raises(ValueError,
             match="n_seed_components must be a tuple or None"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=2, n_target_components=(2,)
                 )
@@ -206,7 +206,7 @@ class TestMultivarSpectralConnectivity:
         # Check n_seed_components is not a tuple or None
         with pytest.raises(ValueError,
             match="n_target_components must be a tuple or None"):
-            multivar_spectral_connectivity_epochs(
+            multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=(2,), n_target_components=2
                 )
@@ -218,7 +218,7 @@ class TestMultivarSpectralConnectivity:
             mt_bandwidth = 1.
         else: 
             mt_bandwidth = None
-        multivar_spectral_connectivity_epochs(
+        multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0]], [[1]]), method='mic', 
             mode='multitaper',sfreq=self.sfreq, mt_adaptive=mt_adaptive, 
             mt_low_bias=mt_low_bias, mt_bandwidth=mt_bandwidth)
@@ -235,7 +235,7 @@ class TestMultivarSpectralConnectivity:
         else:
             cwt_n_cycles = 7
 
-        con = multivar_spectral_connectivity_epochs(
+        con = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0]], [[1]]), method=method, mode=mode,
             sfreq=self.sfreq, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles
@@ -244,7 +244,7 @@ class TestMultivarSpectralConnectivity:
         if not isinstance(method, list):
             freqs = con.attrs.get('freqs_used')
             n = con.n_epochs_used
-            if isinstance(con, SpectralConnectivity):
+            if isinstance(con, MultivariateSpectralConnectivity):
                 times = con.attrs.get('times_used')
             else:
                 times = con.times
@@ -264,13 +264,13 @@ class TestMultivarSpectralConnectivity:
                 )
             
             # Check 0-lag, 2 signals
-            data, _ = create_test_dataset_multivar(
+            data, _ = create_test_dataset_multivariate(
                 self.sfreq, n_signals=2, n_epochs=self.n_epochs,
                 n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
                 fstart=self.fstart, fend=self.fend, 
                 trans_bandwidth=self.trans_bandwidth, shift=0
             )
-            con = multivar_spectral_connectivity_epochs(
+            con = multivariate_spectral_connectivity_epochs(
                 data, indices=([[0]], [[1]]), method=method, mode=mode, 
                 sfreq=self.sfreq, cwt_freqs=cwt_freqs,
                 cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
@@ -281,14 +281,14 @@ class TestMultivarSpectralConnectivity:
                 )
 
             # Check 1-lag, 4 signals
-            data, _ = create_test_dataset_multivar(
+            data, _ = create_test_dataset_multivariate(
                 self.sfreq, n_signals=4, n_epochs=self.n_epochs, 
                 n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
                 fstart=self.fstart, fend=self.fend, 
                 trans_bandwidth=self.trans_bandwidth, shift=1
             )
 
-            con = multivar_spectral_connectivity_epochs(
+            con = multivariate_spectral_connectivity_epochs(
                 data, indices=([[0,2]], [[1,3]]), method=method, mode=mode, 
                 sfreq=self.sfreq, cwt_freqs=cwt_freqs, 
                 cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
@@ -301,7 +301,7 @@ class TestMultivarSpectralConnectivity:
     def test_parallel(self):
         """Test parallel computation."""
         n_jobs = 2
-        multivar_spectral_connectivity_epochs(
+        multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0]], [[1]]), sfreq=self.sfreq, 
             n_jobs=n_jobs
             )
@@ -313,11 +313,11 @@ class TestMultivarSpectralConnectivity:
             )
         epochs = mne.EpochsArray(self.test_data, info)
         
-        con_from_data = multivar_spectral_connectivity_epochs(
+        con_from_data = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0]], [[1]]), sfreq=self.sfreq
             )
 
-        con_from_epochs = multivar_spectral_connectivity_epochs(
+        con_from_epochs = multivariate_spectral_connectivity_epochs(
             epochs, indices=([[0]], [[1]])
             )
 
@@ -326,7 +326,7 @@ class TestMultivarSpectralConnectivity:
             con_from_data.get_data()
             )
 
-        con_from_epochs = multivar_spectral_connectivity_epochs(
+        con_from_epochs = multivariate_spectral_connectivity_epochs(
             epochs, indices=([[0]], [[1]])
             )
 
@@ -335,7 +335,7 @@ class TestMultivarSpectralConnectivity:
             description=['Start', 'Noise'],
         )
         epochs.set_annotations((annotations))
-        con_with_annot = multivar_spectral_connectivity_epochs(
+        con_with_annot = multivariate_spectral_connectivity_epochs(
             epochs, indices=([[0]], [[1]])
             )
         assert_array_almost_equal(
@@ -346,7 +346,7 @@ class TestMultivarSpectralConnectivity:
         epochs = mne.EpochsArray(self.test_data, info)
         epochs.set_annotations((annotations))
         epochs.add_annotations_to_metadata()
-        con_with_metadata = multivar_spectral_connectivity_epochs(
+        con_with_metadata = multivariate_spectral_connectivity_epochs(
             epochs, indices=([[0]], [[1]])
             )
         assert_array_almost_equal(
@@ -356,7 +356,7 @@ class TestMultivarSpectralConnectivity:
 
 
     def test_faverage(self):
-        multivar_spectral_connectivity_epochs(
+        multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
             fmin=(3, 8, 15), fmax=(7, 14, 20), faverage=True,
             )

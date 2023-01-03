@@ -74,6 +74,8 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
         # allocate space for accumulation of CSD
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
 
+        self.topographies = None
+
     def start_epoch(self):  # noqa: D401
         """Called at the start of each epoch."""
         pass  # for this type of con. method we don't do anything
@@ -98,10 +100,18 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
             self.n_times)).transpose(3, 2, 0, 1)
         )
 
-    def reshape_con_scores(self):
-        """Removes the time dimension from con. scores, if necessary."""
+    def reshape_results(self):
+        """Removes the time dimension from con. scores and topographies, if
+        necessary."""
         if self.n_times == 0:
             self.con_scores = self.con_scores[:,:,0]
+
+            if self.topographies is not None:
+                for group_i in range(2):
+                    for con_i in range(self.n_cons):
+                        self.topographies[group_i][con_i] = (
+                            self.topographies[group_i][con_i][:, :, 0]
+                        )
 
 
 class _CohEstBase(_EpochMeanConEstBase):
@@ -614,27 +624,33 @@ class _MIMEst(_MultivarCohEstBase):
         signals"""
         csd = self.reshape_csd()/n_epochs
         n_times = csd.shape[0]
-        node_i = 0
+        con_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             n_seeds = len(seed_idcs)
-            node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(np.arange(n_times), np.arange(self.n_freqs), node_idcs, node_idcs)]
+            con_idcs = [*seed_idcs, *target_idcs]
+            C = csd[np.ix_(
+                np.arange(n_times), np.arange(self.n_freqs), con_idcs, con_idcs
+            )]
 
             # Eqs. 32 & 33
             C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                csd=node_csd,
+                csd=C,
                 n_seeds=n_seeds,
-                n_seed_components=n_seed_components[node_i],
-                n_target_components=n_target_components[node_i],
+                n_seed_components=n_seed_components[con_i],
+                n_target_components=n_target_components[con_i],
             )
 
             # Eqs. 3 & 4
             E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
 
-            # Equation 14
-            self.con_scores[node_i, :, :] = (E @ E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).transpose(1, 0)
-            node_i += 1
-        self.reshape_con_scores()
+            # Eq. 14
+            self.con_scores[con_i, :, :] = (
+                E @ E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3
+            ).T
+
+            con_i += 1
+
+        self.reshape_results()
 
 
 class _MICEst(_MultivarCohEstBase):
@@ -643,24 +659,32 @@ class _MICEst(_MultivarCohEstBase):
     name = "MIC"
     accumulate_psd = False
 
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+        super(_MICEst, self).__init__(
+            n_signals, n_cons, n_freqs, n_times, n_jobs
+        )
+        self.topographies = np.empty((2, n_cons), dtype=object)
+
     def compute_con(
         self, seeds, targets, n_seed_components, n_target_components, n_epochs
     ):
         """Computes maximized imaginary coherence between sets of signals."""
         csd = self.reshape_csd()/n_epochs
         n_times = csd.shape[0]
-        node_i = 0
+        con_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             n_seeds = len(seed_idcs)
-            node_idcs = [*seed_idcs, *target_idcs]
-            node_csd = csd[np.ix_(np.arange(n_times), np.arange(self.n_freqs), node_idcs, node_idcs)]
+            con_idcs = [*seed_idcs, *target_idcs]
+            C = csd[np.ix_(
+                np.arange(n_times), np.arange(self.n_freqs), con_idcs, con_idcs
+            )]
 
             # Eqs. 32 & 33
-            C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                csd=node_csd,
+            C_bar, U_bar_aa, U_bar_bb = self.cross_spectra_svd(
+                csd=C,
                 n_seeds=n_seeds,
-                n_seed_components=n_seed_components[node_i],
-                n_target_components=n_target_components[node_i],
+                n_seed_components=n_seed_components[con_i],
+                n_target_components=n_target_components[con_i],
             )
 
             # Eqs. 3 & 4
@@ -669,17 +693,35 @@ class _MICEst(_MultivarCohEstBase):
             # Weights for signals in the groups
             w_a, V_a = np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))
             w_b, V_b = np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)
-            alpha = V_a[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_a.argmax(axis=2)]
-            beta = V_b[np.arange(n_times)[:, None], np.arange(self.n_freqs), :, w_b.argmax(axis=2)]
+            alpha = V_a[
+                np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
+                w_a.argmax(axis=2)
+            ]
+            beta = V_b[
+                np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
+                w_b.argmax(axis=2)
+            ]
+
+            # Eqs. 46 & 47
+            self.topographies[0, con_i] = (
+                np.real(C[:, :, :n_seeds, :n_seeds]) @ 
+                (U_bar_aa @ np.expand_dims(alpha, 3))
+            )[:, :, :, 0].T
+            self.topographies[1, con_i] = (
+                np.real(C[:, :, n_seeds:, n_seeds:]) @ 
+                (U_bar_bb @ np.expand_dims(beta, 3))
+            )[:, :, :, 0].T
 
             # Eq. 7
-            self.con_scores[node_i, :, :] = (np.einsum(
+            self.con_scores[con_i, :, :] = (np.einsum(
                 "ijk,ijk->ij",
                 alpha,
                 (E @ np.expand_dims(beta, 3))[:, :, :, 0]) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
-            ).transpose(1, 0)
-            node_i += 1
-        self.reshape_con_scores()
+            ).T
+
+            con_i += 1
+
+        self.reshape_results()
 
 
 class _GCEst(_MultivarGCEstBase):

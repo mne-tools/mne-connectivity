@@ -14,14 +14,15 @@ import numpy as np
 from mne import BaseEpochs
 from mne.parallel import parallel_func
 from mne.utils import logger
-
-from ..base import MultivariateSpectralConnectivity, SpectroTemporalConnectivity
+from ..base import (
+    MultivariateSpectralConnectivity, MultivariateSpectroTemporalConnectivity
+)
 from .epochs import (_assemble_spectral_params, _check_estimators,
                      _epoch_spectral_connectivity, _get_and_verify_data_sizes,
                      _get_n_epochs, _prepare_connectivity)
 
 
-def multivar_spectral_connectivity_epochs(
+def multivariate_spectral_connectivity_epochs(
     data, indices, names = None, method = "mic", sfreq = 2 * np.pi,
     mode = "multitaper", tmin = None, tmax = None, fmin = None, fmax = np.inf,
     fskip = 0, faverage = False, cwt_freqs = None, mt_bandwidth = None,
@@ -182,6 +183,7 @@ def multivar_spectral_connectivity_epochs(
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
         svd_gc_con = [[] for _ in range(n_gc_methods)]
+        svd_gc_topo = [[] for _ in range(n_gc_methods)]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
@@ -197,13 +199,19 @@ def multivar_spectral_connectivity_epochs(
                 use_method_types, parallel, my_epoch_spectral_connectivity,
                 times_in, gc_n_lags
             )
-            group_con, freqs_used, n_nodes = _compute_connectivity(
+            group_con, group_topo, freqs_used, n_nodes = _compute_connectivity(
                 con_methods, new_indices, n_seed_components,
                 n_target_components, n_epochs, n_cons, faverage, n_freqs,
                 n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
             [svd_gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
-        svd_gc_con = [np.squeeze(np.array(method_con), 1) for method_con in svd_gc_con]
+            [svd_gc_topo[i].append(group_topo[i]) for i in range(n_gc_methods)]
+        svd_gc_con = [
+            np.squeeze(np.array(method_con), 1) for method_con in svd_gc_con
+        ]
+        svd_gc_topo = [
+            np.squeeze(np.array(method_topo), 1) for method_topo in svd_gc_topo
+        ]
 
         # finds the methods still needing to be computed
         remaining_method_types = [
@@ -219,6 +227,7 @@ def multivar_spectral_connectivity_epochs(
         # creates an empty placeholder for SVD GC connectivity results
         if remaining_method_types == con_method_types:
             svd_gc_con = []
+            svd_gc_topo = []
             use_method_types = []
 
         # computes connectivity
@@ -231,7 +240,7 @@ def multivar_spectral_connectivity_epochs(
             block_size, n_jobs, n_bands, remaining_method_types, parallel,
             my_epoch_spectral_connectivity, times_in, gc_n_lags
         )
-        con, freqs_used, n_nodes = _compute_connectivity(
+        con, topo, freqs_used, n_nodes = _compute_connectivity(
             con_methods, remapped_indices, n_seed_components, n_target_components,
             n_epochs, n_cons, faverage, n_freqs, n_bands, freq_idx_bands,
             freqs_bands, n_signals, freqs
@@ -240,15 +249,22 @@ def multivar_spectral_connectivity_epochs(
     if svd_gc_con and con:
         # combines SVD GC and non-SVD GC results
         con.extend(svd_gc_con)
+        topo.extend(svd_gc_topo)
         # orders the results according to the order they were called
         methods_order = [
             *[mtype.name for mtype in use_method_types],
             *[mtype.name for mtype in remaining_method_types]
         ]
-        con = [con[methods_order.index(mtype.name)] for mtype in con_method_types]
+        con = [
+            con[methods_order.index(mtype.name)] for mtype in con_method_types
+        ]
+        topo = [
+            topo[methods_order.index(mtype.name)] for mtype in con_method_types
+        ]
     elif svd_gc_con and not con:
         # stored SVD GC results
         con = svd_gc_con
+        topo = svd_gc_topo
         # finds the remapped indices of non-SVD data
         unique_indices = np.unique(np.concatenate(sum(indices, [])))
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
@@ -256,7 +272,7 @@ def multivar_spectral_connectivity_epochs(
                              indices_group] for indices_group in indices]
 
     return _store_connectivity(
-        con, method, names, freqs, n_nodes, mode, remapped_indices, n_epochs,
+        con, topo, method, names, freqs, n_nodes, mode, remapped_indices, n_epochs,
         freqs_used, times, n_tapers, metadata, events, event_id
     )
 
@@ -266,7 +282,7 @@ def _sort_inputs(
     n_target_components, n_jobs, verbose
 ):
     """Checks the format of the input parameters to the
-    "multivar_spectral_connectivity_epochs" function and returns relevant
+    "multivariate_spectral_connectivity_epochs" function and returns relevant
     variables."""
     # establishes parallelisation
     if n_jobs != 1:
@@ -616,6 +632,7 @@ def _compute_connectivity(
     """Computes the multivariate connectivity results."""
     # compute final connectivity scores
     con = list()
+    topo = list()
     for conn_method in con_methods:
         if conn_method.name in ["GC", "Net GC", "TRGC", "Net TRGC"]:
             conn_method.compute_con(indices[0], indices[1], n_epochs)
@@ -625,19 +642,15 @@ def _compute_connectivity(
                 n_epochs
             )
 
-        # get the connectivity scores
+        # get the connectivity (and topography) scores
         this_con = conn_method.con_scores
+        this_topo = conn_method.topographies
 
-        assert (this_con.shape[0] == n_cons), \
-            ('The first dimension of connectivity scores does not match the '
-            'number of connections. Please contact the mne-connectivity ' 
-            'developers.')
+        _check_correct_results_dimensions(
+            this_con, this_topo, n_cons, n_freqs, conn_method.n_times
+        )
 
         if faverage:
-            assert (this_con.shape[1] == n_freqs), \
-            ('The second dimension of connectivity scores does not match the '
-            'number of frequencies. Please contact the mne-connectivity ' 
-            'developers.')
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)
             for band_idx in range(n_bands):
@@ -645,7 +658,19 @@ def _compute_connectivity(
                     np.mean(this_con[:, freq_idx_bands[band_idx]], axis=1)
             this_con = this_con_bands
 
+            if this_topo is not None:
+                this_topo_bands = np.empty((2, n_cons), dtype=this_topo.dtype)
+                for group_i in range(2):
+                    for con_i in range(n_cons):
+                        band_topo = [
+                            np.mean(this_topo[group_i][con_i][freq_idx_band],
+                            axis=1) for freq_idx_band in freq_idx_bands
+                        ]
+                        this_topo_bands[group_i][con_i] = np.array(band_topo).T
+                this_topo = this_topo_bands
+
         con.append(this_con)
+        topo.append(this_topo)
 
     freqs_used = freqs
     if faverage:
@@ -662,19 +687,56 @@ def _compute_connectivity(
     # number of nodes in the original data,
     n_nodes = n_signals
 
-    return con, freqs_used, n_nodes
+    return con, topo, freqs_used, n_nodes
+
+def _check_correct_results_dimensions(con, topo, n_cons, n_freqs, n_times):
+    """Checks that the results of the connectivity computations have the
+    appropriate dimensions."""
+    assert (con.shape[0] == n_cons), \
+        ('The first dimension of connectivity scores does not match the '
+        'number of connections. Please contact the mne-connectivity ' 
+        'developers.')
+    assert (con.shape[1] == n_freqs), \
+        ('The second dimension of connectivity scores does not match the '
+        'number of frequencies. Please contact the mne-connectivity ' 
+        'developers.')
+    if n_times != 0:
+        assert (con.shape[2] == n_times), \
+            ('The third dimension of connectivity scores does not match the '
+            'number of timepoints. Please contact the mne-connectivity ' 
+            'developers.')
+    
+    if topo is not None:
+        assert (topo[0].shape[0] == n_cons and topo[1].shape[0]), \
+            ('The first dimension of topographies does not match the number of '
+            'connections. Please contact the mne-connectivity developers.')
+        for con_i in range(n_cons):
+            assert (topo[0][con_i].shape[1] == n_freqs and
+                    topo[1][con_i].shape[1] == n_freqs), \
+                ('The second dimension of topographies does not match the '
+                'number of frequencies. Please contact the mne-connectivity '
+                'developers.')
+            if n_times != 0:
+                assert (topo[0][con_i].shape[2] == n_times and
+                        topo[1][con_i].shape[2] == n_times), \
+                    ('The third dimension of topographies does not match the '
+                    'number of timepoints. Please contact the mne-connectivity '
+                    'developers.')
+
+
 
 def _store_connectivity(
-    con, method, names, freqs, n_nodes, mode, indices, n_epochs, freqs_used,
+    con, topo, method, names, freqs, n_nodes, mode, indices, n_epochs, freqs_used,
     times, n_tapers, metadata, events, event_id
 ):
     """Stores multivariate connectivity results in an mne-connectivity
     object."""
     # create a list of connectivity containers
     conn_list = []
-    for _con, _method in zip(con, method):
+    for _con, _topo, _method in zip(con, topo, method):
         kwargs = dict(
             data=_con,
+            topographies=_topo,
             names=names,
             freqs=freqs,
             method=_method,
@@ -694,7 +756,7 @@ def _store_connectivity(
             conn_class = MultivariateSpectralConnectivity
         else:
             assert mode == 'cwt_morlet'
-            conn_class = SpectroTemporalConnectivity
+            conn_class = MultivariateSpectroTemporalConnectivity
             kwargs.update(times=times)
         conn_list.append(conn_class(**kwargs))
 

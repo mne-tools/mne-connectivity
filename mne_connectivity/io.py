@@ -6,10 +6,12 @@ from mne.utils import _prepare_read_metadata
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
                    SpectralConnectivity, SpectroTemporalConnectivity,
-                   TemporalConnectivity)
+                   TemporalConnectivity, BaseMultivariateConnectivity,
+                   MultivariateSpectralConnectivity,
+                   MultivariateSpectroTemporalConnectivity)
 
 
-def _xarray_to_conn(array, cls_func):
+def _xarray_to_conn(array, cls_func, unpad_ragged_attrs):
     """Create connectivity class from xarray.
 
     Parameters
@@ -18,6 +20,9 @@ def _xarray_to_conn(array, cls_func):
         Xarray containing the connectivity data.
     cls_func : Connectivity class
         The function of the connectivity class to use.
+    unpad_ragged_attrs : bool
+        Whether or not to unpad once ragged attributes of the class that were
+        padded to enable saving with HDF5.
 
     Returns
     -------
@@ -53,6 +58,11 @@ def _xarray_to_conn(array, cls_func):
     conn = cls_func(
         data=data, names=names, metadata=metadata, **array.attrs
     )
+
+    # make padded xarray attrs ragged again (for multivariate connectivity only)
+    if unpad_ragged_attrs:
+        conn._unpad_ragged_attrs()
+
     return conn
 
 
@@ -93,10 +103,20 @@ def read_connectivity(fname):
         'EpochConnectivity': EpochConnectivity,
         'EpochTemporalConnectivity': EpochTemporalConnectivity,
         'EpochSpectralConnectivity': EpochSpectralConnectivity,
-        'EpochSpectroTemporalConnectivity': EpochSpectroTemporalConnectivity
+        'EpochSpectroTemporalConnectivity': EpochSpectroTemporalConnectivity,
+        'MultivariateSpectralConnectivity': MultivariateSpectralConnectivity,
+        'MultivariateSpectroTemporalConnectivity': \
+            MultivariateSpectroTemporalConnectivity
     }
     cls_func = conn_cls[data_structure_name]
 
+    # checks whether ragged attrs of the class padded for saving need to be
+    # restored (so far only the case for multivariate connectivity)
+    if issubclass(cls_func, BaseMultivariateConnectivity):
+        unpad_ragged_attrs = True
+    else:
+        unpad_ragged_attrs = False
+
     # get the data as a new connectivity container
-    conn = _xarray_to_conn(conn_da, cls_func)
+    conn = _xarray_to_conn(conn_da, cls_func, unpad_ragged_attrs)
     return conn
