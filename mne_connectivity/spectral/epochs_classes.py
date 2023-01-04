@@ -654,8 +654,8 @@ class _MIMEst(_MultivarCohEstBase):
 
             # Eq. 14
             self.con_scores[con_i, :, :] = (
-                E @ E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3
-            ).T
+                E @ E.transpose(0, 1, 3, 2)
+            ).trace(axis1=2, axis2=3).T
 
             con_i += 1
 
@@ -751,6 +751,7 @@ class _NetGCEst(_MultivarGCEstBase):
     net = True
     time_reversed = False
 
+
 class _TRGCEst(_MultivarGCEstBase):
     """TRGC Estimator; causality from: [seeds -> targets] - time-reversed[seeds
     -> targets]."""
@@ -759,6 +760,7 @@ class _TRGCEst(_MultivarGCEstBase):
     accumulate_psd = False
     net = False
     time_reversed = True
+
 
 class _NetTRGCEst(_MultivarGCEstBase):
     """Net TRGC Estimator; causality from: ([seeds -> targets] - [targets ->
@@ -769,6 +771,7 @@ class _NetTRGCEst(_MultivarGCEstBase):
     accumulate_psd = False
     net = True
     time_reversed = True
+
 
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
