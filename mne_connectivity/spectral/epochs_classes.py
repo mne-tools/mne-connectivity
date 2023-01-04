@@ -712,20 +712,22 @@ class _MICEst(_MultivarCohEstBase):
             ]
 
             # Eqs. 46 & 47
-            self.topographies[0, con_i] = (
+            self.topographies[0][con_i] = np.abs(
                 np.real(C[:, :, :n_seeds, :n_seeds]) @ 
                 (U_bar_aa @ np.expand_dims(alpha, 3))
             )[:, :, :, 0].T
-            self.topographies[1, con_i] = (
+            self.topographies[1][con_i] = np.abs(
                 np.real(C[:, :, n_seeds:, n_seeds:]) @ 
                 (U_bar_bb @ np.expand_dims(beta, 3))
             )[:, :, :, 0].T
 
             # Eq. 7
-            self.con_scores[con_i, :, :] = (np.einsum(
-                "ijk,ijk->ij",
-                alpha,
-                (E @ np.expand_dims(beta, 3))[:, :, :, 0]) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
+            self.con_scores[con_i, :, :] = np.abs(
+                np.einsum(
+                    "ijk,ijk->ij",
+                    alpha,
+                    (E @ np.expand_dims(beta, 3))[:, :, :, 0]
+                ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
             ).T
 
             con_i += 1
