@@ -1310,12 +1310,12 @@ class MultivariateSpectroTemporalConnectivity(
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices=None, method=None, spec_method=None, times=None,
                  n_epochs_used=None, topographies=None, **kwargs):
-        super(MultivariateSpectralConnectivity, self).__init__(
+        super(MultivariateSpectroTemporalConnectivity, self).__init__(
             data=data, names=names, method=method, indices=indices,
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method, times=times,
             n_epochs_used=n_epochs_used, **kwargs
         )
-        super(MultivariateSpectralConnectivity, self)._add_topographies(
+        super(MultivariateSpectroTemporalConnectivity, self)._add_topographies(
             topographies=topographies, indices=indices, data=self.get_data()
         )
         
