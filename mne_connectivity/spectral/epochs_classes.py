@@ -104,7 +104,7 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
         """Removes the time dimension from con. scores and topographies, if
         necessary."""
         if self.n_times == 0:
-            self.con_scores = self.con_scores[:,:,0]
+            self.con_scores = self.con_scores[:, :, 0]
 
             if self.topographies is not None:
                 for group_i in range(2):
