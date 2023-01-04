@@ -187,6 +187,15 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             ])
         T = T.transpose(1, 0, 2, 3)
 
+        if not np.all(np.isreal(T)):
+            raise ValueError(
+                'the transformation matrix of the data must be real-valued, '
+                'but it is not; check that you are using full-rank data or '
+                'specifying an appropriate number of components for the seeds '
+                'and targets that is less than or equal to their ranks'
+            )
+        T = np.real(T)
+
         # Equation 4
         D = T @ (csd @ T)
 
@@ -198,7 +207,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 def _compute_t(csd, n_seeds):
     """Compute T for a single frequency as the real-valued cross-spectra of
     seeds and targets to the power -0.5."""
-    T = np.zeros_like(csd)
+    T = np.zeros_like(csd, dtype=np.complex128)
     for time_i in range(csd.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = spla.fractional_matrix_power(
             csd[time_i, :n_seeds, :n_seeds], -0.5
