@@ -1,17 +1,13 @@
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
 #          Denis A. Engemann <denis.engemann@gmail.com>
 #          Adam Li <adam2392@gmail.com>
-#          Thomas Samuel Binns <thomas-samuel.binns@charite.de>
+#          Thomas Samuel Binns <t.s.binns@outlook.com>
 #
 # License: BSD (3-clause)
 
 import numpy as np
 from scipy import linalg as spla
 from mne.parallel import parallel_func
-
-
-########################################################################
-# Various connectivity estimators
 
 
 class _AbstractConEstBase(object):
