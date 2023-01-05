@@ -218,6 +218,9 @@ def _compute_t(csd, n_seeds):
 class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
     """Base Estimator for Granger causality multivariate methods."""
 
+    net = None
+    time_reversed = None
+
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
         super(_MultivarGCEstBase, self).__init__(
             n_signals, n_cons, n_freqs, n_times, n_jobs
@@ -253,7 +256,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             )
 
         self.con_scores = con_scores
-        self.reshape_con_scores()
+        self.reshape_results()
 
     def csd_to_autocov(self, csd):
         """Computes the autocovariance sequence from the cross-spectral
