@@ -9,7 +9,7 @@ from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
                                 dpss_windows)
-from mne.utils import (logger, warn, verbose)
+from mne.utils import (logger, verbose)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
 from .epochs import _compute_freq_mask
@@ -19,12 +19,12 @@ from ..utils import check_indices, fill_doc
 
 @verbose
 @fill_doc
-def spectral_connectivity_time(data, method='coh', average=False,
+def spectral_connectivity_time(data, freqs, method='coh', average=False,
                                indices=None, sfreq=None, fmin=None,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning', padding=0,
                                mode='cwt_morlet', mt_bandwidth=None,
-                               freqs=None, n_cycles=7, decim=1, n_jobs=1,
+                               n_cycles=7, decim=1, n_jobs=1,
                                verbose=None):
     """Compute time-frequency-domain connectivity measures.
 
@@ -39,10 +39,13 @@ def spectral_connectivity_time(data, method='coh', average=False,
     ----------
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
         The data from which to compute connectivity.
+    freqs : array_like
+        Array of frequencies of interest for time-frequency decomposition.
+        Only the frequencies within the range specified by ``fmin``  and
+        ``fmax`` are used.
     method : str | list of str
         Connectivity measure(s) to compute. These can be
         ``['coh', 'plv', 'sxy', 'pli', 'wpli']``. These are:
-
             * 'coh' : Coherence
             * 'plv' : Phase-Locking Value (PLV)
             * 'ciplv' : Corrected imaginary Phase-Locking Value
@@ -63,12 +66,11 @@ def spectral_connectivity_time(data, method='coh', average=False,
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower
-        bounds. If `None`, the frequency corresponding to an epoch length of
-        5 cycles is used.
+        bounds. If `None`, the lowest frequency in ``freqs`` is used.
     fmax : float | tuple of float | None
         The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper
-        bounds. If `None`, ``sfreq/2`` is used.
+        bounds. If `None`, the highest frequency in ``freqs`` is used.
     fskip : int
         Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency
         domain.
@@ -98,12 +100,6 @@ def spectral_connectivity_time(data, method='coh', average=False,
         bandwidth (thus the frequency resolution) and the number of good
         tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
         documentation.
-    freqs : array_like
-        Array of frequencies of interest for time-frequency decomposition.
-        Required in ``cwt_morlet`` mode. Only the frequencies within
-        the range specified by ``fmin``  and ``fmax`` are used. Required if
-        ``mode='cwt_morlet'``. If set when ``mode='multitaper'``, overrides the
-        automatically determined frequencies of interest.
     n_cycles : float | array_like of float
         Number of cycles in the wavelet, either a fixed number or one per
         frequency. The number of cycles ``n_cycles`` and the frequencies of
@@ -269,25 +265,13 @@ def spectral_connectivity_time(data, method='coh', average=False,
     if isinstance(method, str):
         method = [method]
 
-    # check that fmin corresponds to at least 5 cycles
-    dur = float(n_times) / sfreq
-    five_cycle_freq = 5. / dur
+    # defaults for fmin and fmax
     if fmin is None:
-        # use the 5 cycle freq. as default
-        fmin = five_cycle_freq
-        logger.info(f'Fmin was not specified. Using fmin={fmin:.2f}, which '
-                    'corresponds to at least five cycles.')
-    else:
-        if np.any(fmin < five_cycle_freq):
-            warn('fmin=%0.3f Hz corresponds to %0.3f < 5 cycles '
-                 'based on the epoch length %0.3f sec, need at least %0.3f '
-                 'sec epochs or fmin=%0.3f. Spectrum estimate will be '
-                 'unreliable.' % (np.min(fmin), dur * np.min(fmin), dur,
-                                  5. / np.min(fmin), five_cycle_freq))
+        fmin = np.min(freqs)
+        logger.info('Fmin was not specified. Using fmin=min(freqs)')
     if fmax is None:
-        fmax = sfreq / 2
-        logger.info(f'Fmax was not specified. Using fmax={fmax:.2f}, which '
-                    f'corresponds to Nyquist.')
+        fmax = np.max(freqs)
+        logger.info('Fmax was not specified. Using fmax=max(freqs).')
 
     fmin = np.array((fmin,), dtype=float).ravel()
     fmax = np.array((fmax,), dtype=float).ravel()
@@ -322,23 +306,29 @@ def spectral_connectivity_time(data, method='coh', average=False,
     n_pairs = len(source_idx)
 
     # check freqs
-    if freqs is not None:
-        # check for single frequency
-        if isinstance(freqs, (int, float)):
-            freqs = [freqs]
-        # array conversion
-        freqs = np.asarray(freqs)
-        # check order for multiple frequencies
-        if len(freqs) >= 2:
-            delta_f = np.diff(freqs)
-            increase = np.all(delta_f > 0)
-            assert increase, "Frequencies should be in increasing order"
+    if isinstance(freqs, (int, float)):
+        freqs = [freqs]
+    # array conversion
+    freqs = np.asarray(freqs)
+    # check order for multiple frequencies
+    if len(freqs) >= 2:
+        delta_f = np.diff(freqs)
+        increase = np.all(delta_f > 0)
+        assert increase, "Frequencies should be in increasing order"
 
-    # compute frequencies to analyze based on number of samples,
-    # sampling rate, specified wavelet frequencies and mode
-    freqs = _compute_freqs(n_times, sfreq, freqs, mode)
+    # check that freqs corresponds to at least n_cycles cycles
+    dur = float(n_times) / sfreq
+    cycle_freq = n_cycles / dur
+    if np.any(freqs < cycle_freq):
+        raise ValueError('At least one value in n_cycles corresponds to a'
+                         'wavelet longer than the signal. Use less cycles, '
+                         'higher frequencies, or longer epochs.')
+    # check for Nyquist
+    if np.any(freqs > sfreq / 2):
+        raise ValueError(f'Frequencies {freqs[freqs > sfreq / 2]} Hz are '
+                         f'larger than Nyquist = {sfreq / 2:.2f} Hz')
 
-    # compute the mask based on specified min/max and decimation factor
+    # compute frequency mask based on specified min/max and decimation factor
     freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
 
     # the frequency points where we compute connectivity
@@ -621,25 +611,3 @@ def _foi_average(conn, foi_idx):
         f_e += 1 if f_s == f_e else f_e
         conn_f[..., n_f, :] = conn[..., f_s:f_e, :].mean(-2)
     return conn_f
-
-
-def _compute_freqs(n_times, sfreq, freqs, mode):
-    from scipy.fft import rfftfreq
-    # get frequencies of interest for the different modes
-    if freqs is not None:
-        if any(freqs > (sfreq / 2.)):
-            raise ValueError('entries in freqs cannot be '
-                             'larger than Nyquist (sfreq / 2)')
-        else:
-            return freqs.astype(np.float64)
-    if mode in ('multitaper', 'fourier'):
-        # fmin fmax etc is only supported for these modes
-        # decide which frequencies to keep
-        return rfftfreq(n_times, 1. / sfreq)
-    elif mode == 'cwt_morlet':
-        # cwt_morlet mode
-        if freqs is None:
-            raise ValueError('define frequencies of interest using '
-                             'cwt_freqs')
-    else:
-        raise ValueError('mode has an invalid value')
