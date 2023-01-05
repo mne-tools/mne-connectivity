@@ -94,6 +94,13 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
             f'    computing {con_name} connectivity for connection {con_i+1} '
             f'of {self.n_cons}'
         )
+    
+    def _get_block_indices(self, block_i, limit):
+        """Gets indices for a given computation block, excluding those values >=
+        a specified limit."""
+        indices = np.arange(block_i * self.n_jobs, (block_i+1) * self.n_jobs)
+
+        return indices[np.nonzero(indices < limit)]
 
     def reshape_csd(self):
         """Reshapes CSD into a matrix of times x freqs x signals x signals."""
@@ -199,9 +206,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         for block_i in ProgressBar(
             range(self.n_steps), mesg='Connection computation progress'
         ):
-            freqs = np.arange(
-                block_i * self.n_jobs, (block_i+1) * self.n_jobs
-            )
+            freqs = self._get_block_indices(block_i, self.n_freqs)
             T[freqs] = parallel(
                 parallel_compute_t(real_csd[:, f, :, :], n_seeds)
                 for f in freqs
@@ -582,10 +587,8 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             initial_value=self.progress,
             max_value=self.n_steps_total,
             mesg='Connection computation progress'
-        ):
-            freqs = np.arange(
-                block_i * self.n_jobs, (block_i+1) * self.n_jobs
-            )
+        ):  
+            freqs = self._get_block_indices(block_i, self.n_freqs)
             H[freqs] = parallel(
                 parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs
             )
