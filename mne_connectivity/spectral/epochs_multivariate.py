@@ -183,7 +183,7 @@ def multivariate_spectral_connectivity_epochs(
         # computes GC for each seed-target group
         n_gc_methods = len(present_gc_methods)
         svd_gc_con = [[] for _ in range(n_gc_methods)]
-        svd_gc_topo = [[] for _ in range(n_gc_methods)]
+        svd_gc_topo = [None for _ in range(n_gc_methods)]
         for gc_node_data, n_seed_comps in zip(seed_target_data, n_seeds):
             new_indices = (
                 [np.arange(n_seed_comps).tolist()],
@@ -199,18 +199,14 @@ def multivariate_spectral_connectivity_epochs(
                 use_method_types, parallel, my_epoch_spectral_connectivity,
                 times_in, gc_n_lags
             )
-            group_con, group_topo, freqs_used, n_nodes = _compute_connectivity(
+            group_con, _, freqs_used, n_nodes = _compute_connectivity(
                 con_methods, new_indices, n_seed_components,
                 n_target_components, n_epochs, n_cons, faverage, n_freqs,
                 n_bands, freq_idx_bands, freqs_bands, n_signals, freqs
             )
             [svd_gc_con[i].append(group_con[i]) for i in range(n_gc_methods)]
-            [svd_gc_topo[i].append(group_topo[i]) for i in range(n_gc_methods)]
         svd_gc_con = [
             np.squeeze(np.array(method_con), 1) for method_con in svd_gc_con
-        ]
-        svd_gc_topo = [
-            np.squeeze(np.array(method_topo), 1) for method_topo in svd_gc_topo
         ]
 
         # finds the methods still needing to be computed
