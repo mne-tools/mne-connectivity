@@ -443,9 +443,15 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
     out = np.squeeze(out, axis=0)
 
     if padding:
+        if padding < 0:
+            raise ValueError(f'Padding cannot be negative, got {padding}.')
+        if padding >= data.shape[-1] / sfreq / 2:
+            raise ValueError(f'Padding cannot be larger than half of data '
+                             f'length, got {padding}.')
         pad_idx = int(np.floor(padding * sfreq / decim))
         out = out[..., pad_idx:-pad_idx]
-        weights = weights[..., pad_idx:-pad_idx]
+        weights = weights[..., pad_idx:-pad_idx] if weights is not None \
+            else None
 
     # compute for each connectivity method
     this_conn = {}
