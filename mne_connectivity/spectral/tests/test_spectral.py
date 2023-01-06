@@ -614,6 +614,62 @@ def test_spectral_connectivity_time_resolved(method, mode):
                    for idx, jdx in triu_inds)
 
 
+@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli'])
+@pytest.mark.parametrize(
+    'mode', ['cwt_morlet', 'multitaper'])
+@pytest.mark.parametrize('padding', [0, 1, 5])
+def test_spectral_connectivity_time_padding(method, mode, padding):
+    """Test time-resolved spectral connectivity."""
+    sfreq = 50.
+    n_signals = 3
+    n_epochs = 2
+    n_times = 300
+    trans_bandwidth = 2.
+    tmin = 0.
+    tmax = (n_times - 1) / sfreq
+    # 5Hz..15Hz
+    fstart, fend = 5.0, 15.0
+    data, _ = create_test_dataset(
+        sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
+    ch_names = np.arange(n_signals).astype(str).tolist()
+    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types='eeg')
+    data = EpochsArray(data, info)
+
+    # define some frequencies for tfr
+    freqs = np.arange(3, 20.5, 1)
+
+    # run connectivity estimation
+    if padding == 5:
+        with pytest.raises(ValueError):
+            con = spectral_connectivity_time(
+                data, freqs, sfreq=sfreq, method=method, mode=mode,
+                n_cycles=5, padding=padding)
+        return
+    else:
+        con = spectral_connectivity_time(
+            data, freqs, sfreq=sfreq, method=method, mode=mode,
+            n_cycles=5, padding=padding)
+
+    assert con.shape == (n_epochs, n_signals ** 2, len(con.freqs))
+    assert con.get_data(output='dense').shape == \
+        (n_epochs, n_signals, n_signals, len(con.freqs))
+
+    # test the simulated signal
+    triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
+
+    # average over frequencies
+    conn_data = con.get_data(output='dense').mean(axis=-1)
+
+    # the indices at which there is a correlation should be greater
+    # then the rest of the components
+    for epoch_idx in range(n_epochs):
+        high_conn_val = conn_data[epoch_idx, 0, 1]
+        assert all(high_conn_val >= conn_data[epoch_idx, idx, jdx]
+                   for idx, jdx in triu_inds)
+
+
 def test_save(tmp_path):
     """Test saving results of spectral connectivity."""
     rng = np.random.RandomState(0)
