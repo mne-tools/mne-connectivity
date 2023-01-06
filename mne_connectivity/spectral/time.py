@@ -24,8 +24,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning', padding=0,
                                mode='cwt_morlet', mt_bandwidth=None,
-                               n_cycles=7, decim=1, n_jobs=1,
-                               verbose=None):
+                               n_cycles=7, decim=1, n_jobs=1, verbose=None):
     """Compute time-frequency-domain connectivity measures.
 
     This function computes spectral connectivity over time from epoched data.
@@ -41,7 +40,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         The data from which to compute connectivity.
     freqs : array_like
         Array of frequencies of interest for time-frequency decomposition.
-        Only the frequencies within the range specified by ``fmin``  and
+        Only the frequencies within the range specified by ``fmin`` and
         ``fmax`` are used.
     method : str | list of str
         Connectivity measure(s) to compute. These can be
