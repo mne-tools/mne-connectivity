@@ -89,8 +89,8 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     def _log_connection_number(self, con_i, con_name):
         """Logs the number of the connection being computed."""
         logger.info(
-            f'    computing {con_name} connectivity for connection {con_i+1} '
-            f'of {self.n_cons}'
+            f'    computing {con_name} for connection {con_i+1} of '
+            f'{self.n_cons}'
         )
     
     def _get_block_indices(self, block_i, limit):
@@ -153,7 +153,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         """Sets up the progress bar for tracking computation progress."""      
         self._progress_bar = ProgressBar(
             np.arange(int(np.ceil(self.n_freqs / self.n_jobs)), dtype=np.int32),
-            mesg="Connection computation progress"
+            mesg=f'connectivity frequency blocks'
         )
 
     def cross_spectra_svd(
@@ -288,7 +288,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             ] = (np.arange(n_steps_per_interval))
         
         self._progress_bar = ProgressBar(
-            block_indices, mesg="Connection computation progress"
+            block_indices, mesg='connectivity frequency blocks'
         )
 
     def compute_con(self, seeds, targets, n_epochs):
@@ -596,7 +596,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             H[freqs] = parallel(
                 parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs
             )
-            self.progress += 1
 
         return H
 
