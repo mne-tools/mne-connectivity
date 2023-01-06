@@ -619,7 +619,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
     'mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('padding', [0, 1, 5])
 def test_spectral_connectivity_time_padding(method, mode, padding):
-    """Test time-resolved spectral connectivity."""
+    """Test time-resolved spectral connectivity with padding."""
     sfreq = 50.
     n_signals = 3
     n_epochs = 2
