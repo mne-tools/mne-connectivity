@@ -45,12 +45,12 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
     method : str | list of str
         Connectivity measure(s) to compute. These can be
         ``['coh', 'plv', 'sxy', 'pli', 'wpli']``. These are:
-            * 'coh' : Coherence
-            * 'plv' : Phase-Locking Value (PLV)
-            * 'ciplv' : Corrected imaginary Phase-Locking Value
-            * 'sxy' : Cross-spectrum
-            * 'pli' : Phase-Lag Index
-            * 'wpli': Weighted Phase-Lag Index
+        * 'coh'   : Coherence
+        * 'plv'   : Phase-Locking Value (PLV)
+        * 'ciplv' : Corrected imaginary Phase-Locking Value
+        * 'sxy'   : Cross-spectrum
+        * 'pli'   : Phase-Lag Index
+        * 'wpli'  : Weighted Phase-Lag Index
     average : bool
         Average connectivity scores over epochs. If ``True``, output will be
         an instance of :class:`SpectralConnectivity`, otherwise
@@ -185,8 +185,8 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : Corrected imaginary PLV (icPLV)
-        :footcite:`BrunaEtAl2018` given by::
+        'ciplv' : Corrected imaginary PLV (icPLV) :footcite:`BrunaEtAl2018`
+        given by::
 
                              |E[Im(Sxy/|Sxy|)]|
             ciPLV = ------------------------------------
