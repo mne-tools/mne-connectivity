@@ -836,7 +836,9 @@ def _collate_connectivity_results(
     con, gc_con, topo, gc_topo,  non_gc_non_svd_method_types,
     gc_svd_method_types, con_method_types, indices, remapped_indices
 ):
-    """"""
+    """Collects the connectivity results for non-GC, non-SVD analysis and GC SVD
+    together according to the order in which the respective methods were
+    called."""
     # Collate connectivity results
     if con and gc_con:
         # combines SVD GC and non-GC, non-SVD results
