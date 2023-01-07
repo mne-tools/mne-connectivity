@@ -586,7 +586,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             range(self.n_steps_per_interval),
             initial_value=self.progress,
             max_value=self.n_steps_total,
-            mesg='Connection computation progress'
+            mesg='frequency blocks'
         ):  
             freqs = self._get_block_indices(block_i, self.n_freqs)
             H[freqs] = parallel(
