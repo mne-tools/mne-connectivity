@@ -55,6 +55,10 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
 class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     """Base class for methods that estimate connectivity as mean epoch-wise."""
 
+    name = None
+    accumulate_psd = False
+    n_steps = None
+
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         self.n_signals = n_signals
         self.n_cons = n_cons
@@ -74,6 +78,8 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
 
         self.topographies = None
 
+        self._compute_n_progress_bar_steps()
+
     def start_epoch(self):  # noqa: D401
         """Called at the start of each epoch."""
         pass  # for this type of con. method we don't do anything
@@ -85,12 +91,15 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     def accumulate(self, con_idx, csd_xy):
         """Accumulate CSD for some connections."""
         self._acc[con_idx] += csd_xy
-    
+
+    def _compute_n_progress_bar_steps(self):
+        """Calculates the number of steps to include in the progress bar."""
+        self.n_steps = int(np.ceil(self.n_freqs / self.n_jobs))  
+
     def _log_connection_number(self, con_i, con_name):
         """Logs the number of the connection being computed."""
         logger.info(
-            f'    computing {con_name} for connection {con_i+1} of '
-            f'{self.n_cons}'
+            f'Computing {con_name} for connection {con_i+1} of {self.n_cons}'
         )
     
     def _get_block_indices(self, block_i, limit):
@@ -112,19 +121,6 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
             self.n_times)).transpose(3, 2, 0, 1)
         )
 
-    def reshape_results(self):
-        """Removes the time dimension from con. scores and topographies, if
-        necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[:, :, 0]
-
-            if self.topographies is not None:
-                for group_i in range(2):
-                    for con_i in range(self.n_cons):
-                        self.topographies[group_i][con_i] = (
-                            self.topographies[group_i][con_i][:, :, 0]
-                        )
-
 
 class _CohEstBase(_EpochMeanConEstBase):
     """Base Estimator for Coherence, Coherency, Imag. Coherence."""
@@ -139,23 +135,129 @@ class _CohEstBase(_EpochMeanConEstBase):
         """Accumulate CSD for some connections."""
         self._acc[con_idx] += csd_xy
 
-class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
-    """Base Estimator for coherence-based multivariate methods."""
 
-    n_steps = None
+class _CohEst(_CohEstBase):
+    """Coherence Estimator."""
+
+    name = 'Coherence'
+    accumulate_psd = True
+
+    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
+        """Compute final con. score for some connections."""
+        if self.con_scores is None:
+            self.con_scores = np.zeros(self.csd_shape)
+        csd_mean = self._acc[con_idx] / n_epochs
+        self.con_scores[con_idx] = np.abs(csd_mean) / np.sqrt(psd_xx * psd_yy)
+
+
+class _CohyEst(_CohEstBase):
+    """Coherency Estimator."""
+
+    name = 'Coherency'
+    accumulate_psd = True
+
+    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
+        """Compute final con. score for some connections."""
+        if self.con_scores is None:
+            self.con_scores = np.zeros(self.csd_shape,
+                                       dtype=np.complex128)
+        csd_mean = self._acc[con_idx] / n_epochs
+        self.con_scores[con_idx] = csd_mean / np.sqrt(psd_xx * psd_yy)
+
+
+class _ImCohEst(_CohEstBase):
+    """Imaginary Coherence Estimator."""
+
+    name = 'Imaginary Coherence'
+    accumulate_psd = True
+
+    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
+        """Compute final con. score for some connections."""
+        if self.con_scores is None:
+            self.con_scores = np.zeros(self.csd_shape)
+        csd_mean = self._acc[con_idx] / n_epochs
+        self.con_scores[con_idx] = np.imag(csd_mean) / np.sqrt(psd_xx * psd_yy)
+
+
+class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
+    """Base estimator for maximised imaginary coherence and multivariate
+    interaction measure."""
+
+    compute_mic = False
+    compute_mim = False
+
+    accepted_form_names = ['MIC & MIM', 'MIC', 'MIM']
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         super(_MultivarCohEstBase, self).__init__(
             n_signals, n_cons, n_freqs, n_times, n_jobs
         )
-        
-        self._compute_n_progress_bar_steps()
 
-    def _compute_n_progress_bar_steps(self):
-        """Calculates the number of steps to include in the progress bar."""
-        self.n_steps = int(np.ceil(self.n_freqs / self.n_jobs))
+        self.mic_scores = copy.deepcopy(self.con_scores)
+        self.mim_scores = copy.deepcopy(self.con_scores)
+        self.topographies = np.empty((2, n_cons), dtype=object)
 
-    def cross_spectra_svd(
+    def compute_con(
+        self, seeds, targets, n_seed_components, n_target_components, n_epochs,
+        form_name
+    ):
+        """Computes MIC and/or MIM between sets of signals."""  
+        self._sort_form_name(form_name)
+
+        csd = self.reshape_csd()/n_epochs
+        n_times = csd.shape[0]
+
+        con_i = 0
+        for seed_idcs, target_idcs in zip(seeds, targets):
+            self._log_connection_number(con_i, f'coherence ({form_name})')
+
+            n_seeds = len(seed_idcs)
+            con_idcs = [*seed_idcs, *target_idcs]
+            C = csd[np.ix_(
+                np.arange(n_times), np.arange(self.n_freqs), con_idcs, con_idcs
+            )]
+
+            # Eqs. 32 & 33
+            C_bar, U_bar_aa, U_bar_bb = self._cross_spectra_svd(
+                csd=C,
+                n_seeds=n_seeds,
+                n_seed_components=n_seed_components[con_i],
+                n_target_components=n_target_components[con_i],
+            )
+
+            # Eqs. 3 & 4
+            E = self._compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
+
+            if self.compute_mic:
+                self._compute_mic(
+                    E, C, n_seeds, n_times, U_bar_aa, U_bar_bb, con_i
+                )
+
+            if self.compute_mim:
+                self._compute_mim(E, con_i)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _sort_form_name(self, form_name):
+        """Checks that the form name of the connectivity being computed is
+        appropriate and sets associated class attributes accordingly."""
+        assert form_name in self.accepted_form_names, (
+            'The requested form of multivariate coherence is not recognised by '
+            'the connectivity class. Please contact the mne-connectivity '
+            'developers.'
+        )
+
+        if form_name == 'MIC & MIM':
+            self.compute_mic = True
+            self.compute_mim = True
+        elif form_name == 'MIC':
+            self.compute_mic = True
+        else: # only MIM left
+            self.compute_mim = True
+
+    def _cross_spectra_svd(
         self, csd, n_seeds, n_seed_components, n_target_components
     ):
         """Performs dimensionality reduction on a cross-spectral density using
@@ -190,7 +292,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 
         return C_bar, U_bar_aa, U_bar_bb
 
-    def compute_e(self, csd, n_seeds):
+    def _compute_e(self, csd, n_seeds):
         """Computes E as the imaginary part of the transformed cross-spectra D
         derived from the original cross-spectra "csd" between the seed and target
         signals."""
@@ -202,7 +304,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         )
         T = np.zeros(csd.shape, dtype=np.complex128).transpose(1, 0, 2, 3)
         for block_i in ProgressBar(
-            range(self.n_steps), mesg='Connection computation progress'
+            range(self.n_steps), mesg='frequency blocks'
         ):
             freqs = self._get_block_indices(block_i, self.n_freqs)
             T[freqs] = parallel(
@@ -228,6 +330,59 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 
         return E
 
+    def _compute_mic(self, E, C, n_seeds, n_times, U_bar_aa, U_bar_bb, con_i):
+        """Computes and stores MIC using E, and the topographies using the CSD
+        and SVD derivatives."""
+        # Weights for signals in the groups
+        w_a, V_a = np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))
+        w_b, V_b = np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)
+        alpha = V_a[
+            np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
+            w_a.argmax(axis=2)
+        ]
+        beta = V_b[
+            np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
+            w_b.argmax(axis=2)
+        ]
+
+        # Eqs. 46 & 47
+        self.topographies[0][con_i] = np.abs(
+            np.real(C[:, :, :n_seeds, :n_seeds]) @ 
+            (U_bar_aa @ np.expand_dims(alpha, 3))
+        )[:, :, :, 0].T
+        self.topographies[1][con_i] = np.abs(
+            np.real(C[:, :, n_seeds:, n_seeds:]) @ 
+            (U_bar_bb @ np.expand_dims(beta, 3))
+        )[:, :, :, 0].T
+
+        # Eq. 7
+        self.mic_scores[con_i, :, :] = np.abs(
+            np.einsum(
+                "ijk,ijk->ij", alpha, (E @ np.expand_dims(beta, 3))[:, :, :, 0]
+            ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
+        ).T
+    
+    def _compute_mim(self, E, con_i):
+        """Computes and stores MIM results using E."""
+        # Eq. 14
+        self.mim_scores[con_i, :, :] = (
+            E @ E.transpose(0, 1, 3, 2)
+        ).trace(axis1=2, axis2=3).T
+    
+    def reshape_results(self):
+        """Removes the time dimension from con. scores and topographies, if
+        necessary."""
+        if self.n_times == 0:
+            self.mic_scores = self.mic_scores[:, :, 0]
+            self.mim_scores = self.mim_scores[:, :, 0]
+
+            if self.topographies is not None:
+                for group_i in range(2):
+                    for con_i in range(self.n_cons):
+                        self.topographies[group_i][con_i] = (
+                            self.topographies[group_i][con_i][:, :, 0]
+                        )
+
 def _compute_t(csd, n_seeds):
     """Compute T for a single frequency as the real-valued cross-spectra of
     seeds and targets to the power -0.5."""
@@ -243,18 +398,25 @@ def _compute_t(csd, n_seeds):
     return T
 
 
-class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
-    """Base Estimator for Granger causality multivariate methods."""
+class _MICEst(_MultivarCohEstBase):
+    """Maximised imaginary coherence estimator."""
 
-    n_steps_per_interval = None
-    n_steps_total = None
-    progress = 0
+    name = 'MIC'
 
-    net = None
-    time_reversed = None
+
+class _MIMEst(_MultivarCohEstBase):
+    """Multivariate interaction measure estimator."""
+
+    name = 'MIM'
+
+
+class _GCEstBase(_EpochMeanMultivarConEstBase):
+    """Base Granger causality estimator."""
+
+    autocov = None
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
-        super(_MultivarGCEstBase, self).__init__(
+        super(_GCEstBase, self).__init__(
             n_signals, n_cons, n_freqs, n_times, n_jobs
         )
 
@@ -268,54 +430,11 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             self.n_lags = n_lags
         else:
             self.n_lags = self.n_freqs - 2 # freq. resolution - 1
-        
-        self._compute_n_progress_bar_steps()
-    
-    def _compute_n_progress_bar_steps(self):
-        """Calculates the number of steps to include in the progress bar."""
-        self.n_steps_per_interval = int(np.ceil(self.n_freqs / self.n_jobs))
-        # number of intervals doubled if net or time-reversed methods used
-        n_intervals = 1
-        if self.net:
-            n_intervals *= 2
-        if self.time_reversed:
-            n_intervals *= 2
-        self.n_steps_total = self.n_steps_per_interval * n_intervals
-        
 
-    def compute_con(self, seeds, targets, n_epochs):
-        """Computes Granger causality between sets of signals."""
-        csd = self.reshape_csd()/n_epochs
-
-        autocov = self.csd_to_autocov(csd)
-
-        con_i = 0
-        con_scores = np.zeros((self.n_cons, self.n_freqs, autocov.shape[0]))
-        for con_seeds, con_targets in zip(seeds, targets):
-            self._log_connection_number(con_i, self.name)
-
-            # GC from seeds -> targets (subtracting GC from targets -> seeds if
-            # self.net == True)
-            con_scores[con_i] = self.autocov_to_gc(
-                autocov, con_seeds, con_targets, self.net
-            )
-
-            # GC from seeds -> targets (subtracting GC from targets -> seeds if
-            # self.net == True), subtracting GC from time-reversed seeds ->
-            # targets (subtracting GC from time-reversed targets -> seeds if
-            # self.net == True)
-            if self.time_reversed:
-                con_scores[con_i] -= self.autocov_to_gc(
-                    autocov.transpose(0, 1, 3, 2),
-                    con_seeds,
-                    con_targets,
-                    self.net
-                )
-            
-            con_i += 1
-
-        self.con_scores = con_scores
-        self.reshape_results()
+    def compute_autocov(self, n_epochs):
+        """Computes the autocovariance sequence from the CSD in preparation for
+        computing connectivity."""
+        self.autocov = self.csd_to_autocov(self.reshape_csd()/n_epochs)
 
     def csd_to_autocov(self, csd):
         """Computes the autocovariance sequence from the cross-spectral
@@ -367,15 +486,51 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         return np.reshape(csd_ifft, csd.shape, order="F")
 
-    def autocov_to_gc(self, autocov, con_seeds, con_targets, net):
+    def compute_con(
+        self, seeds, targets, flip_seeds_targets, reverse_time, form_name
+    ):
+        """Computes Granger causality between sets of signals."""
+        seeds, targets = self._sort_inputs(
+            seeds, targets, flip_seeds_targets, reverse_time
+        )
+
+        con_i = 0
+        for con_seeds, con_targets in zip(seeds, targets):
+            self._log_connection_number(con_i, f'GC ({form_name})')
+
+            self.con_scores[con_i] = self.autocov_to_gc(con_seeds, con_targets)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _sort_inputs(self, seeds, targets, flip_seeds_targets, reverse_time):
+        """Actions the input parameters (swap seeds and targets and reverses
+        time direction)."""
+        if not flip_seeds_targets:
+            # standard GC from seeds -> targets
+            output = (seeds, targets)
+        else:
+            # GC from targets -> seeds (used for computing net GC & net TRGC)
+            output = (targets, seeds)
+
+        if reverse_time:
+            # GC from seeds -> targets (or targets -> seeds) with time reversed
+            # by transposing the signal dimensions of the autocovariance
+            # sequence (used for computing TRGC and net TRGC)
+            self.autocov = self.autocov.transpose(0, 1, 3, 2)
+        
+        return output
+
+    def autocov_to_gc(self, con_seeds, con_targets):
         """Computes frequency-domain multivariate Granger causality from an
         autocovariance sequence."""
-        n_times = autocov.shape[0]
-        lags = np.arange(autocov.shape[1])
+        n_times = self.autocov.shape[0]
+        lags = np.arange(self.autocov.shape[1])
         times = np.arange(n_times)
 
         con_idcs = [*con_seeds, *con_targets]
-        con_autocov = autocov[np.ix_(times, lags, con_idcs, con_idcs)]
+        con_autocov = self.autocov[np.ix_(times, lags, con_idcs, con_idcs)]
         new_seeds = np.arange(len(con_seeds))
         new_targets = np.arange(len(con_targets))+len(con_seeds)
 
@@ -386,27 +541,10 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             order="F"
         )
         A, K = self.full_var_to_iss(A_f_3d)
-
-        con_scores = self.iss_to_usgc(
-            A=A,
-            C=A_f_3d,
-            K=K,
-            V=V,
-            seeds=new_seeds,
-            targets=new_targets,
-        ) # GC from seeds -> targets
-
-        if net:
-            con_scores -= self.iss_to_usgc(
-                A=A,
-                C=A_f_3d,
-                K=K,
-                V=V,
-                seeds=new_targets,
-                targets=new_seeds,
-            ) # GC from targets -> seeds
         
-        return con_scores
+        return self.iss_to_usgc(
+            A=A, C=A_f_3d, K=K, V=V, seeds=new_seeds, targets=new_targets,
+        )
 
     def autocov_to_full_var(self, autocov):
         """Computes the full vector autoregressive (VAR) model from an
@@ -509,7 +647,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
         return A_f, V
 
-
     def full_var_to_iss(self, A_f):
         """Computes innovations-form parameters for a state-space model from a
         full vector autoregressive (VAR) model using Aoki's method.
@@ -583,16 +720,12 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         )
         H = np.zeros((h, t, n, n), dtype=np.complex128)
         for block_i in ProgressBar(
-            range(self.n_steps_per_interval),
-            initial_value=self.progress,
-            max_value=self.n_steps_total,
-            mesg='frequency blocks'
-        ):  
+            range(self.n_steps), mesg='frequency blocks'
+        ):
             freqs = self._get_block_indices(block_i, self.n_freqs)
             H[freqs] = parallel(
                 parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs
             )
-        self.progress += self.n_steps_per_interval
 
         return H
 
@@ -615,6 +748,12 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         W = W.transpose(0, 2, 1) @ W
 
         return V[np.ix_(times, seeds, seeds)] - W
+    
+    def reshape_results(self):
+        """Removes the time dimension from con. scores, if
+        necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[:, :, 0]
 
 def _compute_H(A, C, K, z_k, I_n, I_m):
     """Compute the spectral transfer function H for innovations-form state-space
@@ -632,205 +771,29 @@ def _compute_H(A, C, K, z_k, I_n, I_m):
     return H
 
 
-class _CohEst(_CohEstBase):
-    """Coherence Estimator."""
+class _GCEst(_GCEstBase):
+    """Granger causality ([seeds -> targets]) estimator."""
 
-    name = 'Coherence'
-    accumulate_psd = True
-
-    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
-        """Compute final con. score for some connections."""
-        if self.con_scores is None:
-            self.con_scores = np.zeros(self.csd_shape)
-        csd_mean = self._acc[con_idx] / n_epochs
-        self.con_scores[con_idx] = np.abs(csd_mean) / np.sqrt(psd_xx * psd_yy)
+    name = 'GC'
 
 
-class _CohyEst(_CohEstBase):
-    """Coherency Estimator."""
+class _NetGCEst(_GCEstBase):
+    """Granger causality ([seeds -> targets] - [targets -> seeds]) estimator."""
 
-    name = 'Coherency'
-    accumulate_psd = True
-
-    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
-        """Compute final con. score for some connections."""
-        if self.con_scores is None:
-            self.con_scores = np.zeros(self.csd_shape,
-                                       dtype=np.complex128)
-        csd_mean = self._acc[con_idx] / n_epochs
-        self.con_scores[con_idx] = csd_mean / np.sqrt(psd_xx * psd_yy)
+    name = 'Net GC'
 
 
-class _ImCohEst(_CohEstBase):
-    """Imaginary Coherence Estimator."""
+class _TRGCEst(_GCEstBase):
+    """Granger causality (time-reversed[seeds -> targets]) estimator."""
 
-    name = 'Imaginary Coherence'
-    accumulate_psd = True
-
-    def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
-        """Compute final con. score for some connections."""
-        if self.con_scores is None:
-            self.con_scores = np.zeros(self.csd_shape)
-        csd_mean = self._acc[con_idx] / n_epochs
-        self.con_scores[con_idx] = np.imag(csd_mean) / np.sqrt(psd_xx * psd_yy)
-
-class _MIMEst(_MultivarCohEstBase):
-    """Estimator for MIM (multivariate interaction measure)"""
-
-    name = "MIM"
-    accumulate_psd = False
-
-    def compute_con(
-        self, seeds, targets, n_seed_components, n_target_components, n_epochs
-    ):
-        """Computes the multivariate interaction measure between two sets of
-        signals"""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-        con_i = 0
-        for seed_idcs, target_idcs in zip(seeds, targets):
-            self._log_connection_number(con_i, self.name)
-
-            n_seeds = len(seed_idcs)
-            con_idcs = [*seed_idcs, *target_idcs]
-            C = csd[np.ix_(
-                np.arange(n_times), np.arange(self.n_freqs), con_idcs, con_idcs
-            )]
-
-            # Eqs. 32 & 33
-            C_bar, U_bar_aa, _ = self.cross_spectra_svd(
-                csd=C,
-                n_seeds=n_seeds,
-                n_seed_components=n_seed_components[con_i],
-                n_target_components=n_target_components[con_i],
-            )
-
-            # Eqs. 3 & 4
-            E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
-
-            # Eq. 14
-            self.con_scores[con_i, :, :] = (
-                E @ E.transpose(0, 1, 3, 2)
-            ).trace(axis1=2, axis2=3).T
-
-            con_i += 1
-
-        self.reshape_results()
+    name = 'TRGC'
 
 
-class _MICEst(_MultivarCohEstBase):
-    """Estimator for MIC (maximized imaginary coherence)"""
+class _NetTRGCEst(_GCEstBase):
+    """Granger causality (([seeds -> targets] - [targets -> seeds]) -
+    time-reversed([seeds -> targets] - targets -> seeds])) estimator."""
 
-    name = "MIC"
-    accumulate_psd = False
-
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
-        super(_MICEst, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs
-        )
-        self.topographies = np.empty((2, n_cons), dtype=object)
-
-    def compute_con(
-        self, seeds, targets, n_seed_components, n_target_components, n_epochs
-    ):
-        """Computes maximized imaginary coherence between sets of signals."""
-        csd = self.reshape_csd()/n_epochs
-        n_times = csd.shape[0]
-        con_i = 0
-        for seed_idcs, target_idcs in zip(seeds, targets):
-            self._log_connection_number(con_i, self.name)
-
-            n_seeds = len(seed_idcs)
-            con_idcs = [*seed_idcs, *target_idcs]
-            C = csd[np.ix_(
-                np.arange(n_times), np.arange(self.n_freqs), con_idcs, con_idcs
-            )]
-
-            # Eqs. 32 & 33
-            C_bar, U_bar_aa, U_bar_bb = self.cross_spectra_svd(
-                csd=C,
-                n_seeds=n_seeds,
-                n_seed_components=n_seed_components[con_i],
-                n_target_components=n_target_components[con_i],
-            )
-
-            # Eqs. 3 & 4
-            E = self.compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
-
-            # Weights for signals in the groups
-            w_a, V_a = np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))
-            w_b, V_b = np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)
-            alpha = V_a[
-                np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
-                w_a.argmax(axis=2)
-            ]
-            beta = V_b[
-                np.arange(n_times)[:, None], np.arange(self.n_freqs), :,
-                w_b.argmax(axis=2)
-            ]
-
-            # Eqs. 46 & 47
-            self.topographies[0][con_i] = np.abs(
-                np.real(C[:, :, :n_seeds, :n_seeds]) @ 
-                (U_bar_aa @ np.expand_dims(alpha, 3))
-            )[:, :, :, 0].T
-            self.topographies[1][con_i] = np.abs(
-                np.real(C[:, :, n_seeds:, n_seeds:]) @ 
-                (U_bar_bb @ np.expand_dims(beta, 3))
-            )[:, :, :, 0].T
-
-            # Eq. 7
-            self.con_scores[con_i, :, :] = np.abs(
-                np.einsum(
-                    "ijk,ijk->ij",
-                    alpha,
-                    (E @ np.expand_dims(beta, 3))[:, :, :, 0]
-                ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)
-            ).T
-
-            con_i += 1
-
-        self.reshape_results()
-
-
-class _GCEst(_MultivarGCEstBase):
-    """GC Estimator; causality from: [seeds -> targets]."""
-
-    name = "GC"
-    accumulate_psd = False
-    net = False
-    time_reversed = False
-
-
-class _NetGCEst(_MultivarGCEstBase):
-    """Net GC Estimator; causality from: [seeds -> targets] - [targets ->
-    seeds]."""
-
-    name = "Net GC"
-    accumulate_psd = False
-    net = True
-    time_reversed = False
-
-
-class _TRGCEst(_MultivarGCEstBase):
-    """TRGC Estimator; causality from: [seeds -> targets] - time-reversed[seeds
-    -> targets]."""
-
-    name = "TRGC"
-    accumulate_psd = False
-    net = False
-    time_reversed = True
-
-
-class _NetTRGCEst(_MultivarGCEstBase):
-    """Net TRGC Estimator; causality from: ([seeds -> targets] - [targets ->
-    seeds]) - (time-reversed[seeds -> targets] - time-reversed[targets ->
-    seeds])."""
-
-    name = "Net TRGC"
-    accumulate_psd = False
-    net = True
-    time_reversed = True
+    name = 'Net TRGC'
 
 
 class _PLVEst(_EpochMeanConEstBase):
