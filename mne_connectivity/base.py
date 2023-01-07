@@ -1158,6 +1158,14 @@ class BaseMultivariateConnectivity(BaseConnectivity):
         padded_indices = [[], []]
         for group_i, group in enumerate(self.indices):
             for con_i, con in enumerate(group):
+                if np.nonzero(con == self._pad_val):
+                    # this would break the unpadding process when re-loading the
+                    # connectivity object
+                    raise ValueError(
+                        'the connectivity object cannot be saved with '
+                        f'{self._pad_val} in the indices, as index values '
+                        'should be ints'
+                    )
                 padded_indices[group_i].append(con)
                 len_diff = max_n_channels - len(con)
                 if len_diff != 0:
