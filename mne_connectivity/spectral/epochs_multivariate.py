@@ -9,7 +9,7 @@
 # License: BSD (3-clause)
 
 import inspect
-from copy import deepcopy
+import copy
 import numpy as np
 from mne import BaseEpochs
 from mne.parallel import parallel_func
@@ -371,6 +371,9 @@ def _sort_svd_inputs(
     value is non-zero, as using numpy's default cut-off is too liberal (i.e.
     low) for our purposes where we need to be stricter.
     """
+    n_seed_components = copy.copy(n_seed_components)
+    n_target_components = copy.copy(n_target_components)
+
     # finds if any SVD has been requested for seeds and/or targets
     perform_svd = False
     for n_components in (n_seed_components, n_target_components):
@@ -418,19 +421,18 @@ def _sort_svd_inputs(
                         if n_comps != 'rank':
                             raise ValueError(
                                 'n_seed_components and n_target_components '
-                                'must be lists of `None`, an `int`, or the '
-                                'string "rank"'
+                                'must be lists of `None`, `int`, or the string '
+                                '"rank"'
                             )
-                        else:
-                            n_components[index_i] = np.min(
-                                np.linalg.matrix_rank(
-                                    epochs[:, chs, :], tol=nonzero_tol
-                                )
+                        n_components[index_i] = np.min(
+                            np.linalg.matrix_rank(
+                                epochs[:, chs, :], tol=nonzero_tol
                             )
-                    else:
+                        )
+                    elif not isinstance(n_comps, None):
                         raise TypeError(
                             'n_seed_components and n_target_components must be '
-                            'lists of `None`, an `int`, or the string "rank"'
+                            'lists of `None`, `int`, or the string "rank"'
                         )
                     index_i += 1
     
@@ -445,7 +447,7 @@ def _handle_gc_with_svd_connectivity(
     performed for each connection separately."""
     faverage = call_params['faverage']
     n_bands = call_params['n_bands']
-    non_gc_non_svd_method_types = deepcopy(con_method_types)
+    non_gc_non_svd_method_types = copy.deepcopy(con_method_types)
 
     # finds the GC methods to compute
     gc_svd_method_types = [
