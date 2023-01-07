@@ -96,7 +96,7 @@ class _EpochMeanMultivarConEstBase(_AbstractConEstBase):
     def _get_block_indices(self, block_i, limit):
         """Gets indices for a given computation block, excluding those values >=
         a specified limit."""
-        indices = np.arange(block_i * self.n_jobs, (block_i + 1) * self.n_jobs)
+        indices = np.arange(block_i * self.n_jobs, (block_i+1) * self.n_jobs)
 
         return indices[np.nonzero(indices < limit)]
 
@@ -148,13 +148,12 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         super(_MultivarCohEstBase, self).__init__(
             n_signals, n_cons, n_freqs, n_times, n_jobs
         )
+        
+        self._compute_n_progress_bar_steps()
 
-    def _setup_progress_bar(self):
-        """Sets up the progress bar for tracking computation progress."""      
-        self._progress_bar = ProgressBar(
-            np.arange(int(np.ceil(self.n_freqs / self.n_jobs)), dtype=np.int32),
-            mesg=f'connectivity frequency blocks'
-        )
+    def _compute_n_progress_bar_steps(self):
+        """Calculates the number of steps to include in the progress bar."""
+        self.n_steps = int(np.ceil(self.n_freqs / self.n_jobs))
 
     def cross_spectra_svd(
         self, csd, n_seeds, n_seed_components, n_target_components
@@ -202,7 +201,9 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             _compute_t, self.n_jobs, verbose=False
         )
         T = np.zeros(csd.shape, dtype=np.complex128).transpose(1, 0, 2, 3)
-        for block_i in self._progress_bar:
+        for block_i in ProgressBar(
+            range(self.n_steps), mesg='Connection computation progress'
+        ):
             freqs = self._get_block_indices(block_i, self.n_freqs)
             T[freqs] = parallel(
                 parallel_compute_t(real_csd[:, f, :, :], n_seeds)
@@ -247,6 +248,7 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
 
     n_steps_per_interval = None
     n_steps_total = None
+    progress = 0
 
     net = None
     time_reversed = None
@@ -266,30 +268,20 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             self.n_lags = n_lags
         else:
             self.n_lags = self.n_freqs - 2 # freq. resolution - 1
+        
+        self._compute_n_progress_bar_steps()
     
-    def _setup_progress_bar(self):
-        """Sets up the progress bar for tracking computation progress."""
+    def _compute_n_progress_bar_steps(self):
+        """Calculates the number of steps to include in the progress bar."""
+        self.n_steps_per_interval = int(np.ceil(self.n_freqs / self.n_jobs))
         # number of intervals doubled if net or time-reversed methods used
         n_intervals = 1
         if self.net:
             n_intervals *= 2
         if self.time_reversed:
             n_intervals *= 2
-        n_steps_per_interval = int(np.ceil(self.n_freqs / self.n_jobs))
-        n_steps_total = n_steps_per_interval * n_intervals
-
-        # indices for each computation block of each interval used to index
-        # frequencies of the data
-        block_indices = np.zeros((n_steps_total), dtype=np.int32)
-        for interval_i in range(n_intervals):
-            block_indices[
-                interval_i * n_steps_per_interval:
-                (interval_i + 1) * n_steps_per_interval
-            ] = (np.arange(n_steps_per_interval))
+        self.n_steps_total = self.n_steps_per_interval * n_intervals
         
-        self._progress_bar = ProgressBar(
-            block_indices, mesg='connectivity frequency blocks'
-        )
 
     def compute_con(self, seeds, targets, n_epochs):
         """Computes Granger causality between sets of signals."""
@@ -301,7 +293,6 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
         con_scores = np.zeros((self.n_cons, self.n_freqs, autocov.shape[0]))
         for con_seeds, con_targets in zip(seeds, targets):
             self._log_connection_number(con_i, self.name)
-            self._setup_progress_bar()
 
             # GC from seeds -> targets (subtracting GC from targets -> seeds if
             # self.net == True)
@@ -591,11 +582,17 @@ class _MultivarGCEstBase(_EpochMeanMultivarConEstBase):
             _compute_H, self.n_jobs, verbose=False
         )
         H = np.zeros((h, t, n, n), dtype=np.complex128)
-        for block_i in self._progress_bar:  
+        for block_i in ProgressBar(
+            range(self.n_steps_per_interval),
+            initial_value=self.progress,
+            max_value=self.n_steps_total,
+            mesg='Connection computation progress'
+        ):  
             freqs = self._get_block_indices(block_i, self.n_freqs)
             H[freqs] = parallel(
                 parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs
             )
+        self.progress += self.n_steps_per_interval
 
         return H
 
@@ -693,7 +690,6 @@ class _MIMEst(_MultivarCohEstBase):
         con_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             self._log_connection_number(con_i, self.name)
-            self._setup_progress_bar()
 
             n_seeds = len(seed_idcs)
             con_idcs = [*seed_idcs, *target_idcs]
@@ -743,7 +739,6 @@ class _MICEst(_MultivarCohEstBase):
         con_i = 0
         for seed_idcs, target_idcs in zip(seeds, targets):
             self._log_connection_number(con_i, self.name)
-            self._setup_progress_bar()
 
             n_seeds = len(seed_idcs)
             con_idcs = [*seed_idcs, *target_idcs]
