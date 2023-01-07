@@ -416,9 +416,10 @@ _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'plv': _PLVEst, 'ciplv': _ciPLVEst, 'ppc': _PPCEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
                    'dpli': _DPLIEst, 'wpli': _WPLIEst,
-                   'wpli2_debiased': _WPLIDebiasedEst, 'mic': _MICEst,
-                   'mim': _MIMEst, 'gc': _GCEst, 'net_gc': _NetGCEst,
-                   'trgc': _TRGCEst, 'net_trgc': _NetTRGCEst}
+                   'wpli2_debiased': _WPLIDebiasedEst,
+                   'mic': _MICEst, 'mim': _MIMEst, 'gc': _GCEst,
+                   'net_gc': _NetGCEst, 'trgc': _TRGCEst,
+                   'net_trgc': _NetTRGCEst}
 
 
 def _check_estimators(method, mode):

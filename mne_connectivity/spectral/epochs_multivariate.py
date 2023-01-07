@@ -175,12 +175,12 @@ def multivariate_spectral_connectivity_epochs(
     # connection separately
     if present_gc_methods and perform_svd:
         (
-            gc_svd_method_types, non_gc_non_svd_method_types, gc_con, gc_topo,
-            times, n_tapers, n_epochs, freqs, freqs_used, n_nodes,
+            gc_svd_method_types, non_gc_non_svd_method_types, gc_svd_con,
+            gc_svd_topo, times, n_tapers, n_epochs, freqs, freqs_used, n_nodes,
             remapped_indices
         ) = _handle_gc_with_svd_connectivity(
             data=data, indices=indices, n_seed_components=n_seed_components,
-            n_target_components=n_target_components, perform_svd=perform_svd,
+            n_target_components=n_target_components,
             con_method_types=con_method_types,
             present_gc_methods=present_gc_methods, call_params=call_params
         )
@@ -189,8 +189,8 @@ def multivariate_spectral_connectivity_epochs(
     else:
         non_gc_non_svd_method_types = con_method_types
         gc_svd_method_types = []
-        gc_con = []
-        gc_topo = []
+        gc_svd_con = []
+        gc_svd_topo = []
 
     # if no singular value decomposition is being performed or Granger
     # causality is not being computed, the cross-spectral density can be
@@ -209,7 +209,7 @@ def multivariate_spectral_connectivity_epochs(
     
     # combines the GC SVD and non-GC, non-SVD results together
     con, topo, remapped_indices = _collate_connectivity_results(
-        con=con, gc_con=gc_con, topo=topo, gc_topo=gc_topo,
+        con=con, gc_svd_con=gc_svd_con, topo=topo, gc_svd_topo=gc_svd_topo,
         non_gc_non_svd_method_types=non_gc_non_svd_method_types,
         gc_svd_method_types=gc_svd_method_types,
         con_method_types=con_method_types, indices=indices,
@@ -283,6 +283,8 @@ def _sort_estimator_inputs(method, mode):
         method = [method]  # make it a list so we can iterate over it
 
     con_method_types, _, _, _ = _check_estimators(method, mode)
+    metrics_str = ', '.join([meth.name for meth in con_method_types])
+    logger.info('    the following metrics will be computed: %s' % metrics_str)
 
     # find which Granger causality methods are being called
     present_gc_methods = [
@@ -376,25 +378,25 @@ def _sort_svd_inputs(
 
     # finds if any SVD has been requested for seeds and/or targets
     perform_svd = False
+    if n_seed_components is None:
+         n_seed_components = [None for _ in range(n_cons)]
+    if n_target_components is None:
+         n_target_components = [None for _ in range(n_cons)]
     for n_components in (n_seed_components, n_target_components):
-        if n_components is None:
-            n_components = [None for _ in range(n_cons)]
-        else:
-            if not isinstance(n_components, list):
-                raise TypeError(
-                    'n_seed_components and n_target_components must be lists'
-                )
-            if n_cons != len(n_components):
-                raise ValueError(
-                    'n_seed_components and n_target_components must have the '
-                    'same length as specified the number of connections in '
-                    f'indices. Got: {len(n_components)} components and '
-                    f'{n_cons} connections'
-                )
-            if not perform_svd and any(
-                n_comps is not None for n_comps in n_components
-            ):
-                perform_svd = True
+        if not isinstance(n_components, list):
+            raise TypeError(
+                'n_seed_components and n_target_components must be lists'
+            )
+        if n_cons != len(n_components):
+            raise ValueError(
+                'n_seed_components and n_target_components must have the same '
+                'length as specified the number of connections in indices. '
+                f'Got: {len(n_components)} components and {n_cons} connections'
+            )
+        if not perform_svd and any(
+            n_comps is not None for n_comps in n_components
+        ):
+            perform_svd = True
 
     # if SVD is requested, extract the data and perform subsequent checks
     if perform_svd:
@@ -439,8 +441,8 @@ def _sort_svd_inputs(
     return perform_svd, n_seed_components, n_target_components
 
 def _handle_gc_with_svd_connectivity(
-    data, indices, n_seed_components, n_target_components, perform_svd,
-    con_method_types, present_gc_methods, call_params
+    data, indices, n_seed_components, n_target_components, con_method_types,
+    present_gc_methods, call_params
 ):
     """Computes Granger causality connectivity if SVD is being performed, in
     which case the SVD, CSD computation, and connectivity computation must be
@@ -545,7 +547,7 @@ def _epochs_svd(epochs, n_comps):
     S_k = np.eye(n_comps) * S[:, np.newaxis][:, :n_comps, :n_comps]
     V_k = V[:, :n_comps, :n_comps]
 
-    # reconstruct the dimensionality-reduced data (have to tranpose the data
+    # reconstruct the dimensionality-reduced data (have to transpose the data
     # back into [epochs x channels x timepoints])
     return (U_k @ (S_k @ V_k)).transpose(0, 2, 1)
 
@@ -581,8 +583,8 @@ def _handle_non_gc_non_svd_connectivity(
 def _compute_csd(
     data, indices, sfreq, mode, tmin, tmax, fmin, fmax, fskip, faverage,
     cwt_freqs, mt_bandwidth, mt_adaptive, mt_low_bias, cwt_n_cycles, block_size,
-    n_jobs, n_bands, con_method_types, parallel, epoch_spectral_connectivity,
-    times_in, gc_n_lags
+    n_jobs, n_bands, con_method_types, parallel,
+    epoch_spectral_connectivity, times_in, gc_n_lags
 ):
     """Computes the cross-spectral density of the data in preparation for the
     multivariate connectivity computations."""
@@ -718,8 +720,8 @@ def _instantiate_con_estimators(
     computed."""
     con_methods = []
     for mtype in con_method_types:
-        # if a GC method, provide n_lags argument
         if "n_lags" in list(inspect.signature(mtype).parameters):
+            # if a GC method, provide n_lags argument
             con_methods.append(
                 mtype(
                     use_n_signals, n_cons, n_freqs, n_times_spectrum, gc_n_lags,
@@ -730,9 +732,6 @@ def _instantiate_con_estimators(
             con_methods.append(
                 mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum, n_jobs)
             )
-
-    metrics_str = ', '.join([meth.name for meth in con_methods])
-    logger.info('    the following metrics will be computed: %s' % metrics_str)
     
     return con_methods
 
@@ -742,32 +741,41 @@ def _compute_connectivity(
     freqs
 ):
     """Computes the multivariate connectivity results."""
-    con = list()
-    topo = list()
-    for conn_method in con_methods:
-        if conn_method.name in ["GC", "Net GC", "TRGC", "Net TRGC"]:
-            conn_method.compute_con(indices[0], indices[1], n_epochs)
-        else:
-            conn_method.compute_con(
-                indices[0], indices[1], n_seed_components, n_target_components,
-                n_epochs
-            )
+    con = [None for _ in range(len(con_methods))]
+    topo = [None for _ in range(len(con_methods))]
 
-        # get the connectivity and topography scores
-        this_con = conn_method.con_scores
-        this_topo = conn_method.topographies
+    # add the GC results to con in the correct positions according to the order
+    # of con_methods
+    con = _compute_gc_connectivity(
+        con=con, con_methods=con_methods, indices=indices, n_epochs=n_epochs
+    )
+
+    # add the coherence results to con in the correct positions according to the
+    # order of con_methods
+    con, topo = _compute_coh_connectivity(
+        con=con, topo=topo, con_methods=con_methods, indices=indices,
+        n_epochs=n_epochs, n_seed_components=n_seed_components,
+        n_target_components=n_target_components
+    )
+
+    method_i = 0
+    for method_con, method_topo in zip(con, topo):
+        assert method_con is not None, (
+            'A connectivity results has been missed. Please contact the '
+            'mne-connectivity developers.'
+        )
 
         _check_correct_results_dimensions(
-            this_con, this_topo, n_cons, n_freqs, conn_method.n_times
+            method_con, method_topo, n_cons, n_freqs, con_methods[0].n_times
         )
 
         if faverage:
-            this_con, this_topo = _compute_f_average(
-                this_con, this_topo, n_cons, n_bands, freq_idx_bands
-            )
-
-        con.append(this_con)
-        topo.append(this_topo)
+            con[method_i], topo[method_i] = _compute_faverage(
+                    con=method_con, topo=method_topo, n_cons=n_cons,
+                    n_bands=n_bands, freq_idx_bands=freq_idx_bands
+                )
+        
+        method_i += 1
 
     freqs_used = freqs
     if faverage:
@@ -778,6 +786,176 @@ def _compute_connectivity(
     n_nodes = n_signals
 
     return con, topo, freqs_used, n_nodes
+
+def _compute_gc_connectivity(con, con_methods, indices, n_epochs):
+    """Computes GC connectivity.
+    
+    Different GC methods can rely on common information, so rather than
+    re-computing this information everytime a different GC method is called,
+    store this information such that it can be accessed to compute the final GC
+    connectivity scores when needed.
+    """
+    compute_gc_forms = _get_gc_forms_to_compute(con_methods=con_methods)
+
+    if compute_gc_forms:
+        # computes autocovariance once and assigns it to all GC methods
+        _compute_and_set_gc_autocov(compute_gc_forms, n_epochs)
+
+        gc_scores = {}
+        for form_name, form_info in compute_gc_forms.items():
+            # computes connectivity for individual GC forms
+            form_info['method_class'].compute_con(
+                indices[0], indices[1], form_info['flip_seeds_targets'], 
+                form_info['reverse_time'], form_name
+            )
+
+            # assigns connectivity score to their appropriate GC forms for
+            # combining into the final GC method results
+            gc_scores[form_name] = form_info['method_class'].con_scores
+        
+        # combines results of individual GC forms
+        con = _combine_gc_forms(con, con_methods, gc_scores)
+
+    return con
+
+def _get_gc_forms_to_compute(con_methods):
+    """Finds the GC forms that need to be computed."""
+    # different possible forms of GC with information on how to handle indices,
+    # time-direction, what GC variants this form is used for, and a place to
+    # store the class where the results will be computed
+    possible_gc_forms = {
+        'seeds -> targets': dict(
+            flip_seeds_targets=False, reverse_time=False,
+            for_methods=['GC', 'Net GC', 'TRGC', 'Net TRGC'], method_class=None
+        ),
+        'targets -> seeds': dict(
+            flip_seeds_targets=True, reverse_time=False,
+            for_methods=['Net GC', 'Net TRGC'], method_class=None
+        ),
+        'time-reversed[seeds -> targets]': dict(
+            flip_seeds_targets=False, reverse_time=True,
+            for_methods=['TRGC', 'Net TRGC'], method_class=None
+        ),
+        'time-reversed[targets -> seeds]': dict(
+            flip_seeds_targets=True, reverse_time=True,
+            for_methods=['Net TRGC'], method_class=None
+        )
+    }
+
+    compute_gc_forms = {}
+    for form_name, form_info in possible_gc_forms.items():
+        for method in con_methods:
+            if (
+                method.name in form_info['for_methods'] and
+                form_name not in compute_gc_forms.keys()
+            ):
+                form_info.update(method_class=copy.deepcopy(method))
+                compute_gc_forms[form_name] = form_info
+    
+    return compute_gc_forms
+
+def _compute_and_set_gc_autocov(compute_gc_forms, n_epochs):
+    """Computes autocovariance once and assigns it to all GC methods."""
+    first_form = True
+    for form_info in compute_gc_forms.values():
+        if first_form:
+            form_info['method_class'].compute_autocov(n_epochs)
+            autocov = form_info['method_class'].autocov.copy()
+            first_form = False
+        else:
+            form_info['method_class'].autocov = autocov
+
+def _combine_gc_forms(con, con_methods, gc_scores):
+    """Combines the information from all the different GC forms so that the
+    final connectivity scores for the requested GC methods are returned."""
+    for method_i, method in enumerate(con_methods):
+        if method.name == 'GC':
+            con[method_i] = gc_scores['seeds -> targets']
+        elif method.name == 'Net GC':
+            con[method_i] = (
+                gc_scores['seeds -> targets'] - gc_scores['targets -> seeds']
+            )
+        elif method.name == 'TRGC':
+            con[method_i] = (
+                gc_scores['seeds -> targets'] -
+                gc_scores['time-reversed[seeds -> targets]']
+            )
+        elif method.name == 'Net TRGC':
+            con[method_i] = (
+                (
+                    gc_scores['seeds -> targets'] -
+                    gc_scores['targets -> seeds']
+                ) - (
+                    gc_scores['time-reversed[seeds -> targets]'] -
+                    gc_scores['time-reversed[targets -> seeds]']
+                )
+            )
+
+    return con
+
+def _compute_coh_connectivity(
+    con, topo, con_methods, indices, n_epochs, n_seed_components,
+    n_target_components
+):
+    """Computes MIC and MIM connectivity.
+    
+    MIC and MIM rely on common information, so rather than re-computing this
+    information everytime a different coherence method is called, store this
+    information such that it can be accessed to compute the final MIC and MIM
+    connectivity scores when needed.
+    """
+    compute_coh_form = _get_coh_form_to_compute(con_methods=con_methods)
+
+    if compute_coh_form:
+        # compute connectivity for MIC and/or MIM in a single instance
+        form_name = list(compute_coh_form.keys())[0] # MIC & MIM, MIC, or MIM
+        form_info = compute_coh_form[form_name]
+        form_info['method_class'].compute_con(
+            indices[0], indices[1], n_seed_components, n_target_components,
+            n_epochs, form_name
+        )
+    
+        # store the MIC and/or MIM results in the right places
+        for method_i, method in enumerate(con_methods):
+            if method.name == "MIC":
+                con[method_i] = form_info['method_class'].mic_scores
+                topo[method_i] = form_info['method_class'].topographies
+            elif method.name == "MIM":
+                con[method_i] = form_info['method_class'].mim_scores
+
+    return con, topo
+
+def _get_coh_form_to_compute(con_methods):
+    """Finds the coherence form that need to be computed."""
+    possible_coh_forms = {
+        'MIC & MIM': dict(
+            for_methods=['MIC', 'MIM'], exclude_methods=[], method_class=None
+        ),
+        'MIC': dict(
+            for_methods=['MIC'], exclude_methods=['MIM'], method_class=None
+        ),
+        'MIM': dict(
+            for_methods=['MIM'], exclude_methods=['MIC'], method_class=None
+        )
+    }
+
+    method_names = [method.name for method in con_methods]
+    compute_coh_form = {}
+    for form_name, form_info in possible_coh_forms.items():
+        if (
+            all(name in method_names for name in form_info['for_methods']) and
+            not any(
+                name in method_names for name in form_info['exclude_methods']
+            )
+        ):
+            coh_class = con_methods[
+                method_names.index(form_info['for_methods'][0])
+            ]
+            form_info.update(method_class=coh_class)
+            compute_coh_form[form_name] = form_info
+            break # only one form is possible at any one instance
+    
+    return compute_coh_form
 
 def _check_correct_results_dimensions(con, topo, n_cons, n_freqs, n_times):
     """Checks that the results of the connectivity computations have the
@@ -813,7 +991,7 @@ def _check_correct_results_dimensions(con, topo, n_cons, n_freqs, n_times):
                     'number of timepoints. Please contact the mne-connectivity '
                     'developers.')
 
-def _compute_f_average(con, topo, n_cons, n_bands, freq_idx_bands):
+def _compute_faverage(con, topo, n_cons, n_bands, freq_idx_bands):
     """Computes the average connectivity across the frequency bands."""
     con_shape = (n_cons, n_bands) + con.shape[2:]
     con_bands = np.empty(con_shape, dtype=con.dtype)
@@ -835,21 +1013,21 @@ def _compute_f_average(con, topo, n_cons, n_bands, freq_idx_bands):
     return con_bands, topo_bands
 
 def _collate_connectivity_results(
-    con, gc_con, topo, gc_topo,  non_gc_non_svd_method_types,
+    con, gc_svd_con, topo, gc_svd_topo, non_gc_non_svd_method_types,
     gc_svd_method_types, con_method_types, indices, remapped_indices
 ):
     """Collects the connectivity results for non-GC, non-SVD analysis and GC SVD
     together according to the order in which the respective methods were
     called."""
     # Collate connectivity results
-    if con and gc_con:
+    if con and gc_svd_con:
         # combines SVD GC and non-GC, non-SVD results
-        con.extend(gc_con)
-        topo.extend(gc_topo)
+        con.extend(gc_svd_con)
+        topo.extend(gc_svd_topo)
         # orders the results according to the order they were called
         methods_order = [
-            *[mtype.name for mtype in gc_svd_method_types],
-            *[mtype.name for mtype in non_gc_non_svd_method_types]
+            *[mtype.name for mtype in non_gc_non_svd_method_types],
+            *[mtype.name for mtype in gc_svd_method_types]
         ]
         con = [
             con[methods_order.index(mtype.name)] for mtype in con_method_types
@@ -858,10 +1036,10 @@ def _collate_connectivity_results(
             topo[methods_order.index(mtype.name)] for mtype in con_method_types
         ]
 
-    elif not con and gc_con:
+    elif not con and gc_svd_con:
         # leaves SVD GC results as the only results
-        con = gc_con
-        topo = gc_topo
+        con = gc_svd_con
+        topo = gc_svd_topo
         # finds the remapped indices of non-SVD data
         unique_indices = np.unique(np.concatenate(sum(indices, [])))
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(unique_indices)}
