@@ -209,8 +209,9 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
                                  mode, window_fun, eigvals, wavelets,
                                  freq_mask, mt_adaptive, idx_map, block_size,
                                  psd, accumulate_psd, con_method_types,
-                                 con_methods, n_signals, use_n_signals, n_times,
-                                 gc_n_lags, accumulate_inplace=True):
+                                 con_methods, n_signals, n_times,
+                                 use_n_signals=None, gc_n_lags=None,
+                                 accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
     n_cons = len(idx_map[0])
 
@@ -227,12 +228,15 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
         for mtype in con_method_types:
             method_params = list(inspect.signature(mtype).parameters)
             if "n_signals" in method_params:
+                # if it's a multivariate connectivoty method
                 if "n_lags" in method_params:
+                    # if it's a Granger causality method
                     con_methods.append(
                         mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum,
                               gc_n_lags)
                     )
                 else:
+                    # if it's a coherence method
                     con_methods.append(
                         mtype(use_n_signals, n_cons, n_freqs, n_times_spectrum)
                     )
@@ -768,7 +772,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             mt_adaptive=mt_adaptive,
             con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
-            n_signals=n_signals, n_times=n_times, gc_n_lags=None,
+            n_signals=n_signals, n_times=n_times,
             accumulate_inplace=True if n_jobs == 1 else False)
         call_params.update(**spectral_params)
 
