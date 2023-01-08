@@ -1050,10 +1050,13 @@ class BaseMultivariateConnectivity(BaseConnectivity):
     # until they are no longer ragged, at which point they can be saved with
     # HDF5 (np.inf is chosen as it should not appear in the xarray attributes)
 
-    def _add_topographies(self, topographies, indices, data):
+    def _add_multivariate_attrs(self, topographies, n_lags, indices, data):
+        """Add multivariate connectivity-specific attributes to the object."""
         if topographies is not None:
             self._check_topographies_consistency(topographies, indices, data)
         self.attrs['topographies'] = topographies
+
+        self.attrs['n_lags'] = n_lags
 
     def _check_topographies_consistency(
         self, topographies, indices, data
@@ -1117,6 +1120,11 @@ class BaseMultivariateConnectivity(BaseConnectivity):
         """Connectivity topographies."""
         return self.attrs['topographies']
     
+    @property
+    def n_lags(self):
+        """Number of lags used when computing connectivity."""
+        return self.attrs['n_lags']
+
     def save(self, fname):
         """Save connectivity data to disk.
 
@@ -1274,14 +1282,15 @@ class MultivariateSpectralConnectivity(
 
     def __init__(self, data, freqs, n_nodes, names=None,
                  indices=None, method=None, spec_method=None,
-                 n_epochs_used=None, topographies=None, **kwargs):
+                 n_epochs_used=None, topographies=None, n_lags=None, **kwargs):
         super(MultivariateSpectralConnectivity, self).__init__(
             data=data, names=names, method=method, indices=indices,
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method,
             n_epochs_used=n_epochs_used, **kwargs
         )
-        super(MultivariateSpectralConnectivity, self)._add_topographies(
-            topographies=topographies, indices=indices, data=self.get_data()
+        super(MultivariateSpectralConnectivity, self)._add_multivariate_attrs(
+            topographies=topographies, n_lags=n_lags, indices=indices,
+            data=self.get_data()
         )
 
 
@@ -1323,8 +1332,9 @@ class MultivariateSpectroTemporalConnectivity(
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method, times=times,
             n_epochs_used=n_epochs_used, **kwargs
         )
-        super(MultivariateSpectroTemporalConnectivity, self)._add_topographies(
-            topographies=topographies, indices=indices, data=self.get_data()
+        super(MultivariateSpectralConnectivity, self)._add_multivariate_attrs(
+            topographies=topographies, n_lags=n_lags, indices=indices,
+            data=self.get_data()
         )
         
 

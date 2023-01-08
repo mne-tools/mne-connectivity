@@ -218,7 +218,8 @@ def multivariate_spectral_connectivity_epochs(
 
     return _store_connectivity(
         con, topo, method, names, freqs, n_nodes, mode, remapped_indices,
-        n_epochs, freqs_used, times, n_tapers, metadata, events, event_id
+        n_epochs, freqs_used, times, n_tapers, gc_n_lags, metadata, events,
+        event_id
     )
 
 
@@ -1053,7 +1054,7 @@ def _collate_connectivity_results(
 
 def _store_connectivity(
     con, topo, method, names, freqs, n_nodes, mode, indices, n_epochs,
-    freqs_used, times, n_tapers, metadata, events, event_id
+    freqs_used, times, n_tapers, gc_n_lags, metadata, events, event_id
 ):
     """Stores multivariate connectivity results in an mne-connectivity
     object."""
@@ -1064,9 +1065,11 @@ def _store_connectivity(
             data=_con, topographies=_topo, names=names, freqs=freqs,
             method=_method, n_nodes=n_nodes, spec_method=mode, indices=indices,
             n_epochs_used=n_epochs, freqs_used=freqs_used, times_used=times,
-            n_tapers=n_tapers, metadata=metadata, events=events,
+            n_tapers=n_tapers, n_lags=None, metadata=metadata, events=events,
             event_id=event_id
         )
+        if _method in ['gc', 'net_gc', 'trgc', 'net_trgc']:
+            kwargs.update(n_lags=gc_n_lags)
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
             conn_class = MultivariateSpectralConnectivity
