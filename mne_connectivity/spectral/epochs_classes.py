@@ -420,16 +420,13 @@ class _GCEstBase(_EpochMeanMultivarConEstBase):
             n_signals, n_cons, n_freqs, n_times, n_jobs
         )
 
-        if n_lags:
-            if n_lags >= (self.n_freqs - 1) * 2:
-                raise ValueError(
-                    f"The number of lags ({n_lags}) must be less than double "
-                    "the frequency resolution of the cross-spectral density "
-                    f"({(self.n_freqs - 1) * 2})."
-                )
-            self.n_lags = n_lags
-        else:
-            self.n_lags = self.n_freqs - 2 # freq. resolution - 1
+        if n_lags >= (self.n_freqs - 1) * 2:
+            raise ValueError(
+                f'the number of lags ({n_lags}) must be less than double the '
+                'frequency resolution of the cross-spectral density '
+                f'({(self.n_freqs - 1) * 2}).'
+            )
+        self.n_lags = n_lags
 
     def compute_autocov(self, n_epochs):
         """Computes the autocovariance sequence from the CSD in preparation for
