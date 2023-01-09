@@ -1028,7 +1028,7 @@ class _MVCSpectralEpochs():
 
         if len(self.method) == 1:
             # for a single method store the connectivity object directly
-            self.connectivity = self.conectivity[0]
+            self.connectivity = self.connectivity[0]
 
 
 def multivariate_spectral_connectivity_epochs(
