@@ -86,7 +86,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         Smoothing kernel type. Choose either 'square' or 'hanning'.
     padding : float
         Amount of time to consider as padding at the beginning and end of each
-        epoch in seconds.
+        epoch in seconds. See Notes for more information.
     mode : str
         Time-frequency decomposition method. Can be either: 'multitaper', or
         'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
