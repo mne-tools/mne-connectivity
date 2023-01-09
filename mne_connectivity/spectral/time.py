@@ -44,11 +44,10 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         ``fmax`` are used.
     method : str | list of str
         Connectivity measure(s) to compute. These can be
-        ``['coh', 'plv', 'sxy', 'pli', 'wpli']``. These are:
+        ``['coh', 'plv', 'pli', 'wpli']``. These are:
         * 'coh'   : Coherence
         * 'plv'   : Phase-Locking Value (PLV)
         * 'ciplv' : Corrected imaginary Phase-Locking Value
-        * 'sxy'   : Cross-spectrum
         * 'pli'   : Phase-Lag Index
         * 'wpli'  : Weighted Phase-Lag Index
     average : bool
@@ -199,8 +198,6 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                              |E[Im(Sxy/|Sxy|)]|
             ciPLV = ------------------------------------
                      sqrt(1 - |E[real(Sxy/|Sxy|)]| ** 2)
-
-        'sxy' : Cross spectrum Sxy
 
         'pli' : Phase Lag Index (PLI) :footcite:`StamEtAl2007` given by::
 
@@ -441,7 +438,8 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
             window_length = np.arange(0., n_c / float(f), 1.0 / sfreq).shape[0]
             half_nbw = mt_bandwidth / 2.
             n_tapers = int(np.floor(mt_bandwidth - 1))
-            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers)
+            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers,
+                                      sym=False)
             weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
             # weights have shape (n_tapers, n_freqs, n_times)
     else:
@@ -525,7 +523,7 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
     s_xy = _smooth_spectra(s_xy, kernel)
     out = []
     conn_func = {'plv': _plv, 'ciplv': _ciplv, 'pli': _pli, 'wpli': _wpli,
-                 'coh': _coh, 'cs': _cs}
+                 'coh': _coh}
     for m in method:
         if m == 'coh':
             s_xx = psd[x]
@@ -577,10 +575,6 @@ def _coh(s_xx, s_yy, s_xy):
                       s_yy.mean(axis=-1, keepdims=True))
     coh = con_num / con_den
     return coh
-
-
-def _cs(s_xy):
-    return s_xy.mean(axis=-1, keepdims=True)
 
 
 def _compute_csd(x, y, weights):
