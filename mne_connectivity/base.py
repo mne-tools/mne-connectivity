@@ -1048,20 +1048,25 @@ class BaseMultivariateConnectivity(BaseConnectivity):
 
     _pad_val = np.inf # used to pad ragged xarray attributes before saving
     # until they are no longer ragged, at which point they can be saved with
-    # HDF5 (np.inf is chosen as it should not appear in the xarray attributes)
+    # HDF5 (np.inf is chosen as it should not appear in the xarray attributes;
+    # if it is, an error will be raised when trying to save)
 
-    def _add_multivariate_attrs(self, topographies, n_lags, indices, data):
+    def _add_multivariate_attrs(self, topographies, n_components, n_lags):
         """Add multivariate connectivity-specific attributes to the object."""
         if topographies is not None:
-            self._check_topographies_consistency(topographies, indices, data)
+            self._check_topographies_consistency(topographies)
         self.attrs['topographies'] = topographies
+
+        if n_components is not None:
+            self._check_n_components_consistency(n_components)
+        self.attrs['n_components'] = n_components
 
         self.attrs['n_lags'] = n_lags
 
-    def _check_topographies_consistency(
-        self, topographies, indices, data
-    ):
+    def _check_topographies_consistency(self, topographies):
         """Perform topographies input checks."""
+        data = self.get_data()
+
         if not isinstance(topographies, np.ndarray):
             raise TypeError(
                 'Topographies must be passed in as a numpy array.'
@@ -1093,8 +1098,8 @@ class BaseMultivariateConnectivity(BaseConnectivity):
                     f'as the connectivity data ({len(data)}).'
                 )
             for con_i, topo_data in enumerate(topographies_group):
-                if indices is not None and topo_data.shape[0] != \
-                len(indices[group_i][con_i]):
+                if self.indices is not None and topo_data.shape[0] != \
+                len(self.indices[group_i][con_i]):
                     raise ValueError(
                         'If topographies are passed in then the values for '
                         'each connection must have the same number of entries '
@@ -1102,7 +1107,7 @@ class BaseMultivariateConnectivity(BaseConnectivity):
                         f'For the {group_names[group_i]}, connection {con_i}, '
                         f'the topographies have {topo_data.shape[0]} entries, '
                         'but the indices contain '
-                        f'{len(indices[group_i][con_i])} channels.'
+                        f'{len(self.indices[group_i][con_i])} channels.'
                     )
                 if topo_data.shape[1:] != data[con_i].shape:
                     raise ValueError(
@@ -1115,11 +1120,35 @@ class BaseMultivariateConnectivity(BaseConnectivity):
                         f'{data[con_i].shape}.'
                     )
 
+    def _check_n_components_consistency(self, n_components):
+        """Perform n_components input checks."""
+        if not isinstance(n_components, tuple):
+            raise TypeError('n_components should be a tuple')
+
+        if len(n_components) != 2:
+            raise ValueError('n_components should be a tuple of two lists')
+
+        for group in n_components:
+            if not isinstance(group, list):
+                raise TypeError('n_components should contain two lists')
+
+        if len(n_components[0]) != len(n_components[1]):
+            raise ValueError(
+                'the seed and target portions of n_components must have an '
+                'equal length'
+            )
+
     @property
     def topographies(self):
         """Connectivity topographies."""
         return self.attrs['topographies']
     
+    @property
+    def n_components(self):
+        """Number of components used for the SVD in the connectivity
+        computation."""
+        return self.attrs['n_components']
+
     @property
     def n_lags(self):
         """Number of lags used when computing connectivity."""
@@ -1280,17 +1309,17 @@ class MultivariateSpectralConnectivity(
     mne_connectivity.multivariate_spectral_connectivity_epochs
     """
 
-    def __init__(self, data, freqs, n_nodes, names=None,
-                 indices=None, method=None, spec_method=None,
-                 n_epochs_used=None, topographies=None, n_lags=None, **kwargs):
+    def __init__(
+        self, data, freqs, n_nodes, names=None, indices=None, method=None,
+        spec_method=None, n_epochs_used=None, topographies=None,
+        n_components=None, n_lags=None, **kwargs):
         super(MultivariateSpectralConnectivity, self).__init__(
             data=data, names=names, method=method, indices=indices,
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method,
             n_epochs_used=n_epochs_used, **kwargs
         )
         super(MultivariateSpectralConnectivity, self)._add_multivariate_attrs(
-            topographies=topographies, n_lags=n_lags, indices=indices,
-            data=self.get_data()
+            topographies=topographies, n_components=n_components, n_lags=n_lags
         )
 
 
