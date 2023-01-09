@@ -642,7 +642,8 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
 
     # run connectivity estimation
     if padding == 5:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='Padding cannot be larger than '
+                                             'half of data length'):
             con = spectral_connectivity_time(
                 data, freqs, sfreq=sfreq, method=method, mode=mode,
                 n_cycles=5, padding=padding)
