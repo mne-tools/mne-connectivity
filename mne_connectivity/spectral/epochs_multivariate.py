@@ -360,7 +360,7 @@ class _MVCSpectralEpochs():
                                     epochs[:, chs, :], tol=self.rank_nonzero_tol
                                 )
                             )
-                        elif not isinstance(n_comps, None):
+                        elif n_comps is not None:
                             raise TypeError(
                                 'n_seed_components and n_target_components '
                                 'must be lists of `None`, `int`, or the string '
@@ -462,7 +462,7 @@ class _MVCSpectralEpochs():
             n_seeds.append(seed_data.shape[1])
 
             if n_target_comps is not None: # SVD target data
-                target_data = _epochs_svd(epochs[:, targets, :], n_target_comps)
+                target_data = self._epochs_svd(epochs[:, targets, :], n_target_comps)
             else: # use unaltered target data
                 target_data = epochs[:, targets, :]
 
