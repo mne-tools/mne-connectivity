@@ -485,7 +485,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.1s finished
+[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.2s finished
 Not setting metadata
 88 matching events found
 No baseline correction applied
@@ -657,21 +657,21 @@ Checking surface interior status for 4098 points...
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2859 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.4s finished
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 2966.8 ms
+Interior check completed in 3390.8 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.9s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.9s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.2s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.2s finished
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 2884.5 ms
+Interior check completed in 3237.8 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -682,22 +682,22 @@ Checking surface interior status for 298 points...
 [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.2s finished
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 225.8 ms
+Interior check completed in 225.1 ms
 
 Composing the field computation matrix...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.8s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.8s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.8s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.8s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.0s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    3.0s finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.9s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.9s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.4s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.4s finished
 Computing MEG at 8196 source locations (free orientations)...
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.2s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.2s finished
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.6s remaining:    0.0s
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.6s finished
 
 Finished.
 Converting forward solution to surface orientation
@@ -760,7 +760,7 @@ Created an SSP operator (subspace dimension = 4)
 
 
 <span class="k">def</span> <span class="nf">bp_gen</span><span class="p">(</span><span class="n">label_ts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make a generator that band-passes on the fly.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a generator that band-passes on the fly.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">label_ts</span><span class="p">:</span>
         <span class="k">yield</span> <a href="https://mne.tools/dev/generated/mne.filter.filter_data.html#mne.filter.filter_data" title="mne.filter.filter_data" class="sphx-glr-backref-module-mne-filter sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">filter_data</span></a><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 
@@ -1119,7 +1119,7 @@ For automatic theme detection, &quot;darkdetect&quot; has to be installed! You c
 For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
 For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
 
-&lt;mne.viz._brain._brain.Brain object at 0x7fe12149e1a0&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f3dccb41900&gt;
 </pre></div>
 </div>
 </section>
@@ -1138,7 +1138,7 @@ For automatic theme detection, &quot;darkdetect&quot; has to be installed! You c
 </dd>
 </dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  49.209 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  1.877 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
@@ -1252,7 +1252,7 @@ For automatic theme detection, &quot;darkdetect&quot; has to be installed! You c
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-11-26.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-09.<br>
 
 </p>
 
