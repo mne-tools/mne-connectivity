@@ -44,7 +44,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         ``fmax`` are used.
     method : str | list of str
         Connectivity measure(s) to compute. These can be
-        ``['coh', 'plv', 'pli', 'wpli']``. These are:
+        ``['coh', 'plv', 'ciplv', 'pli', 'wpli']``. These are:
         * 'coh'   : Coherence
         * 'plv'   : Phase-Locking Value (PLV)
         * 'ciplv' : Corrected imaginary Phase-Locking Value
