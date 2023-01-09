@@ -49,10 +49,14 @@ def _xarray_to_conn(array, cls_func, unpad_ragged_attrs):
     metadata = _prepare_read_metadata(metadata)
 
     # write event IDs
-    event_id_keys = np.atleast_1d(array.attrs.pop('event_id_keys')).tolist()
-    event_id_vals = np.atleast_1d(array.attrs.pop('event_id_vals')).tolist()
-    event_id = {key: val for key, val in zip(event_id_keys, event_id_vals)}
-    array.attrs['event_id'] = event_id
+    # storing events is optional, not all files will have them
+    if 'event_id_keys' in array.attrs and 'event_id_vals' in array.attrs:
+        event_id_keys = np.atleast_1d(
+            array.attrs.pop('event_id_keys')).tolist()
+        event_id_vals = np.atleast_1d(
+            array.attrs.pop('event_id_vals')).tolist()
+        event_id = dict(zip(event_id_keys, event_id_vals))
+        array.attrs['event_id'] = event_id
 
     # create the connectivity class
     conn = cls_func(
