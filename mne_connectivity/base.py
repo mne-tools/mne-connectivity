@@ -1312,7 +1312,8 @@ class MultivariateSpectralConnectivity(
     def __init__(
         self, data, freqs, n_nodes, names=None, indices=None, method=None,
         spec_method=None, n_epochs_used=None, topographies=None,
-        n_components=None, n_lags=None, **kwargs):
+        n_components=None, n_lags=None, **kwargs
+    ):
         super(MultivariateSpectralConnectivity, self).__init__(
             data=data, names=names, method=method, indices=indices,
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method,
@@ -1353,17 +1354,20 @@ class MultivariateSpectroTemporalConnectivity(
     mne_connectivity.multivariate_spectral_connectivity_epochs
     """
 
-    def __init__(self, data, freqs, n_nodes, names=None,
-                 indices=None, method=None, spec_method=None, times=None,
-                 n_epochs_used=None, topographies=None, **kwargs):
+    def __init__(
+        self, data, freqs, n_nodes, names=None, indices=None, method=None,
+        spec_method=None, times=None, n_epochs_used=None, topographies=None,
+        n_components=None, n_lags=None, **kwargs
+    ):
         super(MultivariateSpectroTemporalConnectivity, self).__init__(
             data=data, names=names, method=method, indices=indices,
             n_nodes=n_nodes, freqs=freqs, spec_method=spec_method, times=times,
             n_epochs_used=n_epochs_used, **kwargs
         )
-        super(MultivariateSpectralConnectivity, self)._add_multivariate_attrs(
-            topographies=topographies, n_lags=n_lags, indices=indices,
-            data=self.get_data()
+        super(
+            MultivariateSpectroTemporalConnectivity, self
+        )._add_multivariate_attrs(
+            topographies=topographies, n_components=n_components, n_lags=n_lags
         )
         
 
