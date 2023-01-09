@@ -151,6 +151,14 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
     using a weighted average, where the weights correspond to the concentration
     ratios between the DPSS windows.
 
+    Spectral estimation using multitaper or Morlet wavelets introduces edge
+    effects that depend on the length of the wavelet. To remove edge effects,
+    the parameter ``padding`` can be used to prune the edges of the signal.
+    Please see the documentation of
+    :func:`mne.time_frequency.tfr_array_multitaper` and
+    :func:`mne.time_frequency.tfr_array_morlet` for details on wavelet length
+    (i.e., time window length).
+
     By default, the connectivity between all signals is computed (only
     connections corresponding to the lower-triangular part of the
     connectivity matrix). If one is only interested in the connectivity
