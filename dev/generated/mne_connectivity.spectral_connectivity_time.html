@@ -394,30 +394,31 @@
 <h1>mne_connectivity.spectral_connectivity_time<a class="headerlink" href="#mne-connectivity-spectral-connectivity-time" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.spectral_connectivity_time">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fskip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faverage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hanning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cwt_morlet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral/time.html#spectral_connectivity_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity_time" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute frequency- and time-frequency-domain connectivity measures.</p>
-<p>This method computes time-resolved connectivity measures from epoched data.</p>
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">spectral_connectivity_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fskip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faverage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hanning'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cwt_morlet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/spectral/time.html#spectral_connectivity_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.spectral_connectivity_time" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute time-frequency-domain connectivity measures.</p>
+<p>This function computes spectral connectivity over time from epoched data.
+The data may consist of a single epoch.</p>
 <p>The connectivity method(s) are specified using the <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter.
-All methods are based on estimates of the cross- and power spectral
-densities (CSD/PSD) Sxy and Sxx, Syy.</p>
+All methods are based on time-resolved estimates of the cross- and
+power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.25.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be
-<code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'plv',</span> <span class="pre">'sxy',</span> <span class="pre">'pli',</span> <span class="pre">'wpli']</span></code>. These are:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>‘coh’ : Coherence</p></li>
-<li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
-<li><p>‘sxy’ : Cross-spectrum</p></li>
-<li><p>‘pli’ : Phase-Lag Index</p></li>
-<li><p>‘wpli’: Weighted Phase-Lag Index</p></li>
-</ul>
-</div></blockquote>
+<dt><strong>freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.25.dev0)"><span>array_like</span></a></span></dt><dd><p>Array of frequencies of interest for time-frequency decomposition.
+Only the frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fmax</span></code> are used.</p>
 </dd>
-<dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.11)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Average connectivity scores over epochs. If True, output will be
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be
+<code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'pli',</span> <span class="pre">'wpli']</span></code>. These are:
+* ‘coh’   : Coherence
+* ‘plv’   : Phase-Locking Value (PLV)
+* ‘ciplv’ : Corrected imaginary Phase-Locking Value
+* ‘pli’   : Phase-Lag Index
+* ‘wpli’  : Weighted Phase-Lag Index</p>
+</dd>
+<dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.11)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Average connectivity scores over epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output will be
 an instance of <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>, otherwise
 <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>.</p>
 </dd>
@@ -430,12 +431,11 @@ If <a class="reference external" href="https://docs.python.org/3/library/constan
 </dd>
 <dt><strong>fmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The lower frequency of interest. Multiple bands are defined using
 a tuple, e.g., <code class="docutils literal notranslate"><span class="pre">(8.,</span> <span class="pre">20.)</span></code> for two bands with 8 Hz and 20 Hz lower
-bounds. If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, the frequency corresponding to an epoch length of
-5 cycles is used.</p>
+bounds. If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, the lowest frequency in <code class="docutils literal notranslate"><span class="pre">freqs</span></code> is used.</p>
 </dd>
 <dt><strong>fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The upper frequency of interest. Multiple bands are defined using
 a tuple, e.g. <code class="docutils literal notranslate"><span class="pre">(13.,</span> <span class="pre">30.)</span></code> for two band with 13 Hz and 30 Hz upper
-bounds. If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="docutils literal notranslate"><span class="pre">sfreq/2</span></code> is used.</p>
+bounds. If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, the highest frequency in <code class="docutils literal notranslate"><span class="pre">freqs</span></code> is used.</p>
 </dd>
 <dt><strong>fskip</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Omit every <code class="docutils literal notranslate"><span class="pre">(fskip</span> <span class="pre">+</span> <span class="pre">1)</span></code>-th frequency bin to decimate in frequency
 domain.</p>
@@ -452,6 +452,9 @@ is equivalent to no smoothing.</p>
 </dd>
 <dt><strong>sm_kernel</strong><span class="classifier">{‘square’, ‘hanning’}</span></dt><dd><p>Smoothing kernel type. Choose either ‘square’ or ‘hanning’.</p>
 </dd>
+<dt><strong>padding</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Amount of time to consider as padding at the beginning and end of each
+epoch in seconds. See Notes for more information.</p>
+</dd>
 <dt><strong>mode</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Time-frequency decomposition method. Can be either: ‘multitaper’, or
 ‘cwt_morlet’. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
 <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for reference.</p>
@@ -462,11 +465,6 @@ of the window on the time/frequency plane and controls the frequency
 bandwidth (thus the frequency resolution) and the number of good
 tapers. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a>
 documentation.</p>
-</dd>
-<dt><strong>cwt_freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.25.dev0)"><span>array_like</span></a></span></dt><dd><p>Array of frequencies of interest for time-frequency decomposition.
-Only used in ‘cwt_morlet’ mode. Only the frequencies within
-the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and <code class="docutils literal notranslate"><span class="pre">fmax</span></code> are used. Required if
-<code class="docutils literal notranslate"><span class="pre">mode='cwt_morlet'</span></code>. Not used when <code class="docutils literal notranslate"><span class="pre">mode='multitaper'</span></code>.</p>
 </dd>
 <dt><strong>n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.25.dev0)"><span>array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Number of cycles in the wavelet, either a fixed number or one per
 frequency. The number of cycles <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code> and the frequencies of
@@ -523,6 +521,13 @@ using the <code class="docutils literal notranslate"><span class="pre">mode</spa
 cross-spectral density is computed separately for each taper and aggregated
 using a weighted average, where the weights correspond to the concentration
 ratios between the DPSS windows.</p>
+<p>Spectral estimation using multitaper or Morlet wavelets introduces edge
+effects that depend on the length of the wavelet. To remove edge effects,
+the parameter <code class="docutils literal notranslate"><span class="pre">padding</span></code> can be used to prune the edges of the signal.
+Please see the documentation of
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for details on wavelet length
+(i.e., time window length).</p>
 <p>By default, the connectivity between all signals is computed (only
 connections corresponding to the lower-triangular part of the
 connectivity matrix). If one is only interested in the connectivity
@@ -555,12 +560,18 @@ by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLV</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘sxy’ : Cross spectrum Sxy</p>
-<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id2">2</a> given by:</p>
+<p>‘ciplv’ : Corrected imaginary PLV (icPLV) <a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id2">2</a>
+given by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span>
+<span class="n">ciPLV</span> <span class="o">=</span> <span class="o">------------------------------------</span>
+         <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id3">3</a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLI</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">sign</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id3">3</a>
+<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id4">4</a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">WPLI</span> <span class="o">=</span> <span class="o">------------------</span>
@@ -588,15 +599,18 @@ Frites.</p>
 <p><span class="versionmodified added">New in version 0.3.</span></p>
 </div>
 <p class="rubric">References</p>
-<div class="docutils container" id="id4">
+<div class="docutils container" id="id5">
 <dl class="footnote brackets">
 <dt class="label" id="footcite-lachauxetal1999"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
 </dd>
-<dt class="label" id="footcite-stametal2007"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="footcite-brunaetal2018"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
+</dd>
+<dt class="label" id="footcite-stametal2007"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
 <dd><p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
 </dd>
-<dt class="label" id="footcite-vincketal2011"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dt class="label" id="footcite-vincketal2011"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
 <dd><p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
 </dd>
 </dl>
@@ -695,7 +709,7 @@ Frites.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-09.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-10.<br>
 
 </p>
 
