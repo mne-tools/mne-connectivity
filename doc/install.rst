@@ -16,7 +16,22 @@ Dependencies
 * ``matplotlib`` (optional, for using the interactive data inspector)
 
 We require that you use Python 3.7 or higher.
-You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_.
+You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_,
+or conda.
+
+Installation via Conda
+----------------------
+
+To install MNE-Connectivity using conda in a virtual environment,
+simply run the following at the root of the repository:
+
+.. code-block:: bash
+
+   # with python>=3.7 at least
+   conda create -n mne
+   conda activate mne
+   conda install -c conda-forge mne-connectivity
+
 
 Installation via Pip
 --------------------
@@ -33,7 +48,7 @@ If you want to install a snapshot of the current development version, run:
 
 .. code-block:: bash
 
-   pip install --user -U https://api.github.com/repos/mne-tools/mne-connectivity/zipball/master
+   pip install --user -U https://api.github.com/repos/mne-tools/mne-connectivity/zipball/main
 
 To check if everything worked fine, the following command should not give any
 error messages:

@@ -82,7 +82,7 @@ class EpochMixin:
         self : instance of Connectivity
             The altered Epoched Connectivity class.
         """
-        if type(self) != type(epoch_conn):
+        if not isinstance(self, type(epoch_conn)):
             raise ValueError(f'The type of the epoch connectivity to append '
                              f'is {type(epoch_conn)}, which does not match '
                              f'{type(self)}.')

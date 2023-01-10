@@ -3,13 +3,13 @@ trigger:
   batch: False
   branches:
     include:
-      - master
+      - main
       - maint/*
 
 jobs:
 - job: Windows
   pool:
-    vmIMage: 'VS2017-Win2016'
+    vmIMage: 'windows-latest'
   variables:
     MNE_LOGGING_LEVEL: 'warning'
     MNE_FORCE_SERIAL: 'true'
@@ -18,8 +18,8 @@ jobs:
   strategy:
     maxParallel: 4
     matrix:
-      Python39-64bit-full-pip:
-        PYTHON_VERSION: '3.9'
+      Python310-64bit-full-pip:
+        PYTHON_VERSION: '3.10'
         PYTHON_ARCH: 'x64'
   steps:
   - task: UsePythonVersion@0
@@ -28,22 +28,23 @@ jobs:
       architecture: $(PYTHON_ARCH)
       addToPath: true
     condition: eq(variables['TEST_MODE'], 'pip')
-  - powershell: |
-      Set-StrictMode -Version Latest
-      $ErrorActionPreference = "Stop"
-      $PSDefaultParameterValues['*:ErrorAction']='Stop'
-      pip install --upgrade --pre numpy scipy matplotlib
+  - bash: |
+      set -e
+      pip install --upgrade --pre numpy scipy matplotlib "h5py<3.7"
       pip install https://api.github.com/repos/mne-tools/mne-python/zipball/main
-      pip install --upgrade -r requirements.txt
-      pip install codecov pylsl
+      pip install --upgrade -r requirements.txt -r requirements_testing.txt codecov
     displayName: 'Install dependencies with pip'
   - script: python setup.py develop
-    displayName: 'Install MNE-Realtime'
+    displayName: 'Install MNE-Connectivity'
+  - bash: |
+      set -e
+      git clone --depth 1 https://github.com/pyvista/gl-ci-helpers.git
+      powershell gl-ci-helpers/appveyor/install_opengl.ps1
   - script: python -c "import mne; print(mne.sys_info())"
     displayName: 'Print config'
   - script: python -c "import mne; mne.datasets.testing.data_path(verbose=True)"
     displayName: 'Get test data'
-  - script: pytest mne_realtime
+  - script: pytest mne_connectivity
     displayName: 'Run tests'
   - script: codecov --root %BUILD_REPOSITORY_LOCALPATH% -t %CODECOV_TOKEN%
     displayName: 'Codecov'

@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Codecov|_ |PyPI|_
+|GH|_ |Circle|_ |Azure|_ |Codecov|_ |PyPI|_ |PyPI_Release|_ |conda-forge|_ 
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
@@ -8,11 +8,20 @@
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity
 
+.. |Azure| image:: https://dev.azure.com/mne-tools/mne-connectivity/_apis/build/status/mne-tools.mne-connectivity?branchName=main
+.. _Azure: https://dev.azure.com/mne-tools/mne-connectivity/_build/latest?definitionId=1&branchName=main
+
 .. |Codecov| image:: https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/mne-tools/mne-connectivity
 
+.. |conda-forge| image:: https://img.shields.io/conda/dn/conda-forge/mne-connectivity.svg?label=Conda%20downloads
+.. _conda-forge: https://anaconda.org/conda-forge/mne-connectivity
+
 .. |PyPI| image:: https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads
 .. _PyPI: https://pypi.org/project/mne-connectivity/
+
+.. |PyPI_Release| image:: https://img.shields.io/pypi/v/mne-connectivity.svg
+.. _PyPI_Release: https://pypi.org/project/mne-connectivity/
 
 .. _MNE-Connectivity: https://mne.tools/mne-connectivity/dev/
 .. _MNE-Python: https://mne.tools/stable
@@ -78,7 +87,7 @@ To get the latest code using `git <https://git-scm.com/>`__, open a terminal and
 
 .. code-block:: bash
 
-    git clone git://github.com/mne-tools/mne-connectivity.git
+    git clone https://github.com/mne-tools/mne-connectivity.git
 
 Alternatively, you can also download a
 `zip file of the latest development version <https://github.com/mne-tools/mne-connectivity/archive/main.zip>`__.

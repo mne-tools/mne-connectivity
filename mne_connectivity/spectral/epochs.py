@@ -5,11 +5,10 @@
 # License: BSD (3-clause)
 
 from functools import partial
-from inspect import getmembers
+import inspect
 
 import numpy as np
 from mne.epochs import BaseEpochs
-from mne.fixes import _get_args
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.time_frequency.multitaper import (_csd_from_mt,
@@ -17,10 +16,47 @@ from mne.time_frequency.multitaper import (_csd_from_mt,
                                            _psd_from_mt_adaptive)
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
-from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask)
+from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask,
+                       verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
+
+
+def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
+    from scipy.fft import rfftfreq
+    # get frequencies of interest for the different modes
+    if mode in ('multitaper', 'fourier'):
+        # fmin fmax etc is only supported for these modes
+        # decide which frequencies to keep
+        freqs_all = rfftfreq(n_times, 1. / sfreq)
+    elif mode == 'cwt_morlet':
+        # cwt_morlet mode
+        if cwt_freqs is None:
+            raise ValueError('define frequencies of interest using '
+                             'cwt_freqs')
+        else:
+            cwt_freqs = cwt_freqs.astype(np.float64)
+        if any(cwt_freqs > (sfreq / 2.)):
+            raise ValueError('entries in cwt_freqs cannot be '
+                             'larger than Nyquist (sfreq / 2)')
+        freqs_all = cwt_freqs
+    else:
+        raise ValueError('mode has an invalid value')
+
+    return freqs_all
+
+
+def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
+    # create a frequency mask for all bands
+    freq_mask = np.zeros(len(freqs_all), dtype=bool)
+    for f_lower, f_upper in zip(fmin, fmax):
+        freq_mask |= ((freqs_all >= f_lower) & (freqs_all <= f_upper))
+
+    # possibly skip frequency points
+    for pos in range(fskip):
+        freq_mask[pos + 1::fskip + 1] = False
+    return freq_mask
 
 
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
@@ -28,7 +64,6 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           mode, fskip, n_bands,
                           cwt_freqs, faverage):
     """Check and precompute dimensions of results data."""
-    from scipy.fft import rfftfreq
     first_epoch = epoch_block[0]
 
     # get the data size and time scale
@@ -68,25 +103,6 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     logger.info('    using t=%0.3fs..%0.3fs for estimation (%d points)'
                 % (tmin_true, tmax_true, n_times))
 
-    # get frequencies of interest for the different modes
-    if mode in ('multitaper', 'fourier'):
-        # fmin fmax etc is only supported for these modes
-        # decide which frequencies to keep
-        freqs_all = rfftfreq(n_times, 1. / sfreq)
-    elif mode == 'cwt_morlet':
-        # cwt_morlet mode
-        if cwt_freqs is None:
-            raise ValueError('define frequencies of interest using '
-                             'cwt_freqs')
-        else:
-            cwt_freqs = cwt_freqs.astype(np.float64)
-        if any(cwt_freqs > (sfreq / 2.)):
-            raise ValueError('entries in cwt_freqs cannot be '
-                             'larger than Nyquist (sfreq / 2)')
-        freqs_all = cwt_freqs
-    else:
-        raise ValueError('mode has an invalid value')
-
     # check that fmin corresponds to at least 5 cycles
     dur = float(n_times) / sfreq
     five_cycle_freq = 5. / dur
@@ -101,17 +117,15 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                  'unreliable.' % (np.min(fmin), dur * np.min(fmin), dur,
                                   5. / np.min(fmin), five_cycle_freq))
 
-    # create a frequency mask for all bands
-    freq_mask = np.zeros(len(freqs_all), dtype=bool)
-    for f_lower, f_upper in zip(fmin, fmax):
-        freq_mask |= ((freqs_all >= f_lower) & (freqs_all <= f_upper))
+    # compute frequencies to analyze based on number of samples,
+    # sampling rate, specified wavelet frequencies and mode
+    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-    # possibly skip frequency points
-    for pos in range(fskip):
-        freq_mask[pos + 1::fskip + 1] = False
+    # compute the mask based on specified min/max and decimation factor
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
 
     # the frequency points where we compute connectivity
-    freqs = freqs_all[freq_mask]
+    freqs = freqs[freq_mask]
     n_freqs = len(freqs)
 
     # get the freq. indices and points for each band
@@ -374,6 +388,31 @@ class _PLIUnbiasedEst(_PLIEst):
         self.con_scores[con_idx] = con
 
 
+class _DPLIEst(_EpochMeanConEstBase):
+    """DPLI Estimator."""
+
+    name = 'DPLI'
+
+    def __init__(self, n_cons, n_freqs, n_times):
+        super(_DPLIEst, self).__init__(n_cons, n_freqs, n_times)
+
+        # allocate accumulator
+        self._acc = np.zeros(self.csd_shape)
+
+    def accumulate(self, con_idx, csd_xy):
+        """Accumulate some connections."""
+        self._acc[con_idx] += np.heaviside(np.imag(csd_xy), 0.5)
+
+    def compute_con(self, con_idx, n_epochs):
+        """Compute final con. score for some connections."""
+        if self.con_scores is None:
+            self.con_scores = np.zeros(self.csd_shape)
+
+        con = self._acc[con_idx] / n_epochs
+
+        self.con_scores[con_idx] = con
+
+
 class _WPLIEst(_EpochMeanConEstBase):
     """WPLI Estimator."""
 
@@ -629,9 +668,9 @@ def _get_n_epochs(epochs, n):
 
 def _check_method(method):
     """Test if a method implements the required interface."""
-    interface_members = [m[0] for m in getmembers(_AbstractConEstBase)
+    interface_members = [m[0] for m in inspect.getmembers(_AbstractConEstBase)
                          if not m[0].startswith('_')]
-    method_members = [m[0] for m in getmembers(method)
+    method_members = [m[0] for m in inspect.getmembers(method)
                       if not m[0].startswith('_')]
 
     for member in interface_members:
@@ -687,7 +726,8 @@ def _get_and_verify_data_sizes(data, sfreq, n_signals=None, n_times=None,
 _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'plv': _PLVEst, 'ciplv': _ciPLVEst, 'ppc': _PPCEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
-                   'wpli': _WPLIEst, 'wpli2_debiased': _WPLIDebiasedEst}
+                   'dpli': _DPLIEst, 'wpli': _WPLIEst,
+                   'wpli2_debiased': _WPLIDebiasedEst}
 
 
 def _check_estimators(method, mode):
@@ -709,7 +749,7 @@ def _check_estimators(method, mode):
             con_method_types.append(this_method)
 
     # determine how many arguments the compute_con_function needs
-    n_comp_args = [len(_get_args(mtype.compute_con))
+    n_comp_args = [len(inspect.signature(mtype.compute_con).parameters)
                    for mtype in con_method_types]
 
     # we currently only support 3 arguments
@@ -721,6 +761,7 @@ def _check_estimators(method, mode):
     return con_method_types, n_methods, accumulate_psd, n_comp_args
 
 
+@verbose
 @fill_doc
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=2 * np.pi,
@@ -749,7 +790,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
-        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'wpli', 'wpli2_debiased']``.
+        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
+        'wpli2_debiased']``.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
@@ -790,8 +832,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         Use adaptive weights to combine the tapered spectra into PSD.
         Only used in 'multitaper' mode.
     mt_low_bias : bool
-        Only use tapers with more than 90%% spectral concentration within
-        bandwidth. Only used in 'multitaper' mode.
+        Only use tapers with more than 90 percent spectral concentration
+        within bandwidth. Only used in 'multitaper' mode.
     cwt_freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode.
     cwt_n_cycles : float | array of float
@@ -819,6 +861,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     See Also
     --------
+    mne_connectivity.spectral_connectivity_time
     mne_connectivity.SpectralConnectivity
     mne_connectivity.SpectroTemporalConnectivity
 
@@ -833,7 +876,9 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     connectivity structure. Within each Epoch, it is assumed that the spectral
     measure is stationary. The spectral measures implemented in this function
     are computed across Epochs. **Thus, spectral measures computed with only
-    one Epoch will result in errorful values.**
+    one Epoch will result in errorful values and spectral measures computed
+    with few Epochs will be unreliable.** Please see
+    ``spectral_connectivity_time`` for time-resolved connectivity estimation.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
@@ -851,11 +896,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
 
-        con_flat = spectral_connectivity(data, method='coh',
-                                         indices=indices, ...)
+        con = spectral_connectivity_epochs(data, method='coh',
+                                           indices=indices, ...)
 
-    In this case con_flat.shape = (3, n_freqs). The connectivity scores are
-    in the same order as defined indices.
+    In this case con.get_data().shape = (3, n_freqs). The connectivity scores
+    are in the same order as defined indices.
 
     **Supported Connectivity Measures**
 
@@ -903,6 +948,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
         'pli2_unbiased' : Unbiased estimator of squared PLI
         :footcite:`VinckEtAl2011`.
+
+        'dpli' : Directed Phase Lag Index (DPLI) :footcite:`StamEtAl2012`
+        given by (where H is the Heaviside function)::
+
+            DPLI = E[H(Im(Sxy))]
 
         'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011`
         given by::
@@ -953,10 +1003,18 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
         events = data.events
         event_id = data.event_id
+
         # Extract metadata from the Epochs data structure.
         # Make Annotations persist through by adding them to the metadata.
-        if hasattr(data, 'annotations'):
-            data.add_annotations_to_metadata()
+        metadata = data.metadata
+        if metadata is None:
+            annots_in_metadata = False
+        else:
+            annots_in_metadata = all(
+                name not in metadata.columns for name in [
+                    'annot_onset', 'annot_duration', 'annot_description'])
+        if hasattr(data, 'annotations') and not annots_in_metadata:
+            data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
     else:
         times_in = None
@@ -1099,7 +1157,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     if faverage:
         # for each band we return the frequencies that were averaged
         freqs = [np.mean(x) for x in freqs_bands]
+
+        # make sure freq_bands is a list of equal-length lists
+        # XXX: we lose information on which frequency points went into the
+        # computation. If h5netcdf supports numpy objects in the future, then
+        # we can change the min/max to just make it a list of lists.
         freqs_used = freqs_bands
+        freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
     if indices is None:
         # return all-to-all connectivity matrices
