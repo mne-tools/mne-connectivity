@@ -414,8 +414,49 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
                            n_jobs, verbose):
     """Estimate time-resolved connectivity for one epoch.
 
-    Data is of shape (n_channels, n_times)."""
+    Parameters
+    ----------
+    data : array_like, shape (n_channels, n_times)
+        Time-series data.
+    method : list of str
+        List of connectivity metrics to compute.
+    kernel : array_like, shape (n_sm_fres, n_sm_times)
+        Smoothing kernel.
+    foi_idx : array_like, shape (n_foi, 2)
+        Upper and lower bound indices of frequency bands.
+    source_idx : array_like, shape (n_pairs,)
+        Defines the signal pairs of interest together with ``target_idx``.
+    target_idx : array_like, shape (n_pairs,)
+        Defines the signal pairs of interest together with ``source_idx``.
+    mode : str
+        Time-frequency transformation method.
+    sfreq : float
+        Sampling frequency.
+    freqs : array_like
+        Array of frequencies of interest for time-frequency decomposition.
+        Only the frequencies within the range specified by ``fmin`` and
+        ``fmax`` are used.
+    faverage : bool
+        Average over frequency bands.
+    n_cycles : float | array_like of float
+        Number of cycles in the wavelet, either a fixed number or one per
+        frequency.
+    mt_bandwidth : float | None
+        Multitaper time-bandwidth.
+    decim : int
+        Decimation factor after time-frequency
+        decomposition.
+    padding : float
+        Amount of time to consider as padding at the beginning and end of each
+        epoch in seconds.
 
+    Returns
+    -------
+    this_conn : list of array
+        List of connectivity estimates corresponding to the metrics in
+        ``method``. Each element is an array of shape (n_pairs, n_freqs) or
+        (n_pairs, n_fbands) if ``faverage`` is `True`.
+    """
     n_pairs = len(source_idx)
     data = np.expand_dims(data, axis=0)
     if mode == 'cwt_morlet':
@@ -478,8 +519,35 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
                   verbose, total, faverage, weights):
     """Compute spectral connectivity in parallel.
 
-    Input signal w is of shape (n_chans, n_tapers, n_freqs, n_times)."""
+    Parameters
+    ----------
+    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
+        Time-frequency data (complex signal).
+    method : list of str
+        List of connectivity metrics to compute.
+    kernel : array_like, shape (n_sm_fres, n_sm_times)
+        Smoothing kernel.
+    foi_idx : array_like, shape (n_foi, 2)
+        Upper and lower bound indices of frequency bands.
+    source_idx : array_like, shape (n_pairs,)
+        Defines the signal pairs of interest together with ``target_idx``.
+    target_idx : array_like, shape (n_pairs,)
+        Defines the signal pairs of interest together with ``source_idx``.
+    n_jobs : int
+        Number of parallel jobs.
+    total : int
+        Number of pairs of signals.
+    faverage : bool
+        Average over frequency bands.
+    weights : array_like, shape (n_tapers, n_freqs, n_times)
+        Multitaper weights.
 
+    Returns
+    -------
+    out : array_like, shape (n_pairs, n_methods, n_freqs_out)
+        Connectivity estimates for each signal pair, method, and frequency or
+        frequency band.
+    """
     if 'coh' in method:
         # psd
         if weights is not None:
@@ -512,7 +580,36 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
 
 def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
                   faverage, weights):
-    """Compute spectral connectivity metrics between two signals."""
+    """Compute spectral connectivity metrics between two signals.
+
+    Parameters
+    ----------
+    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
+        Time-frequency data.
+    psd : array_like, shape (n_chans, n_freqs, n_times)
+        Power spectrum between signals ``x`` and ``y``.
+    x : int
+        Channel index.
+    y : int
+        Channel index.
+    method : str
+        Connectivity method.
+    kernel : array_like, shape (n_sm_fres, n_sm_times)
+        Smoothing kernel.
+    foi_idx : array_like, shape (n_foi, 2)
+        Upper and lower bound indices of frequency bands.
+    faverage : bool
+        Average over frequency bands.
+    weights : array_like, shape (n_tapers, n_freqs, n_times) | None
+        Multitaper weights.
+
+    Returns
+    -------
+    out : list
+        List of connectivity estimates between signals ``x`` and ``y``
+        corresponding to the methods in ``method``. Each element is an array
+        with shape (n_freqs,) or (n_fbands) depending on ``faverage``.
+    """
     w_x, w_y = w[x], w[y]
     if weights is not None:
         s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
@@ -578,7 +675,7 @@ def _coh(s_xx, s_yy, s_xy):
 
 
 def _compute_csd(x, y, weights):
-    """Compute cross spectral density of signals x and y."""
+    """Compute cross spectral density between signals x and y."""
     if weights is not None:
         s_xy = np.sum(weights * x * np.conj(weights * y), axis=-3)
         s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=-3)
@@ -595,15 +692,15 @@ def _foi_average(conn, foi_idx):
 
     Parameters
     ----------
-    conn : np.ndarray
-        Array of shape (..., n_freqs, n_times)
-    foi_idx : array_like
-        Array of indices describing frequency bounds of shape (n_foi, 2)
+    conn : array_like, shape (..., n_freqs, n_times)
+        Connectivity estimate array.
+    foi_idx : array_like, shape (n_foi, 2)
+        Upper and lower frequency bounds of each frequency band.
 
     Returns
     -------
-    conn_f : np.ndarray
-        Array of shape (..., n_foi, n_times)
+    conn_f : np.ndarray, shape (..., n_fbands, n_times)
+        Connectivity estimate array, averaged within frequency bands.
     """
     # get the number of foi
     n_foi = foi_idx.shape[0]
