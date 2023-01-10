@@ -8,7 +8,8 @@ import pytest
 import os
 import gc
 import warnings
-from distutils.version import LooseVersion
+
+from mne.utils import _check_qt_version
 
 
 def pytest_configure(config):
@@ -25,10 +26,13 @@ def pytest_configure(config):
     ignore:.*Converting `np.character` to a dtype is deprecated.*:DeprecationWarning
     ignore:.*distutils Version classes are deprecated.*:DeprecationWarning
     ignore:.*`np.MachAr` is deprecated.*:DeprecationWarning
+    ignore:.*You are writing invalid netcdf features to file.*:UserWarning
     # for the persistence of metadata and Raw Annotations within mne-python
     # Epochs class
     ignore:.*There were no Annotations stored in.*:RuntimeWarning
     always::ResourceWarning
+    # pydarkstyle
+    ignore:.*Setting theme='dark' is not yet supported.*:RuntimeWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):
         warning_line = warning_line.strip()
@@ -72,11 +76,8 @@ def matplotlib_config():
     orig = cbook.CallbackRegistry
 
     class CallbackRegistryReraise(orig):
-        def __init__(self, exception_handler=None):
-            args = ()
-            if LooseVersion(matplotlib.__version__) >= LooseVersion('2.1'):
-                args += (exception_handler,)
-            super(CallbackRegistryReraise, self).__init__(*args)
+        def __init__(self, exception_handler=None, signals=None):
+            super(CallbackRegistryReraise, self).__init__(exception_handler)
 
     cbook.CallbackRegistry = CallbackRegistryReraise
 
@@ -142,15 +143,14 @@ def _use_backend(backend_name, interactive):
 
 
 def _check_skip_backend(name):
-    from mne.viz.backends.tests._utils import (has_pyvista,
-                                               has_pyqt5, has_imageio_ffmpeg,
+    from mne.viz.backends.tests._utils import (has_pyvista, has_imageio_ffmpeg,
                                                has_pyvistaqt)
     if name in ('pyvistaqt', 'notebook'):
         if not has_pyvista():
             pytest.skip("Test skipped, requires pyvista.")
         if not has_imageio_ffmpeg():
             pytest.skip("Test skipped, requires imageio-ffmpeg")
-    if name == 'pyvistaqt' and not has_pyqt5():
-        pytest.skip("Test skipped, requires PyQt5.")
+    if name == 'pyvistaqt' and not _check_qt_version():
+        pytest.skip("Test skipped, requires Python Qt bindings.")
     if name == 'pyvistaqt' and not has_pyvistaqt():
         pytest.skip("Test skipped, requires pyvistaqt")

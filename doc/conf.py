@@ -100,6 +100,7 @@ numpydoc_xref_aliases = {
     'Axes': 'matplotlib.axes.Axes',
     'Figure': 'matplotlib.figure.Figure',
     'Axes3D': 'mpl_toolkits.mplot3d.axes3d.Axes3D',
+    'PolarAxes': 'matplotlib.projections.polar.PolarAxes',
     'ColorbarBase': 'matplotlib.colorbar.ColorbarBase',
     # joblib
     'joblib.Parallel': 'joblib.Parallel',
@@ -196,7 +197,7 @@ html_theme_options = {
     'use_edit_page_button': False,
     'navigation_with_keys': False,
     'show_toc_level': 1,
-    'navbar_end': ['version-switcher', 'navbar-icon-links'],
+    'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
 }
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
@@ -227,7 +228,7 @@ intersphinx_mapping = {
     'pyvista': ('https://docs.pyvista.org', None),
     'joblib': ('https://joblib.readthedocs.io/en/latest', None),
     'nibabel': ('https://nipy.org/nibabel', None),
-    'nilearn': ('http://nilearn.github.io', None),
+    'nilearn': ('http://nilearn.github.io/stable', None),
     'dipy': ('https://dipy.org/documentation/1.4.0./',
              'https://dipy.org/documentation/1.4.0./objects.inv/'),
 }
@@ -251,6 +252,7 @@ try:
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         import pyvista
     pyvista.OFF_SCREEN = False
+    pyvista.BUILDING_GALLERY = True
 except Exception:
     pass
 else:
