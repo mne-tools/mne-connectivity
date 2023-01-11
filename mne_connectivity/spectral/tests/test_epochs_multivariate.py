@@ -166,16 +166,25 @@ class TestMultivarSpectralConnectivity:
         # Add check that n_components cannot be <= 0
 
         # Check 1 seed, 1 target component
-        _ = multivariate_spectral_connectivity_epochs(
+        n_seed_components = [1]
+        n_target_components = [1]
+        con = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-            n_seed_components=[1], n_target_components=[1]
+            n_seed_components=n_seed_components,
+            n_target_components=n_target_components
             )
+        assert(con.n_components == (n_seed_components, n_target_components))
+
 
         # Check 2 seed, 2 target components
-        _ = multivariate_spectral_connectivity_epochs(
+        n_seed_components = [2]
+        n_target_components = [2]
+        con = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-            n_seed_components=[2], n_target_components=[2]
+            n_seed_components=n_seed_components,
+            n_target_components=n_target_components
             )
+        assert(con.n_components == (n_seed_components, n_target_components))
 
         # Check too many seed components
         with pytest.raises(ValueError, 
@@ -351,18 +360,58 @@ class TestMultivarSpectralConnectivity:
                 assert np.all(con.get_data('raveled')[0, gidx[0]:gidx[1]] > upper_t), \
                     con.get_data()[0, gidx[0]:gidx[1]].min()
 
-    # Add check that ValueError raised if gc_n_lags >= (n_freqs - 1) * 2
+    def test_invalid_n_lags(self):
+        """Tests whether an invalid number of lags for GC is caught.
+        n_lags cannot be >= (n_freqs - 1) * 2"""
+        # use cwt_freqs so we can easily know how many freqs will be present
+        freqs = np.arange(7, 10)
+        with pytest.raises(ValueError, match='the number of lags'):
+            multivariate_spectral_connectivity_epochs(
+                self.test_data, indices=([[0]], [[1]]), method='gc',
+                mode='cwt_morlet', cwt_freqs=freqs, sfreq=self.sfreq,
+                gc_n_lags=len(freqs) * 2
+            )
+    
+    def test_net_gc_mirrored(self):
+        """Tests that net GC and net TRGC from [seeds -> targets] equals net GC
+        and net TRGC, respectively, from [targets -> seeds]*-1 (i.e. they are
+        sign flipped, mirrored around 0)."""
+        seeds = [[0]]
+        targets = [[1]]
 
-    # Could add a check that when net GC computed, results of [seeds -> targets]
-    # == [targets -> seeds]*-1 (i.e. that results are sign flipped)
+        seeds_targets = multivariate_spectral_connectivity_epochs(
+            self.test_data, indices=(seeds, targets),
+            method=['net_gc', 'net_trgc'], sfreq = self.sfreq
+        )
 
-    # Add check that when using non-full rank data used with GC methods that
-    # ValueError is raised for a matrix being non-positive-definite, and that
-    # using SVD to make data full rank resolves this
+        targets_seeds = multivariate_spectral_connectivity_epochs(
+            self.test_data, indices=(targets, seeds),
+            method=['net_gc', 'net_trgc'], sfreq = self.sfreq
+        )
 
-    # Add check that when using non-full rank data with MIC and MIM and mode
-    # 'cwt_morlet' that the non-real-valued nature of a matrix is raised in a
-    # value error, and that using SVD to make the data full rank resolves this
+        assert_array_almost_equal(
+            seeds_targets[0].get_data(),
+            targets_seeds[0].get_data() * -1
+        )
+
+        assert_array_almost_equal(
+            seeds_targets[1].get_data(),
+            targets_seeds[1].get_data() * -1
+        )
+    
+    def test_non_full_rank_catch(self):
+        """Tests that computing multivariate connectivity on non-full-rank data
+        raises errors, and that performing SVD to make the data full rank
+        alleviates this."""
+        # create non-full-rank data (e.g. repeat a seed or target channel)
+
+        # compute GC on this and catch the resulting value error
+
+        # do the same thing, but with n_components == 'rank' and have it succeed
+
+        # do the same for MIC/MIM (but use mode='cwt_morlet'), since
+        # non-full-rank data only seems to be a problem here (i.e. do not SVD
+        # and catch the error, then do it with SVD and have it succeed)
 
     # Could add checks that results of method calls separately match those given
     # together
@@ -437,4 +486,5 @@ class TestMultivarSpectralConnectivity:
     # Add checks that saving works (given indices and topographies can be
     # ragged, which needs to be handled carefully when saving); likewise, could
     # also check that re-loaded results match saved results after hacky
-    # intervation for saving ragged arrays
+    # intervation for saving ragged arrays - SHOULD THIS GO IN A SEPARATE PLACE
+    # FOR TESTING THE NEW CLASSES SPECIFICALLY?
