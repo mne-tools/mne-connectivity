@@ -226,7 +226,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             )
 
             # Eqs. 3 & 4
-            E = self._compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[2])
+            E = self._compute_e(csd=C_bar, n_seeds=U_bar_aa.shape[3])
 
             if self.compute_mic:
                 self._compute_mic(
