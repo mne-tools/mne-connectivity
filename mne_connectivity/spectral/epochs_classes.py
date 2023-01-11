@@ -701,6 +701,11 @@ class _GCEstBase(_EpochMeanMultivarConEstBase):
         points on a unit circle in the complex plane. z = e^-iw, where -pi < w
         <= pi.
 
+        A note on efficiency: solving over the 4D time-freq. tensor is slower
+        than looping over times and freqs when n_times and n_freqs high, and
+        when n_times and n_freqs low, looping over times and freqs very fast
+        anyway (plus tensor solving doesn't allow for parallelisation).
+
         Ref.: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
