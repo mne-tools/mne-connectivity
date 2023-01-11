@@ -276,11 +276,11 @@ class TestMultivarSpectralConnectivity:
 
             # Check topographies do/do not exist, and whether they have the
             # correct shape
-            if 'method' == 'mic':
+            if method == 'mic':
                 results = con.get_data()
                 topographies = con.topographies
-                assert topographies is not None
-                assert len(topographies) == 2
+                assert (topographies is not None)
+                assert (len(topographies) == 2)
                 for group_topos, group_inds in zip(topographies, indices):
                     assert len(group_topos) == len(group_inds)
                     con_i = 0
@@ -291,59 +291,65 @@ class TestMultivarSpectralConnectivity:
                         )
                         con_i += 1
             else:
-                assert con.topographies is None
+                assert (con.topographies is None)
             
-            if 'method' in ['gc', 'net_gc', 'trgc', 'net_trgc']:
-                assert con.n_lags is not None
+            if method in ['gc', 'net_gc', 'trgc', 'net_trgc']:
+                assert (con.n_lags is not None)
             else:
-                assert con.n_lags is None
+                assert (con.n_lags is None)
 
-            # Everything below should be applicable for GC too
+            # Everything below should be applicable for GC too, albeit with a
+            # modification of the thresholds to reflect the fact that:
+            #   - GC is not bounded below 1 (although it is quite rare if it is)
+            #   - net GC, TRGC, and net TRGC values can be negative and are not
+            #       bounded between +/- 1 (although, like for GC, they are not
+            #       often outside of this bound)
 
-            upper_t = 0.3
-            lower_t = 0.5
+            if method in ['mic', 'mim']:
+                upper_t = 0.3
+                lower_t = 0.5
 
-            # test the simulated signal
-            gidx = np.searchsorted(freqs, (self.fstart, self.fend))
-            bidx = np.searchsorted(
-                freqs,
-                (self.fstart - self.trans_bandwidth * 2, 
-                self.fend + self.trans_bandwidth * 2)
+                # test the simulated signal
+                gidx = np.searchsorted(freqs, (self.fstart, self.fend))
+                bidx = np.searchsorted(
+                    freqs,
+                    (self.fstart - self.trans_bandwidth * 2, 
+                    self.fend + self.trans_bandwidth * 2)
+                    )
+                
+                # Check 0-lag, 2 signals
+                data, _ = create_test_dataset_multivariate(
+                    self.sfreq, n_signals=2, n_epochs=self.n_epochs,
+                    n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
+                    fstart=self.fstart, fend=self.fend, 
+                    trans_bandwidth=self.trans_bandwidth, shift=0
                 )
-            
-            # Check 0-lag, 2 signals
-            data, _ = create_test_dataset_multivariate(
-                self.sfreq, n_signals=2, n_epochs=self.n_epochs,
-                n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
-                fstart=self.fstart, fend=self.fend, 
-                trans_bandwidth=self.trans_bandwidth, shift=0
-            )
-            con = multivariate_spectral_connectivity_epochs(
-                data, indices=([[0]], [[1]]), method=method, mode=mode, 
-                sfreq=self.sfreq, cwt_freqs=cwt_freqs,
-                cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
-                n_target_components=None
-                )
-            assert_array_less(
-                con.get_data(output='raveled')[ 0, :bidx[0]], lower_t
+                con = multivariate_spectral_connectivity_epochs(
+                    data, indices=([[0]], [[1]]), method=method, mode=mode, 
+                    sfreq=self.sfreq, cwt_freqs=cwt_freqs,
+                    cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
+                    n_target_components=None
+                    )
+                assert_array_less(
+                    con.get_data(output='raveled')[ 0, :bidx[0]], lower_t
+                    )
+
+                # Check 1-lag, 4 signals
+                data, _ = create_test_dataset_multivariate(
+                    self.sfreq, n_signals=4, n_epochs=self.n_epochs, 
+                    n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
+                    fstart=self.fstart, fend=self.fend, 
+                    trans_bandwidth=self.trans_bandwidth, shift=1
                 )
 
-            # Check 1-lag, 4 signals
-            data, _ = create_test_dataset_multivariate(
-                self.sfreq, n_signals=4, n_epochs=self.n_epochs, 
-                n_times=self.n_times, tmin=self.tmin, tmax=self.tmax, 
-                fstart=self.fstart, fend=self.fend, 
-                trans_bandwidth=self.trans_bandwidth, shift=1
-            )
-
-            con = multivariate_spectral_connectivity_epochs(
-                data, indices=([[0,2]], [[1,3]]), method=method, mode=mode, 
-                sfreq=self.sfreq, cwt_freqs=cwt_freqs, 
-                cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
-                n_target_components=None
-                )
-            assert np.all(con.get_data('raveled')[0, gidx[0]:gidx[1]] > upper_t), \
-                con.get_data()[0, gidx[0]:gidx[1]].min()
+                con = multivariate_spectral_connectivity_epochs(
+                    data, indices=([[0,2]], [[1,3]]), method=method, mode=mode, 
+                    sfreq=self.sfreq, cwt_freqs=cwt_freqs, 
+                    cwt_n_cycles=cwt_n_cycles, n_seed_components=None, 
+                    n_target_components=None
+                    )
+                assert np.all(con.get_data('raveled')[0, gidx[0]:gidx[1]] > upper_t), \
+                    con.get_data()[0, gidx[0]:gidx[1]].min()
 
     # Add check that ValueError raised if gc_n_lags >= (n_freqs - 1) * 2
 
@@ -357,6 +363,9 @@ class TestMultivarSpectralConnectivity:
     # Add check that when using non-full rank data with MIC and MIM and mode
     # 'cwt_morlet' that the non-real-valued nature of a matrix is raised in a
     # value error, and that using SVD to make the data full rank resolves this
+
+    # Could add checks that results of method calls separately match those given
+    # together
 
     def test_parallel(self):
         """Test parallel computation."""
