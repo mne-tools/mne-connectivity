@@ -179,7 +179,7 @@ class TestMultivarSpectralConnectivity:
 
         # Check too many seed components
         with pytest.raises(ValueError, 
-            match="The number of components to take"):
+            match='The number of components to take cannot '):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=[3], n_target_components=[2]
@@ -187,7 +187,7 @@ class TestMultivarSpectralConnectivity:
 
         # Check too many target components
         with pytest.raises(ValueError, 
-            match="The number of components to take"):
+            match='The number of components to take cannot '):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=[2], n_target_components=[3]
@@ -195,7 +195,7 @@ class TestMultivarSpectralConnectivity:
 
         # Check wrong length of n_seed_components
         with pytest.raises(ValueError,
-            match="n_seed_components must have the same length as"):
+            match='n_seed_components and n_target_components must have the '):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=[2, 2], n_target_components=[2]
@@ -203,23 +203,23 @@ class TestMultivarSpectralConnectivity:
 
         # Check wrong length of n_target_components
         with pytest.raises(ValueError,
-            match="n_target_components must have the same length as"):
+            match='n_seed_components and n_target_components must have the '):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=[2], n_target_components=[2, 2]
                 )
 
         # Check n_seed_components is not a list or None
-        with pytest.raises(ValueError,
-            match="n_seed_components must be a tuple or None"):
+        with pytest.raises(TypeError,
+            match='n_seed_components and n_target_components must be lists'):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=2, n_target_components=[2]
                 )
         
         # Check n_seed_components is not a tuple or None
-        with pytest.raises(ValueError,
-            match="n_target_components must be a tuple or None"):
+        with pytest.raises(TypeError,
+            match='n_seed_components and n_target_components must be lists'):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
                 n_seed_components=[2], n_target_components=2
@@ -300,7 +300,7 @@ class TestMultivarSpectralConnectivity:
 
             # Everything below should be applicable for GC too, albeit with a
             # modification of the thresholds to reflect the fact that:
-            #   - GC is not bounded below 1 (although it is quite rare if it is)
+            #   - GC can be > 1 (although it is not often)
             #   - net GC, TRGC, and net TRGC values can be negative and are not
             #       bounded between +/- 1 (although, like for GC, they are not
             #       often outside of this bound)
