@@ -147,20 +147,34 @@ class TestMultivarSpectralConnectivity:
         # Indices cannot be None
         with pytest.raises(
             ValueError, match='indices must be specified'):
-            multivariate_spectral_connectivity_epochs(self.test_data, indices=None)
+            multivariate_spectral_connectivity_epochs(
+                self.test_data, indices=None
+            )
+        
+        # Add check for seeds and targets not being able to contain
+        # intersecting values
+
+        # Add check that seeds and targets for each connection must be a list of
+        # ints
+        
 
     def test_n_seed_or_target_components(self):
+
+        # Add checks for n_components only being allowed to be None, or lists of
+        # None, ints, or 'rank'
+
+        # Add check that n_components cannot be <= 0
 
         # Check 1 seed, 1 target component
         _ = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-            n_seed_components=(1,), n_target_components=(1,)
+            n_seed_components=[1], n_target_components=[1]
             )
 
         # Check 2 seed, 2 target components
         _ = multivariate_spectral_connectivity_epochs(
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-            n_seed_components=(2,), n_target_components=(2,)
+            n_seed_components=[2], n_target_components=[2]
             )
 
         # Check too many seed components
@@ -168,15 +182,15 @@ class TestMultivarSpectralConnectivity:
             match="The number of components to take"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=(3,), n_target_components=(2,)
+                n_seed_components=[3], n_target_components=[2]
                 )
 
-        # Check to many target components
+        # Check too many target components
         with pytest.raises(ValueError, 
             match="The number of components to take"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=(2,), n_target_components=(3,)
+                n_seed_components=[2], n_target_components=[3]
                 )
 
         # Check wrong length of n_seed_components
@@ -184,7 +198,7 @@ class TestMultivarSpectralConnectivity:
             match="n_seed_components must have the same length as"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=(2, 2), n_target_components=(2,)
+                n_seed_components=[2, 2], n_target_components=[2]
                 )
 
         # Check wrong length of n_target_components
@@ -192,15 +206,15 @@ class TestMultivarSpectralConnectivity:
             match="n_target_components must have the same length as"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=(2,), n_target_components=(2, 2)
+                n_seed_components=[2], n_target_components=[2, 2]
                 )
 
-        # Check n_seed_components is not a tuple or None
+        # Check n_seed_components is not a list or None
         with pytest.raises(ValueError,
             match="n_seed_components must be a tuple or None"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=2, n_target_components=(2,)
+                n_seed_components=2, n_target_components=[2]
                 )
         
         # Check n_seed_components is not a tuple or None
@@ -208,8 +222,12 @@ class TestMultivarSpectralConnectivity:
             match="n_target_components must be a tuple or None"):
             multivariate_spectral_connectivity_epochs(
                 self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
-                n_seed_components=(2,), n_target_components=2
+                n_seed_components=[2], n_target_components=2
                 )
+        
+        # Could add a test that when data is given with a certain rank, that
+        # giving ['rank'] as an input for n_components, the correct number of
+        # components are taken and stored in the returned connectivity object
 
     @pytest.mark.parametrize('mt_adaptive', [True, False])
     @pytest.mark.parametrize('mt_low_bias', [True, False])
@@ -224,7 +242,10 @@ class TestMultivarSpectralConnectivity:
             mt_low_bias=mt_low_bias, mt_bandwidth=mt_bandwidth)
 
 
-    @pytest.mark.parametrize('method', ['mic', 'mim', ['mic', 'mim']])
+    @pytest.mark.parametrize('method',
+        ['mic', 'mim', 'gc', 'net_gc', 'trgc', 'net_trgc', 
+        ['mic', 'mim', 'gc', 'net_gc', 'trgc', 'net_trgc']]
+    )
     @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
     def test_methods_and_modes(self, method, mode):
         # define some frequencies for cwt
@@ -235,8 +256,9 @@ class TestMultivarSpectralConnectivity:
         else:
             cwt_n_cycles = 7
 
+        indices = ([[0]], [[1]])
         con = multivariate_spectral_connectivity_epochs(
-            self.test_data, indices=([[0]], [[1]]), method=method, mode=mode,
+            self.test_data, indices=indices, method=method, mode=mode,
             sfreq=self.sfreq, cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles
             )
@@ -251,6 +273,32 @@ class TestMultivarSpectralConnectivity:
 
             assert (n == self.n_epochs)
             assert_array_almost_equal(self.test_times, times)
+
+            # Check topographies do/do not exist, and whether they have the
+            # correct shape
+            if 'method' == 'mic':
+                results = con.get_data()
+                topographies = con.topographies
+                assert topographies is not None
+                assert len(topographies) == 2
+                for group_topos, group_inds in zip(topographies, indices):
+                    assert len(group_topos) == len(group_inds)
+                    con_i = 0
+                    for con_topos, con_inds in zip(group_topos, group_inds):
+                        assert (
+                            con_topos.shape ==
+                            (len(con_inds), *results[con_i].shape)
+                        )
+                        con_i += 1
+            else:
+                assert con.topographies is None
+            
+            if 'method' in ['gc', 'net_gc', 'trgc', 'net_trgc']:
+                assert con.n_lags is not None
+            else:
+                assert con.n_lags is None
+
+            # Everything below should be applicable for GC too
 
             upper_t = 0.3
             lower_t = 0.5
@@ -297,6 +345,18 @@ class TestMultivarSpectralConnectivity:
             assert np.all(con.get_data('raveled')[0, gidx[0]:gidx[1]] > upper_t), \
                 con.get_data()[0, gidx[0]:gidx[1]].min()
 
+    # Add check that ValueError raised if gc_n_lags >= (n_freqs - 1) * 2
+
+    # Could add a check that when net GC computed, results of [seeds -> targets]
+    # == [targets -> seeds]*-1 (i.e. that results are sign flipped)
+
+    # Add check that when using non-full rank data used with GC methods that
+    # ValueError is raised for a matrix being non-positive-definite, and that
+    # using SVD to make data full rank resolves this
+
+    # Add check that when using non-full rank data with MIC and MIM and mode
+    # 'cwt_morlet' that the non-real-valued nature of a matrix is raised in a
+    # value error, and that using SVD to make the data full rank resolves this
 
     def test_parallel(self):
         """Test parallel computation."""
@@ -360,3 +420,12 @@ class TestMultivarSpectralConnectivity:
             self.test_data, indices=([[0,2]], [[1,3]]), sfreq=self.sfreq,
             fmin=(3, 8, 15), fmax=(7, 14, 20), faverage=True,
             )
+
+        # Add checks that performing faverage in function call matches manual
+        # result, and that same is seen for MIC topographies
+
+    
+    # Add checks that saving works (given indices and topographies can be
+    # ragged, which needs to be handled carefully when saving); likewise, could
+    # also check that re-loaded results match saved results after hacky
+    # intervation for saving ragged arrays
