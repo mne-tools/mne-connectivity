@@ -195,11 +195,9 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
 
         self.mic_scores = copy.deepcopy(self.con_scores)
         self.mim_scores = copy.deepcopy(self.con_scores)
-        self.topographies = np.empty((2, n_cons), dtype=object)
 
     def compute_con(
-        self, seeds, targets, n_seed_components, n_target_components, n_epochs,
-        form_name
+        self, seeds, targets, n_components, n_epochs, form_name
     ):
         """Computes MIC and/or MIM between sets of signals."""  
         self._sort_form_name(form_name)
@@ -208,7 +206,9 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         n_times = csd.shape[0]
 
         con_i = 0
-        for seed_idcs, target_idcs in zip(seeds, targets):
+        for seed_idcs, target_idcs, n_seed_comps, n_target_comps in zip(
+            seeds, targets, n_components[0], n_components[1]
+        ):
             self._log_connection_number(con_i, f'coherence ({form_name})')
 
             n_seeds = len(seed_idcs)
@@ -221,8 +221,7 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             C_bar, U_bar_aa, U_bar_bb = self._cross_spectra_svd(
                 csd=C,
                 n_seeds=n_seeds,
-                n_seed_components=n_seed_components[con_i],
-                n_target_components=n_target_components[con_i],
+                n_components=(n_seed_comps, n_target_comps)
             )
 
             # Eqs. 3 & 4
@@ -256,9 +255,12 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             self.compute_mic = True
         else: # only MIM left
             self.compute_mim = True
+        
+        if self.compute_mic:
+            self.topographies = np.empty((2, self.n_cons), dtype=object)
 
     def _cross_spectra_svd(
-        self, csd, n_seeds, n_seed_components, n_target_components
+        self, csd, n_seeds, n_components
     ):
         """Performs dimensionality reduction on a cross-spectral density using
         singular value decomposition (SVD)."""
@@ -270,16 +272,22 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         C_ba = csd[:, :, n_seeds:, :n_seeds]
 
         # Eq. 32
-        if n_seed_components is not None:
+        if n_components[0] is not None:
             U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
-            U_bar_aa = U_aa[:, :, :, :n_seed_components]
+            U_bar_aa = U_aa[:, :, :, :n_components[0]]
         else:
-            U_bar_aa = np.broadcast_to(np.identity(n_seeds), (n_times, self.n_freqs)+(n_seeds, n_seeds))
-        if n_target_components is not None:
+            U_bar_aa = np.broadcast_to(
+                np.identity(n_seeds),
+                (n_times, self.n_freqs) + (n_seeds, n_seeds)
+            )
+        if n_components[1] is not None:
             U_bb = np.linalg.svd(np.real(C_bb), full_matrices=False)[0]
-            U_bar_bb = U_bb[:, :, :, :n_target_components]
+            U_bar_bb = U_bb[:, :, :, :n_components[1]]
         else:
-            U_bar_bb = np.broadcast_to(np.identity(n_targets), (n_times, self.n_freqs)+(n_targets, n_targets))
+            U_bar_bb = np.broadcast_to(
+                np.identity(n_targets),
+                (n_times, self.n_freqs) + (n_targets, n_targets)
+            )
 
         # Eq. 33
         C_bar_aa = U_bar_aa.transpose(0, 1, 3, 2) @ (C_aa @ U_bar_aa)
@@ -287,7 +295,9 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
         C_bar_bb = U_bar_bb.transpose(0, 1, 3, 2) @ (C_bb @ U_bar_bb)
         C_bar_ba = U_bar_bb.transpose(0, 1, 3, 2) @ (C_ba @ U_bar_aa)
         C_bar = np.append(
-            np.append(C_bar_aa, C_bar_ab, axis=3), np.append(C_bar_ba, C_bar_bb, axis=3), axis=2
+            np.append(C_bar_aa, C_bar_ab, axis=3),
+            np.append(C_bar_ba, C_bar_bb, axis=3),
+            axis=2
         )
 
         return C_bar, U_bar_aa, U_bar_bb
@@ -313,12 +323,13 @@ class _MultivarCohEstBase(_EpochMeanMultivarConEstBase):
             )
         T = T.transpose(1, 0, 2, 3)
 
-        if not np.all(np.isreal(T)):
+        if not np.isreal(T).all() or not np.isfinite(T).all():
             raise ValueError(
-                'the transformation matrix of the data must be real-valued, '
-                'but it is not; check that you are using full-rank data or '
-                'specifying an appropriate number of components for the seeds '
-                'and targets that is less than or equal to their ranks'
+                'the transformation matrix of the data must be real-valued and '
+                'contain no NaN or infinity values; check that you are using '
+                'full rank data or specify an appropriate number of components '
+                'for the seeds and targets that is less than or equal to their '
+                'ranks'
             )
         T = np.real(T)
 
@@ -549,21 +560,30 @@ class _GCEstBase(_EpochMeanMultivarConEstBase):
 
         Ref.: Whittle P., 1963. Biometrika, DOI: 10.1093/biomet/50.1-2.129.
         """
+        if np.any(np.linalg.det(autocov) == 0):
+            raise ValueError(
+                'the autocovariance matrix is singular; make sure you are '
+                'using only full rank data, or specify an appropriate number '
+                'of components for the seeds and targets that is less than or '
+                'equal to their ranks'
+            )
+
         A_f, V = self.whittle_lwr_recursion(autocov)
 
         if not np.isfinite(A_f).all():
             raise ValueError(
-                "Some or all VAR model coefficients are infinite or NaNs. "
-                "Please check the data you are computing Granger causality on."
+                'some or all VAR model coefficients are infinite or NaNs; '
+                'please check the data you are computing connectivity on'
             )
 
         try:
             np.linalg.cholesky(V)
         except np.linalg.linalg.LinAlgError as np_error:
             raise ValueError(
-                "The residuals' covariance matrix is not positive-definite. "
-                "Make sure you are computing Granger causality only on data "
-                "that is full rank."
+                'the residuals covariance matrix is not positive-definite; '
+                'make sure you are using only full rank data, or specify an '
+                'appropriate number of components for the seeds and targets '
+                'that is less than or equal to their ranks'
             ) from np_error
 
         return A_f, V

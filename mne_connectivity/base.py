@@ -1122,6 +1122,12 @@ class BaseMultivariateConnectivity(BaseConnectivity):
 
     def _check_n_components_consistency(self, n_components):
         """Perform n_components input checks."""
+        # useful for converting back to a tuple when re-loading after saving
+        if isinstance(n_components, np.ndarray):
+            n_components = tuple(copy(n_components.tolist()))
+        elif isinstance(n_components, list):
+            n_components = tuple(copy(n_components))
+
         if not isinstance(n_components, tuple):
             raise TypeError('n_components should be a tuple')
 
@@ -1165,6 +1171,7 @@ class BaseMultivariateConnectivity(BaseConnectivity):
         """
         old_attrs = deepcopy(self.attrs)
         self._pad_ragged_attrs()
+        self._replace_none_n_components()
         super(BaseMultivariateConnectivity, self).save(fname)
         self.xarray.attrs = old_attrs # resets to non-padded attrs
 
@@ -1195,7 +1202,7 @@ class BaseMultivariateConnectivity(BaseConnectivity):
         padded_indices = [[], []]
         for group_i, group in enumerate(self.indices):
             for con_i, con in enumerate(group):
-                if np.nonzero(con == self._pad_val):
+                if np.count_nonzero(con == self._pad_val):
                     # this would break the unpadding process when re-loading the
                     # connectivity object
                     raise ValueError(
@@ -1217,7 +1224,7 @@ class BaseMultivariateConnectivity(BaseConnectivity):
         longer ragged (i.e. the length of the first dimension of topographies
         for each connection equals 'max_n_channels')."""
         topos_dims = [2, len(self.indices[0]), max_n_channels, len(self.freqs)]
-        if 'times' in self.attrs.keys():
+        if 'times' in self.coords:
             topos_dims.append(len(self.times))
         padded_topos = np.full(
             topos_dims, self._pad_val, dtype=self.topographies[0][0].dtype
@@ -1229,14 +1236,29 @@ class BaseMultivariateConnectivity(BaseConnectivity):
                     
         self.attrs['topographies'] = padded_topos
 
-    def _unpad_ragged_attrs(self):
+    def _replace_none_n_components(self):
+        """Replace None values in the n_components attribute with 'n/a', since
+        None is not supported by netCDF."""
+        n_components = [[], []]
+        for group_i, group in enumerate(self.attrs['n_components']):
+            for con in group:
+                if con is None:
+                    n_components[group_i].append('n/a')
+                else:
+                    n_components[group_i].append(con)
+        self.attrs['n_components'] = tuple(n_components)
+
+    def _restore_attrs(self):
         """Unpads ragged attributes of the connectivity object (i.e. indices and
-        topographies) padded with np.inf so that they could be saved using
+        topographies) padded with np.inf and restored nested None values in
+        attributes replaced with 'n/a' so that they could be saved using
         HDF5."""
         n_padded_channels = self._get_n_padded_channels()
         self._unpad_indices(n_padded_channels)
         if self.topographies is not None:
             self._unpad_topographies(n_padded_channels)
+        
+        self._restore_non_n_components()
 
     def _get_n_padded_channels(self):
         """Finds the number of channels that have been added when padding the
@@ -1281,6 +1303,18 @@ class BaseMultivariateConnectivity(BaseConnectivity):
                     unpadded_topos[group_i][con_i] = con
         
         self.attrs['topographies'] = unpadded_topos
+
+    def _restore_non_n_components(self):
+        """Restores None values in the n_components attribute with from
+        'n/a'."""
+        n_components = [[], []]
+        for group_i, group in enumerate(self.attrs['n_components']):
+            for con in group:
+                if con == 'n/a':
+                    n_components[group_i].append(None)
+                else:
+                    n_components[group_i].append(con)
+        self.attrs['n_components'] = tuple(n_components)
 
 
 class MultivariateSpectralConnectivity(

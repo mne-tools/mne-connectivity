@@ -101,27 +101,47 @@ def seed_target_indices(seeds, targets):
 def multivariate_seed_target_indices(seeds, targets):
     """Generates indices parameter for seed-based multivariate connectivity
     analysis.
-    PARAMETERS
+
+    Parameters
     ----------
-    seeds : array of array of int
+    seeds : array of array of int | list of list of int
     -   Seed indices, consisting of an array composed of sub-arrays, where each
         each sub-array contains the indices of the channels for the seeds of a
         single connectivity node.
-    targets : array of array of int
+    targets : array of array of int | list of list of int
     -   Target indices, consisting of an array composed of sub-arrays, where
         each each sub-array contains the indices of the channels for the targets
         of a single connectivity node. For each "seeds" sub-array, a
         corresponding entry for each of the "targets" sub-arrays will be added
         to the indices.
-    RETURNS
+
+    Returns
     -------
-    indices : tuple of array of array of int
+    indices : tuple of list of list of int
     -   The indices paramater used for multivariate connectivity computation.
-        Consists of two arrays corresponding to the seeds and targets,
-        respectively, where each array is composed of sub-arrays, where each
-        sub-array contains the indices of the channels for the seeds/targets of
-        a single connectivity node.
+        Consists of two lists corresponding to the seeds and targets,
+        respectively, where each list is composed of sub-lists containing the
+        indices of the channels for the seeds/targets of a single connection.
+    
+    See Also
+    --------
+    multivariate_spectral_connectivity_epochs
     """
+    if (
+        not isinstance(seeds, np.ndarray) and not isinstance(seeds, list) or
+        not isinstance(targets, np.ndarray) and not isinstance(targets, list)
+    ):
+        raise TypeError('seeds and targets should be arrays or lists')
+    
+    for seed, target in zip(seeds, targets):
+        if (
+            not isinstance(seed, np.ndarray) and not isinstance(seed, list) or
+            not isinstance(target, np.ndarray) and not isinstance(target, list)
+        ):
+            raise TypeError(
+                'entries of seeds and targets should be arrays or lists'
+            )
+
     indices = [[], []]
     for seed in seeds:
         for target in targets:

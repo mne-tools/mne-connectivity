@@ -11,7 +11,7 @@ from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    MultivariateSpectroTemporalConnectivity)
 
 
-def _xarray_to_conn(array, cls_func, unpad_ragged_attrs):
+def _xarray_to_conn(array, cls_func, restore_attrs):
     """Create connectivity class from xarray.
 
     Parameters
@@ -20,9 +20,10 @@ def _xarray_to_conn(array, cls_func, unpad_ragged_attrs):
         Xarray containing the connectivity data.
     cls_func : Connectivity class
         The function of the connectivity class to use.
-    unpad_ragged_attrs : bool
-        Whether or not to unpad once ragged attributes of the class that were
-        padded to enable saving with HDF5.
+    restore_attrs : bool
+        Whether or not to restore the nature of attributes of the class that
+        were modified to enable saving with HDF5 (only relevant for multivariate
+        connectivity classes).
 
     Returns
     -------
@@ -63,9 +64,9 @@ def _xarray_to_conn(array, cls_func, unpad_ragged_attrs):
         data=data, names=names, metadata=metadata, **array.attrs
     )
 
-    # make padded xarray attrs ragged again (for multivariate connectivity only)
-    if unpad_ragged_attrs:
-        conn._unpad_ragged_attrs()
+    # restore attrs modified for saving (for multivariate connectivity only)
+    if restore_attrs:
+        conn._restore_attrs()
 
     return conn
 
@@ -117,10 +118,10 @@ def read_connectivity(fname):
     # checks whether ragged attrs of the class padded for saving need to be
     # restored (so far only the case for multivariate connectivity)
     if issubclass(cls_func, BaseMultivariateConnectivity):
-        unpad_ragged_attrs = True
+        restore_attrs = True
     else:
-        unpad_ragged_attrs = False
+        restore_attrs = False
 
     # get the data as a new connectivity container
-    conn = _xarray_to_conn(conn_da, cls_func, unpad_ragged_attrs)
+    conn = _xarray_to_conn(conn_da, cls_func, restore_attrs)
     return conn

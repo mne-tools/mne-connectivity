@@ -27,8 +27,8 @@ class _MVCSpectralEpochs():
     init_attrs = [
         'data', 'indices', 'names', 'method', 'sfreq', 'mode', 'tmin', 'tmax',
         'fmin', 'fmax', 'fskip', 'faverage', 'cwt_freqs', 'mt_bandwidth',
-        'mt_adaptive', 'mt_low_bias', 'cwt_n_cycles', 'n_seed_components',
-        'n_target_components', 'gc_n_lags', 'block_size', 'n_jobs', 'verbose'
+        'mt_adaptive', 'mt_low_bias', 'cwt_n_cycles', 'n_components',
+        'gc_n_lags', 'block_size', 'n_jobs', 'verbose'
     ]
 
     gc_method_aliases = ['gc', 'net_gc', 'trgc', 'net_trgc']
@@ -68,7 +68,7 @@ class _MVCSpectralEpochs():
     }
 
     # threshold for classifying singular values as being non-zero
-    rank_nonzero_tol = 1e-10
+    rank_nonzero_tol = 1e-5
     perform_svd = False
 
     # whether the requested frequencies are discontinuous (e.g. different bands)
@@ -288,39 +288,60 @@ class _MVCSpectralEpochs():
                     'for a single connection, however multivariate '
                     'connectivity between shared channels is not supported'
                 )
+        
+        if isinstance(self.data, BaseEpochs):
+            n_channels = self.data.get_data().shape[1]
+        else:
+            n_channels = self.data.shape[1]
+        if len(self._get_unique_signals(self.indices)) > n_channels:
+            raise ValueError(
+                'the number of unique signals in indices is greater than the '
+                'number of channels in the data'
+            )
 
     def _sort_svd_inputs(self):
         """Checks that the SVD parameters are appropriate and finds the correct
         dimensionality reduction settings to use, if applicable.
         
         This involves the rank of the data being computed based its non-zero
-        singular values. We use a cut-off of 1e-10 by default to determine when
-        a value is non-zero, as using numpy's default cut-off is too liberal
-        (i.e. low) for our purposes where we need to be stricter.
+        singular values. We use a cut-off of the largest singular value * 1e-5
+        by default to determine when a value is non-zero, as using numpy's
+        default cut-off is too liberal (i.e. low) for our purposes where we need
+        to be stricter.
         """
-        self.n_seed_components = copy.copy(self.n_seed_components)
-        self.n_target_components = copy.copy(self.n_target_components)
+        self.n_components = copy.copy(self.n_components)
 
         # finds if any SVD has been requested for seeds and/or targets
-        if self.n_seed_components is None:
-            self.n_seed_components = [None for _ in range(self.n_cons)]
-        if self.n_target_components is None:
-            self.n_target_components = [None for _ in range(self.n_cons)]
+        if self.n_components is None:
+            self.n_components = (
+                [None for _ in range(self.n_cons)],
+                [None for _ in range(self.n_cons)]
+            )
+        
+        if self.n_components == 'rank':
+            self.n_components = (
+                ['rank' for _ in range(self.n_cons)],
+                ['rank' for _ in range(self.n_cons)]
+            )
+        
+        if not isinstance(self.n_components, tuple):
+            raise TypeError('n_components must be a tuple')
 
-        for n_components in (self.n_seed_components, self.n_target_components):
-            if not isinstance(n_components, list):
-                raise TypeError(
-                    'n_seed_components and n_target_components must be lists'
-                )
-            if self.n_cons != len(n_components):
+        for group_i, group_comps in enumerate(self.n_components):
+            if group_comps is None:
+                group_comps[group_i] = [None for _ in range(self.n_cons)]
+                
+            if not isinstance(group_comps, list):
+                raise TypeError('entries of n_components must be lists')
+
+            if len(group_comps) != self.n_cons:
                 raise ValueError(
-                    'n_seed_components and n_target_components must have the '
-                    'same length as specified the number of connections in '
-                    f'indices. Got: {len(n_components)} components and '
-                    f'{self.n_cons} connections'
+                    'entries of n_components must have the same length as '
+                    'specified the number of connections in indices'
                 )
+
             if not self.perform_svd and any(
-                n_comps is not None for n_comps in n_components
+                con_comps is not None for con_comps in group_comps
             ):
                 self.perform_svd = True
 
@@ -331,44 +352,40 @@ class _MVCSpectralEpochs():
             else:
                 epochs = self.data
         
-            for group_i, n_components in enumerate(
-                (self.n_seed_components, self.n_target_components)
-            ):
-                if any(n_comps is not None for n_comps in n_components):
+            for group_idcs, group_comps in zip(self.indices, self.n_components):
+                if any(con_comps is not None for con_comps in group_comps):
                     index_i = 0
-                    for n_comps, chs in zip(
-                        n_components, self.indices[group_i]
-                    ):
-                        if isinstance(n_comps, int):
-                            if n_comps > len(chs):
+                    for con_comps, con_chs in zip(group_comps, group_idcs):
+                        if isinstance(con_comps, int):
+                            if con_comps > len(con_chs):
                                 raise ValueError(
-                                    'The number of components to take cannot '
+                                    'the number of components to take cannot '
                                     'be greater than the number of channels in '
                                     'a given seed/target'
                                 )
-                            if n_comps <= 0:
+                            if con_comps <= 0:
                                 raise ValueError(
-                                    'The number of components to take must be '
+                                    'the number of components to take must be '
                                     'greater than 0'
                                 )
-                        elif isinstance(n_comps, str):
-                            if n_comps != 'rank':
+                        elif isinstance(con_comps, str):
+                            if con_comps != 'rank':
                                 raise ValueError(
-                                    'if n_seed_components or '
-                                    'n_target_components contains a string, it '
-                                    'must be the string "rank"'
+                                    'if the number of components is specified '
+                                    'as a string, it must be the string "rank"'
                                 )
                             # compute the rank of the seeds/targets for a con
-                            n_components[index_i] = np.min(
-                                np.linalg.matrix_rank(
-                                    epochs[:, chs, :], tol=self.rank_nonzero_tol
-                                )
+                            S = np.linalg.svd(
+                                epochs[:, con_chs, :],
+                                compute_uv=False
                             )
-                        elif n_comps is not None:
+                            group_comps[index_i] = min([np.count_nonzero(
+                                    s >= s[0]*self.rank_nonzero_tol
+                            ) for s in S])
+                        elif con_comps is not None:
                             raise TypeError(
-                                'n_seed_components and n_target_components '
-                                'must be lists of `None`, `int`, or the string '
-                                '"rank"'
+                                'n_components must be tuples of lists of '
+                                '`None`, `int`, or the string "rank"'
                             )
                         index_i += 1
 
@@ -430,12 +447,7 @@ class _MVCSpectralEpochs():
             this_con, _, = self._compute_connectivity(con_methods, new_indices)
 
             for method_i in range(n_gc_methods):
-                self.separate_gc_con[method_i].append(this_con[method_i])
-
-        self.separate_gc_con = [
-            np.squeeze(np.array(this_con), 1) for this_con in
-            self.separate_gc_con
-        ]
+                self.separate_gc_con[method_i].extend(this_con[method_i])
 
         # finds the methods still needing to be computed
         self.remaining_method_types = [
@@ -456,8 +468,8 @@ class _MVCSpectralEpochs():
         seed_target_data = []
         n_seeds = []
         for seeds, targets, n_seed_comps, n_target_comps in zip(
-            self.indices[0], self.indices[1], self.n_seed_components,
-            self.n_target_components
+            self.indices[0], self.indices[1], self.n_components[0],
+            self.n_components[1]
         ):
             if n_seed_comps is not None: # SVD seed data
                 seed_data = self._epochs_svd(epochs[:, seeds, :], n_seed_comps)
@@ -466,7 +478,9 @@ class _MVCSpectralEpochs():
             n_seeds.append(seed_data.shape[1])
 
             if n_target_comps is not None: # SVD target data
-                target_data = self._epochs_svd(epochs[:, targets, :], n_target_comps)
+                target_data = self._epochs_svd(
+                    epochs[:, targets, :], n_target_comps
+                )
             else: # use unaltered target data
                 target_data = epochs[:, targets, :]
 
@@ -562,7 +576,7 @@ class _MVCSpectralEpochs():
         ) = _prepare_connectivity(
             epoch_block=self.epoch_blocks[0], times_in=self.times_in,
             tmin=self.tmin, tmax=self.tmax, fmin=fmin, fmax=fmax,
-            sfreq=self.sfreq, indices=self.indices, mode=self.mode,
+            sfreq=self.sfreq, indices=indices, mode=self.mode,
             fskip=self.fskip, n_bands=self.n_bands, cwt_freqs=self.cwt_freqs,
             faverage=self.faverage
         )
@@ -581,7 +595,7 @@ class _MVCSpectralEpochs():
 
         self._sort_con_indices(indices)
 
-        con_methods = self._instantiate_con_estimators(con_method_types)
+        con_methods = self._instantiate_con_estimators(con_method_types, indices)
 
         self.csd_call_params = dict(
             sig_idx=self.sig_idx, tmin_idx=tmin_idx, tmax_idx=tmax_idx,
@@ -666,7 +680,7 @@ class _MVCSpectralEpochs():
         """Find the unique signals in a set of indices."""
         return np.unique(sum(sum(indices, []), []))
 
-    def _instantiate_con_estimators(self, con_method_types):
+    def _instantiate_con_estimators(self, con_method_types, indices):
         """Create instances of the connectivity estimators and log the methods
         being computed."""
         con_methods = []
@@ -675,7 +689,7 @@ class _MVCSpectralEpochs():
                 # if a GC method, provide n_lags argument
                 con_methods.append(
                     mtype(
-                        self.use_n_signals, self.n_cons, self.n_freqs,
+                        self.use_n_signals, len(indices[0]), self.n_freqs,
                         self.n_times_spectrum, self.gc_n_lags, self.n_jobs
                     )
                 )
@@ -683,7 +697,7 @@ class _MVCSpectralEpochs():
                 # if a coherence method, do not provide n_lags argument
                 con_methods.append(
                     mtype(
-                        self.use_n_signals, self.n_cons, self.n_freqs,
+                        self.use_n_signals, len(indices[0]), self.n_freqs,
                         self.n_times_spectrum, self.n_jobs
                     )
                 )
@@ -713,7 +727,7 @@ class _MVCSpectralEpochs():
             )
 
             self._check_correct_results_dimensions(
-                con_methods, method_con, method_topo
+                con_methods, method_con, method_topo, indices
             )
 
             if self.faverage:
@@ -867,8 +881,8 @@ class _MVCSpectralEpochs():
             form_name = list(self.compute_coh_form.keys())[0]  # only one there
             form_info = self.compute_coh_form[form_name]
             form_info['method_class'].compute_con(
-                indices[0], indices[1], self.n_seed_components,
-                self.n_target_components, self.n_epochs, form_name
+                indices[0], indices[1], self.n_components, self.n_epochs,
+                form_name
             )
         
             # store the MIC and/or MIM results in the right places
@@ -900,12 +914,13 @@ class _MVCSpectralEpochs():
                 self.compute_coh_form[form_name] = form_info
                 break # only one form is possible at any one instance
 
-    def _check_correct_results_dimensions(self, con_methods, con, topo):
+    def _check_correct_results_dimensions(self, con_methods, con, topo, indices):
         """Checks that the results of the connectivity computations have the
         appropriate dimensions."""
+        n_cons = len(indices[0])
         n_times = con_methods[0].n_times
 
-        assert (con.shape[0] == self.n_cons), (
+        assert (con.shape[0] == n_cons), (
             'The first dimension of connectivity scores does not match the '
             'number of connections. Please contact the mne-connectivity ' 
             'developers.'
@@ -925,13 +940,13 @@ class _MVCSpectralEpochs():
             )
         
         if topo is not None:
-            assert (topo[0].shape[0] == self.n_cons and topo[1].shape[0]), (
+            assert (topo[0].shape[0] == n_cons and topo[1].shape[0]), (
                 'The first dimension of topographies does not match the number '
                 'of connections. Please contact the mne-connectivity '
                 'developers.'
             )
 
-            for con_i in range(self.n_cons):
+            for con_i in range(n_cons):
                 assert (
                     topo[0][con_i].shape[1] == self.n_freqs and
                     topo[1][con_i].shape[1] == self.n_freqs
@@ -953,7 +968,8 @@ class _MVCSpectralEpochs():
 
     def _compute_faverage(self, con, topo):
         """Computes the average connectivity across the frequency bands."""
-        con_shape = (self.n_cons, self.n_bands) + con.shape[2:]
+        n_cons = con.shape[0]
+        con_shape = (n_cons, self.n_bands) + con.shape[2:]
         con_bands = np.empty(con_shape, dtype=con.dtype)
         for band_idx in range(self.n_bands):
             con_bands[:, band_idx] = np.mean(
@@ -961,9 +977,9 @@ class _MVCSpectralEpochs():
             )
 
         if topo is not None:
-            topo_bands = np.empty((2, self.n_cons), dtype=topo.dtype)
+            topo_bands = np.empty((2, n_cons), dtype=topo.dtype)
             for group_i in range(2):
-                for con_i in range(self.n_cons):
+                for con_i in range(n_cons):
                     band_topo = [
                         np.mean(topo[group_i][con_i][:, freq_idx_band], axis=1)
                         for freq_idx_band in self.freq_idx_bands
@@ -1001,6 +1017,9 @@ class _MVCSpectralEpochs():
         # else you only have the remaining (non-GC with SVD/discontinuous
         # frequency) results, already in the order in which they were called
 
+        self.con = np.array(self.con)
+        self.topo = np.array(self.topo, dtype=object)
+
     def store_connectivity_results(self):
         """Stores multivariate connectivity results in mne-connectivity
         objects."""
@@ -1011,11 +1030,10 @@ class _MVCSpectralEpochs():
                 data=_con, topographies=_topo, names=self.names,
                 freqs=self.freqs, method=_method, n_nodes=self.n_nodes,
                 spec_method=self.mode, indices=self.indices,
-                n_components=(self.n_seed_components, self.n_target_components),
-                n_epochs_used=self.n_epochs, freqs_used=self.freqs_used,
-                times_used=self.times, n_tapers=self.n_tapers, n_lags=None,
-                metadata=self.metadata, events=self.events,
-                event_id=self.event_id
+                n_components=self.n_components, n_epochs_used=self.n_epochs,
+                freqs_used=self.freqs_used, times_used=self.times,
+                n_tapers=self.n_tapers, n_lags=None, metadata=self.metadata,
+                events=self.events, event_id=self.event_id
             )
             if _method in ['gc', 'net_gc', 'trgc', 'net_trgc']:
                 kwargs.update(n_lags=self.gc_n_lags)
@@ -1040,8 +1058,8 @@ def multivariate_spectral_connectivity_epochs(
     mode = "multitaper", tmin = None, tmax = None, fmin = None, fmax = np.inf,
     fskip = 0, faverage = False, cwt_freqs = None, mt_bandwidth = None,
     mt_adaptive = False, mt_low_bias = True, cwt_n_cycles = 7.0,
-    n_seed_components = None, n_target_components = None, gc_n_lags = 20,
-    block_size = 1000, n_jobs = 1, verbose = None,
+    n_components = None, gc_n_lags = 20, block_size = 1000, n_jobs = 1,
+    verbose = None,
 ):
     """Compute frequency-domain multivariate connectivity measures.
 
@@ -1121,21 +1139,17 @@ def multivariate_spectral_connectivity_epochs(
         single number, or one per frequency. Only used if "mode" if
         'cwt_morlet'.
 
-    n_seed_components : list of int or str or None | None; default None
-    -   Dimensionality reduction parameter specifying the number of seed
-        components to extract from the single value decomposition of the seed
-        channels' data for each connectivity node. If an individual entry is a
-        str with value "rank", the rank of the seed data will be computed and
-        this number of components taken. If None, or if an individual entry is
-        None, no dimensionality reduction is performed.
-
-    n_target_components : list of int or str or None | None; default None
-    -   Dimensionality reduction parameter specifying the number of seed
-        components to extract from the single value decomposition of the target
-        channels' data for each connectivity node. If an individual entry is a
-        str with value "rank", the rank of the target data will be computed and
-        this number of components taken. If None, or if an individual entry is
-        None, no dimensionality reduction is performed.
+    n_components : tuple of list of int or str or None | str | None; default
+    None
+    -   Dimensionality reduction parameter specifying the number of seed and
+        target components to extract from the singular value decomposition of
+        the seed and target channels' data, respectively, for each connection.
+        If a str with value "rank", the rank of the seed and target data will be
+        computed and this number of components used. If an entry for a
+        connection is "rank", the data of the seed/target for that connection
+        will have its rank computed and that number of components used. If None,
+        if the entry for the seeds/targets is None, or if an entry for a
+        connection is None, no dimensionality reduction is performed.
 
     gc_n_lags : int; default 20
     -   The number of lags to use when computing the autocovariance sequence
@@ -1380,9 +1394,9 @@ def multivariate_spectral_connectivity_epochs(
         mode=mode, tmin=tmin, tmax=tmax, fmin=fmin, fmax=fmax, fskip=fskip,
         faverage=faverage, cwt_freqs=cwt_freqs, mt_bandwidth=mt_bandwidth,
         mt_adaptive=mt_adaptive, mt_low_bias=mt_low_bias,
-        cwt_n_cycles=cwt_n_cycles, n_seed_components=n_seed_components,
-        n_target_components=n_target_components, gc_n_lags=gc_n_lags,
-        block_size=block_size, n_jobs=n_jobs, verbose=verbose
+        cwt_n_cycles=cwt_n_cycles, n_components=n_components,
+        gc_n_lags=gc_n_lags, block_size=block_size, n_jobs=n_jobs,
+        verbose=verbose
     )
 
     connectivity_computation.compute_csd_and_connectivity()
