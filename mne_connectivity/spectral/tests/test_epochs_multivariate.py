@@ -568,12 +568,8 @@ class TestMultivarSpectralConnectivity:
             fmin=(3, 9), fmax=(7, 14), method="gc", gc_n_lags=4
             )
 
-
     # Add checks that saving works (given indices and topographies can be
     # ragged, which needs to be handled carefully when saving); likewise, could
     # also check that re-loaded results match saved results after hacky
     # intervation for saving ragged arrays - SHOULD THIS GO IN A SEPARATE PLACE
     # FOR TESTING THE NEW CLASSES SPECIFICALLY?
-
-if __name__ == "__main__":
-    TestMultivarSpectralConnectivity().test_check_for_discontinuous_freqs()
