@@ -340,12 +340,16 @@ class _MVCSpectralEpochs():
                         n_components, self.indices[group_i]
                     ):
                         if isinstance(n_comps, int):
-                            if n_comps > len(chs) or n_comps <= 0:
+                            if n_comps > len(chs):
                                 raise ValueError(
                                     'The number of components to take cannot '
                                     'be greater than the number of channels in '
-                                    'a given seed/target and must be greater '
-                                    'than 0'
+                                    'a given seed/target'
+                                )
+                            if n_comps <= 0:
+                                raise ValueError(
+                                    'The number of components to take must be '
+                                    'greater than 0'
                                 )
                         elif isinstance(n_comps, str):
                             if n_comps != 'rank':
@@ -1070,7 +1074,7 @@ def multivariate_spectral_connectivity_epochs(
 
     mode : str; default "multitaper"
     -   Cross-spectral estimation method. Can be 'fourier', 'multitaper', or
-        'cwt_wavelet'.
+        'cwt_morlet'.
 
     tmin : float | None; default None
     -   The time at which to start computing connectivity, in seconds. If None,
