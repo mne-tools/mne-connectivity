@@ -764,7 +764,7 @@ def _check_estimators(method, mode):
 @verbose
 @fill_doc
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
-                                 sfreq=2 * np.pi,
+                                 sfreq=None,
                                  mode='multitaper', fmin=None, fmax=np.inf,
                                  fskip=0, faverage=False, tmin=None, tmax=None,
                                  mt_bandwidth=None, mt_adaptive=False,
@@ -796,7 +796,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
     sfreq : float
-        The sampling frequency.
+        The sampling frequency. Required if data is not
+        :class:`Epochs <mne.Epochs>`.
     mode : str
         Spectrum estimation mode can be either: 'multitaper', 'fourier', or
         'cwt_morlet'.
@@ -1019,6 +1020,9 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     else:
         times_in = None
         metadata = None
+        if sfreq is None:
+            raise ValueError('Sampling frequency (sfreq) is required with '
+                             'array input.')
 
     # loop over data; it could be a generator that returns
     # (n_signals x n_times) arrays or SourceEstimates

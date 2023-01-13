@@ -38,9 +38,9 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
+    "sphinx_issues",
     'numpydoc',
     'sphinx_copybutton',
-    'gh_substitutions',  # custom extension, see sphinxext/gh_substitutions.py
 ]
 
 # configure sphinx-copybutton
