@@ -16,7 +16,7 @@ are some bug fixes to the underlying API to make compatible with MNE-Python v1.2
 Enhancements
 ~~~~~~~~~~~~
 
-- Add ``node_height`` to :func:`mne_connectivity.viz.plot_connectivity_circle` and enable passing a polar ``ax``, by `Alex Rockhill`_ :pr:`88`
+- Add ``node_height`` to :func:`mne_connectivity.viz.plot_connectivity_circle` and enable passing a polar ``ax``, by `Alex Rockhill`_ (:pr:`88`)
 - Add directed phase lag index (dPLI) as a method in :func:`mne_connectivity.spectral_connectivity_epochs` with a corresponding example by `Kenji Marshall`_ (:pr:`79`)
 
 Bug
