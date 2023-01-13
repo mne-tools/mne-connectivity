@@ -1109,7 +1109,7 @@
 <div class="viewcode-block" id="spectral_connectivity_epochs"><a class="viewcode-back" href="../../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs">[docs]</a><span class="nd">@verbose</span>
 <span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">spectral_connectivity_epochs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;coh&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                 <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+                                 <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
                                  <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1141,7 +1141,8 @@
 <span class="sd">        Two arrays with indices of connections for which to compute</span>
 <span class="sd">        connectivity. If None, all connections are computed.</span>
 <span class="sd">    sfreq : float</span>
-<span class="sd">        The sampling frequency.</span>
+<span class="sd">        The sampling frequency. Required if data is not</span>
+<span class="sd">        :class:`Epochs &lt;mne.Epochs&gt;`.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        Spectrum estimation mode can be either: &#39;multitaper&#39;, &#39;fourier&#39;, or</span>
 <span class="sd">        &#39;cwt_morlet&#39;.</span>
@@ -1364,6 +1365,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Sampling frequency (sfreq) is required with &#39;</span>
+                             <span class="s1">&#39;array input.&#39;</span><span class="p">)</span>
 
     <span class="c1"># loop over data; it could be a generator that returns</span>
     <span class="c1"># (n_signals x n_times) arrays or SourceEstimates</span>
@@ -1620,7 +1624,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-10.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
