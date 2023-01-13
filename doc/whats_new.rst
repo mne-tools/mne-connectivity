@@ -48,7 +48,7 @@ API
 ~~~
 
 - Streamline the API of :func:`mne_connectivity.spectral_connectivity_time` with :func:`mne_connectivity.spectral_connectivity_epochs` by `Santeri Ruuskanen`_ (:pr:`104`).
-- The ``sfreq`` parameter is now required for numpy array inputs to :func:`spectral_connectivity_epochs`, by `Adam Li`_ (:pr:``)
+- The ``sfreq`` parameter is now required for numpy array inputs to :func:`spectral_connectivity_epochs`, by `Adam Li`_ (:pr:`119`)
 
 Authors
 ~~~~~~~
