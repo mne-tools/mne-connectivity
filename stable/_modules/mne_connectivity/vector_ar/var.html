@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.4.0 documentation</title>
+    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.5.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -101,7 +101,7 @@
 
   
   
-    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
   
 </a>
     
@@ -160,14 +160,24 @@
       </div>
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -267,14 +277,24 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -329,17 +349,18 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
 
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span><span class="p">,</span> <span class="n">EpochTemporalConnectivity</span>
 
 
-<div class="viewcode-block" id="vector_auto_regression"><a class="viewcode-back" href="../../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression">[docs]</a><span class="nd">@fill_doc</span>
+<div class="viewcode-block" id="vector_auto_regression"><a class="viewcode-back" href="../../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression">[docs]</a><span class="nd">@verbose</span>
+<span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">vector_auto_regression</span><span class="p">(</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -537,7 +558,7 @@
 
 
 <span class="k">def</span> <span class="nf">_construct_var_eqns</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Construct VAR equation system (optionally with RLS constraint).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct VAR equation system (optionally with RLS constraint).</span>
 
 <span class="sd">    This function was originally imported from ``scot``.</span>
 
@@ -598,7 +619,7 @@
 
 <span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                            <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
 
 <span class="sd">    Treats each epoch as a different window of time to estimate the model:</span>
 
@@ -671,7 +692,7 @@
 
 
 <span class="k">def</span> <span class="nf">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute linear system using VAR model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute linear system using VAR model.</span>
 
 <span class="sd">    Allows for parallelization over epochs.</span>
 
@@ -710,7 +731,7 @@
 
 
 <span class="k">def</span> <span class="nf">_estimate_var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Estimate a VAR model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate a VAR model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -858,7 +879,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_var_predictor_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lags</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Make predictor matrix for VAR(p) process, Z.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make predictor matrix for VAR(p) process, Z.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -935,7 +956,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
@@ -944,7 +965,7 @@
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

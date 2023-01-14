@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.4.0 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.5.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/dynamic/mne_var_connectivity';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="Dynamic Connectivity Examples" href="index.html" />
+    <link rel="prev" title="Using the connectivity classes" href="../connectivity_classes.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../../_static/copybutton.js"></script>
     <script type="text/javascript" src="../../_static/scrollfix.js"></script>
@@ -103,7 +103,7 @@
 
   
   
-    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
   
 </a>
     
@@ -162,14 +162,24 @@
       </div>
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -269,14 +279,24 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -315,51 +335,71 @@
    Comparing PLI, wPLI, and dPLI
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_psi_visual.html">
    Compute Phase Slope Index (PSI) in source space for a visual stimulus
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../sensor_connectivity.html">
    Compute all-to-all connectivity in sensor space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_coherence_epochs.html">
    Compute coherence in source space using a MNE inverse solution
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_envelope_correlation.html">
    Compute envelope correlations in source space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_envelope_correlation_volume.html">
    Compute envelope correlations in volume source space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_connectivity_spectrum.html">
    Compute full spectrum source space connectivity between labels
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mixed_source_space_connectivity.html">
    Compute mixed source space connectivity and visualize it using a circular graph
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../cwt_sensor_connectivity.html">
    Compute seed-based time-frequency connectivity in sensor space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../mne_inverse_label_connectivity.html">
    Compute source space connectivity and visualize it using a circular graph
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../connectivity_classes.html">
    Using the connectivity classes
@@ -367,22 +407,10 @@
  </li>
 </ul>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="index.html">
-   Dynamic Connectivity Examples
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Compute vector autoregressive model (linear system)
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Compute vector autoregressive model (linear system)
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -459,33 +487,22 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data has a power line frequency at </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
 <span class="c1"># Pick only the ECoG channels, removing the ECG channels</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.pick_types" title="mne.io.BaseRaw.pick_types" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Load the data</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.load_data" title="mne.io.BaseRaw.load_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">()</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 
 <span class="c1"># Then we remove line frequency interference</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.notch_filter" title="mne.io.BaseRaw.notch_filter" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="p">)</span>
 
 <span class="c1"># drop bad channels</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.drop_channels" title="mne.io.BaseRaw.drop_channels" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
-
-  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
- 10%|███▊                                 | 9.15M/88.2M [00:00&lt;00:00, 91.5MB/s]
- 24%|████████▉                             | 20.9M/88.2M [00:00&lt;00:00, 107MB/s]
- 37%|█████████████▉                        | 32.4M/88.2M [00:00&lt;00:00, 110MB/s]
- 50%|██████████████████▉                   | 44.1M/88.2M [00:00&lt;00:00, 113MB/s]
- 63%|███████████████████████▊              | 55.4M/88.2M [00:00&lt;00:00, 113MB/s]
- 76%|███████████████████████████▉         | 66.7M/88.2M [00:00&lt;00:00, 99.7MB/s]
- 87%|████████████████████████████████▎    | 76.9M/88.2M [00:00&lt;00:00, 99.6MB/s]
-  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 144GB/s]
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
-  bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The required channels are:
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/adam2392/Documents/mne-connectivity/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
+  raw = read_raw_bids(bids_path=bids_path, verbose=False)
+/Users/adam2392/Documents/mne-connectivity/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The required channels are:
 
 [&#39;RQ1&#39;, &#39;RQ2&#39;, &#39;N/A&#39;].
 
@@ -511,7 +528,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done  84 out of  84 | elapsed:    0.7s finished
+[Parallel(n_jobs=1)]: Done  84 out of  84 | elapsed:    0.6s finished
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -606,9 +623,10 @@ leave as an exercise for our readers!</p>
 <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_sample</span></a> <span class="o">/</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
 
 <span class="c1"># remove all data after the seizure onset</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.crop" title="mne.io.BaseRaw.crop" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">crop</span></a><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;AD1-4, ATT1,2&#39;, &#39;AST1,3&#39;, &#39;G16&#39;, &#39;PD&#39;, &#39;SLT1-3&#39;, &#39;offset&#39;, &#39;onset&#39;]
 </pre></div>
 </div>
@@ -618,7 +636,7 @@ leave as an exercise for our readers!</p>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
-<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
+<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
 representing this sliding window.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a>
@@ -630,11 +648,12 @@ representing this sliding window.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">events</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
 302 matching events found
 No baseline correction applied
 0 projection items activated
-&lt;Epochs |  302 events (good &amp; bad), 0 - 0.499 sec, baseline off, ~124 kB, data not loaded,
+&lt;Epochs |  302 events (good &amp; bad), 0 - 0.499 sec, baseline off, ~123 kB, data not loaded,
  &#39;1&#39;: 302&gt;
 [0.    0.001 0.002 0.003 0.004 0.005 0.006 0.007 0.008 0.009 0.01  0.011
  0.012 0.013 0.014 0.015 0.016 0.017 0.018 0.019 0.02  0.021 0.022 0.023
@@ -997,26 +1016,67 @@ time-varying linear system.</p>
 <span class="nb">print</span><span class="p">(</span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|6         | 19/302 [00:00&lt;00:01, 188.44it/s]
- 13%|#2        | 39/302 [00:00&lt;00:01, 190.90it/s]
- 20%|#9        | 59/302 [00:00&lt;00:01, 191.73it/s]
- 26%|##6       | 79/302 [00:00&lt;00:01, 191.70it/s]
- 33%|###2      | 99/302 [00:00&lt;00:01, 192.72it/s]
- 39%|###9      | 119/302 [00:00&lt;00:00, 192.05it/s]
- 46%|####6     | 139/302 [00:00&lt;00:00, 193.39it/s]
- 53%|#####2    | 159/302 [00:00&lt;00:00, 193.21it/s]
- 59%|#####9    | 179/302 [00:00&lt;00:00, 193.34it/s]
- 66%|######5   | 199/302 [00:01&lt;00:00, 194.11it/s]
- 73%|#######2  | 219/302 [00:01&lt;00:00, 195.06it/s]
- 79%|#######9  | 239/302 [00:01&lt;00:00, 195.17it/s]
- 86%|########5 | 259/302 [00:01&lt;00:00, 195.50it/s]
- 92%|#########2| 279/302 [00:01&lt;00:00, 196.20it/s]
- 99%|#########9| 299/302 [00:01&lt;00:00, 196.09it/s]
-100%|##########| 302/302 [00:01&lt;00:00, 194.07it/s]
+  1%|          | 3/302 [00:00&lt;00:11, 25.09it/s]
+  2%|2         | 7/302 [00:00&lt;00:09, 32.32it/s]
+  4%|3         | 11/302 [00:00&lt;00:09, 29.49it/s]
+  5%|4         | 15/302 [00:00&lt;00:12, 23.46it/s]
+  7%|6         | 20/302 [00:00&lt;00:09, 28.75it/s]
+  8%|8         | 25/302 [00:00&lt;00:08, 32.44it/s]
+ 10%|9         | 30/302 [00:00&lt;00:07, 35.30it/s]
+ 12%|#1        | 35/302 [00:01&lt;00:07, 37.58it/s]
+ 13%|#3        | 40/302 [00:01&lt;00:06, 40.36it/s]
+ 15%|#4        | 45/302 [00:01&lt;00:06, 41.19it/s]
+ 17%|#6        | 50/302 [00:01&lt;00:06, 41.56it/s]
+ 18%|#8        | 55/302 [00:01&lt;00:06, 40.92it/s]
+ 20%|#9        | 60/302 [00:01&lt;00:07, 32.53it/s]
+ 21%|##1       | 64/302 [00:01&lt;00:07, 32.10it/s]
+ 23%|##2       | 68/302 [00:02&lt;00:07, 30.87it/s]
+ 24%|##3       | 72/302 [00:02&lt;00:07, 30.48it/s]
+ 25%|##5       | 77/302 [00:02&lt;00:06, 34.53it/s]
+ 27%|##7       | 82/302 [00:02&lt;00:05, 38.01it/s]
+ 29%|##8       | 87/302 [00:02&lt;00:05, 41.01it/s]
+ 30%|###       | 92/302 [00:02&lt;00:05, 40.27it/s]
+ 32%|###2      | 97/302 [00:02&lt;00:04, 41.75it/s]
+ 34%|###3      | 102/302 [00:02&lt;00:04, 41.82it/s]
+ 36%|###5      | 108/302 [00:02&lt;00:04, 44.54it/s]
+ 37%|###7      | 113/302 [00:03&lt;00:04, 45.92it/s]
+ 39%|###9      | 118/302 [00:03&lt;00:04, 44.80it/s]
+ 41%|####      | 123/302 [00:03&lt;00:04, 44.23it/s]
+ 42%|####2     | 128/302 [00:03&lt;00:03, 45.59it/s]
+ 44%|####4     | 133/302 [00:03&lt;00:03, 46.63it/s]
+ 46%|####6     | 139/302 [00:03&lt;00:03, 48.26it/s]
+ 48%|####7     | 144/302 [00:03&lt;00:03, 47.72it/s]
+ 49%|####9     | 149/302 [00:03&lt;00:03, 46.94it/s]
+ 51%|#####1    | 155/302 [00:03&lt;00:03, 48.76it/s]
+ 53%|#####3    | 161/302 [00:04&lt;00:02, 51.12it/s]
+ 55%|#####5    | 167/302 [00:04&lt;00:02, 52.84it/s]
+ 57%|#####7    | 173/302 [00:04&lt;00:02, 44.88it/s]
+ 60%|#####9    | 180/302 [00:04&lt;00:02, 49.08it/s]
+ 62%|######1   | 186/302 [00:04&lt;00:02, 50.45it/s]
+ 64%|######3   | 192/302 [00:04&lt;00:02, 52.14it/s]
+ 66%|######5   | 199/302 [00:04&lt;00:01, 54.18it/s]
+ 68%|######7   | 205/302 [00:04&lt;00:01, 53.81it/s]
+ 70%|######9   | 211/302 [00:05&lt;00:01, 52.33it/s]
+ 72%|#######1  | 217/302 [00:05&lt;00:01, 51.35it/s]
+ 74%|#######3  | 223/302 [00:05&lt;00:01, 51.96it/s]
+ 76%|#######6  | 230/302 [00:05&lt;00:01, 54.85it/s]
+ 78%|#######8  | 236/302 [00:05&lt;00:01, 54.45it/s]
+ 80%|########  | 242/302 [00:05&lt;00:01, 54.55it/s]
+ 82%|########2 | 248/302 [00:05&lt;00:01, 53.37it/s]
+ 84%|########4 | 254/302 [00:05&lt;00:00, 50.97it/s]
+ 86%|########6 | 260/302 [00:05&lt;00:00, 51.06it/s]
+ 88%|########8 | 266/302 [00:06&lt;00:00, 50.57it/s]
+ 90%|######### | 272/302 [00:06&lt;00:00, 52.74it/s]
+ 92%|#########2| 278/302 [00:06&lt;00:00, 53.86it/s]
+ 94%|#########4| 285/302 [00:06&lt;00:00, 56.68it/s]
+ 96%|#########6| 291/302 [00:06&lt;00:00, 57.41it/s]
+ 98%|#########8| 297/302 [00:06&lt;00:00, 57.77it/s]
+100%|##########| 302/302 [00:06&lt;00:00, 45.03it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1063,10 +1123,11 @@ of data.</p>
 <li><img src="../../_images/sphx_glr_mne_var_connectivity_001.png" srcset="../../_images/sphx_glr_mne_var_connectivity_001.png" alt="Residuals of fitted VAR model" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_mne_var_connectivity_002.png" srcset="../../_images/sphx_glr_mne_var_connectivity_002.png" alt="mne var connectivity" class = "sphx-glr-multi-img"/></li>
 </ul>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f4ba89837c0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f898d1ec880&gt;
 </pre></div>
 </div>
 </section>
@@ -1084,6 +1145,7 @@ epochs.</p>
 <span class="nb">print</span><span class="p">(</span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 &lt;Connectivity | , nave : 302, nodes, n_estimated : 84, 7056, ~77 kB&gt;
 </pre></div>
@@ -1130,14 +1192,15 @@ model to all the epochs.</p>
 <li><img src="../../_images/sphx_glr_mne_var_connectivity_003.png" srcset="../../_images/sphx_glr_mne_var_connectivity_003.png" alt="Residuals of fitted VAR model" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_mne_var_connectivity_004.png" srcset="../../_images/sphx_glr_mne_var_connectivity_004.png" alt="mne var connectivity" class = "sphx-glr-multi-img"/></li>
 </ul>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f4b93d82f80&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f898d17a970&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.248 seconds)</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  31.029 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
 </div>
@@ -1157,11 +1220,11 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="../connectivity_classes.html" title="previous page">
       <i class="fas fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Dynamic Connectivity Examples</p>
+          <p class="prev-next-title">Using the connectivity classes</p>
       </div>
   </a>
 </div>
@@ -1253,7 +1316,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
@@ -1262,7 +1325,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

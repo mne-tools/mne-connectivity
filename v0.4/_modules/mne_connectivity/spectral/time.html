@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.4.0 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_connectivity/spectral/time';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../install.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.4.0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../install.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../auto_examples/index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.4.0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for mne_connectivity.spectral.time</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">mne.parallel</span> <span class="kn">import</span> <span class="n">parallel_func</span>
+<span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="p">(</span><span class="n">tfr_array_morlet</span><span class="p">,</span> <span class="n">tfr_array_multitaper</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">EpochSpectroTemporalConnectivity</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.smooth</span> <span class="kn">import</span> <span class="n">_create_kernel</span><span class="p">,</span> <span class="n">_smooth_spectra</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
+
+
+<div class="viewcode-block" id="spectral_connectivity_time"><a class="viewcode-back" href="../../../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time">[docs]</a><span class="nd">@fill_doc</span>
+<span class="k">def</span> <span class="nf">spectral_connectivity_time</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;coh&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">foi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sm_times</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
+                               <span class="n">sm_freqs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sm_kernel</span><span class="o">=</span><span class="s1">&#39;hanning&#39;</span><span class="p">,</span>
+                               <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cwt_morlet&#39;</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">decim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute frequency- and time-frequency-domain connectivity measures.</span>
+
+<span class="sd">    This method computes single-Epoch time-resolved spectral connectivity.</span>
+
+<span class="sd">    The connectivity method(s) are specified using the &quot;method&quot; parameter.</span>
+<span class="sd">    All methods are based on estimates of the cross- and power spectral</span>
+<span class="sd">    densities (CSD/PSD) Sxy and Sxx, Syy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : Epochs</span>
+<span class="sd">        The data from which to compute connectivity.</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    method : str | list of str</span>
+<span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;plv&#39;,</span>
+<span class="sd">        &#39;sxy&#39;]``. These are:</span>
+
+<span class="sd">            * &#39;coh&#39; : Coherence</span>
+<span class="sd">            * &#39;plv&#39; : Phase-Locking Value (PLV)</span>
+<span class="sd">            * &#39;sxy&#39; : Cross-spectrum</span>
+
+<span class="sd">        By default, the coherence is used.</span>
+<span class="sd">    indices : tuple of array | None</span>
+<span class="sd">        Two arrays with indices of connections for which to compute</span>
+<span class="sd">        connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.</span>
+<span class="sd">        If None, all connections are computed.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        The sampling frequency.</span>
+<span class="sd">    foi : array_like | None</span>
+<span class="sd">        Extract frequencies of interest. This parameters should be an array of</span>
+<span class="sd">        shapes (n_foi, 2) defining where each band of interest start and</span>
+<span class="sd">        finish.</span>
+<span class="sd">    sm_times : float</span>
+<span class="sd">        Amount of time to consider for the temporal smoothing in seconds. By</span>
+<span class="sd">        default, 0.5 sec smoothing is used.</span>
+<span class="sd">    sm_freqs : int</span>
+<span class="sd">        Number of points for frequency smoothing. By default, 1 is used which</span>
+<span class="sd">        is equivalent to no smoothing.</span>
+<span class="sd">    sm_kernel : {&#39;square&#39;, &#39;hanning&#39;}</span>
+<span class="sd">        Kernel type to use. Choose either &#39;square&#39; or &#39;hanning&#39; (default).</span>
+<span class="sd">    mode : str, optional</span>
+<span class="sd">        Spectrum estimation mode can be either: &#39;multitaper&#39;, or</span>
+<span class="sd">        &#39;cwt_morlet&#39;.</span>
+<span class="sd">    mt_bandwidth : float | None</span>
+<span class="sd">        The bandwidth of the multitaper windowing function in Hz.</span>
+<span class="sd">        Only used in &#39;multitaper&#39; mode.</span>
+<span class="sd">    freqs : array</span>
+<span class="sd">        Array of frequencies of interest for use in time-frequency</span>
+<span class="sd">        decomposition method (specified by ``mode``).</span>
+<span class="sd">    n_cycles : float | array of float</span>
+<span class="sd">        Number of cycles for use in time-frequency decomposition method</span>
+<span class="sd">        (specified by ``mode``). Fixed number or one per frequency.</span>
+<span class="sd">    decim : int | 1</span>
+<span class="sd">        To reduce memory usage, decimation factor after time-frequency</span>
+<span class="sd">        decomposition. default 1 If int, returns tfr[…, ::decim]. If slice,</span>
+<span class="sd">        returns tfr[…, decim].</span>
+<span class="sd">    block_size : int</span>
+<span class="sd">        How many connections to compute at once (higher numbers are faster</span>
+<span class="sd">        but require more memory).</span>
+<span class="sd">    n_jobs : int</span>
+<span class="sd">        How many epochs to process in parallel.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    con : array | instance of Connectivity</span>
+<span class="sd">        Computed connectivity measure(s). Either an instance of</span>
+<span class="sd">        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.</span>
+<span class="sd">        The shape of each connectivity dataset is either</span>
+<span class="sd">        (n_signals ** 2, n_freqs) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
+<span class="sd">        (n_signals ** 2, n_freqs, n_times) mode: &#39;cwt_morlet&#39;</span>
+<span class="sd">        when &quot;indices&quot; is None, or</span>
+<span class="sd">        (n_con, n_freqs) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
+<span class="sd">        (n_con, n_freqs, n_times) mode: &#39;cwt_morlet&#39;</span>
+<span class="sd">        when &quot;indices&quot; is specified and &quot;n_con = len(indices[0])&quot;.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.spectral_connectivity_epochs</span>
+<span class="sd">    mne_connectivity.SpectralConnectivity</span>
+<span class="sd">    mne_connectivity.SpectroTemporalConnectivity</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function was originally implemented in ``frites`` and was</span>
+<span class="sd">    ported over.</span>
+
+<span class="sd">    .. versionadded:: 0.3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># extract data from Epochs object</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span>  <span class="c1"># input times for Epochs input type</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
+    <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># Extract metadata from the Epochs data structure.</span>
+    <span class="c1"># Make Annotations persist through by adding them to the metadata.</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;annot_onset&#39;</span><span class="p">,</span> <span class="s1">&#39;annot_duration&#39;</span><span class="p">,</span> <span class="s1">&#39;annot_description&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;annotations&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="c1"># convert kernel width in time to samples</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sm_times</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">))</span>
+
+    <span class="c1"># convert frequency smoothing from hz to samples</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sm_freqs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">sm_freqs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">sm_freqs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="c1"># temporal decimation</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">times</span><span class="p">[::</span><span class="n">decim</span><span class="p">]</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sm_times</span> <span class="o">/</span> <span class="n">decim</span><span class="p">))</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Create smoothing kernel</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">_create_kernel</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="n">sm_freqs</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">sm_kernel</span><span class="p">)</span>
+
+    <span class="c1"># get indices of pairs of (group) regions</span>
+    <span class="n">roi</span> <span class="o">=</span> <span class="n">names</span>  <span class="c1"># ch_names</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># roi_gp and roi_idx</span>
+        <span class="n">roi_gp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">roi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">roi</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># get pairs for directed / undirected conn</span>
+        <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">roi_gp</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">source_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">]</span>
+        <span class="n">target_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">]</span>
+        <span class="n">roi_gp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">roi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">roi</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">n_pairs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
+
+    <span class="c1"># frequency checking</span>
+    <span class="k">if</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># check for single frequency</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="n">freqs</span><span class="p">]</span>
+        <span class="c1"># array conversion</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="c1"># check order for multiple frequencies</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">delta_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+            <span class="n">increase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">delta_f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">increase</span><span class="p">,</span> <span class="s2">&quot;Frequencies should be in increasing order&quot;</span>
+
+        <span class="c1"># frequency mean</span>
+        <span class="k">if</span> <span class="n">foi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">foi_idx</span> <span class="o">=</span> <span class="n">foi_s</span> <span class="o">=</span> <span class="n">foi_e</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">f_vec</span> <span class="o">=</span> <span class="n">freqs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_f</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)),</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;freqs&#39;</span><span class="p">,),</span>
+                              <span class="n">coords</span><span class="o">=</span><span class="p">(</span><span class="n">freqs</span><span class="p">,))</span>
+            <span class="n">foi_s</span> <span class="o">=</span> <span class="n">_f</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freqs</span><span class="o">=</span><span class="n">foi</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">foi_e</span> <span class="o">=</span> <span class="n">_f</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freqs</span><span class="o">=</span><span class="n">foi</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">foi_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">foi_s</span><span class="p">,</span> <span class="n">foi_e</span><span class="p">]</span>
+            <span class="n">f_vec</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">foi_idx</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># build block size indices</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">),</span> <span class="n">block_size</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)]</span>
+
+    <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_vec</span><span class="p">)</span>
+
+    <span class="c1"># compute coherence on blocks of trials</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_pairs</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Connectivity computation...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># parameters to pass to the connectivity function</span>
+    <span class="n">call_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="o">=</span><span class="n">foi_idx</span><span class="p">,</span>
+        <span class="n">source_idx</span><span class="o">=</span><span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="o">=</span><span class="n">target_idx</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+        <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span> <span class="n">kw_cwt</span><span class="o">=</span><span class="p">{},</span> <span class="n">kw_mt</span><span class="o">=</span><span class="p">{},</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+        <span class="c1"># compute time-resolved spectral connectivity</span>
+        <span class="n">conn_tr</span> <span class="o">=</span> <span class="n">_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">epoch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
+
+        <span class="c1"># merge results</span>
+        <span class="n">conn</span><span class="p">[</span><span class="n">epoch_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">conn_tr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># create a Connectivity container</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="s1">&#39;symmetric&#39;</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochSpectroTemporalConnectivity</span><span class="p">(</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="n">f_vec</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">conn</span></div>
+
+
+<span class="k">def</span> <span class="nf">_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span>
+                           <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span>
+                           <span class="n">mode</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">decim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kw_cwt</span><span class="o">=</span><span class="p">{},</span> <span class="n">kw_mt</span><span class="o">=</span><span class="p">{},</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;EStimate time-resolved connectivity for one epoch.</span>
+
+<span class="sd">    See spectral_connectivity_epoch.&quot;&quot;&quot;</span>
+    <span class="n">n_pairs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
+
+    <span class="c1"># first compute time-frequency decomposition</span>
+    <span class="n">collapse</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_morlet</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span>
+            <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_cwt</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;multitaper&#39;</span><span class="p">:</span>
+        <span class="c1"># In case multiple values are provided for mt_bandwidth</span>
+        <span class="c1"># the MT decomposition is done separatedly for each</span>
+        <span class="c1"># Frequency center</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="c1"># Arrays freqs, n_cycles, mt_bandwidth should have the same size</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">mt_bandwidth</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">f_c</span><span class="p">,</span> <span class="n">n_c</span><span class="p">,</span> <span class="n">mt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="p">):</span>
+                <span class="n">out</span> <span class="o">+=</span> <span class="p">[</span><span class="n">tfr_array_multitaper</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="p">[</span><span class="n">f_c</span><span class="p">],</span> <span class="n">n_cycles</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">n_c</span><span class="p">),</span> <span class="n">time_bandwidth</span><span class="o">=</span><span class="n">mt</span><span class="p">,</span>
+                    <span class="n">output</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span> <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_mt</span><span class="p">)]</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_multitaper</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+                <span class="n">time_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span> <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_mt</span><span class="p">)</span>
+            <span class="n">collapse</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># newest MNE-Python</span>
+                <span class="n">collapse</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+
+    <span class="c1"># get the supported connectivity function</span>
+    <span class="n">conn_func</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coh&#39;</span><span class="p">:</span> <span class="n">_coh</span><span class="p">,</span> <span class="s1">&#39;plv&#39;</span><span class="p">:</span> <span class="n">_plv</span><span class="p">,</span> <span class="s1">&#39;sxy&#39;</span><span class="p">:</span> <span class="n">_cs</span><span class="p">}[</span><span class="n">method</span><span class="p">]</span>
+
+    <span class="c1"># computes conn across trials</span>
+    <span class="c1"># TODO: This is wrong -- it averages in the complex domain (over tapers).</span>
+    <span class="c1"># What it *should* do is compute the conn for each taper, then average</span>
+    <span class="c1"># (see below).</span>
+    <span class="k">if</span> <span class="n">collapse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">collapse</span><span class="p">)</span>
+    <span class="n">this_conn</span> <span class="o">=</span> <span class="n">conn_func</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span>
+                          <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">n_pairs</span><span class="p">)</span>
+    <span class="c1"># This is where it should go, but the regression test fails...</span>
+    <span class="c1"># if collapse is not None:</span>
+    <span class="c1">#     this_conn = [c.mean(axis=collapse) for c in this_conn]</span>
+    <span class="k">return</span> <span class="n">this_conn</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">#                               TIME-RESOLVED CORE FUNCTIONS</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+<span class="k">def</span> <span class="nf">_coh</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pairwise coherence.&quot;&quot;&quot;</span>
+    <span class="c1"># auto spectra (faster that w * w.conj())</span>
+    <span class="n">s_auto</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">real</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">w</span><span class="o">.</span><span class="n">imag</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="c1"># smooth the auto spectra</span>
+    <span class="n">s_auto</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_auto</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+
+    <span class="c1"># define the pairwise coherence</span>
+    <span class="k">def</span> <span class="nf">pairwise_coh</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
+        <span class="c1"># computes the coherence</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">])</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+        <span class="n">s_xx</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">]</span>
+        <span class="n">s_yy</span> <span class="o">=</span> <span class="n">s_auto</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">s_xx</span> <span class="o">*</span> <span class="n">s_yy</span><span class="p">)</span>
+        <span class="c1"># mean inside frequency sliding window (if needed)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+    <span class="c1"># define the function to compute in parallel</span>
+    <span class="n">parallel</span><span class="p">,</span> <span class="n">p_fun</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
+        <span class="n">pairwise_coh</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
+
+    <span class="c1"># compute the single trial coherence</span>
+    <span class="k">return</span> <span class="n">parallel</span><span class="p">(</span><span class="n">p_fun</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_plv</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pairwise phase-locking value.&quot;&quot;&quot;</span>
+    <span class="c1"># define the pairwise plv</span>
+    <span class="k">def</span> <span class="nf">pairwise_plv</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
+        <span class="c1"># computes the plv</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">])</span>
+        <span class="c1"># complex exponential of phase differences</span>
+        <span class="n">exp_dphi</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
+        <span class="c1"># smooth e^(-i*\delta\phi)</span>
+        <span class="n">exp_dphi</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">exp_dphi</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+        <span class="c1"># computes plv</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">exp_dphi</span><span class="p">)</span>
+        <span class="c1"># mean inside frequency sliding window (if needed)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+    <span class="c1"># define the function to compute in parallel</span>
+    <span class="n">parallel</span><span class="p">,</span> <span class="n">p_fun</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
+        <span class="n">pairwise_plv</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
+
+    <span class="c1"># compute the single trial coherence</span>
+    <span class="k">return</span> <span class="n">parallel</span><span class="p">(</span><span class="n">p_fun</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_cs</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pairwise cross-spectra.&quot;&quot;&quot;</span>
+    <span class="c1"># define the pairwise cross-spectra</span>
+    <span class="k">def</span> <span class="nf">pairwise_cs</span><span class="p">(</span><span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span><span class="p">):</span>
+        <span class="c1">#  computes the cross-spectra</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">w_x</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w</span><span class="p">[:,</span> <span class="n">w_y</span><span class="p">])</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">foi_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+    <span class="c1"># define the function to compute in parallel</span>
+    <span class="n">parallel</span><span class="p">,</span> <span class="n">p_fun</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
+        <span class="n">pairwise_cs</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
+
+    <span class="c1"># compute the single trial coherence</span>
+    <span class="k">return</span> <span class="n">parallel</span><span class="p">(</span><span class="n">p_fun</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_foi_average</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Average inside frequency bands.</span>
+
+<span class="sd">    The frequency dimension should be located at -2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conn : np.ndarray</span>
+<span class="sd">        Array of shape (..., n_freqs, n_times)</span>
+<span class="sd">    foi_idx : array_like</span>
+<span class="sd">        Array of indices describing frequency bounds of shape (n_foi, 2)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    conn_f : np.ndarray</span>
+<span class="sd">        Array of shape (..., n_foi, n_times)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get the number of foi</span>
+    <span class="n">n_foi</span> <span class="o">=</span> <span class="n">foi_idx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># get input shape and replace n_freqs with the number of foi</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_foi</span>
+
+    <span class="c1"># compute average</span>
+    <span class="n">conn_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">conn</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n_f</span><span class="p">,</span> <span class="p">(</span><span class="n">f_s</span><span class="p">,</span> <span class="n">f_e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">):</span>
+        <span class="n">conn_f</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n_f</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">f_s</span><span class="p">:</span><span class="n">f_e</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conn_f</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

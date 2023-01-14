@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.4.0 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.5.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -101,7 +101,7 @@
 
   
   
-    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
   
 </a>
     
@@ -160,14 +160,24 @@
       </div>
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -267,14 +277,24 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -341,7 +361,8 @@
                                            <span class="n">_psd_from_mt_adaptive</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency.tfr</span> <span class="kn">import</span> <span class="n">cwt</span><span class="p">,</span> <span class="n">morlet</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency.multitaper</span> <span class="kn">import</span> <span class="n">_compute_mt_params</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">check_indices</span>
@@ -387,7 +408,7 @@
                           <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span>
                           <span class="n">mode</span><span class="p">,</span> <span class="n">fskip</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">,</span>
                           <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">faverage</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check and precompute dimensions of results data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check and precompute dimensions of results data.&quot;&quot;&quot;</span>
     <span class="n">first_epoch</span> <span class="o">=</span> <span class="n">epoch_block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># get the data size and time scale</span>
@@ -487,7 +508,7 @@
 <span class="k">def</span> <span class="nf">_assemble_spectral_params</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span>
                               <span class="n">mt_low_bias</span><span class="p">,</span> <span class="n">cwt_n_cycles</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span>
                               <span class="n">freqs</span><span class="p">,</span> <span class="n">freq_mask</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prepare time-frequency decomposition.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare time-frequency decomposition.&quot;&quot;&quot;</span>
     <span class="n">spectral_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">eigvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelets</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">n_tapers</span> <span class="o">=</span> <span class="kc">None</span>
@@ -528,7 +549,7 @@
 
 
 <span class="k">class</span> <span class="nc">_AbstractConEstBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;ABC for connectivity estimators.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ABC for connectivity estimators.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">start_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;start_epoch method not implemented&#39;</span><span class="p">)</span>
@@ -544,7 +565,7 @@
 
 
 <span class="k">class</span> <span class="nc">_EpochMeanConEstBase</span><span class="p">(</span><span class="n">_AbstractConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for methods that estimate connectivity as mean epoch-wise.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for methods that estimate connectivity as mean epoch-wise.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_cons</span> <span class="o">=</span> <span class="n">n_cons</span>
@@ -559,16 +580,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">start_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># noqa: D401</span>
-        <span class="sd">&quot;&quot;&quot;Called at the start of each epoch.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called at the start of each epoch.&quot;&quot;&quot;</span>
         <span class="k">pass</span>  <span class="c1"># for this type of con. method we don&#39;t do anything</span>
 
     <span class="k">def</span> <span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Include con. accumated for some epochs in this estimate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Include con. accumated for some epochs in this estimate.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">_acc</span>
 
 
 <span class="k">class</span> <span class="nc">_CohEstBase</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base Estimator for Coherence, Coherency, Imag. Coherence.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Estimator for Coherence, Coherency, Imag. Coherence.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_CohEstBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
@@ -577,17 +598,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate CSD for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate CSD for some connections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">csd_xy</span>
 
 
 <span class="k">class</span> <span class="nc">_CohEst</span><span class="p">(</span><span class="n">_CohEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Coherence Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coherence Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Coherence&#39;</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">psd_xx</span><span class="p">,</span> <span class="n">psd_yy</span><span class="p">):</span>  <span class="c1"># lgtm</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">csd_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_epochs</span>
@@ -595,12 +616,12 @@
 
 
 <span class="k">class</span> <span class="nc">_CohyEst</span><span class="p">(</span><span class="n">_CohEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Coherency Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coherency Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Coherency&#39;</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">psd_xx</span><span class="p">,</span> <span class="n">psd_yy</span><span class="p">):</span>  <span class="c1"># lgtm</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">,</span>
                                        <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
@@ -609,12 +630,12 @@
 
 
 <span class="k">class</span> <span class="nc">_ImCohEst</span><span class="p">(</span><span class="n">_CohEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Imaginary Coherence Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Imaginary Coherence Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Imaginary Coherence&#39;</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">psd_xx</span><span class="p">,</span> <span class="n">psd_yy</span><span class="p">):</span>  <span class="c1"># lgtm</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">csd_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_epochs</span>
@@ -622,7 +643,7 @@
 
 
 <span class="k">class</span> <span class="nc">_PLVEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;PLV Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PLV Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PLV&#39;</span>
 
@@ -633,11 +654,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">csd_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">plv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">/</span> <span class="n">n_epochs</span><span class="p">)</span>
@@ -645,7 +666,7 @@
 
 
 <span class="k">class</span> <span class="nc">_ciPLVEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;corrected imaginary PLV Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;corrected imaginary PLV Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ciPLV&#39;</span>
 
@@ -656,11 +677,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">csd_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">imag_plv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_epochs</span>
@@ -673,7 +694,7 @@
 
 
 <span class="k">class</span> <span class="nc">_PLIEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;PLI Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PLI Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PLI&#39;</span>
 
@@ -684,11 +705,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">pli_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_epochs</span>
@@ -696,12 +717,12 @@
 
 
 <span class="k">class</span> <span class="nc">_PLIUnbiasedEst</span><span class="p">(</span><span class="n">_PLIEst</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Unbiased PLI Square Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unbiased PLI Square Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Unbiased PLI Square&#39;</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
         <span class="n">pli_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_epochs</span>
@@ -713,7 +734,7 @@
 
 
 <span class="k">class</span> <span class="nc">_DPLIEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;DPLI Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DPLI Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;DPLI&#39;</span>
 
@@ -724,11 +745,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
@@ -738,7 +759,7 @@
 
 
 <span class="k">class</span> <span class="nc">_WPLIEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;WPLI Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;WPLI Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;WPLI&#39;</span>
 
@@ -750,13 +771,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">acc_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="n">im_csd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">im_csd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">im_csd</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
@@ -776,7 +797,7 @@
 
 
 <span class="k">class</span> <span class="nc">_WPLIDebiasedEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Debiased WPLI Square Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Debiased WPLI Square Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Debiased WPLI Square&#39;</span>
 
@@ -787,14 +808,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">acc_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="n">im_csd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">im_csd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">im_csd</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">im_csd</span> <span class="o">**</span> <span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
@@ -819,7 +840,7 @@
 
 
 <span class="k">class</span> <span class="nc">_PPCEst</span><span class="p">(</span><span class="n">_EpochMeanConEstBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pairwise Phase Consistency (PPC) Estimator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pairwise Phase Consistency (PPC) Estimator.&quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;PPC&#39;</span>
 
@@ -830,7 +851,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">accumulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">csd_xy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accumulate some connections.&quot;&quot;&quot;</span>
         <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">csd_xy</span><span class="p">)</span>
         <span class="n">z_denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">)</span>
         <span class="n">denom</span><span class="p">[</span><span class="n">z_denom</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
@@ -840,7 +861,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_acc</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">this_acc</span>
 
     <span class="k">def</span> <span class="nf">compute_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute final con. score for some connections.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csd_shape</span><span class="p">)</span>
 
@@ -859,7 +880,7 @@
                                  <span class="n">psd</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">,</span> <span class="n">con_method_types</span><span class="p">,</span>
                                  <span class="n">con_methods</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span>
                                  <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">wavelets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -977,7 +998,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_n_epochs</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate lists with at most n epochs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate lists with at most n epochs.&quot;&quot;&quot;</span>
     <span class="n">epochs_out</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">epochs</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -991,7 +1012,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_method</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Test if a method implements the required interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test if a method implements the required interface.&quot;&quot;&quot;</span>
     <span class="n">interface_members</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">_AbstractConEstBase</span><span class="p">)</span>
                          <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
     <span class="n">method_members</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
@@ -1005,7 +1026,7 @@
 
 <span class="k">def</span> <span class="nf">_get_and_verify_data_sizes</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">n_signals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">warn_times</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get and/or verify the data sizes and time scales.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get and/or verify the data sizes and time scales.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data has to be a list or tuple&#39;</span><span class="p">)</span>
     <span class="n">n_signals_tot</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1055,7 +1076,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_estimators</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check construction of connectivity estimators.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check construction of connectivity estimators.&quot;&quot;&quot;</span>
     <span class="n">n_methods</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
     <span class="n">con_method_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
@@ -1085,16 +1106,17 @@
     <span class="k">return</span> <span class="n">con_method_types</span><span class="p">,</span> <span class="n">n_methods</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">,</span> <span class="n">n_comp_args</span>
 
 
-<div class="viewcode-block" id="spectral_connectivity_epochs"><a class="viewcode-back" href="../../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs">[docs]</a><span class="nd">@fill_doc</span>
+<div class="viewcode-block" id="spectral_connectivity_epochs"><a class="viewcode-back" href="../../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs">[docs]</a><span class="nd">@verbose</span>
+<span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">spectral_connectivity_epochs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;coh&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                 <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+                                 <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
                                  <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                  <span class="n">mt_low_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                  <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                  <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Compute frequency- and time-frequency-domain connectivity measures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute frequency- and time-frequency-domain connectivity measures.</span>
 
 <span class="sd">    The connectivity method(s) are specified using the &quot;method&quot; parameter.</span>
 <span class="sd">    All methods are based on estimates of the cross- and power spectral</span>
@@ -1119,7 +1141,8 @@
 <span class="sd">        Two arrays with indices of connections for which to compute</span>
 <span class="sd">        connectivity. If None, all connections are computed.</span>
 <span class="sd">    sfreq : float</span>
-<span class="sd">        The sampling frequency.</span>
+<span class="sd">        The sampling frequency. Required if data is not</span>
+<span class="sd">        :class:`Epochs &lt;mne.Epochs&gt;`.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        Spectrum estimation mode can be either: &#39;multitaper&#39;, &#39;fourier&#39;, or</span>
 <span class="sd">        &#39;cwt_morlet&#39;.</span>
@@ -1155,8 +1178,8 @@
 <span class="sd">        Use adaptive weights to combine the tapered spectra into PSD.</span>
 <span class="sd">        Only used in &#39;multitaper&#39; mode.</span>
 <span class="sd">    mt_low_bias : bool</span>
-<span class="sd">        Only use tapers with more than 90%% spectral concentration within</span>
-<span class="sd">        bandwidth. Only used in &#39;multitaper&#39; mode.</span>
+<span class="sd">        Only use tapers with more than 90 percent spectral concentration</span>
+<span class="sd">        within bandwidth. Only used in &#39;multitaper&#39; mode.</span>
 <span class="sd">    cwt_freqs : array</span>
 <span class="sd">        Array of frequencies of interest. Only used in &#39;cwt_morlet&#39; mode.</span>
 <span class="sd">    cwt_n_cycles : float | array of float</span>
@@ -1184,6 +1207,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.spectral_connectivity_time</span>
 <span class="sd">    mne_connectivity.SpectralConnectivity</span>
 <span class="sd">    mne_connectivity.SpectroTemporalConnectivity</span>
 
@@ -1198,7 +1222,9 @@
 <span class="sd">    connectivity structure. Within each Epoch, it is assumed that the spectral</span>
 <span class="sd">    measure is stationary. The spectral measures implemented in this function</span>
 <span class="sd">    are computed across Epochs. **Thus, spectral measures computed with only</span>
-<span class="sd">    one Epoch will result in errorful values.**</span>
+<span class="sd">    one Epoch will result in errorful values and spectral measures computed</span>
+<span class="sd">    with few Epochs will be unreliable.** Please see</span>
+<span class="sd">    ``spectral_connectivity_time`` for time-resolved connectivity estimation.</span>
 
 <span class="sd">    The spectral densities can be estimated using a multitaper method with</span>
 <span class="sd">    digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier</span>
@@ -1216,11 +1242,11 @@
 <span class="sd">        indices = (np.array([0, 0, 0]),    # row indices</span>
 <span class="sd">                   np.array([2, 3, 4]))    # col indices</span>
 
-<span class="sd">        con_flat = spectral_connectivity(data, method=&#39;coh&#39;,</span>
-<span class="sd">                                         indices=indices, ...)</span>
+<span class="sd">        con = spectral_connectivity_epochs(data, method=&#39;coh&#39;,</span>
+<span class="sd">                                           indices=indices, ...)</span>
 
-<span class="sd">    In this case con_flat.shape = (3, n_freqs). The connectivity scores are</span>
-<span class="sd">    in the same order as defined indices.</span>
+<span class="sd">    In this case con.get_data().shape = (3, n_freqs). The connectivity scores</span>
+<span class="sd">    are in the same order as defined indices.</span>
 
 <span class="sd">    **Supported Connectivity Measures**</span>
 
@@ -1339,6 +1365,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Sampling frequency (sfreq) is required with &#39;</span>
+                             <span class="s1">&#39;array input.&#39;</span><span class="p">)</span>
 
     <span class="c1"># loop over data; it could be a generator that returns</span>
     <span class="c1"># (n_signals x n_times) arrays or SourceEstimates</span>
@@ -1590,7 +1619,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
@@ -1599,7 +1628,7 @@
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

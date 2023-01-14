@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Using the connectivity classes &#8212; MNE-Connectivity 0.4.0 documentation</title>
+    <title>Using the connectivity classes &#8212; MNE-Connectivity 0.5.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/connectivity_classes';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Dynamic Connectivity Examples" href="dynamic/index.html" />
+    <link rel="next" title="Compute vector autoregressive model (linear system)" href="dynamic/mne_var_connectivity.html" />
     <link rel="prev" title="Compute source space connectivity and visualize it using a circular graph" href="mne_inverse_label_connectivity.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -104,7 +104,7 @@
 
   
   
-    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
   
 </a>
     
@@ -163,14 +163,24 @@
       </div>
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -270,14 +280,24 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -310,57 +330,77 @@
     Section Navigation
   </p>
   <div class="bd-toc-item navbar-nav">
-    <ul class="current nav bd-sidenav">
+    <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="dpli_wpli_pli.html">
    Comparing PLI, wPLI, and dPLI
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_psi_visual.html">
    Compute Phase Slope Index (PSI) in source space for a visual stimulus
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="sensor_connectivity.html">
    Compute all-to-all connectivity in sensor space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_coherence_epochs.html">
    Compute coherence in source space using a MNE inverse solution
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_envelope_correlation.html">
    Compute envelope correlations in source space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">
    Compute envelope correlations in volume source space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_connectivity_spectrum.html">
    Compute full spectrum source space connectivity between labels
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mixed_source_space_connectivity.html">
    Compute mixed source space connectivity and visualize it using a circular graph
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="cwt_sensor_connectivity.html">
    Compute seed-based time-frequency connectivity in sensor space
   </a>
  </li>
+</ul>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_inverse_label_connectivity.html">
    Compute source space connectivity and visualize it using a circular graph
   </a>
  </li>
+</ul>
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Using the connectivity classes
@@ -368,22 +408,10 @@
  </li>
 </ul>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="dynamic/index.html">
-   Dynamic Connectivity Examples
+ <li class="toctree-l1">
+  <a class="reference internal" href="dynamic/mne_var_connectivity.html">
+   Compute vector autoregressive model (linear system)
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="dynamic/mne_var_connectivity.html">
-     Compute vector autoregressive model (linear system)
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -472,7 +500,8 @@ how we can interact with the connectivity class.</p>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_filt-0-40_raw.fif...
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /Users/adam2392/mne_data/MNE-sample-data/MEG/sample/sample_audvis_filt-0-40_raw.fif...
     Read a total of 4 projection items:
         PCA-v1 (1 x 102)  idle
         PCA-v2 (1 x 102)  idle
@@ -524,151 +553,151 @@ only using indices for lower-triangular matrix
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: PLI
     computing connectivity for epoch 1
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 2
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 3
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 4
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 5
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 6
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 7
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 8
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 9
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 10
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 11
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 12
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 13
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 14
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 15
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 16
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 17
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 18
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 19
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 20
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 21
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 22
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 23
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 24
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 25
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 26
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 27
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 28
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 29
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 30
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 31
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 32
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 33
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 34
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 35
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 36
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 37
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 38
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 39
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 40
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 41
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 42
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 43
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 44
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 45
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 46
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 47
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 48
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     computing connectivity for epoch 49
-/home/circleci/project/mne_connectivity/spectral/epochs.py:599: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
+/Users/adam2392/Documents/mne-connectivity/mne_connectivity/spectral/epochs.py:600: UserWarning: At least one of the wavelets (419) is longer than the signal (226). Consider using a longer signal or shorter wavelets.
   this_x_t = cwt(this_data[sig_idx, tmin_idx:tmax_idx],
     assembling connectivity matrix
 [Connectivity computation done]
@@ -691,6 +720,7 @@ following are some basic attributes of connectivity classes.</p>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.names" title="mne_connectivity.SpectroTemporalConnectivity.names" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(&#39;node_in -&gt; node_out&#39;, &#39;freqs&#39;, &#39;times&#39;)
 Coordinates:
   * node_in -&gt; node_out  (node_in -&gt; node_out) &lt;U5 &#39;0&#39; &#39;1&#39; ... &#39;41207&#39; &#39;41208&#39;
@@ -702,7 +732,7 @@ Coordinates:
 </div>
 <p>The underlying connectivity measure can be stored in two ways: i) raveled
 and ii) dense. Raveled storage will be a 1D column flattened array, similar
-to what one might expect when using <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ravel.html#numpy.ravel" title="(in NumPy v1.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ravel</span></code></a>. However, if you ask for
+to what one might expect when using <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ravel.html#numpy.ravel" title="(in NumPy v1.25.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ravel</span></code></a>. However, if you ask for
 the dense data, then the shape will show the N by N connectivity.
 In general, you might prefer the raveled version if you specify a subset of
 indices (e.g. some subset of sources) for the computation
@@ -718,6 +748,7 @@ shape.</p>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.get_data" title="mne_connectivity.SpectroTemporalConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(41209, 5, 226)
 (203, 203, 5, 226)
 </pre></div>
@@ -735,6 +766,7 @@ is the phase-lag index (‘pli’).</p>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.attrs" title="mne_connectivity.SpectroTemporalConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span></a><span class="p">())</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;spec_method&#39;, &#39;n_epochs_used&#39;, &#39;freqs_used&#39;, &#39;times_used&#39;, &#39;n_tapers&#39;, &#39;node_names&#39;, &#39;method&#39;, &#39;indices&#39;, &#39;n_nodes&#39;, &#39;events&#39;])
 [&#39;pli&#39;]
 dict_keys([&#39;spec_method&#39;, &#39;n_epochs_used&#39;, &#39;freqs_used&#39;, &#39;times_used&#39;, &#39;n_tapers&#39;, &#39;node_names&#39;, &#39;method&#39;, &#39;indices&#39;, &#39;n_nodes&#39;, &#39;events&#39;, &#39;experimenter&#39;])
@@ -755,12 +787,13 @@ the spectro-temporal connectivity class.</p>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity.times" title="mne_connectivity.SpectroTemporalConnectivity.times" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[4.0, 5.25, 6.5, 7.75, 9.0]
 [0.0, 0.006659840438612929, 0.013319680877225858, 0.019979521315838786, 0.026639361754451717, 0.03329920219306465, 0.03995904263167757, 0.0466188830702905, 0.05327872350890343, 0.05993856394751636, 0.0665984043861293, 0.07325824482474222, 0.07991808526335514, 0.08657792570196808, 0.093237766140581, 0.09989760657919393, 0.10655744701780687, 0.11321728745641979, 0.11987712789503271, 0.12653696833364564, 0.1331968087722586, 0.13985664921087151, 0.14651648964948444, 0.15317633008809736, 0.1598361705267103, 0.1664960109653232, 0.17315585140393616, 0.17981569184254909, 0.186475532281162, 0.19313537271977493, 0.19979521315838786, 0.20645505359700078, 0.21311489403561373, 0.21977473447422666, 0.22643457491283958, 0.2330944153514525, 0.23975425579006543, 0.24641409622867838, 0.2530739366672913, 0.25973377710590423, 0.2663936175445172, 0.2730534579831301, 0.27971329842174303, 0.2863731388603559, 0.2930329792989689, 0.2996928197375818, 0.3063526601761947, 0.3130125006148077, 0.3196723410534206, 0.3263321814920335, 0.3329920219306464, 0.33965186236925937, 0.3463117028078723, 0.3529715432464852, 0.35963138368509817, 0.36629122412371107, 0.372951064562324, 0.37961090500093697, 0.38627074543954987, 0.3929305858781628, 0.3995904263167757, 0.40625026675538867, 0.41291010719400156, 0.4195699476326145, 0.42622978807122747, 0.43288962850984036, 0.4395494689484533, 0.4462093093870662, 0.45286914982567916, 0.4595289902642921, 0.466188830702905, 0.47284867114151796, 0.47950851158013086, 0.4861683520187438, 0.49282819245735676, 0.49948803289596966, 0.5061478733345826, 0.5128077137731956, 0.5194675542118085, 0.5261273946504214, 0.5327872350890344, 0.5394470755276473, 0.5461069159662602, 0.552766756404873, 0.5594265968434861, 0.566086437282099, 0.5727462777207118, 0.5794061181593249, 0.5860659585979378, 0.5927257990365506, 0.5993856394751635, 0.6060454799137766, 0.6127053203523894, 0.6193651607910023, 0.6260250012296154, 0.6326848416682282, 0.6393446821068411, 0.6460045225454542, 0.652664362984067, 0.6593242034226799, 0.6659840438612928, 0.6726438842999058, 0.6793037247385187, 0.6859635651771316, 0.6926234056157446, 0.6992832460543575, 0.7059430864929704, 0.7126029269315833, 0.7192627673701963, 0.7259226078088092, 0.7325824482474221, 0.7392422886860351, 0.745902129124648, 0.7525619695632609, 0.7592218100018739, 0.7658816504404868, 0.7725414908790997, 0.7792013313177126, 0.7858611717563256, 0.7925210121949385, 0.7991808526335514, 0.8058406930721644, 0.8125005335107773, 0.8191603739493902, 0.8258202143880031, 0.8324800548266161, 0.839139895265229, 0.8457997357038419, 0.8524595761424549, 0.8591194165810678, 0.8657792570196807, 0.8724390974582937, 0.8790989378969066, 0.8857587783355195, 0.8924186187741324, 0.8990784592127454, 0.9057382996513583, 0.9123981400899712, 0.9190579805285842, 0.9257178209671971, 0.93237766140581, 0.939037501844423, 0.9456973422830359, 0.9523571827216488, 0.9590170231602617, 0.9656768635988747, 0.9723367040374876, 0.9789965444761005, 0.9856563849147135, 0.9923162253533264, 0.9989760657919393, 1.0056359062305522, 1.012295746669165, 1.0189555871077782, 1.0256154275463911, 1.032275267985004, 1.038935108423617, 1.0455949488622298, 1.0522547893008427, 1.0589146297394556, 1.0655744701780687, 1.0722343106166816, 1.0788941510552945, 1.0855539914939074, 1.0922138319325203, 1.0988736723711332, 1.105533512809746, 1.1121933532483592, 1.1188531936869721, 1.125513034125585, 1.132172874564198, 1.1388327150028108, 1.1454925554414237, 1.1521523958800366, 1.1588122363186497, 1.1654720767572626, 1.1721319171958755, 1.1787917576344884, 1.1854515980731013, 1.1921114385117142, 1.198771278950327, 1.2054311193889402, 1.212090959827553, 1.218750800266166, 1.225410640704779, 1.2320704811433918, 1.2387303215820047, 1.2453901620206178, 1.2520500024592307, 1.2587098428978436, 1.2653696833364565, 1.2720295237750694, 1.2786893642136823, 1.2853492046522952, 1.2920090450909083, 1.2986688855295212, 1.305328725968134, 1.311988566406747, 1.3186484068453599, 1.3253082472839728, 1.3319680877225857, 1.3386279281611988, 1.3452877685998117, 1.3519476090384246, 1.3586074494770375, 1.3652672899156504, 1.3719271303542633, 1.3785869707928762, 1.3852468112314893, 1.3919066516701022, 1.398566492108715, 1.405226332547328, 1.4118861729859409, 1.4185460134245538, 1.4252058538631667, 1.4318656943017798, 1.4385255347403927, 1.4451853751790056, 1.4518452156176185, 1.4585050560562314, 1.4651648964948443, 1.4718247369334574, 1.4784845773720703, 1.4851444178106832, 1.491804258249296, 1.498464098687909]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.959 seconds)</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-connectivity-classes-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.116 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-connectivity-classes-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/980054063d6073a3d7942ac239432571/connectivity_classes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">connectivity_classes.py</span></code></a></p>
 </div>
@@ -786,10 +819,10 @@ the spectro-temporal connectivity class.</p>
           <p class="prev-next-title">Compute source space connectivity and visualize it using a circular graph</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="dynamic/index.html" title="next page">
+  <a class='right-next' id="next-link" href="dynamic/mne_var_connectivity.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Dynamic Connectivity Examples</p>
+      <p class="prev-next-title">Compute vector autoregressive model (linear system)</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -835,7 +868,7 @@ the spectro-temporal connectivity class.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
@@ -844,7 +877,7 @@ the spectro-temporal connectivity class.</p>
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

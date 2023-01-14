@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.4.0 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.5.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -101,7 +101,7 @@
 
   
   
-    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
   
 </a>
     
@@ -160,14 +160,24 @@
       </div>
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -267,14 +277,24 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.4.0
+        v0.5.0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
     </div>
@@ -339,7 +359,7 @@
 
 
 <span class="k">class</span> <span class="nc">SpectralMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mixin class for spectral connectivities.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin class for spectral connectivities.</span>
 
 <span class="sd">    Note: In mne-connectivity, we associate the word</span>
 <span class="sd">    &quot;spectral&quot; with time-frequency. Reference to</span>
@@ -347,7 +367,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">freqs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The frequency points of the connectivity data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The frequency points of the connectivity data.</span>
 
 <span class="sd">        If these are computed over a frequency band, it will</span>
 <span class="sd">        be the median frequency of the frequency band.</span>
@@ -358,7 +378,7 @@
 <span class="k">class</span> <span class="nc">TimeMixin</span><span class="p">:</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The time points of the connectivity data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The time points of the connectivity data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;times&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 
@@ -395,7 +415,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_conn</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Append another connectivity structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append another connectivity structure.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -447,7 +467,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Combine connectivity data over epochs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Combine connectivity data over epochs.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -504,7 +524,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">companion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate block companion matrix.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate block companion matrix.</span>
 
 <span class="sd">        Returns the data matrix if the model is VAR(1).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -524,7 +544,7 @@
         <span class="k">return</span> <span class="n">arrs</span>
 
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Predict samples on actual data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Predict samples on actual data.</span>
 
 <span class="sd">        The result of this function is used for calculating the residuals.</span>
 
@@ -604,7 +624,7 @@
 
     <span class="nd">@fill_doc</span>
     <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">noise_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Simulate vector autoregressive (VAR) model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate vector autoregressive (VAR) model.</span>
 
 <span class="sd">        This function generates data from the VAR model.</span>
 
@@ -665,7 +685,7 @@
 
 <span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">BaseConnectivity</span><span class="p">(</span><span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">EpochMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for connectivity data.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for connectivity data.</span>
 
 <span class="sd">    This class should not be instantiated directly, but should be used</span>
 <span class="sd">    to do type-checking. All connectivity classes will be returned from</span>
@@ -757,7 +777,7 @@
         <span class="k">return</span> <span class="n">r</span>
 
     <span class="k">def</span> <span class="nf">_get_num_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the number of estimated nodes&#39; connectivity.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the number of estimated nodes&#39; connectivity.&quot;&quot;&quot;</span>
         <span class="c1"># account for epoch data structures</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">1</span>
@@ -767,7 +787,7 @@
 
     <span class="k">def</span> <span class="nf">_prepare_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
                         <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Prepare xarray data structure.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare xarray data structure.&quot;&quot;&quot;</span>
         <span class="c1"># generate events and event_id that originate from Epochs class</span>
         <span class="c1"># which stores the windows of Raw that were used to generate</span>
         <span class="c1"># the corresponding connectivity data</span>
@@ -826,7 +846,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">xarray_obj</span>
 
     <span class="k">def</span> <span class="nf">_check_data_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Perform data input checks.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform data input checks.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Connectivity data must be passed in as a &#39;</span>
                             <span class="s1">&#39;numpy array.&#39;</span><span class="p">)</span>
@@ -886,7 +906,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The number of epochs the connectivity data varies over.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of epochs the connectivity data varies over.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">n_epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -895,22 +915,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Numpy array of connectivity data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Numpy array of connectivity data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">values</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The dimensions of the xarray data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The dimensions of the xarray data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">dims</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The coordinates of the xarray data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The coordinates of the xarray data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">coords</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Xarray attributes of connectivity.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Xarray attributes of connectivity.</span>
 
 <span class="sd">        See ``xarray``&#39;s ``attrs``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -918,12 +938,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Shape of raveled connectivity.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of raveled connectivity.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The number of nodes in the original dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of nodes in the original dataset.</span>
 
 <span class="sd">        Even if ``indices`` defines a subset of nodes that</span>
 <span class="sd">        were computed, this should be the total number of</span>
@@ -933,12 +953,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The method used to compute connectivity.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The method used to compute connectivity.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Indices of connectivity data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Indices of connectivity data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -952,17 +972,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Node names.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Node names.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;node_names&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Xarray of the connectivity data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Xarray of the connectivity data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_epochs_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Number of epochs used in computation of connectivity.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of epochs used in computation of connectivity.</span>
 
 <span class="sd">        Can be &#39;None&#39;, if there was no epochs used. This is</span>
 <span class="sd">        equivalent to the number of epochs, if there is no</span>
@@ -972,7 +992,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Estimate the object size.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate the object size.&quot;&quot;&quot;</span>
         <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">size</span> <span class="o">+=</span> <span class="n">object_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
         <span class="n">size</span> <span class="o">+=</span> <span class="n">object_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
@@ -982,7 +1002,7 @@
         <span class="k">return</span> <span class="n">size</span>
 
     <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;compact&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get connectivity data as a numpy array.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get connectivity data as a numpy array.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1055,7 +1075,7 @@
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span> <span class="nf">rename_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Rename nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rename nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1111,7 +1131,7 @@
     <span class="c1">#     pass</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save connectivity data to disk.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save connectivity data to disk.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1161,7 +1181,7 @@
 
 <div class="viewcode-block" id="SpectralConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">SpectralConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spectral connectivity class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectral connectivity class.</span>
 
 <span class="sd">    This class stores connectivity data that varies over</span>
 <span class="sd">    frequencies. The underlying data is an array of shape</span>
@@ -1197,7 +1217,7 @@
 
 <div class="viewcode-block" id="TemporalConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Temporal connectivity class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporal connectivity class.</span>
 
 <span class="sd">    This is an array of shape (n_connections, n_times),</span>
 <span class="sd">    or (n_nodes, n_nodes, n_times). This describes how connectivity</span>
@@ -1238,7 +1258,7 @@
 
 <div class="viewcode-block" id="SpectroTemporalConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">SpectroTemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class.</span>
 
 <span class="sd">    This class stores connectivity data that varies over both frequency</span>
 <span class="sd">    and time. The temporal part describes sample-by-sample time-varying</span>
@@ -1274,7 +1294,7 @@
 
 <div class="viewcode-block" id="EpochSpectralConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spectral connectivity class over Epochs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectral connectivity class over Epochs.</span>
 
 <span class="sd">    This is an array of shape (n_epochs, n_connections, n_freqs),</span>
 <span class="sd">    or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how</span>
@@ -1305,7 +1325,7 @@
 
 <div class="viewcode-block" id="EpochTemporalConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">TemporalConnectivity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Temporal connectivity class over Epochs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporal connectivity class over Epochs.</span>
 
 <span class="sd">    This is an array of shape (n_epochs, n_connections, n_times),</span>
 <span class="sd">    or (n_epochs, n_nodes, n_nodes, n_times). This describes how</span>
@@ -1334,7 +1354,7 @@
 
 <div class="viewcode-block" id="EpochSpectroTemporalConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.EpochSpectroTemporalConnectivity.html#mne_connectivity.EpochSpectroTemporalConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">EpochSpectroTemporalConnectivity</span><span class="p">(</span><span class="n">SpectroTemporalConnectivity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class over Epochs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class over Epochs.</span>
 
 <span class="sd">    This is an array of shape (n_epochs, n_connections, n_freqs, n_times),</span>
 <span class="sd">    or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how</span>
@@ -1366,7 +1386,7 @@
 
 <div class="viewcode-block" id="Connectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Connectivity class without frequency or time component.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connectivity class without frequency or time component.</span>
 
 <span class="sd">    This is an array of shape (n_connections,),</span>
 <span class="sd">    or (n_nodes, n_nodes). This describes a connectivity matrix/graph</span>
@@ -1398,7 +1418,7 @@
 
 <div class="viewcode-block" id="EpochConnectivity"><a class="viewcode-back" href="../../generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">class</span> <span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Epoch connectivity class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Epoch connectivity class.</span>
 
 <span class="sd">    This is an array of shape (n_epochs, n_connections),</span>
 <span class="sd">    or (n_epochs, n_nodes, n_nodes). This describes how</span>
@@ -1481,7 +1501,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
 
 </p>
 
@@ -1490,7 +1510,7 @@
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

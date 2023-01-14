@@ -1,0 +1,933 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Compute coherence in source space using a MNE inverse solution &#8212; MNE-Connectivity 0.4.0 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mne_inverse_coherence_epochs';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compute envelope correlations in source space" href="mne_inverse_envelope_correlation.html" />
+    <link rel="prev" title="Compute all-to-all connectivity in sensor space" href="sensor_connectivity.html" />
+    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.4.0 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../install.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.4.0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../whats_new.html">
+                        What’s new?
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../install.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../api.html">
+                        API
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="index.html">
+                        Examples
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.4.0
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.4 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.3 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="dpli_wpli_pli.html">
+   Comparing PLI, wPLI, and dPLI
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_inverse_psi_visual.html">
+   Compute Phase Slope Index (PSI) in source space for a visual stimulus
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sensor_connectivity.html">
+   Compute all-to-all connectivity in sensor space
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Compute coherence in source space using a MNE inverse solution
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_inverse_envelope_correlation.html">
+   Compute envelope correlations in source space
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">
+   Compute envelope correlations in volume source space
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_inverse_connectivity_spectrum.html">
+   Compute full spectrum source space connectivity between labels
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mixed_source_space_connectivity.html">
+   Compute mixed source space connectivity and visualize it using a circular graph
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cwt_sensor_connectivity.html">
+   Compute seed-based time-frequency connectivity in sensor space
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_inverse_label_connectivity.html">
+   Compute source space connectivity and visualize it using a circular graph
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="connectivity_classes.html">
+   Using the connectivity classes
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="dynamic/index.html">
+   Dynamic Connectivity Examples
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label class="toctree-toggle" for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="dynamic/mne_var_connectivity.html">
+     Compute vector autoregressive model (linear system)
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="compute-coherence-in-source-space-using-a-mne-inverse-solution">
+<span id="sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"></span><h1>Compute coherence in source space using a MNE inverse solution<a class="headerlink" href="#compute-coherence-in-source-space-using-a-mne-inverse-solution" title="Permalink to this heading">#</a></h1>
+<p>This example computes the coherence between a seed in the left
+auditory cortex and the rest of the brain based on single-trial
+MNE-dSPM inverse solutions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Martin Luessi &lt;mluessi@nmr.mgh.harvard.edu&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
+<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <span class="p">(</span><a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse.html#mne.minimum_norm.apply_inverse" title="mne.minimum_norm.apply_inverse" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">,</span>
+                              <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
+
+<span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="read-the-data">
+<h2>Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this heading">#</a></h2>
+<p>First we’ll read in the sample MEG data that we’ll use for computing
+coherence between channels. We’ll convert this into epochs in order to
+compute the event-related coherence.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s1">&#39;subjects&#39;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_inv</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s1">&#39;MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif&#39;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s1">&#39;MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_event</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s1">&#39;MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_name_lh</span></a> <span class="o">=</span> <span class="s1">&#39;Aud-lh&#39;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_label_lh</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;MEG/sample/labels/</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_name_lh</span></a><span class="si">}</span><span class="s1">.label&#39;</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a> <span class="o">=</span> <span class="s2">&quot;dSPM&quot;</span>  <span class="c1"># use dSPM method (could also be MNE or sLORETA)</span>
+
+<span class="c1"># Load data.</span>
+<a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_inv</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.Label.html#mne.Label" title="mne.Label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_lh</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_label.html#mne.read_label" title="mne.read_label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_label</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_label_lh</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_raw</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_event</span></a><span class="p">)</span>
+
+<span class="c1"># Add a bad channel.</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;MEG 2443&#39;</span><span class="p">]</span>
+
+<span class="c1"># pick MEG channels.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">exclude</span><span class="o">=</span><span class="s1">&#39;bads&#39;</span><span class="p">)</span>
+
+<span class="c1"># Read epochs.</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="p">,</span>
+                    <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mag</span><span class="o">=</span><span class="mf">4e-12</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="mf">4000e-13</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading inverse operator decomposition from /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif...
+    Reading inverse operator info...
+    [done]
+    Reading inverse operator decomposition...
+    [done]
+    305 x 305 full covariance (kind = 1) found.
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102) active
+        PCA-v2 (1 x 102) active
+        PCA-v3 (1 x 102) active
+        Average EEG reference (1 x 60) active
+    Noise covariance matrix read.
+    22494 x 22494 diagonal covariance (kind = 2) found.
+    Source covariance matrix read.
+    22494 x 22494 diagonal covariance (kind = 6) found.
+    Orientation priors read.
+    22494 x 22494 diagonal covariance (kind = 5) found.
+    Depth priors read.
+    Did not find the desired covariance matrix (kind = 3)
+    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    2 source spaces read
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102) active
+        PCA-v2 (1 x 102) active
+        PCA-v3 (1 x 102) active
+        Average EEG reference (1 x 60) active
+    Source spaces transformed to the inverse solution coordinate frame
+Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_filt-0-40_raw.fif...
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102)  idle
+        PCA-v2 (1 x 102)  idle
+        PCA-v3 (1 x 102)  idle
+        Average EEG reference (1 x 60)  idle
+    Range : 6450 ... 48149 =     42.956 ...   320.665 secs
+Ready.
+Not setting metadata
+72 matching events found
+Setting baseline interval to [-0.19979521315838786, 0.0] sec
+Applying baseline correction (mode: mean)
+Created an SSP operator (subspace dimension = 3)
+4 projection items activated
+</pre></div>
+</div>
+</section>
+<section id="choose-channels-for-coherence-estimation">
+<h2>Choose channels for coherence estimation<a class="headerlink" href="#choose-channels-for-coherence-estimation" title="Permalink to this heading">#</a></h2>
+<p>Next we’ll calculate our channel sources. Then we’ll find the most active
+vertex in the left auditory cortex, which we will later use as seed for the
+connectivity computation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">=</span> <span class="mf">3.0</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">**</span> <span class="mi">2</span>
+<a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evoked</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.average" title="mne.Epochs.average" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">average</span></a><span class="p">()</span>
+<a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse.html#mne.minimum_norm.apply_inverse" title="mne.minimum_norm.apply_inverse" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evoked</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">,</span>
+                    <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+
+<span class="c1"># Restrict the source estimate to the label in the left auditory cortex.</span>
+<a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc_label</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.in_label" title="mne.SourceEstimate.in_label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">in_label</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Label.html#mne.Label" title="mne.Label" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_lh</span></a><span class="p">)</span>
+
+<span class="c1"># Find number and index of vertex with most power.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src_pow</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.sum.html#numpy.sum" title="numpy.sum" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">sum</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.data" title="mne.SourceEstimate.data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">stc_label</span><span class="o">.</span><span class="n">data</span></a> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">seed_vertno</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc_label</span><span class="o">.</span><span class="n">vertices</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><a href="https://numpy.org/devdocs/reference/generated/numpy.argmax.html#numpy.argmax" title="numpy.argmax" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src_pow</span></a><span class="p">)]</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">seed_idx</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.searchsorted.html#numpy.searchsorted" title="numpy.searchsorted" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span><span class="o">.</span><span class="n">vertices</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">seed_vertno</span></a><span class="p">)</span>  <span class="c1"># index in orig stc</span>
+
+<span class="c1"># Generate index parameter for seed-based connectivity analysis.</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_sources</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.data" title="mne.SourceEstimate.data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">stc</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">([</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">seed_idx</span></a><span class="p">],</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_sources</span></a><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on MAG : [&#39;MEG 1711&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Removing projector &lt;Projection | Average EEG reference, active : True, n_channels : 60&gt;
+Preparing the inverse operator for use...
+    Scaled noise and source covariance from nave = 1 to nave = 55
+    Created the regularized inverter
+    Created an SSP operator (subspace dimension = 3)
+    Created the whitener using a noise covariance matrix with rank 302 (3 small eigenvalues omitted)
+    Computing noise-normalization factors (dSPM)...
+[done]
+Applying inverse operator to &quot;1&quot;...
+    Picked 305 channels from the data
+    Computing inverse...
+    Eigenleads need to be weighted ...
+    Computing residual...
+    Explained  59.3% variance
+    dSPM...
+[done]
+</pre></div>
+</div>
+<p>Compute the inverse solution for each epoch. By using “return_generator=True”
+stcs will be a generator object instead of a list. This allows us so to
+compute the coherence without having to keep all source estimates in memory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># use lower SNR for single epochs</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">stcs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">,</span>
+                            <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-the-coherence-between-sources">
+<h2>Compute the coherence between sources<a class="headerlink" href="#compute-the-coherence-between-sources" title="Permalink to this heading">#</a></h2>
+<p>Now we are ready to compute the coherence in the alpha and beta band.
+fmin and fmax specify the lower and upper freq. for each band, respectively.</p>
+<p>To speed things up, we use 2 parallel jobs and use mode=’fourier’, which
+uses a FFT with a Hanning window to compute the spectra (instead of
+a multitaper estimation, which has a lower variance but is slower).
+By using faverage=True, we directly average the coherence in the alpha and
+beta band, i.e., we will only get 2 frequency bins.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a> <span class="o">=</span> <span class="p">(</span><span class="mf">8.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="p">(</span><span class="mf">13.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
+
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <span class="n">stcs</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="o">=</span><span class="s1">&#39;coh&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;fourier&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">coh</span><span class="o">.</span><span class="n">freqs</span></a>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Frequencies in Hz over which coherence was averaged for alpha: &#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Frequencies in Hz over which coherence was averaged for beta: &#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity computation...
+Preparing the inverse operator for use...
+    Scaled noise and source covariance from nave = 1 to nave = 1
+    Created the regularized inverter
+    Created an SSP operator (subspace dimension = 3)
+    Created the whitener using a noise covariance matrix with rank 302 (3 small eigenvalues omitted)
+    Computing noise-normalization factors (dSPM)...
+[done]
+Picked 305 channels from the data
+Computing inverse...
+    Eigenleads need to be weighted ...
+Processing epoch : 1 / 72 (at most)
+    computing connectivity for 7498 connections
+    using t=-0.200s..0.499s for estimation (106 points)
+    computing connectivity for the bands:
+     band 1: 8.5Hz..12.7Hz (4 points)
+     band 2: 14.2Hz..29.7Hz (12 points)
+    connectivity scores will be averaged for each band
+    using FFT with a Hanning window to estimate spectra
+    the following metrics will be computed: Coherence
+    computing connectivity for epoch 1
+Processing epoch : 2 / 72 (at most)
+    computing connectivity for epoch 2
+Processing epoch : 3 / 72 (at most)
+    computing connectivity for epoch 3
+Processing epoch : 4 / 72 (at most)
+    computing connectivity for epoch 4
+Processing epoch : 5 / 72 (at most)
+    computing connectivity for epoch 5
+Processing epoch : 6 / 72 (at most)
+    computing connectivity for epoch 6
+Processing epoch : 7 / 72 (at most)
+    computing connectivity for epoch 7
+Processing epoch : 8 / 72 (at most)
+    computing connectivity for epoch 8
+Processing epoch : 9 / 72 (at most)
+    computing connectivity for epoch 9
+Processing epoch : 10 / 72 (at most)
+    computing connectivity for epoch 10
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 11 / 72 (at most)
+    computing connectivity for epoch 11
+Processing epoch : 12 / 72 (at most)
+    computing connectivity for epoch 12
+Processing epoch : 13 / 72 (at most)
+    computing connectivity for epoch 13
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 14 / 72 (at most)
+    computing connectivity for epoch 14
+Processing epoch : 15 / 72 (at most)
+    computing connectivity for epoch 15
+Processing epoch : 16 / 72 (at most)
+    computing connectivity for epoch 16
+Processing epoch : 17 / 72 (at most)
+    computing connectivity for epoch 17
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 18 / 72 (at most)
+    computing connectivity for epoch 18
+Processing epoch : 19 / 72 (at most)
+    computing connectivity for epoch 19
+Processing epoch : 20 / 72 (at most)
+    computing connectivity for epoch 20
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 21 / 72 (at most)
+    computing connectivity for epoch 21
+Processing epoch : 22 / 72 (at most)
+    computing connectivity for epoch 22
+Processing epoch : 23 / 72 (at most)
+    computing connectivity for epoch 23
+    Rejecting  epoch based on MAG : [&#39;MEG 1711&#39;]
+Processing epoch : 24 / 72 (at most)
+    computing connectivity for epoch 24
+Processing epoch : 25 / 72 (at most)
+    computing connectivity for epoch 25
+Processing epoch : 26 / 72 (at most)
+    computing connectivity for epoch 26
+Processing epoch : 27 / 72 (at most)
+    computing connectivity for epoch 27
+Processing epoch : 28 / 72 (at most)
+    computing connectivity for epoch 28
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 29 / 72 (at most)
+    computing connectivity for epoch 29
+Processing epoch : 30 / 72 (at most)
+    computing connectivity for epoch 30
+Processing epoch : 31 / 72 (at most)
+    computing connectivity for epoch 31
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 32 / 72 (at most)
+    computing connectivity for epoch 32
+Processing epoch : 33 / 72 (at most)
+    computing connectivity for epoch 33
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 34 / 72 (at most)
+    computing connectivity for epoch 34
+Processing epoch : 35 / 72 (at most)
+    computing connectivity for epoch 35
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 36 / 72 (at most)
+    computing connectivity for epoch 36
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 37 / 72 (at most)
+    computing connectivity for epoch 37
+Processing epoch : 38 / 72 (at most)
+    computing connectivity for epoch 38
+Processing epoch : 39 / 72 (at most)
+    computing connectivity for epoch 39
+Processing epoch : 40 / 72 (at most)
+    computing connectivity for epoch 40
+Processing epoch : 41 / 72 (at most)
+    computing connectivity for epoch 41
+Processing epoch : 42 / 72 (at most)
+    computing connectivity for epoch 42
+Processing epoch : 43 / 72 (at most)
+    computing connectivity for epoch 43
+Processing epoch : 44 / 72 (at most)
+    computing connectivity for epoch 44
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 45 / 72 (at most)
+    computing connectivity for epoch 45
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 46 / 72 (at most)
+    computing connectivity for epoch 46
+Processing epoch : 47 / 72 (at most)
+    computing connectivity for epoch 47
+Processing epoch : 48 / 72 (at most)
+    computing connectivity for epoch 48
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 49 / 72 (at most)
+    computing connectivity for epoch 49
+Processing epoch : 50 / 72 (at most)
+    computing connectivity for epoch 50
+Processing epoch : 51 / 72 (at most)
+    computing connectivity for epoch 51
+Processing epoch : 52 / 72 (at most)
+    computing connectivity for epoch 52
+Processing epoch : 53 / 72 (at most)
+    computing connectivity for epoch 53
+Processing epoch : 54 / 72 (at most)
+    computing connectivity for epoch 54
+Processing epoch : 55 / 72 (at most)
+    computing connectivity for epoch 55
+[done]
+[Connectivity computation done]
+Frequencies in Hz over which coherence was averaged for alpha:
+10.624085912164652
+Frequencies in Hz over which coherence was averaged for beta:
+21.956444218473617
+</pre></div>
+</div>
+</section>
+<section id="generate-coherence-sources-and-plot">
+<h2>Generate coherence sources and plot<a class="headerlink" href="#generate-coherence-sources-and-plot" title="Permalink to this heading">#</a></h2>
+<p>Finally, we’ll generate a SourceEstimate with the coherence. This is simple
+since we used a single seed. For more than one seed we would have to choose
+one of the slices within <code class="docutils literal notranslate"><span class="pre">coh</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use a hack to save the frequency axis as time.</p>
+</div>
+<p>Finally, we’ll plot this source estimate on the brain.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tstep</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a>
+<a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh_stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">SourceEstimate</span></a><span class="p">(</span>
+    <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">coh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <span class="n">vertices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span><span class="o">.</span><span class="n">vertices</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a><span class="o">=</span><span class="mf">1e-3</span> <span class="o">*</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tmin</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tstep</span></a><span class="o">=</span><span class="mf">1e-3</span> <span class="o">*</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">tstep</span></a><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;sample&#39;</span><span class="p">)</span>
+
+<span class="c1"># Now we can visualize the coherence using the plot method.</span>
+<a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain" title="mne.viz.Brain" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.plot" title="mne.SourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">coh_stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;inflated&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">,</span>
+                     <span class="n">time_label</span><span class="o">=</span><span class="s1">&#39;Coherence </span><span class="si">%0.1f</span><span class="s1"> Hz&#39;</span><span class="p">,</span>
+                     <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">,</span>
+                     <span class="n">clim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">)))</span>
+<a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain.show_view" title="mne.viz.Brain.show_view" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-method"><span class="n">brain</span><span class="o">.</span><span class="n">show_view</span></a><span class="p">(</span><span class="s1">&#39;lateral&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" srcset="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" alt="mne inverse coherence epochs" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
+For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
+For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
+For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.138 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-coherence-epochs-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/1db1fbdecde163c90620911f38139f62/mne_inverse_coherence_epochs.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_coherence_epochs.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/9b1b8412e68e7009f51b3dee0c387ca3/mne_inverse_coherence_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_coherence_epochs.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="sensor_connectivity.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Compute all-to-all connectivity in sensor space</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="mne_inverse_envelope_correlation.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Compute envelope correlations in source space</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-the-data">
+   Read the data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#choose-channels-for-coherence-estimation">
+   Choose channels for coherence estimation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compute-the-coherence-between-sources">
+   Compute the coherence between sources
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#generate-coherence-sources-and-plot">
+   Generate coherence sources and plot
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2021-2022, MNE Developers. Last updated on 2022-10-03.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
