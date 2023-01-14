@@ -16,49 +16,28 @@ Here we list a changelog of MNE-connectivity.
 
 .. _current:
 
-Version 0.5
------------
+Version 0.6 (unreleased)
+------------------------
 
-This version has several improvements in the ``spectral`` connectivity analysis and some bug fixes. Functionality now requires ``mne>=1.3``
-for MNE-Python as a minimum version requirement.
-
-This version has major changes in :func:`mne_connectivity.spectral_connectivity_time`. Several bugs are fixed, and the
-function now computes static connectivity over time, as opposed to static connectivity over trials computed by  :func:`mne_connectivity.spectral_connectivity_epochs`.
 
 Enhancements
 ~~~~~~~~~~~~
 
-- Add the ``PLI`` and ``wPLI`` methods in :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Improve the documentation of :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Add the option to average connectivity across epochs and frequencies in :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Select multitaper frequencies automatically in :func:`mne_connectivity.spectral_connectivity_time` similarly to :func:`mne_connectivity.spectral_connectivity_epochs` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Add the ``ciPLV`` method in :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`115`).
-- Add the option to use the edges of each epoch as padding in :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`115`).
+- 
 
 Bug
 ~~~
 
-- When using the ``multitaper`` mode in :func:`mne_connectivity.spectral_connectivity_time`, average CSD over tapers instead of the complex signal by `Santeri Ruuskanen`_ (:pr:`104`).
-- Average over time when computing connectivity measures in :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Fix support for multiple connectivity methods in calls to :func:`mne_connectivity.spectral_connectivity_time` by `Santeri Ruuskanen`_ (:pr:`104`).
-- Fix bug with the ``indices`` parameter in :func:`mne_connectivity.spectral_connectivity_time`, the behavior is now as expected by `Santeri Ruuskanen`_ (:pr:`104`).
-- Fix bug with parallel computation in :func:`mne_connectivity.spectral_connectivity_time`, add instructions for memory mapping in doc by `Santeri Ruuskanen`_ (:pr:`104`).
-- Allow loading files that don't have ``event_id_keys`` and ``event_id_values`` defined, by `Daniel McCloy`_ (:pr:`110`)
-- Fix handling of the ``verbose`` argument by :func:`spectral_connectivity_epochs`, :func:`spectral_connectivity_time`, :func:`vector_auto_regression` by `Sam Steingold`_ (:pr:`111`)
+- 
 
 API
 ~~~
 
-- Streamline the API of :func:`mne_connectivity.spectral_connectivity_time` with :func:`mne_connectivity.spectral_connectivity_epochs` by `Santeri Ruuskanen`_ (:pr:`104`).
-- The ``sfreq`` parameter is now required for numpy array inputs to :func:`spectral_connectivity_epochs`, by `Adam Li`_ (:pr:`119`)
+- 
 
 Authors
 ~~~~~~~
 
-* `Santeri Ruuskanen`_
-* `Daniel McCloy`_
-* `Sam Steingold`_
-* `Adam Li`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
