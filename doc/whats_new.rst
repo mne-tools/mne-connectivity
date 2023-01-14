@@ -19,7 +19,7 @@ Here we list a changelog of MNE-connectivity.
 Version 0.5
 -----------
 
-This version has several improvements in the `spectral` connectivity analysis and some bug fixes. Functionality now requires ``mne>=1.3``
+This version has several improvements in the ``spectral`` connectivity analysis and some bug fixes. Functionality now requires ``mne>=1.3``
 for MNE-Python as a minimum version requirement.
 
 This version has major changes in :func:`mne_connectivity.spectral_connectivity_time`. Several bugs are fixed, and the
