@@ -16,12 +16,14 @@ Here we list a changelog of MNE-connectivity.
 
 .. _current:
 
-Version 0.5 (Unreleased)
-------------------------
+Version 0.5
+-----------
+
+This version has several improvements in the ``spectral`` connectivity analysis and some bug fixes. Functionality now requires ``mne>=1.3``
+for MNE-Python as a minimum version requirement.
 
 This version has major changes in :func:`mne_connectivity.spectral_connectivity_time`. Several bugs are fixed, and the
 function now computes static connectivity over time, as opposed to static connectivity over trials computed by  :func:`mne_connectivity.spectral_connectivity_epochs`.
-Functionality now requires ``mne>=1.3`` for MNE-Python.
 
 Enhancements
 ~~~~~~~~~~~~
@@ -56,6 +58,7 @@ Authors
 * `Santeri Ruuskanen`_
 * `Daniel McCloy`_
 * `Sam Steingold`_
+* `Adam Li`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
