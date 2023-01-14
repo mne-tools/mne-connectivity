@@ -58,6 +58,7 @@ Authors
 * `Santeri Ruuskanen`_
 * `Daniel McCloy`_
 * `Sam Steingold`_
+* `Adam Li`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
