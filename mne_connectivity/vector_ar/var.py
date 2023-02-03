@@ -14,7 +14,7 @@ from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
 @verbose
 @fill_doc
 def vector_auto_regression(
-        data, times=None, names=None, lags=1, l2_reg=0.0, auto_reg=False,
+        data, times=None, names=None, lags=1, l2_reg='auto',
         compute_fb_operator=False, model='dynamic', n_jobs=1, verbose=None):
     """Compute vector auto-regresssive (VAR) model.
 
@@ -30,12 +30,14 @@ def vector_auto_regression(
     %(names)s
     lags : int, optional
         Autoregressive model order, by default 1.
-    l2_reg : float, optional
-        Ridge penalty (l2-regularization) parameter, by default 0.0.
-    auto_reg : bool, optional
-        Whether to perform automatic regularization of X matrix using RidgeCV, 
-        by default False. If matrix is not full rank, this will be adjusted to
-        True.
+    l2_reg : str | array-like, shape=(n_alphas,) | float | None, optional
+        Ridge penalty (l2-regularization) parameter, by default 'auto'. If 
+        ``data`` has condition number less than 1e6, then ``data`` will undergo 
+        automatic regularization using RidgeCV with a pre-defined array of 
+        alphas. A user-defined array of alphas (must be positive floats) can be 
+        inputted or a float value to fix the Ridge penalty (l2-regularization) 
+        parameter. If ``l2_reg`` is set to 0 or None, then no regularization 
+        will be performed.
     compute_fb_operator : bool
         Whether to compute the backwards operator and average with
         the forward operator. Addresses bias in the least-square
@@ -126,8 +128,6 @@ def vector_auto_regression(
     if model not in ['avg-epochs', 'dynamic']:
         raise ValueError(f'"model" parameter must be one of '
                          f'(avg-epochs, dynamic), not {model}.')
-    elif auto_reg and l2_reg:
-        raise ValueError("If l2_reg is set, then auto_reg must be set to False")
 
     events = None
     event_id = None
@@ -158,18 +158,31 @@ def vector_auto_regression(
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape
 
-    # determine condition of matrix across all epochs
-    conds = np.linalg.cond(data)
-    
-    if np.any(conds > 1e6):
-        # matrix is rank-deficient, so regularization must be used
-        auto_reg = True
-
+    cv_alphas = None
+    if isinstance(l2_reg, str):
+        if l2_reg == 'auto':
+            
+            # determine condition of matrix across all epochs
+            conds = np.linalg.cond(data)
+            if np.any(conds > 1e6):
+                # matrix is rank-deficient, so regularization must be used with
+                # cross-validation alphas values
+                cv_alphas = np.logspace(-15,5,11)
+                
+                # TODO: Add message letting user know that matrix is ill-conditioned
+                # and the above alpha set will be searched
+            
+    elif isinstance(l2_reg, (list, tuple, set, np.ndarray)):
+        cv_alphas = l2_reg
+        
     model_params = {
         'lags': lags,
-        'l2_reg': l2_reg,
-        'auto_reg': auto_reg
+        'cv_alphas': cv_alphas
     }
+    
+    # reset l2_reg for downstream functions
+    if cv_alphas is not None:
+        l2_reg = 0
 
     if verbose:
         logger.info(f'Running {model} vector autoregression with parameters: '
@@ -180,11 +193,11 @@ def vector_auto_regression(
         # sample of the multivariate time-series of interest
         # ordinary least squares or regularized least squares
         # (ridge regression)
+
         X, Y = _construct_var_eqns(data, lags=lags, l2_reg=l2_reg)
 
-        if auto_reg:
-            # use ridge regression with built-in cross validation of alpha values
-            reg = RidgeCV(alphas=np.logspace(-15,0,16), cv=5).fit(X, Y)
+        if cv_alphas is not None:
+            reg = RidgeCV(alphas=cv_alphas, cv=5).fit(X, Y)
             coef = reg.coef_
         else:
             b, res, rank, s = scipy.linalg.lstsq(X, Y)
@@ -205,7 +218,7 @@ def vector_auto_regression(
         # linear system
         A_mats = _system_identification(
             data=data, lags=lags,
-            l2_reg=l2_reg, auto_reg=auto_reg, 
+            l2_reg=l2_reg, cv_alphas=cv_alphas,
             n_jobs=n_jobs, compute_fb_operator=compute_fb_operator
         )
         # create connectivity
@@ -291,7 +304,7 @@ def _construct_var_eqns(data, lags, l2_reg=None):
     return X, Y
 
 
-def _system_identification(data, lags, l2_reg=0, auto_reg=False,
+def _system_identification(data, lags, l2_reg=0, cv_alphas=None,
                            n_jobs=-1, compute_fb_operator=False):
     """Solve system identification using least-squares over all epochs.
 
@@ -308,8 +321,8 @@ def _system_identification(data, lags, l2_reg=0, auto_reg=False,
 
     model_params = {
         'l2_reg': l2_reg,
-        'auto_reg': auto_reg,
         'lags': lags,
+        'cv_alphas': cv_alphas,
         'compute_fb_operator': compute_fb_operator
     }
 
@@ -366,7 +379,7 @@ def _system_identification(data, lags, l2_reg=0, auto_reg=False,
     return A_mats
 
 
-def _compute_lds_func(data, lags, l2_reg, auto_reg, compute_fb_operator):
+def _compute_lds_func(data, lags, l2_reg, cv_alphas, compute_fb_operator):
     """Compute linear system using VAR model.
 
     Allows for parallelization over epochs.
@@ -392,13 +405,13 @@ def _compute_lds_func(data, lags, l2_reg, auto_reg, compute_fb_operator):
     # get time-shifted versions
     X = data[:, :]
     A, resid, omega = _estimate_var(X, lags=lags, offset=0,
-                                    l2_reg=l2_reg, auto_reg=auto_reg)
+                                    l2_reg=l2_reg, cv_alphas=cv_alphas)
 
     if compute_fb_operator:
         # compute backward linear operator
         # original method
         back_A, back_resid, back_omega = _estimate_var(
-            X[::-1, :], lags=lags, offset=0, l2_reg=l2_reg, auto_reg=auto_reg
+            X[::-1, :], lags=lags, offset=0, l2_reg=l2_reg, cv_alphas=cv_alphas
         )
         A = sqrtm(A.dot(np.linalg.inv(back_A)))
         A = A.real  # remove numerical noise
@@ -406,7 +419,7 @@ def _compute_lds_func(data, lags, l2_reg, auto_reg, compute_fb_operator):
     return A, resid, omega
 
 
-def _estimate_var(X, lags, offset=0, l2_reg=0, auto_reg=False):
+def _estimate_var(X, lags, offset=0, l2_reg=0, cv_alphas=None):
     """Estimate a VAR model.
 
     Parameters
@@ -418,11 +431,10 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, auto_reg=False):
     offset : int, optional
         Periods to drop from the beginning of the time-series, by default 0.
         Used for order selection, so it's an apples-to-apples comparison
-    l2_reg : int
+    l2_reg : int, optional
         The amount of l2-regularization to use. Default of 0.
-    auto_reg : bool
-        Whether or not to use automatic regularization with RidgeCV. Defaults 
-        to False.
+    cv_alphas : array-like | None, optional
+        RidgeCV regularization cross-validation alpha values. Defaults to None.
 
     Returns
     -------
@@ -456,6 +468,7 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, auto_reg=False):
     y_sample = endog[lags:]
     del endog, X
     # Lütkepohl p75, about 5x faster than stated formula
+    
     if l2_reg != 0:
         # use pre-specified l2 regularization value
         params = np.linalg.lstsq(
@@ -463,9 +476,9 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, auto_reg=False):
             z.T @ y_sample,
             rcond=1e-15
         )[0]
-    elif auto_reg:
+    elif cv_alphas is not None:
         # use ridge regression with built-in cross validation of alpha values
-        reg = RidgeCV(alphas=np.logspace(-15,0,16), cv=5).fit(z, y_sample)
+        reg = RidgeCV(alphas=cv_alphas, cv=5).fit(z, y_sample)
         params = reg.coef_.T
     else:
         # use OLS regression
