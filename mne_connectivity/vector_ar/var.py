@@ -159,22 +159,23 @@ def vector_auto_regression(
     n_epochs, n_nodes, _ = data.shape
 
     cv_alphas = None
-    if isinstance(l2_reg, str) and l2_reg == 'auto': 
+    if isinstance(l2_reg, str) and l2_reg == 'auto':
         # determine condition of matrix across all epochs
         conds = np.linalg.cond(data)
         if np.any(conds > 1e6):
             # matrix is ill-conditioned, so regularization must be used with
             # cross-validation alphas values
-            cv_alphas = np.logspace(-15,5,11)
-            warn('Input data matrix exceeds condition threshold of 1e6. Automatic regularization will be performed.')
+            cv_alphas = np.logspace(-15, 5, 11)
+            warn('Input data matrix exceeds condition threshold of 1e6. '
+                 'Automatic regularization will be performed.')
     elif isinstance(l2_reg, (list, tuple, set, np.ndarray)):
         cv_alphas = l2_reg
-        
+
     model_params = {
         'lags': lags,
         'cv_alphas': cv_alphas
     }
-    
+
     # reset l2_reg for downstream functions
     if cv_alphas is not None:
         l2_reg = 0
@@ -463,7 +464,7 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, cv_alphas=None):
     y_sample = endog[lags:]
     del endog, X
     # Lütkepohl p75, about 5x faster than stated formula
-    
+
     if l2_reg != 0:
         # use pre-specified l2 regularization value
         params = np.linalg.lstsq(
