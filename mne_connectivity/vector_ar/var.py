@@ -465,7 +465,7 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, cv_alphas=None):
     del endog, X
     # Lütkepohl p75, about 5x faster than stated formula
 
-    if l2_reg != 0:
+    if (l2_reg is not None) and (l2_reg != 0):
         # use pre-specified l2 regularization value
         params = np.linalg.lstsq(
             z.T @ z + l2_reg * np.eye(n_equations * lags),
