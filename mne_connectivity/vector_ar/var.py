@@ -5,7 +5,7 @@ from sklearn.linear_model import RidgeCV
 from tqdm import tqdm
 from mne import BaseEpochs
 
-from mne.utils import logger, verbose
+from mne.utils import logger, verbose, warn
 
 from ..utils import fill_doc
 from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
@@ -34,10 +34,10 @@ def vector_auto_regression(
         Ridge penalty (l2-regularization) parameter, by default 'auto'. If 
         ``data`` has condition number less than 1e6, then ``data`` will undergo 
         automatic regularization using RidgeCV with a pre-defined array of 
-        alphas. A user-defined array of alphas (must be positive floats) can be 
-        inputted or a float value to fix the Ridge penalty (l2-regularization) 
-        parameter. If ``l2_reg`` is set to 0 or None, then no regularization 
-        will be performed.
+        alphas: np.logspace(-15,5,11). A user-defined array of alphas (must be 
+        positive floats) can be inputted or a float value to fix the Ridge 
+        penalty (l2-regularization) parameter. If ``l2_reg`` is set to 0 or 
+        None, then no regularization will be performed.
     compute_fb_operator : bool
         Whether to compute the backwards operator and average with
         the forward operator. Addresses bias in the least-square
@@ -159,18 +159,14 @@ def vector_auto_regression(
     n_epochs, n_nodes, _ = data.shape
 
     cv_alphas = None
-    if isinstance(l2_reg, str) and l2_reg == 'auto':
-            
-            # determine condition of matrix across all epochs
-            conds = np.linalg.cond(data)
-            if np.any(conds > 1e6):
-                # matrix is rank-deficient, so regularization must be used with
-                # cross-validation alphas values
-                cv_alphas = np.logspace(-15,5,11)
-                
-                # TODO: Add message letting user know that matrix is ill-conditioned
-                # and the above alpha set will be searched
-            
+    if isinstance(l2_reg, str) and l2_reg == 'auto': 
+        # determine condition of matrix across all epochs
+        conds = np.linalg.cond(data)
+        if np.any(conds > 1e6):
+            # matrix is ill-conditioned, so regularization must be used with
+            # cross-validation alphas values
+            cv_alphas = np.logspace(-15,5,11)
+            warn('Input data matrix exceeds condition threshold of 1e6. Automatic regularization will be performed.')
     elif isinstance(l2_reg, (list, tuple, set, np.ndarray)):
         cv_alphas = l2_reg
         
