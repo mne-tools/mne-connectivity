@@ -159,8 +159,7 @@ def vector_auto_regression(
     n_epochs, n_nodes, _ = data.shape
 
     cv_alphas = None
-    if isinstance(l2_reg, str):
-        if l2_reg == 'auto':
+    if isinstance(l2_reg, str) and l2_reg == 'auto':
             
             # determine condition of matrix across all epochs
             conds = np.linalg.cond(data)
