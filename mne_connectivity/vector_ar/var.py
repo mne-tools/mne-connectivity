@@ -160,6 +160,8 @@ def vector_auto_regression(
 
     cv_alphas = None
     if isinstance(l2_reg, str) and l2_reg == 'auto':
+        # reset l2_reg for downstream functions
+        l2_reg = 0
         # determine condition of matrix across all epochs
         conds = np.linalg.cond(data)
         if np.any(conds > 1e6):
@@ -170,15 +172,19 @@ def vector_auto_regression(
                  'Automatic regularization will be performed.')
     elif isinstance(l2_reg, (list, tuple, set, np.ndarray)):
         cv_alphas = l2_reg
+        l2_reg = 0
+
+    # cases where OLS is used
+    if (l2_reg in [0, None]) and (cv_alphas is None):
+        use_ridge = False
+    else:
+        use_ridge = True
 
     model_params = {
         'lags': lags,
+        'use_ridge': use_ridge,
         'cv_alphas': cv_alphas
     }
-
-    # reset l2_reg for downstream functions
-    if cv_alphas is not None:
-        l2_reg = 0
 
     if verbose:
         logger.info(f'Running {model} vector autoregression with parameters: '
