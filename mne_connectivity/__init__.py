@@ -6,7 +6,7 @@
 #
 # License: BSD (3-clause)
 
-__version__ = '0.5.0.dev0'
+__version__ = '0.6.0dev0'
 
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,

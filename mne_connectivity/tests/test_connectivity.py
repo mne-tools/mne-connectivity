@@ -328,9 +328,13 @@ def test_metadata_handling(func, tmpdir, epochs):
     Test both with the cases of having an array input and
     an ``mne.Epochs`` object input.
     """
+    kwargs = dict()
+    if isinstance(epochs, np.ndarray) and func == spectral_connectivity_epochs:
+        kwargs['sfreq'] = 5
+
     # for each function, check that Annotations were added to the metadata
     # and are handled correctly
-    conn = func(epochs, verbose=False)
+    conn = func(epochs, verbose=False, **kwargs)
     metadata = conn.metadata
 
     if isinstance(epochs, BaseEpochs):
