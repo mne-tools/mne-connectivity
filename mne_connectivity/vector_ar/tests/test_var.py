@@ -25,6 +25,42 @@ def bivariate_var_data():
     return y
 
 
+def illconditioned_data(
+    n=12,
+    m=100,
+    add_noise=False,
+    sigma=1e-4,
+    random_state=12345,
+):
+
+    rng = np.random.RandomState(random_state)
+
+    if add_noise:
+        mu = 0.0
+        noise = rng.normal(mu, sigma, m)  # gaussian noise
+
+    # create upper triangle A matrix
+    A = np.triu(rng.uniform(0, 1, (n, n)))
+    A[-1, -1] = 1e-6  # matrix is ill-conditioned
+
+    # compute true eigenvalues
+    true_eigvals = np.linalg.eigvals(A)
+
+    X = np.zeros((n, m))
+    X[:, 0] = rng.uniform(0, 1, n)
+    # evolve the system and perturb the data with noise
+    for k in range(1, m):
+        X[:, k] = A.dot(X[:, k - 1])
+
+        if add_noise:
+            X[:, k - 1] += noise[k - 1]
+
+    # data must be ill-conditioned
+    assert (np.linalg.cond(X) > 1e6)
+
+    return X, true_eigvals, A
+
+
 def create_noisy_data(
     add_noise,
     sigma=1e-4,
@@ -316,3 +352,41 @@ def test_vector_auto_regression():
     big_epoch_data = rng.randn(n_times * 2, n_signals, n_times)
     parr_conn = vector_auto_regression(big_epoch_data, times=times, n_jobs=-1)
     parr_conn.predict(big_epoch_data)
+
+
+def test_auto_l2reg():
+    """Test automatic l2 regularization of ill-conditioned data."""
+
+    sample_data, sample_eigs, sample_A = illconditioned_data(
+        add_noise=True
+    )
+
+    # create 3D array input
+    sample_data = sample_data[np.newaxis, ...]
+
+    # compute the model
+    model = vector_auto_regression(sample_data, l2_reg='auto')
+
+    # test that Ridge regression was used for ill-conditioned data
+    assert model.xarray.attrs['use_ridge']
+
+    # test the recovered model
+    assert_array_almost_equal(
+        model.get_data(output='dense').squeeze(), sample_A,
+        decimal=1
+    )
+
+    # compute model without regularization
+    noreg_model = vector_auto_regression(sample_data, l2_reg=None)
+    assert model.xarray.attrs['use_ridge'] is False
+
+    # test that the regularized model is better
+    eigs = np.linalg.eigvals(model.get_data(output='dense').squeeze())
+    noreg_eigs = np.linalg.eigvals(
+        noreg_model.get_data(output='dense').squeeze()
+    )
+
+    reg_diff = np.linalg.norm(eigs - sample_eigs)
+    noreg_diff = np.linalg.norm(noreg_eigs - sample_eigs)
+
+    assert reg_diff < noreg_diff
