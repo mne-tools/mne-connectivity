@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import scipy
 from scipy.linalg import sqrtm
@@ -199,7 +201,12 @@ def vector_auto_regression(
         X, Y = _construct_var_eqns(data, lags=lags, l2_reg=l2_reg)
 
         if cv_alphas is not None:
-            reg = RidgeCV(alphas=cv_alphas, cv=5).fit(X, Y)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    action='ignore',
+                    message="Ill-conditioned matrix"
+                )
+                reg = RidgeCV(alphas=cv_alphas, cv=5).fit(X, Y)
             coef = reg.coef_
         else:
             b, res, rank, s = scipy.linalg.lstsq(X, Y)
@@ -480,7 +487,12 @@ def _estimate_var(X, lags, offset=0, l2_reg=0, cv_alphas=None):
         )[0]
     elif cv_alphas is not None:
         # use ridge regression with built-in cross validation of alpha values
-        reg = RidgeCV(alphas=cv_alphas, cv=5).fit(z, y_sample)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                action='ignore',
+                message="Ill-conditioned matrix"
+            )
+            reg = RidgeCV(alphas=cv_alphas, cv=5).fit(z, y_sample)
         params = reg.coef_.T
     else:
         # use OLS regression
