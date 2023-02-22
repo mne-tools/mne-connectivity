@@ -8,19 +8,19 @@ from functools import partial
 import inspect
 
 import numpy as np
+import scipy as sp
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
-from mne.time_frequency.multitaper import (_csd_from_mt,
-                                           _mt_spectra, _psd_from_mt,
-                                           _psd_from_mt_adaptive)
+from mne.time_frequency.multitaper import (
+    _csd_from_mt, _mt_spectra, _psd_from_mt, _psd_from_mt_adaptive)
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
-from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask,
-                       verbose)
+from mne.utils import (
+    _arange_div, _check_option, logger, warn, _time_mask, verbose)
 
-from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
-from ..utils import fill_doc, check_indices
+from ..base import SpectralConnectivity, SpectroTemporalConnectivity
+from ..utils import ProgressBar, fill_doc, check_indices
 
 
 def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
@@ -362,6 +362,203 @@ class _ImCohEst(_CohEstBase):
             self.con_scores = np.zeros(self.csd_shape)
         csd_mean = self._acc[con_idx] / n_epochs
         self.con_scores[con_idx] = np.imag(csd_mean) / np.sqrt(psd_xx * psd_yy)
+
+
+class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
+    """Base estimator for multivariate imag. part of coherency methods.
+
+    See Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    for equation references.
+    """
+
+    accumulate_psd = False
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+        super(_MultivariateCohEstBase, self).__init__(
+            n_signals, n_cons, n_freqs, n_times, n_jobs)
+
+    def compute_con(self, seeds, targets, ranks, n_epochs):
+        """Compute multivariate imag. part of coherency between signals."""
+        assert self.name in ["MIC", "MIM"], (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers")
+
+        csd = self.reshape_csd() / n_epochs
+        n_times = csd.shape[0]
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        con_i = 0
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                [seeds], [targets], ranks[0], ranks[1]):
+            self._log_connection_number(con_i)
+
+            n_seeds = len(seed_idcs)
+            con_idcs = [*seed_idcs, *target_idcs]
+
+            C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
+
+            # Eqs. 32 & 33
+            C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
+                C, n_seeds, seed_rank, target_rank)
+
+            # Eqs. 3 & 4
+            E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
+
+            if self.name == "MIC":
+                self._compute_mic(
+                    E, C, n_seeds, n_times, U_bar_aa, U_bar_bb, con_i)
+            else:
+                self._compute_mim(E, seed_idcs, target_idcs, con_i)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _csd_svd(self, csd, n_seeds, seed_rank, target_rank):
+        """Dimensionality reduction of CSD with SVD."""
+        n_times = csd.shape[0]
+        n_targets = csd.shape[2] - n_seeds
+
+        C_aa = csd[..., :n_seeds, :n_seeds]
+        C_ab = csd[..., :n_seeds, n_seeds:]
+        C_bb = csd[..., n_seeds:, n_seeds:]
+        C_ba = csd[..., n_seeds:, :n_seeds]
+
+        # Eq. 32
+        if seed_rank is not None:
+            U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
+            U_bar_aa = U_aa[..., :seed_rank]
+        else:
+            U_bar_aa = np.broadcast_to(
+                np.identity(n_seeds),
+                (n_times, self.n_freqs) + (n_seeds, n_seeds))
+
+        if target_rank is not None:
+            U_bb = np.linalg.svd(np.real(C_bb), full_matrices=False)[0]
+            U_bar_bb = U_bb[..., :target_rank]
+        else:
+            U_bar_bb = np.broadcast_to(
+                np.identity(n_targets),
+                (n_times, self.n_freqs) + (n_targets, n_targets))
+
+        # Eq. 33
+        C_bar_aa = np.matmul(U_bar_aa.transpose(0, 1, 3, 2),
+                             np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(U_bar_aa.transpose(0, 1, 3, 2),
+                             np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(U_bar_bb.transpose(0, 1, 3, 2),
+                             np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(U_bar_bb.transpose(0, 1, 3, 2),
+                             np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(
+            np.append(C_bar_aa, C_bar_ab, axis=3),
+            np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+
+        return C_bar, U_bar_aa, U_bar_bb
+
+    def _compute_e(self, csd, n_seeds):
+        """Compute E from the CSD."""
+        C_r = np.real(csd)
+
+        parallel, parallel_compute_t, _ = parallel_func(
+            _compute_t, self.n_jobs, verbose=False)
+
+        # imag. part of T filled when data is rank-deficient
+        T = np.zeros(csd.shape, dtype=np.complex128)
+        for block_i in ProgressBar(
+                range(self.n_steps), mesg="frequency blocks"):
+            freqs = self._get_block_indices(block_i, self.n_freqs)
+            parallel(parallel_compute_t(
+                C_r[:, f], T[:, freqs], n_seeds) for f in freqs)
+
+        if not np.isreal(T).all() or not np.isfinite(T).all():
+            raise ValueError(
+                'the transformation matrix of the data must be real-valued '
+                'and contain no NaN or infinity values; check that you are '
+                'using full rank data or specify an appropriate rank for the '
+                'seeds and targets that is less than or equal to their ranks')
+        T = np.real(T)
+
+        # Eq. 4
+        D = np.matmul(T, np.matmul(csd, T))
+
+        # E as imag. part of D between seeds and targets
+        return np.imag(D[..., :n_seeds, n_seeds:])
+
+    def _compute_mic(self, E, C, n_seeds, n_times, U_bar_aa, U_bar_bb, con_i):
+        """Compute MIC and the associated spatial patterns."""
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        # Eigendecomp. to find spatial filters for seeds and targets
+        w_seeds, V_seeds = np.linalg.eigh(
+            np.matmul(E, E.transpose(0, 1, 3, 2)))
+        w_targets, V_targets = np.linalg.eigh(
+            np.matmul(E.transpose(0, 1, 3, 2), E))
+
+        # Spatial filters with largest eigval. for seeds and targets
+        alpha = V_seeds[times[:, None], freqs, :, w_seeds.argmax(axis=2)]
+        beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
+
+        # Eq. 46
+        self.patterns[0][con_i] = (np.matmul(
+            np.real(C[..., :n_seeds, :n_seeds]),
+            np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))))[..., 0].T
+
+        # Eq. 47
+        self.patterns[0][con_i] = (np.matmul(
+            np.real(C[..., n_seeds:, n_seeds:]),
+            np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))))[..., 0].T
+
+        # Eq. 7
+        self.con_scores[con_i] = (np.einsum(
+            'ijk,ijk->ij', alpha,
+            np.matmul(E, np.expand_dims(beta, axis=3))[..., 0]
+        ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)).T
+
+    def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
+        """Compute MIM (a.k.a. GIM if seeds == targets)."""
+        # Eq. 14
+        self.con_scores[con_i] = np.matmul(
+            E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
+
+        # Eq. 15
+        if np.unique(seed_idcs) == np.unique(target_idcs):
+            self.con_scores[con_i] /= 2
+
+    def reshape_results(self):
+        """Remove time dimension from results, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[..., 0]
+
+            if self.patterns is not None:
+                for group_i, patterns in enumerate(self.patterns):
+                    for con_i, pattern in enumerate(patterns):
+                        self.patterns[group_i][con_i] = pattern[..., 0]
+
+
+def _compute_t(C, T, n_seeds):
+    """Compute T in place for a single frequency."""
+    for time_i in range(C.shape[0]):
+        T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
+            C[time_i, :n_seeds, :n_seeds], -0.5
+        )
+        T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
+            C[time_i, n_seeds:, n_seeds:], -0.5
+        )
+
+
+class _MICEst(_MultivariateCohEstBase):
+    """Multivariate imaginary part of coherency (MIC) estimator."""
+
+    name = "MIC"
+
+
+class _MIMEst(_MultivariateCohEstBase):
+    """Multivariate interaction measure (MIM) estimator."""
+
+    name = "MIM"
 
 
 class _PLVEst(_EpochMeanConEstBase):
