@@ -71,7 +71,7 @@ import numpy as np
 # :math:`\boldsymbol{E}` is the imaginary part of the transformed
 # cross-spectral density between the seeds and targets. MIC is bound between
 # :math:`[-1, 1]` where the absolute value reflects connectivity strength and
-# the sign reflects the phase angle.
+# the sign reflects the phase angle difference between signals.
 
 
 # PLOT THE RESULTS FOR MIC (AND POSSIBLY COMPARE TO REGULAR ICOH)
@@ -117,14 +117,16 @@ import numpy as np
 # MIM; COULD ALSO COMPARE TO MIC)
 
 
-# Additionally, the case where the seeds and targets are identical can be
+# Additionally, the instance where the seeds and targets are identical can be
 # considered as a special case of MIM: the global interaction measure (GIM; Eq.
 # 15 of :footcite:`EwaldEtAl2012`). This allows connectivity within a single
-# set of signals to be estimated. Computing GIM follows from Eq. 14, however
-# since each interaction is considered twice, correcting the connectivity by a
-# factor of :math:`\frac{1}{2}` is necessary (**this correction is performed
-# automatically in our implementation**). A similar principle applies in the
-# case where MIC is computed for identical seeds and targets.
+# set of signals to be estimated, and is possible as a result of the exclusion
+# of zero phase lag components from the connectivity estimates. Computing GIM
+# follows from Eq. 14, however since each interaction is considered twice,
+# correcting the connectivity by a factor of :math:`\frac{1}{2}` is necessary
+# (**this correction is performed automatically in our implementation**). A
+# similar principle applies in the case where MIC is computed for identical
+# seeds and targets.
 
 # COMPUTE AND PLOT GIM
 
@@ -138,7 +140,8 @@ import numpy as np
 # estimating the connectivity with a singular value decomposition (Eqs. 32 & 33
 # of :footcite:`EwaldEtAl2012`). The degree of this dimensionality reduction
 # can be specified using the `rank` argument, which by default will not perform
-# any dimensionality reduction (assuming your data is full rank; see below).
+# any dimensionality reduction (assuming your data is full rank; see below if
+# not).
 
 
 # DEMONSTRATE HOW `RANK` CAN BE USED AND PLOT THE RESULTS; SHOW HOW PATTERNS
@@ -165,7 +168,7 @@ import numpy as np
 # computation may fail to detect this, and an error will be raised. In this
 # case, you should inspect the singular values of your data to identify an
 # appropriate degree of dimensionality reduction to perform, which you can then
-# specify manually using the `rank` argument. The example below shows one
+# specify manually using the `rank` argument. The code below shows one
 # possible approach for finding an appropriate rank of close-to-singular data.
 
 # gets the singular values of the data
@@ -178,22 +181,22 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)
 # -----------
 #
 # These multivariate methods offer many benefits in the form of dimensionality
-# reduction, signal-to-noise ratio improvements, and invariance to estimate
-# biasing source mixing; however, no method is perfect. The immunity of the
-# imaginary part of coherency to volume conduction comes from the fact that
-# these artefacts have zero phase lag, and hence a zero-valued imaginary
+# reduction, signal-to-noise ratio improvements, and invariance to
+# estimate-biasing source mixing; however, no method is perfect. The immunity
+# of the imaginary part of coherency to volume conduction comes from the fact
+# that these artefacts have zero phase lag, and hence a zero-valued imaginary
 # component. By projecting the complex-valued coherency to the imaginary axis,
-# a signal of a given magnitude with a phase lag of 90° or 270° would see its
-# contribution to the connectivity estimate increased relative to a comparable
-# signal with a phase lag close to 0° or 180°. Therefore, the imaginary part of
-# coherency is biased towards connectivity involving 90° and 270° phase lag
-# components.
+# signals of a given magnitude with a phase lag differences of 90° or 270°
+# would see their contributions to the connectivity estimate increased relative
+# to comparable signals with phase lag differences close to 0° or 180°.
+# Therefore, the imaginary part of coherency is biased towards connectivity
+# involving 90° and 270° phase lag difference components.
 #
 # Whilst this is not a limitation specific to the multivariate extension of
 # this measure, these multivariate methods can introduce further bias. When
-# maximising the imaginary part of coherency, 90° and 270° phase lag components
-# will likely give us higher connectivity estimates, and so will be prioritised
-# by our spatial filters.
+# maximising the imaginary part of coherency, 90° and 270° phase lag difference
+# components will likely give us higher connectivity estimates, and so will be
+# prioritised by the spatial filters.
 #
 # Such a limitation should be kept in mind when estimating connectivity using
 # these methods. Possible sanity checks can involve comparing the spectral
