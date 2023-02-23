@@ -659,7 +659,7 @@ def _plv(s_xy):
 
 
 def _ciplv(s_xy):
-    """Compute corrected imaginary phase-locking value given the cross power spectral density.
+    """Compute corrected imaginary phase-locking value.
 
     Parameters
     ----------
