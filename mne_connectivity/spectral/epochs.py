@@ -517,10 +517,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))))[..., 0].T
 
         # Eq. 7
-        self.con_scores[con_i] = (np.einsum('ijk,ijk->ij', alpha,
-                                            np.matmul(E, np.expand_dims(
-                                                beta, axis=3))[..., 0]
-                                            ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)).T
+        self.con_scores[con_i] = (np.einsum(
+            'ijk,ijk->ij', alpha, np.matmul(E, np.expand_dims(
+                beta, axis=3))[..., 0]
+        ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)).T
 
     def _compute_mim(self, E, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets)."""
