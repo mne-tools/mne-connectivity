@@ -17,10 +17,10 @@ from mne.time_frequency.multitaper import (
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
 from mne.utils import (
-    ProgressBar, _arange_div, _check_option, logger, warn, _time_mask, verbose)
+    _arange_div, _check_option, logger, warn, _time_mask, verbose)
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
-from ..utils import fill_doc, check_indices
+from ..utils import ProgressBar, fill_doc, check_indices
 
 
 def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
