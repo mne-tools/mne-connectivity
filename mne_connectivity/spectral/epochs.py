@@ -299,13 +299,15 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     def reshape_csd(self):
         """Reshape CSD into a matrix of times x freqs x signals x signals."""
         if self.n_times == 0:
-            return (np.reshape(self._acc, (
-                self.n_signals, self.n_signals, self.n_freqs, 1)
-            ).transpose(3, 2, 0, 1))
-
-        return (np.reshape(self._acc, (
-            self.n_signals, self.n_signals, self.n_freqs, self.n_times)
-        ).transpose(3, 2, 0, 1))
+            return (
+                np.reshape(self._acc, (self.n_signals, self.n_signals,
+                                       self.n_freqs, 1)).transpose(3, 2, 0, 1)
+            )
+        return (
+            np.reshape(self._acc, (self.n_signals, self.n_signals,
+                                   self.n_freqs, self.n_times)
+                       ).transpose(3, 2, 0, 1)
+        )
 
 
 class _CohEstBase(_EpochMeanConEstBase):
@@ -409,10 +411,6 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             else:
                 self._compute_mim(E, seed_idcs, target_idcs, con_i)
 
-            # Eq. 15 for MIM (same principle for MIC)
-            if np.unique(seed_idcs) == np.unique(target_idcs):
-                self.con_scores[con_i] /= 2
-
             con_i += 1
 
         self.reshape_results()
@@ -445,16 +443,17 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 (n_times, self.n_freqs) + (n_targets, n_targets))
 
         # Eq. 33
-        C_bar_aa = np.matmul(
-            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
-        C_bar_ab = np.matmul(
-            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
-        C_bar_bb = np.matmul(
-            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
-        C_bar_ba = np.matmul(
-            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_ba, U_bar_aa))
-        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
-                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+        C_bar_aa = np.matmul(U_bar_aa.transpose(0, 1, 3, 2),
+                             np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(U_bar_aa.transpose(0, 1, 3, 2),
+                             np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(U_bar_bb.transpose(0, 1, 3, 2),
+                             np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(U_bar_bb.transpose(0, 1, 3, 2),
+                             np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(
+            np.append(C_bar_aa, C_bar_ab, axis=3),
+            np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
 
         return C_bar, U_bar_aa, U_bar_bb
 
@@ -479,7 +478,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 'and contain no NaN or infinity values; check that you are '
                 'using full rank data or specify an appropriate rank for the '
                 'seeds and targets that is less than or equal to their ranks')
-        T = np.real(T)  # make T real if check passes
+        T = np.real(T)
 
         # Eq. 4
         D = np.matmul(T, np.matmul(csd, T))
@@ -523,6 +522,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         # Eq. 14
         self.con_scores[con_i] = np.matmul(
             E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
+
+        # Eq. 15
+        if np.unique(seed_idcs) == np.unique(target_idcs):
+            self.con_scores[con_i] /= 2
 
     def reshape_results(self):
         """Remove time dimension from results, if necessary."""
