@@ -17,6 +17,7 @@ global interaction measure, GIM).
 # License: BSD (3-clause)
 
 # %%
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import patheffects as pe
@@ -52,11 +53,12 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # multivariate manner :footcite:`EwaldEtAl2012`. This leads to the following
 # methods: the maximised imaginary part of coherency (MIC); and the
 # multivariate interaction measure (MIM).
-
+#
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
 
 # %%
+
 raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
 raw.pick_types(meg=True, eeg=False, ref_meg=False)
 raw.crop(50., 110.).load_data()
@@ -71,6 +73,7 @@ epochs = make_fixed_length_epochs(raw, duration=2.0).load_data()
 # 75 sensors in the right hemisphere designated as targets.
 
 # %%
+
 # left hemisphere sensors
 seeds = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
          ch_info['loc'][0] < 0]
@@ -112,6 +115,7 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel('Absolute connectivity (A.U.)')
 plt.title('Imaginary part of coherency')
 
+
 ###############################################################################
 # Maximised imaginary part of coherency (MIC)
 # -------------------------------------------
@@ -132,7 +136,7 @@ plt.title('Imaginary part of coherency')
 # frequency-dependent, however this is omitted for readability. MIC is bound
 # between :math:`[-1, 1]` where the absolute value reflects connectivity
 # strength and the sign reflects the phase angle difference between signals.
-
+#
 # In this instance, we see MIC reveal that in addition to the 13-18 Hz peak, a
 # previously unobserved peak in connectivity around 9 Hz is present.
 # Furthermore, the previous peak around 27 Hz is much less pronounced. This may
@@ -141,25 +145,27 @@ plt.title('Imaginary part of coherency')
 # estimate.
 
 # %%
+
 fig = plt.figure()
 plt.plot(mic.freqs, np.abs(mic.get_data()[0]), linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Absolute connectivity (A.U.)')
 plt.title('Maximised imaginary part of coherency')
 
+
 ###############################################################################
 # Furthermore, spatial patterns of connectivity can be constructed from the
 # spatial filters to give a picture of the location of the sources involved in
 # the connectivity. This information is stored under the `patterns` attribute
 # of the connectivity class, with one value per frequency for each channel in
-# the seeds and target. As with MIC, the absolute value of the patterns
+# the seeds and targets. As with MIC, the absolute value of the patterns
 # reflect the strength, however the sign differences can be used to visualise
 # the orientation of the underlying dipole sources. The spatial patterns are
 # not bound between :math:`[-1, 1]`.
-
+#
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
-# hemispheres occurs between the posterolateral parietal regions of the left
+# hemispheres occurs for the posterolateral parietal regions of the left
 # hemisphere, and the occipital and frontolateral regions of the right
 # hemisphere.
 #
@@ -169,6 +175,7 @@ plt.title('Maximised imaginary part of coherency')
 # areas (represented on the plot as a green line).
 
 # %%
+
 # compute average of patterns in desired frequency range
 fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
@@ -206,6 +213,7 @@ axes[0].plot(
 
 plt.show()
 
+
 ###############################################################################
 # Multivariate interaction measure (MIM)
 # --------------------------------------
@@ -226,9 +234,9 @@ plt.show()
 # With normalisation, MIM lies in the range :math:`[0, 1]`, and reflects the
 # total interaction *per channel*. **MIM is not normalised by default in this
 # implementation**.
-
+#
 # Here we see MIM reveal the strongest connectivity component to be around 10
-# Hz, with the higher freqeuncy 13-18 Hz connectivity no longer being so
+# Hz, with the higher frequency 13-18 Hz connectivity no longer being so
 # prominent. This suggests that, across all components in the data, there may
 # be more lower frequency connectivity sources than higher frequency sources.
 # Thus, when combining these different components in MIM, the peak around 10 Hz
@@ -236,11 +244,13 @@ plt.show()
 # largest connectivity component of MIC.
 
 # %%
+
 fig = plt.figure()
 plt.plot(mim.freqs, mim.get_data()[0], linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Absolute connectivity (A.U.)')
 plt.title('Multivariate interaction measure (non-normalised)')
+
 
 ###############################################################################
 # Additionally, the instance where the seeds and targets are identical can be
@@ -255,12 +265,13 @@ plt.title('Multivariate interaction measure (non-normalised)')
 # seeds and targets. Like MIM, GIM is also not bound below 1, but it can be
 # normalised to lie in the range :math:`[0, 1]` by dividing by :math:`N/2`
 # (where :math:`N` is the number of channels).
-
+#
 # With GIM, we find a broad connectivity peak around 10 Hz, with an additional
 # peak around 20 Hz. The differences observed with GIM highlight the presence
 # of interactions within each hemisphere that are absent for MIC or MIM.
 
 # %%
+
 indices = (np.array([*seeds, *targets]), np.array([*seeds, *targets]))
 gim = spectral_connectivity_epochs(
     epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None)
@@ -272,6 +283,7 @@ plt.plot(gim.freqs, normalised_gim, linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Connectivity (A.U.)')
 plt.title('Global interaction measure (normalised)')
+
 
 ###############################################################################
 # Handling high-dimensional data
@@ -297,7 +309,7 @@ plt.title('Global interaction measure (normalised)')
 # across recordings. Note that this does not refer to the number of seeds and
 # targets *within* a connection being identical, rather to the number of seeds
 # and targets *across* connections.
-
+#
 # Here, we will be rather conservative and project our seed and target data to
 # only the first 25 components of our rank subspace. Results for MIM show that
 # the general spectral pattern of connectivity is retained in the rank
@@ -309,6 +321,7 @@ plt.title('Global interaction measure (normalised)')
 # (Eqs. 46 & 47 of :footcite:`EwaldEtAl2012`).
 
 # %%
+
 (mic_red, mim_red) = spectral_connectivity_epochs(
     epochs, method=['mic', 'mim'], indices=multivar_indices, fmin=5, fmax=30,
     rank=([25], [25]))
@@ -331,6 +344,7 @@ plt.legend()
 assert mic.patterns[0][0].shape[0] == mic_red.patterns[0][0].shape[0]
 assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 
+
 ###############################################################################
 # In the case that your data is not full rank and `rank` is left as None, an
 # automatic rank computation is performed and an appropriate degree of
@@ -344,10 +358,12 @@ assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 # possible approach for finding an appropriate rank of close-to-singular data.
 
 # %%
+
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
 # finds how many singular values are "close" to the largest singular value
 rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
+
 
 ###############################################################################
 # Limitations
@@ -360,7 +376,7 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
 # that these artefacts have zero phase lag, and hence a zero-valued imaginary
 # component. By projecting the complex-valued coherency to the imaginary axis,
 # signals of a given magnitude with phase lag differences of 90° or 270° see
-# see their contributions to the connectivity estimate increased relative to
+# their contributions to the connectivity estimate increased relative to
 # comparable signals with phase lag differences close to 0° or 180°. Therefore,
 # the imaginary part of coherency is biased towards connectivity involving 90°
 # and 270° phase lag difference components.
@@ -375,4 +391,10 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
 # these methods. Possible sanity checks can involve comparing the spectral
 # profiles of MIC/MIM to coherence and the imaginary part of coherency
 # computed on the same data, as well as comparing to other multivariate
-# measures, such as canonical coherence :footcite:`:VidaurreEtAl2019:`.
+# measures, such as canonical coherence :footcite:`VidaurreEtAl2019`.
+
+
+###############################################################################
+# References
+# ----------
+# .. footbibliography::
