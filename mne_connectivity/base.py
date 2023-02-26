@@ -574,6 +574,11 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         return self.xarray.values
 
     @property
+    def patterns(self):
+        """Spatial patterns of connectivity data."""
+        return self.attrs['patterns']
+
+    @property
     def dims(self):
         """The dimensions of the xarray data."""
         return self.xarray.dims
@@ -644,6 +649,11 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         combining of epochs.
         """
         return self.attrs.get('n_epochs_used')
+
+    @property
+    def rank(self):
+        """Seed and target ranks used in the connectivity."""
+        return self.attrs['rank']
 
     @property
     def _size(self):
