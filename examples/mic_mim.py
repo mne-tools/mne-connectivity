@@ -166,8 +166,7 @@ plt.title('Maximised imaginary part of coherency')
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
 # hemispheres occurs for the posterolateral parietal regions of the left
-# hemisphere, and the occipital and frontolateral regions of the right
-# hemisphere.
+# hemisphere, and the medial central regions of the right hemisphere.
 #
 # Using the signs of the values, we can infer the existence of a parietal
 # dipole source in the left hemisphere which may account for the connectivity
@@ -180,9 +179,9 @@ plt.title('Maximised imaginary part of coherency')
 fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
-seed_pattern = np.mean(mic.patterns[0][0][:, fband_idx[0]:fband_idx[1]],
+seed_pattern = np.mean(mic.patterns[0][0][:, fband_idx[0]:fband_idx[1] + 1],
                        axis=1)
-target_pattern = np.mean(mic.patterns[1][0][:, fband_idx[0]:fband_idx[1]],
+target_pattern = np.mean(mic.patterns[1][0][:, fband_idx[0]:fband_idx[1] + 1],
                          axis=1)
 
 # store the patterns for plotting
