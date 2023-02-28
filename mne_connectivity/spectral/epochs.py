@@ -1531,14 +1531,18 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     # number of nodes in the original data,
     n_nodes = n_signals
 
+    if multivariate_con:
+        # UNTIL THIS INDICES FORMAT SUPPORTED BY DEFAULT
+        indices = tuple([[np.array(indices[0])], [np.array(indices[1])]])
+
     # create a list of connectivity containers
     conn_list = []
-    for _con, _patterns, _method in zip(con, patterns, method):
+    for _con, _patterns in zip(con, patterns):
         kwargs = dict(data=_con,
                       patterns=_patterns,
                       names=names,
                       freqs=freqs,
-                      method=_method,
+                      method=method,
                       n_nodes=n_nodes,
                       spec_method=mode,
                       indices=indices,
