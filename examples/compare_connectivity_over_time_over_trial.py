@@ -10,20 +10,6 @@ A brief background on the difference between the two conditions is provided,
 followed by examples on simulated data and real EEG data.
 
 """
-# Author: Qianliang Li <glia@dtu.dk>
-#
-# License: BSD (3-clause)
-
-import numpy as np
-import matplotlib.pyplot as plt
-import mne
-
-from mne_connectivity import (spectral_connectivity_epochs, 
-                              spectral_connectivity_time)
-from mne.datasets import sample
-
-print(__doc__)
-
 ###############################################################################
 # Background
 # ----------
@@ -55,8 +41,9 @@ print(__doc__)
 # e.g. a mirror-game paradigm, then
 # :func:`mne_connectivity.spectral_connectivity_time` might be better suited.
 #
-# The way connectivity is computed for the two functions are slightly different,
-# thus their interpretations and the hypotheses being tested are also different.
+# The way connectivity is computed for the two functions are slightly
+# different, thus their interpretations and the hypotheses being tested are
+# also different.
 #
 # Connectivity over trials, as computed by
 # :func:`mne_connectivity.spectral_connectivity_epochs` assume epochs have
@@ -78,6 +65,22 @@ print(__doc__)
 # To better illustrate the differences between the two functions,
 # we will employ them on two simulated cases.
 
+# Author: Qianliang Li <glia@dtu.dk>
+#
+# License: BSD (3-clause)
+
+import numpy as np
+import matplotlib.pyplot as plt
+import mne
+
+from mne_connectivity import (spectral_connectivity_epochs,
+                              spectral_connectivity_time)
+from mne.datasets import sample
+
+rng = np.random.default_rng(1234)  # set seed for reproducibility
+
+print(__doc__)
+
 ###############################################################################
 # Simulated examples
 # ------------------
@@ -85,30 +88,31 @@ print(__doc__)
 #
 # Let's generate some simulated data in the format of :class:`mne.EpochsArray`.
 # In this case, we will use random data for 3 channels over 5 epochs, but
-# all the epochs are just exact replicates of the first epoch.
+# all the epochs are just exact replicates of the first epoch. This simulates
+# when data is collected over an event of interest where we **assume** the
+# connectivity structure is the same over each event.
 
-np.random.seed(1234) # set seed for reproducibility
-n_epochs = 5 # number of simulated epochs
-n_channels = 3 # number of channels
-n_times = 2000 # number of sample points
-sfreq = 250 # # Set sampling freq
-data = np.random.rand(n_epochs, n_channels, n_times) # generate random data
+n_epochs = 5  # number of simulated epochs
+n_channels = 3  # number of channels
+n_times = 2000  # number of sample points
+sfreq = 250  # Set sampling freq
+data = rng.random((n_epochs, n_channels, n_times))  # generate random data
 
 # In case 1, we overwrite all epochs with the data from the first epoch
 for i in range(n_epochs):
     data[i] = data[0]
 
-ch_names = ["C3","Cz","C4"] # three random channel names
-info = mne.create_info(ch_names, sfreq, ch_types="eeg") # create info object
-data_epoch = mne.EpochsArray(data,info) # create EpochsArray
+ch_names = ["C3", "Cz", "C4"]  # three random channel names
+info = mne.create_info(ch_names, sfreq, ch_types="eeg")  # create info object
+data_epoch = mne.EpochsArray(data, info)  # create EpochsArray
 
-data_epoch.plot(scalings=1) # Visualize the data
+data_epoch.plot(scalings=0.75)  # Visualize the data
 
 ###############################################################################
 # First we compute connectivity over trials.
 
 # Freq bands of interest
-Freq_Bands = {"theta": [4.0, 8.0], 
+Freq_Bands = {"theta": [4.0, 8.0],
               "alpha": [8.0, 13.0],
               "beta": [13.0, 30.0]}
 n_freq_bands = len(Freq_Bands)
@@ -116,20 +120,20 @@ min_freq = np.min(list(Freq_Bands.values()))
 max_freq = np.max(list(Freq_Bands.values()))
 
 # Provide the freq points
-freqs = np.linspace(min_freq,max_freq,int((max_freq-min_freq)*4+1))
+freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
 # The dictionary with frequencies are converted to tuples for the function
-fmin=tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax=tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
+fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
 
 # We specify the connectivity measurements
 connectivity_methods = ["plv", "wpli"]
-n_con_methods=len(connectivity_methods)
+n_con_methods = len(connectivity_methods)
 
 # Pre-allocatate memory for the connectiviy matrices
 con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
                              n_freq_bands, n_times))
-con_epochs_array[con_epochs_array==0] = np.nan # nan matrix as 0 is meaningful
+con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
 
 # Compute connectivity over trials
 con_epochs = spectral_connectivity_epochs(data_epoch,
@@ -144,25 +148,25 @@ for c in range(n_con_methods):
 
 ###############################################################################
 # As previously mentioned, connectivity over trials can give connectivity
-# for each timepoint, here in the form of 
+# for each timepoint, here in the form of
 # :class:`mne_connectivity.SpectroTemporalConnectivity`.
-# However, in this example we are not interested in the timing, so we will 
+# However, in this example we are not interested in the timing, so we will
 # average over all timepoints. Notice that only ``mode="cwt_morlet"`` will
 # return an instance of :class:`mne_connectivity.SpectroTemporalConnectivity`
-# and ``mode="fourier"`` or ``mode="multitaper"`` returns an instance of 
+# and ``mode="fourier"`` or ``mode="multitaper"`` returns an instance of
 # :class:`mne_connectivity.SpectralConnectivity`, which does not have
 # single timepoint resolution.
 
-con_epochs_array = np.mean(con_epochs_array, axis=4) # average over timepoints
+con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 
 # In this example, we will just show alpha
-foi = list(Freq_Bands.keys()).index("alpha") # frequency of interest
+foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1,n_con_methods, figsize=(6*n_con_methods,6))
+fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_epochs_array[c,:,:,foi], cmap="binary", vmin=0, vmax=1)
+    ax[c].imshow(con_epochs_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
-    print(f"Connectivity method: {connectivity_methods[c]}\n"+
+    print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_epochs_array[c,:,:,foi]}")
 
 ###############################################################################
@@ -174,12 +178,12 @@ for c in range(n_con_methods):
 # Pre-allocatate memory for the connectiviy matrices
 con_time_array = np.zeros((n_con_methods, n_epochs, n_channels,
                            n_channels, n_freq_bands))
-con_time_array[con_time_array==0] = np.nan # nan matrix as 0 is meaningful
+con_time_array[con_time_array == 0] = np.nan  # nan matrix
 
 # Compute connectivity over time
 con_time = spectral_connectivity_time(data_epoch, freqs,
                                       method=connectivity_methods,
-                                      sfreq=sfreq, mode="cwt_morlet", 
+                                      sfreq=sfreq, mode="cwt_morlet",
                                       fmin=fmin, fmax=fmax,
                                       faverage=True)
 
@@ -193,39 +197,43 @@ for c in range(n_con_methods):
 # before, but it could also be done in the function itself by setting
 # ``average=True``.
 
-con_time_array = np.mean(con_time_array, axis=1) # average over epochs
-foi = list(Freq_Bands.keys()).index("alpha") # frequency of interest
+con_time_array = np.mean(con_time_array, axis=1)  # average over epochs
+foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1,n_con_methods, figsize=(6*n_con_methods,6))
+fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_time_array[c,:,:,foi], cmap="binary", vmin=0, vmax=1)
+    ax[c].imshow(con_time_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
-    print(f"Connectivity method: {connectivity_methods[c]}\n"+
+    print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_time_array[c,:,:,foi]}")
 
 ###############################################################################
 # We see that the connectivity over time are not 1, since the signals were
 # randomly generated and therefore the phase differences between channels
 # are also random over time.
-#
+
+###############################################################################
 # **Case 2: 10 Hz sinus waves with different phases.**
 #
 # In this case, we will generate 10 Hz sinus waves with different phases
-# for each epoch and each channel.
+# for each epoch and each channel. In this case we would expect the
+# connectivity over time between channels to be 1, but not the connectivity
+# over trials.
 
-for i in range(n_epochs): # ensure each epoch are different
-    for c in range(n_channels): # and each channel are also different
-        wave_freq = 10 # freq of the sinus wave
-        epoch_len = n_times/sfreq
-        phase = np.random.rand(1)*10 # Introduce random phase for each channel
-        x = np.linspace(-wave_freq*epoch_len*np.pi+phase, # Generate sinus wave
-                        wave_freq*epoch_len*np.pi+phase,n_times)
-        data[i,c] = np.squeeze(np.sin(x)) # overwrite to data
+for i in range(n_epochs):  # ensure each epoch are different
+    for c in range(n_channels):  # and each channel are also different
+        wave_freq = 10  # freq of the sinus wave
+        epoch_len = n_times / sfreq
+        phase = rng.random(1) * 10  # Introduce random phase for each channel
+        # Generate sinus wave
+        x = np.linspace(-wave_freq * epoch_len * np.pi + phase,
+                        wave_freq * epoch_len * np.pi + phase, n_times)
+        data[i, c] = np.squeeze(np.sin(x))  # overwrite to data
 
-data_epoch = mne.EpochsArray(data,info) # create EpochsArray
+data_epoch = mne.EpochsArray(data, info)  # create EpochsArray
 
 # Visualize one epoch to see the phase differences
-data_epoch.plot(scalings=1, n_epochs=1) 
+data_epoch.plot(scalings=1, n_epochs=1)
 
 ###############################################################################
 # First we compute connectivity over trials.
@@ -233,7 +241,7 @@ data_epoch.plot(scalings=1, n_epochs=1)
 # Pre-allocatate memory for the connectiviy matrices
 con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
                              n_freq_bands, n_times))
-con_epochs_array[con_epochs_array==0] = np.nan # nan matrix as 0 is meaningful
+con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
 
 # Compute connecitivty over trials
 con_epochs = spectral_connectivity_epochs(data_epoch,
@@ -246,15 +254,15 @@ con_epochs = spectral_connectivity_epochs(data_epoch,
 for c in range(n_con_methods):
     con_epochs_array[c] = con_epochs[c].get_data(output="dense")
 
-con_epochs_array = np.mean(con_epochs_array, axis=4) # average over timepoints
+con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 
-foi = list(Freq_Bands.keys()).index("alpha") # frequency of interest
+foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1,n_con_methods, figsize=(6*n_con_methods,6))
+fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_epochs_array[c,:,:,foi], cmap="binary", vmin=0, vmax=1)
+    ax[c].imshow(con_epochs_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
-    print(f"Connectivity method: {connectivity_methods[c]}\n"+
+    print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_epochs_array[c,:,:,foi]}")
 
 ###############################################################################
@@ -264,9 +272,9 @@ for c in range(n_con_methods):
 # We will now compute connectivity over time.
 
 # Pre-allocatate memory for the connectiviy matrices
-con_time_array = np.zeros((n_con_methods,n_epochs,
-                           n_channels,n_channels,n_freq_bands))
-con_time_array[con_time_array==0] = np.nan # nan matrix as 0 is meaningful
+con_time_array = np.zeros((n_con_methods, n_epochs,
+                           n_channels, n_channels, n_freq_bands))
+con_time_array[con_time_array == 0] = np.nan  # nan matrix
 
 con_time = spectral_connectivity_time(data_epoch, freqs,
                                       method=connectivity_methods,
@@ -277,14 +285,14 @@ con_time = spectral_connectivity_time(data_epoch, freqs,
 for c in range(n_con_methods):
     con_time_array[c] = con_time[c].get_data(output="dense")
 
-con_time_array = np.mean(con_time_array, axis=1) # average over epochs
-foi = list(Freq_Bands.keys()).index("alpha") # frequency of interest
+con_time_array = np.mean(con_time_array, axis=1)  # average over epochs
+foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1,n_con_methods, figsize=(6*n_con_methods,6))
+fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_time_array[c,:,:,foi], cmap="binary", vmin=0, vmax=1)
+    ax[c].imshow(con_time_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
-    print(f"Connectivity method: {connectivity_methods[c]}\n"+
+    print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_time_array[c,:,:,foi]}")
 
 ###############################################################################
@@ -303,14 +311,14 @@ raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
 # Select only the EEG
-picks = mne.pick_types(raw.info, meg=False, eeg=True, 
+picks = mne.pick_types(raw.info, meg=False, eeg=True,
                        stim=False, eog=False, exclude='bads')
 
 # Create epochs for left visual field stimulus
 event_id, tmin, tmax = 3, -0.3, 1.6
 epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
                     baseline=(None, 0))
-epochs.load_data() # load the data
+epochs.load_data()  # load the data
 
 ###############################################################################
 # The sample data consist of repeated trials with a visual stimuli,
@@ -329,14 +337,15 @@ n_freq_bands = len(Freq_Bands)
 min_freq = np.min(list(Freq_Bands.values()))
 max_freq = np.max(list(Freq_Bands.values()))
 
-freqs = np.linspace(min_freq,max_freq,int((max_freq-min_freq)*4+1)) # provide the freq points
+# Prepare the freq points
+freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
-fmin=tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax=tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
+fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
 
 # We specify the connectivity measurements
 connectivity_methods = ["wpli"]
-n_con_methods=len(connectivity_methods)
+n_con_methods = len(connectivity_methods)
 
 # Compute connectivity over trials
 con_epochs = spectral_connectivity_epochs(epochs_sample,
@@ -352,19 +361,19 @@ con_epochs = spectral_connectivity_epochs(epochs_sample,
 # measurements more sensitive to noise.
 
 # Plot the global connectivity over time
-n_channels = epochs.info["nchan"] # get number of channels
-times = epochs.times[epochs.times>=tmin] # get the timepoints
-n_connections = (n_channels*n_channels-n_channels)/2 # number of connections
+n_channels = epochs.info["nchan"]  # get number of channels
+times = epochs.times[epochs.times >= tmin]  # get the timepoints
+n_connections = (n_channels * n_channels - n_channels) / 2
 
 # Get global avg connectivity over all connections
 con_epochs_raveled_array = con_epochs.get_data(output="raveled")
-global_con_epochs = np.sum(con_epochs_raveled_array,axis=0)/n_connections
+global_con_epochs = np.sum(con_epochs_raveled_array, axis=0) / n_connections
 
 # Since there is only one freq band, we choose the first dimension
 global_con_epochs = global_con_epochs[0]
 
 fig = plt.figure()
-plt.plot(times,global_con_epochs)
+plt.plot(times, global_con_epochs)
 plt.xlabel("Time (s)")
 plt.ylabel("Global theta wPLI over trials")
 
@@ -375,7 +384,7 @@ t_con_max = np.argmax(global_con_epochs)
 con_epochs_array = con_epochs.get_data(output="dense")
 
 fig = plt.figure()
-im = plt.imshow(con_epochs_array[:,:,0,t_con_max])
+im = plt.imshow(con_epochs_array[:, :, 0, t_con_max])
 fig.colorbar(im)
 plt.ylabel("Channel 1")
 plt.xlabel("Channel 2")
@@ -387,6 +396,6 @@ plt.show()
 # In this example we have looked at the differences between connectivity over
 # time and connectivity over trials and demonstrated the corresponding
 # functions implemented in ``mne_connectivity`` on simulated data.
-# 
+#
 # Both functions serve their specific roles, and it's important to use the
 # correct function for the corresponding task to interpret the analysis.
