@@ -130,7 +130,7 @@ fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
 connectivity_methods = ["plv", "wpli"]
 n_con_methods = len(connectivity_methods)
 
-# Pre-allocatate memory for the connectiviy matrices
+# Pre-allocatate memory for the connectivity matrices
 con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
                              n_freq_bands, n_times))
 con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
@@ -175,7 +175,7 @@ for c in range(n_con_methods):
 #
 # We will now compute connectivity over time.
 
-# Pre-allocatate memory for the connectiviy matrices
+# Pre-allocatate memory for the connectivity matrices
 con_time_array = np.zeros((n_con_methods, n_epochs, n_channels,
                            n_channels, n_freq_bands))
 con_time_array[con_time_array == 0] = np.nan  # nan matrix
@@ -238,7 +238,7 @@ data_epoch.plot(scalings=1, n_epochs=1)
 ###############################################################################
 # First we compute connectivity over trials.
 
-# Pre-allocatate memory for the connectiviy matrices
+# Pre-allocatate memory for the connectivity matrices
 con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
                              n_freq_bands, n_times))
 con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
@@ -271,7 +271,7 @@ for c in range(n_con_methods):
 #
 # We will now compute connectivity over time.
 
-# Pre-allocatate memory for the connectiviy matrices
+# Pre-allocatate memory for the connectivity matrices
 con_time_array = np.zeros((n_con_methods, n_epochs,
                            n_channels, n_channels, n_freq_bands))
 con_time_array[con_time_array == 0] = np.nan  # nan matrix
