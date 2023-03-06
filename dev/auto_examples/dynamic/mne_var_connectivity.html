@@ -439,17 +439,20 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  9%|███▎                                 | 8.02M/88.2M [00:00&lt;00:00, 80.2MB/s]
- 20%|███████▍                             | 17.7M/88.2M [00:00&lt;00:00, 90.2MB/s]
- 31%|███████████▌                         | 27.5M/88.2M [00:00&lt;00:00, 93.6MB/s]
- 43%|████████████████                     | 38.1M/88.2M [00:00&lt;00:00, 98.6MB/s]
- 55%|████████████████████▏                | 48.1M/88.2M [00:00&lt;00:00, 99.1MB/s]
- 66%|████████████████████████▎            | 58.0M/88.2M [00:00&lt;00:00, 96.6MB/s]
- 77%|████████████████████████████▌        | 68.2M/88.2M [00:00&lt;00:00, 98.1MB/s]
- 89%|████████████████████████████████▊    | 78.1M/88.2M [00:00&lt;00:00, 98.5MB/s]
-100%|████████████████████████████████████▉| 88.1M/88.2M [00:00&lt;00:00, 99.1MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:03, 26.5MB/s]
+ 10%|███▊                                 | 9.09M/88.2M [00:00&lt;00:02, 37.1MB/s]
+ 15%|█████▍                               | 13.1M/88.2M [00:00&lt;00:02, 37.2MB/s]
+ 21%|███████▊                             | 18.6M/88.2M [00:00&lt;00:01, 41.6MB/s]
+ 29%|██████████▌                          | 25.2M/88.2M [00:00&lt;00:01, 36.1MB/s]
+ 38%|██████████████                       | 33.6M/88.2M [00:00&lt;00:01, 45.4MB/s]
+ 48%|█████████████████▌                   | 41.9M/88.2M [00:00&lt;00:00, 51.7MB/s]
+ 57%|█████████████████████                | 50.3M/88.2M [00:01&lt;00:00, 49.6MB/s]
+ 67%|████████████████████████▋            | 58.7M/88.2M [00:01&lt;00:00, 53.3MB/s]
+ 76%|████████████████████████████         | 66.8M/88.2M [00:01&lt;00:00, 59.6MB/s]
+ 83%|██████████████████████████████▋      | 73.1M/88.2M [00:01&lt;00:00, 51.3MB/s]
+ 89%|████████████████████████████████▉    | 78.5M/88.2M [00:01&lt;00:00, 48.0MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 188GB/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 134GB/s]
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -481,7 +484,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
 [Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done  84 out of  84 | elapsed:    0.8s finished
+[Parallel(n_jobs=1)]: Done  84 out of  84 | elapsed:    0.7s finished
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -971,21 +974,20 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|6         | 21/302 [00:00&lt;00:01, 202.51it/s]
- 14%|#3        | 42/302 [00:00&lt;00:01, 196.12it/s]
- 21%|##        | 62/302 [00:00&lt;00:01, 193.32it/s]
- 27%|##7       | 83/302 [00:00&lt;00:01, 196.68it/s]
- 34%|###4      | 103/302 [00:00&lt;00:01, 196.95it/s]
- 41%|####1     | 124/302 [00:00&lt;00:00, 199.69it/s]
- 48%|####8     | 146/302 [00:00&lt;00:00, 203.63it/s]
- 55%|#####5    | 167/302 [00:00&lt;00:00, 204.25it/s]
- 62%|######2   | 188/302 [00:00&lt;00:00, 204.60it/s]
- 69%|######9   | 209/302 [00:01&lt;00:00, 204.48it/s]
- 76%|#######6  | 230/302 [00:01&lt;00:00, 205.35it/s]
- 83%|########3 | 252/302 [00:01&lt;00:00, 207.06it/s]
- 90%|######### | 273/302 [00:01&lt;00:00, 206.34it/s]
- 97%|#########7| 294/302 [00:01&lt;00:00, 204.66it/s]
-100%|##########| 302/302 [00:01&lt;00:00, 202.77it/s]
+  7%|6         | 21/302 [00:00&lt;00:01, 202.92it/s]
+ 14%|#4        | 43/302 [00:00&lt;00:01, 209.69it/s]
+ 21%|##1       | 64/302 [00:00&lt;00:01, 205.94it/s]
+ 28%|##8       | 85/302 [00:00&lt;00:01, 197.88it/s]
+ 35%|###5      | 106/302 [00:00&lt;00:00, 201.38it/s]
+ 42%|####2     | 127/302 [00:00&lt;00:00, 204.17it/s]
+ 49%|####9     | 148/302 [00:00&lt;00:00, 204.91it/s]
+ 56%|#####6    | 170/302 [00:00&lt;00:00, 207.08it/s]
+ 64%|######3   | 192/302 [00:00&lt;00:00, 209.52it/s]
+ 71%|#######   | 214/302 [00:01&lt;00:00, 212.65it/s]
+ 78%|#######8  | 237/302 [00:01&lt;00:00, 215.72it/s]
+ 86%|########6 | 260/302 [00:01&lt;00:00, 217.16it/s]
+ 93%|#########3| 282/302 [00:01&lt;00:00, 216.26it/s]
+100%|##########| 302/302 [00:01&lt;00:00, 210.17it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1035,7 +1037,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fe8b35fb7f0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f9c777d3b50&gt;
 </pre></div>
 </div>
 </section>
@@ -1102,10 +1104,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fe8b364c220&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f9c7791c370&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  46.361 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  50.276 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>

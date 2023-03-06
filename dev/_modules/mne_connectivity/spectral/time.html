@@ -993,13 +993,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
 <span class="sd">        frequency and time points.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    plv : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    plv : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The estimated PLV.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
@@ -1012,13 +1012,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
 <span class="sd">        frequency and time points.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ciplv : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    ciplv : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The estimated ciPLV.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
@@ -1033,13 +1033,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
 <span class="sd">        frequency and time points.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    pli : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    pli : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The estimated PLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pli</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)),</span>
@@ -1052,13 +1052,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
 <span class="sd">        frequency and time points.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    wpli : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    wpli : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The estimated wPLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">imag</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -1072,17 +1072,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s_xx : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xx : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The PSD of channel &#39;x&#39;.</span>
-<span class="sd">    s_yy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_yy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The PSD of channel &#39;y&#39;.</span>
-<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
 <span class="sd">        frequency and time points.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    coh : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">    coh : array-like, shape (n_freqs, n_times)</span>
 <span class="sd">        The estimated COH.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
