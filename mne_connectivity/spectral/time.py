@@ -644,13 +644,13 @@ def _plv(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like of shape (n_freqs, n_times)
+    s_xy : array-like, shape (n_freqs, n_times)
         The cross PSD between channel 'x' and channel 'y' across
         frequency and time points.
 
     Returns
     -------
-    plv : array-like of shape (n_freqs, n_times)
+    plv : array-like, shape (n_freqs, n_times)
         The estimated PLV.
     """
     s_xy = s_xy / np.abs(s_xy)
@@ -663,13 +663,13 @@ def _ciplv(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like of shape (n_freqs, n_times)
+    s_xy : array-like, shape (n_freqs, n_times)
         The cross PSD between channel 'x' and channel 'y' across
         frequency and time points.
 
     Returns
     -------
-    ciplv : array-like of shape (n_freqs, n_times)
+    ciplv : array-like, shape (n_freqs, n_times)
         The estimated ciPLV.
     """
     s_xy = s_xy / np.abs(s_xy)
@@ -684,13 +684,13 @@ def _pli(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like of shape (n_freqs, n_times)
+    s_xy : array-like, shape (n_freqs, n_times)
         The cross PSD between channel 'x' and channel 'y' across
         frequency and time points.
 
     Returns
     -------
-    pli : array-like of shape (n_freqs, n_times)
+    pli : array-like, shape (n_freqs, n_times)
         The estimated PLI.
     """
     pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
@@ -703,13 +703,13 @@ def _wpli(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like of shape (n_freqs, n_times)
+    s_xy : array-like, shape (n_freqs, n_times)
         The cross PSD between channel 'x' and channel 'y' across
         frequency and time points.
 
     Returns
     -------
-    wpli : array-like of shape (n_freqs, n_times)
+    wpli : array-like, shape (n_freqs, n_times)
         The estimated wPLI.
     """
     con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
@@ -723,17 +723,17 @@ def _coh(s_xx, s_yy, s_xy):
 
     Parameters
     ----------
-    s_xx : array-like of shape (n_freqs, n_times)
+    s_xx : array-like, shape (n_freqs, n_times)
         The PSD of channel 'x'.
-    s_yy : array-like of shape (n_freqs, n_times)
+    s_yy : array-like, shape (n_freqs, n_times)
         The PSD of channel 'y'.
-    s_xy : array-like of shape (n_freqs, n_times)
+    s_xy : array-like, shape (n_freqs, n_times)
         The cross PSD between channel 'x' and channel 'y' across
         frequency and time points.
 
     Returns
     -------
-    coh : array-like of shape (n_freqs, n_times)
+    coh : array-like, shape (n_freqs, n_times)
         The estimated COH.
     """
     con_num = np.abs(s_xy.mean(axis=-1, keepdims=True))
