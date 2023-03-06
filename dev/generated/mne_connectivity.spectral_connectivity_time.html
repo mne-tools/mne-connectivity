@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   <script>
@@ -406,7 +406,7 @@ The data may consist of a single epoch.</p>
 All methods are based on time-resolved estimates of the cross- and
 power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.25.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity.</p>
 </dd>
@@ -487,7 +487,7 @@ keyword-argument only.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
 <dt><strong>con</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Computed connectivity measure(s). An instance of
 <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>, <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>
@@ -559,23 +559,23 @@ e.g., <code class="docutils literal notranslate"><span class="pre">['coh',</span
     <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxx</span><span class="p">]</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="n">Syy</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id1">1</a> given
+<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> given
 by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLV</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘ciplv’ : Corrected imaginary PLV (icPLV) <a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id2">2</a>
+<p>‘ciplv’ : Corrected imaginary PLV (icPLV) <a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">ciPLV</span> <span class="o">=</span> <span class="o">------------------------------------</span>
          <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id3">3</a> given by:</p>
+<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLI</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">sign</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id4">4</a>
+<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">WPLI</span> <span class="o">=</span> <span class="o">------------------</span>
@@ -604,20 +604,23 @@ Frites.</p>
 </div>
 <p class="rubric">References</p>
 <div class="docutils container" id="id5">
-<dl class="footnote brackets">
-<dt class="label" id="footcite-lachauxetal1999"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
-</dd>
-<dt class="label" id="footcite-brunaetal2018"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
-</dd>
-<dt class="label" id="footcite-stametal2007"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
-</dd>
-<dt class="label" id="footcite-vincketal2011"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
-<dd><p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="footcite-lachauxetal1999" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-brunaetal2018" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-stametal2007" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-vincketal2011" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
+</aside>
+</aside>
 </div>
 </dd></dl>
 
@@ -713,7 +716,7 @@ Frites.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-14.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-03-06.<br>
 
 </p>
 

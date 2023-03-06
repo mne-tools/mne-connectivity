@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Comparing PLI, wPLI, and dPLI &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   <script>
@@ -389,9 +389,9 @@ to download the full example code</p>
 <section class="sphx-glr-example-title" id="comparing-pli-wpli-and-dpli">
 <span id="sphx-glr-auto-examples-dpli-wpli-pli-py"></span><h1>Comparing PLI, wPLI, and dPLI<a class="headerlink" href="#comparing-pli-wpli-and-dpli" title="Permalink to this heading">#</a></h1>
 <p>This example demonstrates the different connectivity information captured by
-the phase lag index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id1">1</a>, weighted phase lag index
-(wPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id2">2</a>, and directed phase lag index (dPLI)
-<a class="footnote-reference brackets" href="#footcite-stametal2012" id="id3">3</a> on simulated data.</p>
+the phase lag index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, weighted phase lag index
+(wPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, and directed phase lag index (dPLI)
+<a class="footnote-reference brackets" href="#footcite-stametal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> on simulated data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Kenji Marshall &lt;kenji.marshall99@gmail.com&gt;</span>
 <span class="c1">#          Charlotte Maschke &lt;charlotte.maschke@mail.mcgill.ca&gt;</span>
 <span class="c1">#          Stefanie Blain-Moraes &lt;stefanie.blain-moraes@mcgill.ca&gt;</span>
@@ -416,14 +416,14 @@ when the signals have a phase difference given by <span class="math notranslate 
 and is <span class="math notranslate nohighlight">\(0\)</span> when the phase difference is given by <span class="math notranslate nohighlight">\(k\pi\)</span> (where
 <span class="math notranslate nohighlight">\(k \in \mathbb{Z}\)</span>). This property provides protection against
 recognizing volume conduction effects as connectivity, and is the backbone
-for these methods <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id4">2</a>. In the equations below,
+for these methods <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. In the equations below,
 <span class="math notranslate nohighlight">\(\mathcal{I}\)</span> refers to the imaginary component,
 <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> refers to the Heaviside step function, and
 <span class="math notranslate nohighlight">\(sgn\)</span> refers to the sign function.</p>
-<p><span class="math notranslate nohighlight">\(PLI = |E[sgn(\mathcal{I}(X_{ij}))]|\)</span> <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id5">1</a></p>
+<p><span class="math notranslate nohighlight">\(PLI = |E[sgn(\mathcal{I}(X_{ij}))]|\)</span> <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p><span class="math notranslate nohighlight">\(wPLI = \frac{|E[\mathcal{I}(X_{ij})]|}{E[|\mathcal{I}(X_{ij})|]}\)</span>
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id6">2</a></p>
-<p><span class="math notranslate nohighlight">\(dPLI = E[\mathcal{H}(\mathcal{I}(X_{ij}))]\)</span> <a class="footnote-reference brackets" href="#footcite-stametal2012" id="id7">3</a></p>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
+<p><span class="math notranslate nohighlight">\(dPLI = E[\mathcal{H}(\mathcal{I}(X_{ij}))]\)</span> <a class="footnote-reference brackets" href="#footcite-stametal2012" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 <p>All three of these metrics are bounded in the range <span class="math notranslate nohighlight">\([0, 1]\)</span>.</p>
 <ul class="simple">
 <li><p>For PLI, <span class="math notranslate nohighlight">\(0\)</span> means that signal <span class="math notranslate nohighlight">\(i\)</span> leads and lags signal
@@ -1496,7 +1496,7 @@ small but non-zero (and may thus be attributed to volume conduciton), while
 PLI weighs these in the same way as phase relationships of
 <span class="math notranslate nohighlight">\(\pm\frac{\pi}{2}\)</span>.</p>
 <p>To demonstrate this, we recreate a result from (Vinck et al, 2011)
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8">2</a>. Two sinusoids are simulated, where the phase
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Two sinusoids are simulated, where the phase
 difference for half of the epochs is <span class="math notranslate nohighlight">\(\frac{\pi}{2}\)</span>, and is
 <span class="math notranslate nohighlight">\(-\frac{\pi}{100}\)</span> for the others. We also explore the effect of
 applying uniform noise to this phase difference.</p>
@@ -2182,7 +2182,7 @@ its ability to distinguish the underlying structure. Beyond a certain point,
 the noise dominates any pre-defined structure, and both methods behave
 similarly, tending toward <span class="math notranslate nohighlight">\(0\)</span>. For a more detailed analysis of this
 result and the properties of wPLI, please refer to (Vinck et al, 2011)
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id9">2</a>.</p>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">A_list</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;o-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">A_list</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;o-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;wPLI&quot;</span><span class="p">)</span>
@@ -2243,7 +2243,7 @@ sample MEG data recorded during visual stimulation.</p>
 Ready.
 Not setting metadata
 73 matching events found
-Setting baseline interval to [-0.19979521315838786, 0.0] sec
+Setting baseline interval to [-0.19979521315838786, 0.0] s
 Applying baseline correction (mode: mean)
 4 projection items activated
 Loading data for 73 events and 256 original time points ...
@@ -2504,19 +2504,24 @@ estimate of phase-based connectivity.</p>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <div class="docutils container" id="id10">
-<dl class="footnote brackets">
-<dt class="label" id="footcite-stametal2007"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id5">2</a>)</span></dt>
-<dd><p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
-</dd>
-<dt class="label" id="footcite-vincketal2011"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id4">2</a>,<a href="#id6">3</a>,<a href="#id8">4</a>,<a href="#id9">5</a>)</span></dt>
-<dd><p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
-</dd>
-<dt class="label" id="footcite-stametal2012"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id7">2</a>)</span></dt>
-<dd><p>C. J. Stam and E. C. W. van Straaten. Go with the flow: use of a directed phase lag index (dpli) to characterize patterns of phase relations in a large-scale model of brain dynamics. <em>NeuroImage</em>, 62(3):1415–1428, Sep 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2012.05.050">doi:10.1016/j.neuroimage.2012.05.050</a>.</p>
-</dd>
-</dl>
+<aside class="footnote brackets" id="footcite-stametal2007" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-vincketal2011" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id4">2</a>,<a role="doc-backlink" href="#id6">3</a>,<a role="doc-backlink" href="#id8">4</a>,<a role="doc-backlink" href="#id9">5</a>)</span>
+<p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-stametal2012" role="note">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>C. J. Stam and E. C. W. van Straaten. Go with the flow: use of a directed phase lag index (dpli) to characterize patterns of phase relations in a large-scale model of brain dynamics. <em>NeuroImage</em>, 62(3):1415–1428, Sep 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2012.05.050">doi:10.1016/j.neuroimage.2012.05.050</a>.</p>
+</aside>
+</aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.372 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.658 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dpli-wpli-pli-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/51b0c8a68236345d60ceb7c4dd05321f/dpli_wpli_pli.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">dpli_wpli_pli.py</span></code></a></p>
@@ -2640,7 +2645,7 @@ estimate of phase-based connectivity.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-14.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-03-06.<br>
 
 </p>
 
