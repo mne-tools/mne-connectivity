@@ -989,12 +989,38 @@
 
 
 <span class="k">def</span> <span class="nf">_plv</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute phase-locking value given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plv : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated PLV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
     <span class="n">plv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">plv</span>
 
 
 <span class="k">def</span> <span class="nf">_ciplv</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute corrected imaginary phase-locking value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ciplv : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated ciPLV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
     <span class="n">rplv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">s_xy</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">iplv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -1003,12 +1029,38 @@
 
 
 <span class="k">def</span> <span class="nf">_pli</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute phase-lag index given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pli : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated PLI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pli</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)),</span>
                          <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">pli</span>
 
 
 <span class="k">def</span> <span class="nf">_wpli</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute weighted phase-lag index given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wpli : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated wPLI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">imag</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">con_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">imag</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">wpli</span> <span class="o">=</span> <span class="n">con_num</span> <span class="o">/</span> <span class="n">con_den</span>
@@ -1016,6 +1068,23 @@
 
 
 <span class="k">def</span> <span class="nf">_coh</span><span class="p">(</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute coherence given the cross spectral density and PSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xx : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;x&#39;.</span>
+<span class="sd">    s_yy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;y&#39;.</span>
+<span class="sd">    s_xy : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coh : array-like of shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated COH.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">con_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s_xx</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span>
                       <span class="n">s_yy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
