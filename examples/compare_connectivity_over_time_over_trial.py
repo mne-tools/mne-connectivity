@@ -164,8 +164,10 @@ foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_epochs_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
+    con_plot = ax[c].imshow(con_epochs_array[c, :, :, foi],
+                            cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
+    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
     print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_epochs_array[c,:,:,foi]}")
 
@@ -202,8 +204,10 @@ foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_time_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
+    con_plot = ax[c].imshow(con_time_array[c, :, :, foi],
+                            cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
+    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
     print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_time_array[c,:,:,foi]}")
 
@@ -260,8 +264,10 @@ foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_epochs_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
+    con_plot = ax[c].imshow(con_epochs_array[c, :, :, foi],
+                            cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
+    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
     print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_epochs_array[c,:,:,foi]}")
 
@@ -290,8 +296,10 @@ foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
 for c in range(n_con_methods):
-    ax[c].imshow(con_time_array[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
+    con_plot = ax[c].imshow(con_time_array[c, :, :, foi],
+                            cmap="binary", vmin=0, vmax=1)
     ax[c].set_title(connectivity_methods[c])
+    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
     print(f"Connectivity method: {connectivity_methods[c]}\n" +
           f"{con_time_array[c,:,:,foi]}")
 
