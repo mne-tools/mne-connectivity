@@ -126,8 +126,8 @@ freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
 fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
 
-# We specify the connectivity measurements
-connectivity_methods = ["plv", "wpli"]
+# We will try two different connectivity measurements as an example
+connectivity_methods = ["coh", "plv"]
 n_con_methods = len(connectivity_methods)
 
 # Pre-allocatate memory for the connectivity matrices
@@ -386,8 +386,8 @@ con_epochs_array = con_epochs.get_data(output="dense")
 fig = plt.figure()
 im = plt.imshow(con_epochs_array[:, :, 0, t_con_max])
 fig.colorbar(im)
-plt.ylabel("Channel 1")
-plt.xlabel("Channel 2")
+plt.ylabel("Channel")
+plt.xlabel("Channel")
 plt.show()
 
 ###############################################################################
