@@ -1588,7 +1588,8 @@ def _check_rank_input(rank, data, indices):
         else:
             data_arr = data
             info = create_info(np.arange(i for i in data_arr.shape[1]), 256)
-            ch_types = ['misc' for _ in range(data.shape[1])]
+            ch_types = ['eeg' for _ in range(data.shape[1])]
+            # 'eeg' channel type used as 'misc' is not recognised as valid
 
         for group_i in range(2):
             for con_i, con_idcs in enumerate(indices[group_i]):
