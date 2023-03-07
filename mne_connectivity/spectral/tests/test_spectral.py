@@ -145,7 +145,8 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
         assert repr(con) == repr(read_con)
 
 
-@pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv',
+@pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv', 'mic',
+                                    'mim',
                                     ['ciplv', 'ppc', 'pli', 'pli2_unbiased',
                                      'dpli', 'wpli', 'wpli2_debiased', 'coh']])
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
@@ -166,11 +167,23 @@ def test_spectral_connectivity(method, mode):
         tmin=tmin, tmax=tmax,
         fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
 
+    multivar_methods = ['mic', 'mim']
+
     # First we test some invalid parameters:
     pytest.raises(ValueError, spectral_connectivity_epochs,
                   data, method='notamethod')
     pytest.raises(ValueError, spectral_connectivity_epochs, data,
                   mode='notamode')
+
+    # test bivar. and multivar. method in same function call forbidden
+    if method in multivar_methods:
+        pytest.raises(ValueError, spectral_connectivity_epochs, data,
+                      method=[method, 'coh'])
+
+    # test repeated indices not allowed with multivar. methods
+    if method in multivar_methods:
+        pytest.raises(ValueError, spectral_connectivity_epochs, data,
+                      method=method, indices=([0, 1, 2], [0, 0, 2]))
 
     # test invalid fmin fmax settings
     pytest.raises(ValueError, spectral_connectivity_epochs, data, fmin=10,
@@ -181,6 +194,42 @@ def test_spectral_connectivity(method, mode):
                   fmax=(5, 10))
     pytest.raises(ValueError, spectral_connectivity_epochs, data, fmin=(11,),
                   fmax=(12, 15))
+
+    # test rank parameter (only do with MIC for speed)
+    if method == 'mic':
+        # test invalid rank (< 1)
+        rank = tuple([[0], [0]])
+        pytest.raises(ValueError, spectral_connectivity_epochs, data,
+                      method=method, sfreq=sfreq, rank=rank)
+
+        # test invalid rank (> n_signals)
+        rank = tuple([[4], [4]])
+        pytest.raises(ValueError, spectral_connectivity_epochs, data,
+                      method=method, sfreq=sfreq, rank=rank)
+
+        # test invalid rank (rank_seeds != rank_targets)
+        rank = tuple([[2], [1]])
+        pytest.raises(ValueError, spectral_connectivity_epochs, data,
+                      method=method, sfreq=sfreq, rank=rank)
+
+        # test valid rank (1 <= rank <= n_signals)
+        rank = tuple([[2], [2]])
+        con = spectral_connectivity_epochs(
+            data, method=method, sfreq=sfreq, rank=rank)
+        assert con.rank == rank
+
+        # test patterns in sensor space despite rank subspace transformation
+        assert (
+            con.patterns[0][0].shape[0] == n_signals and
+            con.patterns[1][0].shape[0] == n_signals)
+
+        # test automatic rank computation works... full rank data
+        con = spectral_connectivity_epochs(data, method=method, sfreq=sfreq)
+        assert con.rank == tuple([[3], [3]])
+        # ... non-full rank data (repeat 2nd channel)
+        con = spectral_connectivity_epochs(
+            data[:, (1, 2, 2)], method=method, sfreq=sfreq)
+        assert con.rank == tuple([[2], [2]])
 
     # define some frequencies for cwt
     cwt_freqs = np.arange(3, 24.5, 1)
@@ -284,7 +333,11 @@ def test_spectral_connectivity(method, mode):
                 con.get_data()[1, 0, bidx[1]:].max()
 
         # compute a subset of connections using indices and 2 jobs
-        indices = (np.array([2, 1]), np.array([0, 0]))
+        if method not in multivar_methods:
+            indices = (np.array([2, 1]), np.array([0, 0]))
+        else:
+            # ... unless using a multivariate method
+            indices = (np.array([0, 1, 2]), np.array([0, 1, 2]))
 
         if not isinstance(method, list):
             test_methods = (method, _CohEst)
@@ -375,6 +428,12 @@ def test_spectral_connectivity(method, mode):
                 freqs_idx = np.searchsorted(freqs2, freqs)
                 con2_avg = np.mean(con2.get_data()[:, freqs_idx], axis=1)
                 assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
+
+                if method in multivar_methods:
+                    con2_patterns_avg = np.mean(
+                        con2.patterns[0][:, freqs_idx], axis=1)
+                    assert_array_almost_equal(
+                        con2_patterns_avg, con3.patterns[0][:, i])
         else:
             for j in range(len(con2)):
                 for i in range(len(freqs3)):
@@ -407,6 +466,8 @@ def test_spectral_connectivity(method, mode):
     assert (len(out_lens) > 0)
     assert (out_lens[0] == 10)
 
+
+test_spectral_connectivity('mic', 'multitaper')
 
 @ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
 def test_epochs_tmin_tmax(kind):

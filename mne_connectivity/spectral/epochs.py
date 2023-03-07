@@ -91,14 +91,23 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     n_times = len(times)
 
     if indices is None:
-        logger.info('only using indices for lower-triangular matrix')
-        # only compute r for lower-triangular region
-        indices_use = np.tril_indices(n_signals, -1)
+        if any(this_method in _multivariate_methods for this_method in method):
+            logger.info('using all indices for multivariate connectivity')
+            indices_use = (np.arange(n_signals, dtype=int),
+                           np.arange(n_signals, dtype=int))
+        else:
+            logger.info('only using indices for lower-triangular matrix')
+            # only compute r for lower-triangular region
+            indices_use = np.tril_indices(n_signals, -1)
     else:
         indices_use = check_indices(indices)
 
     # number of connectivities to compute
     if any(this_method in _multivariate_methods for this_method in method):
+        if len(np.unique(indices_use[0])) != len(np.unique(indices_use[1])):
+            raise ValueError(
+                'seed and target indices cannot contain repeated channels for '
+                'multivariate connectivity')
         n_cons = 1  # UNTIL NEW INDICES FORMAT
     else:
         n_cons = len(indices_use[0])
@@ -1294,12 +1303,6 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     else:
         multivariate_con = False
 
-    # check rank input and compute data ranks if necessary
-    if multivariate_con:
-        rank = _check_rank_input(rank, data, indices)
-    else:
-        rank = None
-
     # handle connectivity estimators
     (con_method_types, n_methods, accumulate_psd) = _check_estimators(method)
 
@@ -1347,6 +1350,12 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 tmin=tmin, tmax=tmax, fmin=fmin, fmax=fmax, sfreq=sfreq,
                 indices=indices, method=method, mode=mode, fskip=fskip,
                 n_bands=n_bands, cwt_freqs=cwt_freqs, faverage=faverage)
+
+            # check rank input and compute data ranks if necessary
+            if multivariate_con:
+                rank = _check_rank_input(rank, data, indices_use)
+            else:
+                rank = None
 
             # get the window function, wavelets, etc for different modes
             (spectral_params, mt_adaptive, n_times_spectrum,
@@ -1511,7 +1520,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         freqs_used = freqs_bands
         freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
-    if indices is None:
+    if indices is None and not any(this_method in _multivariate_methods for
+                                   this_method in method):
         # return all-to-all connectivity matrices
         # raveled into a 1D array
         logger.info('    assembling connectivity matrix')
@@ -1533,7 +1543,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     if multivariate_con:
         # UNTIL THIS INDICES FORMAT SUPPORTED BY DEFAULT
-        indices = tuple([[np.array(indices[0])], [np.array(indices[1])]])
+        indices = tuple(
+            [[np.array(indices_use[0])], [np.array(indices_use[1])]])
 
     # create a list of connectivity containers
     conn_list = []
@@ -1587,7 +1598,7 @@ def _check_rank_input(rank, data, indices):
             ch_types = data.get_channel_types()
         else:
             data_arr = data
-            info = create_info(np.arange(i for i in data_arr.shape[1]), 256)
+            info = create_info([str(i) for i in range(data_arr.shape[1])], 256)
             ch_types = ['eeg' for _ in range(data.shape[1])]
             # 'eeg' channel type used as 'misc' is not recognised as valid
 
@@ -1609,17 +1620,25 @@ def _check_rank_input(rank, data, indices):
             logger.info('    connection %i - seeds (%i); targets (%i)'
                         % (con_i, seed_rank, target_rank, ))
             con_i += 1
+            if seed_rank != target_rank:
+                raise ValueError(
+                    'currently, only seeds and targets of the same rank are '
+                    'supported.')
 
         rank = tuple((np.array(rank[0]), np.array(rank[1])))
 
     else:
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
                 indices[0], indices[1], rank[0], rank[1]):
-            if not (0 < seed_rank <= len(seed_idcs) or
+            if not (0 < seed_rank <= len(seed_idcs) and
                     0 < target_rank <= len(target_idcs)):
                 raise ValueError(
                     'ranks for seeds and targets must be > 0 and <= the '
                     'number of channels in the seeds and targets, '
                     'respectively, for each connection')
+            if seed_rank != target_rank:
+                raise ValueError(
+                    'currently, only seeds and targets of the same rank are '
+                    'supported.')
 
     return rank
