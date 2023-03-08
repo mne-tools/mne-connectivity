@@ -75,6 +75,7 @@ import mne
 
 from mne_connectivity import (spectral_connectivity_epochs,
                               spectral_connectivity_time)
+from mne_connectivity.viz import plot_sensors_connectivity
 from mne.datasets import sample
 
 rng = np.random.default_rng(1234)  # set seed for reproducibility
@@ -162,14 +163,28 @@ con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 # In this example, we will just show alpha
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
-for c in range(n_con_methods):
-    con_plot = ax[c].imshow(con_epochs_array[c, :, :, foi],
-                            cmap="binary", vmin=0, vmax=1)
-    ax[c].set_title(connectivity_methods[c])
-    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
-    print(f"Connectivity method: {connectivity_methods[c]}\n" +
-          f"{con_epochs_array[c,:,:,foi]}")
+# Define function for plotting, for re-usage
+def plot_con_matrix(con_data, n_con_methods):
+    """ Function to plot the connectivity matrix """
+    fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
+    for c in range(n_con_methods):
+        # Plot with imshow
+        con_plot = ax[c].imshow(con_data[c, :, :, foi],
+                                cmap="binary", vmin=0, vmax=1)
+        # Set title
+        ax[c].set_title(connectivity_methods[c])
+        # Add colorbar
+        fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
+        # Fix labels
+        ax[c].set_xticks(range(len(ch_names)))
+        ax[c].set_xticklabels(ch_names)
+        ax[c].set_yticks(range(len(ch_names)))
+        ax[c].set_yticklabels(ch_names)
+        print(f"Connectivity method: {connectivity_methods[c]}\n" +
+              f"{con_data[c,:,:,foi]}")
+    return fig
+
+plot_con_matrix(con_epochs_array, n_con_methods)
 
 ###############################################################################
 # We see that when using repeated trials without any noise, the phase coupling
@@ -202,14 +217,7 @@ for c in range(n_con_methods):
 con_time_array = np.mean(con_time_array, axis=1)  # average over epochs
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
-for c in range(n_con_methods):
-    con_plot = ax[c].imshow(con_time_array[c, :, :, foi],
-                            cmap="binary", vmin=0, vmax=1)
-    ax[c].set_title(connectivity_methods[c])
-    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
-    print(f"Connectivity method: {connectivity_methods[c]}\n" +
-          f"{con_time_array[c,:,:,foi]}")
+plot_con_matrix(con_time_array, n_con_methods)
 
 ###############################################################################
 # We see that the connectivity over time are not 1, since the signals were
@@ -262,14 +270,7 @@ con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
-for c in range(n_con_methods):
-    con_plot = ax[c].imshow(con_epochs_array[c, :, :, foi],
-                            cmap="binary", vmin=0, vmax=1)
-    ax[c].set_title(connectivity_methods[c])
-    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
-    print(f"Connectivity method: {connectivity_methods[c]}\n" +
-          f"{con_epochs_array[c,:,:,foi]}")
+plot_con_matrix(con_epochs_array, n_con_methods)
 
 ###############################################################################
 # We see that connectivity over trials are not 1, since the phase differences
@@ -294,14 +295,7 @@ for c in range(n_con_methods):
 con_time_array = np.mean(con_time_array, axis=1)  # average over epochs
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
-fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
-for c in range(n_con_methods):
-    con_plot = ax[c].imshow(con_time_array[c, :, :, foi],
-                            cmap="binary", vmin=0, vmax=1)
-    ax[c].set_title(connectivity_methods[c])
-    fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
-    print(f"Connectivity method: {connectivity_methods[c]}\n" +
-          f"{con_time_array[c,:,:,foi]}")
+plot_con_matrix(con_time_array, n_con_methods)
 
 ###############################################################################
 # We see that for case 2, the connectivity over time is approximately 1,
@@ -332,15 +326,17 @@ epochs.load_data()  # load the data
 # The sample data consist of repeated trials with a visual stimuli,
 # thus we use :func:`mne_connectivity.spectral_connectivity_epochs`
 # to compute connectivity over trials.
+#
+# Visual tasks are known for evoking event related P1 and N1 responses,
+# which occurs around 100 and 170 ms after stimuli presentation in
+# posterior sites. Additionally, increased theta and alpha phase locking
+# have also been observed during the time window of P1 and N1
+# :footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
+# connectivity in the theta band around P1
 
 sfreq = epochs.info['sfreq']  # the sampling frequency
-tmin = 0.0  # exclude the baseline period
-
-# To speed up the computation, we only use the first 5 epochs
-# and investigate the theta band
-epochs_sample = epochs[:5]
-
-Freq_Bands = {"theta": [4.0, 8.0]}
+tmin = 0.0  # exclude the baseline period for connectivity estimation
+Freq_Bands = {"theta": [4.0, 8.0]}  # frequency of interest
 n_freq_bands = len(Freq_Bands)
 min_freq = np.min(list(Freq_Bands.values()))
 max_freq = np.max(list(Freq_Bands.values()))
@@ -356,7 +352,7 @@ connectivity_methods = ["wpli"]
 n_con_methods = len(connectivity_methods)
 
 # Compute connectivity over trials
-con_epochs = spectral_connectivity_epochs(epochs_sample,
+con_epochs = spectral_connectivity_epochs(epochs,
                                           method=connectivity_methods,
                                           sfreq=sfreq, mode="cwt_morlet",
                                           cwt_freqs=freqs, fmin=fmin,
@@ -385,18 +381,29 @@ plt.plot(times, global_con_epochs)
 plt.xlabel("Time (s)")
 plt.ylabel("Global theta wPLI over trials")
 
-# Get the timepoint with highest global connectivity
-t_con_max = np.argmax(global_con_epochs)
+# Get the timepoint with highest global connectivity right after stimulus
+t_con_max = np.argmax(global_con_epochs[times <= 0.4])
+print(f"Global theta wPLI peaks {times[t_con_max]:.3f}s after stimulus")
+
+###############################################################################
+# We see that around the timing of the P1 evoked response, there is high theta
+# phase coupling on a global scale. To investigate in more details the
+# individual channels, we visualize the connectivity matrix at the
+# timepoint with most global theta connectivity after stimulus presentation
+# and plot the sensor connectivity of the 20 highest connections
 
 # Plot the connectivity matrix at the timepoint with highest global wPLI
-con_epochs_array = con_epochs.get_data(output="dense")
+con_epochs_matrix = con_epochs.get_data(output="dense")[:, :, 0, t_con_max]
 
 fig = plt.figure()
-im = plt.imshow(con_epochs_array[:, :, 0, t_con_max])
+im = plt.imshow(con_epochs_matrix)
 fig.colorbar(im)
-plt.ylabel("Channel")
-plt.xlabel("Channel")
+plt.ylabel("Channels")
+plt.xlabel("Channels")
 plt.show()
+
+# Visualize in 3D
+plot_sensors_connectivity(epochs.info, con_epochs_matrix)
 
 ###############################################################################
 # Conclusions
@@ -407,3 +414,8 @@ plt.show()
 #
 # Both functions serve their specific roles, and it's important to use the
 # correct function for the corresponding task to interpret the analysis.
+#
+# We also briefly analyzed a visual task EEG sample, where we found that
+# there was high global theta connectivity around the timepoint of the P1
+# evoked response. Further analysis revealed the highest connections
+# at this timepoint were between occipital and frontal areas.
