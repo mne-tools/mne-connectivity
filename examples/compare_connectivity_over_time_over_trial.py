@@ -163,9 +163,10 @@ con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 # In this example, we will just show alpha
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
+
 # Define function for plotting, for re-usage
 def plot_con_matrix(con_data, n_con_methods):
-    """ Function to plot the connectivity matrix """
+    """Visualize the connectivity matrix."""
     fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
     for c in range(n_con_methods):
         # Plot with imshow
