@@ -164,7 +164,7 @@ con_epochs_array = np.mean(con_epochs_array, axis=4)  # average over timepoints
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 
-# Define function for plotting, for re-usage
+# Define function for plotting con matrices
 def plot_con_matrix(con_data, n_con_methods):
     """Visualize the connectivity matrix."""
     fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
@@ -175,7 +175,7 @@ def plot_con_matrix(con_data, n_con_methods):
         # Set title
         ax[c].set_title(connectivity_methods[c])
         # Add colorbar
-        fig.colorbar(con_plot, ax=ax[c], shrink=0.7)
+        fig.colorbar(con_plot, ax=ax[c], shrink=0.7, label='Connectivity')
         # Fix labels
         ax[c].set_xticks(range(len(ch_names)))
         ax[c].set_xticklabels(ch_names)
@@ -383,7 +383,7 @@ plt.xlabel("Time (s)")
 plt.ylabel("Global theta wPLI over trials")
 
 # Get the timepoint with highest global connectivity right after stimulus
-t_con_max = np.argmax(global_con_epochs[times <= 0.4])
+t_con_max = np.argmax(global_con_epochs[times <= 0.5])
 print(f"Global theta wPLI peaks {times[t_con_max]:.3f}s after stimulus")
 
 ###############################################################################
@@ -398,12 +398,12 @@ con_epochs_matrix = con_epochs.get_data(output="dense")[:, :, 0, t_con_max]
 
 fig = plt.figure()
 im = plt.imshow(con_epochs_matrix)
-fig.colorbar(im)
+fig.colorbar(im, label='Connectivity')
 plt.ylabel("Channels")
 plt.xlabel("Channels")
 plt.show()
 
-# Visualize in 3D
+# Visualize top 20 connections in 3D
 plot_sensors_connectivity(epochs.info, con_epochs_matrix)
 
 ###############################################################################
