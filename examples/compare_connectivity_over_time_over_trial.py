@@ -420,3 +420,8 @@ plot_sensors_connectivity(epochs.info, con_epochs_matrix)
 # there was high global theta connectivity around the timepoint of the P1
 # evoked response. Further analysis revealed the highest connections
 # at this timepoint were between occipital and frontal areas.
+
+###############################################################################
+# References
+# ----------
+# .. footbibliography::
