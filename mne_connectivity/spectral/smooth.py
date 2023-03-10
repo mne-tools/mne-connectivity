@@ -12,7 +12,7 @@ def _create_kernel(sm_times, sm_freqs, kernel='hanning'):
     sm_times : int, array_like
         Number of points to consider for the temporal smoothing,
         if it is an array it will be considered that the kernel
-        if frequence dependent.
+        if frequency dependent.
     sm_freqs : int
         Number of points to consider for the frequency smoothing
     kernel : {'square', 'hanning'}
