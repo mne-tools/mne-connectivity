@@ -25,8 +25,8 @@ followed by examples on simulated data and real EEG data.
 #
 # In this example, we focus on the two functions, which both computes
 # connectivity from epoched data :class:`mne.Epochs`:
-# - :func:`mne_connectivity.spectral_connectivity_epochs` and
-# - :func:`mne_connectivity.spectral_connectivity_time`.
+# :func:`mne_connectivity.spectral_connectivity_epochs` and
+# :func:`mne_connectivity.spectral_connectivity_time`.
 #
 # Both functions contain the options to choose the connectivity measurements
 # of interest and the method to decompose the frequency content.
@@ -34,9 +34,10 @@ followed by examples on simulated data and real EEG data.
 # the experimental setup and type of tasks.
 #
 # If the data is obtained for repeated trials of a time-locked event,
-# e.g. ERP data :footcite:`MNE_ERP_example`, then
+# e.g. `ERP <erp_tut_>`_ data, then
 # :func:`mne_connectivity.spectral_connectivity_epochs`
 # is most likely the corresponding function to utilize.
+#
 #
 # If the data is obtained from resting-state or free-moving tasks,
 # e.g. a mirror-game paradigm :footcite:`Zimmermann2022`, then
@@ -427,6 +428,8 @@ plot_sensors_connectivity(epochs.info, con_epochs_matrix)
 # at this timepoint were between occipital and frontal areas.
 
 ###############################################################################
+# .. _erp_tut: https://mne.tools/stable/auto_tutorials/evoked/30_eeg_erp.html
+#
 # References
 # ----------
 # .. footbibliography::
