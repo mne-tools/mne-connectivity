@@ -44,7 +44,7 @@ Now you can finally run the tests by running `pytest` in the
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
-    $ pip install -r requirements_doc.text
+    $ pip install -r requirements_doc.txt
 
 To build the documentation locally, one can run:
 
