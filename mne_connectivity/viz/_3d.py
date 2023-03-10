@@ -23,7 +23,7 @@ FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
 @fill_doc
 def plot_sensors_connectivity(info, con, picks=None,
                               cbar_label='Connectivity',
-                              n_con: int=20):
+                              n_con=20):
     """Visualize the sensor connectivity in 3D.
 
     Parameters
