@@ -23,10 +23,10 @@ followed by examples on simulated data and real EEG data.
 # Additionally, there are also multiple methods to estimate the frequency
 # content, e.g. Fourier transforms, Morlet wavelets and multitapers.
 #
-# In this example, we focus on the two functions
-# :func:`mne_connectivity.spectral_connectivity_epochs` and
-# :func:`mne_connectivity.spectral_connectivity_time`,
-# which both computes connectivity from epoched data :class:`mne.Epochs`.
+# In this example, we focus on the two functions, which both computes
+# connectivity from epoched data :class:`mne.Epochs`:
+# - :func:`mne_connectivity.spectral_connectivity_epochs` and
+# - :func:`mne_connectivity.spectral_connectivity_time`.
 #
 # Both functions contain the options to choose the connectivity measurements
 # of interest and the method to decompose the frequency content.
@@ -34,12 +34,15 @@ followed by examples on simulated data and real EEG data.
 # the experimental setup and type of tasks.
 #
 # If the data is obtained for repeated trials of a time-locked event,
-# e.g. ERP data, then :func:`mne_connectivity.spectral_connectivity_epochs`
+# e.g. ERP data:footcite:`MNE_ERP_example`, then
+# :func:`mne_connectivity.spectral_connectivity_epochs`
 # is most likely the corresponding function to utilize.
 #
 # If the data is obtained from resting-state or free-moving tasks,
-# e.g. a mirror-game paradigm, then
+# e.g. a mirror-game paradigm:footcite:`Zimmermann2022`, then
 # :func:`mne_connectivity.spectral_connectivity_time` might be better suited.
+#
+# **Assumptions and Interpretations**
 #
 # The way connectivity is computed for the two functions are slightly
 # different, thus their interpretations and the hypotheses being tested are
@@ -62,8 +65,9 @@ followed by examples on simulated data and real EEG data.
 # If there are multiple epochs, the connectivity over time is computed for
 # epoch separately, with the option to average over epochs.
 #
-# To better illustrate the differences between the two functions,
-# we will employ them on two simulated cases.
+# To better illustrate the differences and usages for the two functions,
+# we will employ them on two simulated cases and also analyze a real
+# visual task dataset.
 
 # Author: Qianliang Li <glia@dtu.dk>
 #
@@ -331,8 +335,8 @@ epochs.load_data()  # load the data
 # Visual tasks are known for evoking event related P1 and N1 responses,
 # which occurs around 100 and 170 ms after stimuli presentation in
 # posterior sites. Additionally, increased theta and alpha phase locking
-# have also been observed during the time window of P1 and N1
-# :footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
+# have also been observed during the time window of P1 and
+# N1:footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
 # connectivity in the theta band around P1
 
 sfreq = epochs.info['sfreq']  # the sampling frequency
@@ -416,7 +420,8 @@ plot_sensors_connectivity(epochs.info, con_epochs_matrix)
 # Both functions serve their specific roles, and it's important to use the
 # correct function for the corresponding task to interpret the analysis.
 #
-# We also briefly analyzed a visual task EEG sample, where we found that
+# We also briefly analyzed a visual task EEG sample, using
+# :func:`mne_connectivity.spectral_connectivity_epochs` where we found that
 # there was high global theta connectivity around the timepoint of the P1
 # evoked response. Further analysis revealed the highest connections
 # at this timepoint were between occipital and frontal areas.
