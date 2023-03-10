@@ -34,12 +34,12 @@ followed by examples on simulated data and real EEG data.
 # the experimental setup and type of tasks.
 #
 # If the data is obtained for repeated trials of a time-locked event,
-# e.g. ERP data:footcite:`MNE_ERP_example`, then
+# e.g. ERP data :footcite:`MNE_ERP_example`, then
 # :func:`mne_connectivity.spectral_connectivity_epochs`
 # is most likely the corresponding function to utilize.
 #
 # If the data is obtained from resting-state or free-moving tasks,
-# e.g. a mirror-game paradigm:footcite:`Zimmermann2022`, then
+# e.g. a mirror-game paradigm :footcite:`Zimmermann2022`, then
 # :func:`mne_connectivity.spectral_connectivity_time` might be better suited.
 #
 # **Assumptions and Interpretations**
@@ -336,7 +336,7 @@ epochs.load_data()  # load the data
 # which occurs around 100 and 170 ms after stimuli presentation in
 # posterior sites. Additionally, increased theta and alpha phase locking
 # have also been observed during the time window of P1 and
-# N1:footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
+# N1 :footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
 # connectivity in the theta band around P1
 
 sfreq = epochs.info['sfreq']  # the sampling frequency
