@@ -10,3 +10,4 @@
 .. _Santeri Ruuskanen: https://github.com/ruuskas
 .. _Daniel McCloy: https://dan.mccloy.info
 .. _Sam Steingold: https://github.com/sam-s
+.. _Qianliang Li: https://github.com/Avoide
