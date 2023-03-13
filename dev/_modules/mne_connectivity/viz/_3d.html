@@ -371,7 +371,8 @@
 
 <div class="viewcode-block" id="plot_sensors_connectivity"><a class="viewcode-back" href="../../../generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">plot_sensors_connectivity</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                              <span class="n">cbar_label</span><span class="o">=</span><span class="s1">&#39;Connectivity&#39;</span><span class="p">):</span>
+                              <span class="n">cbar_label</span><span class="o">=</span><span class="s1">&#39;Connectivity&#39;</span><span class="p">,</span>
+                              <span class="n">n_con</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the sensor connectivity in 3D.</span>
 
 <span class="sd">    Parameters</span>
@@ -384,6 +385,8 @@
 <span class="sd">        Indices of selected channels.</span>
 <span class="sd">    cbar_label : str</span>
 <span class="sd">        Label for the colorbar.</span>
+<span class="sd">    n_con : int</span>
+<span class="sd">        Number of strongest connections shown. By default 20.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -413,13 +416,12 @@
     <span class="n">renderer</span><span class="o">.</span><span class="n">sphere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]],</span>
                     <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
 
-    <span class="c1"># Get the strongest connections</span>
-    <span class="n">n_con</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># show up to 20 connections</span>
-    <span class="n">min_dist</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># exclude sensors that are less than 5cm apart</span>
+    <span class="c1"># Get the strongest n_con connections</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="o">-</span><span class="n">n_con</span><span class="p">]</span>
     <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">con</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span>
 
     <span class="c1"># Remove close connections</span>
+    <span class="n">min_dist</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># exclude sensors that are less than 5cm apart</span>
     <span class="n">con_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">con_val</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">):</span>
@@ -514,7 +516,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-03-10.<br>
+    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-03-13.<br>
 
 </p>
 
