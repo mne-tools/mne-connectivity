@@ -23,7 +23,7 @@ Version 0.6 (unreleased)
 Enhancements
 ~~~~~~~~~~~~
 
-- 
+- Add the option to set the number of connections plotted in :func:`mne_connectivity.viz.plot_sensors_connectivity` by `Qianliang Li`_ (:pr:`133`).
 
 Bug
 ~~~
