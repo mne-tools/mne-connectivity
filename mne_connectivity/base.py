@@ -788,6 +788,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     def save(self, fname):
         """Save connectivity data to disk.
 
+        Can later be loaded using the function "read_connectivity".
+
         Parameters
         ----------
         fname : str | pathlib.Path
