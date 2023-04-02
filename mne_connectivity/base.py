@@ -788,7 +788,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     def save(self, fname):
         """Save connectivity data to disk.
 
-        Can later be loaded using the function :func:`mne_connectivity.io.read_connectivity`.
+        Can later be loaded using the function
+        :func:`mne_connectivity.io.read_connectivity`.
 
         Parameters
         ----------
