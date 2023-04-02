@@ -789,7 +789,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         """Save connectivity data to disk.
 
         Can later be loaded using the function
-        :func:`mne_connectivity.io.read_connectivity`.
+        :func:`mne_connectivity.read_connectivity`.
 
         Parameters
         ----------
