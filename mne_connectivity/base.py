@@ -654,6 +654,11 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     def rank(self):
         """Seed and target ranks used in the connectivity."""
         return self.attrs['rank']
+    
+    @property
+    def n_lags(self):
+        """Number of lags used in the model for computing connectivity."""
+        return self.attrs['n_lags']
 
     @property
     def _size(self):
