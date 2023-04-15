@@ -126,8 +126,8 @@ plt.title('Imaginary part of coherency')
 # eigendecomposition of information from the cross-spectral density (Eq. 7 of
 # :footcite:`EwaldEtAl2012`):
 #
-# :math:`MIC=\frac{\boldsymbol{\alpha E \beta}}{\parallel\boldsymbol{\alpha}
-# \parallel \parallel\boldsymbol{\beta}\parallel}`,
+# :math:`MIC=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}{\parallel
+# \boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}\parallel}`,
 #
 # where :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are the
 # spatial filters for the seeds and targets, respectively, and
@@ -335,7 +335,7 @@ plt.plot(mim_red.freqs, mim_red_meansub, linewidth=2,
          label='rank subspace (25) MIM')
 plt.plot(mim.freqs, mim_meansub, linewidth=2, label='standard MIM')
 plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
+plt.ylabel('Mean-corrected connectivity (A.U.)')
 plt.title('Multivariate interaction measure (non-normalised)')
 plt.legend()
 
@@ -374,17 +374,17 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
 # of the imaginary part of coherency to volume conduction comes from the fact
 # that these artefacts have zero phase lag, and hence a zero-valued imaginary
 # component. By projecting the complex-valued coherency to the imaginary axis,
-# signals of a given magnitude with phase lag differences of 90° or 270° see
-# their contributions to the connectivity estimate increased relative to
+# signals of a given magnitude with phase lag differences close to 90° or 270°
+# see their contributions to the connectivity estimate increased relative to
 # comparable signals with phase lag differences close to 0° or 180°. Therefore,
 # the imaginary part of coherency is biased towards connectivity involving 90°
 # and 270° phase lag difference components.
 #
 # Whilst this is not a limitation specific to the multivariate extension of
-# this measure, these multivariate methods can introduce further bias. When
-# maximising the imaginary part of coherency, 90° and 270° phase lag difference
-# components will likely give higher connectivity estimates, and so will be
-# prioritised by the spatial filters.
+# this measure, these multivariate methods can introduce further bias: when
+# maximising the imaginary part of coherency, components with phase lag
+# differences close to 90° and 270° will likely give higher connectivity
+# estimates, and so may be prioritised by the spatial filters.
 #
 # Such a limitation should be kept in mind when estimating connectivity using
 # these methods. Possible sanity checks can involve comparing the spectral
