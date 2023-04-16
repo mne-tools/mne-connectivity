@@ -293,17 +293,17 @@ plt.title('Global interaction measure (normalised)')
 # the data. This risk can be reduced by performing a preliminary dimensionality
 # reduction prior to estimating the connectivity with a singular value
 # decomposition (Eqs. 32 & 33 of :footcite:`EwaldEtAl2012`). The degree of this
-# dimensionality reduction can be specified using the `rank` argument, which by
-# default will not perform any dimensionality reduction (assuming your data is
-# full rank; see below if not). Choosing an expected rank of the data requires
-# *a priori* knowledge about the number of components you expect to observe in
-# the data.
+# dimensionality reduction can be specified using the ``rank`` argument, which
+# by default will not perform any dimensionality reduction (assuming your data
+# is full rank; see below if not). Choosing an expected rank of the data
+# requires *a priori* knowledge about the number of components you expect to
+# observe in the data.
 #
 # When comparing MIC/MIM scores across recordings, **it is highly recommended
 # to estimate connectivity from the same number of channels (or equally from
 # the same degree of rank subspace projection)** to avoid biases in
 # connectivity estimates. Bias can be avoided by specifying a consistent rank
-# subspace to project to using the `rank` argument, standardising your
+# subspace to project to using the ``rank`` argument, standardising your
 # connectivity estimates regardless of changes in e.g. the number of channels
 # across recordings. Note that this does not refer to the number of seeds and
 # targets *within* a connection being identical, rather to the number of seeds
@@ -345,7 +345,7 @@ assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 
 
 ###############################################################################
-# In the case that your data is not full rank and `rank` is left as None, an
+# In the case that your data is not full rank and ``rank`` is left as None, an
 # automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced.
 #
@@ -353,7 +353,7 @@ assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 # computation may fail to detect this, and an error will be raised. In this
 # case, you should inspect the singular values of your data to identify an
 # appropriate degree of dimensionality reduction to perform, which you can then
-# specify manually using the `rank` argument. The code below shows one
+# specify manually using the ``rank`` argument. The code below shows one
 # possible approach for finding an appropriate rank of close-to-singular data.
 
 # %%
