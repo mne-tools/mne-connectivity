@@ -827,7 +827,6 @@ class _PPCEst(_EpochMeanConEstBase):
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
     """Base multivariate state-space Granger causality estimator."""
 
-    autocov = None
     accumulate_psd = False
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
@@ -841,43 +840,96 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
                 'frequency resolution (%i)' % (n_lags, self.freq_res, ))
         self.n_lags = n_lags
 
-    def _compute_con(self, indices, rank, n_epochs):
+    def compute_con(self, indices, ranks, n_epochs):
         """Compute multivariate state-space Granger causality."""
-        assert self.name in ['GC', 'TRGC'], (
+        assert self.name in ['GC', 'GC time-reversed'], (
             'the class name is not recognised, please contact the '
             'mne-connectivity developers')
 
-        autocov = self._compute_autocov(rank, n_epochs)
-        if self.name == "TRGC":
-            autocov = autocov.transpose(0, 1, 3, 2)
-
-        n_times = autocov.shape[0]
-        times = np.arange(n_times)
-        lags = np.arange(autocov.shape[1])
-
-        con_i = 0
-        for seed_idcs, target_idcs in zip([indices[0]], [indices[1]]):
-            self._log_connection_number(con_i)
-
-            con_idcs = [*seed_idcs, *target_idcs]
-            con_autocov = autocov[np.ix_(times, lags, con_idcs, con_idcs)]
-            new_seeds = np.arange(len(seed_idcs))
-            new_targets = np.arange(len(target_idcs))
-
-            A_f, V = self._autocov_to_full_var(con_autocov)
-            A_f_3d = np.reshape(
-                A_f, (n_times, self.n_signals, self.n_signals * self.n_lags),
-                order="F")
-            A, K = self._full_var_to_iss(A_f_3d)
-
-            self.con_scores[con_i] = self._iss_to_usgc(
-                A, A_f_3d, V, new_seeds, new_targets)
-
-    def _compute_autocov(self, n_epochs):
-        """Compute autocovariance from the CSD."""
         csd = self.reshape_csd() / n_epochs
 
         n_times = csd.shape[0]
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        con_i = 0
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                [indices[0]], [indices[1]], ranks[0], ranks[1]):
+            self._log_connection_number(con_i)
+
+            con_idcs = [*seed_idcs, *target_idcs]
+            C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
+
+            new_seeds = np.arange(len(seed_idcs))
+            new_targets = np.arange(len(target_idcs)) + len(seed_idcs)
+
+            # C_bar = self._csd_svd(
+            #    C, new_seeds, new_targets, seed_rank, target_rank)
+            C_bar = C
+            n_signals = seed_rank + target_rank
+
+            autocov = self._compute_autocov(C_bar)
+            if self.name == "GC time-reversed":
+                autocov = autocov.transpose(0, 1, 3, 2)
+
+            A_f, V = self._autocov_to_full_var(autocov)
+            A_f_3d = np.reshape(
+                A_f, (n_times, n_signals, n_signals * self.n_lags),
+                order="F")
+            A, K = self._full_var_to_iss(A_f_3d)
+
+            self.con_scores[con_i] = self._iss_to_ugc(
+                A, A_f_3d, K, V, new_seeds, new_targets)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _csd_svd(self, csd, seeds, targets, seed_rank, target_rank):
+        """Dimensionality reduction of CSD with SVD on the covariance."""
+        # sum over times and epochs to get cov. from CSD
+        cov = csd.sum(axis=(0, 1))
+
+        n_seeds = len(seeds)
+        n_targets = len(targets)
+
+        cov_aa = cov[:n_seeds, :n_seeds]
+        cov_bb = cov[n_seeds:, n_seeds:]
+
+        if seed_rank != n_seeds:
+            U_aa = np.linalg.svd(np.real(cov_aa), full_matrices=False)[0]
+            U_bar_aa = U_aa[:, :seed_rank]
+        else:
+            U_bar_aa = np.identity(n_seeds)
+
+        if target_rank != n_targets:
+            U_bb = np.linalg.svd(np.real(cov_bb), full_matrices=False)[0]
+            U_bar_bb = U_bb[:, :target_rank]
+        else:
+            U_bar_bb = np.identity(n_targets)
+
+        C_aa = csd[..., :n_seeds, :n_seeds]
+        C_ab = csd[..., :n_seeds, n_seeds:]
+        C_bb = csd[..., n_seeds:, n_seeds:]
+        C_ba = csd[..., n_seeds:, :n_seeds]
+
+        C_bar_aa = np.matmul(
+            U_bar_aa.transpose(1, 0), np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(
+            U_bar_aa.transpose(1, 0), np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(
+            U_bar_bb.transpose(1, 0), np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(
+            U_bar_bb.transpose(1, 0), np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
+                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+
+        return C_bar
+
+    def _compute_autocov(self, csd):
+        """Compute autocovariance from the CSD."""
+        n_times = csd.shape[0]
+        n_signals = csd.shape[2]
 
         circular_shifted_csd = np.concatenate(
             [np.flip(np.conj(csd[:, 1:]), axis=1), csd[:, :-1]], axis=1)
@@ -885,18 +937,17 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             circular_shifted_csd, self.freq_res)
         lags_ifft_shifted_csd = np.reshape(
             ifft_shifted_csd[:, :self.n_lags + 1],
-            (n_times, self.n_lags + 1, self.n_signals ** 2), order="F")
+            (n_times, self.n_lags + 1, n_signals ** 2), order="F")
 
         signs = np.repeat([1], self.n_lags + 1).tolist()
         signs[1::2] = [x * -1 for x in signs[1::2]]
         sign_matrix = np.repeat(
-            np.tile(np.array(signs), (self.n_signals ** 2, 1))[np.newaxis],
+            np.tile(np.array(signs), (n_signals ** 2, 1))[np.newaxis],
             n_times, axis=0).transpose(0, 2, 1)
 
         return np.real(np.reshape(
             sign_matrix * lags_ifft_shifted_csd,
-            (n_times, self.n_lags + 1, self.n_signals, self.n_signals),
-            order="F"))
+            (n_times, self.n_lags + 1, n_signals, n_signals), order="F"))
 
     def _block_ifft(self, csd, n_points):
         """Compute block iFFT with n points."""
@@ -910,13 +961,14 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
     def _autocov_to_full_var(self, autocov):
         """Compute full VAR model using Whittle's LWR recursion."""
-        if np.any(np.linalg.det(autocov) == 0):
+        try:
+            A_f, V = self._whittle_lwr_recursion(autocov)
+        except:
             raise ValueError(
-                'the autocovariance matrix is singular; check the singular '
-                'values of your data and specify an appropriate rank argument '
-                '<= the rank of the seeds and targets')
-
-        A_f, V = self._whittle_lwr_recursion(autocov)
+                'computing the VAR model from the autocovariance failed; try '
+                'checking if your data is rank deficient and specify an '
+                'appropriate rank argument <= the rank of the seeds and '
+                'targets')
 
         if not np.isfinite(A_f).all():
             raise ValueError('at least one VAR model coefficient is infinite '
@@ -996,7 +1048,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         return A_f, V
 
-    def full_var_to_iss(self, A_f):
+    def _full_var_to_iss(self, A_f):
         """Compute innovations-form parameters for a state-space model.
 
         Parameters computed from a full VAR model using Aoki's method. For a
@@ -1019,7 +1071,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         return A, K
 
-    def iss_to_ugc(self, A, C, K, V, seeds, targets):
+    def _iss_to_ugc(self, A, C, K, V, seeds, targets):
         """Compute unconditional GC from innovations-form state-space params.
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
@@ -1030,8 +1082,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))  # points
         # on a unit circle in the complex plane, one for each frequency
 
-        H = self.iss_to_tf(A, C, K, z)  # spectral transfer function
-        V_22_1 = np.linalg.cholesky(self.partial_covar(V, seeds, targets))
+        H = self._iss_to_tf(A, C, K, z)  # spectral transfer function
+        V_22_1 = np.linalg.cholesky(self._partial_covar(V, seeds, targets))
         HV = np.matmul(H, np.linalg.cholesky(V))
         S = np.matmul(HV, HV.conj().transpose(0, 1, 3, 2))  # Eq. 6
         S_11 = S[np.ix_(freqs, times, targets, targets)]
@@ -1042,7 +1094,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         return np.real(
             np.log(np.linalg.det(S_11)) - np.log(np.linalg.det(S_11 - HVH)))
 
-    def iss_to_tf(self, A, C, K, z):
+    def _iss_to_tf(self, A, C, K, z):
         """Compute transfer function for innovations-form state-space params.
 
         In the frequency domain, the back-shift operator, z, is a vector of
@@ -1078,7 +1130,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         return H
 
-    def partial_covar(self, V, seeds, targets):
+    def _partial_covar(self, V, seeds, targets):
         """Compute partial covariance of a matrix.
 
         Given a covariance matrix V, the partial covariance matrix of V between
@@ -1088,10 +1140,9 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
         """
-        from numpy import linalg  # is this necessary???
         times = np.arange(V.shape[0])
-        W = linalg.solve(
-            linalg.cholesky(V[np.ix_(times, targets, targets)]),
+        W = np.linalg.solve(
+            np.linalg.cholesky(V[np.ix_(times, targets, targets)]),
             V[np.ix_(times, targets, seeds)],
         )
         W = np.matmul(W.transpose(0, 2, 1), W)
@@ -1371,8 +1422,8 @@ def _check_estimators(method):
     return con_method_types, n_methods, accumulate_psd
 
 
-@verbose
-@fill_doc
+@ verbose
+@ fill_doc
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=None,
                                  mode='multitaper', fmin=None, fmax=np.inf,
@@ -1627,9 +1678,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     .. footbibliography::
     """
     if n_jobs != 1:
-        parallel, my_epoch_spectral_connectivity, _ = \
-            parallel_func(_epoch_spectral_connectivity, n_jobs,
-                          verbose=verbose)
+        parallel, my_epoch_spectral_connectivity, _ = parallel_func(
+            _epoch_spectral_connectivity, n_jobs, verbose=verbose)
 
     # format fmin and fmax and check inputs
     if fmin is None:
@@ -1798,8 +1848,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 % (epoch_idx + 1, epoch_idx + len(epoch_block)))
 
             out = parallel(my_epoch_spectral_connectivity(
-                           data=this_epoch, **call_params)
-                           for this_epoch in epoch_block)
+                data=this_epoch, **call_params)
+                for this_epoch in epoch_block)
             # do the accumulation
             for this_out in out:
                 for _method, parallel_method in zip(con_methods, this_out[0]):
@@ -1850,8 +1900,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)
             for band_idx in range(n_bands):
-                this_con_bands[:, band_idx] =\
-                    np.mean(this_con[:, freq_idx_bands[band_idx]], axis=1)
+                this_con_bands[:, band_idx] = np.mean(
+                    this_con[:, freq_idx_bands[band_idx]], axis=1)
             this_con = this_con_bands
 
             if this_patterns is not None:
