@@ -163,7 +163,7 @@ signals_b_names = [epochs.info['ch_names'][idx] for idx in signals_b]
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
     epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
-    gc_n_lags=20)  # A -> B
+    gc_n_lags=20)  # A -> B (np.array([20]), np.array([20]))
 gc_ba = spectral_connectivity_epochs(
     epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30, rank=None,
     gc_n_lags=20)  # B -> A
@@ -177,7 +177,7 @@ freqs = gc_ab.freqs
 # %%
 
 fig = plt.figure()
-plt.plot(freqs, gc_ab.get_data(), linewidth=2)
+plt.plot(freqs, gc_ab.get_data()[0], linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Connectivity (A.U.)')
 plt.title('GC: [A -> B]')
