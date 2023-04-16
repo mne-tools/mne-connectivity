@@ -1128,13 +1128,13 @@ class _GCEst(_GCEstBase):
 class _TRGCEst(_GCEstBase):
     """time-reversed[seeds -> targets] state-space GC estimator."""
 
-    name = "TRGC"
+    name = "GC time-reversed"
 
 ###############################################################################
 
 
-_multivariate_methods = ['mic', 'mim', 'gc', 'trgc']
-_gc_methods = ['gc', 'trgc']
+_multivariate_methods = ['mic', 'mim', 'gc', 'gc_tr']
+_gc_methods = ['gc', 'gc_tr']
 
 
 def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
@@ -1343,7 +1343,7 @@ _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
                    'dpli': _DPLIEst, 'wpli': _WPLIEst,
                    'wpli2_debiased': _WPLIDebiasedEst, 'mic': _MICEst,
-                   'mim': _MIMEst, 'gc': _GCEst, 'trgc': _TRGCEst}
+                   'mim': _MIMEst, 'gc': _GCEst, 'gc_tr': _TRGCEst}
 
 
 def _check_estimators(method):
@@ -1401,7 +1401,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
         'imcoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
-        'wpli2_debiased', 'gc', 'trgc']``.
+        'wpli2_debiased', 'gc', 'gc_tr']``.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
@@ -1452,13 +1452,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
         but reduce the degree of spectral smooting in the results. Only used
-        if ``method`` contains any of ``['gc', 'trgc']``.
+        if ``method`` contains any of ``['gc', 'gc_tr']``.
     rank : tuple of array | None
         Two arrays with the rank to project the seed and target data to,
         respectively, using singular value decomposition. If None, the rank of
         the data is computed using :func:`mne.compute_rank` and projected to.
         Only used if ``method`` contains any of ``['mic', 'mim', 'gc',
-        'trgc']``.
+        'gc_tr']``.
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
@@ -1616,7 +1616,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             the autoegressive model; and :math:`\boldsymbol{S}` is
             :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.
 
-        'trgc' : State-space time-reversed GC (TRGC)
+        'gc_tr' : State-space GC on time-reversed signals
         :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation
         as for 'gc', but where the autocovariance sequence from which the
         autoregressive model is produced is transposed to mimic the reversal of
