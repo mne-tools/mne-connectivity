@@ -38,43 +38,45 @@ from mne_connectivity import spectral_connectivity_epochs
 # Additionally, it can be of interest to examine the directionality of
 # connectivity between signals, providing additional clarity to how information
 # flows in a system. One such directed measure of connectivity is Granger
-# causality (GC). A signal, :math:`boldsymbol{x}`, is said to Granger-cause
-# another signal, :math:`boldsymbol{y}`, if information from the past of
-# :math:`boldsymbol{x}` improves the prediction of the present of
-# :math:`boldsymbol{y}` over the case where only information from the past of
-# :math:`boldsymbol{y}` is used. Note: this of course does not mean that GC
+# causality (GC). A signal, :math:`\boldsymbol{x}`, is said to Granger-cause
+# another signal, :math:`\boldsymbol{y}`, if information from the past of
+# :math:`\boldsymbol{x}` improves the prediction of the present of
+# :math:`\boldsymbol{y}` over the case where only information from the past of
+# :math:`\boldsymbol{y}` is used. Note: this of course does not mean that GC
 # shows true causality between signals.
 #
-# The degree to which :math:`boldsymbol{x}` and :math:`boldsymbol{y}` can be
+# The degree to which :math:`\boldsymbol{x}` and :math:`\boldsymbol{y}` can be
 # used to predict one another can be quantified using vector autoregressive
 # (VAR) models. Considering the simpler case of time domain connectivity, the
 # VAR models are as follows:
 #
-# :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y`, :math:`Var(\xi_t^y) :=
-# Sigma_y`,
+# :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y`,
 #
-# and :math:`boldsymbol{z}_t = \sum_{k=1}^K \boldsymbol{A}_k
-# \boldsymbol{z}_{t-k} + \boldsymbol{\epsilon}_t`, :math:`\boldsymbol{\Sigma}
-# := \langle \boldsymbol{\epsilon}_t \boldsymbol{\epsilon}_t^T \rangle =
-# \begin{bmatrix} \Sigma_{xx} & \Sigma_{xy} \\ \Sigma_{yx} & \Sigma_{yy}
-# \end{bmatrix}`,
+# :math:`Var(\xi_t^y) := \Sigma_y`,
+#
+# and :math:`\boldsymbol{z}_t = \sum_{k=1}^K \boldsymbol{A}_k
+# \boldsymbol{z}_{t-k} + \boldsymbol{\epsilon}_t`,
+#
+# :math:`\boldsymbol{\Sigma} := \langle \boldsymbol{\epsilon}_t
+# \boldsymbol{\epsilon}_t^T \rangle = \begin{bmatrix} \Sigma_{xx} & \Sigma_{xy}
+# \\ \Sigma_{yx} & \Sigma_{yy} \end{bmatrix}`,
 #
 # representing the reduced and full VAR models, respectively, where: :math:`K`
 # is the order of the VAR model, determining the number of lags, :math:`k`,
 # used; :math:`\boldsymbol{Z} := \begin{bmatrix} \boldsymbol{x} \\
-# \boldsymbol{y} \end{bmatrix}`; and \xi and \boldsymbol{\epsilon} are the
-# residuals of the VAR models. In this way, the information of the signals at
-# time :math:`t` can be represented as a weighted form of the information from
-# the previous timepoints, plus some residual information not encoded in the
-# signals' past. In practice, VAR model parameters are computed from an
-# autocovariance sequence generated from the time-series data using the
-# Yule-Walker equations :footcite:`Whittle1963`.
+# \boldsymbol{y} \end{bmatrix}`; and :math:`\xi` and
+# :math:`\boldsymbol{\epsilon}` are the residuals of the VAR models. In this
+# way, the information of the signals at time :math:`t` can be represented as a
+# weighted form of the information from the previous timepoints, plus some
+# residual information not encoded in the signals' past. In practice, VAR model
+# parameters are computed from an autocovariance sequence generated from the
+# time-series data using the Yule-Walker equations :footcite:`Whittle1963`.
 #
 # By comparing the residuals, or errors, of the reduced and full VAR models, we
 # can therefore estimate how much :math:`\boldsymbol{x}` Granger-causes
 # :math:`\boldsymbol{y}`:
 #
-# :math:`F_{x \rightarrow y} = ln(\frac{\Sigma_y}{\Sigma_{yy}})`,
+# :math:`F_{x \rightarrow y} = ln \Large{(\frac{\Sigma_y}{\Sigma_{yy}})}`,
 #
 # where :math:`F` is the Granger score. For example, if :math:`\boldsymbol{x}`
 # contains no information about :math:`\boldsymbol{y}`, the residuals of the
@@ -83,9 +85,9 @@ from mne_connectivity import spectral_connectivity_epochs
 # information from :math:`\boldsymbol{x}` does not flow to
 # :math:`\boldsymbol{y}`. In contrast, if :math:`\boldsymbol{x}` does help to
 # predict :math:`\boldsymbol{y}`, the residual of the full model will be
-# smaller than that of the reduced model. :math:`\frac{\Sigma_y}{\Sigma_{yy}}`
-# will therefore be greater than 1, leading to a Granger score > 0. Granger
-# scores are thus bound between :math:`[0, \infty)`
+# smaller than that of the reduced model. :math:`\Large{\frac{\Sigma_y}
+# {\Sigma_{yy}}}` will therefore be greater than 1, leading to a Granger score
+# > 0. Granger scores are thus bound between :math:`[0, \infty)`.
 #
 # These same principles apply to spectral GC, which provides information about
 # the directional relationships of signals for individual frequencies. The
@@ -99,9 +101,10 @@ from mne_connectivity import spectral_connectivity_epochs
 # form of spectral GC based on state-space models, enabling the estimation of
 # information flow between whole sets of signals simultaneously:
 #
-# :math:`F_{A \rarrow B}(f) = \Real ln(\frac{det(\boldsymbol{S}_{BB}(f))}
-# {det(\boldsymbol{S}_{BB}(f) - \boldymbol{H}_{ba}(f)
-# \boldsymbol{\Sigma}_{AA \lvert B} \boldsymbol{H}_{ba}^*(f))})`,
+# :math:`F_{A \rightarrow B}(f) = \Re ln \Large{(\frac{
+# det(\boldsymbol{S}_{BB}(f))}{det(\boldsymbol{S}_{BB}(f) -
+# \boldsymbol{H}_{BA}(f) \boldsymbol{\Sigma}_{AA \lvert B}
+# \boldsymbol{H}_{BA}^*(f))})}`,
 #
 # where: :math:`A` and :math:`B` are the seeds and targets, respectively;
 # :math:`f` is a given frequency; :math:`\boldsymbol{H}` is the spectral
@@ -193,7 +196,8 @@ plt.title('GC: [A -> B]')
 # desired. For this, we can simply subtract the Granger scores in the opposite
 # direction, giving us the net GC score:
 #
-# :math:`F_{A \rarrow B}^(net) := F_{A \rarrow B} - F_{B \rarrow A}`.
+# :math:`F_{A \rightarrow B}^{net} := F_{A \rightarrow B} -
+# F_{B \rightarrow A}`.
 #
 # Doing so, we see that...
 
@@ -233,16 +237,16 @@ plt.title('Net GC: [A -> B] - [B -> A]')
 # positive connectivity estimates (even performing favourably against other
 # methods such as the phase slope index) :footcite:`VinckEtAl2015` and retain
 # the ability to correctly identify the net direction of information flow akin
-# to net GC :footcite:`HaufeEtAl2013,WinklerEtAl2016`. This approach is termed
+# to net GC :footcite:`WinklerEtAl2016,HaufeEtAl2013`. This approach is termed
 # time-reversed GC (TRGC):
 #
-# :math`\tilde{D}_{A \rarrow B}^(net) := F_{A \rarrow B}^(net) - F_{\tilde{A}
-# \rarrow \tilde{B}}^(net)`,
+# :math:`\tilde{D}_{A \rightarrow B}^{net} := F_{A \rightarrow B}^{net} -
+# F_{\tilde{A} \rightarrow \tilde{B}}^{net}`,
 #
-# where :math:`\tilde` represents time-reversal, and:
+# where :math:`\sim` represents time-reversal, and:
 #
-# :math:`F_{\tilde{A} \rarrow \tilde{B}}^(net) := F_`F_{\tilde{A} \rarrow
-# \tilde{B}} - F_`F_{\tilde{B} \rarrow \tilde{A}}`.
+# :math:`F_{\tilde{A} \rightarrow \tilde{B}}^{net} := F_{\tilde{A} \rightarrow
+# \tilde{B}} - F_{\tilde{B} \rightarrow \tilde{A}}`.
 #
 # GC on time-reversed signals can be computed simply with the
 # ``method=['gc_tr']``, which will perform the time-reversal of the signals for
