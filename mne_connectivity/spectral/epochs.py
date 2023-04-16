@@ -961,14 +961,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
     def _autocov_to_full_var(self, autocov):
         """Compute full VAR model using Whittle's LWR recursion."""
-        try:
-            A_f, V = self._whittle_lwr_recursion(autocov)
-        except:
+        if np.any(np.linalg.det(autocov) == 0):
             raise ValueError(
-                'computing the VAR model from the autocovariance failed; try '
-                'checking if your data is rank deficient and specify an '
-                'appropriate rank argument <= the rank of the seeds and '
-                'targets')
+                'the autocovariance matrix is singular; check if your data is'
+                'rank deficient and specify an appropriate rank argument <= '
+                'the rank of the seeds and targets')
+
+        A_f, V = self._whittle_lwr_recursion(autocov)
 
         if not np.isfinite(A_f).all():
             raise ValueError('at least one VAR model coefficient is infinite '
