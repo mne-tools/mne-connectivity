@@ -50,16 +50,16 @@ from mne_connectivity import spectral_connectivity_epochs
 # (VAR) models. Considering the simpler case of time domain connectivity, the
 # VAR models are as follows:
 #
-# :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y`,
+# :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y` ,
 #
-# :math:`Var(\xi_t^y) := \Sigma_y`,
+# :math:`Var(\xi_t^y) := \Sigma_y` ,
 #
 # and :math:`\boldsymbol{z}_t = \sum_{k=1}^K \boldsymbol{A}_k
-# \boldsymbol{z}_{t-k} + \boldsymbol{\epsilon}_t`,
+# \boldsymbol{z}_{t-k} + \boldsymbol{\epsilon}_t` ,
 #
 # :math:`\boldsymbol{\Sigma} := \langle \boldsymbol{\epsilon}_t
 # \boldsymbol{\epsilon}_t^T \rangle = \begin{bmatrix} \Sigma_{xx} & \Sigma_{xy}
-# \\ \Sigma_{yx} & \Sigma_{yy} \end{bmatrix}`,
+# \\ \Sigma_{yx} & \Sigma_{yy} \end{bmatrix}` ,
 #
 # representing the reduced and full VAR models, respectively, where: :math:`K`
 # is the order of the VAR model, determining the number of lags, :math:`k`,
@@ -76,7 +76,7 @@ from mne_connectivity import spectral_connectivity_epochs
 # can therefore estimate how much :math:`\boldsymbol{x}` Granger-causes
 # :math:`\boldsymbol{y}`:
 #
-# :math:`F_{x \rightarrow y} = ln \Large{(\frac{\Sigma_y}{\Sigma_{yy}})}`,
+# :math:`F_{x \rightarrow y} = ln \Large{(\frac{\Sigma_y}{\Sigma_{yy}})}` ,
 #
 # where :math:`F` is the Granger score. For example, if :math:`\boldsymbol{x}`
 # contains no information about :math:`\boldsymbol{y}`, the residuals of the
@@ -104,7 +104,7 @@ from mne_connectivity import spectral_connectivity_epochs
 # :math:`F_{A \rightarrow B}(f) = \Re ln \Large{(\frac{
 # det(\boldsymbol{S}_{BB}(f))}{det(\boldsymbol{S}_{BB}(f) -
 # \boldsymbol{H}_{BA}(f) \boldsymbol{\Sigma}_{AA \lvert B}
-# \boldsymbol{H}_{BA}^*(f))})}`,
+# \boldsymbol{H}_{BA}^*(f))})}` ,
 #
 # where: :math:`A` and :math:`B` are the seeds and targets, respectively;
 # :math:`f` is a given frequency; :math:`\boldsymbol{H}` is the spectral
@@ -165,7 +165,7 @@ signals_b_names = [epochs.info['ch_names'][idx] for idx in signals_b]
 
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
+    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=(np.array([5]), np.array([5])),
     gc_n_lags=20)  # A -> B (np.array([20]), np.array([20]))
 gc_ba = spectral_connectivity_epochs(
     epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30, rank=None,
@@ -241,7 +241,7 @@ plt.title('Net GC: [A -> B] - [B -> A]')
 # time-reversed GC (TRGC):
 #
 # :math:`\tilde{D}_{A \rightarrow B}^{net} := F_{A \rightarrow B}^{net} -
-# F_{\tilde{A} \rightarrow \tilde{B}}^{net}`,
+# F_{\tilde{A} \rightarrow \tilde{B}}^{net}` ,
 #
 # where :math:`\sim` represents time-reversal, and:
 #

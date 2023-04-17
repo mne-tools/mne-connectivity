@@ -863,9 +863,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             new_seeds = np.arange(len(seed_idcs))
             new_targets = np.arange(len(target_idcs)) + len(seed_idcs)
 
-            # C_bar = self._csd_svd(
-            #    C, new_seeds, new_targets, seed_rank, target_rank)
-            C_bar = C
+            C_bar = self._csd_svd(
+                C, new_seeds, new_targets, seed_rank, target_rank)
             n_signals = seed_rank + target_rank
 
             autocov = self._compute_autocov(C_bar)
