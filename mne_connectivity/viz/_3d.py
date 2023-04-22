@@ -22,7 +22,8 @@ FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
 
 @fill_doc
 def plot_sensors_connectivity(info, con, picks=None,
-                              cbar_label='Connectivity'):
+                              cbar_label='Connectivity',
+                              n_con=20):
     """Visualize the sensor connectivity in 3D.
 
     Parameters
@@ -35,6 +36,8 @@ def plot_sensors_connectivity(info, con, picks=None,
         Indices of selected channels.
     cbar_label : str
         Label for the colorbar.
+    n_con : int
+        Number of strongest connections shown. By default 20.
 
     Returns
     -------
@@ -64,13 +67,12 @@ def plot_sensors_connectivity(info, con, picks=None,
     renderer.sphere(np.c_[sens_loc[:, 0], sens_loc[:, 1], sens_loc[:, 2]],
                     color=(1, 1, 1), opacity=1, scale=0.005)
 
-    # Get the strongest connections
-    n_con = 20  # show up to 20 connections
-    min_dist = 0.05  # exclude sensors that are less than 5cm apart
+    # Get the strongest n_con connections
     threshold = np.sort(con, axis=None)[-n_con]
     ii, jj = np.where(con >= threshold)
 
     # Remove close connections
+    min_dist = 0.05  # exclude sensors that are less than 5cm apart
     con_nodes = list()
     con_val = list()
     for i, j in zip(ii, jj):

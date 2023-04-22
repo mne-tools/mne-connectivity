@@ -640,12 +640,38 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
 
 
 def _plv(s_xy):
+    """Compute phase-locking value given the cross power spectral density.
+
+    Parameters
+    ----------
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    plv : array-like, shape (n_freqs, n_times)
+        The estimated PLV.
+    """
     s_xy = s_xy / np.abs(s_xy)
     plv = np.abs(s_xy.mean(axis=-1, keepdims=True))
     return plv
 
 
 def _ciplv(s_xy):
+    """Compute corrected imaginary phase-locking value.
+
+    Parameters
+    ----------
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    ciplv : array-like, shape (n_freqs, n_times)
+        The estimated ciPLV.
+    """
     s_xy = s_xy / np.abs(s_xy)
     rplv = np.abs(np.mean(np.real(s_xy), axis=-1, keepdims=True))
     iplv = np.abs(np.mean(np.imag(s_xy), axis=-1, keepdims=True))
@@ -654,12 +680,38 @@ def _ciplv(s_xy):
 
 
 def _pli(s_xy):
+    """Compute phase-lag index given the cross power spectral density.
+
+    Parameters
+    ----------
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    pli : array-like, shape (n_freqs, n_times)
+        The estimated PLI.
+    """
     pli = np.abs(np.mean(np.sign(np.imag(s_xy)),
                          axis=-1, keepdims=True))
     return pli
 
 
 def _wpli(s_xy):
+    """Compute weighted phase-lag index given the cross power spectral density.
+
+    Parameters
+    ----------
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    wpli : array-like, shape (n_freqs, n_times)
+        The estimated wPLI.
+    """
     con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
     con_den = np.mean(np.abs(s_xy.imag), axis=-1, keepdims=True)
     wpli = con_num / con_den
@@ -667,6 +719,23 @@ def _wpli(s_xy):
 
 
 def _coh(s_xx, s_yy, s_xy):
+    """Compute coherence given the cross spectral density and PSD.
+
+    Parameters
+    ----------
+    s_xx : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'x'.
+    s_yy : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'y'.
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    coh : array-like, shape (n_freqs, n_times)
+        The estimated COH.
+    """
     con_num = np.abs(s_xy.mean(axis=-1, keepdims=True))
     con_den = np.sqrt(s_xx.mean(axis=-1, keepdims=True) *
                       s_yy.mean(axis=-1, keepdims=True))
