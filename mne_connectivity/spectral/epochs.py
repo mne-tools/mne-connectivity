@@ -860,12 +860,14 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             con_idcs = [*seed_idcs, *target_idcs]
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
 
-            new_seeds = np.arange(len(seed_idcs))
-            new_targets = np.arange(len(target_idcs)) + len(seed_idcs)
+            con_seeds = np.arange(len(seed_idcs))
+            con_targets = np.arange(len(target_idcs)) + len(seed_idcs)
 
             C_bar = self._csd_svd(
-                C, new_seeds, new_targets, seed_rank, target_rank)
+                C, con_seeds, con_targets, seed_rank, target_rank)
             n_signals = seed_rank + target_rank
+            con_seeds = np.arange(seed_rank)
+            con_targets = np.arange(target_rank) + seed_rank
 
             autocov = self._compute_autocov(C_bar)
             if self.name == "GC time-reversed":
@@ -878,7 +880,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             A, K = self._full_var_to_iss(A_f_3d)
 
             self.con_scores[con_i] = self._iss_to_ugc(
-                A, A_f_3d, K, V, new_seeds, new_targets)
+                A, A_f_3d, K, V, con_seeds, con_targets)
 
             con_i += 1
 
@@ -962,7 +964,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """Compute full VAR model using Whittle's LWR recursion."""
         if np.any(np.linalg.det(autocov) == 0):
             raise ValueError(
-                'the autocovariance matrix is singular; check if your data is'
+                'the autocovariance matrix is singular; check if your data is '
                 'rank deficient and specify an appropriate rank argument <= '
                 'the rank of the seeds and targets')
 
