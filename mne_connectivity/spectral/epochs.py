@@ -105,6 +105,11 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
             # only compute r for lower-triangular region
             indices_use = np.tril_indices(n_signals, -1)
     else:
+        if any(this_method in _gc_methods for this_method in method):
+            if set(indices[0]).intersection(indices[1]):
+                raise ValueError(
+                    'seed and target indices must not intersect when computing'
+                    'Granger causality')
         indices_use = check_indices(indices)
 
     # number of connectivities to compute
