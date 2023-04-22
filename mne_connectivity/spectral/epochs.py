@@ -1764,7 +1764,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
             # check rank input and compute data ranks if necessary
             if multivariate_con:
-                rank = _check_rank_input(rank, data, indices_use)
+                rank = _check_rank_input(rank, data, sfreq, indices_use)
             else:
                 rank = None
                 gc_n_lags = None
@@ -1997,7 +1997,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     return conn_list
 
 
-def _check_rank_input(rank, data, indices):
+def _check_rank_input(rank, data, sfreq, indices):
     """Check the rank argument is appropriate and compute rank if missing."""
     # UNTIL NEW INDICES FORMAT
     indices = np.array([[indices[0]], [indices[1]]])
@@ -2012,7 +2012,8 @@ def _check_rank_input(rank, data, indices):
             ch_types = data.get_channel_types()
         else:
             data_arr = data
-            info = create_info([str(i) for i in range(data_arr.shape[1])], 256)
+            info = create_info([str(i) for i in range(data_arr.shape[1])],
+                               sfreq)
             ch_types = ['eeg' for _ in range(data.shape[1])]
             # 'eeg' channel type used as 'misc' is not recognised as valid
 
@@ -2026,7 +2027,8 @@ def _check_rank_input(rank, data, indices):
                     data_arr[:, con_idcs], con_info, verbose=False)
 
                 rank[group_i][con_i] = sum(
-                    compute_rank(con_data, verbose=False).values())
+                    compute_rank(con_data, tol=1e-10, tol_kind='relative',
+                                 verbose=False).values())
 
         logger.info('Estimated data ranks:')
         con_i = 1
