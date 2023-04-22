@@ -983,10 +983,10 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             np.linalg.cholesky(V)
         except np.linalg.LinAlgError as np_error:
             raise ValueError(
-                'the residuals covariance matrix is not positive-definite; '
-                'check the singular values of your data and specify an '
-                'appropriate rank argument <= the rank of the seeds and '
-                'targets') from np_error
+                'the covariance matrix of the redisuals is not '
+                'positive-definite; check the singular values of your data '
+                'and specify an appropriate rank argument <= the rank of the '
+                'seeds and targets') from np_error
 
         return A_f, V
 
