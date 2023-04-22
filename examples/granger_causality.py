@@ -139,43 +139,44 @@ raw.resample(100)
 epochs = make_fixed_length_epochs(raw, duration=2.0).load_data()
 
 ###############################################################################
-# We will focus on connectivity between sensors over the left and right
-# hemispheres, with 75 sensors in the left hemisphere designated as group A,
-# and 75 sensors in the right hemisphere designated as group B.
+# We will focus on connectivity between sensors over the parietal and occipital
+# cortices, with 20 parietal designated as group A, and 20 occipital sensors
+# designated as group B.
 
 # %%
 
-# left hemisphere sensors
+# parietal sensors
 signals_a = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['loc'][0] < 0]
-# right hemisphere sensors
+             ch_info['ch_name'][2] == 'P']
+# occipital sensors
 signals_b = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['loc'][0] > 0]
+             ch_info['ch_name'][2] == 'O']
 
 # UNTIL NEW INDICES FORMAT
 min_n_chs = min(len(signals_a), len(signals_b))
 signals_a = signals_a[:min_n_chs]
 signals_b = signals_b[:min_n_chs]
 
-indices_ab = (np.array(signals_a), np.array(signals_b))  # A -> B
-indices_ba = (np.array(signals_b), np.array(signals_a))  # B -> A
+indices_ab = (np.array(signals_a), np.array(signals_b))  # A => B
+indices_ba = (np.array(signals_b), np.array(signals_a))  # B => A
 
 signals_a_names = [epochs.info['ch_names'][idx] for idx in signals_a]
 signals_b_names = [epochs.info['ch_names'][idx] for idx in signals_b]
 
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=(np.array([5]), np.array([5])),
-    gc_n_lags=20)  # A -> B (np.array([20]), np.array([20]))
+    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
+    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # A => B
 gc_ba = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30, rank=None,
-    gc_n_lags=20)  # B -> A
+    epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30,
+    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # B => A
 freqs = gc_ab.freqs
 
 
 ###############################################################################
 # Plotting the results, we see that there is a flow of information from our
-# left hemisphere (group A) to our right hemisphere (group B)...
+# parietal sensors (group A) to our occipital sensors (group B) with noticeable
+# peaks at ~8 Hz and ~13 Hz.
 
 # %%
 
@@ -183,7 +184,7 @@ fig = plt.figure()
 plt.plot(freqs, gc_ab.get_data()[0], linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Connectivity (A.U.)')
-plt.title('GC: [A -> B]')
+plt.title('GC: [A => B]')
 
 
 ###############################################################################
@@ -199,17 +200,22 @@ plt.title('GC: [A -> B]')
 # :math:`F_{A \rightarrow B}^{net} := F_{A \rightarrow B} -
 # F_{B \rightarrow A}`.
 #
-# Doing so, we see that...
+# Doing so, we see that the flow of information around 8 Hz is dominant from
+# parietal to occipital sensors (indicated by the positive-valued Granger
+# scores). However, at 13, 18, and 24 Hz, information flow is dominant in the
+# occipital to parietal direction (as shown by the negative-valued Granger
+# scores).
 
 # %%
 
-net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A -> B] - [B -> A]
+net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A => B] - [B => A]
 
 fig = plt.figure()
-plt.plot(freqs, net_gc, linewidth=2)
+plt.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--', color='k')
+plt.plot(freqs, net_gc[0], linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Connectivity (A.U.)')
-plt.title('Net GC: [A -> B] - [B -> A]')
+plt.title('Net GC: [A => B] - [B => A]')
 
 
 ###############################################################################
@@ -261,50 +267,85 @@ plt.title('Net GC: [A -> B] - [B -> A]')
 
 # compute GC on time-reversed signals
 gc_tr_ab = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ab, fmin=5, fmax=30, rank=None,
-    gc_n_lags=20)  # TR[A -> B]
+    epochs, method=['gc_tr'], indices=indices_ab, fmin=5, fmax=30,
+    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[A => B]
 gc_tr_ba = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ba, fmin=5, fmax=30, rank=None,
-    gc_n_lags=20)  # TR[B -> A]
+    epochs, method=['gc_tr'], indices=indices_ba, fmin=5, fmax=30,
+    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[B => A]
 
-# compute net GC on time-reversed signals (TR[A -> B] - TR[B -> A])
+# compute net GC on time-reversed signals (TR[A => B] - TR[B => A])
 net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
 
 # compute TRGC
 trgc = net_gc - net_gc_tr
 
-# plot TRGC
+###############################################################################
+# Plotting the TRGC results, there is a clear peak for information flow
+# dominant in the parietal to occipital direction ~12 Hz.  Additionally, there
+# is dominance of information flow from occipital to parietal sensors around
+# 18-22 Hz. As with the net GC scores, this lower-higher frequency contrast
+# between the directions of information flow remains present, however that is
+# not to say the spectral patterns are identical (e.g. the 24 Hz negative peak
+# is absent for TRGC). The absence of TRGC peaks observed with net GC suggests
+# that such peaks may have been spurious connectivity estimates resulting from
+# noise in the recordings. Altogether, the use of TRGC instead of net GC is
+# generally advised.
+
+# %%
+
 fig = plt.figure()
-plt.plot(freqs, trgc, linewidth=2)
+plt.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--', color='k')
+plt.plot(freqs, trgc[0], linewidth=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Connectivity (A.U.)')
-plt.title('TRGC: net[A -> B] - net time-reversed[B -> A]')
+plt.title('TRGC: net[A => B] - net time-reversed[A => B]')
+
+
+###############################################################################
+# Controlling spectral smoothing with the number of lags
+# ------------------------------------------------------
+#
+# One important parameter when computing GC is the number of lags used when
+# computing the VAR model. A lower number of lags reduces the computational
+# cost, but in the context of spectral GC, leads to a smoothing of Granger
+# scores across frequencies. The number of lags can be specified using the
+# ``gc_n_lags`` parameter. The default value is 40, however there is no correct
+# number of lags to use when computing GC. Instead, you have to use your own
+# best judgement of whether or not your Granger scores look overly smooth.
+#
+# Below is a comparison of Granger scores computed with a different number of
+# lags. In the above examples we had used 20 lags, which we will compare to
+# Granger scores computed with 60 lags. As you can see, the spectra of Granger
+# scores computed with 60 lags is noticeably less smooth, but it does share the
+# same overall pattern.
+
+# %%
+
+gc_ab_60 = spectral_connectivity_epochs(
+    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
+    rank=(np.array([5]), np.array([5])), gc_n_lags=60)  # A => B
+
+plt.figure()
+plt.plot(freqs, gc_ab.get_data()[0], linewidth=2, label='20 lags')
+plt.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label='60 lags')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Connectivity (A.U.)')
+plt.title('GC: [A => B]')
+plt.legend()
 
 
 ###############################################################################
 # Handling high-dimensional data
 # ------------------------------
 #
-# An important issue to consider when using these multivariate methods is
-# overfitting, which risks biasing connectivity estimates to noise in the data.
-# This risk can be reduced by performing a preliminary dimensionality
-# reduction prior to estimating the connectivity with a singular value
-# decomposition. The degree of this dimensionality reduction can be specified
-# using the ``rank`` argument, which by default will not perform any
-# dimensionality reduction (assuming your data is full rank; see below if not).
-# Choosing an expected rank of the data requires *a priori* knowledge about the
-# number of components you expect to observe in the data.
+# An important issue to consider when computing multivariate GC is that the
+# data GC is computed on should not be rank deficient (i.e. must have full
+# rank). More specifically, the autocovariance matrix must not be singular or
+# close to singular.
 #
-# Here, we will be rather conservative and project our seed and target data to
-# only the first 25 components of our rank subspace. Results for GC show...
-
-
-###############################################################################
-# In the case that your data is not full rank and ``rank`` is left as None, an
-# automatic rank computation is performed and an appropriate degree of
-# dimensionality reduction will be enforced.
-#
-# In the related case that your data is close to singular, the automatic rank
+# In the case that your data is not full rank and ``rank`` is left as ``None``,
+# an automatic rank computation is performed and an appropriate degree of
+# dimensionality reduction will be enforced. However, the automatic rank
 # computation may fail to detect this, and an error will be raised. In this
 # case, you should inspect the singular values of your data to identify an
 # appropriate degree of dimensionality reduction to perform, which you can then
@@ -317,6 +358,34 @@ plt.title('TRGC: net[A -> B] - net time-reversed[B -> A]')
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
 # finds how many singular values are "close" to the largest singular value
 rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
+
+###############################################################################
+# Nonethless, even in situations where you specify an appropriate rank, it is
+# not guaranteed that the subsequently-computed autocovariance sequence will
+# retain this non-singularity (this can depend on, e.g. the number of lags).
+# Hence, you may also encounter situations where you have to specify a rank
+# less than that of your data to ensure that the autocovariance sequence is
+# non-singular.
+#
+# In the above examples, notice how a rank of 5 was given, despite there being
+# 20 channels in the seeds and targets. Attempting to compute GC on the
+# original data would not succeed, given that the resulting autocovariance
+# sequence is singular, as the example below shows.
+
+# %%
+
+try:
+    spectral_connectivity_epochs(
+        epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
+        gc_n_lags=20)  # A => B
+    print('Success!')
+except ValueError as error:
+    print('\nCaught the following error:\n' + repr(error))
+
+###############################################################################
+# Rigorous checks are implemented to identify any such instances which would
+# otherwise cause the GC computation to produce erroneous results. You can
+# therefore be confident as an end-user that these edge cases will be caught.
 
 
 ###############################################################################

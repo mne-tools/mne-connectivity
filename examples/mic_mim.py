@@ -345,8 +345,8 @@ assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 
 
 ###############################################################################
-# In the case that your data is not full rank and ``rank`` is left as None, an
-# automatic rank computation is performed and an appropriate degree of
+# In the case that your data is not full rank and ``rank`` is left as ``None``,
+# an automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced.
 #
 # In the related case that your data is close to singular, the automatic rank
