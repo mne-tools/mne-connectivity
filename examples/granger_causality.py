@@ -188,7 +188,7 @@ plt.title('GC: [A => B]')
 
 
 ###############################################################################
-# Drivers and recievers: analysing the net direction of information flow
+# Drivers and receivers: analysing the net direction of information flow
 # ----------------------------------------------------------------------
 #
 # Although analysing connectivity in a given direction can be of interest,

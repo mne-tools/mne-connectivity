@@ -1507,7 +1507,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
-        but reduce the degree of spectral smooting in the results. Only used
+        but reduce the degree of spectral smoothing in the results. Only used
         if ``method`` contains any of ``['gc', 'gc_tr']``.
     rank : tuple of array | None
         Two arrays with the rank to project the seed and target data to,
