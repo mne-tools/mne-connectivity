@@ -1662,14 +1662,14 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         'gc' : State-space Granger causality (GC) :footcite:`BarnettSeth2015`
         given by:
 
-            :math:`GC = ln(\Large{\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
+            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
             \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
             \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,
 
             where: :math:`s` and :math:`t` represent the seeds and targets,
             respectively; :math:`\boldsymbol{H}` is the spectral transfer
             function; :math:`\boldsymbol{\Sigma}` is the residuals matrix of
-            the autoegressive model; and :math:`\boldsymbol{S}` is
+            the autoregressive model; and :math:`\boldsymbol{S}` is
             :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.
 
         'gc_tr' : State-space GC on time-reversed signals
