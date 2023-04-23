@@ -534,14 +534,9 @@ def test_multivar_spectral_connectivity(method, mode):
                 sfreq=sfreq, rank=(np.array([2]), np.array([2])))
 
     # check scores are different for GC and GC time-reversed
-    if 'gc' in method and 'gc_tr' in method:
+    if isinstance(method, list) and 'gc' in method and 'gc_tr' in method:
         assert not np.allclose(con[method.index('gc')].get_data(),
                                con[method.index('gc_tr')].get_data())
-
-
-test_multivar_spectral_connectivity('mic', 'multitaper')
-test_multivar_spectral_connectivity('gc', 'multitaper')
-test_multivar_spectral_connectivity(['gc', 'gc_tr'], 'multitaper')
 
 
 @ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
