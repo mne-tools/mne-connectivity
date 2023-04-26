@@ -1893,15 +1893,17 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         this_con = conn_method.con_scores
         this_patterns = conn_method.patterns
 
-        assert this_con.shape[0] == n_cons, (
-            'first dimension of connectivity scores does not match the '
-            'number of connections; please contact the mne-connectivity '
-            'developers')
-        if faverage:
-            assert this_con.shape[1] == n_freqs, (
-                'second dimension of connectivity scores does not match the '
-                'number of frequencies; please contact the mne-connectivity '
+        if this_con.shape[0] != n_cons:
+            raise ValueError(
+                'first dimension of connectivity scores does not match the '
+                'number of connections; please contact the mne-connectivity '
                 'developers')
+        if faverage:
+            if this_con.shape[1] != n_freqs:
+                raise ValueError(
+                    'second dimension of connectivity scores does not match '
+                    'the number of frequencies; please contact the '
+                    'mne-connectivity developers')
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)
             for band_idx in range(n_bands):
