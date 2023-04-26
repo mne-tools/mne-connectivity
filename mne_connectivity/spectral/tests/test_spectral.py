@@ -539,6 +539,31 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
                                con[method.index('gc_tr')].get_data())
 
 
+@pytest.mark.parametrize('method', ['mic', 'mim', 'gc'])
+def test_multivar_spectral_connectivity_parallel(method):
+    """Test multivar. freq.-domain connectivity methods run in parallel."""
+    sfreq = 50.
+    n_signals = 4
+    n_epochs = 8
+    n_times = 256
+    trans_bandwidth = 2.
+    tmin = 0.
+    tmax = (n_times - 1) / sfreq
+
+    # 5Hz..15Hz
+    fstart, fend = 5.0, 15.0
+    data, _ = create_test_dataset(
+        sfreq, n_signals=n_signals, n_epochs=n_epochs, n_times=n_times,
+        tmin=tmin, tmax=tmax,
+        fstart=fstart, fend=fend, trans_bandwidth=trans_bandwidth)
+
+    indices = (np.arange(0, 2), np.arange(2, 4))
+
+    spectral_connectivity_epochs(
+        data, method=method, mode="multitaper", indices=indices, sfreq=sfreq,
+        gc_n_lags=10, n_jobs=2)
+
+
 @ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
 def test_epochs_tmin_tmax(kind):
     """Test spectral.spectral_connectivity_epochs with epochs and arrays."""
