@@ -411,8 +411,8 @@ def test_spectral_connectivity(method, mode):
 @pytest.mark.parametrize('method', ['mic', 'mim', 'gc', 'gc_tr',
                                     ['mic', 'mim', 'gc', 'gc_tr']])
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
-def test_multivar_spectral_connectivity(method, mode):
-    """Test multivariate frequency-domain connectivity methods."""
+def test_multivar_spectral_connectivity_error_catch(method, mode):
+    """Test error catching for multivar. freq.-domain connectivity methods."""
     sfreq = 50.
     n_signals = 4
     n_epochs = 8
