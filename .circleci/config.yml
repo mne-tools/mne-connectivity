@@ -70,7 +70,7 @@ jobs:
               - pip-cache
         - restore_cache:
             keys:
-              - user-install-bin-cachev1
+              - user-install-bin-cache-310
 
         - run:
             name: Get Python running and install dependencies
@@ -83,9 +83,9 @@ jobs:
               - ~/.cache/pip
 
         - save_cache:
-            key: user-install-bin-cachev1
+            key: user-install-bin-cache-310
             paths:
-              - ~/.local/lib/python3.8/site-packages
+              - ~/.local/lib/python3.10/site-packages
               - ~/.local/bin
 
         # Look at what we have and fail early if there is some library conflict
