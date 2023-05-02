@@ -33,7 +33,9 @@ jobs:
             name: Set BASH_ENV
             command: |
               set -e
-              ./tools/setup_xvfb.sh
+              curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
+              chmod +x setup_xvfb.sh
+              ./setup_xvfb.sh
               sudo apt install -qq graphviz optipng python3.10-venv python3-venv libxft2 ffmpeg
               python3.10 -m venv ~/python_env
               echo "set -e" >> $BASH_ENV
@@ -70,12 +72,14 @@ jobs:
               - pip-cache
         - restore_cache:
             keys:
-              - user-install-bin-cachev1
+              - user-install-bin-cache-310
 
         - run:
             name: Get Python running and install dependencies
             command: |
-              ./tools/circleci_dependencies.sh
+              curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
+              chmod +x circleci_dependencies.sh
+              ./circleci_dependencies.sh
 
         - save_cache:
             key: pip-cache
@@ -83,9 +87,9 @@ jobs:
               - ~/.cache/pip
 
         - save_cache:
-            key: user-install-bin-cachev1
+            key: user-install-bin-cache-310
             paths:
-              - ~/.local/lib/python3.8/site-packages
+              - ~/.local/lib/python3.10/site-packages
               - ~/.local/bin
 
         # Look at what we have and fail early if there is some library conflict
