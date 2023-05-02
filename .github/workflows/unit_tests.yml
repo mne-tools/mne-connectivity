@@ -46,7 +46,10 @@ jobs:
         # with:
         #   path: ~/.cache/pip
         #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
-      - run: ./tools/setup_xvfb.sh
+      - run: |
+          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
+          chmod +x setup_xvfb.sh
+          ./setup_xvfb.sh
         name: 'Setup xvfb'
         if: runner.os == 'Linux'
       - name: Set up Python ${{ matrix.python-version }}
@@ -132,7 +135,10 @@ jobs:
         #   path: ~/.cache/pip
         #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
 
-      - run: ./tools/setup_xvfb.sh
+      - run: |
+          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
+          chmod +x setup_xvfb.sh
+          ./setup_xvfb.sh
         name: 'Setup xvfb'
         if: runner.os == 'Linux'
 

@@ -49,7 +49,10 @@ EXTRAS_REQUIRE = {
         'sip',
         'pyvista',
         'pyvistaqt',
-        'pyqt5'],
+        'pyqt5',
+        'h5netcdf',
+        'pyside6',
+    ],
     'tests': [
         'pytest',
         'pytest-cov',

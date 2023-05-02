@@ -28,7 +28,10 @@ jobs:
       PYTHON_VERSION: '3.9'
     steps:
       - uses: actions/checkout@v2
-      - run: ./tools/setup_xvfb.sh
+      - run: |
+          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
+          chmod +x setup_xvfb.sh
+          ./setup_xvfb.sh
         name: 'Setup xvfb'
       - uses: conda-incubator/setup-miniconda@v2
         with:
@@ -39,7 +42,9 @@ jobs:
       - shell: bash -el {0}
         run: |
           conda activate mne
-          source tools/get_minimal_commands.sh
+          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh -o get_minimal_commands.sh
+          chmod +x get_minimal_commands.sh
+          source ./get_minimal_commands.sh
           pip install -r requirements_testing.txt
         name: 'Install dependencies'
 
