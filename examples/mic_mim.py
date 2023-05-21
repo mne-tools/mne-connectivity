@@ -50,8 +50,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # To overcome this limitation, spatial filters can be used to estimate
 # connectivity free from this source mixing-dependent bias, which additionally
 # increases the signal-to-noise ratio and allows signals to be analysed in a
-# multivariate manner :footcite:`EwaldEtAl2012`. This leads to the following
-# methods: the maximised imaginary part of coherency (MIC); and the
+# multivariate manner :footcite:`EwaldEtAl2012`. This approach leads to the
+# following methods: the maximised imaginary part of coherency (MIC); and the
 # multivariate interaction measure (MIM).
 #
 # We start by loading some example MEG data and dividing it into
@@ -60,7 +60,7 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # %%
 
 raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
-raw.pick_types(meg=True, eeg=False, ref_meg=False)
+raw.pick('mag')
 raw.crop(50., 110.).load_data()
 raw.notch_filter(50)
 raw.resample(100)
@@ -81,7 +81,7 @@ seeds = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
 targets = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
            ch_info['loc'][0] > 0]
 
-# UNTIL NEW INDICES FORMAT
+# UNTIL RAGGED INDICES SUPPORTED
 min_n_chs = min(len(seeds), len(targets))
 seeds = seeds[:min_n_chs]
 targets = targets[:min_n_chs]
@@ -108,12 +108,12 @@ imcoh = spectral_connectivity_epochs(
 # weaker peak around 27 Hz.
 
 # %%
-fig = plt.figure()
-plt.plot(imcoh.freqs, np.mean(np.abs(imcoh.get_data()), axis=0),
-         linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Absolute connectivity (A.U.)')
-plt.title('Imaginary part of coherency')
+fig, axis = plt.subplots(1, 1)
+axis.plot(imcoh.freqs, np.mean(np.abs(imcoh.get_data()), axis=0),
+          linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Absolute connectivity (A.U.)')
+fig.suptitle('Imaginary part of coherency')
 
 
 ###############################################################################
@@ -146,11 +146,11 @@ plt.title('Imaginary part of coherency')
 
 # %%
 
-fig = plt.figure()
-plt.plot(mic.freqs, np.abs(mic.get_data()[0]), linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Absolute connectivity (A.U.)')
-plt.title('Maximised imaginary part of coherency')
+fig, axis = plt.subplots(1, 1)
+axis.plot(mic.freqs, np.abs(mic.get_data()[0]), linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Absolute connectivity (A.U.)')
+fig.suptitle('Maximised imaginary part of coherency')
 
 
 ###############################################################################
@@ -179,14 +179,15 @@ plt.title('Maximised imaginary part of coherency')
 fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
-seed_pattern = np.mean(mic.patterns[0][0][:, fband_idx[0]:fband_idx[1] + 1],
+patterns = mic.attrs["patterns"]
+seed_pattern = np.mean(patterns[0][0][:, fband_idx[0]:fband_idx[1] + 1],
                        axis=1)
-target_pattern = np.mean(mic.patterns[1][0][:, fband_idx[0]:fband_idx[1] + 1],
+target_pattern = np.mean(patterns[1][0][:, fband_idx[0]:fband_idx[1] + 1],
                          axis=1)
 
 # store the patterns for plotting
-seed_info = epochs.copy().pick_channels(seed_names).info
-target_info = epochs.copy().pick_channels(target_names).info
+seed_info = epochs.copy().pick(seed_names).info
+target_info = epochs.copy().pick(target_names).info
 seed_pattern = EvokedArray(seed_pattern[:, np.newaxis], seed_info)
 target_pattern = EvokedArray(target_pattern[:, np.newaxis], target_info)
 
@@ -230,7 +231,8 @@ plt.show()
 # where again the frequency dependence is omitted. Unlike MIC, MIM is
 # positive-valued, and is not bound below 1. Without normalisation, MIM can be
 # thought of as reflecting the total interaction between the seeds and targets.
-# With normalisation, MIM lies in the range :math:`[0, 1]`, and reflects the
+# MIM can be normalised to lie in the range :math:`[0, 1]` by dividing the
+# scores by the number of channels in the seeds and targets, representing the
 # total interaction *per channel*. **MIM is not normalised by default in this
 # implementation**.
 #
@@ -239,16 +241,16 @@ plt.show()
 # prominent. This suggests that, across all components in the data, there may
 # be more lower frequency connectivity sources than higher frequency sources.
 # Thus, when combining these different components in MIM, the peak around 10 Hz
-# remains, but the 13-18 Hz connectivity is diminished relative to  the single,
+# remains, but the 13-18 Hz connectivity is diminished relative to the single,
 # largest connectivity component of MIC.
 
 # %%
 
-fig = plt.figure()
-plt.plot(mim.freqs, mim.get_data()[0], linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Absolute connectivity (A.U.)')
-plt.title('Multivariate interaction measure (non-normalised)')
+fig, axis = plt.subplots(1, 1)
+axis.plot(mim.freqs, mim.get_data()[0], linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Absolute connectivity (A.U.)')
+fig.suptitle('Multivariate interaction measure (non-normalised)')
 
 
 ###############################################################################
@@ -263,7 +265,8 @@ plt.title('Multivariate interaction measure (non-normalised)')
 # a similar principle applies in the case where MIC is computed for identical
 # seeds and targets. Like MIM, GIM is also not bound below 1, but it can be
 # normalised to lie in the range :math:`[0, 1]` by dividing by :math:`N/2`
-# (where :math:`N` is the number of channels).
+# (where :math:`N` is the number of channels; **GIM is also not normalised by
+# default in this implementation**).
 #
 # With GIM, we find a broad connectivity peak around 10 Hz, with an additional
 # peak around 20 Hz. The differences observed with GIM highlight the presence
@@ -277,11 +280,11 @@ gim = spectral_connectivity_epochs(
 
 normalised_gim = gim.get_data()[0] / (len(indices[0]) / 2)
 
-fig = plt.figure()
-plt.plot(gim.freqs, normalised_gim, linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
-plt.title('Global interaction measure (normalised)')
+fig, axis = plt.subplots(1, 1)
+axis.plot(gim.freqs, normalised_gim, linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Connectivity (A.U.)')
+fig.suptitle('Global interaction measure (normalised)')
 
 
 ###############################################################################
@@ -309,15 +312,15 @@ plt.title('Global interaction measure (normalised)')
 # targets *within* a connection being identical, rather to the number of seeds
 # and targets *across* connections.
 #
-# Here, we will be rather conservative and project our seed and target data to
-# only the first 25 components of our rank subspace. Results for MIM show that
-# the general spectral pattern of connectivity is retained in the rank
-# subspace-projected data, suggesting that a fair degree of redundant
-# connectivity information is contained in the remaining 50 components of the
-# seed and target data. We also assert that the spatial patterns of MIC are
-# returned in the original sensor space despite this rank subspace projection,
-# being reconstructed using the products of the singular value decomposition
-# (Eqs. 46 & 47 of :footcite:`EwaldEtAl2012`).
+# Here, we will project our seed and target data to only the first 25
+# components of our rank subspace. Results for MIM show that the general
+# spectral pattern of connectivity is retained in the rank subspace-projected
+# data, suggesting that a fair degree of redundant connectivity information is
+# contained in the remaining 50 components of the seed and target data. We also
+# assert that the spatial patterns of MIC are returned in the original sensor
+# space despite this rank subspace projection, being reconstructed using the
+# products of the singular value decomposition (Eqs. 46 & 47 of
+# :footcite:`EwaldEtAl2012`).
 
 # %%
 
@@ -330,18 +333,20 @@ mim_red_meansub = mim_red.get_data()[0] - mim_red.get_data()[0].mean()
 mim_meansub = mim.get_data()[0] - mim.get_data()[0].mean()
 
 # compare standard and rank subspace-projected MIM
-fig = plt.figure()
-plt.plot(mim_red.freqs, mim_red_meansub, linewidth=2,
-         label='rank subspace (25) MIM')
-plt.plot(mim.freqs, mim_meansub, linewidth=2, label='standard MIM')
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Mean-corrected connectivity (A.U.)')
-plt.title('Multivariate interaction measure (non-normalised)')
-plt.legend()
+fig, axis = plt.subplots(1, 1)
+axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2,
+          label='rank subspace (25) MIM')
+axis.plot(mim.freqs, mim_meansub, linewidth=2, label='standard MIM')
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Mean-corrected connectivity (A.U.)')
+axis.legend()
+fig.suptitle('Multivariate interaction measure (non-normalised)')
 
 # no. channels equal with and without projecting to rank subspace for patterns
-assert mic.patterns[0][0].shape[0] == mic_red.patterns[0][0].shape[0]
-assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
+assert (mic.attrs["patterns"][0][0].shape[0]
+        == mic_red.attrs["patterns"][0][0].shape[0])
+assert (mic.attrs["patterns"][1][0].shape[0]
+        == mic_red.attrs["patterns"][1][0].shape[0])
 
 
 ###############################################################################
@@ -349,7 +354,7 @@ assert mic.patterns[1][0].shape[0] == mic_red.patterns[1][0].shape[0]
 # an automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced.
 #
-# In the related case that your data is close to singular, the automatic rank
+# In the case that your data is close to singular, the automatic rank
 # computation may fail to detect this, and an error will be raised. In this
 # case, you should inspect the singular values of your data to identify an
 # appropriate degree of dimensionality reduction to perform, which you can then
@@ -392,8 +397,9 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
 # computed on the same data, as well as comparing to other multivariate
 # measures, such as canonical coherence :footcite:`VidaurreEtAl2019`.
 
-
 ###############################################################################
 # References
 # ----------
 # .. footbibliography::
+
+# %%

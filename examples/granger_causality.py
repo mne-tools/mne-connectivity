@@ -19,7 +19,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 import mne
-from mne import make_fixed_length_epochs
 from mne.datasets.fieldtrip_cmc import data_path
 from mne_connectivity import spectral_connectivity_epochs
 
@@ -42,8 +41,8 @@ from mne_connectivity import spectral_connectivity_epochs
 # another signal, :math:`\boldsymbol{y}`, if information from the past of
 # :math:`\boldsymbol{x}` improves the prediction of the present of
 # :math:`\boldsymbol{y}` over the case where only information from the past of
-# :math:`\boldsymbol{y}` is used. Note: this of course does not mean that GC
-# shows true causality between signals.
+# :math:`\boldsymbol{y}` is used. Note: GC does not make any assertions about
+# the true causality between signals.
 #
 # The degree to which :math:`\boldsymbol{x}` and :math:`\boldsymbol{y}` can be
 # used to predict one another can be quantified using vector autoregressive
@@ -51,12 +50,10 @@ from mne_connectivity import spectral_connectivity_epochs
 # VAR models are as follows:
 #
 # :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y` ,
-#
 # :math:`Var(\xi_t^y) := \Sigma_y` ,
 #
 # and :math:`\boldsymbol{z}_t = \sum_{k=1}^K \boldsymbol{A}_k
 # \boldsymbol{z}_{t-k} + \boldsymbol{\epsilon}_t` ,
-#
 # :math:`\boldsymbol{\Sigma} := \langle \boldsymbol{\epsilon}_t
 # \boldsymbol{\epsilon}_t^T \rangle = \begin{bmatrix} \Sigma_{xx} & \Sigma_{xy}
 # \\ \Sigma_{yx} & \Sigma_{yy} \end{bmatrix}` ,
@@ -87,19 +84,19 @@ from mne_connectivity import spectral_connectivity_epochs
 # predict :math:`\boldsymbol{y}`, the residual of the full model will be
 # smaller than that of the reduced model. :math:`\Large{\frac{\Sigma_y}
 # {\Sigma_{yy}}}` will therefore be greater than 1, leading to a Granger score
-# > 0. Granger scores are thus bound between :math:`[0, \infty)`.
+# > 0. Granger scores are bound between :math:`[0, \infty)`.
 #
 # These same principles apply to spectral GC, which provides information about
-# the directional relationships of signals for individual frequencies. The
-# autocovariance sequence is instead generated from an inverse Fourier
-# transform applied to the cross-spectral density of the signals, and a
-# spectral transfer function is required to translate information from the VAR
+# the directionality of connectivity for individual frequencies. For spectral
+# GC, the autocovariance sequence is generated from an inverse Fourier
+# transform applied to the cross-spectral density of the signals. Additionally,
+# a spectral transfer function is used to translate information from the VAR
 # models back into the frequency domain before computing the final Granger
 # scores.
 #
-# Barnett and Seth :footcite:`BarnettSeth2015` have defined a multivariate
-# form of spectral GC based on state-space models, enabling the estimation of
-# information flow between whole sets of signals simultaneously:
+# Barnett and Seth (2015) :footcite:`BarnettSeth2015` have defined a
+# multivariate form of spectral GC based on state-space models, enabling the
+# estimation of information flow between whole sets of signals simultaneously:
 #
 # :math:`F_{A \rightarrow B}(f) = \Re ln \Large{(\frac{
 # det(\boldsymbol{S}_{BB}(f))}{det(\boldsymbol{S}_{BB}(f) -
@@ -131,17 +128,17 @@ from mne_connectivity import spectral_connectivity_epochs
 # %%
 
 raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
-raw.pick_types(meg=True, eeg=False, ref_meg=False)
+raw.pick('mag')
 raw.crop(50., 110.).load_data()
 raw.notch_filter(50)
 raw.resample(100)
 
-epochs = make_fixed_length_epochs(raw, duration=2.0).load_data()
+epochs = mne.make_fixed_length_epochs(raw, duration=2.0).load_data()
 
 ###############################################################################
 # We will focus on connectivity between sensors over the parietal and occipital
-# cortices, with 20 parietal designated as group A, and 20 occipital sensors
-# designated as group B.
+# cortices, with 20 parietal sensors designated as group A, and 20 occipital
+# sensors designated as group B.
 
 # %%
 
@@ -152,7 +149,7 @@ signals_a = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
 signals_b = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
              ch_info['ch_name'][2] == 'O']
 
-# UNTIL NEW INDICES FORMAT
+# UNTIL RAGGED INDICES SUPPORTED
 min_n_chs = min(len(signals_a), len(signals_b))
 signals_a = signals_a[:min_n_chs]
 signals_b = signals_b[:min_n_chs]
@@ -180,11 +177,11 @@ freqs = gc_ab.freqs
 
 # %%
 
-fig = plt.figure()
-plt.plot(freqs, gc_ab.get_data()[0], linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
-plt.title('GC: [A => B]')
+fig, axis = plt.subplots(1, 1)
+axis.plot(freqs, gc_ab.get_data()[0], linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Connectivity (A.U.)')
+fig.suptitle('GC: [A => B]')
 
 
 ###############################################################################
@@ -210,41 +207,42 @@ plt.title('GC: [A => B]')
 
 net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A => B] - [B => A]
 
-fig = plt.figure()
-plt.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--', color='k')
-plt.plot(freqs, net_gc[0], linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
-plt.title('Net GC: [A => B] - [B => A]')
+fig, axis = plt.subplots(1, 1)
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
+          color='k')
+axis.plot(freqs, net_gc[0], linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Connectivity (A.U.)')
+fig.suptitle('Net GC: [A => B] - [B => A]')
 
 
 ###############################################################################
 # Improving the robustness of connectivity estimates with time-reversal
 # ---------------------------------------------------------------------
 #
-# One limitation of all GC methods is the risk of connectivity estimates being
+# One limitation of GC methods is the risk of connectivity estimates being
 # contaminated with noise. For instance, consider the case where, due to
 # volume conduction, multiple sensors detect activity from the same source.
-# Naturally, information recorded at these sensors mutually help predicting
+# Naturally, information recorded at these sensors mutually help to predict
 # the activity of one another, leading to spurious estimates of directed
 # connectivity which one may incorrectly attribute to information flow between
-# different brain regions. On the other hand, even if there is no source mixing
-# in the sensors, the presence of correlated noise between sensors can
-# similarly bias directed connectivity estimates.
+# different brain regions. On the other hand, even if there is no source
+# mixing, the presence of correlated noise between sensors can similarly bias
+# directed connectivity estimates.
 #
-# To address this issue, Haufe *et al.* :footcite:`HaufeEtAl2013` propose
-# contrasting causality scores obtained on the original time-series to those
-# obtained on the reversed time-series. The idea behind this approach is as
-# follows: if temporal order is crucial in distinguishing a driver from a
+# To address this issue, Haufe *et al.* (2013) :footcite:`HaufeEtAl2013`
+# propose contrasting causality scores obtained on the original time-series to
+# those obtained on the reversed time-series. The idea behind this approach is
+# as follows: if temporal order is crucial in distinguishing a driver from a
 # recipient, then reversing the temporal order should reduce, if not flip, an
 # estimate of directed connectivity. In practice, time-reversal is implemented
 # as a transposition of the autocovariance sequence used to compute GC. Several
-# studies have shown that that such an approach can reduce the degree of false
-# positive connectivity estimates (even performing favourably against other
-# methods such as the phase slope index) :footcite:`VinckEtAl2015` and retain
-# the ability to correctly identify the net direction of information flow akin
-# to net GC :footcite:`WinklerEtAl2016,HaufeEtAl2013`. This approach is termed
-# time-reversed GC (TRGC):
+# studies have shown that that such an approach can reduce the degree of
+# false-positive connectivity estimates (even performing favourably against
+# other methods such as the phase slope index) :footcite:`VinckEtAl2015` and
+# retain the ability to correctly identify the net direction of information
+# flow akin to net GC :footcite:`WinklerEtAl2016,HaufeEtAl2013`. This approach
+# is termed time-reversed GC (TRGC):
 #
 # :math:`\tilde{D}_{A \rightarrow B}^{net} := F_{A \rightarrow B}^{net} -
 # F_{\tilde{A} \rightarrow \tilde{B}}^{net}` ,
@@ -254,14 +252,13 @@ plt.title('Net GC: [A => B] - [B => A]')
 # :math:`F_{\tilde{A} \rightarrow \tilde{B}}^{net} := F_{\tilde{A} \rightarrow
 # \tilde{B}} - F_{\tilde{B} \rightarrow \tilde{A}}`.
 #
-# GC on time-reversed signals can be computed simply with the
-# ``method=['gc_tr']``, which will perform the time-reversal of the signals for
-# the end-user. Note that **time-reversed results should only be interpreted in
-# the context of net results**. In the example below, notice how the outputs
-# are not used directly, but rather used to produce net scores of the
-# time-reversed signals. The net scores of the time-reversed signals can then
-# be subtracted from the net scores of the original signals to produce the
-# final TRGC scores.
+# GC on time-reversed signals can be computed simply with ``method=['gc_tr']``,
+# which will perform the time-reversal of the signals for the end-user. Note
+# that **time-reversed results should only be interpreted in the context of net
+# results**. In the example below, notice how the outputs are not used
+# directly, but rather used to produce net scores of the time-reversed signals.
+# The net scores of the time-reversed signals can then be subtracted from the
+# net scores of the original signals to produce the final TRGC scores.
 
 # %%
 
@@ -286,19 +283,20 @@ trgc = net_gc - net_gc_tr
 # 18-22 Hz. As with the net GC scores, this lower-higher frequency contrast
 # between the directions of information flow remains present, however that is
 # not to say the spectral patterns are identical (e.g. the 24 Hz negative peak
-# is absent for TRGC). The absence of TRGC peaks observed with net GC suggests
-# that such peaks may have been spurious connectivity estimates resulting from
-# noise in the recordings. Altogether, the use of TRGC instead of net GC is
-# generally advised.
+# is absent for TRGC). The absence of certain connectivity peaks for TRGC
+# suggests that these estimates may have been spurious connectivity resulting
+# from source mixing or correlated noise in the recordings. Altogether, the use
+# of TRGC instead of net GC is generally advised.
 
 # %%
 
-fig = plt.figure()
-plt.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--', color='k')
-plt.plot(freqs, trgc[0], linewidth=2)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
-plt.title('TRGC: net[A => B] - net time-reversed[A => B]')
+fig, axis = plt.subplots(1, 1)
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
+          color='k')
+axis.plot(freqs, trgc[0], linewidth=2)
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Connectivity (A.U.)')
+fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
 
 
 ###############################################################################
@@ -325,13 +323,13 @@ gc_ab_60 = spectral_connectivity_epochs(
     epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=60)  # A => B
 
-plt.figure()
-plt.plot(freqs, gc_ab.get_data()[0], linewidth=2, label='20 lags')
-plt.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label='60 lags')
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Connectivity (A.U.)')
-plt.title('GC: [A => B]')
-plt.legend()
+fig, axis = plt.subplots(1, 1)
+axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label='20 lags')
+axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label='60 lags')
+axis.set_xlabel('Frequency (Hz)')
+axis.set_ylabel('Connectivity (A.U.)')
+axis.legend()
+fig.suptitle('GC: [A => B]')
 
 
 ###############################################################################
@@ -379,13 +377,13 @@ try:
         epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
         gc_n_lags=20)  # A => B
     print('Success!')
-except ValueError as error:
+except RuntimeError as error:
     print('\nCaught the following error:\n' + repr(error))
 
 ###############################################################################
 # Rigorous checks are implemented to identify any such instances which would
 # otherwise cause the GC computation to produce erroneous results. You can
-# therefore be confident as an end-user that these edge cases will be caught.
+# therefore be confident as an end-user that these cases will be caught.
 
 
 ###############################################################################
