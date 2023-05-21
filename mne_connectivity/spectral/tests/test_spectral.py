@@ -446,8 +446,8 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
             patterns_shape = (
                 (len(indices[0]), len(con.freqs)),
                 (len(indices[1]), len(con.freqs)))
-        assert con.patterns[0][0].shape == patterns_shape[0]
-        assert con.patterns[1][0].shape == patterns_shape[1]
+        assert con.attrs["patterns"][0][0].shape == patterns_shape[0]
+        assert con.attrs["patterns"][1][0].shape == patterns_shape[1]
 
         # only check these once for speed
         if mode == 'multitaper':
@@ -457,16 +457,16 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
             con = spectral_connectivity_epochs(
                 data, method=method, mode=mode, indices=indices, sfreq=sfreq,
                 fmin=fmin, fmax=fmax, faverage=True)
-            assert con.patterns[0][0].shape[1] == len(fmin)
-            assert con.patterns[1][0].shape[1] == len(fmin)
+            assert con.attrs["patterns"][0][0].shape[1] == len(fmin)
+            assert con.attrs["patterns"][1][0].shape[1] == len(fmin)
 
             # check patterns shape matches input data, not rank
             rank = (np.array([1]), np.array([1]))
             con = spectral_connectivity_epochs(
                 data, method=method, mode=mode, indices=indices, sfreq=sfreq,
                 cwt_freqs=cwt_freqs, rank=rank)
-            assert con.patterns[0][0].shape[0] == len(indices[0])
-            assert con.patterns[1][0].shape[0] == len(indices[1])
+            assert con.attrs["patterns"][0][0].shape[0] == len(indices[0])
+            assert con.attrs["patterns"][1][0].shape[0] == len(indices[1])
 
             # check bad rank args caught
             too_low_rank = (np.array([0]), np.array([0]))
@@ -488,7 +488,8 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
             bad_data[:, 3] = bad_data[:, 2]
             assert np.all(np.linalg.matrix_rank(bad_data[:, (0, 1), :]) == 1)
             assert np.all(np.linalg.matrix_rank(bad_data[:, (2, 3), :]) == 1)
-            with pytest.raises(ValueError, match='the transformation matrix'):
+            with pytest.raises(RuntimeError,
+                               match='the transformation matrix'):
                 spectral_connectivity_epochs(
                     bad_data, method=method, mode=mode, indices=indices,
                     sfreq=sfreq, rank=(np.array([2]), np.array([2])))
@@ -524,10 +525,10 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
         rank_con = spectral_connectivity_epochs(
             bad_data, method=method, mode=mode, indices=indices, sfreq=sfreq,
             gc_n_lags=10)
-        assert rank_con.rank == (np.array([1]), np.array([1]))
+        assert rank_con.attrs["rank"] == (np.array([1]), np.array([1]))
 
         # check rank-deficient autocovariance caught
-        with pytest.raises(ValueError,
+        with pytest.raises(RuntimeError,
                            match='the autocovariance matrix is singular'):
             spectral_connectivity_epochs(
                 bad_data, method=method, mode=mode, indices=indices,

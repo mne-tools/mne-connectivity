@@ -118,7 +118,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
             raise ValueError(
                 'seed and target indices cannot contain repeated channels for '
                 'multivariate connectivity')
-        n_cons = 1  # UNTIL NEW INDICES FORMAT
+        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
     else:
         n_cons = len(indices_use[0])
 
@@ -443,7 +443,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
             # Eq. 15 for MIM (same principle for MIC)
             if all(np.unique(seed_idcs) == np.unique(target_idcs)):
-                self.con_scores[con_i] /= 2
+                self.con_scores[con_i] *= 0.5
 
             con_i += 1
 
@@ -506,7 +506,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 C_r[:, f], T[:, f], n_seeds) for f in freqs)
 
         if not np.isreal(T).all() or not np.isfinite(T).all():
-            raise ValueError(
+            raise RuntimeError(
                 'the transformation matrix of the data must be real-valued '
                 'and contain no NaN or infinity values; check that you are '
                 'using full rank data or specify an appropriate rank for the '
@@ -968,7 +968,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     def _autocov_to_full_var(self, autocov):
         """Compute full VAR model using Whittle's LWR recursion."""
         if np.any(np.linalg.det(autocov) == 0):
-            raise ValueError(
+            raise RuntimeError(
                 'the autocovariance matrix is singular; check if your data is '
                 'rank deficient and specify an appropriate rank argument <= '
                 'the rank of the seeds and targets')
@@ -976,14 +976,14 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         A_f, V = self._whittle_lwr_recursion(autocov)
 
         if not np.isfinite(A_f).all():
-            raise ValueError('at least one VAR model coefficient is infinite '
-                             ' or NaN; check the data you are using')
+            raise RuntimeError('at least one VAR model coefficient is '
+                               'infinite or NaN; check the data you are using')
 
         try:
             np.linalg.cholesky(V)
         except np.linalg.LinAlgError as np_error:
-            raise ValueError(
-                'the covariance matrix of the redisuals is not '
+            raise RuntimeError(
+                'the covariance matrix of the residuals is not '
                 'positive-definite; check the singular values of your data '
                 'and specify an appropriate rank argument <= the rank of the '
                 'seeds and targets') from np_error
@@ -1198,10 +1198,10 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
                                  freq_mask, mt_adaptive, idx_map, block_size,
                                  psd, accumulate_psd, con_method_types,
                                  con_methods, n_signals, n_signals_use,
-                                 n_times, accumulate_inplace=True):
+                                 n_times, gc_n_lags, accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
     if any(this_method in _multivariate_methods for this_method in method):
-        n_cons = 1  # UNTIL NEW INDICES FORMAT
+        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
         n_con_signals = n_signals_use ** 2
     else:
         n_cons = len(idx_map[0])
@@ -1216,8 +1216,24 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
 
     if not accumulate_inplace:
         # instantiate methods only for this epoch (used in parallel mode)
-        con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
-                       for mtype in con_method_types]
+        con_methods = []
+        for mtype in con_method_types:
+            method_params = list(inspect.signature(mtype).parameters)
+            if "n_signals" in method_params:
+                # if it's a multivariate connectivity method
+                if "n_lags" in method_params:
+                    # if it's a Granger causality method
+                    con_methods.append(
+                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum,
+                              gc_n_lags)
+                    )
+                else:
+                    # if it's a coherence method
+                    con_methods.append(
+                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum)
+                    )
+            else:
+                con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
 
     _check_option('mode', mode, ('cwt_morlet', 'multitaper', 'fourier'))
     if len(sig_idx) == n_signals:
@@ -1457,10 +1473,14 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
         'imcoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
-        'wpli2_debiased', 'gc', 'gc_tr']``.
+        'wpli2_debiased', 'gc', 'gc_tr']``. Multivariate methods (``['mic',
+        'mim', 'gc', 'gc_tr]``) cannot be called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed.
+        connectivity. If a multivariate method is called, the indices are for a
+        single connection between all seeds and all targets. If None, all
+        connections are computed, unless a multivariate method is called, in
+        which case an error is raised.
     sfreq : float
         The sampling frequency. Required if data is not
         :class:`Epochs <mne.Epochs>`.
@@ -1533,7 +1553,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         when "indices" is None, or
         (n_con, n_freqs) mode: 'multitaper' or 'fourier'
         (n_con, n_freqs, n_times) mode: 'cwt_morlet'
-        when "indices" is specified and "n_con = len(indices[0])".
+        when "indices" is specified and "n_con = len(indices[0])" or if a
+        multivariate method is called "n_con = 1".
 
     See Also
     --------
@@ -1562,12 +1583,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     Morlet wavelets. The spectral estimation mode is specified using the
     "mode" parameter.
 
-    By default, the connectivity between all signals is computed (only
-    connections corresponding to the lower-triangular part of the
-    connectivity matrix). If one is only interested in the connectivity
-    between some signals, the "indices" parameter can be used. For example,
-    to compute the connectivity between the signal with index 0 and signals
-    "2, 3, 4" (a total of 3 connections) one can use the following::
+    By default, unless a multivariate method is called, the connectivity
+    between all signals is computed (only connections corresponding to the
+    lower-triangular part of the connectivity matrix). If one is only
+    interested in the connectivity between some signals, the "indices"
+    parameter can be used. For example, to compute the connectivity between
+    the signal with index 0 and signals "2, 3, 4" (a total of 3 connections)
+    one can use the following::
 
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
@@ -1577,6 +1599,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     In this case con.get_data().shape = (3, n_freqs). The connectivity scores
     are in the same order as defined indices.
+
+    If a multivariate method were called, the indices must be specified, and
+    the seeds and targets are treated as a single connection. For example, to
+    compute the connectivity between signals 0, 1, 2 and 3, 4, 5, one would use
+    the same approach as above. However, the signals would all be considered
+    for a single connection, and the connectivity scores would have the shape
+    (1, n_freqs).
 
     **Supported Connectivity Measures**
 
@@ -1835,6 +1864,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
             n_signals=n_signals, n_signals_use=n_signals_use, n_times=n_times,
+            gc_n_lags=gc_n_lags,
             accumulate_inplace=True if n_jobs == 1 else False)
         call_params.update(**spectral_params)
 
@@ -1894,13 +1924,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         this_patterns = conn_method.patterns
 
         if this_con.shape[0] != n_cons:
-            raise ValueError(
+            raise RuntimeError(
                 'first dimension of connectivity scores does not match the '
                 'number of connections; please contact the mne-connectivity '
                 'developers')
         if faverage:
             if this_con.shape[1] != n_freqs:
-                raise ValueError(
+                raise RuntimeError(
                     'second dimension of connectivity scores does not match '
                     'the number of frequencies; please contact the '
                     'mne-connectivity developers')
@@ -1962,7 +1992,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     n_nodes = n_signals
 
     if multivariate_con:
-        # UNTIL THIS INDICES FORMAT SUPPORTED BY DEFAULT
+        # UNTIL RAGGED ARRAYS SUPPORTED
         indices = tuple(
             [[np.array(indices_use[0])], [np.array(indices_use[1])]])
 
@@ -2006,7 +2036,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
 def _check_rank_input(rank, data, sfreq, indices):
     """Check the rank argument is appropriate and compute rank if missing."""
-    # UNTIL NEW INDICES FORMAT
+    # UNTIL RAGGED ARRAYS SUPPORTED
     indices = np.array([[indices[0]], [indices[1]]])
 
     if rank is None:
