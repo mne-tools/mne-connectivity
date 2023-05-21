@@ -156,12 +156,12 @@ fig.suptitle('Maximised imaginary part of coherency')
 ###############################################################################
 # Furthermore, spatial patterns of connectivity can be constructed from the
 # spatial filters to give a picture of the location of the sources involved in
-# the connectivity. This information is stored under the `patterns` attribute
-# of the connectivity class, with one value per frequency for each channel in
-# the seeds and targets. As with MIC, the absolute value of the patterns
-# reflect the strength, however the sign differences can be used to visualise
-# the orientation of the underlying dipole sources. The spatial patterns are
-# not bound between :math:`[-1, 1]`.
+# the connectivity. This information is stored under ``attrs['patterns']`` of
+# the connectivity class, with one value per frequency for each channel in the
+# seeds and targets. As with MIC, the absolute value of the patterns reflect
+# the strength, however the sign differences can be used to visualise the
+# orientation of the underlying dipole sources. The spatial patterns are not
+# bound between :math:`[-1, 1]`.
 #
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
@@ -343,10 +343,8 @@ axis.legend()
 fig.suptitle('Multivariate interaction measure (non-normalised)')
 
 # no. channels equal with and without projecting to rank subspace for patterns
-assert (mic.attrs["patterns"][0][0].shape[0]
-        == mic_red.attrs["patterns"][0][0].shape[0])
-assert (mic.attrs["patterns"][1][0].shape[0]
-        == mic_red.attrs["patterns"][1][0].shape[0])
+assert (patterns[0][0].shape[0] == mic_red.attrs["patterns"][0][0].shape[0])
+assert (patterns[1][0].shape[0] == mic_red.attrs["patterns"][1][0].shape[0])
 
 
 ###############################################################################
