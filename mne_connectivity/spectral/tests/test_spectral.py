@@ -508,7 +508,8 @@ def test_multivariate_spectral_connectivity_epochs_regression():
     computing the CSD or the final connectivity scores!
     """
     fpath = os.path.dirname(os.path.realpath(__file__))
-    data = pd.read_pickle(os.path.join(fpath, 'example_multivariate_data.pkl'))
+    data = pd.read_pickle(
+        os.path.join(fpath, 'data', 'example_multivariate_data.pkl'))
     sfreq = 100
     indices = tuple([[0, 1], [2, 3]])
     methods = ['mic', 'mim', 'gc', 'gc_tr']
@@ -524,7 +525,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
     mne_results = {this_con.method: np.abs(this_con.get_data())
                    for this_con in con}
     matlab_results = pd.read_pickle(
-        os.path.join(fpath, 'example_multivariate_matlab_results.pkl'))
+        os.path.join(fpath, 'data', 'example_multivariate_matlab_results.pkl'))
     for method in methods:
         assert_allclose(matlab_results[method], mne_results[method], 1e-5)
 
