@@ -481,7 +481,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
         con_ts_tr = spectral_connectivity_epochs(
             data, method='gc_tr', mode=mode, indices=indices_ts, sfreq=sfreq,
             gc_n_lags=20)
-        trgc = ((con.get_data() - con_ts.get_data()) - 
+        trgc = ((con.get_data() - con_ts.get_data()) -
                 (con_tr.get_data() - con_ts_tr.get_data()))
         # checks that TRGC is positive and >> 0 (for 15-25 Hz)
         assert np.all(trgc[0, gidx[0]:gidx[1]] > 0)
