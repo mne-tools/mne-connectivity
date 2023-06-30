@@ -137,6 +137,11 @@ fig.suptitle('Imaginary part of coherency')
 # between :math:`[-1, 1]` where the absolute value reflects connectivity
 # strength and the sign reflects the phase angle difference between signals.
 #
+# MIC can also be computed between identical sets of seeds and targets,
+# allowing connectivity within a single set of signals to be estimated. This is
+# possible as a result of the exclusion of zero phase lag components from the
+# connectivity estimates, which would otherwise return a perfect correlation.
+#
 # In this instance, we see MIC reveal that in addition to the 13-18 Hz peak, a
 # previously unobserved peak in connectivity around 9 Hz is present.
 # Furthermore, the previous peak around 27 Hz is much less pronounced. This may
@@ -179,10 +184,10 @@ fig.suptitle('Maximised imaginary part of coherency')
 fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
-patterns = mic.attrs["patterns"]
-seed_pattern = np.mean(patterns[0][0][:, fband_idx[0]:fband_idx[1] + 1],
+patterns = np.array(mic.attrs["patterns"])
+seed_pattern = np.mean(patterns[0, 0, :, fband_idx[0]:fband_idx[1] + 1],
                        axis=1)
-target_pattern = np.mean(patterns[1][0][:, fband_idx[0]:fband_idx[1] + 1],
+target_pattern = np.mean(patterns[1, 0, :, fband_idx[0]:fband_idx[1] + 1],
                          axis=1)
 
 # store the patterns for plotting
@@ -233,8 +238,9 @@ plt.show()
 # thought of as reflecting the total interaction between the seeds and targets.
 # MIM can be normalised to lie in the range :math:`[0, 1]` by dividing the
 # scores by the number of channels in the seeds and targets, representing the
-# total interaction *per channel*. **MIM is not normalised by default in this
-# implementation**.
+# total interaction *per channel*, which can accordingly be influenced by e.g.
+# the presence of channels with little to no interaction. **MIM is not
+# normalised by default in this implementation**.
 #
 # Here we see MIM reveal the strongest connectivity component to be around 10
 # Hz, with the higher frequency 13-18 Hz connectivity no longer being so
@@ -256,17 +262,14 @@ fig.suptitle('Multivariate interaction measure (non-normalised)')
 ###############################################################################
 # Additionally, the instance where the seeds and targets are identical can be
 # considered as a special case of MIM: the global interaction measure (GIM; Eq.
-# 15 of :footcite:`EwaldEtAl2012`). This allows connectivity within a single
-# set of signals to be estimated, and is possible as a result of the exclusion
-# of zero phase lag components from the connectivity estimates. Computing GIM
-# follows from Eq. 14, however since each interaction is considered twice,
-# correcting the connectivity by a factor of :math:`\frac{1}{2}` is necessary
-# (**the correction is performed automatically in this implementation**). Note:
-# a similar principle applies in the case where MIC is computed for identical
-# seeds and targets. Like MIM, GIM is also not bound below 1, but it can be
-# normalised to lie in the range :math:`[0, 1]` by dividing by :math:`N/2`
-# (where :math:`N` is the number of channels; **GIM is also not normalised by
-# default in this implementation**).
+# 15 of :footcite:`EwaldEtAl2012`). Again, this allows connectivity within a
+# single set of signals to be estimated. Computing GIM follows from Eq. 14,
+# however since each interaction is considered twice, correcting the
+# connectivity by a factor of :math:`\frac{1}{2}` is necessary (**the
+# correction is performed automatically in this implementation**). Like MIM,
+# GIM is also not bound below 1, but it can be normalised to lie in the range
+# :math:`[0, 1]` by dividing by :math:`N/2` (where :math:`N` is the number of
+# channels; **GIM is also not normalised by default in this implementation**).
 #
 # With GIM, we find a broad connectivity peak around 10 Hz, with an additional
 # peak around 20 Hz. The differences observed with GIM highlight the presence
@@ -343,21 +346,25 @@ axis.legend()
 fig.suptitle('Multivariate interaction measure (non-normalised)')
 
 # no. channels equal with and without projecting to rank subspace for patterns
-assert (patterns[0][0].shape[0] == mic_red.attrs["patterns"][0][0].shape[0])
-assert (patterns[1][0].shape[0] == mic_red.attrs["patterns"][1][0].shape[0])
+assert (patterns[0, 0].shape[0] ==
+        np.array(mic_red.attrs["patterns"])[0, 0].shape[0])
+assert (patterns[1, 0].shape[0] ==
+        np.array(mic_red.attrs["patterns"])[1, 0].shape[0])
 
 
 ###############################################################################
 # In the case that your data is not full rank and ``rank`` is left as ``None``,
 # an automatic rank computation is performed and an appropriate degree of
-# dimensionality reduction will be enforced.
+# dimensionality reduction will be enforced. The rank of the data is determined
+# by computing the singular values of the data and finding those within a
+# factor of :math:`1e^{-10}` relative to the largest singular value.
 #
-# In the case that your data is close to singular, the automatic rank
-# computation may fail to detect this, and an error will be raised. In this
-# case, you should inspect the singular values of your data to identify an
-# appropriate degree of dimensionality reduction to perform, which you can then
-# specify manually using the ``rank`` argument. The code below shows one
-# possible approach for finding an appropriate rank of close-to-singular data.
+# In some circumstances, this threshold may be too lenient, in which case you
+# should inspect the singular values of your data to identify an appropriate
+# degree of dimensionality reduction to perform, which you can then specify
+# manually using the ``rank`` argument. The code below shows one possible
+# approach for finding an appropriate rank of close-to-singular data with a
+# more conservative threshold of :math:`1e^{-5}`.
 
 # %%
 

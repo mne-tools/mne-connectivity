@@ -12,9 +12,14 @@ from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
 from mne.utils import (logger, verbose)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
-from .epochs import _compute_freq_mask
+from .epochs import (_MICEst, _MIMEst, _GCEst, _GCTREst, _compute_freq_mask,
+                     _check_rank_input)
 from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, fill_doc
+
+
+_multivariate_methods = ['mic', 'mim', 'gc', 'gc_tr']
+_gc_methods = ['gc', 'gc_tr']
 
 
 @verbose
@@ -24,8 +29,9 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                                fmax=None, fskip=0, faverage=False, sm_times=0,
                                sm_freqs=1, sm_kernel='hanning', padding=0,
                                mode='cwt_morlet', mt_bandwidth=None,
-                               n_cycles=7, decim=1, n_jobs=1, verbose=None):
-    """Compute time-frequency-domain connectivity measures.
+                               n_cycles=7, gc_n_lags=40, rank=None, decim=1,
+                               n_jobs=1, verbose=None):
+    r"""Compute time-frequency-domain connectivity measures.
 
     This function computes spectral connectivity over time from epoched data.
     The data may consist of a single epoch.
@@ -44,20 +50,29 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         ``fmax`` are used.
     method : str | list of str
         Connectivity measure(s) to compute. These can be
-        ``['coh', 'plv', 'ciplv', 'pli', 'wpli']``. These are:
+        ``['coh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc',
+        'gc_tr']``. These are:
         * 'coh'   : Coherence
+        * 'mic'   : Maximised Imaginary part of Coherency (MIC)
+        * 'mim'   : Multivariate Interaction Measure (MIM)
         * 'plv'   : Phase-Locking Value (PLV)
         * 'ciplv' : Corrected imaginary Phase-Locking Value
         * 'pli'   : Phase-Lag Index
         * 'wpli'  : Weighted Phase-Lag Index
+        * 'gc'    : State-space Granger Causality (GC)
+        * 'gc_tr' : State-space GC on time-reversed signals
+        Multivariate methods (``['mic', 'mim', 'gc', 'gc_tr]``) cannot be
+        called with the other methods.
     average : bool
         Average connectivity scores over epochs. If ``True``, output will be
         an instance of :class:`SpectralConnectivity`, otherwise
         :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
         Two arrays with indices of connections for which to compute
-        connectivity. I.e. it is a ``(n_pairs, 2)`` array essentially.
-        If `None`, all connections are computed.
+        connectivity. If a multivariate method is called, the indices are for a
+        single connection between all seeds and all targets. If None, all
+        connections are computed, unless a Granger causality method is called,
+        in which case an error is raised.
     sfreq : float
         The sampling frequency. Required if data is not
         :class:`Epochs <mne.Epochs>`.
@@ -103,6 +118,16 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         frequency. The number of cycles ``n_cycles`` and the frequencies of
         interest ``cwt_freqs`` define the temporal window length. For details,
         see :func:`mne.time_frequency.tfr_array_morlet` documentation.
+    gc_n_lags : int
+        Number of lags to use for the vector autoregressive model when
+        computing Granger causality. Higher values increase computational cost,
+        but reduce the degree of spectral smoothing in the results. Only used
+        if ``method`` contains any of ``['gc', 'gc_tr']``.
+    rank : tuple of array | None
+        Two arrays with the rank to project the seed and target data to,
+        respectively, using singular value decomposition. If `None`, the rank
+        of the data is computed and projected to. Only used if ``method``
+        contains any of ``['mic', 'mim', 'gc', 'gc_tr']``.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
@@ -119,9 +144,10 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         or a list of instances corresponding to connectivity measures if
         several connectivity measures are specified.
         The shape of each connectivity dataset is
-        (n_epochs, n_signals, n_signals, n_freqs) when ``indices`` is `None`
-        and (n_epochs, n_nodes, n_nodes, n_freqs) when ``indices`` is specified
-        and ``n_nodes = len(indices[0])``.
+        (n_epochs, n_signals, n_signals, n_freqs) when ``indices`` is `None`,
+        (n_epochs, n_nodes, n_nodes, n_freqs) when ``indices`` is specified
+        and ``n_nodes = len(indices[0])``, or (n_epochs, 1, 1, n_freqs) when a
+        multi-variate method is called regardless of "indices".
 
     See Also
     --------
@@ -159,11 +185,11 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
     (i.e., time window length).
 
     By default, the connectivity between all signals is computed (only
-    connections corresponding to the lower-triangular part of the
-    connectivity matrix). If one is only interested in the connectivity
-    between some signals, the ``indices`` parameter can be used. For example,
-    to compute the connectivity between the signal with index 0 and signals
-    2, 3, 4 (a total of 3 connections), one can use the following::
+    connections corresponding to the lower-triangular part of the connectivity
+    matrix). If one is only interested in the connectivity between some
+    signals, the "indices" parameter can be used. For example, to compute the
+    connectivity between the signal with index 0 and signals "2, 3, 4" (a total
+    of 3 connections) one can use the following::
 
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
@@ -173,6 +199,15 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
 
     In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity
     scores are in the same order as defined indices.
+
+    For multivariate methods, this is handled differently. If "indices" is
+    None, connectivity between all signals will attempt to be computed (this is
+    not possible if a Granger causality method is called). If "indices" is
+    specified, the seeds and targets are treated as a single connection. For
+    example, to compute the connectivity between signals 0, 1, 2 and 3, 4, 5,
+    one would use the same approach as above, however the signals would all be
+    considered for a single connection and the connectivity scores would have
+    the shape (1, n_freqs).
 
     **Supported Connectivity Measures**
 
@@ -187,12 +222,31 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
+        'mic' : Maximised Imaginary part of Coherency (MIC)
+        :footcite:`EwaldEtAl2012` given by:
+
+            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+            \parallel}}`
+
+            where: :math:`\boldsymbol{E}` is the imaginary part of the
+            transformed cross-spectral density between seeds and targets; and
+            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are
+            eigenvectors for the seeds and targets, such that
+            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises
+            connectivity between the seeds and targets.
+
+        'mim' : Multivariate Interaction Measure (MIM)
+        :footcite:`EwaldEtAl2012` given by:
+
+            :math:`MIM=tr(\boldsymbol{EE}^T)`
+
         'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
         by::
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : Corrected imaginary PLV (icPLV) :footcite:`BrunaEtAl2018`
+        'ciplv' : Corrected imaginary PLV (ciPLV) :footcite:`BrunaEtAl2018`
         given by::
 
                              |E[Im(Sxy/|Sxy|)]|
@@ -209,6 +263,25 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                       |E[Im(Sxy)]|
             WPLI = ------------------
                       E[|Im(Sxy)|]
+
+        'gc' : State-space Granger Causality (GC) :footcite:`BarnettSeth2015`
+        given by:
+
+            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
+            \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
+            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,
+
+            where: :math:`s` and :math:`t` represent the seeds and targets,
+            respectively; :math:`\boldsymbol{H}` is the spectral transfer
+            function; :math:`\boldsymbol{\Sigma}` is the residuals matrix of
+            the autoregressive model; and :math:`\boldsymbol{S}` is
+            :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.
+
+        'gc_tr' : State-space GC on time-reversed signals
+        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation
+        as for 'gc', but where the autocovariance sequence from which the
+        autoregressive model is produced is transposed to mimic the reversal of
+        the original signal in time.
 
     Parallel computation can be activated by setting the ``n_jobs`` parameter.
     Under the hood, this utilizes the ``joblib`` library. For effective
@@ -284,6 +357,22 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
     if np.any(fmin > fmax):
         raise ValueError('fmax must be larger than fmin')
 
+    if len(fmin) != 1 and any(
+        this_method in _gc_methods for this_method in method
+    ):
+        raise ValueError('computing Granger causality on multiple frequency '
+                         'bands is not yet supported')
+
+    if any(this_method in _multivariate_methods for this_method in method):
+        if not all(this_method in _multivariate_methods for
+                   this_method in method):
+            raise ValueError(
+                'bivariate and multivariate connectivity methods cannot be '
+                'used in the same function call')
+        multivariate_con = True
+    else:
+        multivariate_con = False
+
     # convert kernel width in time to samples
     if isinstance(sm_times, (int, float)):
         sm_times = int(np.round(sm_times * sfreq))
@@ -302,12 +391,42 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
 
     # get indices of pairs of (group) regions
     if indices is None:
-        indices_use = np.tril_indices(n_signals, k=-1)
+        if multivariate_con:
+            if any(this_method in _gc_methods for this_method in method):
+                raise ValueError(
+                    'indices must be specified when computing Granger '
+                    'causality, as all-to-all connectivity is not supported')
+            logger.info('using all indices for multivariate connectivity')
+            indices_use = (np.arange(n_signals, dtype=int),
+                           np.arange(n_signals, dtype=int))
+        else:
+            logger.info('only using indices for lower-triangular matrix')
+            indices_use = np.tril_indices(n_signals, k=-1)
     else:
+        if multivariate_con:
+            if len(np.unique(indices[0])) != len(np.unique(indices[1])):
+                raise ValueError(
+                    'seed and target indices cannot contain repeated '
+                    'channels for multivariate connectivity')
+            if any(this_method in _gc_methods for this_method in method):
+                if set(indices[0]).intersection(indices[1]):
+                    raise ValueError(
+                        'seed and target indices must not intersect when '
+                        'computing Granger causality')
         indices_use = check_indices(indices)
     source_idx = indices_use[0]
     target_idx = indices_use[1]
-    n_pairs = len(source_idx)
+    n_pairs = len(source_idx) if not multivariate_con else 1
+
+    # unique signals for which we actually need to compute the CSD of
+    signals_use = np.unique(np.r_[indices_use[0], indices_use[1]])
+
+    # check rank input and compute data ranks if necessary
+    if multivariate_con:
+        rank = _check_rank_input(rank, data, sfreq, indices_use)
+    else:
+        rank = None
+        gc_n_lags = None
 
     # check freqs
     if isinstance(freqs, (int, float)):
@@ -354,26 +473,34 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         out_freqs = freqs
 
     conn = dict()
+    conn_patterns = dict()
     for m in method:
         conn[m] = np.zeros((n_epochs, n_pairs, n_freqs))
+        conn_patterns[m] = np.full((n_epochs, 2, len(source_idx), n_freqs),
+                                   np.nan)
     logger.info('Connectivity computation...')
 
     # parameters to pass to the connectivity function
     call_params = dict(
         method=method, kernel=kernel, foi_idx=foi_idx,
-        source_idx=source_idx, target_idx=target_idx,
+        source_idx=source_idx, target_idx=target_idx, signals_use=signals_use,
         mode=mode, sfreq=sfreq, freqs=freqs, faverage=faverage,
-        n_cycles=n_cycles, mt_bandwidth=mt_bandwidth,
-        decim=decim, padding=padding, kw_cwt={}, kw_mt={}, n_jobs=n_jobs,
-        verbose=verbose)
+        n_cycles=n_cycles, mt_bandwidth=mt_bandwidth, gc_n_lags=gc_n_lags,
+        rank=rank, decim=decim, padding=padding, kw_cwt={}, kw_mt={},
+        n_jobs=n_jobs, verbose=verbose, multivariate_con=multivariate_con)
 
     for epoch_idx in np.arange(n_epochs):
         logger.info(f'   Processing epoch {epoch_idx+1} / {n_epochs} ...')
-        conn_tr = _spectral_connectivity(data[epoch_idx], **call_params)
+        scores, patterns = _spectral_connectivity(data[epoch_idx],
+                                                  **call_params)
         for m in method:
-            conn[m][epoch_idx] = np.stack(conn_tr[m], axis=0)
+            conn[m][epoch_idx] = np.stack(scores[m], axis=0)
+            if multivariate_con and patterns[m] is not None:
+                conn_patterns[m][epoch_idx] = np.stack(patterns[m], axis=0)
+    if np.isnan(conn_patterns[m]).all():
+        conn_patterns[m] = None
 
-    if indices is None:
+    if indices is None and not multivariate_con:
         conn_flat = conn
         conn = dict()
         for m in method:
@@ -385,18 +512,28 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                                           conn_flat[m].shape[2:])
             conn[m] = this_conn
 
-    # create a Connectivity container
-    if average:
-        out = [SpectralConnectivity(
-               conn[m].mean(axis=0), freqs=out_freqs, n_nodes=n_signals,
-               names=names, indices=indices, method=method, spec_method=mode,
-               events=events, event_id=event_id, metadata=metadata)
-               for m in method]
-    else:
-        out = [EpochSpectralConnectivity(
-               conn[m], freqs=out_freqs, n_nodes=n_signals, names=names,
-               indices=indices, method=method, spec_method=mode, events=events,
-               event_id=event_id, metadata=metadata) for m in method]
+    if multivariate_con:
+        # UNTIL RAGGED ARRAYS SUPPORTED
+        indices = tuple(
+            [[np.array(indices_use[0])], [np.array(indices_use[1])]])
+
+    # create the connectivity containers
+    out = []
+    for m in method:
+        store_params = {
+            'data': conn[m], 'patterns': patterns[m], 'freqs': out_freqs,
+            'n_nodes': n_signals, 'names': names, 'indices': indices,
+            'method': method, 'spec_method': mode, 'events': events,
+            'event_id': event_id, 'metadata': metadata, 'rank': rank,
+            'n_lags': gc_n_lags if m in _gc_methods else None}
+        if average:
+            store_params['data'] = np.mean(store_params['data'], axis=0)
+            if patterns[m] is not None:
+                store_params['patterns'] = np.mean(store_params['patterns'],
+                                                   axis=0)
+            out.append(SpectralConnectivity(**store_params))
+        else:
+            out.append(EpochSpectralConnectivity(**store_params))
 
     logger.info('[Connectivity computation done]')
 
@@ -408,10 +545,10 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
 
 
 def _spectral_connectivity(data, method, kernel, foi_idx,
-                           source_idx, target_idx,
+                           source_idx, target_idx, signals_use,
                            mode, sfreq, freqs, faverage, n_cycles,
-                           mt_bandwidth, decim, padding, kw_cwt, kw_mt,
-                           n_jobs, verbose):
+                           mt_bandwidth, gc_n_lags, rank, decim, padding,
+                           kw_cwt, kw_mt, n_jobs, verbose, multivariate_con):
     """Estimate time-resolved connectivity for one epoch.
 
     Parameters
@@ -428,6 +565,8 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         Defines the signal pairs of interest together with ``target_idx``.
     target_idx : array_like, shape (n_pairs,)
         Defines the signal pairs of interest together with ``source_idx``.
+    signals_use : list of int
+        The unique signals on which connectivity is to be computed.
     mode : str
         Time-frequency transformation method.
     sfreq : float
@@ -443,19 +582,33 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         frequency.
     mt_bandwidth : float | None
         Multitaper time-bandwidth.
+    gc_n_lags : int
+        Number of lags to use for the vector autoregressive model when
+        computing Granger causality.
+    rank : tuple of array
+        Ranks to project the seed and target data to.
     decim : int
         Decimation factor after time-frequency
         decomposition.
     padding : float
         Amount of time to consider as padding at the beginning and end of each
         epoch in seconds.
+    multivariate_con : bool
+        Whether or not multivariate connectivity is to be computed.
 
     Returns
     -------
-    this_conn : list of array
-        List of connectivity estimates corresponding to the metrics in
-        ``method``. Each element is an array of shape (n_pairs, n_freqs) or
-        (n_pairs, n_fbands) if ``faverage`` is `True`.
+    scores : dict
+        Dictionary containing the connectivity estimates corresponding to the
+        metrics in ``method``. Each element is an array of shape (n_pairs,
+        n_freqs) or (n_pairs, n_fbands) if ``faverage`` is `True`.
+
+    patterns : dict
+        Dictionary containing the connectivity patterns corresponding to the
+        metrics in ``method``, if multivariate methods are called, else an
+        empty dictionary. Each element is an array of shape (n_pairs,
+        n_channels, n_freqs) or (n_pairs, n_channels, n_fbands) if ``faverage``
+        is `True`.
     """
     n_pairs = len(source_idx)
     data = np.expand_dims(data, axis=0)
@@ -500,13 +653,20 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
             else None
 
     # compute for each connectivity method
-    this_conn = {}
+    scores = {}
+    patterns = {}
     conn = _parallel_con(out, method, kernel, foi_idx, source_idx, target_idx,
-                         n_jobs, verbose, n_pairs, faverage, weights)
+                         signals_use, gc_n_lags, rank, n_jobs, verbose,
+                         n_pairs, faverage, weights, multivariate_con)
     for i, m in enumerate(method):
-        this_conn[m] = [out[i] for out in conn]
+        if multivariate_con:
+            scores[m] = conn[0][i]
+            patterns[m] = conn[1][i][:, 0] if conn[1][i] is not None else None
+        else:
+            scores[m] = [out[i] for out in conn]
+            patterns[m] = None
 
-    return this_conn
+    return scores, patterns
 
 
 ###############################################################################
@@ -515,8 +675,9 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
 ###############################################################################
 ###############################################################################
 
-def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
-                  verbose, total, faverage, weights):
+def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx,
+                  signals_use, gc_n_lags, rank, n_jobs, verbose, total,
+                  faverage, weights, multivariate_con):
     """Compute spectral connectivity in parallel.
 
     Parameters
@@ -533,6 +694,13 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
         Defines the signal pairs of interest together with ``target_idx``.
     target_idx : array_like, shape (n_pairs,)
         Defines the signal pairs of interest together with ``source_idx``.
+    signals_use : list of int
+        The unique signals on which connectivity is to be computed.
+    gc_n_lags : int
+        Number of lags to use for the vector autoregressive model when
+        computing Granger causality.
+    rank : tuple of array
+        Ranks to project the seed and target data to.
     n_jobs : int
         Number of parallel jobs.
     total : int
@@ -541,12 +709,17 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
         Average over frequency bands.
     weights : array_like, shape (n_tapers, n_freqs, n_times)
         Multitaper weights.
+    multivariate_con : bool
+        Whether or not multivariate connectivity is being computed.
 
     Returns
     -------
-    out : array_like, shape (n_pairs, n_methods, n_freqs_out)
+    out : tuple of list of array
         Connectivity estimates for each signal pair, method, and frequency or
-        frequency band.
+        frequency band. If bivariate methods are called, the output is a tuple
+        of a list of arrays containing the connectivity scores. If multivariate
+        methods are called, the output is a tuple of lists containing arrays
+        for the connectivity scores and patterns, respectively.
     """
     if 'coh' in method:
         # psd
@@ -564,18 +737,22 @@ def _parallel_con(w, method, kernel, foi_idx, source_idx, target_idx, n_jobs,
     else:
         psd = None
 
-    # only show progress if verbosity level is DEBUG
-    if verbose != 'DEBUG' and verbose != 'debug' and verbose != 10:
-        total = None
+    if not multivariate_con:
+        # only show progress if verbosity level is DEBUG
+        if verbose != 'DEBUG' and verbose != 'debug' and verbose != 10:
+            total = None
 
-    # define the function to compute in parallel
-    parallel, my_pairwise_con, n_jobs = parallel_func(
-        _pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
+        # define the function to compute in parallel
+        parallel, my_pairwise_con, n_jobs = parallel_func(
+            _pairwise_con, n_jobs=n_jobs, verbose=verbose, total=total)
 
-    return parallel(
-        my_pairwise_con(w, psd, s, t, method, kernel,
-                        foi_idx, faverage, weights)
-        for s, t in zip(source_idx, target_idx))
+        return tuple(parallel(
+            my_pairwise_con(w, psd, s, t, method, kernel, foi_idx, faverage,
+                            weights) for s, t in zip(source_idx, target_idx)))
+
+    return _multivariate_con(w, source_idx, target_idx, signals_use, method,
+                             kernel, foi_idx, faverage, weights, gc_n_lags,
+                             rank, n_jobs)
 
 
 def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
@@ -637,6 +814,96 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx,
         out[i] = out[i].squeeze(axis=-1)
 
     return out
+
+
+def _multivariate_con(w, source_idx, target_idx, signals_use, method, kernel,
+                      foi_idx, faverage, weights, gc_n_lags, rank, n_jobs):
+    """Compute spectral connectivity metrics between multiple signals.
+
+    Parameters
+    ----------
+    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
+        Time-frequency data.
+    x : int
+        Channel index.
+    y : int
+        Channel index.
+    method : str
+        Connectivity method.
+    kernel : array_like, shape (n_sm_fres, n_sm_times)
+        Smoothing kernel.
+    foi_idx : array_like, shape (n_foi, 2)
+        Upper and lower bound indices of frequency bands.
+    faverage : bool
+        Average over frequency bands.
+    weights : array_like, shape (n_tapers, n_freqs, n_times) | None
+        Multitaper weights.
+
+    Returns
+    -------
+    scores : list
+        List of connectivity scores between seed and target signals for each
+        connectivity method. Each element is an array with shape (n_freqs,) or
+        (n_fbands) depending on ``faverage``.
+
+    patterns : list
+        List of connectivity patterns between seed and target signals for each
+        connectivity method. Each element is an array of length 2 corresponding
+        to the seed and target patterns, respectively, each with shape
+        (n_channels, n_freqs,) or (n_channels, n_fbands) depending on
+        ``faverage``.
+    """
+    csd = []
+    for x in signals_use:
+        for y in signals_use:
+            w_x, w_y = w[x], w[y]
+            if weights is not None:
+                s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
+                s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
+            else:
+                s_xy = w_x * np.conj(w_y)
+                s_xy = np.squeeze(s_xy, axis=0)
+            csd.append(_smooth_spectra(s_xy, kernel).mean(axis=-1))
+    csd = np.array(csd)
+
+    # initialise connectivity estimators and add CSD information
+    conn_class = {'mic': _MICEst, 'mim': _MIMEst, 'gc': _GCEst,
+                  'gc_tr': _GCTREst}
+    conn = []
+    for m in method:
+        # N_CONS = 1 UNTIL RAGGED ARRAYS SUPPORTED
+        call_params = {'n_signals': len(signals_use), 'n_cons': 1,
+                       'n_freqs': csd.shape[1], 'n_times': 0,
+                       'n_jobs': n_jobs}
+        if m in _gc_methods:
+            call_params['n_lags'] = gc_n_lags
+        con_est = conn_class[m](**call_params)
+        for con_i, con_csd in enumerate(csd):
+            con_est.accumulate(con_i, con_csd)
+        conn.append(con_est)
+
+    # compute connectivity
+    scores = []
+    patterns = []
+    for con_est in conn:
+        con_est.compute_con(np.array([source_idx, target_idx]), rank)
+        scores.append(con_est.con_scores[..., np.newaxis])
+        patterns.append(con_est.patterns)
+        if patterns[-1] is not None:
+            patterns[-1] = patterns[-1][..., np.newaxis]
+
+    for i, _ in enumerate(scores):
+        # mean inside frequency sliding window (if needed)
+        if isinstance(foi_idx, np.ndarray) and faverage:
+            scores[i] = _foi_average(scores[i], foi_idx)
+            if patterns[i] is not None:
+                patterns[i] = _foi_average(patterns[i], foi_idx)
+        # squeeze time dimension
+        scores[i] = scores[i].squeeze(axis=-1)
+        if patterns[i] is not None:
+            patterns[i] = patterns[i].squeeze(axis=-1)
+
+    return scores, patterns
 
 
 def _plv(s_xy):

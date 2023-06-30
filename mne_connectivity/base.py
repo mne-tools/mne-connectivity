@@ -667,7 +667,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             ``(n_nodes_in * n_nodes_out,)`` list. If 'dense', then
             will return each connectivity matrix as a 2D array. If 'compact'
             (default) then will return 'raveled' if ``indices`` were defined as
-            a list of tuples, or ``dense`` if indices is 'all'.
+            a list of tuples, or ``dense`` if indices is 'all'. Multivariate
+            connectivity data cannot be returned in a dense form.
 
         Returns
         -------
@@ -685,6 +686,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == 'raveled':
             data = self._data
         else:
+            if self.method in ['mic', 'mim', 'gc', 'gc_tr']:
+                raise ValueError('cannot return multivariate connectivity '
+                                 'data in a dense form')
+
             # get the new shape of the data array
             if self.is_epoched:
                 new_shape = [self.n_epochs]

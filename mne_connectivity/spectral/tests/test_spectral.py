@@ -1,6 +1,8 @@
+import os
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_almost_equal,
                            assert_array_less)
+import pandas as pd
 import pytest
 from mne import (EpochsArray, SourceEstimate, create_info)
 from mne.filter import filter_data
@@ -408,8 +410,127 @@ def test_spectral_connectivity(method, mode):
     assert (out_lens[0] == 10)
 
 
-@pytest.mark.parametrize('method', ['mic', 'mim', 'gc', 'gc_tr',
-                                    ['mic', 'mim', 'gc', 'gc_tr']])
+@pytest.mark.parametrize('method', ['mic', 'mim', 'gc'])
+def test_spectral_connectivity_epochs_multivariate(method):
+    """Test over-epoch multivariate connectivity methods."""
+    mode = 'multitaper'  # stick with single mode in interest of time
+
+    sfreq = 100.0  # Hz
+    n_signals = 4  # should be even!
+    n_seeds = n_signals // 2
+    n_epochs = 10
+    n_times = 200  # samples
+    trans_bandwidth = 2.0  # Hz
+    delay = 10  # samples (non-zero delay needed for ImCoh and GC to be >> 0)
+
+    indices = tuple([np.arange(n_seeds), np.arange(n_seeds) + n_seeds])
+
+    # 15-25 Hz connectivity
+    fstart, fend = 15.0, 25.0
+    rng = np.random.RandomState(0)
+    data = rng.randn(n_signals, n_epochs * n_times + delay)
+    # simulate connectivity from fstart to fend
+    data[n_seeds:, :] = filter_data(
+        data[:n_seeds, :], sfreq, fstart, fend, filter_length='auto',
+        fir_design='firwin2', l_trans_bandwidth=trans_bandwidth,
+        h_trans_bandwidth=trans_bandwidth)
+    # add some noise, so the spectrum is not exactly zero
+    data[n_seeds:, :] += 1e-2 * rng.randn(n_seeds, n_times * n_epochs + delay)
+    # shift the seeds to that the targets are a delayed version of them
+    data[:n_seeds, :n_epochs * n_times] = data[:n_seeds, delay:]
+    data = data[:, :n_times * n_epochs]
+    data = data.reshape(n_signals, n_epochs, n_times)
+    data = np.transpose(data, [1, 0, 2])
+
+    con = spectral_connectivity_epochs(
+        data, method=method, mode=mode, indices=indices, sfreq=sfreq,
+        gc_n_lags=20)
+    freqs = con.freqs
+    gidx = (freqs.index(fstart), freqs.index(fend) + 1)
+    bidx = (freqs.index(fstart - trans_bandwidth * 2),
+            freqs.index(fend + trans_bandwidth * 2) + 1)
+
+    if method in ['mic', 'mim']:
+        lower_t = 0.2
+        upper_t = 0.5
+
+        assert np.abs(con.get_data())[0, gidx[0]:gidx[1]].mean() > upper_t
+        assert np.abs(con.get_data())[0, :bidx[0]].mean() < lower_t
+        assert np.abs(con.get_data())[0, bidx[1]:].mean() < lower_t
+
+    elif method == 'gc':
+        lower_t = 0.2
+        upper_t = 0.8
+
+        assert con.get_data()[0, gidx[0]:gidx[1]].mean() > upper_t
+        assert con.get_data()[0, :bidx[0]].mean() < lower_t
+        assert con.get_data()[0, bidx[1]:].mean() < lower_t
+
+        # check that target -> seed connectivity is low
+        indices_ts = (indices[1], indices[0])
+        con_ts = spectral_connectivity_epochs(
+            data, method=method, mode=mode, indices=indices_ts, sfreq=sfreq,
+            gc_n_lags=20)
+        assert con_ts.get_data()[0, gidx[0]:gidx[1]].mean() < lower_t
+
+        # check that TRGC is positive (i.e. net seed -> target connectivity not
+        # due to noise)
+        con_tr = spectral_connectivity_epochs(
+            data, method='gc_tr', mode=mode, indices=indices, sfreq=sfreq,
+            gc_n_lags=20)
+        con_ts_tr = spectral_connectivity_epochs(
+            data, method='gc_tr', mode=mode, indices=indices_ts, sfreq=sfreq,
+            gc_n_lags=20)
+        trgc = ((con.get_data() - con_ts.get_data()) - 
+                (con_tr.get_data() - con_ts_tr.get_data()))
+        # checks that TRGC is positive and >> 0 (for 15-25 Hz)
+        assert np.all(trgc[0, gidx[0]:gidx[1]] > 0)
+        assert np.all(trgc[0, gidx[0]:gidx[1]] > upper_t)
+        # checks that TRGC is ~ 0 for other frequencies
+        assert np.allclose(trgc[0, :bidx[0]].mean(), 0, atol=lower_t)
+        assert np.allclose(trgc[0, bidx[1]:].mean(), 0, atol=lower_t)
+
+
+def test_multivariate_spectral_connectivity_epochs_regression():
+    """Test multivar. spectral connectivity over epochs for regression.
+
+    The multivariate methods were originally implemented in MATLAB by their
+    respective authors. To show that this Python implementation is identical
+    and to avoid any future regressions, we compare the results of the Python
+    and MATLAB implementations on some example data (randomly generated).
+
+    As the MNE code for computing the cross-spectral density matrix is not
+    available in MATLAB, the CSD matrix was computed using MNE and then loaded
+    into MATLAB to compute the connectivity from the original implementations
+    using the same processing settings in MATLAB and Python.
+
+    It is therefore important that no changes are made to the settings for
+    computing the CSD or the final connectivity scores!
+    """
+    fpath = os.path.dirname(os.path.realpath(__file__))
+    data = pd.read_pickle(os.path.join(fpath, 'example_multivariate_data.pkl'))
+    sfreq = 100
+    indices = tuple([[0, 1], [2, 3]])
+    methods = ['mic', 'mim', 'gc', 'gc_tr']
+    con = spectral_connectivity_epochs(
+        data, method=methods, indices=indices, mode='multitaper', sfreq=sfreq,
+        fskip=0, faverage=False, tmin=0, tmax=None, mt_bandwidth=4,
+        mt_low_bias=True, mt_adaptive=False, gc_n_lags=20,
+        rank=tuple([[2], [2]]), n_jobs=1)
+
+    # should take the absolute of the MIC scores, as the signs vary depending
+    # on the eigendecomposition implementation (leads to sign differences
+    # between MATLAB & Python)
+    mne_results = {this_con.method: np.abs(this_con.get_data())
+                   for this_con in con}
+    matlab_results = pd.read_pickle(
+        os.path.join(fpath, 'example_multivariate_matlab_results.pkl'))
+    for method in methods:
+        assert_allclose(matlab_results[method], mne_results[method], 1e-5)
+
+
+@pytest.mark.parametrize(
+    'method', ['mic', 'mim', 'gc', 'gc_tr', ['mic', 'mim', 'gc', 'gc_tr']])
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
 def test_multivar_spectral_connectivity_error_catch(method, mode):
     """Test error catching for multivar. freq.-domain connectivity methods."""
@@ -446,8 +567,8 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
             patterns_shape = (
                 (len(indices[0]), len(con.freqs)),
                 (len(indices[1]), len(con.freqs)))
-        assert con.attrs["patterns"][0][0].shape == patterns_shape[0]
-        assert con.attrs["patterns"][1][0].shape == patterns_shape[1]
+        assert np.shape(con.attrs["patterns"][0][0]) == patterns_shape[0]
+        assert np.shape(con.attrs["patterns"][1][0]) == patterns_shape[1]
 
         # only check these once for speed
         if mode == 'multitaper':
@@ -457,16 +578,16 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
             con = spectral_connectivity_epochs(
                 data, method=method, mode=mode, indices=indices, sfreq=sfreq,
                 fmin=fmin, fmax=fmax, faverage=True)
-            assert con.attrs["patterns"][0][0].shape[1] == len(fmin)
-            assert con.attrs["patterns"][1][0].shape[1] == len(fmin)
+            assert np.shape(con.attrs["patterns"][0][0])[1] == len(fmin)
+            assert np.shape(con.attrs["patterns"][1][0])[1] == len(fmin)
 
             # check patterns shape matches input data, not rank
             rank = (np.array([1]), np.array([1]))
             con = spectral_connectivity_epochs(
                 data, method=method, mode=mode, indices=indices, sfreq=sfreq,
                 cwt_freqs=cwt_freqs, rank=rank)
-            assert con.attrs["patterns"][0][0].shape[0] == len(indices[0])
-            assert con.attrs["patterns"][1][0].shape[0] == len(indices[1])
+            assert np.shape(con.attrs["patterns"][0][0])[0] == len(indices[0])
+            assert np.shape(con.attrs["patterns"][1][0])[0] == len(indices[1])
 
             # check bad rank args caught
             too_low_rank = (np.array([0]), np.array([0]))
@@ -540,7 +661,7 @@ def test_multivar_spectral_connectivity_error_catch(method, mode):
                                con[method.index('gc_tr')].get_data())
 
 
-@pytest.mark.parametrize('method', ['mic', 'mim', 'gc'])
+@pytest.mark.parametrize('method', ['mic', 'mim', 'gc', 'gc_tr'])
 def test_multivar_spectral_connectivity_parallel(method):
     """Test multivar. freq.-domain connectivity methods run in parallel."""
     sfreq = 50.
@@ -629,9 +750,9 @@ def test_epochs_tmin_tmax(kind):
     assert len(w) == 1  # just one even though there were multiple epochs
 
 
-@pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
 @pytest.mark.parametrize(
-    'mode', ['cwt_morlet', 'multitaper'])
+    'method', ['coh', 'mic', 'mim', 'plv', 'pli', 'wpli', 'ciplv'])
+@pytest.mark.parametrize('mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('data_option', ['sync', 'random'])
 def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     """Test time-resolved spectral connectivity with simulated phase-locked
@@ -657,30 +778,109 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
                                 wave_freq * epoch_length * np.pi + phase,
                                 n_times)
                 data[i, c] = np.squeeze(np.sin(x))
+
+    multivar_methods = ['mic', 'mim']
+
     # the frequency band should contain the frequency at which there is a
     # hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
     freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
-    con = spectral_connectivity_time(data, freqs, method=method, mode=mode,
-                                     sfreq=sfreq, fmin=freq_band_low_limit,
-                                     fmax=freq_band_high_limit,
-                                     n_jobs=1,
-                                     faverage=True, average=True, sm_times=0)
-    assert con.shape == (n_channels ** 2, len(con.freqs))
-    con_matrix = con.get_data('dense')[..., 0]
+    con = spectral_connectivity_time(
+        data, freqs, method=method, mode=mode, sfreq=sfreq,
+        fmin=freq_band_low_limit, fmax=freq_band_high_limit, n_jobs=1,
+        faverage=True if method != 'mic' else False,
+        average=True if method != 'mic' else False, sm_times=0)
+    con_matrix = con.get_data()
+
+    # MIC values can be pos. and neg., so must be averaged after taking the
+    # absolute values for the test to work
+    if method in multivar_methods:
+        if method == 'mic':
+            con_matrix = np.mean(np.abs(con_matrix), axis=(0, 2))
+            assert con.shape == (n_epochs, 1, len(con.freqs))
+        else:
+            assert con.shape == (1, len(con.freqs))
+    else:
+        assert con.shape == (n_channels ** 2, len(con.freqs))
+        con_matrix = np.reshape(con_matrix, (n_channels, n_channels))[
+            np.tril_indices(n_channels, -1)]
+
     if data_option == 'sync':
         # signals are perfectly phase-locked, connectivity matrix should be
-        # a lower triangular matrix of ones
-        assert np.allclose(con_matrix,
-                           np.tril(np.ones(con_matrix.shape),
-                                   k=-1),
-                           atol=0.01)
+        # a matrix of ones
+        assert np.allclose(con_matrix, np.ones(con_matrix.shape), atol=0.01)
     if data_option == 'random':
         # signals are random, all connectivity values should be small
         # 0.5 is picked rather arbitrarily such that the obsolete wrong
         # implementation fails
-        assert np.all(con_matrix) <= 0.5
+        assert np.all(con_matrix <= 0.5)
+
+
+def test_spectral_connectivity_time_delayed():
+    """Test per-epoch Granger causality with time-delayed data.
+
+    N.B.: the spectral_connectivity_time method seems to be more unstable than
+    spectral_connectivity_epochs for GC estimation. Accordingly, we assess
+    Granger scores only in the context of the noise-corrected TRGC metric,
+    where the true directionality of the connections seems to identified.
+    """
+    mode = 'multitaper'  # stick with single mode in interest of time
+
+    sfreq = 100.0  # Hz
+    n_signals = 4  # should be even!
+    n_seeds = n_signals // 2
+    n_epochs = 10
+    n_times = 200  # samples
+    trans_bandwidth = 2.0  # Hz
+    delay = 5  # samples (non-zero delay needed for GC to be >> 0)
+
+    indices = tuple([np.arange(n_seeds), np.arange(n_seeds) + n_seeds])
+
+    # 20-30 Hz connectivity
+    fstart, fend = 20.0, 30.0
+    rng = np.random.RandomState(0)
+    data = rng.randn(n_signals, n_epochs * n_times + delay)
+    # simulate connectivity from fstart to fend
+    data[n_seeds:, :] = filter_data(
+        data[:n_seeds, :], sfreq, fstart, fend, filter_length='auto',
+        fir_design='firwin2', l_trans_bandwidth=trans_bandwidth,
+        h_trans_bandwidth=trans_bandwidth)
+    # add some noise, so the spectrum is not exactly zero
+    data[n_seeds:, :] += 1e-2 * rng.randn(n_seeds, n_times * n_epochs + delay)
+    # shift the seeds to that the targets are a delayed version of them
+    data[:n_seeds, :n_epochs * n_times] = data[:n_seeds, delay:]
+    data = data[:, :n_times * n_epochs]
+    data = data.reshape(n_signals, n_epochs, n_times)
+    data = np.transpose(data, [1, 0, 2])
+
+    freqs = np.arange(2.5, 50, 0.5)
+    con_st = spectral_connectivity_time(
+        data, freqs, method=['gc', 'gc_tr'], indices=indices, mode=mode,
+        sfreq=sfreq, n_jobs=1, gc_n_lags=20, n_cycles=5, average=True)
+    con_ts = spectral_connectivity_time(
+        data, freqs, method=['gc', 'gc_tr'], indices=(indices[1], indices[0]),
+        mode=mode, sfreq=sfreq, n_jobs=1, gc_n_lags=20, n_cycles=5,
+        average=True)
+    st = con_st[0].get_data()
+    st_tr = con_st[1].get_data()
+    ts = con_ts[0].get_data()
+    ts_tr = con_ts[1].get_data()
+    trgc = (st - ts) - (st_tr - ts_tr)
+
+    freqs = con_st[0].freqs
+    gidx = (freqs.index(fstart), freqs.index(fend) + 1)
+    bidx = (freqs.index(fstart - trans_bandwidth * 2),
+            freqs.index(fend + trans_bandwidth * 2) + 1)
+
+    # assert that TRGC (i.e. net, noise-corrected connectivity) is positive and
+    # >> 0 (i.e. that there is indeed a flow of info. from  seeds to targets,
+    # as simulated)
+    assert np.all(trgc[:, gidx[0]:gidx[1]] > 0)
+    assert trgc[:, gidx[0]:gidx[1]].mean() > 0.4
+    # check that non-interacting freqs. have close to zero connectivity
+    assert np.allclose(trgc[0, :bidx[0]].mean(), 0, atol=0.1)
+    assert np.allclose(trgc[0, bidx[1]:].mean(), 0, atol=0.1)
 
 
 @pytest.mark.parametrize('method', ['coh', 'plv', 'pli', 'wpli', 'ciplv'])

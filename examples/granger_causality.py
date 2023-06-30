@@ -173,7 +173,7 @@ freqs = gc_ab.freqs
 ###############################################################################
 # Plotting the results, we see that there is a flow of information from our
 # parietal sensors (group A) to our occipital sensors (group B) with noticeable
-# peaks at ~8 Hz and ~13 Hz.
+# peaks at around 8, 18, and 26 Hz.
 
 # %%
 
@@ -197,11 +197,10 @@ fig.suptitle('GC: [A => B]')
 # :math:`F_{A \rightarrow B}^{net} := F_{A \rightarrow B} -
 # F_{B \rightarrow A}`.
 #
-# Doing so, we see that the flow of information around 8 Hz is dominant from
-# parietal to occipital sensors (indicated by the positive-valued Granger
-# scores). However, at 13, 18, and 24 Hz, information flow is dominant in the
-# occipital to parietal direction (as shown by the negative-valued Granger
-# scores).
+# Doing so, we see that the flow of information across the spectrum remains
+# dominant from parietal to occipital sensors (indicated by the positive-valued
+# Granger scores). However, the pattern of connectivity is altered, such as
+# around 10 and 12 Hz where peaks of net information flow are now present.
 
 # %%
 
@@ -255,10 +254,11 @@ fig.suptitle('Net GC: [A => B] - [B => A]')
 # GC on time-reversed signals can be computed simply with ``method=['gc_tr']``,
 # which will perform the time-reversal of the signals for the end-user. Note
 # that **time-reversed results should only be interpreted in the context of net
-# results**. In the example below, notice how the outputs are not used
-# directly, but rather used to produce net scores of the time-reversed signals.
-# The net scores of the time-reversed signals can then be subtracted from the
-# net scores of the original signals to produce the final TRGC scores.
+# results**, i.e. with :math:`\tilde{D}_{A \rightarrow B}^{net}`. In the
+# example below, notice how the outputs are not used directly, but rather used
+# to produce net scores of the time-reversed signals. The net scores of the
+# time-reversed signals can then be subtracted from the net scores of the
+# original signals to produce the final TRGC scores.
 
 # %%
 
@@ -277,14 +277,13 @@ net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
 trgc = net_gc - net_gc_tr
 
 ###############################################################################
-# Plotting the TRGC results, there is a clear peak for information flow
-# dominant in the parietal to occipital direction ~12 Hz.  Additionally, there
-# is dominance of information flow from occipital to parietal sensors around
-# 18-22 Hz. As with the net GC scores, this lower-higher frequency contrast
-# between the directions of information flow remains present, however that is
-# not to say the spectral patterns are identical (e.g. the 24 Hz negative peak
-# is absent for TRGC). The absence of certain connectivity peaks for TRGC
-# suggests that these estimates may have been spurious connectivity resulting
+# Plotting the TRGC results, reveals a very different picture compared to net
+# GC. For one, there is now a dominance of information flow ~6 Hz from
+# occipital to parietal sensors (indicated by the negative-valued Granger
+# scores). Additionally, the peaks ~10 Hz are less dominant in the spectrum,
+# with parietal to occipital information flow between 13-20 Hz being much more
+# prominent. The stark difference between net GC and TRGC results indicates
+# that the net GC spectrum was contaminated by spurious connectivity resulting
 # from source mixing or correlated noise in the recordings. Altogether, the use
 # of TRGC instead of net GC is generally advised.
 
@@ -343,12 +342,16 @@ fig.suptitle('GC: [A => B]')
 #
 # In the case that your data is not full rank and ``rank`` is left as ``None``,
 # an automatic rank computation is performed and an appropriate degree of
-# dimensionality reduction will be enforced. However, the automatic rank
-# computation may fail to detect this, and an error will be raised. In this
-# case, you should inspect the singular values of your data to identify an
-# appropriate degree of dimensionality reduction to perform, which you can then
-# specify manually using the ``rank`` argument. The code below shows one
-# possible approach for finding an appropriate rank of close-to-singular data.
+# dimensionality reduction will be enforced. The rank of the data is determined
+# by computing the singular values of the data and finding those within a
+# factor of :math:`1e^{-10}` relative to the largest singular value.
+#
+# In some circumstances, this threshold may be too lenient, in which case you
+# should inspect the singular values of your data to identify an appropriate
+# degree of dimensionality reduction to perform, which you can then specify
+# manually using the ``rank`` argument. The code below shows one possible
+# approach for finding an appropriate rank of close-to-singular data with a
+# more conservative threshold of :math:`1e^{-5}`.
 
 # %%
 
@@ -384,6 +387,16 @@ except RuntimeError as error:
 # Rigorous checks are implemented to identify any such instances which would
 # otherwise cause the GC computation to produce erroneous results. You can
 # therefore be confident as an end-user that these cases will be caught.
+#
+# Finally, when comparing GC scores across recordings, **it is highly
+# recommended to estimate connectivity from the same number of channels (or
+# equally from the same degree of rank subspace projection)** to avoid biases
+# in connectivity estimates. Bias can be avoided by specifying a consistent
+# rank subspace to project to using the ``rank`` argument, standardising your
+# connectivity estimates regardless of changes in e.g. the number of channels
+# across recordings. Note that this does not refer to the number of seeds and
+# targets *within* a connection being identical, rather to the number of seeds
+# and targets *across* connections.
 
 
 ###############################################################################
