@@ -34,7 +34,9 @@ def test_plot_sensors_connectivity(renderer):
     fig = plot_sensors_connectivity(info=info, con=con, picks=picks, cmap=cmap)
     # check colormap
     cmap_from_mpl = np.array(colormaps[cmap].colors)
-    cmap_from_vtk = np.array(fig.plotter.scalar_bar.GetLookupTable().GetTable())
+    cmap_from_vtk = np.array(
+        fig.plotter.scalar_bar.GetLookupTable().GetTable()
+    )
     cmap_from_vtk = cmap_from_vtk[:, :3] / cmap_from_vtk[:, [-1]]
     cmap_from_vtk = cmap_from_vtk[::-1]  # for some reason order is flipped
     assert_almost_equal(cmap_from_mpl, cmap_from_vtk, decimal=2)

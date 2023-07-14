@@ -39,9 +39,9 @@ def plot_sensors_connectivity(info, con, picks=None,
     n_con : int
         Number of strongest connections shown. By default 20.
     cmap : str | instance of matplotlib.colors.Colormap
-        Colormap for coloring connections by strength. If :class:`str`, must be a valid
-        Matplotlib colormap (i.e. a valid key of ``matplotlib.colormaps``).
-        Default is ``"RdBu"``.
+        Colormap for coloring connections by strength. If :class:`str`, must
+        be a valid Matplotlib colormap (i.e. a valid key of
+        ``matplotlib.colormaps``). Default is ``"RdBu"``.
 
     Returns
     -------
