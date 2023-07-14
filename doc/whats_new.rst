@@ -24,7 +24,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Add the option to set the number of connections plotted in :func:`mne_connectivity.viz.plot_sensors_connectivity` by `Qianliang Li`_ (:pr:`133`).
-- Allow setting colormap via new parameter ``cmap`` in :func:`mne_connectivity.vis.plot_sensors_connectivity` by `Daniel McCloy`_ (:pr:`141`).
+- Allow setting colormap via new parameter ``cmap`` in :func:`mne_connectivity.viz.plot_sensors_connectivity` by `Daniel McCloy`_ (:pr:`141`).
 
 Bug
 ~~~
