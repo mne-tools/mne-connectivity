@@ -483,7 +483,8 @@ hurt SNR) and downsample. Then we compute SSP projectors and apply them.</p>
 <span class="n">cov</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.compute_raw_covariance.html#mne.compute_raw_covariance" title="mne.compute_raw_covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">compute_raw_covariance</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>  <span class="c1"># compute before band-pass of interest</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading 0 ... 144000  =      0.000 ...    60.000 secs...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>NOTE: pick_types() is a legacy function. New code should use inst.pick(...).
+Reading 0 ... 144000  =      0.000 ...    60.000 secs...
 Including 0 SSP projectors from raw file
 Running ECG SSP computation
 Reconstructing ECG signal from Magnetometers
@@ -498,7 +499,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 4.75 Hz)
 - Upper passband edge: 35.00 Hz
 - Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 35.25 Hz)
-- Filter length: 800 samples (10.000 sec)
+- Filter length: 800 samples (10.000 s)
 
 Number of ECG events detected : 88 (average pulse 88 / min.)
 Computing projector
@@ -514,14 +515,12 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 0.75 Hz)
 - Upper passband edge: 35.00 Hz
 - Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 35.25 Hz)
-- Filter length: 800 samples (10.000 sec)
+- Filter length: 800 samples (10.000 s)
 
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 88 matching events found
 No baseline correction applied
@@ -531,6 +530,7 @@ Using data from preloaded Raw for 88 events and 49 original time points ...
     Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
     Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
 4 bad epochs dropped
+NOTE: pick_channels() is a legacy function. New code should use inst.pick(...).
 No gradiometers found. Forcing n_grad to 0
 No EEG channels found. Forcing n_eeg to 0
 Adding projection: axial--0.200-0.400-PCA-01
@@ -552,11 +552,8 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 0.75 Hz)
 - Upper passband edge: 10.00 Hz
 - Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 10.25 Hz)
-- Filter length: 800 samples (10.000 sec)
+- Filter length: 800 samples (10.000 s)
 
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
 Now detecting blinks and generating corresponding events
 Found 12 significant peaks
 Number of EOG events detected: 12
@@ -573,14 +570,12 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Lower transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 0.75 Hz)
 - Upper passband edge: 35.00 Hz
 - Upper transition bandwidth: 0.50 Hz (-12 dB cutoff frequency: 35.25 Hz)
-- Filter length: 800 samples (10.000 sec)
+- Filter length: 800 samples (10.000 s)
 
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -588,6 +583,7 @@ No baseline correction applied
 Using data from preloaded Raw for 12 events and 33 original time points ...
     Rejecting  epoch based on MAG : [&#39;MRT41-4407&#39;]
 1 bad epochs dropped
+NOTE: pick_channels() is a legacy function. New code should use inst.pick(...).
 No gradiometers found. Forcing n_grad to 0
 No EEG channels found. Forcing n_eeg to 0
 Adding projection: axial--0.200-0.200-PCA-01
@@ -623,14 +619,12 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 - Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
 - Upper passband edge: 30.00 Hz
 - Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 sec)
+- Filter length: 77 samples (0.963 s)
 
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:    0.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done 298 out of 298 | elapsed:    0.2s finished
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -692,12 +686,9 @@ Checking surface interior status for 1364 points...
     Found  150/1364 points inside  an interior sphere of radius   49.6 mm
     Found    0/1364 points outside an exterior sphere of radius  105.3 mm
     Found  761/1214 points outside using surface Qhull
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.0s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    1.0s finished
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 957.9 ms
+Interior check completed in 819.3 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -772,38 +763,20 @@ Checking surface interior status for 479 points...
     Found 150/479 points inside  an interior sphere of radius   49.6 mm
     Found   0/479 points outside an exterior sphere of radius  105.3 mm
     Found   0/329 points outside using surface Qhull
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.8s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.8s finished
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 788.9 ms
+Interior check completed in 614.5 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
     Found 283/298 points outside an exterior sphere of radius  105.3 mm
     Found  15/ 15 points outside using surface Qhull
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.3s finished
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 273.6 ms
+Interior check completed in 200.2 ms
 
 Composing the field computation matrix...
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.6s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.6s finished
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.5s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.5s finished
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.9s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    2.9s finished
 Computing MEG at 479 source locations (free orientations)...
-[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.1s remaining:    0.0s
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.1s finished
 
 Finished.
 Removing 5 compensators from info because not all compensation channels were picked.
@@ -885,7 +858,7 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.926 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.103 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e8d9a36f1de06d756efc8f0135d04ae2/mne_inverse_envelope_correlation_volume.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation_volume.py</span></code></a></p>
@@ -970,7 +943,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-05-02.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
       <br/>
     
   </p>

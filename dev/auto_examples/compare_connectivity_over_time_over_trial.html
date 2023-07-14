@@ -458,7 +458,7 @@ imaginary part of coherence, phase locking value, and envelope correlations.
 Additionally, there are also multiple methods to estimate the frequency
 content, e.g. Fourier transforms, Morlet wavelets and multitapers.</p>
 <p>In this example, we focus on the two functions, which both computes
-connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
+connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a> and
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>.</p>
 <p>Both functions contain the options to choose the connectivity measurements
@@ -488,7 +488,7 @@ result in errorful values when computed on one epoch.</p>
 time for single-trials or from experiments that do not involve exactly
 repeated trials, then <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>
 should be employed. This function also takes data in the form of
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
 If there are multiple epochs, the connectivity over time is computed for
 epoch separately, with the option to average over epochs.</p>
 <p>To better illustrate the differences and usages for the two functions,
@@ -516,7 +516,7 @@ visual task dataset.</p>
 <section id="simulated-examples">
 <h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Permalink to this heading">#</a></h2>
 <p><strong>Case 1: Repetitions of the same trial.</strong></p>
-<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
+<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
 In this case, we will use random data for 3 channels over 5 epochs, but
 all the epochs are just exact replicates of the first epoch. This simulates
 when data is collected over an event of interest where we <strong>assume</strong> the
@@ -544,7 +544,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f7332dab640&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f5ad39e96c0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -584,7 +584,7 @@ Using qt as 2D backend.
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 - 7.996 sec, baseline off, ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -678,7 +678,7 @@ between the three electrodes over trials are exactly 1.</p>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 - 7.996 sec, baseline off, ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -741,7 +741,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f738894c820&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f5ad3a66710&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -768,7 +768,7 @@ No baseline correction applied
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 - 7.996 sec, baseline off, ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -824,7 +824,7 @@ between two channels are not the same over trials.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 - 7.996 sec, baseline off, ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -879,7 +879,7 @@ since the phase differences over time between two channels are synchronized.</p>
 Ready.
 Not setting metadata
 73 matching events found
-Setting baseline interval to [-0.2996928197375818, 0.0] sec
+Setting baseline interval to [-0.2996928197375818, 0.0] s
 Applying baseline correction (mode: mean)
 Created an SSP operator (subspace dimension = 1)
 4 projection items activated
@@ -901,11 +901,11 @@ Loading data for 73 events and 286 original time points ...
     </tr>
     <tr>
         <th>Time range</th>
-        <td>-0.300 – 1.598 sec</td>
+        <td>-0.300 – 1.598 s</td>
     </tr>
     <tr>
         <th>Baseline</th>
-        <td>-0.300 – 0.000 sec</td>
+        <td>-0.300 – 0.000 s</td>
     </tr>
 </table>
 </div>
@@ -1081,7 +1081,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f7332caf8b0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f5b29310af0&gt;
 </pre></div>
 </div>
 </section>
@@ -1111,7 +1111,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  27.253 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.142 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/efc9d2bd33a8554972ab792e6d73b8aa/compare_connectivity_over_time_over_trial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">compare_connectivity_over_time_over_trial.py</span></code></a></p>
@@ -1197,7 +1197,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-05-02.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
       <br/>
     
   </p>
