@@ -5,8 +5,10 @@
 #
 # License: Simplified BSD
 
+import numpy as np
 from mne.utils import warn
 from mne.viz.circle import _plot_connectivity_circle
+from matplotlib.animation import FuncAnimation
 
 
 def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
@@ -105,7 +107,7 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
 
     Returns
     -------
-    fig : instance of matplotlib.figure.Figure
+    fig : instance of matplotlib.figure.Figure | instance of matplotlib.animation.FuncAnimation  # noqa E501
         The figure handle.
     ax : instance of matplotlib.projections.polar.PolarAxes
         The subplot handle.
@@ -140,6 +142,40 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
             if not isinstance(subplot, tuple):
                 subplot = (subplot,)
             ax = plt.subplot(*subplot, polar=True)
+
+    if con.ndim == 3:
+        if ax is None:
+            fig, ax = plt.subplots(subplot_kw=dict(projection='polar'),
+                                   facecolor='black')
+        else:
+            fig = ax.figure
+
+        def update_connectivity(i):
+            ax.clear()
+            these_n_lines = n_lines[i] if isinstance(n_lines, np.ndarray) \
+                else n_lines
+            _plot_connectivity_circle(
+                con=con[i], node_names=node_names, indices=indices,
+                n_lines=these_n_lines, node_angles=node_angles,
+                node_width=node_width, node_height=node_height,
+                node_colors=node_colors, facecolor=facecolor,
+                textcolor=textcolor, node_edgecolor=node_edgecolor,
+                linewidth=linewidth, colormap=colormap, vmin=vmin, vmax=vmax,
+                colorbar=(i == 0 and colorbar), title=title,
+                colorbar_size=colorbar_size,
+                colorbar_pos=colorbar_pos, fontsize_title=fontsize_title,
+                fontsize_names=fontsize_names,
+                fontsize_colorbar=fontsize_colorbar, padding=padding, ax=ax,
+                interactive=interactive, node_linewidth=node_linewidth,
+                show=show)
+            # circle is size 10
+            ax.text(3 * np.pi / 4, 25, f'epoch = {i}', color='white',
+                    clip_on=False)
+
+        anim = FuncAnimation(fig, update_connectivity,
+                             frames=con.shape[0],
+                             blit=False, repeat=False)
+        return anim, ax
 
     return _plot_connectivity_circle(
         con=con, node_names=node_names, indices=indices, n_lines=n_lines,
