@@ -37,7 +37,8 @@ def test_plot_sensors_connectivity(renderer):
     cmap_from_vtk = np.array(
         fig.plotter.scalar_bar.GetLookupTable().GetTable()
     )
-    cmap_from_vtk = cmap_from_vtk[:, :3] / cmap_from_vtk[:, [-1]]
+    # discard alpha channel and convert uint8 -> norm
+    cmap_from_vtk = cmap_from_vtk[:, :3] / 255
     cmap_from_vtk = cmap_from_vtk[::-1]  # for some reason order is flipped
     assert_almost_equal(cmap_from_mpl, cmap_from_vtk, decimal=2)
     # check title
