@@ -45,9 +45,9 @@ from mne_connectivity import spectral_connectivity_epochs
 # the true causality between signals.
 #
 # The degree to which :math:`\boldsymbol{x}` and :math:`\boldsymbol{y}` can be
-# used to predict one another can be quantified using vector autoregressive
-# (VAR) models. Considering the simpler case of time domain connectivity, the
-# VAR models are as follows:
+# used to predict one another in a linear model can be quantified using vector
+# autoregressive (VAR) models. Considering the simpler case of time domain
+# connectivity, the VAR models are as follows:
 #
 # :math:`y_t = \sum_{k=1}^{K} a_k y_{t-k} + \xi_t^y` ,
 # :math:`Var(\xi_t^y) := \Sigma_y` ,
@@ -61,7 +61,9 @@ from mne_connectivity import spectral_connectivity_epochs
 # representing the reduced and full VAR models, respectively, where: :math:`K`
 # is the order of the VAR model, determining the number of lags, :math:`k`,
 # used; :math:`\boldsymbol{Z} := \begin{bmatrix} \boldsymbol{x} \\
-# \boldsymbol{y} \end{bmatrix}`; and :math:`\xi` and
+# \boldsymbol{y} \end{bmatrix}`; :math:`\boldsymbol{A}` is a matrix of
+# coefficients explaining the contribution of past entries of
+# :math:`\boldsymbol{Z}` to its current value; and :math:`\xi` and
 # :math:`\boldsymbol{\epsilon}` are the residuals of the VAR models. In this
 # way, the information of the signals at time :math:`t` can be represented as a
 # weighted form of the information from the previous timepoints, plus some
@@ -69,9 +71,15 @@ from mne_connectivity import spectral_connectivity_epochs
 # parameters are computed from an autocovariance sequence generated from the
 # time-series data using the Yule-Walker equations :footcite:`Whittle1963`.
 #
-# By comparing the residuals, or errors, of the reduced and full VAR models, we
-# can therefore estimate how much :math:`\boldsymbol{x}` Granger-causes
-# :math:`\boldsymbol{y}`:
+# The residuals, or errors, represent how much information about the present
+# state of the signals is not explained by their past. We can therefore
+# estimate how much :math:`\boldsymbol{x}` Granger-causes
+# :math:`\boldsymbol{y}` by comparing the variance of the residuals of the
+# reduced VAR model (:math:`\Sigma_y`; i.e. how much the present of
+# :math:`\boldsymbol{y}` is not explained by its own past) and of the full VAR
+# model (:math:`\Sigma_{yy}`; i.e. how much the present of
+# :math:`\boldsymbol{y}` is not explained by both its own past and that of
+# :math:`\boldsymbol{x}`):
 #
 # :math:`F_{x \rightarrow y} = ln \Large{(\frac{\Sigma_y}{\Sigma_{yy}})}` ,
 #

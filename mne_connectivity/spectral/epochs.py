@@ -113,7 +113,10 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
 
     # number of connectivities to compute
     if any(this_method in _multivariate_methods for this_method in method):
-        if len(np.unique(indices_use[0])) != len(np.unique(indices_use[1])):
+        if (
+            len(np.unique(indices_use[0])) != len(indices_use[0]) or
+            len(np.unique(indices_use[1])) != len(indices_use[1])
+        ):
             raise ValueError(
                 'seed and target indices cannot contain repeated channels for '
                 'multivariate connectivity')
@@ -1977,7 +1980,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 this_patterns_bands = np.empty(patterns_shape,
                                                dtype=this_patterns.dtype)
                 for band_idx in range(n_bands):
-                    this_patterns_bands[:, :, band_idx] = np.mean(
+                    this_patterns_bands[:, :, :, band_idx] = np.mean(
                         this_patterns[:, :, :, freq_idx_bands[band_idx]],
                         axis=3)
                 this_patterns = this_patterns_bands

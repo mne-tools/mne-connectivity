@@ -687,6 +687,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             data = self._data
         else:
             if self.method in ['mic', 'mim', 'gc', 'gc_tr']:
+                # multivariate results cannot be returned in a dense form as a
+                # single set of results would correspond to multiple entries in
+                # the matrix, and there could also be cases where multiple
+                # results correspond to the same entries in the matrix.
                 raise ValueError('cannot return multivariate connectivity '
                                  'data in a dense form')
 

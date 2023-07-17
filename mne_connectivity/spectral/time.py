@@ -404,7 +404,10 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
             indices_use = np.tril_indices(n_signals, k=-1)
     else:
         if multivariate_con:
-            if len(np.unique(indices[0])) != len(np.unique(indices[1])):
+            if (
+                len(np.unique(indices[0])) != len(indices[0]) or
+                len(np.unique(indices[1])) != len(indices[1])
+            ):
                 raise ValueError(
                     'seed and target indices cannot contain repeated '
                     'channels for multivariate connectivity')
@@ -497,8 +500,12 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
             conn[m][epoch_idx] = np.stack(scores[m], axis=0)
             if multivariate_con and patterns[m] is not None:
                 conn_patterns[m][epoch_idx] = np.stack(patterns[m], axis=0)
-    if np.isnan(conn_patterns[m]).all():
-        conn_patterns[m] = None
+    for m in method:
+        if np.isnan(conn_patterns[m]).all():
+            conn_patterns[m] = None
+        else:
+            # epochs x 2 x n_channels x n_freqs
+            conn_patterns[m] = conn_patterns[m].transpose((1, 0, 2, 3))
 
     if indices is None and not multivariate_con:
         conn_flat = conn
@@ -521,16 +528,16 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
     out = []
     for m in method:
         store_params = {
-            'data': conn[m], 'patterns': patterns[m], 'freqs': out_freqs,
+            'data': conn[m], 'patterns': conn_patterns[m], 'freqs': out_freqs,
             'n_nodes': n_signals, 'names': names, 'indices': indices,
             'method': method, 'spec_method': mode, 'events': events,
             'event_id': event_id, 'metadata': metadata, 'rank': rank,
             'n_lags': gc_n_lags if m in _gc_methods else None}
         if average:
             store_params['data'] = np.mean(store_params['data'], axis=0)
-            if patterns[m] is not None:
+            if conn_patterns[m] is not None:
                 store_params['patterns'] = np.mean(store_params['patterns'],
-                                                   axis=0)
+                                                   axis=1)
             out.append(SpectralConnectivity(**store_params))
         else:
             out.append(EpochSpectralConnectivity(**store_params))
@@ -604,11 +611,12 @@ def _spectral_connectivity(data, method, kernel, foi_idx,
         n_freqs) or (n_pairs, n_fbands) if ``faverage`` is `True`.
 
     patterns : dict
-        Dictionary containing the connectivity patterns corresponding to the
-        metrics in ``method``, if multivariate methods are called, else an
-        empty dictionary. Each element is an array of shape (n_pairs,
-        n_channels, n_freqs) or (n_pairs, n_channels, n_fbands) if ``faverage``
-        is `True`.
+        Dictionary containing the connectivity patterns (for reconstructing the
+        connectivity components in source-space) corresponding to the metrics
+        in ``method``, if multivariate methods are called, else an empty
+        dictionary. Each element is an array of shape (2, n_channels, n_freqs)
+        or (2, n_channels, 1) if ``faverage`` is `True`, where 2 corresponds to
+        the seed and target signals (respectively).
     """
     n_pairs = len(source_idx)
     data = np.expand_dims(data, axis=0)
