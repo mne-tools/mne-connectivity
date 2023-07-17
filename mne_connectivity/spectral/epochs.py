@@ -1,6 +1,9 @@
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
 #          Denis A. Engemann <denis.engemann@gmail.com>
 #          Adam Li <adam2392@gmail.com>
+#          Thomas S. Binns <t.s.binns@outlook.com>
+#          Tien D. Nguyen <tien-dung.nguyen@bccn-berlin.de>
+#          Richard M. Köhler <koehler.richard@charite.de>
 #
 # License: BSD (3-clause)
 

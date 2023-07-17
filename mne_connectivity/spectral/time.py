@@ -1,5 +1,6 @@
 # Authors: Adam Li <adam2392@gmail.com>
 #          Santeri Ruuskanen <santeriruuskanen@gmail.com>
+#          Thomas S. Binns <t.s.binns@outlook.com>
 #
 # License: BSD (3-clause)
 
