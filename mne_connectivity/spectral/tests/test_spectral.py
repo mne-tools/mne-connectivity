@@ -1128,6 +1128,13 @@ def test_multivar_spectral_connectivity_time_error_catch(method):
             data, freqs, method=method, indices=indices, sfreq=sfreq,
             rank=too_high_rank)
 
+    # check all-to-all conn. computed for MIC/MIM when no indices given
+    if method in ['mic', 'mim']:
+        con = spectral_connectivity_epochs(
+            data, freqs, method=method, indices=None, sfreq=sfreq)
+        assert (np.array(con.indices).tolist() ==
+                [[[0, 1, 2, 3]], [[0, 1, 2, 3]]])
+
     if method in ['gc', 'gc_tr']:
         # check no indices caught
         with pytest.raises(ValueError, match='indices must be specified'):
