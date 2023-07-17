@@ -2,6 +2,9 @@ import os.path as op
 import numpy as np
 import pytest
 
+from matplotlib import colormaps
+from numpy.testing import assert_almost_equal
+
 import mne
 from mne.datasets import testing
 
@@ -27,7 +30,17 @@ def test_plot_sensors_connectivity(renderer):
         plot_sensors_connectivity(info='foo', con=con, picks=picks)
     with pytest.raises(ValueError, match='does not correspond to the size'):
         plot_sensors_connectivity(info=info, con=con[::2, ::2], picks=picks)
-
-    fig = plot_sensors_connectivity(info=info, con=con, picks=picks)
+    cmap = 'viridis'
+    fig = plot_sensors_connectivity(info=info, con=con, picks=picks, cmap=cmap)
+    # check colormap
+    cmap_from_mpl = np.array(colormaps[cmap].colors)
+    cmap_from_vtk = np.array(
+        fig.plotter.scalar_bar.GetLookupTable().GetTable()
+    )
+    # discard alpha channel and convert uint8 -> norm
+    cmap_from_vtk = cmap_from_vtk[:, :3] / 255
+    cmap_from_vtk = cmap_from_vtk[::-1]  # for some reason order is flipped
+    assert_almost_equal(cmap_from_mpl, cmap_from_vtk, decimal=2)
+    # check title
     title = list(fig.plotter.scalar_bars.values())[0].GetTitle()
     assert title == 'Connectivity'
