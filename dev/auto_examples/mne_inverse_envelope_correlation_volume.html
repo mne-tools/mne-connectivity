@@ -367,10 +367,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
@@ -688,7 +690,7 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 819.3 ms
+Interior check completed in 757.6 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -765,7 +767,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 614.5 ms
+Interior check completed in 731.1 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -773,7 +775,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 200.2 ms
+Interior check completed in 222.9 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -858,7 +860,7 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.103 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  29.553 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e8d9a36f1de06d756efc8f0135d04ae2/mne_inverse_envelope_correlation_volume.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation_volume.py</span></code></a></p>
@@ -943,7 +945,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

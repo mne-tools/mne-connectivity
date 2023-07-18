@@ -367,10 +367,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
@@ -544,7 +546,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f5ad39e96c0&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f4db3323370&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -584,7 +586,7 @@ Using qt as 2D backend.
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1810: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -598,11 +600,11 @@ only using indices for lower-triangular matrix
     connectivity scores will be averaged for each band
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
-    computing connectivity for epoch 1
-    computing connectivity for epoch 2
-    computing connectivity for epoch 3
-    computing connectivity for epoch 4
-    computing connectivity for epoch 5
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
     assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
@@ -678,9 +680,10 @@ between the three electrodes over trials are exactly 1.</p>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:330: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
+only using indices for lower-triangular matrix
 Connectivity computation...
    Processing epoch 1 / 5 ...
    Processing epoch 2 / 5 ...
@@ -741,7 +744,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f5ad3a66710&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f4df77f11b0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -768,7 +771,7 @@ No baseline correction applied
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1018: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1810: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -782,11 +785,11 @@ only using indices for lower-triangular matrix
     connectivity scores will be averaged for each band
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
-    computing connectivity for epoch 1
-    computing connectivity for epoch 2
-    computing connectivity for epoch 3
-    computing connectivity for epoch 4
-    computing connectivity for epoch 5
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
     assembling connectivity matrix
 [Connectivity computation done]
 Connectivity method: coh
@@ -824,9 +827,10 @@ between two channels are not the same over trials.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:256: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:330: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray |  5 events (all good), 0 – 7.996 s, baseline off, ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
+only using indices for lower-triangular matrix
 Connectivity computation...
    Processing epoch 1 / 5 ...
    Processing epoch 2 / 5 ...
@@ -954,79 +958,79 @@ only using indices for lower-triangular matrix
     connectivity scores will be averaged for each band
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: WPLI
-    computing connectivity for epoch 1
-    computing connectivity for epoch 2
-    computing connectivity for epoch 3
-    computing connectivity for epoch 4
-    computing connectivity for epoch 5
-    computing connectivity for epoch 6
-    computing connectivity for epoch 7
-    computing connectivity for epoch 8
-    computing connectivity for epoch 9
-    computing connectivity for epoch 10
-    computing connectivity for epoch 11
-    computing connectivity for epoch 12
-    computing connectivity for epoch 13
-    computing connectivity for epoch 14
-    computing connectivity for epoch 15
-    computing connectivity for epoch 16
-    computing connectivity for epoch 17
-    computing connectivity for epoch 18
-    computing connectivity for epoch 19
-    computing connectivity for epoch 20
-    computing connectivity for epoch 21
-    computing connectivity for epoch 22
-    computing connectivity for epoch 23
-    computing connectivity for epoch 24
-    computing connectivity for epoch 25
-    computing connectivity for epoch 26
-    computing connectivity for epoch 27
-    computing connectivity for epoch 28
-    computing connectivity for epoch 29
-    computing connectivity for epoch 30
-    computing connectivity for epoch 31
-    computing connectivity for epoch 32
-    computing connectivity for epoch 33
-    computing connectivity for epoch 34
-    computing connectivity for epoch 35
-    computing connectivity for epoch 36
-    computing connectivity for epoch 37
-    computing connectivity for epoch 38
-    computing connectivity for epoch 39
-    computing connectivity for epoch 40
-    computing connectivity for epoch 41
-    computing connectivity for epoch 42
-    computing connectivity for epoch 43
-    computing connectivity for epoch 44
-    computing connectivity for epoch 45
-    computing connectivity for epoch 46
-    computing connectivity for epoch 47
-    computing connectivity for epoch 48
-    computing connectivity for epoch 49
-    computing connectivity for epoch 50
-    computing connectivity for epoch 51
-    computing connectivity for epoch 52
-    computing connectivity for epoch 53
-    computing connectivity for epoch 54
-    computing connectivity for epoch 55
-    computing connectivity for epoch 56
-    computing connectivity for epoch 57
-    computing connectivity for epoch 58
-    computing connectivity for epoch 59
-    computing connectivity for epoch 60
-    computing connectivity for epoch 61
-    computing connectivity for epoch 62
-    computing connectivity for epoch 63
-    computing connectivity for epoch 64
-    computing connectivity for epoch 65
-    computing connectivity for epoch 66
-    computing connectivity for epoch 67
-    computing connectivity for epoch 68
-    computing connectivity for epoch 69
-    computing connectivity for epoch 70
-    computing connectivity for epoch 71
-    computing connectivity for epoch 72
-    computing connectivity for epoch 73
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+    computing cross-spectral density for epoch 31
+    computing cross-spectral density for epoch 32
+    computing cross-spectral density for epoch 33
+    computing cross-spectral density for epoch 34
+    computing cross-spectral density for epoch 35
+    computing cross-spectral density for epoch 36
+    computing cross-spectral density for epoch 37
+    computing cross-spectral density for epoch 38
+    computing cross-spectral density for epoch 39
+    computing cross-spectral density for epoch 40
+    computing cross-spectral density for epoch 41
+    computing cross-spectral density for epoch 42
+    computing cross-spectral density for epoch 43
+    computing cross-spectral density for epoch 44
+    computing cross-spectral density for epoch 45
+    computing cross-spectral density for epoch 46
+    computing cross-spectral density for epoch 47
+    computing cross-spectral density for epoch 48
+    computing cross-spectral density for epoch 49
+    computing cross-spectral density for epoch 50
+    computing cross-spectral density for epoch 51
+    computing cross-spectral density for epoch 52
+    computing cross-spectral density for epoch 53
+    computing cross-spectral density for epoch 54
+    computing cross-spectral density for epoch 55
+    computing cross-spectral density for epoch 56
+    computing cross-spectral density for epoch 57
+    computing cross-spectral density for epoch 58
+    computing cross-spectral density for epoch 59
+    computing cross-spectral density for epoch 60
+    computing cross-spectral density for epoch 61
+    computing cross-spectral density for epoch 62
+    computing cross-spectral density for epoch 63
+    computing cross-spectral density for epoch 64
+    computing cross-spectral density for epoch 65
+    computing cross-spectral density for epoch 66
+    computing cross-spectral density for epoch 67
+    computing cross-spectral density for epoch 68
+    computing cross-spectral density for epoch 69
+    computing cross-spectral density for epoch 70
+    computing cross-spectral density for epoch 71
+    computing cross-spectral density for epoch 72
+    computing cross-spectral density for epoch 73
     assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
@@ -1081,7 +1085,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f5b29310af0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f4db0166bc0&gt;
 </pre></div>
 </div>
 </section>
@@ -1111,7 +1115,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.142 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  20.881 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/efc9d2bd33a8554972ab792e6d73b8aa/compare_connectivity_over_time_over_trial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">compare_connectivity_over_time_over_trial.py</span></code></a></p>
@@ -1197,7 +1201,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

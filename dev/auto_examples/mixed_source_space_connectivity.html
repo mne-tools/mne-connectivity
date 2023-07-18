@@ -52,7 +52,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mixed_source_space_connectivity';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Compute seed-based time-frequency connectivity in sensor space" href="cwt_sensor_connectivity.html" />
+    <link rel="next" title="Compute multivariate measures of the imaginary part of coherency" href="mic_mim.html" />
     <link rel="prev" title="Compute full spectrum source space connectivity between labels" href="mne_inverse_connectivity_spectrum.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -367,10 +367,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
@@ -670,7 +672,7 @@ Checking surface interior status for 2961 points...
     Found 1275/2615 points outside using surface Qhull
     Found   97/1340 points outside using solid angles
     Total 1589/2961 points inside the surface
-Interior check completed in 1606.6 ms
+Interior check completed in 1621.1 ms
     1372 source space points omitted because they are outside the inner skull surface.
     283 source space points omitted because of the    5.0-mm distance limit.
 1306 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -760,7 +762,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 815 points outside using surface Qhull
     Found    0/ 815 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1080.5 ms
+Interior check completed in 1155.3 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 1026 points...
     Found  219/1026 points inside  an interior sphere of radius   43.6 mm
@@ -768,7 +770,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 807 points outside using surface Qhull
     Found    0/ 807 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1084.8 ms
+Interior check completed in 1195.2 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 2 points...
     Found 2/2 points inside  an interior sphere of radius   43.6 mm
@@ -776,49 +778,49 @@ Checking surface interior status for 2 points...
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 2/2 points inside the surface
-Interior check completed in 201.4 ms
+Interior check completed in 251.5 ms
 Checking surface interior status for 9 points...
     Found 9/9 points inside  an interior sphere of radius   43.6 mm
     Found 0/9 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 9/9 points inside the surface
-Interior check completed in 203.7 ms
+Interior check completed in 258.5 ms
 Checking surface interior status for 33 points...
     Found  1/33 point  inside  an interior sphere of radius   43.6 mm
     Found  0/33 points outside an exterior sphere of radius   91.8 mm
     Found  0/32 points outside using surface Qhull
     Found  0/32 points outside using solid angles
     Total 33/33 points inside the surface
-Interior check completed in 276.2 ms
+Interior check completed in 336.5 ms
 Checking surface interior status for 21 points...
     Found  8/21 points inside  an interior sphere of radius   43.6 mm
     Found  0/21 points outside an exterior sphere of radius   91.8 mm
     Found  0/13 points outside using surface Qhull
     Found  0/13 points outside using solid angles
     Total 21/21 points inside the surface
-Interior check completed in 253.8 ms
+Interior check completed in 294.2 ms
 Checking surface interior status for 1 point ...
     Found 1/1 point  inside  an interior sphere of radius   43.6 mm
     Found 0/1 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 1/1 point  inside the surface
-Interior check completed in 237.0 ms
+Interior check completed in 258.8 ms
 Checking surface interior status for 7 points...
     Found 7/7 points inside  an interior sphere of radius   43.6 mm
     Found 0/7 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 7/7 points inside the surface
-Interior check completed in 217.2 ms
+Interior check completed in 252.4 ms
 Checking surface interior status for 44 points...
     Found  1/44 point  inside  an interior sphere of radius   43.6 mm
     Found  0/44 points outside an exterior sphere of radius   91.8 mm
     Found  0/43 points outside using surface Qhull
     Found  0/43 points outside using solid angles
     Total 44/44 points inside the surface
-Interior check completed in 313.6 ms
+Interior check completed in 355.4 ms
 
 Checking surface interior status for 305 points...
     Found   0/305 points inside  an interior sphere of radius   43.6 mm
@@ -826,7 +828,7 @@ Checking surface interior status for 305 points...
     Found   0/  0 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/305 points inside the surface
-Interior check completed in 234.9 ms
+Interior check completed in 238.7 ms
 
 Composing the field computation matrix...
 Computing MEG at 2001 source locations (free orientations)...
@@ -878,240 +880,240 @@ only using indices for lower-triangular matrix
     connectivity scores will be averaged for each band
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: PLI
-    computing connectivity for epoch 1
+    computing cross-spectral density for epoch 1
 Processing epoch : 2 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 2
+    computing cross-spectral density for epoch 2
 Processing epoch : 3 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 3
+    computing cross-spectral density for epoch 3
 Processing epoch : 4 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 4
+    computing cross-spectral density for epoch 4
 Processing epoch : 5 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 5
+    computing cross-spectral density for epoch 5
 Processing epoch : 6 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 6
+    computing cross-spectral density for epoch 6
 Processing epoch : 7 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 7
+    computing cross-spectral density for epoch 7
 Processing epoch : 8 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 8
+    computing cross-spectral density for epoch 8
 Processing epoch : 9 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 9
+    computing cross-spectral density for epoch 9
 Processing epoch : 10 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 10
+    computing cross-spectral density for epoch 10
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 11 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 11
+    computing cross-spectral density for epoch 11
 Processing epoch : 12 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 12
+    computing cross-spectral density for epoch 12
 Processing epoch : 13 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 13
+    computing cross-spectral density for epoch 13
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 14 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 14
+    computing cross-spectral density for epoch 14
 Processing epoch : 15 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 15
+    computing cross-spectral density for epoch 15
 Processing epoch : 16 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 16
+    computing cross-spectral density for epoch 16
 Processing epoch : 17 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 17
+    computing cross-spectral density for epoch 17
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 18 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 18
+    computing cross-spectral density for epoch 18
 Processing epoch : 19 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 19
+    computing cross-spectral density for epoch 19
 Processing epoch : 20 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 20
+    computing cross-spectral density for epoch 20
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 21 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 21
+    computing cross-spectral density for epoch 21
 Processing epoch : 22 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 22
+    computing cross-spectral density for epoch 22
 Processing epoch : 23 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 23
+    computing cross-spectral density for epoch 23
     Rejecting  epoch based on MAG : [&#39;MEG 1711&#39;]
 Processing epoch : 24 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 24
+    computing cross-spectral density for epoch 24
 Processing epoch : 25 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 25
+    computing cross-spectral density for epoch 25
 Processing epoch : 26 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 26
+    computing cross-spectral density for epoch 26
 Processing epoch : 27 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 27
+    computing cross-spectral density for epoch 27
 Processing epoch : 28 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 28
+    computing cross-spectral density for epoch 28
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 29 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 29
+    computing cross-spectral density for epoch 29
 Processing epoch : 30 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 30
+    computing cross-spectral density for epoch 30
 Processing epoch : 31 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 31
+    computing cross-spectral density for epoch 31
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 32 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 32
+    computing cross-spectral density for epoch 32
 Processing epoch : 33 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 33
+    computing cross-spectral density for epoch 33
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 34 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 34
+    computing cross-spectral density for epoch 34
 Processing epoch : 35 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 35
+    computing cross-spectral density for epoch 35
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 36 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 36
+    computing cross-spectral density for epoch 36
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 37 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 37
+    computing cross-spectral density for epoch 37
 Processing epoch : 38 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 38
+    computing cross-spectral density for epoch 38
 Processing epoch : 39 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 39
+    computing cross-spectral density for epoch 39
 Processing epoch : 40 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 40
+    computing cross-spectral density for epoch 40
 Processing epoch : 41 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 41
+    computing cross-spectral density for epoch 41
 Processing epoch : 42 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 42
+    computing cross-spectral density for epoch 42
 Processing epoch : 43 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 43
+    computing cross-spectral density for epoch 43
 Processing epoch : 44 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 44
+    computing cross-spectral density for epoch 44
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 45 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 45
+    computing cross-spectral density for epoch 45
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 46 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 46
+    computing cross-spectral density for epoch 46
 Processing epoch : 47 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 47
+    computing cross-spectral density for epoch 47
 Processing epoch : 48 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 48
+    computing cross-spectral density for epoch 48
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 49 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 49
+    computing cross-spectral density for epoch 49
 Processing epoch : 50 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 50
+    computing cross-spectral density for epoch 50
 Processing epoch : 51 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 51
+    computing cross-spectral density for epoch 51
 Processing epoch : 52 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 52
+    computing cross-spectral density for epoch 52
 Processing epoch : 53 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 53
+    computing cross-spectral density for epoch 53
 Processing epoch : 54 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 54
+    computing cross-spectral density for epoch 54
 Processing epoch : 55 / 72 (at most)
 combining the current components...
 Extracting time courses for 75 labels (mode: mean_flip)
-    computing connectivity for epoch 55
+    computing cross-spectral density for epoch 55
 [done]
     assembling connectivity matrix
 [Connectivity computation done]
@@ -1126,7 +1128,7 @@ and legend will be cut off from the output png file.</p>
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  19.179 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.762 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mixed-source-space-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/089119f41c66c5258e6c09e3b0f169ae/mixed_source_space_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mixed_source_space_connectivity.py</span></code></a></p>
@@ -1157,11 +1159,11 @@ and legend will be cut off from the output png file.</p>
       </div>
     </a>
     <a class="right-next"
-       href="cwt_sensor_connectivity.html"
+       href="mic_mim.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Compute seed-based time-frequency connectivity in sensor space</p>
+        <p class="prev-next-title">Compute multivariate measures of the imaginary part of coherency</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1208,7 +1210,7 @@ and legend will be cut off from the output png file.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

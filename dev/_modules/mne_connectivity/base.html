@@ -1072,7 +1072,8 @@ document.write(`
 <span class="sd">            ``(n_nodes_in * n_nodes_out,)`` list. If &#39;dense&#39;, then</span>
 <span class="sd">            will return each connectivity matrix as a 2D array. If &#39;compact&#39;</span>
 <span class="sd">            (default) then will return &#39;raveled&#39; if ``indices`` were defined as</span>
-<span class="sd">            a list of tuples, or ``dense`` if indices is &#39;all&#39;.</span>
+<span class="sd">            a list of tuples, or ``dense`` if indices is &#39;all&#39;. Multivariate</span>
+<span class="sd">            connectivity data cannot be returned in a dense form.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1090,6 +1091,14 @@ document.write(`
         <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;raveled&#39;</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mic&#39;</span><span class="p">,</span> <span class="s1">&#39;mim&#39;</span><span class="p">,</span> <span class="s1">&#39;gc&#39;</span><span class="p">,</span> <span class="s1">&#39;gc_tr&#39;</span><span class="p">]:</span>
+                <span class="c1"># multivariate results cannot be returned in a dense form as a</span>
+                <span class="c1"># single set of results would correspond to multiple entries in</span>
+                <span class="c1"># the matrix, and there could also be cases where multiple</span>
+                <span class="c1"># results correspond to the same entries in the matrix.</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;cannot return multivariate connectivity &#39;</span>
+                                 <span class="s1">&#39;data in a dense form&#39;</span><span class="p">)</span>
+
             <span class="c1"># get the new shape of the data array</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
                 <span class="n">new_shape</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="p">]</span>
@@ -1551,7 +1560,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

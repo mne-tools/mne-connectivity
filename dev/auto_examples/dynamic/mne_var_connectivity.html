@@ -366,10 +366,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../connectivity_classes.html">Using the connectivity classes</a></li>
@@ -498,87 +500,21 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
-
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 29.2MB/s]
+ 14%|█████                                | 12.0M/88.2M [00:00&lt;00:01, 53.4MB/s]
+ 23%|████████▋                            | 20.6M/88.2M [00:00&lt;00:01, 67.0MB/s]
+ 33%|████████████▎                        | 29.3M/88.2M [00:00&lt;00:00, 74.7MB/s]
+ 42%|███████████████▋                     | 37.3M/88.2M [00:00&lt;00:00, 76.5MB/s]
+ 51%|██████████████████▉                  | 45.2M/88.2M [00:00&lt;00:00, 73.6MB/s]
+ 61%|██████████████████████▋              | 54.1M/88.2M [00:00&lt;00:00, 78.4MB/s]
+ 71%|██████████████████████████▎          | 62.8M/88.2M [00:00&lt;00:00, 81.3MB/s]
+ 81%|█████████████████████████████▉       | 71.2M/88.2M [00:00&lt;00:00, 82.1MB/s]
+ 90%|█████████████████████████████████▎   | 79.5M/88.2M [00:01&lt;00:00, 80.7MB/s]
+ 99%|████████████████████████████████████▊| 87.6M/88.2M [00:01&lt;00:00, 80.9MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  1%|▎                                     | 734k/88.2M [00:00&lt;00:11, 7.34MB/s]
-  2%|▋                                    | 1.56M/88.2M [00:00&lt;00:11, 7.36MB/s]
-  3%|█▏                                   | 2.69M/88.2M [00:00&lt;00:09, 9.07MB/s]
-  4%|█▋                                   | 3.91M/88.2M [00:00&lt;00:08, 9.66MB/s]
-  6%|██                                   | 4.96M/88.2M [00:00&lt;00:08, 9.83MB/s]
-  7%|██▌                                  | 6.01M/88.2M [00:00&lt;00:08, 9.94MB/s]
-  8%|██▉                                  | 7.05M/88.2M [00:00&lt;00:08, 9.96MB/s]
-  9%|███▍                                 | 8.20M/88.2M [00:00&lt;00:07, 10.4MB/s]
- 11%|███▉                                 | 9.27M/88.2M [00:00&lt;00:07, 10.5MB/s]
- 12%|████▎                                | 10.4M/88.2M [00:01&lt;00:07, 10.7MB/s]
- 13%|████▊                                | 11.5M/88.2M [00:01&lt;00:07, 9.74MB/s]
- 14%|█████▏                               | 12.4M/88.2M [00:01&lt;00:08, 9.42MB/s]
- 15%|█████▌                               | 13.4M/88.2M [00:01&lt;00:08, 9.14MB/s]
- 16%|██████                               | 14.3M/88.2M [00:01&lt;00:08, 8.76MB/s]
- 17%|██████▍                              | 15.2M/88.2M [00:01&lt;00:08, 8.25MB/s]
- 18%|██████▊                              | 16.2M/88.2M [00:01&lt;00:08, 8.43MB/s]
- 20%|███████▏                             | 17.2M/88.2M [00:01&lt;00:08, 8.54MB/s]
- 21%|███████▋                             | 18.2M/88.2M [00:01&lt;00:07, 8.94MB/s]
- 22%|████████                             | 19.2M/88.2M [00:02&lt;00:08, 8.40MB/s]
- 23%|████████▍                            | 20.2M/88.2M [00:02&lt;00:07, 8.85MB/s]
- 24%|████████▉                            | 21.2M/88.2M [00:02&lt;00:07, 9.20MB/s]
- 25%|█████████▎                           | 22.2M/88.2M [00:02&lt;00:06, 9.50MB/s]
- 26%|█████████▊                           | 23.3M/88.2M [00:02&lt;00:06, 9.42MB/s]
- 28%|██████████▏                          | 24.3M/88.2M [00:02&lt;00:06, 9.74MB/s]
- 29%|██████████▋                          | 25.4M/88.2M [00:02&lt;00:06, 9.88MB/s]
- 30%|███████████▏                         | 26.7M/88.2M [00:02&lt;00:05, 10.8MB/s]
- 31%|███████████▋                         | 27.7M/88.2M [00:02&lt;00:06, 9.99MB/s]
- 33%|████████████                         | 28.8M/88.2M [00:03&lt;00:05, 9.92MB/s]
- 34%|████████████▌                        | 29.8M/88.2M [00:03&lt;00:05, 9.84MB/s]
- 35%|████████████▉                        | 30.8M/88.2M [00:03&lt;00:06, 9.30MB/s]
- 36%|█████████████▎                       | 31.7M/88.2M [00:03&lt;00:06, 8.84MB/s]
- 37%|█████████████▋                       | 32.7M/88.2M [00:03&lt;00:06, 8.65MB/s]
- 38%|██████████████▏                      | 33.7M/88.2M [00:03&lt;00:06, 8.69MB/s]
- 39%|██████████████▌                      | 34.8M/88.2M [00:03&lt;00:05, 9.02MB/s]
- 41%|███████████████                      | 35.8M/88.2M [00:03&lt;00:05, 8.77MB/s]
- 42%|███████████████▍                     | 36.7M/88.2M [00:03&lt;00:06, 8.41MB/s]
- 43%|███████████████▊                     | 37.6M/88.2M [00:04&lt;00:05, 8.69MB/s]
- 44%|████████████████▏                    | 38.6M/88.2M [00:04&lt;00:05, 9.06MB/s]
- 45%|████████████████▌                    | 39.6M/88.2M [00:04&lt;00:05, 8.93MB/s]
- 46%|█████████████████                    | 40.5M/88.2M [00:04&lt;00:05, 9.10MB/s]
- 47%|█████████████████▍                   | 41.6M/88.2M [00:04&lt;00:05, 9.09MB/s]
- 48%|█████████████████▉                   | 42.6M/88.2M [00:04&lt;00:04, 9.19MB/s]
- 50%|██████████████████▎                  | 43.7M/88.2M [00:04&lt;00:04, 9.18MB/s]
- 51%|██████████████████▊                  | 44.7M/88.2M [00:04&lt;00:04, 9.06MB/s]
- 52%|███████████████████▏                 | 45.7M/88.2M [00:04&lt;00:04, 9.35MB/s]
- 53%|███████████████████▌                 | 46.6M/88.2M [00:05&lt;00:04, 8.44MB/s]
- 54%|███████████████████▉                 | 47.6M/88.2M [00:05&lt;00:04, 8.40MB/s]
- 55%|████████████████████▍                | 48.6M/88.2M [00:05&lt;00:04, 8.88MB/s]
- 56%|████████████████████▊                | 49.5M/88.2M [00:05&lt;00:04, 8.60MB/s]
- 60%|██████████████████████▏              | 52.9M/88.2M [00:05&lt;00:02, 15.7MB/s]
- 63%|███████████████████████▎             | 55.4M/88.2M [00:05&lt;00:01, 17.8MB/s]
- 65%|████████████████████████             | 57.2M/88.2M [00:05&lt;00:01, 15.8MB/s]
- 67%|████████████████████████▋            | 58.9M/88.2M [00:05&lt;00:02, 13.3MB/s]
- 68%|█████████████████████████▎           | 60.3M/88.2M [00:06&lt;00:02, 12.4MB/s]
- 70%|█████████████████████████▊           | 61.6M/88.2M [00:06&lt;00:02, 11.9MB/s]
- 71%|██████████████████████████▍          | 62.9M/88.2M [00:06&lt;00:02, 11.6MB/s]
- 73%|██████████████████████████▉          | 64.1M/88.2M [00:06&lt;00:02, 10.8MB/s]
- 74%|███████████████████████████▎         | 65.2M/88.2M [00:06&lt;00:02, 10.2MB/s]
- 75%|███████████████████████████▊         | 66.4M/88.2M [00:06&lt;00:02, 10.4MB/s]
- 77%|████████████████████████████▎        | 67.5M/88.2M [00:06&lt;00:02, 10.2MB/s]
- 78%|████████████████████████████▊        | 68.8M/88.2M [00:06&lt;00:01, 10.5MB/s]
- 79%|█████████████████████████████▍       | 70.1M/88.2M [00:07&lt;00:01, 10.7MB/s]
- 81%|█████████████████████████████▊       | 71.1M/88.2M [00:07&lt;00:01, 10.1MB/s]
- 82%|██████████████████████████████▍      | 72.4M/88.2M [00:07&lt;00:01, 10.6MB/s]
- 84%|██████████████████████████████▉      | 73.7M/88.2M [00:07&lt;00:01, 11.2MB/s]
- 85%|███████████████████████████████▍     | 74.8M/88.2M [00:07&lt;00:01, 11.0MB/s]
- 86%|███████████████████████████████▊     | 75.9M/88.2M [00:07&lt;00:01, 10.9MB/s]
- 87%|████████████████████████████████▎    | 77.1M/88.2M [00:07&lt;00:01, 11.0MB/s]
- 89%|████████████████████████████████▉    | 78.4M/88.2M [00:07&lt;00:00, 11.3MB/s]
- 91%|█████████████████████████████████▌   | 79.9M/88.2M [00:07&lt;00:00, 12.3MB/s]
- 92%|██████████████████████████████████   | 81.3M/88.2M [00:08&lt;00:00, 12.2MB/s]
- 94%|██████████████████████████████████▋  | 82.6M/88.2M [00:08&lt;00:00, 12.3MB/s]
- 95%|███████████████████████████████████▎ | 84.0M/88.2M [00:08&lt;00:00, 12.8MB/s]
- 97%|███████████████████████████████████▉ | 85.5M/88.2M [00:08&lt;00:00, 12.8MB/s]
- 99%|████████████████████████████████████▌| 87.0M/88.2M [00:08&lt;00:00, 13.5MB/s]
-  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 232GB/s]
-Download complete in 10s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 313GB/s]
+Download complete in 03s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -606,8 +542,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1097,22 +1033,22 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|5         | 18/302 [00:00&lt;00:01, 179.51it/s]
- 12%|#2        | 37/302 [00:00&lt;00:01, 185.42it/s]
- 19%|#8        | 56/302 [00:00&lt;00:01, 187.30it/s]
- 25%|##4       | 75/302 [00:00&lt;00:01, 187.00it/s]
- 31%|###1      | 94/302 [00:00&lt;00:01, 183.94it/s]
- 37%|###7      | 113/302 [00:00&lt;00:01, 185.54it/s]
- 44%|####3     | 132/302 [00:00&lt;00:00, 180.78it/s]
- 50%|#####     | 152/302 [00:00&lt;00:00, 185.02it/s]
- 57%|#####7    | 173/302 [00:00&lt;00:00, 189.89it/s]
- 64%|######3   | 193/302 [00:01&lt;00:00, 190.19it/s]
- 71%|#######   | 213/302 [00:01&lt;00:00, 190.29it/s]
- 77%|#######7  | 233/302 [00:01&lt;00:00, 186.55it/s]
- 84%|########3 | 253/302 [00:01&lt;00:00, 188.04it/s]
- 90%|######### | 273/302 [00:01&lt;00:00, 189.83it/s]
- 97%|#########7| 293/302 [00:01&lt;00:00, 192.24it/s]
-100%|##########| 302/302 [00:01&lt;00:00, 187.43it/s]
+  7%|6         | 20/302 [00:00&lt;00:01, 189.35it/s]
+ 13%|#2        | 39/302 [00:00&lt;00:01, 164.06it/s]
+ 20%|#9        | 59/302 [00:00&lt;00:01, 176.12it/s]
+ 26%|##6       | 79/302 [00:00&lt;00:01, 183.51it/s]
+ 32%|###2      | 98/302 [00:00&lt;00:01, 167.92it/s]
+ 38%|###8      | 116/302 [00:00&lt;00:01, 164.45it/s]
+ 44%|####4     | 133/302 [00:00&lt;00:01, 164.92it/s]
+ 51%|#####     | 153/302 [00:00&lt;00:00, 173.98it/s]
+ 57%|#####7    | 173/302 [00:00&lt;00:00, 181.19it/s]
+ 64%|######3   | 192/302 [00:01&lt;00:00, 181.03it/s]
+ 70%|######9   | 211/302 [00:01&lt;00:00, 182.39it/s]
+ 76%|#######6  | 230/302 [00:01&lt;00:00, 173.24it/s]
+ 82%|########2 | 248/302 [00:01&lt;00:00, 160.80it/s]
+ 88%|########7 | 265/302 [00:01&lt;00:00, 159.68it/s]
+ 94%|#########3| 283/302 [00:01&lt;00:00, 163.37it/s]
+100%|##########| 302/302 [00:01&lt;00:00, 171.27it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1162,7 +1098,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f5b26fbb8b0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4dd35c84c0&gt;
 </pre></div>
 </div>
 </section>
@@ -1229,10 +1165,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f5b11a02e30&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4dd33e1de0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  3.710 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  51.858 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1311,7 +1247,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

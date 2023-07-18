@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute source space connectivity and visualize it using a circular graph" href="mne_inverse_label_connectivity.html" />
-    <link rel="prev" title="Compute mixed source space connectivity and visualize it using a circular graph" href="mixed_source_space_connectivity.html" />
+    <link rel="prev" title="Compute multivariate measures of the imaginary part of coherency" href="mic_mim.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -367,10 +367,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
@@ -550,73 +552,73 @@ Connectivity computation...
     frequencies: 9.0Hz..29.0Hz (11 points)
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Debiased WPLI Square
-    computing connectivity for epoch 1
-    computing connectivity for epoch 2
-    computing connectivity for epoch 3
-    computing connectivity for epoch 4
-    computing connectivity for epoch 5
-    computing connectivity for epoch 6
-    computing connectivity for epoch 7
-    computing connectivity for epoch 8
-    computing connectivity for epoch 9
-    computing connectivity for epoch 10
-    computing connectivity for epoch 11
-    computing connectivity for epoch 12
-    computing connectivity for epoch 13
-    computing connectivity for epoch 14
-    computing connectivity for epoch 15
-    computing connectivity for epoch 16
-    computing connectivity for epoch 17
-    computing connectivity for epoch 18
-    computing connectivity for epoch 19
-    computing connectivity for epoch 20
-    computing connectivity for epoch 21
-    computing connectivity for epoch 22
-    computing connectivity for epoch 23
-    computing connectivity for epoch 24
-    computing connectivity for epoch 25
-    computing connectivity for epoch 26
-    computing connectivity for epoch 27
-    computing connectivity for epoch 28
-    computing connectivity for epoch 29
-    computing connectivity for epoch 30
-    computing connectivity for epoch 31
-    computing connectivity for epoch 32
-    computing connectivity for epoch 33
-    computing connectivity for epoch 34
-    computing connectivity for epoch 35
-    computing connectivity for epoch 36
-    computing connectivity for epoch 37
-    computing connectivity for epoch 38
-    computing connectivity for epoch 39
-    computing connectivity for epoch 40
-    computing connectivity for epoch 41
-    computing connectivity for epoch 42
-    computing connectivity for epoch 43
-    computing connectivity for epoch 44
-    computing connectivity for epoch 45
-    computing connectivity for epoch 46
-    computing connectivity for epoch 47
-    computing connectivity for epoch 48
-    computing connectivity for epoch 49
-    computing connectivity for epoch 50
-    computing connectivity for epoch 51
-    computing connectivity for epoch 52
-    computing connectivity for epoch 53
-    computing connectivity for epoch 54
-    computing connectivity for epoch 55
-    computing connectivity for epoch 56
-    computing connectivity for epoch 57
-    computing connectivity for epoch 58
-    computing connectivity for epoch 59
-    computing connectivity for epoch 60
-    computing connectivity for epoch 61
-    computing connectivity for epoch 62
-    computing connectivity for epoch 63
-    computing connectivity for epoch 64
-    computing connectivity for epoch 65
-    computing connectivity for epoch 66
-    computing connectivity for epoch 67
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+    computing cross-spectral density for epoch 31
+    computing cross-spectral density for epoch 32
+    computing cross-spectral density for epoch 33
+    computing cross-spectral density for epoch 34
+    computing cross-spectral density for epoch 35
+    computing cross-spectral density for epoch 36
+    computing cross-spectral density for epoch 37
+    computing cross-spectral density for epoch 38
+    computing cross-spectral density for epoch 39
+    computing cross-spectral density for epoch 40
+    computing cross-spectral density for epoch 41
+    computing cross-spectral density for epoch 42
+    computing cross-spectral density for epoch 43
+    computing cross-spectral density for epoch 44
+    computing cross-spectral density for epoch 45
+    computing cross-spectral density for epoch 46
+    computing cross-spectral density for epoch 47
+    computing cross-spectral density for epoch 48
+    computing cross-spectral density for epoch 49
+    computing cross-spectral density for epoch 50
+    computing cross-spectral density for epoch 51
+    computing cross-spectral density for epoch 52
+    computing cross-spectral density for epoch 53
+    computing cross-spectral density for epoch 54
+    computing cross-spectral density for epoch 55
+    computing cross-spectral density for epoch 56
+    computing cross-spectral density for epoch 57
+    computing cross-spectral density for epoch 58
+    computing cross-spectral density for epoch 59
+    computing cross-spectral density for epoch 60
+    computing cross-spectral density for epoch 61
+    computing cross-spectral density for epoch 62
+    computing cross-spectral density for epoch 63
+    computing cross-spectral density for epoch 64
+    computing cross-spectral density for epoch 65
+    computing cross-spectral density for epoch 66
+    computing cross-spectral density for epoch 67
 [Connectivity computation done]
 No baseline correction applied
 
@@ -632,7 +634,7 @@ No baseline correction applied
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.283 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.486 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-cwt-sensor-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9bff005f56221c8f1951ca0ce7178681/cwt_sensor_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cwt_sensor_connectivity.py</span></code></a></p>
@@ -654,12 +656,12 @@ No baseline correction applied
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mixed_source_space_connectivity.html"
+       href="mic_mim.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Compute mixed source space connectivity and visualize it using a circular graph</p>
+        <p class="prev-next-title">Compute multivariate measures of the imaginary part of coherency</p>
       </div>
     </a>
     <a class="right-next"
@@ -714,7 +716,7 @@ No baseline correction applied
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

@@ -428,7 +428,7 @@ document.write(`
 <div class="viewcode-block" id="plot_sensors_connectivity"><a class="viewcode-back" href="../../../generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity">[docs]</a><span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">plot_sensors_connectivity</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">cbar_label</span><span class="o">=</span><span class="s1">&#39;Connectivity&#39;</span><span class="p">,</span>
-                              <span class="n">n_con</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+                              <span class="n">n_con</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the sensor connectivity in 3D.</span>
 
 <span class="sd">    Parameters</span>
@@ -443,6 +443,10 @@ document.write(`
 <span class="sd">        Label for the colorbar.</span>
 <span class="sd">    n_con : int</span>
 <span class="sd">        Number of strongest connections shown. By default 20.</span>
+<span class="sd">    cmap : str | instance of matplotlib.colors.Colormap</span>
+<span class="sd">        Colormap for coloring connections by strength. If :class:`str`, must</span>
+<span class="sd">        be a valid Matplotlib colormap (i.e. a valid key of</span>
+<span class="sd">        ``matplotlib.colormaps``). Default is ``&quot;RdBu&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -497,7 +501,8 @@ document.write(`
                              <span class="n">destination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span>
                              <span class="n">scalars</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="p">],</span>
                              <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
-                             <span class="n">reverse_lut</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                             <span class="n">reverse_lut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">colormap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
 
     <span class="n">renderer</span><span class="o">.</span><span class="n">scalarbar</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">tube</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">cbar_label</span><span class="p">)</span>
 
@@ -554,7 +559,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

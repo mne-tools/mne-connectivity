@@ -679,7 +679,8 @@ will represent each connectivity matrix as a
 <code class="docutils literal notranslate"><span class="pre">(n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out,)</span></code> list. If ‘dense’, then
 will return each connectivity matrix as a 2D array. If ‘compact’
 (default) then will return ‘raveled’ if <code class="docutils literal notranslate"><span class="pre">indices</span></code> were defined as
-a list of tuples, or <code class="docutils literal notranslate"><span class="pre">dense</span></code> if indices is ‘all’.</p>
+a list of tuples, or <code class="docutils literal notranslate"><span class="pre">dense</span></code> if indices is ‘all’. Multivariate
+connectivity data cannot be returned in a dense form.</p>
 </dd>
 </dl>
 </dd>
@@ -970,12 +971,18 @@ obtained from the operating system (see
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the coherence between a seed in the left auditory cortex and the rest of ..."><img alt="" src="../_images/sphx_glr_mne_inverse_coherence_epochs_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute coherence in source space using a MNE inverse solution</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how Granger causality based on state-space models BarnettSeth2015 can..."><img alt="" src="../_images/sphx_glr_granger_causality_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/granger_causality.html#sphx-glr-auto-examples-granger-causality-py"><span class="std std-ref">Compute directionality of connectivity with multivariate Granger causality</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compute directionality of connectivity with multivariate Granger causality</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="The connectivity is computed between 4 labels across the spectrum between 7.5 Hz and 40 Hz."><img alt="" src="../_images/sphx_glr_mne_inverse_connectivity_spectrum_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute full spectrum source space connectivity between labels</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 75 regions in a mixed source space ba..."><img alt="" src="../_images/sphx_glr_mixed_source_space_connectivity_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute mixed source space connectivity and visualize it using a circular graph</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how multivariate methods based on the imaginary part of coherency Ewa..."><img alt="" src="../_images/sphx_glr_mic_mim_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compute multivariate measures of the imaginary part of coherency</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 68 regions in source space based on d..."><img alt="" src="../_images/sphx_glr_mne_inverse_label_connectivity_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute source space connectivity and visualize it using a circular graph</div>
@@ -1075,7 +1082,7 @@ obtained from the operating system (see
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>

@@ -52,7 +52,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mne_inverse_coherence_epochs';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Compute envelope correlations in source space" href="mne_inverse_envelope_correlation.html" />
+    <link rel="next" title="Compute directionality of connectivity with multivariate Granger causality" href="granger_causality.html" />
     <link rel="prev" title="Compute all-to-all connectivity in sensor space" href="sensor_connectivity.html" />
     <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -367,10 +367,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
@@ -664,132 +666,132 @@ Processing epoch : 1 / 72 (at most)
     connectivity scores will be averaged for each band
     using FFT with a Hanning window to estimate spectra
     the following metrics will be computed: Coherence
-    computing connectivity for epoch 1
+    computing cross-spectral density for epoch 1
 Processing epoch : 2 / 72 (at most)
-    computing connectivity for epoch 2
+    computing cross-spectral density for epoch 2
 Processing epoch : 3 / 72 (at most)
-    computing connectivity for epoch 3
+    computing cross-spectral density for epoch 3
 Processing epoch : 4 / 72 (at most)
-    computing connectivity for epoch 4
+    computing cross-spectral density for epoch 4
 Processing epoch : 5 / 72 (at most)
-    computing connectivity for epoch 5
+    computing cross-spectral density for epoch 5
 Processing epoch : 6 / 72 (at most)
-    computing connectivity for epoch 6
+    computing cross-spectral density for epoch 6
 Processing epoch : 7 / 72 (at most)
-    computing connectivity for epoch 7
+    computing cross-spectral density for epoch 7
 Processing epoch : 8 / 72 (at most)
-    computing connectivity for epoch 8
+    computing cross-spectral density for epoch 8
 Processing epoch : 9 / 72 (at most)
-    computing connectivity for epoch 9
+    computing cross-spectral density for epoch 9
 Processing epoch : 10 / 72 (at most)
-    computing connectivity for epoch 10
+    computing cross-spectral density for epoch 10
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 11 / 72 (at most)
-    computing connectivity for epoch 11
+    computing cross-spectral density for epoch 11
 Processing epoch : 12 / 72 (at most)
-    computing connectivity for epoch 12
+    computing cross-spectral density for epoch 12
 Processing epoch : 13 / 72 (at most)
-    computing connectivity for epoch 13
+    computing cross-spectral density for epoch 13
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 14 / 72 (at most)
-    computing connectivity for epoch 14
+    computing cross-spectral density for epoch 14
 Processing epoch : 15 / 72 (at most)
-    computing connectivity for epoch 15
+    computing cross-spectral density for epoch 15
 Processing epoch : 16 / 72 (at most)
-    computing connectivity for epoch 16
+    computing cross-spectral density for epoch 16
 Processing epoch : 17 / 72 (at most)
-    computing connectivity for epoch 17
+    computing cross-spectral density for epoch 17
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 18 / 72 (at most)
-    computing connectivity for epoch 18
+    computing cross-spectral density for epoch 18
 Processing epoch : 19 / 72 (at most)
-    computing connectivity for epoch 19
+    computing cross-spectral density for epoch 19
 Processing epoch : 20 / 72 (at most)
-    computing connectivity for epoch 20
+    computing cross-spectral density for epoch 20
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 21 / 72 (at most)
-    computing connectivity for epoch 21
+    computing cross-spectral density for epoch 21
 Processing epoch : 22 / 72 (at most)
-    computing connectivity for epoch 22
+    computing cross-spectral density for epoch 22
 Processing epoch : 23 / 72 (at most)
-    computing connectivity for epoch 23
+    computing cross-spectral density for epoch 23
     Rejecting  epoch based on MAG : [&#39;MEG 1711&#39;]
 Processing epoch : 24 / 72 (at most)
-    computing connectivity for epoch 24
+    computing cross-spectral density for epoch 24
 Processing epoch : 25 / 72 (at most)
-    computing connectivity for epoch 25
+    computing cross-spectral density for epoch 25
 Processing epoch : 26 / 72 (at most)
-    computing connectivity for epoch 26
+    computing cross-spectral density for epoch 26
 Processing epoch : 27 / 72 (at most)
-    computing connectivity for epoch 27
+    computing cross-spectral density for epoch 27
 Processing epoch : 28 / 72 (at most)
-    computing connectivity for epoch 28
+    computing cross-spectral density for epoch 28
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 29 / 72 (at most)
-    computing connectivity for epoch 29
+    computing cross-spectral density for epoch 29
 Processing epoch : 30 / 72 (at most)
-    computing connectivity for epoch 30
+    computing cross-spectral density for epoch 30
 Processing epoch : 31 / 72 (at most)
-    computing connectivity for epoch 31
+    computing cross-spectral density for epoch 31
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 32 / 72 (at most)
-    computing connectivity for epoch 32
+    computing cross-spectral density for epoch 32
 Processing epoch : 33 / 72 (at most)
-    computing connectivity for epoch 33
+    computing cross-spectral density for epoch 33
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 34 / 72 (at most)
-    computing connectivity for epoch 34
+    computing cross-spectral density for epoch 34
 Processing epoch : 35 / 72 (at most)
-    computing connectivity for epoch 35
+    computing cross-spectral density for epoch 35
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 36 / 72 (at most)
-    computing connectivity for epoch 36
+    computing cross-spectral density for epoch 36
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 37 / 72 (at most)
-    computing connectivity for epoch 37
+    computing cross-spectral density for epoch 37
 Processing epoch : 38 / 72 (at most)
-    computing connectivity for epoch 38
+    computing cross-spectral density for epoch 38
 Processing epoch : 39 / 72 (at most)
-    computing connectivity for epoch 39
+    computing cross-spectral density for epoch 39
 Processing epoch : 40 / 72 (at most)
-    computing connectivity for epoch 40
+    computing cross-spectral density for epoch 40
 Processing epoch : 41 / 72 (at most)
-    computing connectivity for epoch 41
+    computing cross-spectral density for epoch 41
 Processing epoch : 42 / 72 (at most)
-    computing connectivity for epoch 42
+    computing cross-spectral density for epoch 42
 Processing epoch : 43 / 72 (at most)
-    computing connectivity for epoch 43
+    computing cross-spectral density for epoch 43
 Processing epoch : 44 / 72 (at most)
-    computing connectivity for epoch 44
+    computing cross-spectral density for epoch 44
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 45 / 72 (at most)
-    computing connectivity for epoch 45
+    computing cross-spectral density for epoch 45
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 46 / 72 (at most)
-    computing connectivity for epoch 46
+    computing cross-spectral density for epoch 46
 Processing epoch : 47 / 72 (at most)
-    computing connectivity for epoch 47
+    computing cross-spectral density for epoch 47
 Processing epoch : 48 / 72 (at most)
-    computing connectivity for epoch 48
+    computing cross-spectral density for epoch 48
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
 Processing epoch : 49 / 72 (at most)
-    computing connectivity for epoch 49
+    computing cross-spectral density for epoch 49
 Processing epoch : 50 / 72 (at most)
-    computing connectivity for epoch 50
+    computing cross-spectral density for epoch 50
 Processing epoch : 51 / 72 (at most)
-    computing connectivity for epoch 51
+    computing cross-spectral density for epoch 51
 Processing epoch : 52 / 72 (at most)
-    computing connectivity for epoch 52
+    computing cross-spectral density for epoch 52
 Processing epoch : 53 / 72 (at most)
-    computing connectivity for epoch 53
+    computing cross-spectral density for epoch 53
 Processing epoch : 54 / 72 (at most)
-    computing connectivity for epoch 54
+    computing cross-spectral density for epoch 54
 Processing epoch : 55 / 72 (at most)
-    computing connectivity for epoch 55
+    computing cross-spectral density for epoch 55
 [done]
 [Connectivity computation done]
 Frequencies in Hz over which coherence was averaged for alpha:
@@ -823,7 +825,7 @@ one of the slices within <code class="docutils literal notranslate"><span class=
 <a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain.show_view" title="mne.viz.Brain.show_view" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-method"><span class="n">brain</span><span class="o">.</span><span class="n">show_view</span></a><span class="p">(</span><span class="s1">&#39;lateral&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" srcset="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" alt="mne inverse coherence epochs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.493 seconds)</p>
+<img src="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" srcset="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" alt="mne inverse coherence epochs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.542 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-coherence-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1db1fbdecde163c90620911f38139f62/mne_inverse_coherence_epochs.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_coherence_epochs.py</span></code></a></p>
@@ -854,11 +856,11 @@ one of the slices within <code class="docutils literal notranslate"><span class=
       </div>
     </a>
     <a class="right-next"
-       href="mne_inverse_envelope_correlation.html"
+       href="granger_causality.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Compute envelope correlations in source space</p>
+        <p class="prev-next-title">Compute directionality of connectivity with multivariate Granger causality</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -908,7 +910,7 @@ one of the slices within <code class="docutils literal notranslate"><span class=
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-18.
       <br/>
     
   </p>
