@@ -1,6 +1,9 @@
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
 #          Denis A. Engemann <denis.engemann@gmail.com>
 #          Adam Li <adam2392@gmail.com>
+#          Thomas S. Binns <t.s.binns@outlook.com>
+#          Tien D. Nguyen <tien-dung.nguyen@charite.de>
+#          Richard M. Köhler <koehler.richard@charite.de>
 #
 # License: BSD (3-clause)
 
@@ -8,6 +11,7 @@ from functools import partial
 import inspect
 
 import numpy as np
+import scipy as sp
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
@@ -16,8 +20,8 @@ from mne.time_frequency.multitaper import (_csd_from_mt,
                                            _psd_from_mt_adaptive)
 from mne.time_frequency.tfr import cwt, morlet
 from mne.time_frequency.multitaper import _compute_mt_params
-from mne.utils import (_arange_div, _check_option, logger, warn, _time_mask,
-                       verbose)
+from mne.utils import (
+    ProgressBar, _arange_div, _check_option, _time_mask, logger, warn, verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
 from ..utils import fill_doc, check_indices
@@ -61,7 +65,7 @@ def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
 
 def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                           fmin, fmax, sfreq, indices,
-                          mode, fskip, n_bands,
+                          method, mode, fskip, n_bands,
                           cwt_freqs, faverage):
     """Check and precompute dimensions of results data."""
     first_epoch = epoch_block[0]
@@ -89,14 +93,39 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     n_times = len(times)
 
     if indices is None:
-        logger.info('only using indices for lower-triangular matrix')
-        # only compute r for lower-triangular region
-        indices_use = np.tril_indices(n_signals, -1)
+        if any(this_method in _multivariate_methods for this_method in method):
+            if any(this_method in _gc_methods for this_method in method):
+                raise ValueError(
+                    'indices must be specified when computing Granger '
+                    'causality, as all-to-all connectivity is not supported')
+            else:
+                logger.info('using all indices for multivariate connectivity')
+                indices_use = (np.arange(n_signals, dtype=int),
+                               np.arange(n_signals, dtype=int))
+        else:
+            logger.info('only using indices for lower-triangular matrix')
+            # only compute r for lower-triangular region
+            indices_use = np.tril_indices(n_signals, -1)
     else:
+        if any(this_method in _gc_methods for this_method in method):
+            if set(indices[0]).intersection(indices[1]):
+                raise ValueError(
+                    'seed and target indices must not intersect when computing'
+                    'Granger causality')
         indices_use = check_indices(indices)
 
     # number of connectivities to compute
-    n_cons = len(indices_use[0])
+    if any(this_method in _multivariate_methods for this_method in method):
+        if (
+            len(np.unique(indices_use[0])) != len(indices_use[0]) or
+            len(np.unique(indices_use[1])) != len(indices_use[1])
+        ):
+            raise ValueError(
+                'seed and target indices cannot contain repeated channels for '
+                'multivariate connectivity')
+        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
+    else:
+        n_cons = len(indices_use[0])
 
     logger.info('    computing connectivity for %d connections'
                 % n_cons)
@@ -222,6 +251,8 @@ class _AbstractConEstBase(object):
 class _EpochMeanConEstBase(_AbstractConEstBase):
     """Base class for methods that estimate connectivity as mean epoch-wise."""
 
+    patterns = None
+
     def __init__(self, n_cons, n_freqs, n_times):
         self.n_cons = n_cons
         self.n_freqs = n_freqs
@@ -243,8 +274,75 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
         self._acc += other._acc
 
 
+class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
+    """Base class for mean epoch-wise multivar. con. estimation methods."""
+
+    n_steps = None
+    patterns = None
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+        self.n_signals = n_signals
+        self.n_cons = n_cons
+        self.n_freqs = n_freqs
+        self.n_times = n_times
+        self.n_jobs = n_jobs
+
+        # include time dimension, even when unused for indexing flexibility
+        if n_times == 0:
+            self.csd_shape = (n_signals**2, n_freqs)
+            self.con_scores = np.zeros((n_cons, n_freqs, 1))
+        else:
+            self.csd_shape = (n_signals**2, n_freqs, n_times)
+            self.con_scores = np.zeros((n_cons, n_freqs, n_times))
+
+        # allocate space for accumulation of CSD
+        self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
+
+        self._compute_n_progress_bar_steps()
+
+    def start_epoch(self):  # noqa: D401
+        """Called at the start of each epoch."""
+        pass  # for this type of con. method we don't do anything
+
+    def combine(self, other):
+        """Include con. accumulated for some epochs in this estimate."""
+        self._acc += other._acc
+
+    def accumulate(self, con_idx, csd_xy):
+        """Accumulate CSD for some connections."""
+        self._acc[con_idx] += csd_xy
+
+    def _compute_n_progress_bar_steps(self):
+        """Calculate the number of steps to include in the progress bar."""
+        self.n_steps = int(np.ceil(self.n_freqs / self.n_jobs))
+
+    def _log_connection_number(self, con_i):
+        """Log the number of the connection being computed."""
+        logger.info('Computing %s for connection %i of %i'
+                    % (self.name, con_i + 1, self.n_cons, ))
+
+    def _get_block_indices(self, block_i, limit):
+        """Get indices for a computation block capped by a limit."""
+        indices = np.arange(block_i * self.n_jobs, (block_i + 1) * self.n_jobs)
+
+        return indices[np.nonzero(indices < limit)]
+
+    def reshape_csd(self):
+        """Reshape CSD into a matrix of times x freqs x signals x signals."""
+        if self.n_times == 0:
+            return (np.reshape(self._acc, (
+                self.n_signals, self.n_signals, self.n_freqs, 1)
+            ).transpose(3, 2, 0, 1))
+
+        return (np.reshape(self._acc, (
+            self.n_signals, self.n_signals, self.n_freqs, self.n_times)
+        ).transpose(3, 2, 0, 1))
+
+
 class _CohEstBase(_EpochMeanConEstBase):
     """Base Estimator for Coherence, Coherency, Imag. Coherence."""
+
+    accumulate_psd = True
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_CohEstBase, self).__init__(n_cons, n_freqs, n_times)
@@ -297,10 +395,236 @@ class _ImCohEst(_CohEstBase):
         self.con_scores[con_idx] = np.imag(csd_mean) / np.sqrt(psd_xx * psd_yy)
 
 
+class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
+    """Base estimator for multivariate imag. part of coherency methods.
+
+    See Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    for equation references.
+    """
+
+    name = None
+    accumulate_psd = False
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+        super(_MultivariateCohEstBase, self).__init__(
+            n_signals, n_cons, n_freqs, n_times, n_jobs)
+
+    def compute_con(self, indices, ranks, n_epochs=1):
+        """Compute multivariate imag. part of coherency between signals."""
+        assert self.name in ['MIC', 'MIM'], (
+            'the class name is not recognised, please contact the '
+            'mne-connectivity developers')
+
+        csd = self.reshape_csd() / n_epochs
+        n_times = csd.shape[0]
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        if self.name == 'MIC':
+            self.patterns = np.full(
+                (2, self.n_cons, len(indices[0]), self.n_freqs, n_times),
+                np.nan)
+
+        con_i = 0
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                [indices[0]], [indices[1]], ranks[0], ranks[1]):
+            self._log_connection_number(con_i)
+
+            n_seeds = len(seed_idcs)
+            con_idcs = [*seed_idcs, *target_idcs]
+
+            C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
+
+            # Eqs. 32 & 33
+            C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
+                C, n_seeds, seed_rank, target_rank)
+
+            # Eqs. 3 & 4
+            E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
+
+            if self.name == 'MIC':
+                self._compute_mic(E, C, seed_idcs, target_idcs, n_times,
+                                  U_bar_aa, U_bar_bb, con_i)
+            else:
+                self._compute_mim(E, seed_idcs, target_idcs, con_i)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _csd_svd(self, csd, n_seeds, seed_rank, target_rank):
+        """Dimensionality reduction of CSD with SVD."""
+        n_times = csd.shape[0]
+        n_targets = csd.shape[2] - n_seeds
+
+        C_aa = csd[..., :n_seeds, :n_seeds]
+        C_ab = csd[..., :n_seeds, n_seeds:]
+        C_bb = csd[..., n_seeds:, n_seeds:]
+        C_ba = csd[..., n_seeds:, :n_seeds]
+
+        # Eq. 32
+        if seed_rank != n_seeds:
+            U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
+            U_bar_aa = U_aa[..., :seed_rank]
+        else:
+            U_bar_aa = np.broadcast_to(
+                np.identity(n_seeds),
+                (n_times, self.n_freqs) + (n_seeds, n_seeds))
+
+        if target_rank != n_targets:
+            U_bb = np.linalg.svd(np.real(C_bb), full_matrices=False)[0]
+            U_bar_bb = U_bb[..., :target_rank]
+        else:
+            U_bar_bb = np.broadcast_to(
+                np.identity(n_targets),
+                (n_times, self.n_freqs) + (n_targets, n_targets))
+
+        # Eq. 33
+        C_bar_aa = np.matmul(
+            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(
+            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(
+            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(
+            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
+                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+
+        return C_bar, U_bar_aa, U_bar_bb
+
+    def _compute_e(self, csd, n_seeds):
+        """Compute E from the CSD."""
+        C_r = np.real(csd)
+
+        parallel, parallel_compute_t, _ = parallel_func(
+            _mic_mim_compute_t, self.n_jobs, verbose=False)
+
+        # imag. part of T filled when data is rank-deficient
+        T = np.zeros(csd.shape, dtype=np.complex128)
+        for block_i in ProgressBar(
+                range(self.n_steps), mesg="frequency blocks"):
+            freqs = self._get_block_indices(block_i, self.n_freqs)
+            parallel(parallel_compute_t(
+                C_r[:, f], T[:, f], n_seeds) for f in freqs)
+
+        if not np.isreal(T).all() or not np.isfinite(T).all():
+            raise RuntimeError(
+                'the transformation matrix of the data must be real-valued '
+                'and contain no NaN or infinity values; check that you are '
+                'using full rank data or specify an appropriate rank for the '
+                'seeds and targets that is less than or equal to their ranks')
+        T = np.real(T)  # make T real if check passes
+
+        # Eq. 4
+        D = np.matmul(T, np.matmul(csd, T))
+
+        # E as imag. part of D between seeds and targets
+        return np.imag(D[..., :n_seeds, n_seeds:])
+
+    def _compute_mic(self, E, C, seed_idcs, target_idcs, n_times, U_bar_aa,
+                     U_bar_bb, con_i):
+        """Compute MIC and the associated spatial patterns."""
+        n_seeds = len(seed_idcs)
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        # Eigendecomp. to find spatial filters for seeds and targets
+        w_seeds, V_seeds = np.linalg.eigh(
+            np.matmul(E, E.transpose(0, 1, 3, 2)))
+        w_targets, V_targets = np.linalg.eigh(
+            np.matmul(E.transpose(0, 1, 3, 2), E))
+        if np.all(seed_idcs == target_idcs):
+            # strange edge-case where the eigenvectors returned should be a set
+            # of identity matrices with one rotated by 90 degrees, but are
+            # instead identical (i.e. are not rotated versions of one another).
+            # This leads to the case where the spatial filters are incorrectly
+            # applied, resulting in connectivity estimates of e.g. ~0 when they
+            # should be perfectly correlated ~1. Accordingly, we manually
+            # create a set of rotated identity matrices to use as the filters.
+            create_filter = False
+            stop = False
+            while not create_filter and not stop:
+                for time_i in range(n_times):
+                    for freq_i in range(self.n_freqs):
+                        if np.all(V_seeds[time_i, freq_i] ==
+                                  V_targets[time_i, freq_i]):
+                            create_filter = True
+                            break
+                stop = True
+            if create_filter:
+                n_chans = E.shape[2]
+                eye_4d = np.zeros_like(V_seeds)
+                eye_4d[:, :, np.arange(n_chans), np.arange(n_chans)] = 1
+                V_seeds = eye_4d
+                V_targets = np.rot90(eye_4d, axes=(2, 3))
+
+        # Spatial filters with largest eigval. for seeds and targets
+        alpha = V_seeds[times[:, None], freqs, :, w_seeds.argmax(axis=2)]
+        beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
+
+        # Eq. 46 (seed spatial patterns)
+        self.patterns[0, con_i] = (np.matmul(
+            np.real(C[..., :n_seeds, :n_seeds]),
+            np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))))[..., 0].T
+
+        # Eq. 47 (target spatial patterns)
+        self.patterns[1, con_i] = (np.matmul(
+            np.real(C[..., n_seeds:, n_seeds:]),
+            np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))))[..., 0].T
+
+        # Eq. 7
+        self.con_scores[con_i] = (np.einsum(
+            'ijk,ijk->ij', alpha, np.matmul(E, np.expand_dims(
+                beta, axis=3))[..., 0]
+        ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)).T
+
+    def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
+        """Compute MIM (a.k.a. GIM if seeds == targets)."""
+        # Eq. 14
+        self.con_scores[con_i] = np.matmul(
+            E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
+
+        # Eq. 15
+        if all(np.unique(seed_idcs) == np.unique(target_idcs)):
+            self.con_scores[con_i] *= 0.5
+
+    def reshape_results(self):
+        """Remove time dimension from results, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[..., 0]
+            if self.patterns is not None:
+                self.patterns = self.patterns[..., 0]
+
+
+def _mic_mim_compute_t(C, T, n_seeds):
+    """Compute T in place for a single frequency (used for MIC and MIM)."""
+    for time_i in range(C.shape[0]):
+        T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
+            C[time_i, :n_seeds, :n_seeds], -0.5
+        )
+        T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
+            C[time_i, n_seeds:, n_seeds:], -0.5
+        )
+
+
+class _MICEst(_MultivariateCohEstBase):
+    """Multivariate imaginary part of coherency (MIC) estimator."""
+
+    name = "MIC"
+
+
+class _MIMEst(_MultivariateCohEstBase):
+    """Multivariate interaction measure (MIM) estimator."""
+
+    name = "MIM"
+
+
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
 
     name = 'PLV'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PLVEst, self).__init__(n_cons, n_freqs, n_times)
@@ -324,6 +648,7 @@ class _ciPLVEst(_EpochMeanConEstBase):
     """corrected imaginary PLV Estimator."""
 
     name = 'ciPLV'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_ciPLVEst, self).__init__(n_cons, n_freqs, n_times)
@@ -352,6 +677,7 @@ class _PLIEst(_EpochMeanConEstBase):
     """PLI Estimator."""
 
     name = 'PLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -375,6 +701,7 @@ class _PLIUnbiasedEst(_PLIEst):
     """Unbiased PLI Square Estimator."""
 
     name = 'Unbiased PLI Square'
+    accumulate_psd = False
 
     def compute_con(self, con_idx, n_epochs):
         """Compute final con. score for some connections."""
@@ -392,6 +719,7 @@ class _DPLIEst(_EpochMeanConEstBase):
     """DPLI Estimator."""
 
     name = 'DPLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_DPLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -417,6 +745,7 @@ class _WPLIEst(_EpochMeanConEstBase):
     """WPLI Estimator."""
 
     name = 'WPLI'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_WPLIEst, self).__init__(n_cons, n_freqs, n_times)
@@ -455,6 +784,7 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
     """Debiased WPLI Square Estimator."""
 
     name = 'Debiased WPLI Square'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_WPLIDebiasedEst, self).__init__(n_cons, n_freqs, n_times)
@@ -498,6 +828,7 @@ class _PPCEst(_EpochMeanConEstBase):
     """Pairwise Phase Consistency (PPC) Estimator."""
 
     name = 'PPC'
+    accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
         super(_PPCEst, self).__init__(n_cons, n_freqs, n_times)
@@ -528,15 +859,389 @@ class _PPCEst(_EpochMeanConEstBase):
         self.con_scores[con_idx] = np.real(con)
 
 
+class _GCEstBase(_EpochMeanMultivariateConEstBase):
+    """Base multivariate state-space Granger causality estimator."""
+
+    accumulate_psd = False
+
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
+        super(_GCEstBase, self).__init__(
+            n_signals, n_cons, n_freqs, n_times, n_jobs)
+
+        self.freq_res = (self.n_freqs - 1) * 2
+        if n_lags >= self.freq_res:
+            raise ValueError(
+                'the number of lags (%i) must be less than double the '
+                'frequency resolution (%i)' % (n_lags, self.freq_res, ))
+        self.n_lags = n_lags
+
+    def compute_con(self, indices, ranks, n_epochs=1):
+        """Compute multivariate state-space Granger causality."""
+        assert self.name in ['GC', 'GC time-reversed'], (
+            'the class name is not recognised, please contact the '
+            'mne-connectivity developers')
+
+        csd = self.reshape_csd() / n_epochs
+
+        n_times = csd.shape[0]
+        times = np.arange(n_times)
+        freqs = np.arange(self.n_freqs)
+
+        con_i = 0
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                [indices[0]], [indices[1]], ranks[0], ranks[1]):
+            self._log_connection_number(con_i)
+
+            con_idcs = [*seed_idcs, *target_idcs]
+            C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
+
+            con_seeds = np.arange(len(seed_idcs))
+            con_targets = np.arange(len(target_idcs)) + len(seed_idcs)
+
+            C_bar = self._csd_svd(
+                C, con_seeds, con_targets, seed_rank, target_rank)
+            n_signals = seed_rank + target_rank
+            con_seeds = np.arange(seed_rank)
+            con_targets = np.arange(target_rank) + seed_rank
+
+            autocov = self._compute_autocov(C_bar)
+            if self.name == "GC time-reversed":
+                autocov = autocov.transpose(0, 1, 3, 2)
+
+            A_f, V = self._autocov_to_full_var(autocov)
+            A_f_3d = np.reshape(
+                A_f, (n_times, n_signals, n_signals * self.n_lags),
+                order="F")
+            A, K = self._full_var_to_iss(A_f_3d)
+
+            self.con_scores[con_i] = self._iss_to_ugc(
+                A, A_f_3d, K, V, con_seeds, con_targets)
+
+            con_i += 1
+
+        self.reshape_results()
+
+    def _csd_svd(self, csd, seeds, targets, seed_rank, target_rank):
+        """Dimensionality reduction of CSD with SVD on the covariance."""
+        # sum over times and epochs to get cov. from CSD
+        cov = csd.sum(axis=(0, 1))
+
+        n_seeds = len(seeds)
+        n_targets = len(targets)
+
+        cov_aa = cov[:n_seeds, :n_seeds]
+        cov_bb = cov[n_seeds:, n_seeds:]
+
+        if seed_rank != n_seeds:
+            U_aa = np.linalg.svd(np.real(cov_aa), full_matrices=False)[0]
+            U_bar_aa = U_aa[:, :seed_rank]
+        else:
+            U_bar_aa = np.identity(n_seeds)
+
+        if target_rank != n_targets:
+            U_bb = np.linalg.svd(np.real(cov_bb), full_matrices=False)[0]
+            U_bar_bb = U_bb[:, :target_rank]
+        else:
+            U_bar_bb = np.identity(n_targets)
+
+        C_aa = csd[..., :n_seeds, :n_seeds]
+        C_ab = csd[..., :n_seeds, n_seeds:]
+        C_bb = csd[..., n_seeds:, n_seeds:]
+        C_ba = csd[..., n_seeds:, :n_seeds]
+
+        C_bar_aa = np.matmul(
+            U_bar_aa.transpose(1, 0), np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(
+            U_bar_aa.transpose(1, 0), np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(
+            U_bar_bb.transpose(1, 0), np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(
+            U_bar_bb.transpose(1, 0), np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
+                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+
+        return C_bar
+
+    def _compute_autocov(self, csd):
+        """Compute autocovariance from the CSD."""
+        n_times = csd.shape[0]
+        n_signals = csd.shape[2]
+
+        circular_shifted_csd = np.concatenate(
+            [np.flip(np.conj(csd[:, 1:]), axis=1), csd[:, :-1]], axis=1)
+        ifft_shifted_csd = self._block_ifft(
+            circular_shifted_csd, self.freq_res)
+        lags_ifft_shifted_csd = np.reshape(
+            ifft_shifted_csd[:, :self.n_lags + 1],
+            (n_times, self.n_lags + 1, n_signals ** 2), order="F")
+
+        signs = np.repeat([1], self.n_lags + 1).tolist()
+        signs[1::2] = [x * -1 for x in signs[1::2]]
+        sign_matrix = np.repeat(
+            np.tile(np.array(signs), (n_signals ** 2, 1))[np.newaxis],
+            n_times, axis=0).transpose(0, 2, 1)
+
+        return np.real(np.reshape(
+            sign_matrix * lags_ifft_shifted_csd,
+            (n_times, self.n_lags + 1, n_signals, n_signals), order="F"))
+
+    def _block_ifft(self, csd, n_points):
+        """Compute block iFFT with n points."""
+        shape = csd.shape
+        csd_3d = np.reshape(
+            csd, (shape[0], shape[1], shape[2] * shape[3]), order="F")
+
+        csd_ifft = np.fft.ifft(csd_3d, n=n_points, axis=1)
+
+        return np.reshape(csd_ifft, shape, order="F")
+
+    def _autocov_to_full_var(self, autocov):
+        """Compute full VAR model using Whittle's LWR recursion."""
+        if np.any(np.linalg.det(autocov) == 0):
+            raise RuntimeError(
+                'the autocovariance matrix is singular; check if your data is '
+                'rank deficient and specify an appropriate rank argument <= '
+                'the rank of the seeds and targets')
+
+        A_f, V = self._whittle_lwr_recursion(autocov)
+
+        if not np.isfinite(A_f).all():
+            raise RuntimeError('at least one VAR model coefficient is '
+                               'infinite or NaN; check the data you are using')
+
+        try:
+            np.linalg.cholesky(V)
+        except np.linalg.LinAlgError as np_error:
+            raise RuntimeError(
+                'the covariance matrix of the residuals is not '
+                'positive-definite; check the singular values of your data '
+                'and specify an appropriate rank argument <= the rank of the '
+                'seeds and targets') from np_error
+
+        return A_f, V
+
+    def _whittle_lwr_recursion(self, G):
+        """Solve Yule-Walker eqs. for full VAR params. with LWR recursion.
+
+        See: Whittle P., 1963. Biometrika, DOI: 10.1093/biomet/50.1-2.129
+        """
+        # Initialise recursion
+        n = G.shape[2]  # number of signals
+        q = G.shape[1] - 1  # number of lags
+        t = G.shape[0]  # number of times
+        qn = n * q
+
+        cov = G[:, 0, :, :]  # covariance
+        G_f = np.reshape(
+            G[:, 1:, :, :].transpose(0, 3, 1, 2), (t, qn, n),
+            order="F")  # forward autocov
+        G_b = np.reshape(
+            np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn),
+            order="F").transpose(0, 2, 1)  # backward autocov
+
+        A_f = np.zeros((t, n, qn))  # forward coefficients
+        A_b = np.zeros((t, n, qn))  # backward coefficients
+
+        k = 1  # model order
+        r = q - k
+        k_f = np.arange(k * n)  # forward indices
+        k_b = np.arange(r * n, qn)  # backward indices
+
+        try:
+            A_f[:, :, k_f] = np.linalg.solve(
+                cov, G_b[:, k_b, :].transpose(0, 2, 1)).transpose(0, 2, 1)
+            A_b[:, :, k_b] = np.linalg.solve(
+                cov, G_f[:, k_f, :].transpose(0, 2, 1)).transpose(0, 2, 1)
+
+            # Perform recursion
+            for k in np.arange(2, q + 1):
+                var_A = (G_b[:, (r - 1) * n: r * n, :] -
+                         np.matmul(A_f[:, :, k_f], G_b[:, k_b, :]))
+                var_B = cov - np.matmul(A_b[:, :, k_b], G_b[:, k_b, :])
+                AA_f = np.linalg.solve(
+                    var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
+
+                var_A = (G_f[:, (k - 1) * n: k * n, :] -
+                         np.matmul(A_b[:, :, k_b], G_f[:, k_f, :]))
+                var_B = cov - np.matmul(A_f[:, :, k_f], G_f[:, k_f, :])
+                AA_b = np.linalg.solve(
+                    var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
+
+                A_f_previous = A_f[:, :, k_f]
+                A_b_previous = A_b[:, :, k_b]
+
+                r = q - k
+                k_f = np.arange(k * n)
+                k_b = np.arange(r * n, qn)
+
+                A_f[:, :, k_f] = np.dstack(
+                    (A_f_previous - np.matmul(AA_f, A_b_previous), AA_f))
+                A_b[:, :, k_b] = np.dstack(
+                    (AA_b, A_b_previous - np.matmul(AA_b, A_f_previous)))
+        except np.linalg.LinAlgError as np_error:
+            raise RuntimeError(
+                'the autocovariance matrix is singular; check if your data is '
+                'rank deficient and specify an appropriate rank argument <= '
+                'the rank of the seeds and targets') from np_error
+
+        V = cov - np.matmul(A_f, G_f)
+        A_f = np.reshape(A_f, (t, n, n, q), order="F")
+
+        return A_f, V
+
+    def _full_var_to_iss(self, A_f):
+        """Compute innovations-form parameters for a state-space model.
+
+        Parameters computed from a full VAR model using Aoki's method. For a
+        non-moving-average full VAR model, the state-space parameter C
+        (observation matrix) is identical to AF of the VAR model.
+
+        See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+        10.1103/PhysRevE.91.040101.
+        """
+        t = A_f.shape[0]
+        m = A_f.shape[1]  # number of signals
+        p = A_f.shape[2] // m  # number of autoregressive lags
+
+        I_p = np.dstack(t * [np.eye(m * p)]).transpose(2, 0, 1)
+        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition
+        # matrix
+        K = np.hstack((
+            np.dstack(t * [np.eye(m)]).transpose(2, 0, 1),
+            np.zeros((t, (m * (p - 1)), m))))  # Kalman gain matrix
+
+        return A, K
+
+    def _iss_to_ugc(self, A, C, K, V, seeds, targets):
+        """Compute unconditional GC from innovations-form state-space params.
+
+        See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+        10.1103/PhysRevE.91.040101.
+        """
+        times = np.arange(A.shape[0])
+        freqs = np.arange(self.n_freqs)
+        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))  # points
+        # on a unit circle in the complex plane, one for each frequency
+
+        H = self._iss_to_tf(A, C, K, z)  # spectral transfer function
+        V_22_1 = np.linalg.cholesky(self._partial_covar(V, seeds, targets))
+        HV = np.matmul(H, np.linalg.cholesky(V))
+        S = np.matmul(HV, HV.conj().transpose(0, 1, 3, 2))  # Eq. 6
+        S_11 = S[np.ix_(freqs, times, targets, targets)]
+        HV_12 = np.matmul(H[np.ix_(freqs, times, targets, seeds)], V_22_1)
+        HVH = np.matmul(HV_12, HV_12.conj().transpose(0, 1, 3, 2))
+
+        # Eq. 11
+        return np.real(
+            np.log(np.linalg.det(S_11)) - np.log(np.linalg.det(S_11 - HVH)))
+
+    def _iss_to_tf(self, A, C, K, z):
+        """Compute transfer function for innovations-form state-space params.
+
+        In the frequency domain, the back-shift operator, z, is a vector of
+        points on a unit circle in the complex plane. z = e^-iw, where -pi < w
+        <= pi.
+
+        A note on efficiency: solving over the 4D time-freq. tensor is slower
+        than looping over times and freqs when n_times and n_freqs high, and
+        when n_times and n_freqs low, looping over times and freqs very fast
+        anyway (plus tensor solving doesn't allow for parallelisation).
+
+        See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+        10.1103/PhysRevE.91.040101.
+        """
+        t = A.shape[0]
+        h = self.n_freqs
+        n = C.shape[1]
+        m = A.shape[1]
+        I_n = np.eye(n)
+        I_m = np.eye(m)
+        H = np.zeros((h, t, n, n), dtype=np.complex128)
+
+        parallel, parallel_compute_H, _ = parallel_func(
+            _gc_compute_H, self.n_jobs, verbose=False
+        )
+        H = np.zeros((h, t, n, n), dtype=np.complex128)
+        for block_i in ProgressBar(
+            range(self.n_steps), mesg="frequency blocks"
+        ):
+            freqs = self._get_block_indices(block_i, self.n_freqs)
+            H[freqs] = parallel(
+                parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs)
+
+        return H
+
+    def _partial_covar(self, V, seeds, targets):
+        """Compute partial covariance of a matrix.
+
+        Given a covariance matrix V, the partial covariance matrix of V between
+        indices i and j, given k (V_ij|k), is equivalent to V_ij - V_ik *
+        V_kk^-1 * V_kj. In this case, i and j are seeds, and k are targets.
+
+        See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+        10.1103/PhysRevE.91.040101.
+        """
+        times = np.arange(V.shape[0])
+        W = np.linalg.solve(
+            np.linalg.cholesky(V[np.ix_(times, targets, targets)]),
+            V[np.ix_(times, targets, seeds)],
+        )
+        W = np.matmul(W.transpose(0, 2, 1), W)
+
+        return V[np.ix_(times, seeds, seeds)] - W
+
+    def reshape_results(self):
+        """Remove time dimension from con. scores, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[:, :, 0]
+
+
+def _gc_compute_H(A, C, K, z_k, I_n, I_m):
+    """Compute transfer function for innovations-form state-space params.
+
+    See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
+    10.1103/PhysRevE.91.040101, Eq. 4.
+    """
+    from scipy import linalg  # is this necessary???
+    H = np.zeros((A.shape[0], C.shape[1], C.shape[1]), dtype=np.complex128)
+    for t in range(A.shape[0]):
+        H[t] = I_n + np.matmul(
+            C[t], linalg.lu_solve(linalg.lu_factor(z_k * I_m - A[t]), K[t]))
+
+    return H
+
+
+class _GCEst(_GCEstBase):
+    """[seeds -> targets] state-space GC estimator."""
+
+    name = "GC"
+
+
+class _GCTREst(_GCEstBase):
+    """time-reversed[seeds -> targets] state-space GC estimator."""
+
+    name = "GC time-reversed"
+
 ###############################################################################
+
+
+_multivariate_methods = ['mic', 'mim', 'gc', 'gc_tr']
+_gc_methods = ['gc', 'gc_tr']
+
+
 def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
-                                 mode, window_fun, eigvals, wavelets,
+                                 method, mode, window_fun, eigvals, wavelets,
                                  freq_mask, mt_adaptive, idx_map, block_size,
                                  psd, accumulate_psd, con_method_types,
-                                 con_methods, n_signals, n_times,
-                                 accumulate_inplace=True):
+                                 con_methods, n_signals, n_signals_use,
+                                 n_times, gc_n_lags, accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
-    n_cons = len(idx_map[0])
+    if any(this_method in _multivariate_methods for this_method in method):
+        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
+        n_con_signals = n_signals_use ** 2
+    else:
+        n_cons = len(idx_map[0])
+        n_con_signals = n_cons
 
     if wavelets is not None:
         n_times_spectrum = n_times
@@ -547,8 +1252,24 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
 
     if not accumulate_inplace:
         # instantiate methods only for this epoch (used in parallel mode)
-        con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
-                       for mtype in con_method_types]
+        con_methods = []
+        for mtype in con_method_types:
+            method_params = list(inspect.signature(mtype).parameters)
+            if "n_signals" in method_params:
+                # if it's a multivariate connectivity method
+                if "n_lags" in method_params:
+                    # if it's a Granger causality method
+                    con_methods.append(
+                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum,
+                              gc_n_lags)
+                    )
+                else:
+                    # if it's a coherence method
+                    con_methods.append(
+                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum)
+                    )
+            else:
+                con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
 
     _check_option('mode', mode, ('cwt_morlet', 'multitaper', 'fourier'))
     if len(sig_idx) == n_signals:
@@ -624,8 +1345,9 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
 
     # accumulate connectivity scores
     if mode in ['multitaper', 'fourier']:
-        for i in range(0, n_cons, block_size):
-            con_idx = slice(i, i + block_size)
+        for i in range(0, n_con_signals, block_size):
+            n_extra = max(0, i + block_size - n_con_signals)
+            con_idx = slice(i, i + block_size - n_extra)
             if mt_adaptive:
                 csd = _csd_from_mt(x_t[idx_map[0][con_idx]],
                                    x_t[idx_map[1][con_idx]],
@@ -639,8 +1361,9 @@ def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
             for method in con_methods:
                 method.accumulate(con_idx, csd)
     else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
-        for i_block, i in enumerate(range(0, n_cons, block_size)):
-            con_idx = slice(i, i + block_size)
+        for i in range(0, n_con_signals, block_size):
+            n_extra = max(0, i + block_size - n_con_signals)
+            con_idx = slice(i, i + block_size - n_extra)
             # this codes can be very slow
             csd = (x_t[idx_map[0][con_idx]] *
                    x_t[idx_map[1][con_idx]].conjugate())
@@ -727,10 +1450,11 @@ _CON_METHOD_MAP = {'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst,
                    'plv': _PLVEst, 'ciplv': _ciPLVEst, 'ppc': _PPCEst,
                    'pli': _PLIEst, 'pli2_unbiased': _PLIUnbiasedEst,
                    'dpli': _DPLIEst, 'wpli': _WPLIEst,
-                   'wpli2_debiased': _WPLIDebiasedEst}
+                   'wpli2_debiased': _WPLIDebiasedEst, 'mic': _MICEst,
+                   'mim': _MIMEst, 'gc': _GCEst, 'gc_tr': _GCTREst}
 
 
-def _check_estimators(method, mode):
+def _check_estimators(method):
     """Check construction of connectivity estimators."""
     n_methods = len(method)
     con_method_types = list()
@@ -748,30 +1472,24 @@ def _check_estimators(method, mode):
                                  'not have the method %s' % msg)
             con_method_types.append(this_method)
 
-    # determine how many arguments the compute_con_function needs
-    n_comp_args = [len(inspect.signature(mtype.compute_con).parameters)
-                   for mtype in con_method_types]
-
-    # we currently only support 3 arguments
-    if any(n not in (3, 5) for n in n_comp_args):
-        raise ValueError('The .compute_con method needs to have either '
-                         '3 or 5 arguments')
     # if none of the comp_con functions needs the PSD, we don't estimate it
-    accumulate_psd = any(n == 5 for n in n_comp_args)
-    return con_method_types, n_methods, accumulate_psd, n_comp_args
+    accumulate_psd = any(
+        this_method.accumulate_psd for this_method in con_method_types)
+
+    return con_method_types, n_methods, accumulate_psd
 
 
-@verbose
-@fill_doc
+@ verbose
+@ fill_doc
 def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                                  sfreq=None,
                                  mode='multitaper', fmin=None, fmax=np.inf,
                                  fskip=0, faverage=False, tmin=None, tmax=None,
                                  mt_bandwidth=None, mt_adaptive=False,
                                  mt_low_bias=True, cwt_freqs=None,
-                                 cwt_n_cycles=7, block_size=1000, n_jobs=1,
-                                 verbose=None):
-    """Compute frequency- and time-frequency-domain connectivity measures.
+                                 cwt_n_cycles=7, gc_n_lags=40, rank=None,
+                                 block_size=1000, n_jobs=1, verbose=None):
+    r"""Compute frequency- and time-frequency-domain connectivity measures.
 
     The connectivity method(s) are specified using the "method" parameter.
     All methods are based on estimates of the cross- and power spectral
@@ -790,11 +1508,15 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
-        'imcoh', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
-        'wpli2_debiased']``.
+        'imcoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
+        'wpli2_debiased', 'gc', 'gc_tr']``. Multivariate methods (``['mic',
+        'mim', 'gc', 'gc_tr]``) cannot be called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed.
+        connectivity. If a multivariate method is called, the indices are for a
+        single connection between all seeds and all targets. If None, all
+        connections are computed, unless a Granger causality method is called,
+        in which case an error is raised.
     sfreq : float
         The sampling frequency. Required if data is not
         :class:`Epochs <mne.Epochs>`.
@@ -804,8 +1526,6 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     fmin : float | tuple of float
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-        If None the frequency corresponding to an epoch length of 5 cycles
-        is used.
     fmax : float | tuple of float
         The upper frequency of interest. Multiple bands are dedined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
@@ -840,11 +1560,21 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     cwt_n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in
         'cwt_morlet' mode.
+    gc_n_lags : int
+        Number of lags to use for the vector autoregressive model when
+        computing Granger causality. Higher values increase computational cost,
+        but reduce the degree of spectral smoothing in the results. Only used
+        if ``method`` contains any of ``['gc', 'gc_tr']``.
+    rank : tuple of array | None
+        Two arrays with the rank to project the seed and target data to,
+        respectively, using singular value decomposition. If None, the rank of
+        the data is computed and projected to. Only used if ``method`` contains
+        any of ``['mic', 'mim', 'gc', 'gc_tr']``.
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
     n_jobs : int
-        How many epochs to process in parallel.
+        How many samples to process in parallel.
     %(verbose)s
 
     Returns
@@ -858,7 +1588,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         when "indices" is None, or
         (n_con, n_freqs) mode: 'multitaper' or 'fourier'
         (n_con, n_freqs, n_times) mode: 'cwt_morlet'
-        when "indices" is specified and "n_con = len(indices[0])".
+        when "indices" is specified and "n_con = len(indices[0])". If a
+        multivariate method is called "n_con = 1" even if "indices" is None.
 
     See Also
     --------
@@ -888,11 +1619,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     "mode" parameter.
 
     By default, the connectivity between all signals is computed (only
-    connections corresponding to the lower-triangular part of the
-    connectivity matrix). If one is only interested in the connectivity
-    between some signals, the "indices" parameter can be used. For example,
-    to compute the connectivity between the signal with index 0 and signals
-    "2, 3, 4" (a total of 3 connections) one can use the following::
+    connections corresponding to the lower-triangular part of the connectivity
+    matrix). If one is only interested in the connectivity between some
+    signals, the "indices" parameter can be used. For example, to compute the
+    connectivity between the signal with index 0 and signals "2, 3, 4" (a total
+    of 3 connections) one can use the following::
 
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
@@ -902,6 +1633,15 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     In this case con.get_data().shape = (3, n_freqs). The connectivity scores
     are in the same order as defined indices.
+
+    For multivariate methods, this is handled differently. If "indices" is
+    None, connectivity between all signals will attempt to be computed (this is
+    not possible if a Granger causality method is called). If "indices" is
+    specified, the seeds and targets are treated as a single connection. For
+    example, to compute the connectivity between signals 0, 1, 2 and 3, 4, 5,
+    one would use the same approach as above, however the signals would all be
+    considered for a single connection and the connectivity scores would have
+    the shape (1, n_freqs).
 
     **Supported Connectivity Measures**
 
@@ -928,12 +1668,31 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             C = ----------------------
                 sqrt(E[Sxx] * E[Syy])
 
+        'mic' : Maximised Imaginary part of Coherency (MIC)
+        :footcite:`EwaldEtAl2012` given by:
+
+            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+            \parallel}}`
+
+            where: :math:`\boldsymbol{E}` is the imaginary part of the
+            transformed cross-spectral density between seeds and targets; and
+            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are
+            eigenvectors for the seeds and targets, such that
+            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises
+            connectivity between the seeds and targets.
+
+        'mim' : Multivariate Interaction Measure (MIM)
+        :footcite:`EwaldEtAl2012` given by:
+
+            :math:`MIM=tr(\boldsymbol{EE}^T)`
+
         'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
         by::
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : corrected imaginary PLV (icPLV)
+        'ciplv' : corrected imaginary PLV (ciPLV)
         :footcite:`BrunaEtAl2018` given by::
 
                              |E[Im(Sxy/|Sxy|)]|
@@ -965,14 +1724,32 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         'wpli2_debiased' : Debiased estimator of squared WPLI
         :footcite:`VinckEtAl2011`.
 
+        'gc' : State-space Granger Causality (GC) :footcite:`BarnettSeth2015`
+        given by:
+
+            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
+            \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
+            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,
+
+            where: :math:`s` and :math:`t` represent the seeds and targets,
+            respectively; :math:`\boldsymbol{H}` is the spectral transfer
+            function; :math:`\boldsymbol{\Sigma}` is the residuals matrix of
+            the autoregressive model; and :math:`\boldsymbol{S}` is
+            :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.
+
+        'gc_tr' : State-space GC on time-reversed signals
+        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation
+        as for 'gc', but where the autocovariance sequence from which the
+        autoregressive model is produced is transposed to mimic the reversal of
+        the original signal in time.
+
     References
     ----------
     .. footbibliography::
     """
     if n_jobs != 1:
-        parallel, my_epoch_spectral_connectivity, _ = \
-            parallel_func(_epoch_spectral_connectivity, n_jobs,
-                          verbose=verbose)
+        parallel, my_epoch_spectral_connectivity, _ = parallel_func(
+            _epoch_spectral_connectivity, n_jobs, verbose=verbose)
 
     # format fmin and fmax and check inputs
     if fmin is None:
@@ -991,9 +1768,24 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     if not isinstance(method, (list, tuple)):
         method = [method]  # make it a list so we can iterate over it
 
+    if n_bands != 1 and any(
+        this_method in _gc_methods for this_method in method
+    ):
+        raise ValueError('computing Granger causality on multiple frequency '
+                         'bands is not yet supported')
+
+    if any(this_method in _multivariate_methods for this_method in method):
+        if not all(this_method in _multivariate_methods for
+                   this_method in method):
+            raise ValueError(
+                'bivariate and multivariate connectivity methods cannot be '
+                'used in the same function call')
+        multivariate_con = True
+    else:
+        multivariate_con = False
+
     # handle connectivity estimators
-    (con_method_types, n_methods, accumulate_psd,
-     n_comp_args) = _check_estimators(method=method, mode=mode)
+    (con_method_types, n_methods, accumulate_psd) = _check_estimators(method)
 
     events = None
     event_id = None
@@ -1037,8 +1829,15 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
              n_signals, indices_use, warn_times) = _prepare_connectivity(
                 epoch_block=epoch_block, times_in=times_in,
                 tmin=tmin, tmax=tmax, fmin=fmin, fmax=fmax, sfreq=sfreq,
-                indices=indices, mode=mode, fskip=fskip, n_bands=n_bands,
-                cwt_freqs=cwt_freqs, faverage=faverage)
+                indices=indices, method=method, mode=mode, fskip=fskip,
+                n_bands=n_bands, cwt_freqs=cwt_freqs, faverage=faverage)
+
+            # check rank input and compute data ranks if necessary
+            if multivariate_con:
+                rank = _check_rank_input(rank, data, sfreq, indices_use)
+            else:
+                rank = None
+                gc_n_lags = None
 
             # get the window function, wavelets, etc for different modes
             (spectral_params, mt_adaptive, n_times_spectrum,
@@ -1050,23 +1849,36 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
             # unique signals for which we actually need to compute PSD etc.
             sig_idx = np.unique(np.r_[indices_use[0], indices_use[1]])
+            n_signals_use = len(sig_idx)
 
             # map indices to unique indices
             idx_map = [np.searchsorted(sig_idx, ind) for ind in indices_use]
+            if multivariate_con:
+                indices_use = idx_map
+                idx_map = np.unique([*idx_map[0], *idx_map[1]])
+                idx_map = [np.sort(np.repeat(idx_map, len(sig_idx))),
+                           np.tile(idx_map, len(sig_idx))]
 
             # allocate space to accumulate PSD
             if accumulate_psd:
                 if n_times_spectrum == 0:
-                    psd_shape = (len(sig_idx), n_freqs)
+                    psd_shape = (n_signals_use, n_freqs)
                 else:
-                    psd_shape = (len(sig_idx), n_freqs, n_times_spectrum)
+                    psd_shape = (n_signals_use, n_freqs, n_times_spectrum)
                 psd = np.zeros(psd_shape)
             else:
                 psd = None
 
             # create instances of the connectivity estimators
-            con_methods = [mtype(n_cons, n_freqs, n_times_spectrum)
-                           for mtype in con_method_types]
+            con_methods = []
+            for mtype_i, mtype in enumerate(con_method_types):
+                method_params = dict(n_cons=n_cons, n_freqs=n_freqs,
+                                     n_times=n_times_spectrum)
+                if method[mtype_i] in _multivariate_methods:
+                    method_params.update(dict(n_signals=n_signals_use))
+                    if method[mtype_i] in _gc_methods:
+                        method_params.update(dict(n_lags=gc_n_lags))
+                con_methods.append(mtype(**method_params))
 
             sep = ', '
             metrics_str = sep.join([meth.name for meth in con_methods])
@@ -1080,33 +1892,35 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 warn_times=warn_times)
 
         call_params = dict(
-            sig_idx=sig_idx, tmin_idx=tmin_idx,
-            tmax_idx=tmax_idx, sfreq=sfreq, mode=mode,
-            freq_mask=freq_mask, idx_map=idx_map, block_size=block_size,
+            sig_idx=sig_idx, tmin_idx=tmin_idx, tmax_idx=tmax_idx, sfreq=sfreq,
+            method=method, mode=mode, freq_mask=freq_mask, idx_map=idx_map,
+            block_size=block_size,
             psd=psd, accumulate_psd=accumulate_psd,
             mt_adaptive=mt_adaptive,
             con_method_types=con_method_types,
             con_methods=con_methods if n_jobs == 1 else None,
-            n_signals=n_signals, n_times=n_times,
+            n_signals=n_signals, n_signals_use=n_signals_use, n_times=n_times,
+            gc_n_lags=gc_n_lags,
             accumulate_inplace=True if n_jobs == 1 else False)
         call_params.update(**spectral_params)
 
         if n_jobs == 1:
             # no parallel processing
             for this_epoch in epoch_block:
-                logger.info('    computing connectivity for epoch %d'
+                logger.info('    computing cross-spectral density for epoch %d'
                             % (epoch_idx + 1))
                 # con methods and psd are updated inplace
                 _epoch_spectral_connectivity(data=this_epoch, **call_params)
                 epoch_idx += 1
         else:
             # process epochs in parallel
-            logger.info('    computing connectivity for epochs %d..%d'
-                        % (epoch_idx + 1, epoch_idx + len(epoch_block)))
+            logger.info(
+                '    computing cross-spectral density for epochs %d..%d'
+                % (epoch_idx + 1, epoch_idx + len(epoch_block)))
 
             out = parallel(my_epoch_spectral_connectivity(
-                           data=this_epoch, **call_params)
-                           for this_epoch in epoch_block)
+                data=this_epoch, **call_params)
+                for this_epoch in epoch_block)
             # do the accumulation
             for this_out in out:
                 for _method, parallel_method in zip(con_methods, this_out[0]):
@@ -1123,12 +1937,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
     # compute final connectivity scores
     con = list()
-    for conn_method, n_args in zip(con_methods, n_comp_args):
+    patterns = list()
+    for method_i, conn_method in enumerate(con_methods):
+
         # future estimators will need to be handled here
-        if n_args == 3:
-            # compute all scores at once
-            conn_method.compute_con(slice(0, n_cons), n_epochs)
-        elif n_args == 5:
+        if conn_method.accumulate_psd:
             # compute scores block-wise to save memory
             for i in range(0, n_cons, block_size):
                 con_idx = slice(i, i + block_size)
@@ -1136,26 +1949,47 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 psd_yy = psd[idx_map[1][con_idx]]
                 conn_method.compute_con(con_idx, n_epochs, psd_xx, psd_yy)
         else:
-            raise RuntimeError('This should never happen.')
+            # compute all scores at once
+            if method[method_i] in _multivariate_methods:
+                conn_method.compute_con(indices_use, rank, n_epochs)
+            else:
+                conn_method.compute_con(slice(0, n_cons), n_epochs)
 
         # get the connectivity scores
         this_con = conn_method.con_scores
+        this_patterns = conn_method.patterns
 
         if this_con.shape[0] != n_cons:
-            raise ValueError('First dimension of connectivity scores must be '
-                             'the same as the number of connections')
+            raise RuntimeError(
+                'first dimension of connectivity scores does not match the '
+                'number of connections; please contact the mne-connectivity '
+                'developers')
         if faverage:
             if this_con.shape[1] != n_freqs:
-                raise ValueError('2nd dimension of connectivity scores must '
-                                 'be the same as the number of frequencies')
+                raise RuntimeError(
+                    'second dimension of connectivity scores does not match '
+                    'the number of frequencies; please contact the '
+                    'mne-connectivity developers')
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)
             for band_idx in range(n_bands):
-                this_con_bands[:, band_idx] =\
-                    np.mean(this_con[:, freq_idx_bands[band_idx]], axis=1)
+                this_con_bands[:, band_idx] = np.mean(
+                    this_con[:, freq_idx_bands[band_idx]], axis=1)
             this_con = this_con_bands
 
+            if this_patterns is not None:
+                patterns_shape = ((2, n_cons, len(indices[0]), n_bands) +
+                                  this_patterns.shape[4:])
+                this_patterns_bands = np.empty(patterns_shape,
+                                               dtype=this_patterns.dtype)
+                for band_idx in range(n_bands):
+                    this_patterns_bands[:, :, :, band_idx] = np.mean(
+                        this_patterns[:, :, :, freq_idx_bands[band_idx]],
+                        axis=3)
+                this_patterns = this_patterns_bands
+
         con.append(this_con)
+        patterns.append(this_patterns)
 
     freqs_used = freqs
     if faverage:
@@ -1169,7 +2003,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         freqs_used = freqs_bands
         freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
-    if indices is None:
+    if indices is None and not multivariate_con:
         # return all-to-all connectivity matrices
         # raveled into a 1D array
         logger.info('    assembling connectivity matrix')
@@ -1186,27 +2020,24 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             this_con = this_con.reshape((n_signals ** 2,) +
                                         this_con_flat.shape[1:])
             con.append(this_con)
-    # number of nodes in the original data,
+    # number of nodes in the original data
     n_nodes = n_signals
+
+    if multivariate_con:
+        # UNTIL RAGGED ARRAYS SUPPORTED
+        indices = tuple(
+            [[np.array(indices_use[0])], [np.array(indices_use[1])]])
 
     # create a list of connectivity containers
     conn_list = []
-    for _con in con:
-        kwargs = dict(data=_con,
-                      names=names,
-                      freqs=freqs,
-                      method=method,
-                      n_nodes=n_nodes,
-                      spec_method=mode,
-                      indices=indices,
-                      n_epochs_used=n_epochs,
-                      freqs_used=freqs_used,
-                      times_used=times,
-                      n_tapers=n_tapers,
-                      metadata=metadata,
-                      events=events,
-                      event_id=event_id
-                      )
+    for _con, _patterns, _method in zip(con, patterns, method):
+        kwargs = dict(
+            data=_con, patterns=_patterns, names=names, freqs=freqs,
+            method=_method, n_nodes=n_nodes, spec_method=mode, indices=indices,
+            n_epochs_used=n_epochs, freqs_used=freqs_used, times_used=times,
+            n_tapers=n_tapers, metadata=metadata, events=events,
+            event_id=event_id, rank=rank,
+            n_lags=gc_n_lags if _method in _gc_methods else None)
         # create the connectivity container
         if mode in ['multitaper', 'fourier']:
             klass = SpectralConnectivity
@@ -1223,3 +2054,46 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         conn_list = conn_list[0]
 
     return conn_list
+
+
+def _check_rank_input(rank, data, sfreq, indices):
+    """Check the rank argument is appropriate and compute rank if missing."""
+    # UNTIL RAGGED ARRAYS SUPPORTED
+    indices = np.array([[indices[0]], [indices[1]]])
+
+    if rank is None:
+
+        rank = np.zeros((2, len(indices[0])), dtype=int)
+
+        if isinstance(data, BaseEpochs):
+            data_arr = data.get_data()
+        else:
+            data_arr = data
+
+        for group_i in range(2):
+            for con_i, con_idcs in enumerate(indices[group_i]):
+                s = np.linalg.svd(data_arr[:, con_idcs], compute_uv=False)
+                rank[group_i][con_i] = np.min(
+                    [np.count_nonzero(epoch >= epoch[0] * 1e-10)
+                     for epoch in s])
+
+        logger.info('Estimated data ranks:')
+        con_i = 1
+        for seed_rank, target_rank in zip(rank[0], rank[1]):
+            logger.info('    connection %i - seeds (%i); targets (%i)'
+                        % (con_i, seed_rank, target_rank, ))
+            con_i += 1
+
+        rank = tuple((np.array(rank[0]), np.array(rank[1])))
+
+    else:
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                indices[0], indices[1], rank[0], rank[1]):
+            if not (0 < seed_rank <= len(seed_idcs) and
+                    0 < target_rank <= len(target_idcs)):
+                raise ValueError(
+                    'ranks for seeds and targets must be > 0 and <= the '
+                    'number of channels in the seeds and targets, '
+                    'respectively, for each connection')
+
+    return rank
