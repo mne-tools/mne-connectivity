@@ -81,7 +81,8 @@ seeds = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
 targets = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
            ch_info['loc'][0] > 0]
 
-# UNTIL RAGGED INDICES SUPPORTED
+# XXX: Currently ragged indices are not supported, so we only consider a single
+# list of indices with an equal number of seeds and targets
 min_n_chs = min(len(seeds), len(targets))
 seeds = seeds[:min_n_chs]
 targets = targets[:min_n_chs]
@@ -165,18 +166,17 @@ fig.suptitle('Maximised imaginary part of coherency')
 # the connectivity class, with one value per frequency for each channel in the
 # seeds and targets. As with MIC, the absolute value of the patterns reflect
 # the strength, however the sign differences can be used to visualise the
-# orientation of the underlying dipole sources. The spatial patterns are not
-# bound between :math:`[-1, 1]`.
+# orientation of the underlying dipole sources. The spatial patterns are
+# **not** bound between :math:`[-1, 1]`.
 #
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
-# hemispheres occurs for the posterolateral parietal regions of the left
-# hemisphere, and the medial central regions of the right hemisphere.
-#
-# Using the signs of the values, we can infer the existence of a parietal
-# dipole source in the left hemisphere which may account for the connectivity
-# contributions seen for the posterolateral parietal regions and frontomedial
-# areas (represented on the plot as a green line).
+# hemispheres occurs at the posteromedial regions, based on the regions with
+# the largest absolute values. Using the signs of the values, we can infer the
+# existence of a dipole source in the central regions of the left hemisphere
+# which may account for the connectivity contributions seen for the left
+# posteromedial and frontolateral areas (represented on the plot as a green
+# line).
 
 # %%
 
@@ -184,10 +184,14 @@ fig.suptitle('Maximised imaginary part of coherency')
 fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
+# patterns have shape [seeds/targets x cons x channels x freqs (x times)]
 patterns = np.array(mic.attrs["patterns"])
-seed_pattern = np.mean(patterns[0, 0, :, fband_idx[0]:fband_idx[1] + 1],
+seed_pattern = patterns[0]
+target_pattern = patterns[1]
+# average across frequencies
+seed_pattern = np.mean(seed_pattern[0, :, fband_idx[0]:fband_idx[1] + 1],
                        axis=1)
-target_pattern = np.mean(patterns[1, 0, :, fband_idx[0]:fband_idx[1] + 1],
+target_pattern = np.mean(target_pattern[0, :, fband_idx[0]:fband_idx[1] + 1],
                          axis=1)
 
 # store the patterns for plotting
@@ -213,7 +217,7 @@ axes[2].set_title('Target spatial pattern\n13-18 Hz')
 
 # plot the left hemisphere dipole example
 axes[0].plot(
-    [-0.07, -0.035], [-0.03, -0.055], color='lime', linewidth=2,
+    [-0.1, -0.05], [-0.075, -0.03], color='lime', linewidth=2,
     path_effects=[pe.Stroke(linewidth=4, foreground='k'), pe.Normal()])
 
 plt.show()
@@ -234,13 +238,15 @@ plt.show()
 # :math:`MIM=tr(\boldsymbol{EE}^T)`,
 #
 # where again the frequency dependence is omitted. Unlike MIC, MIM is
-# positive-valued, and is not bound below 1. Without normalisation, MIM can be
+# positive-valued and can be > 1. Without normalisation, MIM can be
 # thought of as reflecting the total interaction between the seeds and targets.
 # MIM can be normalised to lie in the range :math:`[0, 1]` by dividing the
-# scores by the number of channels in the seeds and targets, representing the
-# total interaction *per channel*, which can accordingly be influenced by e.g.
-# the presence of channels with little to no interaction. **MIM is not
-# normalised by default in this implementation**.
+# scores by the number of unique channels in the seeds and targets. Normalised
+# MIM represents the interaction *per channel*, which can be biased by factors
+# such as the presence of channels with little to no interaction. In line with
+# the preferences of the method's authors :footcite:`EwaldEtAl2012`, since
+# normalisation alters the interpretability of the results, **normalisation is
+# not performed by default**.
 #
 # Here we see MIM reveal the strongest connectivity component to be around 10
 # Hz, with the higher frequency 13-18 Hz connectivity no longer being so
@@ -249,6 +255,10 @@ plt.show()
 # Thus, when combining these different components in MIM, the peak around 10 Hz
 # remains, but the 13-18 Hz connectivity is diminished relative to the single,
 # largest connectivity component of MIC.
+#
+# Looking at the values for normalised MIM, we see it has a maximum of ~0.1.
+# The relatively small connectivity values thus indicate that many of the
+# channels show little to no interaction.
 
 # %%
 
@@ -256,7 +266,11 @@ fig, axis = plt.subplots(1, 1)
 axis.plot(mim.freqs, mim.get_data()[0], linewidth=2)
 axis.set_xlabel('Frequency (Hz)')
 axis.set_ylabel('Absolute connectivity (A.U.)')
-fig.suptitle('Multivariate interaction measure (non-normalised)')
+fig.suptitle('Multivariate interaction measure')
+
+n_channels = len(np.unique([*multivar_indices[0], *multivar_indices[1]]))
+normalised_mim = mim.get_data()[0] / n_channels
+print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
 
 
 ###############################################################################
@@ -267,27 +281,35 @@ fig.suptitle('Multivariate interaction measure (non-normalised)')
 # however since each interaction is considered twice, correcting the
 # connectivity by a factor of :math:`\frac{1}{2}` is necessary (**the
 # correction is performed automatically in this implementation**). Like MIM,
-# GIM is also not bound below 1, but it can be normalised to lie in the range
-# :math:`[0, 1]` by dividing by :math:`N/2` (where :math:`N` is the number of
-# channels; **GIM is also not normalised by default in this implementation**).
+# GIM can also be > 1, but it can again be normalised to lie in the range
+# :math:`[0, 1]` by dividing by the number of unique channels in the seeds and
+# targets. However, since normalisation alters the interpretability of the
+# results (i.e. interaction per channel for normalised GIM vs. total
+# interaction for standard GIM), **GIM is not normalised by default**.
 #
 # With GIM, we find a broad connectivity peak around 10 Hz, with an additional
 # peak around 20 Hz. The differences observed with GIM highlight the presence
 # of interactions within each hemisphere that are absent for MIC or MIM.
+# Furthermore, the values for normalised GIM are higher than for MIM, with a
+# maximum of ~0.2, again indicating the presence of interactions across
+# channels within each hemisphere.
 
 # %%
 
 indices = (np.array([*seeds, *targets]), np.array([*seeds, *targets]))
 gim = spectral_connectivity_epochs(
-    epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None)
-
-normalised_gim = gim.get_data()[0] / (len(indices[0]) / 2)
+    epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None,
+    verbose=False)
 
 fig, axis = plt.subplots(1, 1)
-axis.plot(gim.freqs, normalised_gim, linewidth=2)
+axis.plot(gim.freqs, gim.get_data()[0], linewidth=2)
 axis.set_xlabel('Frequency (Hz)')
 axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('Global interaction measure (normalised)')
+fig.suptitle('Global interaction measure')
+
+n_channels = len(np.unique([*indices[0], *indices[1]]))
+normalised_gim = gim.get_data()[0] / n_channels
+print(f'Normalised GIM has a maximum value of {normalised_gim.max():.2f}')
 
 
 ###############################################################################

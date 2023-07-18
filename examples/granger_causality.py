@@ -157,7 +157,8 @@ signals_a = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
 signals_b = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
              ch_info['ch_name'][2] == 'O']
 
-# UNTIL RAGGED INDICES SUPPORTED
+# XXX: Currently ragged indices are not supported, so we only consider a single
+# list of indices with an equal number of seeds and targets
 min_n_chs = min(len(signals_a), len(signals_b))
 signals_a = signals_a[:min_n_chs]
 signals_b = signals_b[:min_n_chs]
@@ -319,10 +320,10 @@ fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
 # best judgement of whether or not your Granger scores look overly smooth.
 #
 # Below is a comparison of Granger scores computed with a different number of
-# lags. In the above examples we had used 20 lags, which we will compare to
-# Granger scores computed with 60 lags. As you can see, the spectra of Granger
-# scores computed with 60 lags is noticeably less smooth, but it does share the
-# same overall pattern.
+# lags. In the above examples we used 20 lags, which we will compare to Granger
+# scores computed with 60 lags. As you can see, the spectra of Granger scores
+# computed with 60 lags is noticeably less smooth, but it does share the same
+# overall pattern.
 
 # %%
 
