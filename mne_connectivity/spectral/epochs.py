@@ -2,7 +2,7 @@
 #          Denis A. Engemann <denis.engemann@gmail.com>
 #          Adam Li <adam2392@gmail.com>
 #          Thomas S. Binns <t.s.binns@outlook.com>
-#          Tien D. Nguyen <tien-dung.nguyen@bccn-berlin.de>
+#          Tien D. Nguyen <tien-dung.nguyen@charite.de>
 #          Richard M. Köhler <koehler.richard@charite.de>
 #
 # License: BSD (3-clause)
