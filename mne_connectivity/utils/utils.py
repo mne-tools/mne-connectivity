@@ -1,4 +1,5 @@
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
+#          Thomas S. Binns <t.s.binns@outlook.com>
 #
 # License: BSD (3-clause)
 import numpy as np
