@@ -24,7 +24,7 @@ from mne.utils import (
     ProgressBar, _arange_div, _check_option, _time_mask, logger, warn, verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
-from ..utils import fill_doc, check_indices
+from ..utils import fill_doc, check_indices, check_multivariate_indices
 
 
 def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
@@ -92,40 +92,40 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     times = times_in[tmin_idx:tmax_idx]
     n_times = len(times)
 
+    if any(this_method in _multivariate_methods for this_method in method):
+        multivariate_con = True
+    else:
+        multivariate_con = False
+
     if indices is None:
-        if any(this_method in _multivariate_methods for this_method in method):
+        if multivariate_con:
             if any(this_method in _gc_methods for this_method in method):
                 raise ValueError(
                     'indices must be specified when computing Granger '
                     'causality, as all-to-all connectivity is not supported')
             else:
                 logger.info('using all indices for multivariate connectivity')
-                indices_use = (np.arange(n_signals, dtype=int),
-                               np.arange(n_signals, dtype=int))
+                indices_use = (np.arange(n_signals, dtype=int)[np.newaxis, :],
+                               np.arange(n_signals, dtype=int)[np.newaxis, :])
         else:
             logger.info('only using indices for lower-triangular matrix')
             # only compute r for lower-triangular region
             indices_use = np.tril_indices(n_signals, -1)
     else:
-        if any(this_method in _gc_methods for this_method in method):
-            if set(indices[0]).intersection(indices[1]):
-                raise ValueError(
-                    'seed and target indices must not intersect when computing'
-                    'Granger causality')
-        indices_use = check_indices(indices)
+        if multivariate_con:
+            indices_use = check_multivariate_indices(indices)  # pad with -1
+            if any(this_method in _gc_methods for this_method in method):
+                for seed, target in zip(indices[0], indices[1]):
+                    intersection = np.intersect1d(seed, target)
+                    if np.any(intersection != -1):  # ignore padded entries
+                        raise ValueError(
+                            'seed and target indices must not intersect when '
+                            'computing Granger causality')
+        else:
+            indices_use = check_indices(indices)
 
     # number of connectivities to compute
-    if any(this_method in _multivariate_methods for this_method in method):
-        if (
-            len(np.unique(indices_use[0])) != len(indices_use[0]) or
-            len(np.unique(indices_use[1])) != len(indices_use[1])
-        ):
-            raise ValueError(
-                'seed and target indices cannot contain repeated channels for '
-                'multivariate connectivity')
-        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
-    else:
-        n_cons = len(indices_use[0])
+    n_cons = len(indices_use[0])
 
     logger.info('    computing connectivity for %d connections'
                 % n_cons)
@@ -187,6 +187,46 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
     return (n_cons, times, n_times, times_in, n_times_in, tmin_idx,
             tmax_idx, n_freqs, freq_mask, freqs, freqs_bands, freq_idx_bands,
             n_signals, indices_use, warn_times)
+
+
+def _check_rank_input(rank, data, indices):
+    """Check the rank argument is appropriate and compute rank if missing."""
+    sv_tol = 1e-10  # tolerance for non-zero singular val (rel to largest)
+    if rank is None:
+        rank = np.zeros((2, len(indices[0])), dtype=int)
+
+        if isinstance(data, BaseEpochs):
+            data_arr = data.get_data()
+        else:
+            data_arr = data
+
+        for group_i in range(2):  # seeds and targets
+            for con_i, con_idcs in enumerate(indices[group_i]):
+                con_idcs = con_idcs[con_idcs != -1]  # -1 is padded value
+                s = np.linalg.svd(data_arr[:, con_idcs], compute_uv=False)
+                rank[group_i][con_i] = np.min(
+                    [np.count_nonzero(epoch >= epoch[0] * sv_tol)
+                     for epoch in s])
+
+        logger.info('Estimated data ranks:')
+        con_i = 1
+        for seed_rank, target_rank in zip(rank[0], rank[1]):
+            logger.info('    connection %i - seeds (%i); targets (%i)'
+                        % (con_i, seed_rank, target_rank, ))
+            con_i += 1
+        rank = tuple((np.array(rank[0]), np.array(rank[1])))
+
+    else:
+        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
+                indices[0], indices[1], rank[0], rank[1]):
+            if not (0 < seed_rank <= len(seed_idcs) and
+                    0 < target_rank <= len(target_idcs)):
+                raise ValueError(
+                    'ranks for seeds and targets must be > 0 and <= the '
+                    'number of channels in the seeds and targets, '
+                    'respectively, for each connection')
+
+    return rank
 
 
 def _assemble_spectral_params(mode, n_times, mt_adaptive, mt_bandwidth, sfreq,
@@ -422,22 +462,23 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         if self.name == 'MIC':
             self.patterns = np.full(
-                (2, self.n_cons, len(indices[0]), self.n_freqs, n_times),
+                (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times),
                 np.nan)
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                [indices[0]], [indices[1]], ranks[0], ranks[1]):
+                indices[0], indices[1], ranks[0], ranks[1]):
             self._log_connection_number(con_i)
 
-            n_seeds = len(seed_idcs)
+            seed_idcs = seed_idcs[seed_idcs != -1]
+            target_idcs = target_idcs[target_idcs != -1]
             con_idcs = [*seed_idcs, *target_idcs]
 
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
 
             # Eqs. 32 & 33
             C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
-                C, n_seeds, seed_rank, target_rank)
+                C, seed_idcs, seed_rank, target_rank)
 
             # Eqs. 3 & 4
             E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
@@ -452,10 +493,11 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         self.reshape_results()
 
-    def _csd_svd(self, csd, n_seeds, seed_rank, target_rank):
+    def _csd_svd(self, csd, seed_idcs, seed_rank, target_rank):
         """Dimensionality reduction of CSD with SVD."""
         n_times = csd.shape[0]
-        n_targets = csd.shape[2] - n_seeds
+        n_seeds = len(seed_idcs)
+        n_targets = csd.shape[3] - n_seeds
 
         C_aa = csd[..., :n_seeds, :n_seeds]
         C_ab = csd[..., :n_seeds, n_seeds:]
@@ -505,8 +547,9 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         for block_i in ProgressBar(
                 range(self.n_steps), mesg="frequency blocks"):
             freqs = self._get_block_indices(block_i, self.n_freqs)
-            parallel(parallel_compute_t(
+            T[:, freqs] = np.array(parallel(parallel_compute_t(
                 C_r[:, f], T[:, f], n_seeds) for f in freqs)
+            ).transpose(1, 0, 2, 3)
 
         if not np.isreal(T).all() or not np.isfinite(T).all():
             raise RuntimeError(
@@ -526,6 +569,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                      U_bar_bb, con_i):
         """Compute MIC and the associated spatial patterns."""
         n_seeds = len(seed_idcs)
+        n_targets = len(target_idcs)
         times = np.arange(n_times)
         freqs = np.arange(self.n_freqs)
 
@@ -564,12 +608,12 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
 
         # Eq. 46 (seed spatial patterns)
-        self.patterns[0, con_i] = (np.matmul(
+        self.patterns[0, con_i, :n_seeds] = (np.matmul(
             np.real(C[..., :n_seeds, :n_seeds]),
             np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))))[..., 0].T
 
         # Eq. 47 (target spatial patterns)
-        self.patterns[1, con_i] = (np.matmul(
+        self.patterns[1, con_i, :n_targets] = (np.matmul(
             np.real(C[..., n_seeds:, n_seeds:]),
             np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))))[..., 0].T
 
@@ -586,7 +630,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
 
         # Eq. 15
-        if all(np.unique(seed_idcs) == np.unique(target_idcs)):
+        if np.all(np.unique(seed_idcs) == np.unique(target_idcs)):
             self.con_scores[con_i] *= 0.5
 
     def reshape_results(self):
@@ -598,7 +642,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
 
 def _mic_mim_compute_t(C, T, n_seeds):
-    """Compute T in place for a single frequency (used for MIC and MIM)."""
+    """Compute T for a single frequency (used for MIC and MIM)."""
     for time_i in range(C.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
             C[time_i, :n_seeds, :n_seeds], -0.5
@@ -606,6 +650,8 @@ def _mic_mim_compute_t(C, T, n_seeds):
         T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
             C[time_i, n_seeds:, n_seeds:], -0.5
         )
+
+    return T
 
 
 class _MICEst(_MultivariateCohEstBase):
@@ -889,17 +935,16 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                [indices[0]], [indices[1]], ranks[0], ranks[1]):
+                indices[0], indices[1], ranks[0], ranks[1]):
             self._log_connection_number(con_i)
 
+            seed_idcs = seed_idcs[seed_idcs != -1]
+            target_idcs = target_idcs[target_idcs != -1]
             con_idcs = [*seed_idcs, *target_idcs]
+
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
 
-            con_seeds = np.arange(len(seed_idcs))
-            con_targets = np.arange(len(target_idcs)) + len(seed_idcs)
-
-            C_bar = self._csd_svd(
-                C, con_seeds, con_targets, seed_rank, target_rank)
+            C_bar = self._csd_svd(C, seed_idcs, seed_rank, target_rank)
             n_signals = seed_rank + target_rank
             con_seeds = np.arange(seed_rank)
             con_targets = np.arange(target_rank) + seed_rank
@@ -921,13 +966,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         self.reshape_results()
 
-    def _csd_svd(self, csd, seeds, targets, seed_rank, target_rank):
+    def _csd_svd(self, csd, seed_idcs, seed_rank, target_rank):
         """Dimensionality reduction of CSD with SVD on the covariance."""
         # sum over times and epochs to get cov. from CSD
         cov = csd.sum(axis=(0, 1))
 
-        n_seeds = len(seeds)
-        n_targets = len(targets)
+        n_seeds = len(seed_idcs)
+        n_targets = csd.shape[3] - n_seeds
 
         cov_aa = cov[:n_seeds, :n_seeds]
         cov_bb = cov[n_seeds:, n_seeds:]
@@ -1202,7 +1247,7 @@ def _gc_compute_H(A, C, K, z_k, I_n, I_m):
     See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
     10.1103/PhysRevE.91.040101, Eq. 4.
     """
-    from scipy import linalg  # is this necessary???
+    from scipy import linalg  # XXX: is this necessary???
     H = np.zeros((A.shape[0], C.shape[1], C.shape[1]), dtype=np.complex128)
     for t in range(A.shape[0]):
         H[t] = I_n + np.matmul(
@@ -1231,16 +1276,15 @@ _gc_methods = ['gc', 'gc_tr']
 
 def _epoch_spectral_connectivity(data, sig_idx, tmin_idx, tmax_idx, sfreq,
                                  method, mode, window_fun, eigvals, wavelets,
-                                 freq_mask, mt_adaptive, idx_map, block_size,
-                                 psd, accumulate_psd, con_method_types,
-                                 con_methods, n_signals, n_signals_use,
-                                 n_times, gc_n_lags, accumulate_inplace=True):
+                                 freq_mask, mt_adaptive, idx_map, n_cons,
+                                 block_size, psd, accumulate_psd,
+                                 con_method_types, con_methods, n_signals,
+                                 n_signals_use, n_times, gc_n_lags,
+                                 accumulate_inplace=True):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
     if any(this_method in _multivariate_methods for this_method in method):
-        n_cons = 1  # UNTIL RAGGED ARRAYS SUPPORTED
         n_con_signals = n_signals_use ** 2
     else:
-        n_cons = len(idx_map[0])
         n_con_signals = n_cons
 
     if wavelets is not None:
@@ -1513,10 +1557,11 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         'mim', 'gc', 'gc_tr]``) cannot be called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
-        connectivity. If a multivariate method is called, the indices are for a
-        single connection between all seeds and all targets. If None, all
-        connections are computed, unless a Granger causality method is called,
-        in which case an error is raised.
+        connectivity. If a multivariate method is called, each array for the
+        seeds and targets should contain a nested array of channel indices for
+        the individual connections. If None, connections between all channels
+        are computed, unless a Granger causality method is called, in which
+        case an error is raised.
     sfreq : float
         The sampling frequency. Required if data is not
         :class:`Epochs <mne.Epochs>`.
@@ -1582,14 +1627,13 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     con : array | list of array
         Computed connectivity measure(s). Either an instance of
         ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
-        The shape of each connectivity dataset is either
-        (n_signals ** 2, n_freqs) mode: 'multitaper' or 'fourier'
-        (n_signals ** 2, n_freqs, n_times) mode: 'cwt_morlet'
-        when "indices" is None, or
-        (n_con, n_freqs) mode: 'multitaper' or 'fourier'
-        (n_con, n_freqs, n_times) mode: 'cwt_morlet'
-        when "indices" is specified and "n_con = len(indices[0])". If a
-        multivariate method is called "n_con = 1" even if "indices" is None.
+        The shape of each connectivity dataset is either:
+        (n_cons, n_freqs) mode: 'multitaper' or 'fourier'; or
+        (n_cons, n_freqs, n_times) mode: 'cwt_morlet'. When "indices" is None
+        and a bivariate method is called, "n_cons = n_signals ** 2", or if a
+        multivariate method is called "n_cons = 1". When "indices" is
+        specified, "n_con = len(indices[0])" for bivariate and multivariate
+        methods.
 
     See Also
     --------
@@ -1635,13 +1679,19 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     are in the same order as defined indices.
 
     For multivariate methods, this is handled differently. If "indices" is
-    None, connectivity between all signals will attempt to be computed (this is
-    not possible if a Granger causality method is called). If "indices" is
-    specified, the seeds and targets are treated as a single connection. For
-    example, to compute the connectivity between signals 0, 1, 2 and 3, 4, 5,
-    one would use the same approach as above, however the signals would all be
-    considered for a single connection and the connectivity scores would have
-    the shape (1, n_freqs).
+    None, connectivity between all signals will be computed and a single
+    connectivity spectrum will be returned (this is not possible if a Granger
+    causality method is called). If "indices" is specified, seed and target
+    indices for each connection should be specified as nested array-likes. For
+    example, to compute the connectivity between signals (0, 1) -> (2, 3) and
+    (0, 1) -> (4, 5), indices should be specified as::
+
+        indices = (np.array([[0, 1], [0, 1]]),  # seeds
+                   np.array([[2, 3], [4, 5]]))  # targets
+
+    More information on working with multivariate indices and handling
+    connections where the number of seeds and targets are not equal can be
+    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
 
     **Supported Connectivity Measures**
 
@@ -1834,10 +1884,14 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
             # check rank input and compute data ranks if necessary
             if multivariate_con:
-                rank = _check_rank_input(rank, data, sfreq, indices_use)
+                rank = _check_rank_input(rank, data, indices_use)
             else:
                 rank = None
                 gc_n_lags = None
+
+            # make sure padded indices are stored in the connectivity object
+            if multivariate_con and indices is not None:
+                indices = tuple(np.array(indices_use))  # create a copy
 
             # get the window function, wavelets, etc for different modes
             (spectral_params, mt_adaptive, n_times_spectrum,
@@ -1848,16 +1902,33 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
                 cwt_freqs=cwt_freqs, freqs=freqs, freq_mask=freq_mask)
 
             # unique signals for which we actually need to compute PSD etc.
-            sig_idx = np.unique(np.r_[indices_use[0], indices_use[1]])
+            if multivariate_con:
+                sig_idx = np.unique(np.concatenate(np.concatenate(
+                    indices_use)))
+                sig_idx = sig_idx[sig_idx != -1]
+                remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(sig_idx)}
+                remapping[-1] = -1
+                remapped_inds = (indices_use[0].copy(), indices_use[1].copy())
+                con_i = 0
+                for seed, target in zip(indices_use[0], indices_use[1]):
+                    remapped_inds[0][con_i] = np.array([
+                        remapping[idx] for idx in seed])
+                    remapped_inds[1][con_i] = np.array([
+                        remapping[idx] for idx in target])
+                    con_i += 1
+                remapped_sig = [remapping[idx] for idx in sig_idx]
+            else:
+                sig_idx = np.unique(np.r_[indices_use[0], indices_use[1]])
             n_signals_use = len(sig_idx)
 
             # map indices to unique indices
-            idx_map = [np.searchsorted(sig_idx, ind) for ind in indices_use]
             if multivariate_con:
-                indices_use = idx_map
-                idx_map = np.unique([*idx_map[0], *idx_map[1]])
-                idx_map = [np.sort(np.repeat(idx_map, len(sig_idx))),
-                           np.tile(idx_map, len(sig_idx))]
+                indices_use = remapped_inds  # use remapped seeds & targets
+                idx_map = [np.sort(np.repeat(remapped_sig, len(sig_idx))),
+                           np.tile(remapped_sig, len(sig_idx))]
+            else:
+                idx_map = [
+                    np.searchsorted(sig_idx, ind) for ind in indices_use]
 
             # allocate space to accumulate PSD
             if accumulate_psd:
@@ -1894,7 +1965,7 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         call_params = dict(
             sig_idx=sig_idx, tmin_idx=tmin_idx, tmax_idx=tmax_idx, sfreq=sfreq,
             method=method, mode=mode, freq_mask=freq_mask, idx_map=idx_map,
-            block_size=block_size,
+            n_cons=n_cons, block_size=block_size,
             psd=psd, accumulate_psd=accumulate_psd,
             mt_adaptive=mt_adaptive,
             con_method_types=con_method_types,
@@ -1978,8 +2049,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
             this_con = this_con_bands
 
             if this_patterns is not None:
-                patterns_shape = ((2, n_cons, len(indices[0]), n_bands) +
-                                  this_patterns.shape[4:])
+                patterns_shape = list(this_patterns.shape)
+                patterns_shape[3] = n_bands
                 this_patterns_bands = np.empty(patterns_shape,
                                                dtype=this_patterns.dtype)
                 for band_idx in range(n_bands):
@@ -2023,11 +2094,6 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     # number of nodes in the original data
     n_nodes = n_signals
 
-    if multivariate_con:
-        # UNTIL RAGGED ARRAYS SUPPORTED
-        indices = tuple(
-            [[np.array(indices_use[0])], [np.array(indices_use[1])]])
-
     # create a list of connectivity containers
     conn_list = []
     for _con, _patterns, _method in zip(con, patterns, method):
@@ -2054,46 +2120,3 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
         conn_list = conn_list[0]
 
     return conn_list
-
-
-def _check_rank_input(rank, data, sfreq, indices):
-    """Check the rank argument is appropriate and compute rank if missing."""
-    # UNTIL RAGGED ARRAYS SUPPORTED
-    indices = np.array([[indices[0]], [indices[1]]])
-
-    if rank is None:
-
-        rank = np.zeros((2, len(indices[0])), dtype=int)
-
-        if isinstance(data, BaseEpochs):
-            data_arr = data.get_data()
-        else:
-            data_arr = data
-
-        for group_i in range(2):
-            for con_i, con_idcs in enumerate(indices[group_i]):
-                s = np.linalg.svd(data_arr[:, con_idcs], compute_uv=False)
-                rank[group_i][con_i] = np.min(
-                    [np.count_nonzero(epoch >= epoch[0] * 1e-10)
-                     for epoch in s])
-
-        logger.info('Estimated data ranks:')
-        con_i = 1
-        for seed_rank, target_rank in zip(rank[0], rank[1]):
-            logger.info('    connection %i - seeds (%i); targets (%i)'
-                        % (con_i, seed_rank, target_rank, ))
-            con_i += 1
-
-        rank = tuple((np.array(rank[0]), np.array(rank[1])))
-
-    else:
-        for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                indices[0], indices[1], rank[0], rank[1]):
-            if not (0 < seed_rank <= len(seed_idcs) and
-                    0 < target_rank <= len(target_idcs)):
-                raise ValueError(
-                    'ranks for seeds and targets must be > 0 and <= the '
-                    'number of channels in the seeds and targets, '
-                    'respectively, for each connection')
-
-    return rank

@@ -3,11 +3,15 @@ import pytest
 from numpy.testing import assert_array_equal
 
 from mne_connectivity import Connectivity
-from mne_connectivity.utils import degree, seed_target_indices
+from mne_connectivity.utils import (degree, check_indices,
+                                    check_multivariate_indices,
+                                    seed_target_indices,
+                                    seed_target_multivariate_indices)
 
 
-def test_indices():
-    """Test connectivity indexing methods."""
+def test_seed_target_indices():
+    """Test indices generation functions."""
+    # bivariate indices
     n_seeds_test = [1, 3, 4]
     n_targets_test = [2, 3, 200]
     rng = np.random.RandomState(42)
@@ -24,6 +28,69 @@ def test_indices():
                 assert np.sum(indices[0] == seed) == n_targets
             for target in targets:
                 assert np.sum(indices[1] == target) == n_seeds
+
+    # multivariate indices
+    # non-ragged indices
+    seeds = [[0, 1]]
+    targets = [[2, 3], [3, 4]]
+    indices = seed_target_multivariate_indices(seeds, targets)
+    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
+                                        np.array([[2, 3], [3, 4]])))
+    # ragged indices
+    seeds = [[0, 1]]
+    targets = [[2, 3, 4], [4]]
+    indices = seed_target_multivariate_indices(seeds, targets)
+    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
+                                        np.array([[2, 3, 4], [4, -1, -1]])))
+    # test error catching
+    # non-array-like seeds/targets
+    with pytest.raises(TypeError,
+                       match='`seeds` and `targets` must be array-like'):
+        seed_target_multivariate_indices(0, 1)
+    # non-nested seeds/targets
+    with pytest.raises(TypeError,
+                       match='`seeds` and `targets` must contain nested'):
+        seed_target_multivariate_indices([0], [1])
+
+
+def test_check_indices():
+    """Test indices checking functions."""
+    # bivariate indices
+    # test error catching
+    with pytest.raises(ValueError,
+                       match='indices must be a tuple of length 2'):
+        non_tuple_indices = [[0], [1]]
+        check_indices(non_tuple_indices)
+    with pytest.raises(ValueError,
+                       match='indices must be a tuple of length 2'):
+        non_len2_indices = ([0], [1], [2])
+        check_indices(non_len2_indices)
+    with pytest.raises(ValueError, match='Index arrays indices'):
+        non_equal_len_indices = ([0], [1, 2])
+        check_indices(non_equal_len_indices)
+
+    # multivariate indices
+    # non-ragged indices
+    seeds = [[0, 1], [0, 1]]
+    targets = [[2, 3], [3, 4]]
+    indices = check_multivariate_indices((seeds, targets))
+    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
+                                        np.array([[2, 3], [3, 4]])))
+    # ragged indices
+    seeds = [[0, 1], [0, 1]]
+    targets = [[2, 3, 4], [4]]
+    indices = check_multivariate_indices((seeds, targets))
+    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
+                                        np.array([[2, 3, 4], [4, -1, -1]])))
+    # test error catching
+    with pytest.raises(TypeError,
+                       match='multivariate indices must contain array-likes'):
+        non_nested_indices = (np.array([0, 1]), np.array([2, 3]))
+        check_multivariate_indices(non_nested_indices)
+    with pytest.raises(ValueError,
+                       match='multivariate indices cannot contain repeated'):
+        repeated_indices = (np.array([[0, 1, 1]]), np.array([[2, 2, 3]]))
+        check_multivariate_indices(repeated_indices)
 
 
 def test_degree():

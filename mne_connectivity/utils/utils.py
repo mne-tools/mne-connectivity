@@ -71,6 +71,47 @@ def check_indices(indices):
     return indices
 
 
+def check_multivariate_indices(indices):
+    """Check indices parameter for multivariate connectivity and pad it.
+
+    Parameters
+    ----------
+    indices : tuple of array-like of array-like of int
+        Tuple of length 2 containing index pairs.
+
+    Returns
+    -------
+    indices : tuple of array of array of int
+        The indices padded with the invalid channel index ``-1``.
+    """
+    indices = check_indices(indices)
+    n_cons = len(indices[0])
+
+    n_chans = []
+    for inds in ([*indices[0], *indices[1]]):
+        if not isinstance(inds, (np.ndarray, list, tuple)):
+            raise TypeError(
+                'multivariate indices must contain array-likes of channel '
+                'indices for each seed and target')
+        if len(inds) != len(np.unique(inds)):
+            raise ValueError(
+                'multivariate indices cannot contain repeated channels within '
+                'a seed or target')
+        n_chans.append(len(inds))
+    max_n_chans = np.max(n_chans)
+
+    # pad indices to avoid ragged arrays
+    padded_indices = (np.full((n_cons, max_n_chans), -1, dtype=np.int32),
+                      np.full((n_cons, max_n_chans), -1, dtype=np.int32))
+    con_i = 0
+    for seed, target in zip(indices[0], indices[1]):
+        padded_indices[0][con_i, :len(seed)] = seed
+        padded_indices[1][con_i, :len(target)] = target
+        con_i += 1
+
+    return padded_indices
+
+
 def seed_target_indices(seeds, targets):
     """Generate indices parameter for seed based connectivity analysis.
 
@@ -95,6 +136,60 @@ def seed_target_indices(seeds, targets):
 
     indices = (np.concatenate([np.tile(i, n_targets) for i in seeds]),
                np.tile(targets, n_seeds))
+
+    return indices
+
+
+def seed_target_multivariate_indices(seeds, targets):
+    """Generate indices parameter for multivariate seed-based connectivity.
+
+    Parameters
+    ----------
+    seeds : array-like of array-like of int
+        Seed indices.
+
+    targets : array-like of array-like of int
+        Target indices.
+
+    Returns
+    -------
+    indices : tuple of array of array of int
+        The indices padded with the invalid channel index ``-1``.
+    """
+    array_like = (np.ndarray, list, tuple)
+
+    if (
+        not isinstance(seeds, array_like) or
+        not isinstance(targets, array_like)
+    ):
+        raise TypeError('`seeds` and `targets` must be array-like')
+
+    n_chans = []
+    for inds in [*seeds, *targets]:
+        if not isinstance(inds, array_like):
+            raise TypeError(
+                '`seeds` and `targets` must contain nested array-likes')
+        n_chans.append(len(inds))
+    max_n_chans = max(n_chans)
+    n_cons = len(seeds) * len(targets)
+
+    # pad indices to avoid ragged arrays
+    padded_seeds = np.full((len(seeds), max_n_chans), -1, dtype=np.int32)
+    padded_targets = np.full((len(targets), max_n_chans), -1, dtype=np.int32)
+    for con_i, seed in enumerate(seeds):
+        padded_seeds[con_i, :len(seed)] = seed
+    for con_i, target in enumerate(targets):
+        padded_targets[con_i, :len(target)] = target
+
+    # create final indices
+    indices = (np.zeros((n_cons, max_n_chans), dtype=np.int32),
+               np.zeros((n_cons, max_n_chans), dtype=np.int32))
+    con_i = 0
+    for seed in padded_seeds:
+        for target in padded_targets:
+            indices[0][con_i] = seed
+            indices[1][con_i] = target
+            con_i += 1
 
     return indices
 

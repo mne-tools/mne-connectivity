@@ -73,7 +73,9 @@ Post-processing on connectivity
 
    degree
    seed_target_indices
+   seed_target_multivariate_indices
    check_indices
+   check_multivariate_indices
    select_order
 
 Visualization functions
