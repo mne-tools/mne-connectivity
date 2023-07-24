@@ -578,7 +578,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             np.matmul(E, E.transpose(0, 1, 3, 2)))
         w_targets, V_targets = np.linalg.eigh(
             np.matmul(E.transpose(0, 1, 3, 2), E))
-        if np.all(seed_idcs == target_idcs):
+        if np.all(np.unique(seed_idcs) == np.unique(target_idcs)):
             # strange edge-case where the eigenvectors returned should be a set
             # of identity matrices with one rotated by 90 degrees, but are
             # instead identical (i.e. are not rotated versions of one another).
