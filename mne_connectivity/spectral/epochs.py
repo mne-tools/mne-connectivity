@@ -578,12 +578,15 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             np.matmul(E, E.transpose(0, 1, 3, 2)))
         w_targets, V_targets = np.linalg.eigh(
             np.matmul(E.transpose(0, 1, 3, 2), E))
-        if np.all(np.unique(seed_idcs) == np.unique(target_idcs)):
+        if (
+            len(seed_idcs) == len(target_idcs) and
+            np.all(np.unique(seed_idcs) == np.unique(target_idcs))
+        ):
             # strange edge-case where the eigenvectors returned should be a set
             # of identity matrices with one rotated by 90 degrees, but are
             # instead identical (i.e. are not rotated versions of one another).
             # This leads to the case where the spatial filters are incorrectly
-            # applied, resulting in connectivity estimates of e.g. ~0 when they
+            # applied, resulting in connectivity estimates of ~0 when they
             # should be perfectly correlated ~1. Accordingly, we manually
             # create a set of rotated identity matrices to use as the filters.
             create_filter = False
@@ -630,7 +633,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
 
         # Eq. 15
-        if np.all(np.unique(seed_idcs) == np.unique(target_idcs)):
+        if (
+            len(seed_idcs) == len(target_idcs) and
+            np.all(np.unique(seed_idcs) == np.unique(target_idcs))
+        ):
             self.con_scores[con_i] *= 0.5
 
     def reshape_results(self):
