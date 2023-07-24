@@ -580,7 +580,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             np.matmul(E.transpose(0, 1, 3, 2), E))
         if (
             len(seed_idcs) == len(target_idcs) and
-            np.all(np.unique(seed_idcs) == np.unique(target_idcs))
+            np.all(np.sort(seed_idcs) == np.sort(target_idcs))
         ):
             # strange edge-case where the eigenvectors returned should be a set
             # of identity matrices with one rotated by 90 degrees, but are
@@ -635,7 +635,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         # Eq. 15
         if (
             len(seed_idcs) == len(target_idcs) and
-            np.all(np.unique(seed_idcs) == np.unique(target_idcs))
+            np.all(np.sort(seed_idcs) == np.sort(target_idcs))
         ):
             self.con_scores[con_i] *= 0.5
 
