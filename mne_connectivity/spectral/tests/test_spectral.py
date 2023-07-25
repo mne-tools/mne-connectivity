@@ -736,6 +736,53 @@ def test_multivar_spectral_connectivity_parallel(method):
         indices=indices, sfreq=sfreq, gc_n_lags=10, n_jobs=2)
 
 
+def test_multivar_spectral_connectivity_flipped_indices():
+    """Test multivar. indices structure maintained by connectivity methods."""
+    sfreq = 50.
+    n_signals = 4
+    n_epochs = 8
+    n_times = 256
+    rng = np.random.RandomState(0)
+    data = rng.randn(n_epochs, n_signals, n_times)
+    freqs = np.arange(10, 20)
+
+    # if we're not careful, when finding the channels we need to compute the
+    # CSD for, we might accidentally reorder the connectivity indices
+    indices = (np.array([[0, 1]]),
+               np.array([[2, 3]]))
+    flipped_indices = (np.array([[2, 3]]),
+                       np.array([[0, 1]]))
+    concat_indices = (np.array([[0, 1], [2, 3]]),
+                      np.array([[2, 3], [0, 1]]))
+
+    # we test on GC since this is a directed connectivity measure
+    method = 'gc'
+
+    con_st = spectral_connectivity_epochs(  # seed -> target
+        data, method=method, indices=indices, sfreq=sfreq, gc_n_lags=10)
+    con_ts = spectral_connectivity_epochs(  # target -> seed
+        data, method=method, indices=flipped_indices, sfreq=sfreq,
+        gc_n_lags=10)
+    con_st_ts = spectral_connectivity_epochs(  # seed -> target; target -> seed
+        data, method=method, indices=concat_indices, sfreq=sfreq, gc_n_lags=10)
+    assert not np.all(con_st.get_data() == con_ts.get_data())
+    assert np.all(con_st.get_data()[0] == con_st_ts.get_data()[0])
+    assert np.all(con_ts.get_data()[0] == con_st_ts.get_data()[1])
+
+    con_st = spectral_connectivity_time(  # seed -> target
+        data, freqs, method=method, indices=indices, sfreq=sfreq,
+        gc_n_lags=10)
+    con_ts = spectral_connectivity_time(  # target -> seed
+        data, freqs, method=method, indices=flipped_indices, sfreq=sfreq,
+        gc_n_lags=10)
+    con_st_ts = spectral_connectivity_time(  # seed -> target; target -> seed
+        data, freqs, method=method, indices=concat_indices, sfreq=sfreq,
+        gc_n_lags=10)
+    assert not np.all(con_st.get_data() == con_ts.get_data())
+    assert np.all(con_st.get_data()[:, 0] == con_st_ts.get_data()[:, 0])
+    assert np.all(con_ts.get_data()[:, 0] == con_st_ts.get_data()[:, 1])
+
+
 @ pytest.mark.parametrize('kind', ('epochs', 'ndarray', 'stc', 'combo'))
 def test_epochs_tmin_tmax(kind):
     """Test spectral.spectral_connectivity_epochs with epochs and arrays."""
