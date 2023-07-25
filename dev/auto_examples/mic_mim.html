@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Compute multivariate measures of the imaginary part of coherency &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -51,17 +51,16 @@
     <script src="../_static/copybutton.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mic_mim';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute seed-based time-frequency connectivity in sensor space" href="cwt_sensor_connectivity.html" />
     <link rel="prev" title="Compute mixed source space connectivity and visualize it using a circular graph" href="mixed_source_space_connectivity.html" />
-    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
-    <script type="text/javascript" src="../_static/copybutton.js"></script>
-    <script type="text/javascript" src="../_static/scrollfix.js"></script>
-
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-
   </head>
   
   
@@ -199,20 +198,20 @@ document.write(`
 `);
 </script></div>
       
-        <div class="navbar-item"><div class="dropdown">
-    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.6.0dev0
-        <span class="caret"></span>
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      dev  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
     </button>
-    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
     </div>
-</div></div>
+  </div>
+`);
+</script></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
     aria-label="Icon Links">
@@ -323,20 +322,20 @@ document.write(`
 `);
 </script></div>
         
-          <div class="navbar-item"><div class="dropdown">
-    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.6.0dev0
-        <span class="caret"></span>
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      dev  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
     </button>
-    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
     </div>
-</div></div>
+  </div>
+`);
+</script></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
     aria-label="Icon Links">
@@ -620,113 +619,113 @@ Estimated data ranks:
 Computing MIC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|1         | frequency blocks : 1/51 [00:00&lt;00:01,   28.62it/s]
-  4%|3         | frequency blocks : 2/51 [00:00&lt;00:01,   27.92it/s]
-  6%|5         | frequency blocks : 3/51 [00:00&lt;00:01,   33.64it/s]
-  8%|7         | frequency blocks : 4/51 [00:00&lt;00:01,   25.74it/s]
- 10%|9         | frequency blocks : 5/51 [00:00&lt;00:01,   29.12it/s]
- 12%|#1        | frequency blocks : 6/51 [00:00&lt;00:01,   31.35it/s]
- 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:01,   27.53it/s]
- 16%|#5        | frequency blocks : 8/51 [00:00&lt;00:01,   29.77it/s]
- 18%|#7        | frequency blocks : 9/51 [00:00&lt;00:01,   31.82it/s]
- 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:01,   33.67it/s]
- 22%|##1       | frequency blocks : 11/51 [00:00&lt;00:01,   30.21it/s]
- 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:01,   31.80it/s]
- 25%|##5       | frequency blocks : 13/51 [00:00&lt;00:01,   33.29it/s]
- 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:01,   30.02it/s]
- 29%|##9       | frequency blocks : 15/51 [00:00&lt;00:01,   31.38it/s]
- 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:01,   32.69it/s]
- 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:01,   29.98it/s]
- 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:01,   30.79it/s]
- 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:01,   28.44it/s]
- 39%|###9      | frequency blocks : 20/51 [00:00&lt;00:01,   29.55it/s]
- 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:00,   30.64it/s]
- 43%|####3     | frequency blocks : 22/51 [00:00&lt;00:00,   31.73it/s]
- 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:00,   29.86it/s]
- 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   30.88it/s]
- 49%|####9     | frequency blocks : 25/51 [00:00&lt;00:00,   31.85it/s]
- 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   29.79it/s]
- 53%|#####2    | frequency blocks : 27/51 [00:00&lt;00:00,   30.68it/s]
- 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   31.65it/s]
- 57%|#####6    | frequency blocks : 29/51 [00:00&lt;00:00,   29.62it/s]
- 59%|#####8    | frequency blocks : 30/51 [00:00&lt;00:00,   30.53it/s]
- 61%|######    | frequency blocks : 31/51 [00:00&lt;00:00,   31.39it/s]
- 63%|######2   | frequency blocks : 32/51 [00:01&lt;00:00,   29.52it/s]
- 65%|######4   | frequency blocks : 33/51 [00:01&lt;00:00,   30.41it/s]
- 67%|######6   | frequency blocks : 34/51 [00:01&lt;00:00,   31.28it/s]
- 69%|######8   | frequency blocks : 35/51 [00:01&lt;00:00,   29.55it/s]
- 71%|#######   | frequency blocks : 36/51 [00:01&lt;00:00,   30.39it/s]
- 73%|#######2  | frequency blocks : 37/51 [00:01&lt;00:00,   31.22it/s]
- 75%|#######4  | frequency blocks : 38/51 [00:01&lt;00:00,   29.61it/s]
- 76%|#######6  | frequency blocks : 39/51 [00:01&lt;00:00,   30.44it/s]
- 78%|#######8  | frequency blocks : 40/51 [00:01&lt;00:00,   31.28it/s]
- 80%|########  | frequency blocks : 41/51 [00:01&lt;00:00,   29.85it/s]
- 82%|########2 | frequency blocks : 42/51 [00:01&lt;00:00,   30.64it/s]
- 84%|########4 | frequency blocks : 43/51 [00:01&lt;00:00,   31.28it/s]
- 86%|########6 | frequency blocks : 44/51 [00:01&lt;00:00,   29.88it/s]
- 88%|########8 | frequency blocks : 45/51 [00:01&lt;00:00,   30.62it/s]
- 90%|######### | frequency blocks : 46/51 [00:01&lt;00:00,   31.29it/s]
- 92%|#########2| frequency blocks : 47/51 [00:01&lt;00:00,   29.66it/s]
- 94%|#########4| frequency blocks : 48/51 [00:01&lt;00:00,   30.25it/s]
- 96%|#########6| frequency blocks : 49/51 [00:01&lt;00:00,   28.32it/s]
- 98%|#########8| frequency blocks : 50/51 [00:01&lt;00:00,   29.06it/s]
-100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   29.81it/s]
-100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   30.19it/s]
+  2%|1         | frequency blocks : 1/51 [00:00&lt;00:01,   26.43it/s]
+  4%|3         | frequency blocks : 2/51 [00:00&lt;00:02,   21.96it/s]
+  6%|5         | frequency blocks : 3/51 [00:00&lt;00:01,   27.62it/s]
+  8%|7         | frequency blocks : 4/51 [00:00&lt;00:01,   31.82it/s]
+ 10%|9         | frequency blocks : 5/51 [00:00&lt;00:01,   25.99it/s]
+ 12%|#1        | frequency blocks : 6/51 [00:00&lt;00:01,   28.71it/s]
+ 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:01,   30.77it/s]
+ 16%|#5        | frequency blocks : 8/51 [00:00&lt;00:01,   26.63it/s]
+ 18%|#7        | frequency blocks : 9/51 [00:00&lt;00:01,   28.73it/s]
+ 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:01,   30.50it/s]
+ 22%|##1       | frequency blocks : 11/51 [00:00&lt;00:01,   27.02it/s]
+ 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:01,   27.86it/s]
+ 25%|##5       | frequency blocks : 13/51 [00:00&lt;00:01,   25.01it/s]
+ 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:01,   26.34it/s]
+ 29%|##9       | frequency blocks : 15/51 [00:00&lt;00:01,   27.53it/s]
+ 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:01,   26.32it/s]
+ 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:01,   27.58it/s]
+ 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:01,   28.78it/s]
+ 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:01,   26.96it/s]
+ 39%|###9      | frequency blocks : 20/51 [00:00&lt;00:01,   28.09it/s]
+ 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:01,   29.20it/s]
+ 43%|####3     | frequency blocks : 22/51 [00:00&lt;00:01,   27.07it/s]
+ 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:01,   27.52it/s]
+ 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:01,   26.01it/s]
+ 49%|####9     | frequency blocks : 25/51 [00:00&lt;00:00,   26.65it/s]
+ 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   25.19it/s]
+ 53%|#####2    | frequency blocks : 27/51 [00:01&lt;00:00,   25.66it/s]
+ 55%|#####4    | frequency blocks : 28/51 [00:01&lt;00:00,   24.42it/s]
+ 57%|#####6    | frequency blocks : 29/51 [00:01&lt;00:00,   24.98it/s]
+ 59%|#####8    | frequency blocks : 30/51 [00:01&lt;00:00,   23.83it/s]
+ 61%|######    | frequency blocks : 31/51 [00:01&lt;00:00,   24.44it/s]
+ 63%|######2   | frequency blocks : 32/51 [00:01&lt;00:00,   23.39it/s]
+ 65%|######4   | frequency blocks : 33/51 [00:01&lt;00:00,   24.22it/s]
+ 67%|######6   | frequency blocks : 34/51 [00:01&lt;00:00,   25.04it/s]
+ 69%|######8   | frequency blocks : 35/51 [00:01&lt;00:00,   24.12it/s]
+ 71%|#######   | frequency blocks : 36/51 [00:01&lt;00:00,   24.85it/s]
+ 73%|#######2  | frequency blocks : 37/51 [00:01&lt;00:00,   25.68it/s]
+ 75%|#######4  | frequency blocks : 38/51 [00:01&lt;00:00,   24.86it/s]
+ 76%|#######6  | frequency blocks : 39/51 [00:01&lt;00:00,   25.57it/s]
+ 78%|#######8  | frequency blocks : 40/51 [00:01&lt;00:00,   26.23it/s]
+ 80%|########  | frequency blocks : 41/51 [00:01&lt;00:00,   25.19it/s]
+ 82%|########2 | frequency blocks : 42/51 [00:01&lt;00:00,   25.62it/s]
+ 84%|########4 | frequency blocks : 43/51 [00:01&lt;00:00,   24.51it/s]
+ 86%|########6 | frequency blocks : 44/51 [00:01&lt;00:00,   24.94it/s]
+ 88%|########8 | frequency blocks : 45/51 [00:01&lt;00:00,   23.92it/s]
+ 90%|######### | frequency blocks : 46/51 [00:01&lt;00:00,   24.47it/s]
+ 92%|#########2| frequency blocks : 47/51 [00:01&lt;00:00,   23.40it/s]
+ 94%|#########4| frequency blocks : 48/51 [00:01&lt;00:00,   23.83it/s]
+ 96%|#########6| frequency blocks : 49/51 [00:01&lt;00:00,   22.95it/s]
+ 98%|#########8| frequency blocks : 50/51 [00:02&lt;00:00,   23.38it/s]
+100%|##########| frequency blocks : 51/51 [00:02&lt;00:00,   22.59it/s]
+100%|##########| frequency blocks : 51/51 [00:02&lt;00:00,   24.34it/s]
 Computing MIM for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|1         | frequency blocks : 1/51 [00:00&lt;00:00,   55.43it/s]
-  4%|3         | frequency blocks : 2/51 [00:00&lt;00:00,   56.23it/s]
-  6%|5         | frequency blocks : 3/51 [00:00&lt;00:00,   56.42it/s]
-  8%|7         | frequency blocks : 4/51 [00:00&lt;00:01,   37.47it/s]
- 10%|9         | frequency blocks : 5/51 [00:00&lt;00:01,   40.52it/s]
- 12%|#1        | frequency blocks : 6/51 [00:00&lt;00:01,   42.87it/s]
- 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:01,   33.64it/s]
- 16%|#5        | frequency blocks : 8/51 [00:00&lt;00:01,   35.78it/s]
- 18%|#7        | frequency blocks : 9/51 [00:00&lt;00:01,   37.70it/s]
- 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:01,   32.75it/s]
- 22%|##1       | frequency blocks : 11/51 [00:00&lt;00:01,   34.39it/s]
- 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:01,   35.84it/s]
- 25%|##5       | frequency blocks : 13/51 [00:00&lt;00:01,   31.74it/s]
- 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:01,   33.14it/s]
- 29%|##9       | frequency blocks : 15/51 [00:00&lt;00:01,   34.49it/s]
- 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:01,   30.81it/s]
- 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:01,   32.05it/s]
- 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:00,   33.21it/s]
- 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:01,   30.87it/s]
- 39%|###9      | frequency blocks : 20/51 [00:00&lt;00:00,   32.00it/s]
- 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:00,   33.08it/s]
- 43%|####3     | frequency blocks : 22/51 [00:00&lt;00:00,   30.66it/s]
- 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:00,   31.69it/s]
- 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   32.71it/s]
- 49%|####9     | frequency blocks : 25/51 [00:00&lt;00:00,   33.70it/s]
- 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   31.61it/s]
- 53%|#####2    | frequency blocks : 27/51 [00:00&lt;00:00,   32.58it/s]
- 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   33.52it/s]
- 57%|#####6    | frequency blocks : 29/51 [00:00&lt;00:00,   31.28it/s]
- 59%|#####8    | frequency blocks : 30/51 [00:00&lt;00:00,   32.16it/s]
- 61%|######    | frequency blocks : 31/51 [00:00&lt;00:00,   33.04it/s]
- 63%|######2   | frequency blocks : 32/51 [00:00&lt;00:00,   31.19it/s]
- 65%|######4   | frequency blocks : 33/51 [00:01&lt;00:00,   31.98it/s]
- 67%|######6   | frequency blocks : 34/51 [00:01&lt;00:00,   32.45it/s]
- 69%|######8   | frequency blocks : 35/51 [00:01&lt;00:00,   30.28it/s]
- 71%|#######   | frequency blocks : 36/51 [00:01&lt;00:00,   31.14it/s]
- 73%|#######2  | frequency blocks : 37/51 [00:01&lt;00:00,   31.93it/s]
- 75%|#######4  | frequency blocks : 38/51 [00:01&lt;00:00,   30.37it/s]
- 76%|#######6  | frequency blocks : 39/51 [00:01&lt;00:00,   31.17it/s]
- 78%|#######8  | frequency blocks : 40/51 [00:01&lt;00:00,   32.00it/s]
- 80%|########  | frequency blocks : 41/51 [00:01&lt;00:00,   30.28it/s]
- 82%|########2 | frequency blocks : 42/51 [00:01&lt;00:00,   31.08it/s]
- 84%|########4 | frequency blocks : 43/51 [00:01&lt;00:00,   31.85it/s]
- 86%|########6 | frequency blocks : 44/51 [00:01&lt;00:00,   30.05it/s]
- 88%|########8 | frequency blocks : 45/51 [00:01&lt;00:00,   30.64it/s]
- 90%|######### | frequency blocks : 46/51 [00:01&lt;00:00,   28.92it/s]
- 92%|#########2| frequency blocks : 47/51 [00:01&lt;00:00,   29.07it/s]
- 94%|#########4| frequency blocks : 48/51 [00:01&lt;00:00,   27.35it/s]
- 96%|#########6| frequency blocks : 49/51 [00:01&lt;00:00,   27.56it/s]
- 98%|#########8| frequency blocks : 50/51 [00:01&lt;00:00,   26.10it/s]
-100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   26.32it/s]
-100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   29.42it/s]
+  2%|1         | frequency blocks : 1/51 [00:00&lt;00:01,   45.13it/s]
+  4%|3         | frequency blocks : 2/51 [00:00&lt;00:00,   50.14it/s]
+  6%|5         | frequency blocks : 3/51 [00:00&lt;00:01,   30.54it/s]
+  8%|7         | frequency blocks : 4/51 [00:00&lt;00:01,   34.41it/s]
+ 10%|9         | frequency blocks : 5/51 [00:00&lt;00:01,   37.57it/s]
+ 12%|#1        | frequency blocks : 6/51 [00:00&lt;00:01,   29.44it/s]
+ 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:01,   31.72it/s]
+ 16%|#5        | frequency blocks : 8/51 [00:00&lt;00:01,   33.92it/s]
+ 18%|#7        | frequency blocks : 9/51 [00:00&lt;00:01,   29.57it/s]
+ 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:01,   31.43it/s]
+ 22%|##1       | frequency blocks : 11/51 [00:00&lt;00:01,   32.84it/s]
+ 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:01,   29.44it/s]
+ 25%|##5       | frequency blocks : 13/51 [00:00&lt;00:01,   30.77it/s]
+ 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:01,   32.12it/s]
+ 29%|##9       | frequency blocks : 15/51 [00:00&lt;00:01,   29.37it/s]
+ 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:01,   30.58it/s]
+ 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:01,   31.81it/s]
+ 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:01,   29.39it/s]
+ 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:01,   30.51it/s]
+ 39%|###9      | frequency blocks : 20/51 [00:00&lt;00:00,   31.63it/s]
+ 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:01,   29.35it/s]
+ 43%|####3     | frequency blocks : 22/51 [00:00&lt;00:00,   30.28it/s]
+ 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:00,   31.17it/s]
+ 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   29.10it/s]
+ 49%|####9     | frequency blocks : 25/51 [00:00&lt;00:00,   30.03it/s]
+ 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   30.97it/s]
+ 53%|#####2    | frequency blocks : 27/51 [00:00&lt;00:00,   29.18it/s]
+ 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   30.10it/s]
+ 57%|#####6    | frequency blocks : 29/51 [00:00&lt;00:00,   30.89it/s]
+ 59%|#####8    | frequency blocks : 30/51 [00:01&lt;00:00,   29.34it/s]
+ 61%|######    | frequency blocks : 31/51 [00:01&lt;00:00,   30.14it/s]
+ 63%|######2   | frequency blocks : 32/51 [00:01&lt;00:00,   30.87it/s]
+ 65%|######4   | frequency blocks : 33/51 [00:01&lt;00:00,   29.22it/s]
+ 67%|######6   | frequency blocks : 34/51 [00:01&lt;00:00,   30.01it/s]
+ 69%|######8   | frequency blocks : 35/51 [00:01&lt;00:00,   30.76it/s]
+ 71%|#######   | frequency blocks : 36/51 [00:01&lt;00:00,   29.39it/s]
+ 73%|#######2  | frequency blocks : 37/51 [00:01&lt;00:00,   30.11it/s]
+ 75%|#######4  | frequency blocks : 38/51 [00:01&lt;00:00,   30.82it/s]
+ 76%|#######6  | frequency blocks : 39/51 [00:01&lt;00:00,   29.26it/s]
+ 78%|#######8  | frequency blocks : 40/51 [00:01&lt;00:00,   29.59it/s]
+ 80%|########  | frequency blocks : 41/51 [00:01&lt;00:00,   27.96it/s]
+ 82%|########2 | frequency blocks : 42/51 [00:01&lt;00:00,   28.67it/s]
+ 84%|########4 | frequency blocks : 43/51 [00:01&lt;00:00,   29.42it/s]
+ 86%|########6 | frequency blocks : 44/51 [00:01&lt;00:00,   27.99it/s]
+ 88%|########8 | frequency blocks : 45/51 [00:01&lt;00:00,   28.76it/s]
+ 90%|######### | frequency blocks : 46/51 [00:01&lt;00:00,   29.37it/s]
+ 92%|#########2| frequency blocks : 47/51 [00:01&lt;00:00,   27.92it/s]
+ 94%|#########4| frequency blocks : 48/51 [00:01&lt;00:00,   28.65it/s]
+ 96%|#########6| frequency blocks : 49/51 [00:01&lt;00:00,   29.39it/s]
+ 98%|#########8| frequency blocks : 50/51 [00:01&lt;00:00,   28.11it/s]
+100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   28.86it/s]
+100%|##########| frequency blocks : 51/51 [00:01&lt;00:00,   29.51it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -1057,60 +1056,55 @@ Connectivity computation...
 Computing MIC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|5         | frequency blocks : 3/51 [00:00&lt;00:00,  140.68it/s]
- 12%|#1        | frequency blocks : 6/51 [00:00&lt;00:00,  135.35it/s]
- 16%|#5        | frequency blocks : 8/51 [00:00&lt;00:00,   79.26it/s]
- 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:00,   85.69it/s]
- 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:00,   89.89it/s]
- 29%|##9       | frequency blocks : 15/51 [00:00&lt;00:00,   73.22it/s]
- 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:00,   76.24it/s]
- 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:00,   79.80it/s]
- 43%|####3     | frequency blocks : 22/51 [00:00&lt;00:00,   71.58it/s]
- 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   74.86it/s]
- 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   75.79it/s]
- 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   67.49it/s]
- 61%|######    | frequency blocks : 31/51 [00:00&lt;00:00,   72.21it/s]
- 67%|######6   | frequency blocks : 34/51 [00:00&lt;00:00,   76.63it/s]
- 71%|#######   | frequency blocks : 36/51 [00:00&lt;00:00,   68.16it/s]
- 75%|#######4  | frequency blocks : 38/51 [00:00&lt;00:00,   68.54it/s]
- 78%|#######8  | frequency blocks : 40/51 [00:00&lt;00:00,   62.35it/s]
- 82%|########2 | frequency blocks : 42/51 [00:00&lt;00:00,   63.12it/s]
- 86%|########6 | frequency blocks : 44/51 [00:00&lt;00:00,   58.58it/s]
- 90%|######### | frequency blocks : 46/51 [00:00&lt;00:00,   59.39it/s]
- 94%|#########4| frequency blocks : 48/51 [00:00&lt;00:00,   55.13it/s]
- 98%|#########8| frequency blocks : 50/51 [00:00&lt;00:00,   56.08it/s]
-100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   60.71it/s]
+  4%|3         | frequency blocks : 2/51 [00:00&lt;00:00,  114.12it/s]
+  8%|7         | frequency blocks : 4/51 [00:00&lt;00:00,   76.12it/s]
+ 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:00,   92.83it/s]
+ 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:00,  104.87it/s]
+ 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:00,   74.71it/s]
+ 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:00,   78.03it/s]
+ 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:00,   85.58it/s]
+ 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:00,   69.38it/s]
+ 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:00,   76.28it/s]
+ 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   82.06it/s]
+ 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   72.20it/s]
+ 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   73.61it/s]
+ 59%|#####8    | frequency blocks : 30/51 [00:00&lt;00:00,   74.97it/s]
+ 61%|######    | frequency blocks : 31/51 [00:00&lt;00:00,   65.48it/s]
+ 65%|######4   | frequency blocks : 33/51 [00:00&lt;00:00,   68.26it/s]
+ 71%|#######   | frequency blocks : 36/51 [00:00&lt;00:00,   73.00it/s]
+ 76%|#######6  | frequency blocks : 39/51 [00:00&lt;00:00,   68.84it/s]
+ 82%|########2 | frequency blocks : 42/51 [00:00&lt;00:00,   72.91it/s]
+ 88%|########8 | frequency blocks : 45/51 [00:00&lt;00:00,   76.52it/s]
+ 92%|#########2| frequency blocks : 47/51 [00:00&lt;00:00,   70.31it/s]
+ 98%|#########8| frequency blocks : 50/51 [00:00&lt;00:00,   73.61it/s]
+100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   74.47it/s]
 Computing MIM for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  4%|3         | frequency blocks : 2/51 [00:00&lt;00:00,  113.16it/s]
-  8%|7         | frequency blocks : 4/51 [00:00&lt;00:00,  115.33it/s]
- 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:00,   74.42it/s]
- 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:00,   86.85it/s]
- 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:00,   88.78it/s]
- 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:00,   69.74it/s]
- 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:00,   73.01it/s]
- 35%|###5      | frequency blocks : 18/51 [00:00&lt;00:00,   74.55it/s]
- 37%|###7      | frequency blocks : 19/51 [00:00&lt;00:00,   61.54it/s]
- 41%|####1     | frequency blocks : 21/51 [00:00&lt;00:00,   64.02it/s]
- 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:00,   67.40it/s]
- 47%|####7     | frequency blocks : 24/51 [00:00&lt;00:00,   58.86it/s]
- 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   60.90it/s]
- 55%|#####4    | frequency blocks : 28/51 [00:00&lt;00:00,   62.74it/s]
- 57%|#####6    | frequency blocks : 29/51 [00:00&lt;00:00,   55.99it/s]
- 61%|######    | frequency blocks : 31/51 [00:00&lt;00:00,   58.32it/s]
- 65%|######4   | frequency blocks : 33/51 [00:00&lt;00:00,   60.26it/s]
- 67%|######6   | frequency blocks : 34/51 [00:00&lt;00:00,   54.31it/s]
- 71%|#######   | frequency blocks : 36/51 [00:00&lt;00:00,   56.22it/s]
- 75%|#######4  | frequency blocks : 38/51 [00:00&lt;00:00,   57.87it/s]
- 76%|#######6  | frequency blocks : 39/51 [00:00&lt;00:00,   52.94it/s]
- 80%|########  | frequency blocks : 41/51 [00:00&lt;00:00,   54.66it/s]
- 84%|########4 | frequency blocks : 43/51 [00:00&lt;00:00,   56.31it/s]
- 86%|########6 | frequency blocks : 44/51 [00:00&lt;00:00,   52.13it/s]
- 92%|#########2| frequency blocks : 47/51 [00:00&lt;00:00,   56.10it/s]
- 96%|#########6| frequency blocks : 49/51 [00:00&lt;00:00,   58.04it/s]
-100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   55.19it/s]
-100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   57.33it/s]
+  6%|5         | frequency blocks : 3/51 [00:00&lt;00:00,  143.15it/s]
+ 10%|9         | frequency blocks : 5/51 [00:00&lt;00:00,   90.06it/s]
+ 14%|#3        | frequency blocks : 7/51 [00:00&lt;00:00,   97.48it/s]
+ 20%|#9        | frequency blocks : 10/51 [00:00&lt;00:00,  110.21it/s]
+ 24%|##3       | frequency blocks : 12/51 [00:00&lt;00:00,   78.23it/s]
+ 27%|##7       | frequency blocks : 14/51 [00:00&lt;00:00,   81.27it/s]
+ 31%|###1      | frequency blocks : 16/51 [00:00&lt;00:00,   81.96it/s]
+ 33%|###3      | frequency blocks : 17/51 [00:00&lt;00:00,   65.23it/s]
+ 39%|###9      | frequency blocks : 20/51 [00:00&lt;00:00,   72.61it/s]
+ 45%|####5     | frequency blocks : 23/51 [00:00&lt;00:00,   79.14it/s]
+ 51%|#####     | frequency blocks : 26/51 [00:00&lt;00:00,   72.05it/s]
+ 57%|#####6    | frequency blocks : 29/51 [00:00&lt;00:00,   77.22it/s]
+ 63%|######2   | frequency blocks : 32/51 [00:00&lt;00:00,   81.99it/s]
+ 67%|######6   | frequency blocks : 34/51 [00:00&lt;00:00,   72.78it/s]
+ 71%|#######   | frequency blocks : 36/51 [00:00&lt;00:00,   73.00it/s]
+ 75%|#######4  | frequency blocks : 38/51 [00:00&lt;00:00,   65.97it/s]
+ 78%|#######8  | frequency blocks : 40/51 [00:00&lt;00:00,   66.60it/s]
+ 82%|########2 | frequency blocks : 42/51 [00:00&lt;00:00,   67.25it/s]
+ 84%|########4 | frequency blocks : 43/51 [00:00&lt;00:00,   61.32it/s]
+ 88%|########8 | frequency blocks : 45/51 [00:00&lt;00:00,   62.15it/s]
+ 92%|#########2| frequency blocks : 47/51 [00:00&lt;00:00,   57.81it/s]
+ 96%|#########6| frequency blocks : 49/51 [00:00&lt;00:00,   58.74it/s]
+100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   59.64it/s]
+100%|##########| frequency blocks : 51/51 [00:00&lt;00:00,   63.46it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1174,7 +1168,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  35.977 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.637 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mic-mim-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4883237c21de028ffd92e1fbf5756fc5/mic_mim.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mic_mim.py</span></code></a></p>
@@ -1193,7 +1187,10 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="mixed_source_space_connectivity.html"
@@ -1213,7 +1210,10 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1242,7 +1242,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1250,8 +1250,8 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1261,7 +1261,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-24.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-25.
       <br/>
     
   </p>
@@ -1269,7 +1269,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1280,7 +1280,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>
