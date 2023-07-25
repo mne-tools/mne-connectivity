@@ -161,11 +161,10 @@ author = 'Adam Li'
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-# The short X.Y version.
-version = mne_connectivity.__version__
 # The full version, including alpha/beta/rc tags.
-release = version
+release = mne_connectivity.__version__
+# The short X.Y version.
+version = ".".join(release.split(".")[:2])
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -185,6 +184,8 @@ templates_path = ['_templates']
 html_static_path = ['_static']
 html_css_files = ['style.css']
 
+switcher_version_match = "dev" if "dev" in release else version
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -198,6 +199,10 @@ html_theme_options = {
     'navigation_with_keys': False,
     'show_toc_level': 1,
     'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
+    "switcher": {
+        "json_url": "https://mne.tools/mne-connectivity/dev/_static/versions.json",
+        "version_match": switcher_version_match,
+    },
 }
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
