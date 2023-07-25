@@ -151,12 +151,12 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MNE-Connectivity'
+project = 'MNE-Connectivity'
 td = date.today()
-copyright = u'2021-%s, MNE Developers. Last updated on %s' % (td.year,
-                                                              td.isoformat())
+copyright = '2021-%s, MNE Developers. Last updated on %s' % (td.year,
+                                                             td.isoformat())
 
-author = u'Adam Li'
+author = 'Adam Li'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -199,24 +199,6 @@ html_theme_options = {
     'show_toc_level': 1,
     'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
 }
-# Custom sidebar templates, maps document names to template names.
-html_sidebars = {
-    'index': ['search-field.html'],
-}
-
-html_context = {
-    'versions_dropdown': {
-        'dev': 'v0.6 (devel)',
-        'stable': 'v0.5 (stable)',
-        'v0.4': 'v0.4',
-        'v0.3': 'v0.3',
-        'v0.2': 'v0.2',
-        'v0.1': 'v0.1',
-    },
-}
-
-# html_sidebars = {'**': ['localtoc.html']}
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
