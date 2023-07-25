@@ -43,6 +43,9 @@ extensions = [
     'sphinx_copybutton',
 ]
 
+# configure sphinx-issues
+issues_github_path = "mne-tools/mne-connectivity"
+
 # configure sphinx-copybutton
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
 copybutton_prompt_is_regexp = True
