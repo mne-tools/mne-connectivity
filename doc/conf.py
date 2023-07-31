@@ -43,6 +43,9 @@ extensions = [
     'sphinx_copybutton',
 ]
 
+# configure sphinx-issues
+issues_github_path = "mne-tools/mne-connectivity"
+
 # configure sphinx-copybutton
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
 copybutton_prompt_is_regexp = True
@@ -151,21 +154,20 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MNE-Connectivity'
+project = 'MNE-Connectivity'
 td = date.today()
-copyright = u'2021-%s, MNE Developers. Last updated on %s' % (td.year,
-                                                              td.isoformat())
+copyright = '2021-%s, MNE Developers. Last updated on %s' % (td.year,
+                                                             td.isoformat())
 
-author = u'Adam Li'
+author = 'Adam Li'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-# The short X.Y version.
-version = mne_connectivity.__version__
 # The full version, including alpha/beta/rc tags.
-release = version
+release = mne_connectivity.__version__
+# The short X.Y version.
+version = ".".join(release.split(".")[:2])
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -185,6 +187,8 @@ templates_path = ['_templates']
 html_static_path = ['_static']
 html_css_files = ['style.css']
 
+switcher_version_match = "dev" if "dev" in release else version
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -198,25 +202,11 @@ html_theme_options = {
     'navigation_with_keys': False,
     'show_toc_level': 1,
     'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
-}
-# Custom sidebar templates, maps document names to template names.
-html_sidebars = {
-    'index': ['search-field.html'],
-}
-
-html_context = {
-    'versions_dropdown': {
-        'dev': 'v0.6 (devel)',
-        'stable': 'v0.5 (stable)',
-        'v0.4': 'v0.4',
-        'v0.3': 'v0.3',
-        'v0.2': 'v0.2',
-        'v0.1': 'v0.1',
+    "switcher": {
+        "json_url": "https://mne.tools/mne-connectivity/dev/_static/versions.json",
+        "version_match": switcher_version_match,
     },
 }
-
-# html_sidebars = {'**': ['localtoc.html']}
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
