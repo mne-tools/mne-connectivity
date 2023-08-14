@@ -252,16 +252,16 @@ def seed_target_multivariate_indices(seeds, targets):
         not isinstance(seeds, array_like) or
         not isinstance(targets, array_like)
     ):
-        raise TypeError('``seeds`` and ``targets`` must be array-like')
+        raise TypeError('`seeds` and `targets` must be array-like')
 
     n_chans = []
     for inds in [*seeds, *targets]:
         if not isinstance(inds, array_like):
             raise TypeError(
-                '``seeds`` and ``targets`` must contain nested array-likes')
+                '`seeds` and `targets` must contain nested array-likes')
         if len(inds) != len(np.unique(inds)):
             raise ValueError(
-                '``seeds`` and ``targets`` cannot contain repeated channels')
+                '`seeds` and `targets` cannot contain repeated channels')
         n_chans.append(len(inds))
     max_n_chans = max(n_chans)
     n_cons = len(seeds) * len(targets)
