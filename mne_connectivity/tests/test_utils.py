@@ -51,6 +51,10 @@ def test_seed_target_indices():
     with pytest.raises(TypeError,
                        match='`seeds` and `targets` must contain nested'):
         seed_target_multivariate_indices([0], [1])
+    # repeated seeds/targets
+    with pytest.raises(ValueError,
+                       match='`seeds` and `targets` cannot contain repeated'):
+        seed_target_multivariate_indices([[0, 1, 1]], [[2, 2, 3]])
 
 
 def test_check_indices():
