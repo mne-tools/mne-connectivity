@@ -108,8 +108,8 @@ def check_multivariate_indices(indices):
     connections or between the seeds and targets for a given connection (i.e.
     ragged indices), the returned array will be padded with the invalid channel
     index ``-1`` according to the maximum number of channels in the seed or
-    target of any one connection. E.g. the ragged indices of shape `(2, n_cons,
-    variable)`::
+    target of any one connection. E.g. the ragged indices of shape ``(2,
+    n_cons, variable)``::
 
             indices = ([[0, 1], [0, 1   ]],  # seeds
                        [[2, 3], [4, 5, 6]])  # targets
@@ -119,8 +119,8 @@ def check_multivariate_indices(indices):
             indices = (np.array([[0, 1, -1], [0, 1, -1]]),  # seeds
                        np.array([[2, 3, -1], [4, 5, -1]]))  # targets
 
-    where the indices have been padded with ``-1`` to have shape `(2, n_cons,
-    max_n_chans)`, where `max_n_chans = 3`. More information on working with
+    where the indices have been padded with ``-1`` to have shape ``(2, n_cons,
+    max_n_chans)``, where ``max_n_chans = 3``. More information on working with
     multivariate indices and handling connections where the number of seeds and
     targets are not equal can be found in the
     :doc:`../auto_examples/handling_ragged_arrays` example.
@@ -183,8 +183,8 @@ def seed_target_indices(seeds, targets):
             indices = (np.array([0, 0, 0, 1, 1, 1]),  # seeds
                        np.array([2, 3, 4, 2, 3, 4]))  # targets
 
-    where the indices have been expanded to have shape `(2, n_cons)`, where
-    `n_cons = n_unique_seeds * n_unique_targets`.
+    where the indices have been expanded to have shape ``(2, n_cons)``, where
+    ``n_cons = n_unique_seeds * n_unique_targets``.
     """
     # make them arrays
     seeds = np.asarray((seeds,)).ravel()
@@ -239,9 +239,9 @@ def seed_target_multivariate_indices(seeds, targets):
             indices = (np.array([[0, -1, -1], [0, -1, -1]]),  # seeds
                        np.array([[1,  2, -1], [3,  4,  5]]))  # targets
 
-    where the indices have been padded with ``-1`` to have shape `(2, n_cons,
-    max_n_chans)`, where `n_cons = n_unique_seeds * n_unique_targets` and
-    `max_n_chans = 3`. More information on working with multivariate indices
+    where the indices have been padded with ``-1`` to have shape ``(2, n_cons,
+    max_n_chans)``, where ``n_cons = n_unique_seeds * n_unique_targets`` and
+    ``max_n_chans = 3``. More information on working with multivariate indices
     and handling connections where the number of seeds and targets are not
     equal can be found in the :doc:`../auto_examples/handling_ragged_arrays`
     example.
