@@ -170,10 +170,10 @@ def seed_target_indices(seeds, targets):
 
     Notes
     -----
-    `seeds` and `targets` should be array-likes or integers representing the
-    indices of the channel pairs in the data for each connection. `seeds` and
-    `targets` will be expanded such that connectivity will be computed between
-    each seed and each target. E.g. the seeds and targets::
+    ``seeds`` and ``targets`` should be array-likes or integers representing
+    the indices of the channel pairs in the data for each connection. ``seeds``
+    and ``targets`` will be expanded such that connectivity will be computed
+    between each seed and each target. E.g. the seeds and targets::
 
             seeds   = [0, 1]
             targets = [2, 3, 4]
@@ -217,19 +217,19 @@ def seed_target_multivariate_indices(seeds, targets):
 
     Notes
     -----
-    `seeds` and `targets` should be array-likes representing the indices of the
-    channel sets in the data for each connection. The indices for each
+    ``seeds`` and ``targets`` should be array-likes representing the indices of
+    the channel sets in the data for each connection. The indices for each
     connection should be an array-like of integers representing the individual
     channels in the data. The length of indices for each connection do not need
     to be equal. Furthermore, all indices within a connection must be unique.
 
-    `seeds` and `targets` will be expanded such that connectivity will be
+    ``seeds`` and ``targets`` will be expanded such that connectivity will be
     computed between each set of seeds and targets. In case the number of
     channels differs across connections or between the seeds and targets for a
     given connection (i.e. ragged indices), the returned array will be padded
     with the invalid channel index ``-1`` according to the maximum number of
-    channels in the seed or target of any one connection. E.g. `seeds` and
-    `targets`::
+    channels in the seed or target of any one connection. E.g. ``seeds`` and
+    ``targets``::
 
             seeds   = [[0]]
             targets = [[1, 2], [3, 4, 5]]
@@ -252,16 +252,16 @@ def seed_target_multivariate_indices(seeds, targets):
         not isinstance(seeds, array_like) or
         not isinstance(targets, array_like)
     ):
-        raise TypeError('`seeds` and `targets` must be array-like')
+        raise TypeError('``seeds`` and ``targets`` must be array-like')
 
     n_chans = []
     for inds in [*seeds, *targets]:
         if not isinstance(inds, array_like):
             raise TypeError(
-                '`seeds` and `targets` must contain nested array-likes')
+                '``seeds`` and ``targets`` must contain nested array-likes')
         if len(inds) != len(np.unique(inds)):
             raise ValueError(
-                '`seeds` and `targets` cannot contain repeated channels')
+                '``seeds`` and ``targets`` cannot contain repeated channels')
         n_chans.append(len(inds))
     max_n_chans = max(n_chans)
     n_cons = len(seeds) * len(targets)
