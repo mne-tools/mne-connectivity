@@ -499,22 +499,25 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▋                                   | 4.06M/88.2M [00:00&lt;00:02, 40.6MB/s]
- 11%|████▏                                | 9.92M/88.2M [00:00&lt;00:01, 51.2MB/s]
- 21%|███████▊                             | 18.5M/88.2M [00:00&lt;00:01, 66.9MB/s]
- 29%|██████████▌                          | 25.2M/88.2M [00:00&lt;00:01, 62.1MB/s]
- 36%|█████████████▏                       | 31.4M/88.2M [00:00&lt;00:01, 55.1MB/s]
- 42%|███████████████▌                     | 37.1M/88.2M [00:00&lt;00:01, 50.6MB/s]
- 48%|█████████████████▋                   | 42.2M/88.2M [00:00&lt;00:00, 46.4MB/s]
- 58%|█████████████████████▎               | 50.8M/88.2M [00:00&lt;00:00, 57.1MB/s]
- 67%|████████████████████████▊            | 59.2M/88.2M [00:01&lt;00:00, 64.3MB/s]
- 77%|████████████████████████████▍        | 67.8M/88.2M [00:01&lt;00:00, 70.5MB/s]
- 86%|███████████████████████████████▊     | 75.9M/88.2M [00:01&lt;00:00, 73.5MB/s]
- 96%|███████████████████████████████████▌ | 84.6M/88.2M [00:01&lt;00:00, 77.7MB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
+
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 316GB/s]
-Download complete in 04s (84.1 MB)
+  1%|▎                                     | 828k/88.2M [00:00&lt;00:10, 8.28MB/s]
+  5%|█▋                                   | 3.97M/88.2M [00:00&lt;00:03, 21.9MB/s]
+ 13%|████▉                                | 11.8M/88.2M [00:00&lt;00:01, 47.5MB/s]
+ 20%|███████▎                             | 17.6M/88.2M [00:00&lt;00:01, 49.2MB/s]
+ 25%|█████████▍                           | 22.5M/88.2M [00:00&lt;00:01, 38.2MB/s]
+ 34%|████████████▊                        | 30.4M/88.2M [00:00&lt;00:01, 49.7MB/s]
+ 43%|███████████████▋                     | 37.5M/88.2M [00:00&lt;00:00, 55.7MB/s]
+ 49%|██████████████████▏                  | 43.4M/88.2M [00:00&lt;00:00, 47.3MB/s]
+ 57%|█████████████████████▏               | 50.4M/88.2M [00:01&lt;00:00, 52.9MB/s]
+ 67%|████████████████████████▊            | 59.0M/88.2M [00:01&lt;00:00, 61.9MB/s]
+ 77%|████████████████████████████▍        | 67.7M/88.2M [00:01&lt;00:00, 68.9MB/s]
+ 87%|████████████████████████████████     | 76.4M/88.2M [00:01&lt;00:00, 74.0MB/s]
+ 97%|███████████████████████████████████▊ | 85.3M/88.2M [00:01&lt;00:00, 78.3MB/s]
+  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 310GB/s]
+Download complete in 03s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -650,7 +653,7 @@ leave as an exercise for our readers!</p>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
-<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
+<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
 representing this sliding window.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a>
@@ -1033,21 +1036,24 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  4%|4         | 13/302 [00:00&lt;00:02, 120.63it/s]
- 10%|#         | 31/302 [00:00&lt;00:01, 154.01it/s]
- 17%|#7        | 52/302 [00:00&lt;00:01, 175.69it/s]
- 24%|##4       | 73/302 [00:00&lt;00:01, 186.48it/s]
- 31%|###1      | 94/302 [00:00&lt;00:01, 193.46it/s]
- 38%|###8      | 115/302 [00:00&lt;00:00, 197.26it/s]
- 45%|####5     | 136/302 [00:00&lt;00:00, 199.39it/s]
- 52%|#####1    | 156/302 [00:00&lt;00:00, 198.52it/s]
- 59%|#####8    | 177/302 [00:00&lt;00:00, 199.77it/s]
- 66%|######5   | 198/302 [00:01&lt;00:00, 200.65it/s]
- 73%|#######2  | 219/302 [00:01&lt;00:00, 202.07it/s]
- 79%|#######9  | 240/302 [00:01&lt;00:00, 202.08it/s]
- 86%|########6 | 261/302 [00:01&lt;00:00, 201.45it/s]
- 93%|#########3| 282/302 [00:01&lt;00:00, 202.41it/s]
-100%|##########| 302/302 [00:01&lt;00:00, 195.64it/s]
+  5%|▍         | 14/302 [00:00&lt;00:02, 138.45it/s]
+ 10%|▉         | 29/302 [00:00&lt;00:01, 144.13it/s]
+ 15%|█▍        | 45/302 [00:00&lt;00:01, 150.23it/s]
+ 21%|██        | 63/302 [00:00&lt;00:01, 159.82it/s]
+ 26%|██▋       | 80/302 [00:00&lt;00:01, 162.75it/s]
+ 32%|███▏      | 98/302 [00:00&lt;00:01, 167.32it/s]
+ 38%|███▊      | 115/302 [00:00&lt;00:01, 160.81it/s]
+ 44%|████▎     | 132/302 [00:00&lt;00:01, 158.10it/s]
+ 49%|████▉     | 148/302 [00:00&lt;00:00, 155.44it/s]
+ 54%|█████▍    | 164/302 [00:01&lt;00:00, 153.69it/s]
+ 60%|█████▉    | 180/302 [00:01&lt;00:00, 151.71it/s]
+ 65%|██████▌   | 197/302 [00:01&lt;00:00, 156.98it/s]
+ 72%|███████▏  | 216/302 [00:01&lt;00:00, 165.31it/s]
+ 78%|███████▊  | 235/302 [00:01&lt;00:00, 172.45it/s]
+ 84%|████████▍ | 254/302 [00:01&lt;00:00, 176.94it/s]
+ 90%|█████████ | 272/302 [00:01&lt;00:00, 168.14it/s]
+ 97%|█████████▋| 292/302 [00:01&lt;00:00, 176.29it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 164.48it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1097,7 +1103,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f5efdf19450&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4b6699e590&gt;
 </pre></div>
 </div>
 </section>
@@ -1164,10 +1170,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f5ed9ae2e30&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4b24583220&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.227 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.500 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1252,7 +1258,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-07-25.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-08-22.
       <br/>
     
   </p>
