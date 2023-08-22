@@ -36,6 +36,8 @@ def pytest_configure(config):
     # imageio-ffmpeg (still happening as of version 0.4.8):
     ignore:pkg_resources is deprecated as an API:DeprecationWarning
     ignore:Deprecated call to `pkg_resources.declare_namespace.*:DeprecationWarning
+    # HDF5
+    ignore:`product` is deprecated as of NumPy.*:DeprecationWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):
         warning_line = warning_line.strip()
