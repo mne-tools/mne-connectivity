@@ -5,14 +5,13 @@
 import os
 from mne.annotations import Annotations
 from mne.epochs import BaseEpochs
-from mne.io.meas_info import create_info
 
 import numpy as np
 import pandas as pd
 import pytest
 from numpy.testing import assert_array_equal
 from mne.io import RawArray
-from mne import make_fixed_length_epochs
+from mne import make_fixed_length_epochs, create_info
 
 from mne_connectivity import (Connectivity, EpochConnectivity,
                               EpochSpectralConnectivity,
