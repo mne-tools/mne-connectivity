@@ -53,6 +53,10 @@ def _xarray_to_conn(array, cls_func):
         event_id = dict(zip(event_id_keys, event_id_vals))
         array.attrs['event_id'] = event_id
 
+    # convert indices numpy arrays to a tuple of arrays
+    if isinstance(array.attrs['indices'], np.ndarray):
+        array.attrs['indices'] = tuple(array.attrs['indices'])
+
     # create the connectivity class
     conn = cls_func(
         data=data, names=names, metadata=metadata, **array.attrs

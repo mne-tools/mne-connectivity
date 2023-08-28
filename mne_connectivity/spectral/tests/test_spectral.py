@@ -1282,9 +1282,34 @@ def test_save(tmp_path):
         faverage=True)
     conn.save(tmp_path / 'foo.nc')
 
-    # multivariate connectivity
-    # use ragged indices & MIC to test padding of indices and patterns
-    indices = (np.array([[0, 1]]), np.array([[2]]))
-    conn_mvc = spectral_connectivity_epochs(
-        epochs, method="mic", indices=indices, sfreq=sfreq, fmin=10, fmax=40)
-    conn_mvc.save(tmp_path / 'foo_mvc.nc')
+
+def test_multivar_save_load(tmp_path):
+    """Test saving and loading results of multivariate connectivity."""
+    rng = np.random.RandomState(0)
+    n_epochs, n_chs, n_times, sfreq, f = 10, 4, 2000, 1000., 20.
+    data = rng.randn(n_epochs, n_chs, n_times)
+    sig = np.sin(2 * np.pi * f * np.arange(1000) / sfreq) * np.hanning(1000)
+    data[:, :, 500:1500] += sig
+    info = create_info(n_chs, sfreq, 'eeg')
+    tmin = -1
+    epochs = EpochsArray(data, info, tmin=tmin)
+    tmp_file = os.path.join(tmp_path, 'foo_mvc.nc')
+
+    non_ragged_indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    ragged_indices = (np.array([[0, 1]]), np.array([[2]]))
+    for indices in [non_ragged_indices, ragged_indices]:
+        con = spectral_connectivity_epochs(
+            epochs, method=['mic', 'mim', 'gc', 'gc_tr'], indices=indices,
+            sfreq=sfreq, fmin=10, fmax=30)
+        for this_con in con:
+            this_con.save(tmp_file)
+            read_con = read_connectivity(tmp_file)
+            assert_array_almost_equal(this_con.get_data(),
+                                      read_con.get_data('raveled'))
+            if this_con.attrs['patterns'] is not None:
+                assert_array_almost_equal(np.array(this_con.attrs['patterns']),
+                                          np.array(read_con.attrs['patterns']))
+            # split `repr` before the file size (`~23 kB` for example)
+            a = repr(this_con).split('~')[0]
+            b = repr(read_con).split('~')[0]
+            assert a == b
