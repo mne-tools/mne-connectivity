@@ -144,7 +144,10 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
 
         read_con = read_connectivity(tmp_file)
         assert_array_almost_equal(con.get_data(), read_con.get_data())
-        assert repr(con) == repr(read_con)
+        # split `repr` before the file size (`~23 kB` for example)
+        a = repr(con).split('~')[0]
+        b = repr(read_con).split('~')[0]
+        assert a == b
 
 
 @pytest.mark.parametrize('method', ['coh', 'cohy', 'imcoh', 'plv',
