@@ -200,6 +200,12 @@ def _check_rank_input(rank, data, indices):
         else:
             data_arr = data
 
+        # XXX: Unpadding of arrays after already padding them is perhaps not so
+        #      efficient. However, we need to remove the padded values to
+        #      ensure only the correct channels are indexed, and having two
+        #      versions of indices is a bit messy currently. A candidate for
+        #      refactoring to simplify code.
+
         for group_i in range(2):  # seeds and targets
             for con_i, con_idcs in enumerate(indices[group_i]):
                 con_idcs = con_idcs[con_idcs != -1]  # -1 is padded value
