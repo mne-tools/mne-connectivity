@@ -76,6 +76,10 @@ def check_indices(indices):
         raise ValueError('Index arrays indices[0] and indices[1] must '
                          'have the same length')
 
+    if any(isinstance(inds, (np.ndarray, list, tuple)) for inds in
+           [*indices[0], *indices[1]]):
+        raise TypeError('Channel indices must be integers, not array-likes')
+
     return indices
 
 
@@ -125,7 +129,13 @@ def check_multivariate_indices(indices):
     targets are not equal can be found in the
     :doc:`../auto_examples/handling_ragged_arrays` example.
     """
-    indices = check_indices(indices)
+    if not isinstance(indices, tuple) or len(indices) != 2:
+        raise ValueError('indices must be a tuple of length 2')
+
+    if len(indices[0]) != len(indices[1]):
+        raise ValueError('index arrays indices[0] and indices[1] must '
+                         'have the same length')
+
     n_cons = len(indices[0])
 
     n_chans = []

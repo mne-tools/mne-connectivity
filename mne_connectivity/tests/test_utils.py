@@ -72,6 +72,10 @@ def test_check_indices():
     with pytest.raises(ValueError, match='Index arrays indices'):
         non_equal_len_indices = ([0], [1, 2])
         check_indices(non_equal_len_indices)
+    with pytest.raises(TypeError,
+                       match='Channel indices must be integers, not array'):
+        nested_indices = ([[0]], [[1]])
+        check_indices(nested_indices)
 
     # multivariate indices
     # non-ragged indices
@@ -87,6 +91,17 @@ def test_check_indices():
     assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
                                         np.array([[2, 3, 4], [4, -1, -1]])))
     # test error catching
+    with pytest.raises(ValueError,
+                       match='indices must be a tuple of length 2'):
+        non_tuple_indices = [np.array([0, 1]), np.array([2, 3])]
+        check_multivariate_indices(non_tuple_indices)
+    with pytest.raises(ValueError,
+                       match='indices must be a tuple of length 2'):
+        non_len2_indices = (np.array([0]), np.array([1]), np.array([2]))
+        check_multivariate_indices(non_len2_indices)
+    with pytest.raises(ValueError, match='index arrays indices'):
+        non_equal_len_indices = (np.array([[0]]), np.array([[1], [2]]))
+        check_multivariate_indices(non_equal_len_indices)
     with pytest.raises(TypeError,
                        match='multivariate indices must contain array-likes'):
         non_nested_indices = (np.array([0, 1]), np.array([2, 3]))

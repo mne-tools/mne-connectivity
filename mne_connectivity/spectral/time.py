@@ -70,11 +70,13 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
         Two arrays with indices of connections for which to compute
-        connectivity. If a multivariate method is called, each array for the
-        seeds and targets should contain a nested array of channel indices for
-        the individual connections. If None, connections between all channels
-        are computed, unless a Granger causality method is called, in which
-        case an error is raised.
+        connectivity. If a bivariate method is called, each array for the seeds
+        and targets should contain the channel indices for the each bivariate
+        connection. If a multivariate method is called, each array for the
+        seeds and targets should consist of nested arrays containing
+        the channel indices for each multivariate connection. If None,
+        connections between all channels are computed, unless a Granger
+        causality method is called, in which case an error is raised.
     sfreq : float
         The sampling frequency. Required if data is not
         :class:`Epochs <mne.Epochs>`.
