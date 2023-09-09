@@ -138,7 +138,7 @@ def check_multivariate_indices(indices):
 
     n_cons = len(indices[0])
 
-    n_chans = []
+    max_n_chans = 0
     for inds in ([*indices[0], *indices[1]]):
         if not isinstance(inds, (np.ndarray, list, tuple)):
             raise TypeError(
@@ -148,8 +148,7 @@ def check_multivariate_indices(indices):
             raise ValueError(
                 'multivariate indices cannot contain repeated channels within '
                 'a seed or target')
-        n_chans.append(len(inds))
-    max_n_chans = np.max(n_chans)
+        max_n_chans = max(max_n_chans, len(inds))
 
     # pad indices to avoid ragged arrays
     padded_indices = (np.full((n_cons, max_n_chans), -1, dtype=np.int32),
