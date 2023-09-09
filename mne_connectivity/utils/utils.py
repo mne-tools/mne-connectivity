@@ -50,7 +50,7 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
 
 def check_indices(indices):
-    """Check indices parameter for bivariate connetivity.
+    """Check indices parameter for bivariate connectivity.
 
     Parameters
     ----------

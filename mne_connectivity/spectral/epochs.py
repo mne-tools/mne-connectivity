@@ -1570,10 +1570,10 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If a bivariate method is called, each array for the seeds
-        and targets should contain the channel indices for the each bivariate
+        and targets should contain the channel indices for each bivariate
         connection. If a multivariate method is called, each array for the
         seeds and targets should consist of nested arrays containing
-        the channel indices for each multivariate connection. If None,
+        the channel indices for each multivariate connection. If ``None``,
         connections between all channels are computed, unless a Granger
         causality method is called, in which case an error is raised.
     sfreq : float
