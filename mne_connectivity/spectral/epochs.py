@@ -1641,13 +1641,15 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
     con : array | list of array
         Computed connectivity measure(s). Either an instance of
         ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
-        The shape of each connectivity dataset is either:
-        (n_cons, n_freqs) mode: 'multitaper' or 'fourier'; or
-        (n_cons, n_freqs, n_times) mode: 'cwt_morlet'. When "indices" is None
-        and a bivariate method is called, "n_cons = n_signals ** 2", or if a
-        multivariate method is called "n_cons = 1". When "indices" is
-        specified, "n_con = len(indices[0])" for bivariate and multivariate
-        methods.
+        The shape of the connectivity result will be:
+
+        - ``(n_cons, n_freqs)`` for multitaper or fourier modes
+        - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode
+        - ``n_cons = n_signals ** 2`` for bivariate methods with
+          ``indices=None``
+        - ``n_cons = 1`` for multivariate methods with ``indices=None``
+        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods
+          when indices is supplied.
 
     See Also
     --------
