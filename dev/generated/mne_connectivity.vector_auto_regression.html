@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>mne_connectivity.vector_auto_regression &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   
@@ -457,7 +457,7 @@ document.write(`
 <span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">vector_auto_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_fb_operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dynamic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/vector_ar/var.html#vector_auto_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.vector_auto_regression" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute vector auto-regresssive (VAR) model.</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.0.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.11)"><span>generator</span></a></span></dt><dd><p>The data from which to compute connectivity. The epochs dimension
 is interpreted differently, depending on <code class="docutils literal notranslate"><span class="pre">'output'</span></code> argument.</p>
@@ -477,7 +477,7 @@ of names, then it must be equal in length to <code class="docutils literal notra
 </dd>
 <dt><strong>compute_fb_operator</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.11)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to compute the backwards operator and average with
 the forward operator. Addresses bias in the least-square
-estimation <a class="footnote-reference brackets" href="#footcite-dawson-2016" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+estimation <a class="footnote-reference brackets" href="#footcite-dawson-2016" id="id1">1</a>.</p>
 </dd>
 <dt><strong>model</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Whether to compute one VAR model using all epochs as multiple
 samples of the same VAR model (‘avg-epochs’), or to compute
@@ -493,7 +493,7 @@ keyword-argument only.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
 <dt><strong>conn</strong><span class="classifier"><a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a> | <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemporalConnectivity</span></code></a> | <a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a></span></dt><dd><p>The connectivity data estimated.</p>
 </dd>
@@ -537,9 +537,15 @@ would be the following for <strong>each</strong> epoch:</p>
 <div class="math notranslate nohighlight">
 \[X(t+1) = \sum_{i=0}^{order} A_i X(t-i)\]</div>
 <p>This results in one VAR model for each epoch. This is done according
-to the model in <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+to the model in <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id2">2</a>.</p>
 <p><em>b</em> is of shape [m, m*p], with sub matrices arranged as follows:</p>
 <table class="table">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p>b_00</p></td>
 <td><p>b_01</p></td>
@@ -571,15 +577,14 @@ more sample points then channels. You should not estimate a VAR model
 using less sample points then channels, unless you have good reason.</p>
 <p class="rubric">References</p>
 <div class="docutils container" id="id3">
-<aside class="footnote brackets" id="footcite-dawson-2016" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Scott T. M. Dawson, Maziar S. Hemati, Matthew O. Williams, and Clarence W. Rowley. Characterizing and correcting for the effect of sensor noise in the dynamic mode decomposition. <em>Experiments in Fluids</em>, Feb 2016. URL: <a class="reference external" href="http://dx.doi.org/10.1007/s00348-016-2127-7">http://dx.doi.org/10.1007/s00348-016-2127-7</a>, <a class="reference external" href="https://doi.org/10.1007/s00348-016-2127-7">doi:10.1007/s00348-016-2127-7</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-li-linear-2017" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Adam Li, Kristin M. Gunnarsdottir, Sara Inati, Kareem Zaghloul, John Gale, Juan Bulacio, Jorge Martinez-Gonzalez, and Sridevi V. Sarma. Linear time-varying model characterizes invasive eeg signals generated from complex epileptic networks. In <em>2017 39th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)</em>, volume, 2802–2805. 2017. <a class="reference external" href="https://doi.org/10.1109/EMBC.2017.8037439">doi:10.1109/EMBC.2017.8037439</a>.</p>
-</aside>
-</aside>
+<dl class="footnote brackets">
+<dt class="label" id="footcite-dawson-2016"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Scott T. M. Dawson, Maziar S. Hemati, Matthew O. Williams, and Clarence W. Rowley. Characterizing and correcting for the effect of sensor noise in the dynamic mode decomposition. <em>Experiments in Fluids</em>, Feb 2016. URL: <a class="reference external" href="http://dx.doi.org/10.1007/s00348-016-2127-7">http://dx.doi.org/10.1007/s00348-016-2127-7</a>, <a class="reference external" href="https://doi.org/10.1007/s00348-016-2127-7">doi:10.1007/s00348-016-2127-7</a>.</p>
+</dd>
+<dt class="label" id="footcite-li-linear-2017"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Adam Li, Kristin M. Gunnarsdottir, Sara Inati, Kareem Zaghloul, John Gale, Juan Bulacio, Jorge Martinez-Gonzalez, and Sridevi V. Sarma. Linear time-varying model characterizes invasive eeg signals generated from complex epileptic networks. In <em>2017 39th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)</em>, volume, 2802–2805. 2017. <a class="reference external" href="https://doi.org/10.1109/EMBC.2017.8037439">doi:10.1109/EMBC.2017.8037439</a>.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
@@ -667,7 +672,7 @@ using less sample points then channels, unless you have good reason.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
       <br/>
     
   </p>

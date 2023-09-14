@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   
@@ -471,7 +471,7 @@ e.g. <a class="reference external" href="https://mne.tools/stable/auto_tutorials
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a>
 is most likely the corresponding function to utilize.</p>
 <p>If the data is obtained from resting-state or free-moving tasks,
-e.g. a mirror-game paradigm <a class="footnote-reference brackets" href="#footcite-zimmermann2022" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, then
+e.g. a mirror-game paradigm <a class="footnote-reference brackets" href="#footcite-zimmermann2022" id="id1">1</a>, then
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a> might be better suited.</p>
 <p><strong>Assumptions and Interpretations</strong></p>
 <p>The way connectivity is computed for the two functions are slightly
@@ -547,7 +547,7 @@ No baseline correction applied
   data_epoch.plot(scalings=0.75)  # Visualize the data
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f4b26de3d00&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f08400fb6d0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -747,7 +747,7 @@ No baseline correction applied
 /home/circleci/project/examples/compare_connectivity_over_time_over_trial.py:254: FutureWarning: The current default events=None is deprecated and will change to events=True in MNE 1.6. Set events=False to suppress this warning.
   data_epoch.plot(scalings=1, n_epochs=1)
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f4b26e75b40&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f0840181510&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -924,7 +924,7 @@ to compute connectivity over trials.</p>
 which occurs around 100 and 170 ms after stimuli presentation in
 posterior sites. Additionally, increased theta and alpha phase locking
 have also been observed during the time window of P1 and
-N1 <a class="footnote-reference brackets" href="#footcite-klimeschetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Here, we will therefore analyze phase
+N1 <a class="footnote-reference brackets" href="#footcite-klimeschetal2004" id="id2">2</a>. Here, we will therefore analyze phase
 connectivity in the theta band around P1</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># exclude the baseline period for connectivity estimation</span>
@@ -1088,7 +1088,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f4b7c603700&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f083ba7d780&gt;
 </pre></div>
 </div>
 </section>
@@ -1108,17 +1108,16 @@ at this timepoint were between occipital and frontal areas.</p>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <div class="docutils container" id="id3">
-<aside class="footnote brackets" id="footcite-zimmermann2022" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Marius Zimmermann, Arianna Schiano Lomoriello, and Ivana Konvalinka. Intra-individual behavioural and neural signatures of audience effects and interactions in a mirror-game paradigm. <em>Royal Society Open Science</em>, 2022. URL: <a class="reference external" href="https://royalsocietypublishing.org/doi/10.1098/rsos.211352">https://royalsocietypublishing.org/doi/10.1098/rsos.211352</a>, <a class="reference external" href="https://doi.org/10.1098/rsos.211352">doi:10.1098/rsos.211352</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-klimeschetal2004" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Wolfgang Klimesch, Bärbel Schack, Manuel Schabus, Michael Doppelmayr, Walter Gruber, and Paul Sauseng. Phase-locked alpha and theta oscillations generate the p1–n1 complex and are related to memory performance. <em>Cognitive Brain Research</em>, 19(3):302–316, 2004. <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.cogbrainres.2003.11.016">doi:https://doi.org/10.1016/j.cogbrainres.2003.11.016</a>.</p>
-</aside>
-</aside>
+<dl class="footnote brackets">
+<dt class="label" id="footcite-zimmermann2022"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Marius Zimmermann, Arianna Schiano Lomoriello, and Ivana Konvalinka. Intra-individual behavioural and neural signatures of audience effects and interactions in a mirror-game paradigm. <em>Royal Society Open Science</em>, 2022. URL: <a class="reference external" href="https://royalsocietypublishing.org/doi/10.1098/rsos.211352">https://royalsocietypublishing.org/doi/10.1098/rsos.211352</a>, <a class="reference external" href="https://doi.org/10.1098/rsos.211352">doi:10.1098/rsos.211352</a>.</p>
+</dd>
+<dt class="label" id="footcite-klimeschetal2004"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Wolfgang Klimesch, Bärbel Schack, Manuel Schabus, Michael Doppelmayr, Walter Gruber, and Paul Sauseng. Phase-locked alpha and theta oscillations generate the p1–n1 complex and are related to memory performance. <em>Cognitive Brain Research</em>, 19(3):302–316, 2004. <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.cogbrainres.2003.11.016">doi:https://doi.org/10.1016/j.cogbrainres.2003.11.016</a>.</p>
+</dd>
+</dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.784 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 34.193 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/efc9d2bd33a8554972ab792e6d73b8aa/compare_connectivity_over_time_over_trial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">compare_connectivity_over_time_over_trial.py</span></code></a></p>
@@ -1210,7 +1209,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
       <br/>
     
   </p>

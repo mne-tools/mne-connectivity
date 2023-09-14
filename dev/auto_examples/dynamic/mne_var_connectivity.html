@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   
@@ -448,7 +448,7 @@ to download the full example code</p>
 <section class="sphx-glr-example-title" id="compute-vector-autoregressive-model-linear-system">
 <span id="ex-var"></span><span id="sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"></span><h1>Compute vector autoregressive model (linear system)<a class="headerlink" href="#compute-vector-autoregressive-model-linear-system" title="Permalink to this heading">#</a></h1>
 <p>Compute a VAR (linear system) model from time-series
-activity <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> using a
+activity <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id1">1</a> using a
 continuous iEEG recording.</p>
 <p>In this example, we will demonstrate how to compute
 a VAR model with different statistical assumptions.</p>
@@ -502,22 +502,22 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
 
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  1%|▎                                     | 828k/88.2M [00:00&lt;00:10, 8.28MB/s]
-  5%|█▋                                   | 3.97M/88.2M [00:00&lt;00:03, 21.9MB/s]
- 13%|████▉                                | 11.8M/88.2M [00:00&lt;00:01, 47.5MB/s]
- 20%|███████▎                             | 17.6M/88.2M [00:00&lt;00:01, 49.2MB/s]
- 25%|█████████▍                           | 22.5M/88.2M [00:00&lt;00:01, 38.2MB/s]
- 34%|████████████▊                        | 30.4M/88.2M [00:00&lt;00:01, 49.7MB/s]
- 43%|███████████████▋                     | 37.5M/88.2M [00:00&lt;00:00, 55.7MB/s]
- 49%|██████████████████▏                  | 43.4M/88.2M [00:00&lt;00:00, 47.3MB/s]
- 57%|█████████████████████▏               | 50.4M/88.2M [00:01&lt;00:00, 52.9MB/s]
- 67%|████████████████████████▊            | 59.0M/88.2M [00:01&lt;00:00, 61.9MB/s]
- 77%|████████████████████████████▍        | 67.7M/88.2M [00:01&lt;00:00, 68.9MB/s]
- 87%|████████████████████████████████     | 76.4M/88.2M [00:01&lt;00:00, 74.0MB/s]
- 97%|███████████████████████████████████▊ | 85.3M/88.2M [00:01&lt;00:00, 78.3MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 34.2MB/s]
+ 10%|███▋                                 | 8.73M/88.2M [00:00&lt;00:01, 40.0MB/s]
+ 16%|█████▊                               | 13.8M/88.2M [00:00&lt;00:01, 44.6MB/s]
+ 25%|█████████▎                           | 22.2M/88.2M [00:00&lt;00:01, 59.6MB/s]
+ 34%|████████████▌                        | 29.8M/88.2M [00:00&lt;00:00, 65.5MB/s]
+ 43%|███████████████▊                     | 37.8M/88.2M [00:00&lt;00:00, 69.7MB/s]
+ 51%|██████████████████▊                  | 44.8M/88.2M [00:00&lt;00:00, 63.7MB/s]
+ 58%|█████████████████████▌               | 51.3M/88.2M [00:00&lt;00:00, 60.1MB/s]
+ 65%|████████████████████████▏            | 57.6M/88.2M [00:00&lt;00:00, 61.0MB/s]
+ 73%|██████████████████████████▉          | 64.0M/88.2M [00:01&lt;00:00, 62.1MB/s]
+ 80%|█████████████████████████████▋       | 70.9M/88.2M [00:01&lt;00:00, 63.9MB/s]
+ 88%|████████████████████████████████▍    | 77.3M/88.2M [00:01&lt;00:00, 64.0MB/s]
+ 95%|███████████████████████████████████▏ | 83.8M/88.2M [00:01&lt;00:00, 61.0MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 310GB/s]
-Download complete in 03s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 220GB/s]
+Download complete in 04s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -545,8 +545,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.9s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -1036,24 +1036,28 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  5%|▍         | 14/302 [00:00&lt;00:02, 138.45it/s]
- 10%|▉         | 29/302 [00:00&lt;00:01, 144.13it/s]
- 15%|█▍        | 45/302 [00:00&lt;00:01, 150.23it/s]
- 21%|██        | 63/302 [00:00&lt;00:01, 159.82it/s]
- 26%|██▋       | 80/302 [00:00&lt;00:01, 162.75it/s]
- 32%|███▏      | 98/302 [00:00&lt;00:01, 167.32it/s]
- 38%|███▊      | 115/302 [00:00&lt;00:01, 160.81it/s]
- 44%|████▎     | 132/302 [00:00&lt;00:01, 158.10it/s]
- 49%|████▉     | 148/302 [00:00&lt;00:00, 155.44it/s]
- 54%|█████▍    | 164/302 [00:01&lt;00:00, 153.69it/s]
- 60%|█████▉    | 180/302 [00:01&lt;00:00, 151.71it/s]
- 65%|██████▌   | 197/302 [00:01&lt;00:00, 156.98it/s]
- 72%|███████▏  | 216/302 [00:01&lt;00:00, 165.31it/s]
- 78%|███████▊  | 235/302 [00:01&lt;00:00, 172.45it/s]
- 84%|████████▍ | 254/302 [00:01&lt;00:00, 176.94it/s]
- 90%|█████████ | 272/302 [00:01&lt;00:00, 168.14it/s]
- 97%|█████████▋| 292/302 [00:01&lt;00:00, 176.29it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 164.48it/s]
+  5%|▍         | 15/302 [00:00&lt;00:02, 140.11it/s]
+ 10%|▉         | 30/302 [00:00&lt;00:01, 137.70it/s]
+ 15%|█▍        | 44/302 [00:00&lt;00:01, 137.60it/s]
+ 19%|█▉        | 58/302 [00:00&lt;00:01, 137.49it/s]
+ 24%|██▍       | 72/302 [00:00&lt;00:01, 136.75it/s]
+ 28%|██▊       | 86/302 [00:00&lt;00:01, 136.81it/s]
+ 33%|███▎      | 100/302 [00:00&lt;00:01, 136.89it/s]
+ 38%|███▊      | 114/302 [00:00&lt;00:01, 137.06it/s]
+ 42%|████▏     | 128/302 [00:00&lt;00:01, 136.54it/s]
+ 47%|████▋     | 142/302 [00:01&lt;00:01, 136.21it/s]
+ 52%|█████▏    | 156/302 [00:01&lt;00:01, 135.93it/s]
+ 56%|█████▋    | 170/302 [00:01&lt;00:00, 136.22it/s]
+ 61%|██████    | 184/302 [00:01&lt;00:00, 135.58it/s]
+ 66%|██████▌   | 198/302 [00:01&lt;00:00, 136.03it/s]
+ 70%|███████   | 212/302 [00:01&lt;00:00, 136.61it/s]
+ 75%|███████▍  | 226/302 [00:01&lt;00:00, 137.24it/s]
+ 79%|███████▉  | 240/302 [00:01&lt;00:00, 137.27it/s]
+ 84%|████████▍ | 254/302 [00:01&lt;00:00, 137.26it/s]
+ 89%|████████▊ | 268/302 [00:01&lt;00:00, 137.16it/s]
+ 93%|█████████▎| 282/302 [00:02&lt;00:00, 136.64it/s]
+ 98%|█████████▊| 296/302 [00:02&lt;00:00, 136.17it/s]
+100%|██████████| 302/302 [00:02&lt;00:00, 136.68it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1103,7 +1107,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f4b6699e590&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f089e683340&gt;
 </pre></div>
 </div>
 </section>
@@ -1170,10 +1174,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f4b24583220&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f0879a99d80&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.500 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 0.915 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1258,7 +1262,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
       <br/>
     
   </p>

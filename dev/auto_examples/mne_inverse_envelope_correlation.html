@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
   
@@ -446,11 +446,11 @@ to download the full example code</p>
 <section class="sphx-glr-example-title" id="compute-envelope-correlations-in-source-space">
 <span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this heading">#</a></h1>
 <p>Compute envelope correlations of orthogonalized activity
-<a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> using pairwise and symmetric
-orthogonalization <a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> in source space using
+<a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2">2</a> using pairwise and symmetric
+orthogonalization <a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id3">3</a> in source space using
 resting state CTF data.</p>
 <p>Note that the original procedure for symmetric orthogonalization in
-<a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> is:</p>
+<a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id4">3</a> is:</p>
 <ol class="arabic simple">
 <li><p>Extract inverse label data from raw</p></li>
 <li><p>Symmetric orthogonalization</p></li>
@@ -467,7 +467,7 @@ resting state CTF data.</p>
 <li><p>Hilbert transform and absolute value (inside envelope_correlation)</p></li>
 </ol>
 <p>The differences between these two should hopefully be fairly minimal given
-the pairwise orthogonalization used in <a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> used a similar
+the pairwise orthogonalization used in <a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id5">2</a> used a similar
 pipeline.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Eric Larson &lt;larson.eric.d@gmail.com&gt;</span>
 <span class="c1">#          Sheraz Khan &lt;sheraz@khansheraz.com&gt;</span>
@@ -600,9 +600,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -715,14 +715,14 @@ Checking surface interior status for 4098 points...
     Found    0/2859 points outside using surface Qhull
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3295.1 ms
+Interior check completed in 3447.9 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3129.5 ms
+Interior check completed in 3165.7 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -730,7 +730,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 206.3 ms
+Interior check completed in 529.4 ms
 
 Composing the field computation matrix...
 Computing MEG at 8196 source locations (free orientations)...
@@ -891,9 +891,9 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.2s
 Setting up band-pass filter from 14 - 30 Hz
 
 FIR filter parameters
@@ -927,7 +927,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Setting up band-pass filter from 14 - 30 Hz
@@ -1117,30 +1117,26 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7f4b2418d2a0&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f0838e9a800&gt;
 </pre></div>
 </div>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <div class="docutils container" id="id6">
-<aside class="footnote brackets" id="footcite-hippetal2012" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-khanetal2018" role="note">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
-<p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
-</aside>
-<aside class="footnote brackets" id="footcite-colcloughetal2015" role="note">
-<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
-<p>G. L. Colclough, M. J. Brookes, S. M. Smith, and M. W. Woolrich. A symmetric multivariate leakage correction for MEG connectomes. <em>NeuroImage</em>, 117:439–448, August 2015. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2015.03.071">doi:10.1016/j.neuroimage.2015.03.071</a>.</p>
-</aside>
-</aside>
+<dl class="footnote brackets">
+<dt class="label" id="footcite-hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
+</dd>
+<dt class="label" id="footcite-khanetal2018"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id5">2</a>)</span></dt>
+<dd><p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
+</dd>
+<dt class="label" id="footcite-colcloughetal2015"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>G. L. Colclough, M. J. Brookes, S. M. Smith, and M. W. Woolrich. A symmetric multivariate leakage correction for MEG connectomes. <em>NeuroImage</em>, 117:439–448, August 2015. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2015.03.071">doi:10.1016/j.neuroimage.2015.03.071</a>.</p>
+</dd>
+</dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 3.680 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 25.704 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8267ab3ea381fc82087786c85efee005/mne_inverse_envelope_correlation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation.py</span></code></a></p>
@@ -1231,7 +1227,7 @@ Using control points [26. 29. 32.]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
       <br/>
     
   </p>
