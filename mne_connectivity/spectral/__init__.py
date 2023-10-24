@@ -1,2 +1,3 @@
-from .epochs import spectral_connectivity_epochs
+from .epochs_bivariate import spectral_connectivity_epochs
+from .epochs_multivariate import spectral_connectivity_epochs_multivariate
 from .time import spectral_connectivity_time

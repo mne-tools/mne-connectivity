@@ -13,8 +13,9 @@ from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
 from mne.utils import (logger, verbose)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
-from .epochs import (_MICEst, _MIMEst, _GCEst, _GCTREst, _compute_freq_mask,
-                     _check_rank_input)
+from .epochs import _compute_freq_mask
+from .epochs_multivariate import (_MICEst, _MIMEst, _GCEst, _GCTREst,
+                                  _check_rank_input)
 from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, check_multivariate_indices, fill_doc
 

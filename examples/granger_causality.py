@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 
 import mne
 from mne.datasets.fieldtrip_cmc import data_path
-from mne_connectivity import spectral_connectivity_epochs
+from mne_connectivity import spectral_connectivity_epochs_multivariate
 
 ###############################################################################
 # Background
@@ -161,10 +161,10 @@ indices_ab = (np.array([signals_a]), np.array([signals_b]))  # A => B
 indices_ba = (np.array([signals_b]), np.array([signals_a]))  # B => A
 
 # compute Granger causality
-gc_ab = spectral_connectivity_epochs(
+gc_ab = spectral_connectivity_epochs_multivariate(
     epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # A => B
-gc_ba = spectral_connectivity_epochs(
+gc_ba = spectral_connectivity_epochs_multivariate(
     epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # B => A
 freqs = gc_ab.freqs
@@ -262,10 +262,10 @@ fig.suptitle('Net GC: [A => B] - [B => A]')
 # %%
 
 # compute GC on time-reversed signals
-gc_tr_ab = spectral_connectivity_epochs(
+gc_tr_ab = spectral_connectivity_epochs_multivariate(
     epochs, method=['gc_tr'], indices=indices_ab, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[A => B]
-gc_tr_ba = spectral_connectivity_epochs(
+gc_tr_ba = spectral_connectivity_epochs_multivariate(
     epochs, method=['gc_tr'], indices=indices_ba, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[B => A]
 
@@ -317,7 +317,7 @@ fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
 
 # %%
 
-gc_ab_60 = spectral_connectivity_epochs(
+gc_ab_60 = spectral_connectivity_epochs_multivariate(
     epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
     rank=(np.array([5]), np.array([5])), gc_n_lags=60)  # A => B
 
@@ -375,7 +375,7 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the 'closeness' criteria
 # %%
 
 try:
-    spectral_connectivity_epochs(
+    spectral_connectivity_epochs_multivariate(
         epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
         gc_n_lags=20, verbose=False)  # A => B
     print('Success!')
