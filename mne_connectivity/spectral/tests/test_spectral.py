@@ -1392,7 +1392,11 @@ def test_multivar_spectral_connectivity_indices_roundtrip_io(
             assert isinstance(con.indices, tuple) and isinstance(
                 read_con.indices, tuple
             )
+            # check indices are masked
+            assert all([np.ma.isMA(inds) for inds in con.indices] and
+                       [np.ma.isMA(inds) for inds in read_con.indices])
             # check indices have same values
-            assert np.all(np.array(con.indices) == np.array(read_con.indices))
+            assert np.all([con_inds == read_inds for con_inds, read_inds in
+                           zip(con.indices, read_con.indices)])
         else:
             assert con.indices is None and read_con.indices is None

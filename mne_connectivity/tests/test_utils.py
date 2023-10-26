@@ -34,14 +34,22 @@ def test_seed_target_indices():
     seeds = [[0, 1]]
     targets = [[2, 3], [3, 4]]
     indices = seed_target_multivariate_indices(seeds, targets)
-    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
-                                        np.array([[2, 3], [3, 4]])))
+    match_indices = (np.array([[0, 1], [0, 1]], dtype=object),
+                     np.array([[2, 3], [3, 4]], dtype=object))
+    for type_i in range(2):
+        for con_i in range(len(indices[0])):
+            assert np.all(indices[type_i][con_i] ==
+                          match_indices[type_i][con_i])
     # ragged indices
     seeds = [[0, 1]]
     targets = [[2, 3, 4], [4]]
     indices = seed_target_multivariate_indices(seeds, targets)
-    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
-                                        np.array([[2, 3, 4], [4, -1, -1]])))
+    match_indices = (np.array([[0, 1], [0, 1]], dtype=object),
+                     np.array([[2, 3, 4], [4]], dtype=object))
+    for type_i in range(2):
+        for con_i in range(len(indices[0])):
+            assert np.all(indices[type_i][con_i] ==
+                          match_indices[type_i][con_i])
     # test error catching
     # non-array-like seeds/targets
     with pytest.raises(TypeError,
