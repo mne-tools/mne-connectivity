@@ -275,7 +275,7 @@ def seed_target_multivariate_indices(seeds, targets):
                        np.array([[1, 2], [3, 4, 5]], dtype=object))  # targets
 
     Even if the number of channels does not vary, the indices will still be
-    stored as object arrays for compatability.
+    stored as object arrays for compatibility.
 
     More information on working with multivariate indices and handling
     connections where the number of seeds and targets are not equal can be
