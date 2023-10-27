@@ -64,8 +64,10 @@ jobs:
         run: python setup.py sdist
       - name: Install sdist
         run: pip install ./dist/mne-connectivity-*
+        shell: bash -e {0}
       - name: Clean up working directory
         run: rm -rf ./*
+        shell: bash -e {0}
       - name: Try importing mne_connectivity
         run: python -c 'import mne_connectivity; print(mne_connectivity.__version__)'
       - name: Remove sdist install
@@ -76,8 +78,10 @@ jobs:
         run: python setup.py bdist_wheel
       - name: Install wheel
         run: pip install ./dist/mne_connectivity-*.whl
+        shell: bash -e {0}
       - name: Clean up working directory
         run: rm -rf ./*
+        shell: bash -e {0}
       - name: Try importing mne_connectivity
         run: python -c 'import mne_connectivity; print(mne_connectivity.__version__)'
       - name: Remove wheel install
