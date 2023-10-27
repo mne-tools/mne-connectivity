@@ -34,13 +34,17 @@ jobs:
         run: make pep
 
   # Run installation tests
-  build:
+  install:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        python-version: [ "3.8", "3.11" ]
+        python-version: [ "3.11" ]
+        include:
+          # An old one
+          - os: ubuntu-latest
+            python-version: "3.8"
     steps:
       - uses: actions/checkout@v4
       - uses: pyvista/setup-headless-display-action@main
