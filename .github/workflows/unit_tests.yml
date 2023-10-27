@@ -102,6 +102,9 @@ jobs:
   # Run unit tests
   test:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
     strategy:
       fail-fast: false
       matrix:
@@ -115,7 +118,6 @@ jobs:
           - os: macos-latest
             python-version: "3.10"
             mne-version: mne-main
-
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
@@ -123,63 +125,28 @@ jobs:
       MNE_LOGGING_LEVEL: 'info'
       OPENBLAS_NUM_THREADS: '1'
       PYTHONUNBUFFERED: '1'
-
     steps:
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - uses: actions/checkout@v2
-        # with:
-        #   path: ~/.cache/pip
-        #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
-
-      - run: |
-          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
-          chmod +x setup_xvfb.sh
-          ./setup_xvfb.sh
-        name: 'Setup xvfb'
-        if: runner.os == 'Linux'
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements.txt
-          pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
-
-      - name: Install MNE (stable)
-        if: "matrix.mne-version == 'mne-stable'"
-        run: |
-          pip install --upgrade mne
-
+      - uses: actions/checkout@v4
+      - uses: pyvista/setup-headless-display-action@main
+        with:
+          qt: true
+          pyvista: false
+      - run: pip install --upgrade --upgrade-strategy eager -r requirements.txt -r requirements_testing.txt
+      - if: "matrix.mne-version == 'mne-stable'"
+        run: pip install --upgrade mne
       - name: Install MNE (main)
         if: "matrix.mne-version == 'mne-main'"
-        run: |
-          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-          pip install -e ./mne-python
-
+        run: pip install git+https://github.com/mne-tools/mne-python@main
       - name: Display versions and environment information
         run: |
           echo $TZ
           date
           python --version
           which python
-
-      - name: Install MNE-connectivity
-        run: |
-          pip install --no-deps .
-
-      - shell: bash -el {0}
-        run: mne sys_info
-        name: 'Show infos'
-
-      - name: Run pytest
-        run: |
-          python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
-        shell: bash
-
-      - name: Upload coverage stats to codecov
-        if: "matrix.os == 'ubuntu-latest'"
-        uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
+      - run: pip install -e .
+      - run: mne sys_info
+      - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+      - uses: codecov/codecov-action@v3
