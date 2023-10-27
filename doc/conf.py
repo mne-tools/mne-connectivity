@@ -251,6 +251,7 @@ except Exception:
 else:
     scrapers += ('pyvista',)
 if 'pyvista' in scrapers:
+    import mne.viz._brain
     brain_scraper = mne.viz._brain._BrainScraper()
     scrapers = list(scrapers)
     scrapers.insert(scrapers.index('pyvista'), brain_scraper)
