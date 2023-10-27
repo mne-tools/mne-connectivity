@@ -43,7 +43,7 @@ jobs:
           source ./get_minimal_commands.sh
           pip install -r requirements_testing.txt
         name: 'Install dependencies'
-      - run: pip install git@https://github.com/mne-tools/mne-python@main
+      - run: pip install git+https://github.com/mne-tools/mne-python@main
       - run: pip install -e .
       - run: |
           which mne
