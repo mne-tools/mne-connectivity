@@ -20,14 +20,14 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ 3.9 ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install pip
         run: |
-          pip install --upgrade pip
+          pip install --upgrade pip setuptools wheel
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
           pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
       - name: Run style & documentation tests
@@ -40,36 +40,23 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python-version: [ 3.8, 3.9, '3.10' ]
+        python-version: [ "3.8", "3.9", "3.10" ]
     steps:
-      - uses: actions/checkout@v2
-        # with:
-        #   path: ~/.cache/pip
-        #   key: ${{ hashFiles('setup.py') }}-${{ hashFiles('test-requirements.txt') }}-${{ hashFiles('requirements.txt') }}
-      - run: |
-          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
-          chmod +x setup_xvfb.sh
-          ./setup_xvfb.sh
-        name: 'Setup xvfb'
-        if: runner.os == 'Linux'
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+      - uses: actions/checkout@v4
+      - uses: pyvista/setup-headless-display-action@main
+        with:
+          qt: true
+          pyvista: false
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          pip install --upgrade pip setuptools wheel
           pip install --upgrade --upgrade-strategy eager -r requirements.txt
           pip install --upgrade --upgrade-strategy eager -r requirements_testing.txt
-      # TODO: doesn't work segfault cuz of pyvista?
-      # - shell: bash -el {0}
-      #   run: mne sys_info
-      #   name: Print config
-      # TODO: why doesn't this work on mac?
-      # - shell: bash -el {0}
-      #   run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
-      #   name: 'Get test data'
-      # build with sdist directly
-      - uses: actions/checkout@v2
+      - run: mne sys_info
+      - run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
       - name: Build sdist
         run: python setup.py sdist
       - name: Install sdist
@@ -81,7 +68,7 @@ jobs:
       - name: Remove sdist install
         run: pip uninstall -y mne-connectivity
       # build with build wheet
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build wheel
         run: python setup.py bdist_wheel
       - name: Install wheel
@@ -92,8 +79,7 @@ jobs:
         run: python -c 'import mne_connectivity; print(mne_connectivity.__version__)'
       - name: Remove wheel install
         run: pip uninstall -y mne-connectivity
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Test extras install
         run: |
           pip install .[full]
@@ -104,13 +90,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -e {0}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            python-version: 3.8
+            python-version: "3.8"
             mne-version: mne-main
           - os: ubuntu-latest
             python-version: "3.10"
@@ -134,7 +120,10 @@ jobs:
         with:
           qt: true
           pyvista: false
-      - run: pip install --upgrade --upgrade-strategy eager -r requirements.txt -r requirements_testing.txt
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt -r requirements_testing.txt
       - if: "matrix.mne-version == 'mne-stable'"
         run: pip install --upgrade mne
       - name: Install MNE (main)
