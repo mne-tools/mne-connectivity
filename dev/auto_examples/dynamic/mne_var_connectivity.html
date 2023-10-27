@@ -483,7 +483,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="c1"># versions &lt;= 0.6</span>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Data has a power line frequency at </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
 <span class="c1"># Pick only the ECoG channels, removing the ECG channels</span>
@@ -496,28 +496,25 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="p">)</span>
 
 <span class="c1"># drop bad channels</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
 
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 34.2MB/s]
- 10%|███▋                                 | 8.73M/88.2M [00:00&lt;00:01, 40.0MB/s]
- 16%|█████▊                               | 13.8M/88.2M [00:00&lt;00:01, 44.6MB/s]
- 25%|█████████▎                           | 22.2M/88.2M [00:00&lt;00:01, 59.6MB/s]
- 34%|████████████▌                        | 29.8M/88.2M [00:00&lt;00:00, 65.5MB/s]
- 43%|███████████████▊                     | 37.8M/88.2M [00:00&lt;00:00, 69.7MB/s]
- 51%|██████████████████▊                  | 44.8M/88.2M [00:00&lt;00:00, 63.7MB/s]
- 58%|█████████████████████▌               | 51.3M/88.2M [00:00&lt;00:00, 60.1MB/s]
- 65%|████████████████████████▏            | 57.6M/88.2M [00:00&lt;00:00, 61.0MB/s]
- 73%|██████████████████████████▉          | 64.0M/88.2M [00:01&lt;00:00, 62.1MB/s]
- 80%|█████████████████████████████▋       | 70.9M/88.2M [00:01&lt;00:00, 63.9MB/s]
- 88%|████████████████████████████████▍    | 77.3M/88.2M [00:01&lt;00:00, 64.0MB/s]
- 95%|███████████████████████████████████▏ | 83.8M/88.2M [00:01&lt;00:00, 61.0MB/s]
+  6%|██▏                                  | 5.14M/88.2M [00:00&lt;00:01, 51.4MB/s]
+ 15%|█████▌                               | 13.3M/88.2M [00:00&lt;00:01, 69.4MB/s]
+ 24%|████████▉                            | 21.4M/88.2M [00:00&lt;00:00, 74.4MB/s]
+ 34%|████████████▌                        | 30.1M/88.2M [00:00&lt;00:00, 79.4MB/s]
+ 44%|████████████████▏                    | 38.6M/88.2M [00:00&lt;00:00, 81.5MB/s]
+ 54%|████████████████████                 | 47.7M/88.2M [00:00&lt;00:00, 84.7MB/s]
+ 64%|███████████████████████▊             | 56.8M/88.2M [00:00&lt;00:00, 86.8MB/s]
+ 74%|███████████████████████████▍         | 65.5M/88.2M [00:00&lt;00:00, 84.2MB/s]
+ 85%|███████████████████████████████▎     | 74.6M/88.2M [00:00&lt;00:00, 86.3MB/s]
+ 95%|███████████████████████████████████  | 83.4M/88.2M [00:01&lt;00:00, 86.9MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 220GB/s]
-Download complete in 04s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 304GB/s]
+Download complete in 03s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -545,24 +542,67 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.9s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
+<style>
+label { cursor: pointer; }
+#section_6b52f56b-0877-49dd-85a8-05e75c0ca569 ~ table [for="section_6b52f56b-0877-49dd-85a8-05e75c0ca569"]::before,
+#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7 ~ table [for="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7"]::before,
+#section_ded1141f-35fa-40a4-b428-0be065bc6959 ~ table [for="section_ded1141f-35fa-40a4-b428-0be065bc6959"]::before {
+    display: inline-block;
+    content: "►";
+    font-size: 11px;
+    width: 15px;
+    text-align: left;
+}
+
+#section_6b52f56b-0877-49dd-85a8-05e75c0ca569:checked ~ table [for="section_6b52f56b-0877-49dd-85a8-05e75c0ca569"]::before,
+#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7:checked ~ table [for="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7"]::before,
+#section_ded1141f-35fa-40a4-b428-0be065bc6959:checked ~ table [for="section_ded1141f-35fa-40a4-b428-0be065bc6959"]::before {
+    content: "▼";
+}
+
+#section_6b52f56b-0877-49dd-85a8-05e75c0ca569 ~ table tr.section_6b52f56b-0877-49dd-85a8-05e75c0ca569,
+#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7 ~ table tr.section_42e2e4b5-805b-4bc7-8c08-4d748d285de7,
+#section_ded1141f-35fa-40a4-b428-0be065bc6959 ~ table tr.section_ded1141f-35fa-40a4-b428-0be065bc6959 {
+    visibility: collapse;
+}
+
+#section_6b52f56b-0877-49dd-85a8-05e75c0ca569:checked ~ table tr.section_6b52f56b-0877-49dd-85a8-05e75c0ca569,
+#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7:checked ~ table tr.section_42e2e4b5-805b-4bc7-8c08-4d748d285de7,
+#section_ded1141f-35fa-40a4-b428-0be065bc6959:checked ~ table tr.section_ded1141f-35fa-40a4-b428-0be065bc6959 {
+    visibility: visible;
+}
+</style>
+
+<input type="checkbox" id="section_6b52f56b-0877-49dd-85a8-05e75c0ca569" hidden aria-hidden="true"/>
+<input type="checkbox" id="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7" hidden aria-hidden="true"/>
+<input type="checkbox" id="section_ded1141f-35fa-40a4-b428-0be065bc6959" hidden aria-hidden="true"/>
+
 <table class="table table-hover table-striped table-sm table-responsive small">
     <tr>
+        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
+            <label for=section_6b52f56b-0877-49dd-85a8-05e75c0ca569>
+                General
+            </label>
+        </th>
+    </tr>
+    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
         <th>Measurement date</th>
 
         <td>July 24, 1920  19:35:19 GMT</td>
 
     </tr>
-    <tr>
+    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
         <th>Experimenter</th>
 
         <td>mne_anonymize</td>
 
     </tr>
+    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
         <th>Participant</th>
 
 
@@ -571,55 +611,72 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 
     </tr>
     <tr>
+        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
+            <label for=section_42e2e4b5-805b-4bc7-8c08-4d748d285de7>
+                Channels
+            </label>
+        </th>
+    </tr>
+    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
         <th>Digitized points</th>
 
         <td>86 points</td>
 
     </tr>
-    <tr>
+    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
         <th>Good channels</th>
         <td>84 ECoG</td>
     </tr>
-    <tr>
+    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
         <th>Bad channels</th>
         <td>None</td>
     </tr>
-    <tr>
+    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
         <th>EOG channels</th>
         <td>Not available</td>
     </tr>
-    <tr>
+    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
         <th>ECG channels</th>
         <td>Not available</td>
-
+    </tr>
     <tr>
+        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
+            <label for=section_ded1141f-35fa-40a4-b428-0be065bc6959>
+                Data
+            </label>
+        </th>
+    </tr>
+
+    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
         <th>Sampling frequency</th>
         <td>1000.00 Hz</td>
     </tr>
 
 
-    <tr>
+    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
         <th>Highpass</th>
         <td>0.00 Hz</td>
     </tr>
 
 
-    <tr>
+    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
         <th>Lowpass</th>
         <td>500.00 Hz</td>
     </tr>
 
 
 
-    <tr>
+    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
         <th>Filenames</th>
         <td>sub-pt1_ses-presurgery_task-ictal_ieeg.eeg</td>
     </tr>
 
-    <tr>
+
+    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
         <th>Duration</th>
         <td>00:04:30 (HH:MM:SS)</td>
     </tr>
+
 </table>
 </div>
 <br />
@@ -638,7 +695,7 @@ leave as an exercise for our readers!</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_id</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_idx</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.argwhere.html#numpy.argwhere" title="numpy.argwhere" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_id</span></a><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_sample</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">[</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_idx</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_sample</span></a> <span class="o">/</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">onset_sample</span></a> <span class="o">/</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
 
 <span class="c1"># remove all data after the seizure onset</span>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1036,28 +1093,22 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  5%|▍         | 15/302 [00:00&lt;00:02, 140.11it/s]
- 10%|▉         | 30/302 [00:00&lt;00:01, 137.70it/s]
- 15%|█▍        | 44/302 [00:00&lt;00:01, 137.60it/s]
- 19%|█▉        | 58/302 [00:00&lt;00:01, 137.49it/s]
- 24%|██▍       | 72/302 [00:00&lt;00:01, 136.75it/s]
- 28%|██▊       | 86/302 [00:00&lt;00:01, 136.81it/s]
- 33%|███▎      | 100/302 [00:00&lt;00:01, 136.89it/s]
- 38%|███▊      | 114/302 [00:00&lt;00:01, 137.06it/s]
- 42%|████▏     | 128/302 [00:00&lt;00:01, 136.54it/s]
- 47%|████▋     | 142/302 [00:01&lt;00:01, 136.21it/s]
- 52%|█████▏    | 156/302 [00:01&lt;00:01, 135.93it/s]
- 56%|█████▋    | 170/302 [00:01&lt;00:00, 136.22it/s]
- 61%|██████    | 184/302 [00:01&lt;00:00, 135.58it/s]
- 66%|██████▌   | 198/302 [00:01&lt;00:00, 136.03it/s]
- 70%|███████   | 212/302 [00:01&lt;00:00, 136.61it/s]
- 75%|███████▍  | 226/302 [00:01&lt;00:00, 137.24it/s]
- 79%|███████▉  | 240/302 [00:01&lt;00:00, 137.27it/s]
- 84%|████████▍ | 254/302 [00:01&lt;00:00, 137.26it/s]
- 89%|████████▊ | 268/302 [00:01&lt;00:00, 137.16it/s]
- 93%|█████████▎| 282/302 [00:02&lt;00:00, 136.64it/s]
- 98%|█████████▊| 296/302 [00:02&lt;00:00, 136.17it/s]
-100%|██████████| 302/302 [00:02&lt;00:00, 136.68it/s]
+  7%|▋         | 20/302 [00:00&lt;00:01, 192.85it/s]
+ 13%|█▎        | 40/302 [00:00&lt;00:01, 194.84it/s]
+ 20%|█▉        | 60/302 [00:00&lt;00:01, 194.87it/s]
+ 26%|██▋       | 80/302 [00:00&lt;00:01, 195.59it/s]
+ 33%|███▎      | 101/302 [00:00&lt;00:01, 197.29it/s]
+ 40%|████      | 121/302 [00:00&lt;00:00, 195.92it/s]
+ 47%|████▋     | 141/302 [00:00&lt;00:00, 195.05it/s]
+ 53%|█████▎    | 161/302 [00:00&lt;00:00, 187.33it/s]
+ 60%|█████▉    | 181/302 [00:00&lt;00:00, 188.37it/s]
+ 66%|██████▌   | 200/302 [00:01&lt;00:00, 184.25it/s]
+ 73%|███████▎  | 219/302 [00:01&lt;00:00, 177.96it/s]
+ 78%|███████▊  | 237/302 [00:01&lt;00:00, 164.98it/s]
+ 84%|████████▍ | 254/302 [00:01&lt;00:00, 161.09it/s]
+ 90%|████████▉ | 271/302 [00:01&lt;00:00, 163.17it/s]
+ 95%|█████████▌| 288/302 [00:01&lt;00:00, 158.28it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 177.62it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1107,7 +1158,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f089e683340&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7fc11a569540&gt;
 </pre></div>
 </div>
 </section>
@@ -1174,10 +1225,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f0879a99d80&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7fc11a594fd0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 0.915 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 47.905 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1262,7 +1313,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
       <br/>
     
   </p>

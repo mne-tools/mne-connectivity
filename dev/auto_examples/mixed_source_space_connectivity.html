@@ -537,7 +537,7 @@ is ordered based on the locations of the regions in the axial plane.</p>
 
 <span class="c1"># Compute inverse operator</span>
 <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.make_inverse_operator.html#mne.minimum_norm.make_inverse_operator" title="mne.minimum_norm.make_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">make_inverse_operator</span></a><span class="p">(</span>
-    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">fwd</span><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.Covariance.html#mne.Covariance" title="mne.Covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">noise_cov</span></a><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fixed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">fwd</span><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.Covariance.html#mne.Covariance" title="mne.Covariance" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">noise_cov</span></a><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fixed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">fwd</span>
 
 <span class="n">stcs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inv_method</span></a><span class="p">,</span>
@@ -559,7 +559,7 @@ is ordered based on the locations of the regions in the axial plane.</p>
 <span class="c1"># graph layout</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a> <span class="o">=</span> <span class="mf">8.</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mf">13.</span>
-<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
 <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <span class="n">label_ts</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;pli&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -671,7 +671,7 @@ Checking surface interior status for 2961 points...
     Found 1275/2615 points outside using surface Qhull
     Found   97/1340 points outside using solid angles
     Total 1589/2961 points inside the surface
-Interior check completed in 1611.8 ms
+Interior check completed in 1698.4 ms
     1372 source space points omitted because they are outside the inner skull surface.
     283 source space points omitted because of the    5.0-mm distance limit.
 1306 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -761,7 +761,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 815 points outside using surface Qhull
     Found    0/ 815 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1282.1 ms
+Interior check completed in 1293.1 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 1026 points...
     Found  219/1026 points inside  an interior sphere of radius   43.6 mm
@@ -769,7 +769,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 807 points outside using surface Qhull
     Found    0/ 807 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1204.8 ms
+Interior check completed in 1209.5 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 2 points...
     Found 2/2 points inside  an interior sphere of radius   43.6 mm
@@ -777,49 +777,49 @@ Checking surface interior status for 2 points...
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 2/2 points inside the surface
-Interior check completed in 205.7 ms
+Interior check completed in 247.1 ms
 Checking surface interior status for 9 points...
     Found 9/9 points inside  an interior sphere of radius   43.6 mm
     Found 0/9 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 9/9 points inside the surface
-Interior check completed in 309.2 ms
+Interior check completed in 261.1 ms
 Checking surface interior status for 33 points...
     Found  1/33 point  inside  an interior sphere of radius   43.6 mm
     Found  0/33 points outside an exterior sphere of radius   91.8 mm
     Found  0/32 points outside using surface Qhull
     Found  0/32 points outside using solid angles
     Total 33/33 points inside the surface
-Interior check completed in 428.6 ms
+Interior check completed in 310.8 ms
 Checking surface interior status for 21 points...
     Found  8/21 points inside  an interior sphere of radius   43.6 mm
     Found  0/21 points outside an exterior sphere of radius   91.8 mm
     Found  0/13 points outside using surface Qhull
     Found  0/13 points outside using solid angles
     Total 21/21 points inside the surface
-Interior check completed in 423.4 ms
+Interior check completed in 261.8 ms
 Checking surface interior status for 1 point ...
     Found 1/1 point  inside  an interior sphere of radius   43.6 mm
     Found 0/1 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 1/1 point  inside the surface
-Interior check completed in 320.2 ms
+Interior check completed in 260.1 ms
 Checking surface interior status for 7 points...
     Found 7/7 points inside  an interior sphere of radius   43.6 mm
     Found 0/7 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 7/7 points inside the surface
-Interior check completed in 209.3 ms
+Interior check completed in 234.0 ms
 Checking surface interior status for 44 points...
     Found  1/44 point  inside  an interior sphere of radius   43.6 mm
     Found  0/44 points outside an exterior sphere of radius   91.8 mm
     Found  0/43 points outside using surface Qhull
     Found  0/43 points outside using solid angles
     Total 44/44 points inside the surface
-Interior check completed in 309.7 ms
+Interior check completed in 349.6 ms
 
 Checking surface interior status for 305 points...
     Found   0/305 points inside  an interior sphere of radius   43.6 mm
@@ -827,7 +827,7 @@ Checking surface interior status for 305 points...
     Found   0/  0 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/305 points inside the surface
-Interior check completed in 291.7 ms
+Interior check completed in 212.4 ms
 
 Composing the field computation matrix...
 Computing MEG at 2001 source locations (free orientations)...
@@ -1127,7 +1127,7 @@ and legend will be cut off from the output png file.</p>
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.595 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.107 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mixed-source-space-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/089119f41c66c5258e6c09e3b0f169ae/mixed_source_space_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mixed_source_space_connectivity.py</span></code></a></p>
@@ -1215,7 +1215,7 @@ and legend will be cut off from the output png file.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-09-14.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
       <br/>
     
   </p>
