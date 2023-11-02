@@ -407,8 +407,10 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                     'indices must be specified when computing Granger '
                     'causality, as all-to-all connectivity is not supported')
             logger.info('using all indices for multivariate connectivity')
-            indices_use = (np.array([np.arange(n_signals, dtype=np.int32)]),
-                           np.array([np.arange(n_signals, dtype=np.int32)]))
+            indices_use = (np.arange(n_signals, dtype=int)[np.newaxis, :],
+                           np.arange(n_signals, dtype=int)[np.newaxis, :])
+            indices_use = np.ma.masked_array(indices_use,
+                                             mask=False, fill_value=-1)
         else:
             logger.info('only using indices for lower-triangular matrix')
             indices_use = np.tril_indices(n_signals, k=-1)
@@ -437,20 +439,20 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
 
     # unique signals for which we actually need to compute the CSD of
     if multivariate_con:
-        signals_use = np.unique(np.concatenate(np.concatenate(indices_use)))
-        signals_use = signals_use[signals_use != -1]
+        signals_use = np.unique(indices_use.compressed())
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(signals_use)}
-        remapping[-1] = -1
+        remapped_inds = indices_use.copy()
         # multivariate functions expect seed/target remapping
-        con_i = 0
-        for seed, target in zip(indices_use[0], indices_use[1]):
-            source_idx[con_i] = np.array([remapping[idx] for idx in seed])
-            target_idx[con_i] = np.array([remapping[idx] for idx in target])
-            con_i += 1
+        for idx in signals_use:
+            remapped_inds[indices_use == idx] = remapping[idx]
+        source_idx = remapped_inds[0]
+        target_idx = remapped_inds[1]
         max_n_channels = len(indices_use[0][0])
     else:
         # no indices remapping required for bivariate functions
         signals_use = np.unique(np.r_[indices_use[0], indices_use[1]])
+        source_idx = indices_use[0].copy()
+        target_idx = indices_use[1].copy()
         max_n_channels = len(indices_use[0])
 
     # check rank input and compute data ranks if necessary
