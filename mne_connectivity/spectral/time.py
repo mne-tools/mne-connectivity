@@ -408,50 +408,46 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                     'indices must be specified when computing Granger '
                     'causality, as all-to-all connectivity is not supported')
             logger.info('using all indices for multivariate connectivity')
-            indices_use = (np.arange(n_signals, dtype=int)[np.newaxis, :],
-                           np.arange(n_signals, dtype=int)[np.newaxis, :])
-            indices_use = np.ma.masked_array(indices_use,
-                                             mask=False, fill_value=-1)
+            indices_use = (np.array([np.arange(n_signals, dtype=np.int32)]),
+                           np.array([np.arange(n_signals, dtype=np.int32)]))
         else:
             logger.info('only using indices for lower-triangular matrix')
             indices_use = np.tril_indices(n_signals, k=-1)
     else:
         if multivariate_con:
-            indices_use = check_multivariate_indices(indices)  # mask indices
-            indices_use = np.ma.concatenate([inds[np.newaxis] for inds in
-                                             indices_use])
-            np.ma.set_fill_value(indices_use, -1)  # else 99999 after concat.
+            indices_use = check_multivariate_indices(indices)  # pad with -1
             if any(this_method in _gc_methods for this_method in method):
-                for seed, target in zip(indices_use[0], indices_use[1]):
-                    intersection = np.intersect1d(seed.compressed(),
-                                                  target.compressed())
-                    if intersection.size > 0:
+                for seed, target in zip(indices[0], indices[1]):
+                    intersection = np.intersect1d(seed, target)
+                    if np.any(intersection != -1):  # ignore padded entries
                         raise ValueError(
                             'seed and target indices must not intersect when '
                             'computing Granger causality')
             # make sure padded indices are stored in the connectivity object
-            # create a copy
-            indices = (indices_use[0].copy(), indices_use[1].copy())
+            indices = tuple(np.array(indices_use))  # create a copy
         else:
             indices_use = check_indices(indices)
-    n_cons = len(indices_use[0])
+    # create copies of indices_use for independent manipulation
+    source_idx = np.array(indices_use[0])
+    target_idx = np.array(indices_use[1])
+    n_cons = len(source_idx)
 
     # unique signals for which we actually need to compute the CSD of
     if multivariate_con:
-        signals_use = np.unique(indices_use.compressed())
+        signals_use = np.unique(np.concatenate(np.concatenate(indices_use)))
+        signals_use = signals_use[signals_use != -1]
         remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(signals_use)}
-        remapped_inds = indices_use.copy()
+        remapping[-1] = -1
         # multivariate functions expect seed/target remapping
-        for idx in signals_use:
-            remapped_inds[indices_use == idx] = remapping[idx]
-        source_idx = remapped_inds[0]
-        target_idx = remapped_inds[1]
+        con_i = 0
+        for seed, target in zip(indices_use[0], indices_use[1]):
+            source_idx[con_i] = np.array([remapping[idx] for idx in seed])
+            target_idx[con_i] = np.array([remapping[idx] for idx in target])
+            con_i += 1
         max_n_channels = len(indices_use[0][0])
     else:
         # no indices remapping required for bivariate functions
         signals_use = np.unique(np.r_[indices_use[0], indices_use[1]])
-        source_idx = indices_use[0].copy()
-        target_idx = indices_use[1].copy()
         max_n_channels = len(indices_use[0])
 
     # check rank input and compute data ranks if necessary
