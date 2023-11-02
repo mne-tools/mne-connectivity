@@ -62,8 +62,8 @@ from mne_connectivity import spectral_connectivity_epochs
 #   ragged_indices = (np.array([[0, 1   ], [0, 1, 2, 3]], dtype='object'),
 #                     np.array([[2, 3, 4], [4         ]], dtype='object'))
 #
-# **N.B. Note that since NumPy v1.19.0, dtype='object' must be specified when
-# forming ragged arrays.**
+# **N.B. Note that when forming ragged arrays in NumPy, dtype='object' must be
+# specified.**
 #
 # Just as for bivariate connectivity, the length of ``indices[0]`` and
 # ``indices[1]`` is equal (i.e. the number of connections), however information
@@ -71,16 +71,19 @@ from mne_connectivity import spectral_connectivity_epochs
 # array. Importantly, these indices are ragged, as the first connection will be
 # computed between 2 seed and 3 target channels, and the second connection
 # between 4 seed and 1 target channel. The connectivity functions will
-# recognise the indices as being ragged, and pad them to a 'full' array by
-# adding placeholder values which are masked accordingly. This makes the
-# indices easier to work with, and also compatible with the engine used to save
-# connectivity objects. For example, the above indices would become::
+# recognise the indices as being ragged, and pad them accordingly to make them
+# easier to work with and compatible with the h5netcdf saving engine. The known
+# value used to pad the arrays is ``-1``, an invalid channel index. The above
+# indices would be padded to::
 #
-#   padded_indices = (np.array([[0, 1, --, --], [0,  1,  2,  3]]),
-#                     np.array([[2, 3,  4, --], [4, --, --, --]]))
+#   padded_indices = (np.array([[0, 1, -1, -1], [0,  1,  2,  3]]),
+#                     np.array([[2, 3,  4, -1], [4, -1, -1, -1]]))
 #
-# where ``--`` are masked entries. These indices are what is stored in the
-# returned connectivity objects.
+# These indices are what is stored in the connectivity object, and is also the
+# format of indices returned from the helper functions
+# :func:`~mne_connectivity.check_multivariate_indices` and
+# :func:`~mne_connectivity.seed_target_multivariate_indices`. It is also
+# possible to pass the padded indices to the connectivity functions directly.
 #
 # For the connectivity results themselves, the methods available in
 # MNE-Connectivity combine information across the different channels into a
@@ -115,11 +118,11 @@ n_cons = len(ragged_indices[0])
 max_n_chans = max(
     [len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]])])
 
-# show that the padded indices entries are masked
-assert np.sum(padded_indices[0][0].mask) == 2  # 2 padded channels
-assert np.sum(padded_indices[1][0].mask) == 1  # 1 padded channels
-assert np.sum(padded_indices[0][1].mask) == 0  # 0 padded channels
-assert np.sum(padded_indices[1][1].mask) == 3  # 3 padded channels
+# show that the padded indices entries are all -1
+assert np.count_nonzero(padded_indices[0][0] == -1) == 2  # 2 padded channels
+assert np.count_nonzero(padded_indices[1][0] == -1) == 1  # 1 padded channels
+assert np.count_nonzero(padded_indices[0][1] == -1) == 0  # 0 padded channels
+assert np.count_nonzero(padded_indices[1][1] == -1) == 3  # 3 padded channels
 
 # patterns have shape [seeds/targets x cons x max channels x freqs (x times)]
 assert patterns.shape == (2, n_cons, max_n_chans, n_freqs)
@@ -134,11 +137,11 @@ assert np.all(np.isnan(patterns[1, 1, 1:]))  # 3 padded channels
 seed_patterns_con1 = patterns[0, 0, :len(ragged_indices[0][0])]
 target_patterns_con1 = patterns[1, 0, :len(ragged_indices[1][0])]
 
-# extract patterns for second connection using the padded, masked indices
+# extract patterns for second connection using the padded indices (pad = -1)
 seed_patterns_con2 = (
-    patterns[0, 1, :padded_indices[0][1].count()])
+    patterns[0, 1, :np.count_nonzero(padded_indices[0][1] != -1)])
 target_patterns_con2 = (
-    patterns[1, 1, :padded_indices[1][1].count()])
+    patterns[1, 1, :np.count_nonzero(padded_indices[1][1] != -1)])
 
 # show that shapes of patterns are correct
 assert seed_patterns_con1.shape == (2, n_freqs)  # channels (0, 1)
