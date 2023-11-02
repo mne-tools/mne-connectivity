@@ -198,7 +198,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
 
 def _check_rank_input(rank, data, indices):
     """Check the rank argument is appropriate and compute rank if missing."""
-    sv_tol = 1e-10  # tolerance for non-zero singular val (rel. to largest)
+    sv_tol = 1e-6  # tolerance for non-zero singular val (rel. to largest)
     if rank is None:
         rank = np.zeros((2, len(indices[0])), dtype=int)
 

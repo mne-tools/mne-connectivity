@@ -372,21 +372,21 @@ assert (patterns[1, 0].shape[0] ==
 # an automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced. The rank of the data is determined
 # by computing the singular values of the data and finding those within a
-# factor of :math:`1e^{-10}` relative to the largest singular value.
+# factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# In some circumstances, this threshold may be too lenient, in which case you
-# should inspect the singular values of your data to identify an appropriate
-# degree of dimensionality reduction to perform, which you can then specify
-# manually using the ``rank`` argument. The code below shows one possible
-# approach for finding an appropriate rank of close-to-singular data with a
-# more conservative threshold of :math:`1e^{-5}`.
+# Whilst unlikely, there may be scenarios in which this threshold may be too
+# lenient. In these cases, you should inspect the singular values of your data
+# to identify an appropriate degree of dimensionality reduction to perform,
+# which you can then specify manually using the ``rank`` argument. The code
+# below shows one possible approach for finding an appropriate rank of
+# close-to-singular data with a more conservative threshold.
 
 # %%
 
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
 # finds how many singular values are 'close' to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the 'closeness' criteria
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 
 
 ###############################################################################
