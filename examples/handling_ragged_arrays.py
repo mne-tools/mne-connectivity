@@ -14,7 +14,7 @@ numbers of seeds and targets can be handled in MNE-Connectivity.
 
 import numpy as np
 
-from mne_connectivity import spectral_connectivity_epochs_multivariate
+from mne_connectivity import spectral_connectivity_epochs
 
 ###############################################################################
 # Background
@@ -44,7 +44,7 @@ from mne_connectivity import spectral_connectivity_epochs_multivariate
 #   targets = [[2, 3, 4], [4         ]]
 #
 # The ``indices`` parameter passed to
-# :func:`~mne_connectivity.spectral_connectivity_epochs_multivariate` and
+# :func:`~mne_connectivity.spectral_connectivity_epochs` and
 # :func:`~mne_connectivity.spectral_connectivity_time` must be a tuple of
 # array-likes, meaning
 # that the indices can be passed as a tuple of: lists; tuples; or NumPy arrays.
@@ -105,7 +105,7 @@ ragged_indices = ([[0, 1], [0, 1, 2, 3]],  # seeds
                   [[2, 3, 4], [4]])  # targets
 
 # compute connectivity
-con = spectral_connectivity_epochs_multivariate(
+con = spectral_connectivity_epochs(
     data, method='mic', indices=ragged_indices, sfreq=sfreq, fmin=10, fmax=30,
     verbose=False)
 patterns = np.array(con.attrs['patterns'])
