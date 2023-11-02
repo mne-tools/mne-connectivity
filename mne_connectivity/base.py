@@ -483,9 +483,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         # set method, indices and n_nodes
         if isinstance(indices, tuple):
-            if all([isinstance(inds, np.ndarray) for inds in indices]):
+            if all(isinstance(inds, np.ndarray) for inds in indices):
                 # leave multivariate indices as arrays for easier indexing
-                if all([inds.ndim > 1 for inds in indices]):
+                if all(inds.ndim > 1 for inds in indices):
                     new_indices = (indices[0], indices[1])
                 else:
                     new_indices = (list(indices[0]), list(indices[1]))
