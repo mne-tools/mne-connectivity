@@ -16,7 +16,7 @@ from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
 from .epochs import (_MICEst, _MIMEst, _GCEst, _GCTREst, _compute_freq_mask,
                      _check_rank_input)
 from .smooth import _create_kernel, _smooth_spectra
-from ..utils import check_indices, check_multivariate_indices, fill_doc
+from ..utils import check_indices, _check_multivariate_indices, fill_doc
 
 
 _multivariate_methods = ['mic', 'mim', 'gc', 'gc_tr']
@@ -414,7 +414,11 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
             indices_use = np.tril_indices(n_signals, k=-1)
     else:
         if multivariate_con:
-            indices_use = check_multivariate_indices(indices)  # pad with -1
+            # mask indices
+            indices_use = _check_multivariate_indices(indices, n_signals)
+            indices_use = np.ma.concatenate([inds[np.newaxis] for inds in
+                                             indices_use])
+            np.ma.set_fill_value(indices_use, -1)  # else 99999 after concat.
             if any(this_method in _gc_methods for this_method in method):
                 for seed, target in zip(indices[0], indices[1]):
                     intersection = np.intersect1d(seed, target)

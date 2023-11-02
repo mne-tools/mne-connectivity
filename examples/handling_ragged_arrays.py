@@ -116,7 +116,7 @@ padded_indices = con.indices
 n_freqs = con.get_data().shape[-1]
 n_cons = len(ragged_indices[0])
 max_n_chans = max(
-    [len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]])])
+    len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]]))
 
 # show that the padded indices entries are all -1
 assert np.count_nonzero(padded_indices[0][0] == -1) == 2  # 2 padded channels

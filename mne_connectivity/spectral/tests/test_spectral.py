@@ -1366,3 +1366,57 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
             assert np.all(np.array(con.indices) == np.array(read_con.indices))
         else:
             assert con.indices is None and read_con.indices is None
+
+
+@pytest.mark.parametrize("method", ['mic', 'mim', 'gc', 'gc_tr'])
+@pytest.mark.parametrize("indices", [None,
+                                     (np.array([[0, 1]]), np.array([[2, 3]]))])
+def test_multivar_spectral_connectivity_indices_roundtrip_io(
+    tmp_path, method, indices
+):
+    """Test that indices values and type is maintained after saving.
+
+    If `indices` is None, `indices` in the returned connectivity object should
+    be None, otherwise, `indices` should be a tuple. The type of `indices` and
+    its values should be retained after saving and reloading.
+    """
+    rng = np.random.RandomState(0)
+    n_epochs, n_chs, n_times, sfreq = 5, 4, 200, 100.0
+    data = rng.randn(n_epochs, n_chs, n_times)
+    info = create_info(n_chs, sfreq, "eeg")
+    tmin = -1
+    epochs = EpochsArray(data, info, tmin=tmin)
+    freqs = np.arange(10, 31)
+    tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
+
+    # test the pair of method and indices defined to check the output indices
+    if indices is None and method in ['gc', 'gc_tr']:
+        # indicesmust be specified for GC
+        pytest.skip()
+
+    con_epochs = spectral_connectivity_epochs(
+        epochs, method=method, indices=indices, sfreq=sfreq, fmin=10, fmax=30,
+        gc_n_lags=10
+    )
+    con_time = spectral_connectivity_time(
+        epochs, freqs, method=method, indices=indices, sfreq=sfreq,
+        gc_n_lags=10
+    )
+
+    for con in [con_epochs, con_time]:
+        con.save(tmp_file)
+        read_con = read_connectivity(tmp_file)
+
+        if indices is not None:
+            # check indices of same type (tuples)
+            assert isinstance(con.indices, tuple) and isinstance(
+                read_con.indices, tuple
+            )
+            # check indices are masked
+            assert all([np.ma.isMA(inds) for inds in con.indices] and
+                       [np.ma.isMA(inds) for inds in read_con.indices])
+            # check indices have same values
+            assert np.all([con_inds == read_inds for con_inds, read_inds in
+                           zip(con.indices, read_con.indices)])
+        else:
+            assert con.indices is None and read_con.indices is None

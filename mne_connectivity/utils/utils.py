@@ -83,13 +83,17 @@ def check_indices(indices):
     return indices
 
 
-def check_multivariate_indices(indices):
-    """Check indices parameter for multivariate connectivity and pad it.
+def _check_multivariate_indices(indices, n_chans):
+    """Check indices parameter for multivariate connectivity and mask it.
 
     Parameters
     ----------
     indices : tuple of array of array of int, shape (2, n_cons, variable)
         Tuple containing index sets.
+
+    n_chans : int
+        The number of channels in the data. Used when converting negative
+        indices to positive indices.
 
     Returns
     -------
@@ -139,16 +143,27 @@ def check_multivariate_indices(indices):
     n_cons = len(indices[0])
 
     max_n_chans = 0
-    for inds in ([*indices[0], *indices[1]]):
-        if not isinstance(inds, (np.ndarray, list, tuple)):
-            raise TypeError(
-                'multivariate indices must contain array-likes of channel '
-                'indices for each seed and target')
-        if len(inds) != len(np.unique(inds)):
-            raise ValueError(
-                'multivariate indices cannot contain repeated channels within '
-                'a seed or target')
-        max_n_chans = max(max_n_chans, len(inds))
+    for group_idx, group in enumerate(indices):
+        for con_idx, con in enumerate(group):
+            if not isinstance(con, (np.ndarray, list, tuple)):
+                raise TypeError(
+                    'multivariate indices must contain array-likes of channel '
+                    'indices for each seed and target')
+            con = np.array(con)
+            if len(con) != len(np.unique(con)):
+                raise ValueError(
+                    'multivariate indices cannot contain repeated channels '
+                    'within a seed or target')
+            max_n_chans = max(max_n_chans, len(con))
+            # convert negative to positive indices
+            for chan_idx, chan in enumerate(con):
+                if chan < 0:
+                    if chan * -1 >= n_chans:
+                        raise ValueError(
+                            'a negative channel index is not present in the '
+                            'data'
+                        )
+                    indices[group_idx][con_idx][chan_idx] = chan % n_chans
 
     # pad indices to avoid ragged arrays
     padded_indices = (np.full((n_cons, max_n_chans), -1, dtype=np.int32),

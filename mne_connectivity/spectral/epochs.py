@@ -24,7 +24,7 @@ from mne.utils import (
     ProgressBar, _arange_div, _check_option, _time_mask, logger, warn, verbose)
 
 from ..base import (SpectralConnectivity, SpectroTemporalConnectivity)
-from ..utils import fill_doc, check_indices, check_multivariate_indices
+from ..utils import fill_doc, check_indices, _check_multivariate_indices
 
 
 def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
@@ -107,17 +107,24 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
                 logger.info('using all indices for multivariate connectivity')
                 indices_use = (np.arange(n_signals, dtype=int)[np.newaxis, :],
                                np.arange(n_signals, dtype=int)[np.newaxis, :])
+                indices_use = np.ma.masked_array(indices_use,
+                                                 mask=False, fill_value=-1)
         else:
             logger.info('only using indices for lower-triangular matrix')
             # only compute r for lower-triangular region
             indices_use = np.tril_indices(n_signals, -1)
     else:
         if multivariate_con:
-            indices_use = check_multivariate_indices(indices)  # pad with -1
+            # mask indices
+            indices_use = _check_multivariate_indices(indices, n_signals)
+            indices_use = np.ma.concatenate([inds[np.newaxis] for inds in
+                                             indices_use])
+            np.ma.set_fill_value(indices_use, -1)  # else 99999 after concat.
             if any(this_method in _gc_methods for this_method in method):
-                for seed, target in zip(indices[0], indices[1]):
-                    intersection = np.intersect1d(seed, target)
-                    if np.any(intersection != -1):  # ignore padded entries
+                for seed, target in zip(indices_use[0], indices_use[1]):
+                    intersection = np.intersect1d(seed.compressed(),
+                                                  target.compressed())
+                    if intersection.size > 0:
                         raise ValueError(
                             'seed and target indices must not intersect when '
                             'computing Granger causality')
@@ -191,7 +198,7 @@ def _prepare_connectivity(epoch_block, times_in, tmin, tmax,
 
 def _check_rank_input(rank, data, indices):
     """Check the rank argument is appropriate and compute rank if missing."""
-    sv_tol = 1e-10  # tolerance for non-zero singular val (rel to largest)
+    sv_tol = 1e-10  # tolerance for non-zero singular val (rel. to largest)
     if rank is None:
         rank = np.zeros((2, len(indices[0])), dtype=int)
 
@@ -200,16 +207,10 @@ def _check_rank_input(rank, data, indices):
         else:
             data_arr = data
 
-        # XXX: Unpadding of arrays after already padding them is perhaps not so
-        #      efficient. However, we need to remove the padded values to
-        #      ensure only the correct channels are indexed, and having two
-        #      versions of indices is a bit messy currently. A candidate for
-        #      refactoring to simplify code.
-
         for group_i in range(2):  # seeds and targets
             for con_i, con_idcs in enumerate(indices[group_i]):
-                con_idcs = con_idcs[con_idcs != -1]  # -1 is padded value
-                s = np.linalg.svd(data_arr[:, con_idcs], compute_uv=False)
+                s = np.linalg.svd(data_arr[:, con_idcs.compressed()],
+                                  compute_uv=False)
                 rank[group_i][con_i] = np.min(
                     [np.count_nonzero(epoch >= epoch[0] * sv_tol)
                      for epoch in s])
@@ -476,8 +477,8 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 indices[0], indices[1], ranks[0], ranks[1]):
             self._log_connection_number(con_i)
 
-            seed_idcs = seed_idcs[seed_idcs != -1]
-            target_idcs = target_idcs[target_idcs != -1]
+            seed_idcs = seed_idcs.compressed()
+            target_idcs = target_idcs.compressed()
             con_idcs = [*seed_idcs, *target_idcs]
 
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
@@ -950,8 +951,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
                 indices[0], indices[1], ranks[0], ranks[1]):
             self._log_connection_number(con_i)
 
-            seed_idcs = seed_idcs[seed_idcs != -1]
-            target_idcs = target_idcs[target_idcs != -1]
+            seed_idcs = seed_idcs.compressed()
+            target_idcs = target_idcs.compressed()
             con_idcs = [*seed_idcs, *target_idcs]
 
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
@@ -1907,7 +1908,8 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
             # make sure padded indices are stored in the connectivity object
             if multivariate_con and indices is not None:
-                indices = tuple(np.array(indices_use))  # create a copy
+                # create a copy
+                indices = (indices_use[0].copy(), indices_use[1].copy())
 
             # get the window function, wavelets, etc for different modes
             (spectral_params, mt_adaptive, n_times_spectrum,
@@ -1919,20 +1921,12 @@ def spectral_connectivity_epochs(data, names=None, method='coh', indices=None,
 
             # unique signals for which we actually need to compute PSD etc.
             if multivariate_con:
-                sig_idx = np.unique(np.concatenate(np.concatenate(
-                    indices_use)))
-                sig_idx = sig_idx[sig_idx != -1]
+                sig_idx = np.unique(indices_use.compressed())
                 remapping = {ch_i: sig_i for sig_i, ch_i in enumerate(sig_idx)}
-                remapping[-1] = -1
-                remapped_inds = (indices_use[0].copy(), indices_use[1].copy())
-                con_i = 0
-                for seed, target in zip(indices_use[0], indices_use[1]):
-                    remapped_inds[0][con_i] = np.array([
-                        remapping[idx] for idx in seed])
-                    remapped_inds[1][con_i] = np.array([
-                        remapping[idx] for idx in target])
-                    con_i += 1
-                remapped_sig = [remapping[idx] for idx in sig_idx]
+                remapped_inds = indices_use.copy()
+                for idx in sig_idx:
+                    remapped_inds[indices_use == idx] = remapping[idx]
+                remapped_sig = np.unique(remapped_inds.compressed())
             else:
                 sig_idx = np.unique(np.r_[indices_use[0], indices_use[1]])
             n_signals_use = len(sig_idx)

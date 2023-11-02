@@ -4,7 +4,7 @@ from numpy.testing import assert_array_equal
 
 from mne_connectivity import Connectivity
 from mne_connectivity.utils import (degree, check_indices,
-                                    check_multivariate_indices,
+                                    _check_multivariate_indices,
                                     seed_target_indices,
                                     seed_target_multivariate_indices)
 
@@ -58,7 +58,7 @@ def test_seed_target_indices():
 
 
 def test_check_indices():
-    """Test indices checking functions."""
+    """Test check_indices function."""
     # bivariate indices
     # test error catching
     with pytest.raises(ValueError,
@@ -77,39 +77,68 @@ def test_check_indices():
         nested_indices = ([[0]], [[1]])
         check_indices(nested_indices)
 
-    # multivariate indices
+
+def test_check_multivariate_indices():
+    """Test _check_multivariate_indices function."""
+    n_signals = 5
+    mask_value = -1
     # non-ragged indices
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3], [3, 4]]
-    indices = check_multivariate_indices((seeds, targets))
+    indices = _check_multivariate_indices((seeds, targets), n_signals)
+    assert all(np.ma.isMA(inds) for inds in indices)
+    assert all(inds.fill_value == mask_value for inds in indices)
+    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
+                                        np.array([[2, 3], [3, 4]])))
+    # non-ragged indices with negative values
+    seeds = [[0, 1], [0, 1]]
+    targets = [[2, 3], [3, -1]]
+    indices = _check_multivariate_indices((seeds, targets), n_signals)
+    assert all(np.ma.isMA(inds) for inds in indices)
+    assert all(inds.fill_value == mask_value for inds in indices)
     assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
                                         np.array([[2, 3], [3, 4]])))
     # ragged indices
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3, 4], [4]]
-    indices = check_multivariate_indices((seeds, targets))
+    indices = _check_multivariate_indices((seeds, targets), n_signals)
+    assert all(np.ma.isMA(inds) for inds in indices)
+    assert all(inds.fill_value == mask_value for inds in indices)
     assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
                                         np.array([[2, 3, 4], [4, -1, -1]])))
+    # ragged indices with negative values
+    seeds = [[0, 1], [0, 1]]
+    targets = [[2, 3, 4], [-1]]
+    indices = _check_multivariate_indices((seeds, targets), n_signals)
+    assert all(np.ma.isMA(inds) for inds in indices)
+    assert all(inds.fill_value == mask_value for inds in indices)
+    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
+                                        np.array([[2, 3, 4], [4, -1, -1]])))
+
     # test error catching
     with pytest.raises(ValueError,
                        match='indices must be a tuple of length 2'):
         non_tuple_indices = [np.array([0, 1]), np.array([2, 3])]
-        check_multivariate_indices(non_tuple_indices)
+        _check_multivariate_indices(non_tuple_indices, n_signals)
     with pytest.raises(ValueError,
                        match='indices must be a tuple of length 2'):
         non_len2_indices = (np.array([0]), np.array([1]), np.array([2]))
-        check_multivariate_indices(non_len2_indices)
+        _check_multivariate_indices(non_len2_indices, n_signals)
     with pytest.raises(ValueError, match='index arrays indices'):
         non_equal_len_indices = (np.array([[0]]), np.array([[1], [2]]))
-        check_multivariate_indices(non_equal_len_indices)
+        _check_multivariate_indices(non_equal_len_indices, n_signals)
     with pytest.raises(TypeError,
                        match='multivariate indices must contain array-likes'):
         non_nested_indices = (np.array([0, 1]), np.array([2, 3]))
-        check_multivariate_indices(non_nested_indices)
+        _check_multivariate_indices(non_nested_indices, n_signals)
     with pytest.raises(ValueError,
                        match='multivariate indices cannot contain repeated'):
         repeated_indices = (np.array([[0, 1, 1]]), np.array([[2, 2, 3]]))
-        check_multivariate_indices(repeated_indices)
+        _check_multivariate_indices(repeated_indices, n_signals)
+    with pytest.raises(ValueError,
+                       match='a negative channel index is not present in the'):
+        missing_chan_indices = (np.array([[0, 1]]), np.array([[2, -5]]))
+        _check_multivariate_indices(missing_chan_indices, n_signals)
 
 
 def test_degree():
