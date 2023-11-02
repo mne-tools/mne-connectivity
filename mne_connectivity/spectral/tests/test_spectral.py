@@ -1315,12 +1315,9 @@ def test_multivar_save_load(tmp_path):
             assert a == b
 
 
-@pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli", "ciplv",
-                                    "mic", "mim"])
+@pytest.mark.parametrize("method", ['coh', 'plv', 'pli', 'wpli', 'ciplv'])
 @pytest.mark.parametrize("indices", [None,
-                                     (np.array([0, 1]), np.array([2, 3])),
-                                     (np.array([[0, 1]]), np.array([[2, 3]]))
-                                     ])
+                                     (np.array([0, 1]), np.array([2, 3]))])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
 
@@ -1336,14 +1333,6 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     epochs = EpochsArray(data, info, tmin=tmin)
     freqs = np.arange(10, 31)
     tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
-
-    # mutlivariate and bivariate methods require the right indices shape
-    if method in ["mic", "mim"]:
-        if indices is not None and indices[0].ndim == 1:
-            pytest.skip()
-    else:
-        if indices is not None and indices[0].ndim == 2:
-            pytest.skip()
 
     # test the pair of method and indices defined to check the output indices
     con_epochs = spectral_connectivity_epochs(

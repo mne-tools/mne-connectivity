@@ -422,20 +422,19 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                                              indices_use])
             np.ma.set_fill_value(indices_use, -1)  # else 99999 after concat.
             if any(this_method in _gc_methods for this_method in method):
-                for seed, target in zip(indices[0], indices[1]):
-                    intersection = np.intersect1d(seed, target)
-                    if np.any(intersection != -1):  # ignore padded entries
+                for seed, target in zip(indices_use[0], indices_use[1]):
+                    intersection = np.intersect1d(seed.compressed(),
+                                                  target.compressed())
+                    if intersection.size > 0:
                         raise ValueError(
                             'seed and target indices must not intersect when '
                             'computing Granger causality')
             # make sure padded indices are stored in the connectivity object
-            indices = tuple(np.array(indices_use))  # create a copy
+            # create a copy
+            indices = (indices_use[0].copy(), indices_use[1].copy())
         else:
             indices_use = check_indices(indices)
-    # create copies of indices_use for independent manipulation
-    source_idx = np.array(indices_use[0])
-    target_idx = np.array(indices_use[1])
-    n_cons = len(source_idx)
+    n_cons = len(indices_use[0])
 
     # unique signals for which we actually need to compute the CSD of
     if multivariate_con:
