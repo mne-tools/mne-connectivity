@@ -15,9 +15,7 @@ from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
 from .effective import phase_slope_index
 from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity
-from .spectral import (spectral_connectivity_time,
-                       spectral_connectivity_epochs,
-                       spectral_connectivity_epochs_multivariate)
+from .spectral import spectral_connectivity_time, spectral_connectivity_epochs
 from .vector_ar import vector_auto_regression, select_order
 from .utils import (check_indices, check_multivariate_indices, degree,
                     seed_target_indices, seed_target_multivariate_indices)

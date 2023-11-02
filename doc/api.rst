@@ -47,7 +47,6 @@ on numpy array inputs.
    phase_slope_index
    vector_auto_regression
    spectral_connectivity_epochs
-   spectral_connectivity_epochs_multivariate
    spectral_connectivity_time
 
 Reading functions

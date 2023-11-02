@@ -25,9 +25,7 @@ from matplotlib import patheffects as pe
 import mne
 from mne import EvokedArray, make_fixed_length_epochs
 from mne.datasets.fieldtrip_cmc import data_path
-from mne_connectivity import (seed_target_indices,
-                              spectral_connectivity_epochs,
-                              spectral_connectivity_epochs_multivariate)
+from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 ###############################################################################
 # Background
@@ -89,7 +87,7 @@ seed_names = [epochs.info['ch_names'][idx] for idx in seeds]
 target_names = [epochs.info['ch_names'][idx] for idx in targets]
 
 # multivariate imaginary part of coherency
-(mic, mim) = spectral_connectivity_epochs_multivariate(
+(mic, mim) = spectral_connectivity_epochs(
     epochs, method=['mic', 'mim'], indices=multivar_indices, fmin=5, fmax=30,
     rank=None)
 
@@ -292,7 +290,7 @@ print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
 # %%
 
 indices = (np.array([[*seeds, *targets]]), np.array([[*seeds, *targets]]))
-gim = spectral_connectivity_epochs_multivariate(
+gim = spectral_connectivity_epochs(
     epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None,
     verbose=False)
 
@@ -344,7 +342,7 @@ print(f'Normalised GIM has a maximum value of {normalised_gim.max():.2f}')
 
 # %%
 
-(mic_red, mim_red) = spectral_connectivity_epochs_multivariate(
+(mic_red, mim_red) = spectral_connectivity_epochs(
     epochs, method=['mic', 'mim'], indices=multivar_indices, fmin=5, fmax=30,
     rank=([25], [25]))
 
