@@ -374,6 +374,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="../cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Dynamic Connectivity Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
@@ -502,19 +503,20 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
 
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  6%|██▏                                  | 5.14M/88.2M [00:00&lt;00:01, 51.4MB/s]
- 15%|█████▌                               | 13.3M/88.2M [00:00&lt;00:01, 69.4MB/s]
- 24%|████████▉                            | 21.4M/88.2M [00:00&lt;00:00, 74.4MB/s]
- 34%|████████████▌                        | 30.1M/88.2M [00:00&lt;00:00, 79.4MB/s]
- 44%|████████████████▏                    | 38.6M/88.2M [00:00&lt;00:00, 81.5MB/s]
- 54%|████████████████████                 | 47.7M/88.2M [00:00&lt;00:00, 84.7MB/s]
- 64%|███████████████████████▊             | 56.8M/88.2M [00:00&lt;00:00, 86.8MB/s]
- 74%|███████████████████████████▍         | 65.5M/88.2M [00:00&lt;00:00, 84.2MB/s]
- 85%|███████████████████████████████▎     | 74.6M/88.2M [00:00&lt;00:00, 86.3MB/s]
- 95%|███████████████████████████████████  | 83.4M/88.2M [00:01&lt;00:00, 86.9MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:03, 25.7MB/s]
+ 13%|████▉                                | 11.7M/88.2M [00:00&lt;00:01, 48.9MB/s]
+ 22%|████████▎                            | 19.8M/88.2M [00:00&lt;00:01, 61.4MB/s]
+ 32%|███████████▋                         | 27.9M/88.2M [00:00&lt;00:00, 68.8MB/s]
+ 41%|███████████████▏                     | 36.2M/88.2M [00:00&lt;00:00, 73.5MB/s]
+ 50%|██████████████████▌                  | 44.3M/88.2M [00:00&lt;00:00, 76.2MB/s]
+ 60%|██████████████████████               | 52.6M/88.2M [00:00&lt;00:00, 78.1MB/s]
+ 69%|█████████████████████████▌           | 60.8M/88.2M [00:00&lt;00:00, 79.3MB/s]
+ 78%|████████████████████████████▉        | 69.0M/88.2M [00:00&lt;00:00, 80.2MB/s]
+ 88%|████████████████████████████████▍    | 77.3M/88.2M [00:01&lt;00:00, 80.9MB/s]
+ 97%|███████████████████████████████████▊ | 85.5M/88.2M [00:01&lt;00:00, 81.3MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 304GB/s]
-Download complete in 03s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 305GB/s]
+Download complete in 02s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -542,142 +544,99 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style>
-label { cursor: pointer; }
-#section_6b52f56b-0877-49dd-85a8-05e75c0ca569 ~ table [for="section_6b52f56b-0877-49dd-85a8-05e75c0ca569"]::before,
-#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7 ~ table [for="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7"]::before,
-#section_ded1141f-35fa-40a4-b428-0be065bc6959 ~ table [for="section_ded1141f-35fa-40a4-b428-0be065bc6959"]::before {
-    display: inline-block;
-    content: "►";
-    font-size: 11px;
-    width: 15px;
-    text-align: left;
-}
+<details open>
+    <summary><strong>General</strong></summary>
+    <table class="table table-hover table-striped table-sm table-responsive small">
+        <tr>
+            <th>Measurement date</th>
 
-#section_6b52f56b-0877-49dd-85a8-05e75c0ca569:checked ~ table [for="section_6b52f56b-0877-49dd-85a8-05e75c0ca569"]::before,
-#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7:checked ~ table [for="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7"]::before,
-#section_ded1141f-35fa-40a4-b428-0be065bc6959:checked ~ table [for="section_ded1141f-35fa-40a4-b428-0be065bc6959"]::before {
-    content: "▼";
-}
+            <td>July 24, 1920  19:35:19 GMT</td>
 
-#section_6b52f56b-0877-49dd-85a8-05e75c0ca569 ~ table tr.section_6b52f56b-0877-49dd-85a8-05e75c0ca569,
-#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7 ~ table tr.section_42e2e4b5-805b-4bc7-8c08-4d748d285de7,
-#section_ded1141f-35fa-40a4-b428-0be065bc6959 ~ table tr.section_ded1141f-35fa-40a4-b428-0be065bc6959 {
-    visibility: collapse;
-}
+        </tr>
+        <tr>
+            <th>Experimenter</th>
 
-#section_6b52f56b-0877-49dd-85a8-05e75c0ca569:checked ~ table tr.section_6b52f56b-0877-49dd-85a8-05e75c0ca569,
-#section_42e2e4b5-805b-4bc7-8c08-4d748d285de7:checked ~ table tr.section_42e2e4b5-805b-4bc7-8c08-4d748d285de7,
-#section_ded1141f-35fa-40a4-b428-0be065bc6959:checked ~ table tr.section_ded1141f-35fa-40a4-b428-0be065bc6959 {
-    visibility: visible;
-}
-</style>
+            <td>mne_anonymize</td>
 
-<input type="checkbox" id="section_6b52f56b-0877-49dd-85a8-05e75c0ca569" hidden aria-hidden="true"/>
-<input type="checkbox" id="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7" hidden aria-hidden="true"/>
-<input type="checkbox" id="section_ded1141f-35fa-40a4-b428-0be065bc6959" hidden aria-hidden="true"/>
-
-<table class="table table-hover table-striped table-sm table-responsive small">
-    <tr>
-        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
-            <label for=section_6b52f56b-0877-49dd-85a8-05e75c0ca569>
-                General
-            </label>
-        </th>
-    </tr>
-    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
-        <th>Measurement date</th>
-
-        <td>July 24, 1920  19:35:19 GMT</td>
-
-    </tr>
-    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
-        <th>Experimenter</th>
-
-        <td>mne_anonymize</td>
-
-    </tr>
-    <tr class="section_6b52f56b-0877-49dd-85a8-05e75c0ca569">
-        <th>Participant</th>
+        </tr>
+        <tr>
+            <th>Participant</th>
 
 
             <td>sub-pt1</td>
 
 
-    </tr>
-    <tr>
-        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
-            <label for=section_42e2e4b5-805b-4bc7-8c08-4d748d285de7>
-                Channels
-            </label>
-        </th>
-    </tr>
-    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
-        <th>Digitized points</th>
+        </tr>
+    </table>
+    </details>
+    <details open>
+        <summary><strong>Channels</strong></summary>
+        <table class="table table-hover table-striped table-sm table-responsive small">
+            <tr>
+                <th>Digitized points</th>
 
-        <td>86 points</td>
+                <td>86 points</td>
 
-    </tr>
-    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
-        <th>Good channels</th>
-        <td>84 ECoG</td>
-    </tr>
-    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
-        <th>Bad channels</th>
-        <td>None</td>
-    </tr>
-    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
-        <th>EOG channels</th>
-        <td>Not available</td>
-    </tr>
-    <tr class="section_42e2e4b5-805b-4bc7-8c08-4d748d285de7">
-        <th>ECG channels</th>
-        <td>Not available</td>
-    </tr>
-    <tr>
-        <th class="collapsible_header" colspan="2" style="font-weight: bold; text-align: left;">
-            <label for=section_ded1141f-35fa-40a4-b428-0be065bc6959>
-                Data
-            </label>
-        </th>
-    </tr>
+            </tr>
+            <tr>
+                <th>Good channels</th>
+                <td>84 ECoG</td>
+            </tr>
+            <tr>
+                <th>Bad channels</th>
+                <td>None</td>
+            </tr>
+            <tr>
+                <th>EOG channels</th>
+                <td>Not available</td>
+            </tr>
+            <tr>
+                <th>ECG channels</th>
+                <td>Not available</td>
+            </tr>
+        </table>
+        </details>
+        <details open>
+            <summary><strong>Data</strong></summary>
+            <table class="table table-hover table-striped table-sm table-responsive small">
 
-    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
-        <th>Sampling frequency</th>
-        <td>1000.00 Hz</td>
-    </tr>
+                <tr>
+                    <th>Sampling frequency</th>
+                    <td>1000.00 Hz</td>
+                </tr>
 
 
-    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
-        <th>Highpass</th>
-        <td>0.00 Hz</td>
-    </tr>
+                <tr>
+                    <th>Highpass</th>
+                    <td>0.00 Hz</td>
+                </tr>
 
 
-    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
-        <th>Lowpass</th>
-        <td>500.00 Hz</td>
-    </tr>
+                <tr>
+                    <th>Lowpass</th>
+                    <td>500.00 Hz</td>
+                </tr>
 
 
 
-    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
-        <th>Filenames</th>
-        <td>sub-pt1_ses-presurgery_task-ictal_ieeg.eeg</td>
-    </tr>
+                <tr>
+                    <th>Filenames</th>
+                    <td>sub-pt1_ses-presurgery_task-ictal_ieeg.eeg</td>
+                </tr>
 
 
-    <tr class="section_ded1141f-35fa-40a4-b428-0be065bc6959">
-        <th>Duration</th>
-        <td>00:04:30 (HH:MM:SS)</td>
-    </tr>
+                <tr>
+                    <th>Duration</th>
+                    <td>00:04:30 (HH:MM:SS)</td>
+                </tr>
 
-</table>
+            </table>
+            </details>
 </div>
 <br />
 <br /></section>
@@ -1093,22 +1052,22 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 20/302 [00:00&lt;00:01, 192.85it/s]
- 13%|█▎        | 40/302 [00:00&lt;00:01, 194.84it/s]
- 20%|█▉        | 60/302 [00:00&lt;00:01, 194.87it/s]
- 26%|██▋       | 80/302 [00:00&lt;00:01, 195.59it/s]
- 33%|███▎      | 101/302 [00:00&lt;00:01, 197.29it/s]
- 40%|████      | 121/302 [00:00&lt;00:00, 195.92it/s]
- 47%|████▋     | 141/302 [00:00&lt;00:00, 195.05it/s]
- 53%|█████▎    | 161/302 [00:00&lt;00:00, 187.33it/s]
- 60%|█████▉    | 181/302 [00:00&lt;00:00, 188.37it/s]
- 66%|██████▌   | 200/302 [00:01&lt;00:00, 184.25it/s]
- 73%|███████▎  | 219/302 [00:01&lt;00:00, 177.96it/s]
- 78%|███████▊  | 237/302 [00:01&lt;00:00, 164.98it/s]
- 84%|████████▍ | 254/302 [00:01&lt;00:00, 161.09it/s]
- 90%|████████▉ | 271/302 [00:01&lt;00:00, 163.17it/s]
- 95%|█████████▌| 288/302 [00:01&lt;00:00, 158.28it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 177.62it/s]
+  7%|▋         | 20/302 [00:00&lt;00:01, 191.82it/s]
+ 13%|█▎        | 40/302 [00:00&lt;00:01, 192.19it/s]
+ 20%|█▉        | 60/302 [00:00&lt;00:01, 187.96it/s]
+ 26%|██▌       | 79/302 [00:00&lt;00:01, 181.05it/s]
+ 32%|███▏      | 98/302 [00:00&lt;00:01, 176.56it/s]
+ 38%|███▊      | 116/302 [00:00&lt;00:01, 176.25it/s]
+ 44%|████▍     | 134/302 [00:00&lt;00:00, 170.62it/s]
+ 50%|█████     | 152/302 [00:00&lt;00:00, 171.58it/s]
+ 57%|█████▋    | 172/302 [00:00&lt;00:00, 178.77it/s]
+ 63%|██████▎   | 191/302 [00:01&lt;00:00, 180.90it/s]
+ 70%|██████▉   | 210/302 [00:01&lt;00:00, 179.04it/s]
+ 76%|███████▌  | 229/302 [00:01&lt;00:00, 179.45it/s]
+ 82%|████████▏ | 248/302 [00:01&lt;00:00, 182.01it/s]
+ 88%|████████▊ | 267/302 [00:01&lt;00:00, 180.71it/s]
+ 95%|█████████▍| 286/302 [00:01&lt;00:00, 182.32it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 180.25it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1158,7 +1117,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fc11a569540&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f3af7f783d0&gt;
 </pre></div>
 </div>
 </section>
@@ -1225,10 +1184,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fc11a594fd0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f3b125b6050&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 47.905 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 45.688 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
@@ -1313,7 +1272,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

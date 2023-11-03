@@ -387,6 +387,7 @@ document.write(`
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.degree.html">mne_connectivity.degree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.seed_target_indices.html">mne_connectivity.seed_target_indices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.seed_target_multivariate_indices.html">mne_connectivity.seed_target_multivariate_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.check_indices.html">mne_connectivity.check_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.select_order.html">mne_connectivity.select_order</a></li>
 </ul>
@@ -481,10 +482,13 @@ of names, then it must be equal in length to <code class="docutils literal notra
 <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be called with the other methods.</p>
 </dd>
 <dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which to compute
-connectivity. If a multivariate method is called, the indices are for a
-single connection between all seeds and all targets. If None, all
-connections are computed, unless a Granger causality method is called,
-in which case an error is raised.</p>
+connectivity. If a bivariate method is called, each array for the seeds
+and targets should contain the channel indices for each bivariate
+connection. If a multivariate method is called, each array for the
+seeds and targets should consist of nested arrays containing
+the channel indices for each multivariate connection. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+connections between all channels are computed, unless a Granger
+causality method is called, in which case an error is raised.</p>
 </dd>
 <dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The sampling frequency. Required if data is not
 <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>.</p>
@@ -554,14 +558,16 @@ keyword-argument only.</p>
 <dd class="field-even"><dl>
 <dt><strong>con</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Computed connectivity measure(s). Either an instance of
 <code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code> or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>.
-The shape of each connectivity dataset is either
-(n_signals ** 2, n_freqs) mode: ‘multitaper’ or ‘fourier’
-(n_signals ** 2, n_freqs, n_times) mode: ‘cwt_morlet’
-when “indices” is None, or
-(n_con, n_freqs) mode: ‘multitaper’ or ‘fourier’
-(n_con, n_freqs, n_times) mode: ‘cwt_morlet’
-when “indices” is specified and “n_con = len(indices[0])”. If a
-multivariate method is called “n_con = 1” even if “indices” is None.</p>
+The shape of the connectivity result will be:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">(n_cons,</span> <span class="pre">n_freqs)</span></code> for multitaper or fourier modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(n_cons,</span> <span class="pre">n_freqs,</span> <span class="pre">n_times)</span></code> for cwt_morlet mode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">n_signals</span> <span class="pre">**</span> <span class="pre">2</span></code> for bivariate methods with
+<code class="docutils literal notranslate"><span class="pre">indices=None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">1</span></code> for multivariate methods with <code class="docutils literal notranslate"><span class="pre">indices=None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">len(indices[0])</span></code> for bivariate and multivariate methods
+when indices is supplied.</p></li>
+</ul>
 </dd>
 </dl>
 </dd>
@@ -607,13 +613,19 @@ of 3 connections) one can use the following:</p>
 <p>In this case con.get_data().shape = (3, n_freqs). The connectivity scores
 are in the same order as defined indices.</p>
 <p>For multivariate methods, this is handled differently. If “indices” is
-None, connectivity between all signals will attempt to be computed (this is
-not possible if a Granger causality method is called). If “indices” is
-specified, the seeds and targets are treated as a single connection. For
-example, to compute the connectivity between signals 0, 1, 2 and 3, 4, 5,
-one would use the same approach as above, however the signals would all be
-considered for a single connection and the connectivity scores would have
-the shape (1, n_freqs).</p>
+None, connectivity between all signals will be computed and a single
+connectivity spectrum will be returned (this is not possible if a Granger
+causality method is called). If “indices” is specified, seed and target
+indices for each connection should be specified as nested array-likes. For
+example, to compute the connectivity between signals (0, 1) -&gt; (2, 3) and
+(0, 1) -&gt; (4, 5), indices should be specified as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]),</span>  <span class="c1"># seeds</span>
+           <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]))</span>  <span class="c1"># targets</span>
+</pre></div>
+</div>
+<p>More information on working with multivariate indices and handling
+connections where the number of seeds and targets are not equal can be
+found in the <a class="reference internal" href="../auto_examples/handling_ragged_arrays.html"><span class="doc">Working with ragged indices for multivariate connectivity</span></a> example.</p>
 <p><strong>Supported Connectivity Measures</strong></p>
 <p>The connectivity method(s) is specified using the “method” parameter. The
 following methods are supported (note: <code class="docutils literal notranslate"><span class="pre">E[]</span></code> denotes average over
@@ -780,6 +792,9 @@ the original signal in time.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Compute different connectivity measures and then demonstrate the utility of the class."><img alt="" src="../_images/sphx_glr_connectivity_classes_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/connectivity_classes.html#sphx-glr-auto-examples-connectivity-classes-py"><span class="std std-ref">Using the connectivity classes</span></a></p>
   <div class="sphx-glr-thumbnail-title">Using the connectivity classes</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how multivariate connectivity involving different numbers of seeds an..."><img alt="" src="../_images/sphx_glr_handling_ragged_arrays_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/handling_ragged_arrays.html#sphx-glr-auto-examples-handling-ragged-arrays-py"><span class="std std-ref">Working with ragged indices for multivariate connectivity</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Working with ragged indices for multivariate connectivity</div>
 </div></div><div style='clear:both'></div></section>
 </section>
 
@@ -859,7 +874,7 @@ the original signal in time.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

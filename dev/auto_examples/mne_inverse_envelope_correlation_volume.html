@@ -375,6 +375,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -519,7 +520,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
@@ -576,7 +577,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -624,7 +625,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -688,7 +689,7 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 790.2 ms
+Interior check completed in 777.3 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -765,7 +766,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 716.4 ms
+Interior check completed in 696.1 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -773,7 +774,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 241.2 ms
+Interior check completed in 237.8 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -857,7 +858,7 @@ Using control points [ 82.5  92.3 107. ]
 </dd>
 </dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 39.374 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.612 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e8d9a36f1de06d756efc8f0135d04ae2/mne_inverse_envelope_correlation_volume.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation_volume.py</span></code></a></p>
@@ -948,7 +949,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

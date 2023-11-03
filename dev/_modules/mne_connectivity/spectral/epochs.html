@@ -428,7 +428,7 @@ document.write(`
     <span class="n">ProgressBar</span><span class="p">,</span> <span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">check_indices</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">_check_multivariate_indices</span>
 
 
 <span class="k">def</span> <span class="nf">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
@@ -496,40 +496,45 @@ document.write(`
     <span class="n">times</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmin_idx</span><span class="p">:</span><span class="n">tmax_idx</span><span class="p">]</span>
     <span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;indices must be specified when computing Granger &#39;</span>
                     <span class="s1">&#39;causality, as all-to-all connectivity is not supported&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;using all indices for multivariate connectivity&#39;</span><span class="p">)</span>
-                <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span>
-                               <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+                <span class="c1"># indices expected to be a masked array, even if not ragged</span>
+                <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+                               <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span>
+                                                 <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;only using indices for lower-triangular matrix&#39;</span><span class="p">)</span>
             <span class="c1"># only compute r for lower-triangular region</span>
             <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;seed and target indices must not intersect when computing&#39;</span>
-                    <span class="s1">&#39;Granger causality&#39;</span><span class="p">)</span>
-        <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="c1"># pad ragged indices and mask the invalid entries</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">seed</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">seed</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span>
+                                                  <span class="n">target</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s1">&#39;seed and target indices must not intersect when &#39;</span>
+                            <span class="s1">&#39;computing Granger causality&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
 
     <span class="c1"># number of connectivities to compute</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;seed and target indices cannot contain repeated channels for &#39;</span>
-                <span class="s1">&#39;multivariate connectivity&#39;</span><span class="p">)</span>
-        <span class="n">n_cons</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># UNTIL RAGGED ARRAYS SUPPORTED</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    computing connectivity for </span><span class="si">%d</span><span class="s1"> connections&#39;</span>
                 <span class="o">%</span> <span class="n">n_cons</span><span class="p">)</span>
@@ -591,6 +596,46 @@ document.write(`
     <span class="k">return</span> <span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">times_in</span><span class="p">,</span> <span class="n">n_times_in</span><span class="p">,</span> <span class="n">tmin_idx</span><span class="p">,</span>
             <span class="n">tmax_idx</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">freq_mask</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">freqs_bands</span><span class="p">,</span> <span class="n">freq_idx_bands</span><span class="p">,</span>
             <span class="n">n_signals</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">,</span> <span class="n">warn_times</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the rank argument is appropriate and compute rank if missing.&quot;&quot;&quot;</span>
+    <span class="n">sv_tol</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># tolerance for non-zero singular val (rel. to largest)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
+            <span class="n">data_arr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_arr</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">for</span> <span class="n">group_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># seeds and targets</span>
+            <span class="k">for</span> <span class="n">con_i</span><span class="p">,</span> <span class="n">con_idcs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">group_i</span><span class="p">]):</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">data_arr</span><span class="p">[:,</span> <span class="n">con_idcs</span><span class="o">.</span><span class="n">compressed</span><span class="p">()],</span>
+                                  <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">rank</span><span class="p">[</span><span class="n">group_i</span><span class="p">][</span><span class="n">con_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">epoch</span> <span class="o">&gt;=</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sv_tol</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">s</span><span class="p">])</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Estimated data ranks:&#39;</span><span class="p">)</span>
+        <span class="n">con_i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    connection </span><span class="si">%i</span><span class="s1"> - seeds (</span><span class="si">%i</span><span class="s1">); targets (</span><span class="si">%i</span><span class="s1">)&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">con_i</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">,</span> <span class="p">))</span>
+            <span class="n">con_i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">target_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">seed_rank</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">target_rank</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;ranks for seeds and targets must be &gt; 0 and &lt;= the &#39;</span>
+                    <span class="s1">&#39;number of channels in the seeds and targets, &#39;</span>
+                    <span class="s1">&#39;respectively, for each connection&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rank</span>
 
 
 <span class="k">def</span> <span class="nf">_assemble_spectral_params</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span>
@@ -826,22 +871,23 @@ document.write(`
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;MIC&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cons</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
         <span class="n">con_i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">target_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_connection_number</span><span class="p">(</span><span class="n">con_i</span><span class="p">)</span>
 
-            <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span>
+            <span class="n">seed_idcs</span> <span class="o">=</span> <span class="n">seed_idcs</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+            <span class="n">target_idcs</span> <span class="o">=</span> <span class="n">target_idcs</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
             <span class="n">con_idcs</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">seed_idcs</span><span class="p">,</span> <span class="o">*</span><span class="n">target_idcs</span><span class="p">]</span>
 
             <span class="n">C</span> <span class="o">=</span> <span class="n">csd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">con_idcs</span><span class="p">,</span> <span class="n">con_idcs</span><span class="p">)]</span>
 
             <span class="c1"># Eqs. 32 &amp; 33</span>
             <span class="n">C_bar</span><span class="p">,</span> <span class="n">U_bar_aa</span><span class="p">,</span> <span class="n">U_bar_bb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csd_svd</span><span class="p">(</span>
-                <span class="n">C</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">)</span>
+                <span class="n">C</span><span class="p">,</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">)</span>
 
             <span class="c1"># Eqs. 3 &amp; 4</span>
             <span class="n">E</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_e</span><span class="p">(</span><span class="n">C_bar</span><span class="p">,</span> <span class="n">n_seeds</span><span class="o">=</span><span class="n">U_bar_aa</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
@@ -856,10 +902,11 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reshape_results</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_csd_svd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csd</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_csd_svd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csd</span><span class="p">,</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Dimensionality reduction of CSD with SVD.&quot;&quot;&quot;</span>
         <span class="n">n_times</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">n_targets</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">n_seeds</span>
+        <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span>
+        <span class="n">n_targets</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">n_seeds</span>
 
         <span class="n">C_aa</span> <span class="o">=</span> <span class="n">csd</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">]</span>
         <span class="n">C_ab</span> <span class="o">=</span> <span class="n">csd</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">:]</span>
@@ -909,8 +956,9 @@ document.write(`
         <span class="k">for</span> <span class="n">block_i</span> <span class="ow">in</span> <span class="n">ProgressBar</span><span class="p">(</span>
                 <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">),</span> <span class="n">mesg</span><span class="o">=</span><span class="s2">&quot;frequency blocks&quot;</span><span class="p">):</span>
             <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_indices</span><span class="p">(</span><span class="n">block_i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_freqs</span><span class="p">)</span>
-            <span class="n">parallel</span><span class="p">(</span><span class="n">parallel_compute_t</span><span class="p">(</span>
+            <span class="n">T</span><span class="p">[:,</span> <span class="n">freqs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">parallel</span><span class="p">(</span><span class="n">parallel_compute_t</span><span class="p">(</span>
                 <span class="n">C_r</span><span class="p">[:,</span> <span class="n">f</span><span class="p">],</span> <span class="n">T</span><span class="p">[:,</span> <span class="n">f</span><span class="p">],</span> <span class="n">n_seeds</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">freqs</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isreal</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -930,6 +978,7 @@ document.write(`
                      <span class="n">U_bar_bb</span><span class="p">,</span> <span class="n">con_i</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute MIC and the associated spatial patterns.&quot;&quot;&quot;</span>
         <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span>
+        <span class="n">n_targets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)</span>
         <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_freqs</span><span class="p">)</span>
 
@@ -938,12 +987,15 @@ document.write(`
             <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
         <span class="n">w_targets</span><span class="p">,</span> <span class="n">V_targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">E</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">E</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">seed_idcs</span> <span class="o">==</span> <span class="n">target_idcs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">))</span>
+        <span class="p">):</span>
             <span class="c1"># strange edge-case where the eigenvectors returned should be a set</span>
             <span class="c1"># of identity matrices with one rotated by 90 degrees, but are</span>
             <span class="c1"># instead identical (i.e. are not rotated versions of one another).</span>
             <span class="c1"># This leads to the case where the spatial filters are incorrectly</span>
-            <span class="c1"># applied, resulting in connectivity estimates of e.g. ~0 when they</span>
+            <span class="c1"># applied, resulting in connectivity estimates of ~0 when they</span>
             <span class="c1"># should be perfectly correlated ~1. Accordingly, we manually</span>
             <span class="c1"># create a set of rotated identity matrices to use as the filters.</span>
             <span class="n">create_filter</span> <span class="o">=</span> <span class="kc">False</span>
@@ -968,12 +1020,12 @@ document.write(`
         <span class="n">beta</span> <span class="o">=</span> <span class="n">V_targets</span><span class="p">[</span><span class="n">times</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">freqs</span><span class="p">,</span> <span class="p">:,</span> <span class="n">w_targets</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 
         <span class="c1"># Eq. 46 (seed spatial patterns)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">con_i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">con_i</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">]),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">U_bar_aa</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">))))[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
 
         <span class="c1"># Eq. 47 (target spatial patterns)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">con_i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">con_i</span><span class="p">,</span> <span class="p">:</span><span class="n">n_targets</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">:,</span> <span class="n">n_seeds</span><span class="p">:]),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">U_bar_bb</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">))))[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
 
@@ -990,7 +1042,10 @@ document.write(`
             <span class="n">E</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">axis1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
         <span class="c1"># Eq. 15</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">))</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">con_scores</span><span class="p">[</span><span class="n">con_i</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">0.5</span>
 
     <span class="k">def</span> <span class="nf">reshape_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1002,7 +1057,7 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_mic_mim_compute_t</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute T in place for a single frequency (used for MIC and MIM).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute T for a single frequency (used for MIC and MIM).&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">time_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="n">T</span><span class="p">[</span><span class="n">time_i</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">fractional_matrix_power</span><span class="p">(</span>
             <span class="n">C</span><span class="p">[</span><span class="n">time_i</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">],</span> <span class="o">-</span><span class="mf">0.5</span>
@@ -1010,6 +1065,8 @@ document.write(`
         <span class="n">T</span><span class="p">[</span><span class="n">time_i</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">:,</span> <span class="n">n_seeds</span><span class="p">:]</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">fractional_matrix_power</span><span class="p">(</span>
             <span class="n">C</span><span class="p">[</span><span class="n">time_i</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">:,</span> <span class="n">n_seeds</span><span class="p">:],</span> <span class="o">-</span><span class="mf">0.5</span>
         <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">T</span>
 
 
 <span class="k">class</span> <span class="nc">_MICEst</span><span class="p">(</span><span class="n">_MultivariateCohEstBase</span><span class="p">):</span>
@@ -1293,17 +1350,16 @@ document.write(`
 
         <span class="n">con_i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">target_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ranks</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_connection_number</span><span class="p">(</span><span class="n">con_i</span><span class="p">)</span>
 
+            <span class="n">seed_idcs</span> <span class="o">=</span> <span class="n">seed_idcs</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+            <span class="n">target_idcs</span> <span class="o">=</span> <span class="n">target_idcs</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
             <span class="n">con_idcs</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">seed_idcs</span><span class="p">,</span> <span class="o">*</span><span class="n">target_idcs</span><span class="p">]</span>
+
             <span class="n">C</span> <span class="o">=</span> <span class="n">csd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">con_idcs</span><span class="p">,</span> <span class="n">con_idcs</span><span class="p">)]</span>
 
-            <span class="n">con_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">))</span>
-            <span class="n">con_targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">))</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span>
-
-            <span class="n">C_bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csd_svd</span><span class="p">(</span>
-                <span class="n">C</span><span class="p">,</span> <span class="n">con_seeds</span><span class="p">,</span> <span class="n">con_targets</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">)</span>
+            <span class="n">C_bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csd_svd</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">)</span>
             <span class="n">n_signals</span> <span class="o">=</span> <span class="n">seed_rank</span> <span class="o">+</span> <span class="n">target_rank</span>
             <span class="n">con_seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">seed_rank</span><span class="p">)</span>
             <span class="n">con_targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">target_rank</span><span class="p">)</span> <span class="o">+</span> <span class="n">seed_rank</span>
@@ -1325,13 +1381,13 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reshape_results</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_csd_svd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csd</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_csd_svd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csd</span><span class="p">,</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Dimensionality reduction of CSD with SVD on the covariance.&quot;&quot;&quot;</span>
         <span class="c1"># sum over times and epochs to get cov. from CSD</span>
         <span class="n">cov</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-        <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
-        <span class="n">n_targets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+        <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span>
+        <span class="n">n_targets</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">n_seeds</span>
 
         <span class="n">cov_aa</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[:</span><span class="n">n_seeds</span><span class="p">,</span> <span class="p">:</span><span class="n">n_seeds</span><span class="p">]</span>
         <span class="n">cov_bb</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[</span><span class="n">n_seeds</span><span class="p">:,</span> <span class="n">n_seeds</span><span class="p">:]</span>
@@ -1606,7 +1662,7 @@ document.write(`
 <span class="sd">    See: Barnett, L. &amp; Seth, A.K., 2015, Physical Review, DOI:</span>
 <span class="sd">    10.1103/PhysRevE.91.040101, Eq. 4.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>  <span class="c1"># is this necessary???</span>
+    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>  <span class="c1"># XXX: is this necessary???</span>
     <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="n">H</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">I_n</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
@@ -1635,16 +1691,15 @@ document.write(`
 
 <span class="k">def</span> <span class="nf">_epoch_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sig_idx</span><span class="p">,</span> <span class="n">tmin_idx</span><span class="p">,</span> <span class="n">tmax_idx</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span>
                                  <span class="n">method</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">window_fun</span><span class="p">,</span> <span class="n">eigvals</span><span class="p">,</span> <span class="n">wavelets</span><span class="p">,</span>
-                                 <span class="n">freq_mask</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">idx_map</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span>
-                                 <span class="n">psd</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">,</span> <span class="n">con_method_types</span><span class="p">,</span>
-                                 <span class="n">con_methods</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals_use</span><span class="p">,</span>
-                                 <span class="n">n_times</span><span class="p">,</span> <span class="n">gc_n_lags</span><span class="p">,</span> <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                                 <span class="n">freq_mask</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">idx_map</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span>
+                                 <span class="n">block_size</span><span class="p">,</span> <span class="n">psd</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">,</span>
+                                 <span class="n">con_method_types</span><span class="p">,</span> <span class="n">con_methods</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span>
+                                 <span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">gc_n_lags</span><span class="p">,</span>
+                                 <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-        <span class="n">n_cons</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># UNTIL RAGGED ARRAYS SUPPORTED</span>
         <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_signals_use</span> <span class="o">**</span> <span class="mi">2</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_cons</span>
 
     <span class="k">if</span> <span class="n">wavelets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1917,10 +1972,13 @@ document.write(`
 <span class="sd">        &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr]``) cannot be called with the other methods.</span>
 <span class="sd">    indices : tuple of array | None</span>
 <span class="sd">        Two arrays with indices of connections for which to compute</span>
-<span class="sd">        connectivity. If a multivariate method is called, the indices are for a</span>
-<span class="sd">        single connection between all seeds and all targets. If None, all</span>
-<span class="sd">        connections are computed, unless a Granger causality method is called,</span>
-<span class="sd">        in which case an error is raised.</span>
+<span class="sd">        connectivity. If a bivariate method is called, each array for the seeds</span>
+<span class="sd">        and targets should contain the channel indices for each bivariate</span>
+<span class="sd">        connection. If a multivariate method is called, each array for the</span>
+<span class="sd">        seeds and targets should consist of nested arrays containing</span>
+<span class="sd">        the channel indices for each multivariate connection. If ``None``,</span>
+<span class="sd">        connections between all channels are computed, unless a Granger</span>
+<span class="sd">        causality method is called, in which case an error is raised.</span>
 <span class="sd">    sfreq : float</span>
 <span class="sd">        The sampling frequency. Required if data is not</span>
 <span class="sd">        :class:`Epochs &lt;mne.Epochs&gt;`.</span>
@@ -1986,14 +2044,15 @@ document.write(`
 <span class="sd">    con : array | list of array</span>
 <span class="sd">        Computed connectivity measure(s). Either an instance of</span>
 <span class="sd">        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.</span>
-<span class="sd">        The shape of each connectivity dataset is either</span>
-<span class="sd">        (n_signals ** 2, n_freqs) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
-<span class="sd">        (n_signals ** 2, n_freqs, n_times) mode: &#39;cwt_morlet&#39;</span>
-<span class="sd">        when &quot;indices&quot; is None, or</span>
-<span class="sd">        (n_con, n_freqs) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
-<span class="sd">        (n_con, n_freqs, n_times) mode: &#39;cwt_morlet&#39;</span>
-<span class="sd">        when &quot;indices&quot; is specified and &quot;n_con = len(indices[0])&quot;. If a</span>
-<span class="sd">        multivariate method is called &quot;n_con = 1&quot; even if &quot;indices&quot; is None.</span>
+<span class="sd">        The shape of the connectivity result will be:</span>
+
+<span class="sd">        - ``(n_cons, n_freqs)`` for multitaper or fourier modes</span>
+<span class="sd">        - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode</span>
+<span class="sd">        - ``n_cons = n_signals ** 2`` for bivariate methods with</span>
+<span class="sd">          ``indices=None``</span>
+<span class="sd">        - ``n_cons = 1`` for multivariate methods with ``indices=None``</span>
+<span class="sd">        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods</span>
+<span class="sd">          when indices is supplied.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2039,13 +2098,19 @@ document.write(`
 <span class="sd">    are in the same order as defined indices.</span>
 
 <span class="sd">    For multivariate methods, this is handled differently. If &quot;indices&quot; is</span>
-<span class="sd">    None, connectivity between all signals will attempt to be computed (this is</span>
-<span class="sd">    not possible if a Granger causality method is called). If &quot;indices&quot; is</span>
-<span class="sd">    specified, the seeds and targets are treated as a single connection. For</span>
-<span class="sd">    example, to compute the connectivity between signals 0, 1, 2 and 3, 4, 5,</span>
-<span class="sd">    one would use the same approach as above, however the signals would all be</span>
-<span class="sd">    considered for a single connection and the connectivity scores would have</span>
-<span class="sd">    the shape (1, n_freqs).</span>
+<span class="sd">    None, connectivity between all signals will be computed and a single</span>
+<span class="sd">    connectivity spectrum will be returned (this is not possible if a Granger</span>
+<span class="sd">    causality method is called). If &quot;indices&quot; is specified, seed and target</span>
+<span class="sd">    indices for each connection should be specified as nested array-likes. For</span>
+<span class="sd">    example, to compute the connectivity between signals (0, 1) -&gt; (2, 3) and</span>
+<span class="sd">    (0, 1) -&gt; (4, 5), indices should be specified as::</span>
+
+<span class="sd">        indices = (np.array([[0, 1], [0, 1]]),  # seeds</span>
+<span class="sd">                   np.array([[2, 3], [4, 5]]))  # targets</span>
+
+<span class="sd">    More information on working with multivariate indices and handling</span>
+<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
+<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
 
 <span class="sd">    **Supported Connectivity Measures**</span>
 
@@ -2238,10 +2303,15 @@ document.write(`
 
             <span class="c1"># check rank input and compute data ranks if necessary</span>
             <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-                <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">)</span>
+                <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rank</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">gc_n_lags</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># make sure padded indices are stored in the connectivity object</span>
+            <span class="k">if</span> <span class="n">multivariate_con</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># create a copy so that `indices_use` can be modified</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
 
             <span class="c1"># get the window function, wavelets, etc for different modes</span>
             <span class="p">(</span><span class="n">spectral_params</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">,</span>
@@ -2252,16 +2322,25 @@ document.write(`
                 <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">freq_mask</span><span class="o">=</span><span class="n">freq_mask</span><span class="p">)</span>
 
             <span class="c1"># unique signals for which we actually need to compute PSD etc.</span>
-            <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+                <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices_use</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="n">remapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch_i</span><span class="p">:</span> <span class="n">sig_i</span> <span class="k">for</span> <span class="n">sig_i</span><span class="p">,</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">)}</span>
+                <span class="n">remapped_inds</span> <span class="o">=</span> <span class="n">indices_use</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sig_idx</span><span class="p">:</span>
+                    <span class="n">remapped_inds</span><span class="p">[</span><span class="n">indices_use</span> <span class="o">==</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">remapping</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="n">remapped_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">remapped_inds</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
             <span class="n">n_signals_use</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">)</span>
 
             <span class="c1"># map indices to unique indices</span>
-            <span class="n">idx_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">idx_map</span>
-                <span class="n">idx_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="o">*</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-                <span class="n">idx_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">idx_map</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">))),</span>
-                           <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">idx_map</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">))]</span>
+                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">remapped_inds</span>  <span class="c1"># use remapped seeds &amp; targets</span>
+                <span class="n">idx_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">remapped_sig</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">))),</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">remapped_sig</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">))]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">idx_map</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">]</span>
 
             <span class="c1"># allocate space to accumulate PSD</span>
             <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
@@ -2298,7 +2377,7 @@ document.write(`
         <span class="n">call_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">sig_idx</span><span class="o">=</span><span class="n">sig_idx</span><span class="p">,</span> <span class="n">tmin_idx</span><span class="o">=</span><span class="n">tmin_idx</span><span class="p">,</span> <span class="n">tmax_idx</span><span class="o">=</span><span class="n">tmax_idx</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">freq_mask</span><span class="o">=</span><span class="n">freq_mask</span><span class="p">,</span> <span class="n">idx_map</span><span class="o">=</span><span class="n">idx_map</span><span class="p">,</span>
-            <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span>
+            <span class="n">n_cons</span><span class="o">=</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span>
             <span class="n">psd</span><span class="o">=</span><span class="n">psd</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="o">=</span><span class="n">accumulate_psd</span><span class="p">,</span>
             <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
             <span class="n">con_method_types</span><span class="o">=</span><span class="n">con_method_types</span><span class="p">,</span>
@@ -2382,8 +2461,8 @@ document.write(`
             <span class="n">this_con</span> <span class="o">=</span> <span class="n">this_con_bands</span>
 
             <span class="k">if</span> <span class="n">this_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">patterns_shape</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">n_bands</span><span class="p">)</span> <span class="o">+</span>
-                                  <span class="n">this_patterns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+                <span class="n">patterns_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">this_patterns</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">patterns_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_bands</span>
                 <span class="n">this_patterns_bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">patterns_shape</span><span class="p">,</span>
                                                <span class="n">dtype</span><span class="o">=</span><span class="n">this_patterns</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">band_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_bands</span><span class="p">):</span>
@@ -2427,11 +2506,6 @@ document.write(`
     <span class="c1"># number of nodes in the original data</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">n_signals</span>
 
-    <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-        <span class="c1"># UNTIL RAGGED ARRAYS SUPPORTED</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">])]])</span>
-
     <span class="c1"># create a list of connectivity containers</span>
     <span class="n">conn_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_con</span><span class="p">,</span> <span class="n">_patterns</span><span class="p">,</span> <span class="n">_method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
@@ -2458,49 +2532,6 @@ document.write(`
         <span class="n">conn_list</span> <span class="o">=</span> <span class="n">conn_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">conn_list</span></div>
-
-
-<span class="k">def</span> <span class="nf">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the rank argument is appropriate and compute rank if missing.&quot;&quot;&quot;</span>
-    <span class="c1"># UNTIL RAGGED ARRAYS SUPPORTED</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
-
-    <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-        <span class="n">rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
-            <span class="n">data_arr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_arr</span> <span class="o">=</span> <span class="n">data</span>
-
-        <span class="k">for</span> <span class="n">group_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">con_i</span><span class="p">,</span> <span class="n">con_idcs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">group_i</span><span class="p">]):</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">data_arr</span><span class="p">[:,</span> <span class="n">con_idcs</span><span class="p">],</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">rank</span><span class="p">[</span><span class="n">group_i</span><span class="p">][</span><span class="n">con_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">epoch</span> <span class="o">&gt;=</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-10</span><span class="p">)</span>
-                     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">s</span><span class="p">])</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Estimated data ranks:&#39;</span><span class="p">)</span>
-        <span class="n">con_i</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    connection </span><span class="si">%i</span><span class="s1"> - seeds (</span><span class="si">%i</span><span class="s1">); targets (</span><span class="si">%i</span><span class="s1">)&#39;</span>
-                        <span class="o">%</span> <span class="p">(</span><span class="n">con_i</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">,</span> <span class="p">))</span>
-            <span class="n">con_i</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="n">rank</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">seed_idcs</span><span class="p">,</span> <span class="n">target_idcs</span><span class="p">,</span> <span class="n">seed_rank</span><span class="p">,</span> <span class="n">target_rank</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">seed_rank</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed_idcs</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">target_rank</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_idcs</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;ranks for seeds and targets must be &gt; 0 and &lt;= the &#39;</span>
-                    <span class="s1">&#39;number of channels in the seeds and targets, &#39;</span>
-                    <span class="s1">&#39;respectively, for each connection&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">rank</span>
 </pre></div>
 
                 </article>
@@ -2545,7 +2576,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

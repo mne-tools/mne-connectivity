@@ -457,6 +457,12 @@ document.write(`
         <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">event_id_keys</span><span class="p">,</span> <span class="n">event_id_vals</span><span class="p">))</span>
         <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
 
+    <span class="c1"># convert indices numpy arrays to a tuple of masked arrays</span>
+    <span class="c1"># (only multivariate connectivity indices saved as arrays)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
     <span class="c1"># create the connectivity class</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">cls_func</span><span class="p">(</span>
         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">array</span><span class="o">.</span><span class="n">attrs</span>
@@ -552,7 +558,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

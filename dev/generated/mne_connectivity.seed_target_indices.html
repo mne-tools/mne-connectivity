@@ -56,7 +56,7 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.check_indices" href="mne_connectivity.check_indices.html" />
+    <link rel="next" title="mne_connectivity.seed_target_multivariate_indices" href="mne_connectivity.seed_target_multivariate_indices.html" />
     <link rel="prev" title="mne_connectivity.degree" href="mne_connectivity.degree.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -386,6 +386,7 @@ document.write(`
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.degree.html">mne_connectivity.degree</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_connectivity.seed_target_indices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.seed_target_multivariate_indices.html">mne_connectivity.seed_target_multivariate_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.check_indices.html">mne_connectivity.check_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.select_order.html">mne_connectivity.select_order</a></li>
 </ul>
@@ -454,23 +455,39 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.seed_target_indices">
 <span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">seed_target_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/utils/utils.html#seed_target_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.seed_target_indices" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate indices parameter for seed based connectivity analysis.</p>
+<dd><p>Generate indices parameter for bivariate seed-based connectivity.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>seeds</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Seed indices.</p>
+<dt><strong>seeds</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_seeds)</span></dt><dd><p>Seed indices.</p>
 </dd>
-<dt><strong>targets</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Indices of signals for which to compute connectivity.</p>
+<dt><strong>targets</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_targets)</span></dt><dd><p>Indices of signals for which to compute connectivity.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>The indices parameter used for connectivity computation.</p>
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (2, n_cons)</span></dt><dd><p>The indices parameter used for connectivity computation.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">seeds</span></code> and <code class="docutils literal notranslate"><span class="pre">targets</span></code> should be array-likes or integers representing
+the indices of the channel pairs in the data for each connection. <code class="docutils literal notranslate"><span class="pre">seeds</span></code>
+and <code class="docutils literal notranslate"><span class="pre">targets</span></code> will be expanded such that connectivity will be computed
+between each seed and each target. E.g. the seeds and targets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">seeds</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>would be returned as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>  <span class="c1"># seeds</span>
+           <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>  <span class="c1"># targets</span>
+</pre></div>
+</div>
+<p>where the indices have been expanded to have shape <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">n_cons)</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">n_unique_seeds</span> <span class="pre">*</span> <span class="pre">n_unique_targets</span></code>.</p>
 </dd></dl>
 
 <section id="examples-using-mne-connectivity-seed-target-indices">
@@ -511,11 +528,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="mne_connectivity.check_indices.html"
+       href="mne_connectivity.seed_target_multivariate_indices.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.check_indices</p>
+        <p class="prev-next-title">mne_connectivity.seed_target_multivariate_indices</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -566,7 +583,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-10-27.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
       <br/>
     
   </p>

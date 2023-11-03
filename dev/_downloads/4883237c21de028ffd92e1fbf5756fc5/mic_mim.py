@@ -70,7 +70,7 @@ epochs = make_fixed_length_epochs(raw, duration=2.0).load_data()
 ###############################################################################
 # We will focus on connectivity between sensors over the left and right
 # hemispheres, with 75 sensors in the left hemisphere designated as seeds, and
-# 75 sensors in the right hemisphere designated as targets.
+# 76 sensors in the right hemisphere designated as targets.
 
 # %%
 
@@ -81,13 +81,7 @@ seeds = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
 targets = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
            ch_info['loc'][0] > 0]
 
-# XXX: Currently ragged indices are not supported, so we only consider a single
-# list of indices with an equal number of seeds and targets
-min_n_chs = min(len(seeds), len(targets))
-seeds = seeds[:min_n_chs]
-targets = targets[:min_n_chs]
-
-multivar_indices = (np.array(seeds), np.array(targets))
+multivar_indices = (np.array([seeds]), np.array([targets]))
 
 seed_names = [epochs.info['ch_names'][idx] for idx in seeds]
 target_names = [epochs.info['ch_names'][idx] for idx in targets]
@@ -171,12 +165,11 @@ fig.suptitle('Maximised imaginary part of coherency')
 #
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
-# hemispheres occurs at the posteromedial regions, based on the regions with
-# the largest absolute values. Using the signs of the values, we can infer the
-# existence of a dipole source in the central regions of the left hemisphere
-# which may account for the connectivity contributions seen for the left
-# posteromedial and frontolateral areas (represented on the plot as a green
-# line).
+# hemispheres occurs at the left and right posterior and left central regions,
+# based on the areas with the largest absolute values. Using the signs of the
+# values, we can infer the existence of a dipole source between the central and
+# posterior regions of the left hemisphere accounting for the connectivity
+# contributions (represented on the plot as a green line).
 
 # %%
 
@@ -185,9 +178,9 @@ fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
 # patterns have shape [seeds/targets x cons x channels x freqs (x times)]
-patterns = np.array(mic.attrs["patterns"])
-seed_pattern = patterns[0]
-target_pattern = patterns[1]
+patterns = np.array(mic.attrs['patterns'])
+seed_pattern = patterns[0, :, :len(seeds)]
+target_pattern = patterns[1, :, :len(targets)]
 # average across frequencies
 seed_pattern = np.mean(seed_pattern[0, :, fband_idx[0]:fband_idx[1] + 1],
                        axis=1)
@@ -217,7 +210,7 @@ axes[2].set_title('Target spatial pattern\n13-18 Hz')
 
 # plot the left hemisphere dipole example
 axes[0].plot(
-    [-0.1, -0.05], [-0.075, -0.03], color='lime', linewidth=2,
+    [-0.01, -0.07], [-0.07, -0.03], color='lime', linewidth=2,
     path_effects=[pe.Stroke(linewidth=4, foreground='k'), pe.Normal()])
 
 plt.show()
@@ -268,7 +261,7 @@ axis.set_xlabel('Frequency (Hz)')
 axis.set_ylabel('Absolute connectivity (A.U.)')
 fig.suptitle('Multivariate interaction measure')
 
-n_channels = len(np.unique([*multivar_indices[0], *multivar_indices[1]]))
+n_channels = len(seeds) + len(targets)
 normalised_mim = mim.get_data()[0] / n_channels
 print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
 
@@ -296,7 +289,7 @@ print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
 
 # %%
 
-indices = (np.array([*seeds, *targets]), np.array([*seeds, *targets]))
+indices = (np.array([[*seeds, *targets]]), np.array([[*seeds, *targets]]))
 gim = spectral_connectivity_epochs(
     epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None,
     verbose=False)
@@ -307,7 +300,7 @@ axis.set_xlabel('Frequency (Hz)')
 axis.set_ylabel('Connectivity (A.U.)')
 fig.suptitle('Global interaction measure')
 
-n_channels = len(np.unique([*indices[0], *indices[1]]))
+n_channels = len(seeds) + len(targets)
 normalised_gim = gim.get_data()[0] / n_channels
 print(f'Normalised GIM has a maximum value of {normalised_gim.max():.2f}')
 
@@ -369,9 +362,9 @@ fig.suptitle('Multivariate interaction measure (non-normalised)')
 
 # no. channels equal with and without projecting to rank subspace for patterns
 assert (patterns[0, 0].shape[0] ==
-        np.array(mic_red.attrs["patterns"])[0, 0].shape[0])
+        np.array(mic_red.attrs['patterns'])[0, 0].shape[0])
 assert (patterns[1, 0].shape[0] ==
-        np.array(mic_red.attrs["patterns"])[1, 0].shape[0])
+        np.array(mic_red.attrs['patterns'])[1, 0].shape[0])
 
 
 ###############################################################################
@@ -379,21 +372,21 @@ assert (patterns[1, 0].shape[0] ==
 # an automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced. The rank of the data is determined
 # by computing the singular values of the data and finding those within a
-# factor of :math:`1e^{-10}` relative to the largest singular value.
+# factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# In some circumstances, this threshold may be too lenient, in which case you
-# should inspect the singular values of your data to identify an appropriate
-# degree of dimensionality reduction to perform, which you can then specify
-# manually using the ``rank`` argument. The code below shows one possible
-# approach for finding an appropriate rank of close-to-singular data with a
-# more conservative threshold of :math:`1e^{-5}`.
+# Whilst unlikely, there may be scenarios in which this threshold may be too
+# lenient. In these cases, you should inspect the singular values of your data
+# to identify an appropriate degree of dimensionality reduction to perform,
+# which you can then specify manually using the ``rank`` argument. The code
+# below shows one possible approach for finding an appropriate rank of
+# close-to-singular data with a more conservative threshold.
 
 # %%
 
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
-# finds how many singular values are "close" to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
+# finds how many singular values are 'close' to the largest singular value
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 
 
 ###############################################################################
