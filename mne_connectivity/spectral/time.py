@@ -407,6 +407,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                     'indices must be specified when computing Granger '
                     'causality, as all-to-all connectivity is not supported')
             logger.info('using all indices for multivariate connectivity')
+            # indices expected to be a masked array, even if not ragged
             indices_use = (np.arange(n_signals, dtype=int)[np.newaxis, :],
                            np.arange(n_signals, dtype=int)[np.newaxis, :])
             indices_use = np.ma.masked_array(indices_use,
@@ -416,11 +417,8 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
             indices_use = np.tril_indices(n_signals, k=-1)
     else:
         if multivariate_con:
-            # mask indices
+            # pad ragged indices and mask the invalid entries
             indices_use = _check_multivariate_indices(indices, n_signals)
-            indices_use = np.ma.concatenate([inds[np.newaxis] for inds in
-                                             indices_use])
-            np.ma.set_fill_value(indices_use, -1)  # else 99999 after concat.
             if any(this_method in _gc_methods for this_method in method):
                 for seed, target in zip(indices_use[0], indices_use[1]):
                     intersection = np.intersect1d(seed.compressed(),
@@ -430,7 +428,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
                             'seed and target indices must not intersect when '
                             'computing Granger causality')
             # make sure padded indices are stored in the connectivity object
-            # create a copy
+            # create a copy so that `indices_use` can be modified
             indices = (indices_use[0].copy(), indices_use[1].copy())
         else:
             indices_use = check_indices(indices)

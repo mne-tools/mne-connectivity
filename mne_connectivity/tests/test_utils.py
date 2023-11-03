@@ -94,34 +94,34 @@ def test_check_multivariate_indices():
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3], [3, 4]]
     indices = _check_multivariate_indices((seeds, targets), n_signals)
-    assert all(np.ma.isMA(inds) for inds in indices)
-    assert all(inds.fill_value == mask_value for inds in indices)
-    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
-                                        np.array([[2, 3], [3, 4]])))
+    assert np.ma.isMA(indices)
+    assert indices.fill_value == mask_value
+    assert np.all(indices == np.array([[[0, 1], [0, 1]],
+                                       [[2, 3], [3, 4]]]))
     # non-ragged indices with negative values
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3], [3, -1]]
     indices = _check_multivariate_indices((seeds, targets), n_signals)
-    assert all(np.ma.isMA(inds) for inds in indices)
-    assert all(inds.fill_value == mask_value for inds in indices)
-    assert np.all(np.array(indices) == (np.array([[0, 1], [0, 1]]),
-                                        np.array([[2, 3], [3, 4]])))
+    assert np.ma.isMA(indices)
+    assert indices.fill_value == mask_value
+    assert np.all(indices == np.array([[[0, 1], [0, 1]],
+                                       [[2, 3], [3, 4]]]))
     # ragged indices
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3, 4], [4]]
     indices = _check_multivariate_indices((seeds, targets), n_signals)
-    assert all(np.ma.isMA(inds) for inds in indices)
-    assert all(inds.fill_value == mask_value for inds in indices)
-    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
-                                        np.array([[2, 3, 4], [4, -1, -1]])))
+    assert np.ma.isMA(indices)
+    assert indices.fill_value == mask_value
+    assert np.all(indices == np.array([[[0, 1, -1], [0, 1, -1]],
+                                       [[2, 3, 4], [4, -1, -1]]]))
     # ragged indices with negative values
     seeds = [[0, 1], [0, 1]]
     targets = [[2, 3, 4], [-1]]
     indices = _check_multivariate_indices((seeds, targets), n_signals)
-    assert all(np.ma.isMA(inds) for inds in indices)
-    assert all(inds.fill_value == mask_value for inds in indices)
-    assert np.all(np.array(indices) == (np.array([[0, 1, -1], [0, 1, -1]]),
-                                        np.array([[2, 3, 4], [4, -1, -1]])))
+    assert np.ma.isMA(indices)
+    assert indices.fill_value == mask_value
+    assert np.all(indices == np.array([[[0, 1, -1], [0, 1, -1]],
+                                       [[2, 3, 4], [4, -1, -1]]]))
 
     # test error catching
     with pytest.raises(ValueError,

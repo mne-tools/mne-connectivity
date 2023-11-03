@@ -97,8 +97,8 @@ def _check_multivariate_indices(indices, n_chans):
 
     Returns
     -------
-    indices : tuple of array of array of int, shape of (2, n_cons, max_n_chans)
-        The indices as a masked array.
+    indices : array of array of int, shape of (2, n_cons, max_n_chans)
+        The padded indices as a masked array.
 
     Notes
     -----
@@ -176,17 +176,13 @@ def _check_multivariate_indices(indices, n_chans):
                     indices[group_idx][con_idx][chan_idx] = chan % n_chans
 
     # pad indices to avoid ragged arrays
-    padded_indices = (np.full((n_cons, max_n_chans), invalid, dtype=np.int32),
-                      np.full((n_cons, max_n_chans), invalid, dtype=np.int32))
-    con_i = 0
-    for seed, target in zip(indices[0], indices[1]):
-        padded_indices[0][con_i, :len(seed)] = seed
-        padded_indices[1][con_i, :len(target)] = target
-        con_i += 1
+    padded_indices = np.full((2, n_cons, max_n_chans), invalid, dtype=np.int32)
+    for con_i, (seed, target) in enumerate(zip(indices[0], indices[1])):
+        padded_indices[0, con_i, :len(seed)] = seed
+        padded_indices[1, con_i, :len(target)] = target
 
     # mask invalid indices
-    masked_indices = (np.ma.masked_values(padded_indices[0], invalid),
-                      np.ma.masked_values(padded_indices[1], invalid))
+    masked_indices = np.ma.masked_values(padded_indices, invalid)
 
     return masked_indices
 
