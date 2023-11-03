@@ -1,4 +1,5 @@
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
+#          Thomas S. Binns <t.s.binns@outlook.com>
 #
 # License: BSD (3-clause)
 import numpy as np
@@ -49,17 +50,24 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
 
 def check_indices(indices):
-    """Check indices parameter.
+    """Check indices parameter for bivariate connectivity.
 
     Parameters
     ----------
-    indices : tuple of array
-        Tuple of length 2 containing index pairs.
+    indices : tuple of array of int, shape (2, n_cons)
+        Tuple containing index pairs.
 
     Returns
     -------
-    indices : tuple of array
+    indices : tuple of array of int, shape (2, n_cons)
         The indices.
+
+    Notes
+    -----
+    Indices for bivariate connectivity should be a tuple of length 2,
+    containing the channel indices for the seed and target channel pairs,
+    respectively. Seed and target indices should be equal-length array-likes of
+    integers representing the indices of the individual channels in the data.
     """
     if not isinstance(indices, tuple) or len(indices) != 2:
         raise ValueError('indices must be a tuple of length 2')
@@ -68,23 +76,149 @@ def check_indices(indices):
         raise ValueError('Index arrays indices[0] and indices[1] must '
                          'have the same length')
 
+    if any(isinstance(inds, (np.ndarray, list, tuple)) for inds in
+           [*indices[0], *indices[1]]):
+        raise TypeError('Channel indices must be integers, not array-likes')
+
     return indices
 
 
-def seed_target_indices(seeds, targets):
-    """Generate indices parameter for seed based connectivity analysis.
+def _check_multivariate_indices(indices, n_chans):
+    """Check indices parameter for multivariate connectivity and mask it.
 
     Parameters
     ----------
-    seeds : array of int | int
+    indices : tuple of array of array of int, shape (2, n_cons, variable)
+        Tuple containing index sets.
+
+    n_chans : int
+        The number of channels in the data. Used when converting negative
+        indices to positive indices.
+
+    Returns
+    -------
+    indices : array of array of int, shape of (2, n_cons, max_n_chans)
+        The padded indices as a masked array.
+
+    Notes
+    -----
+    Indices for multivariate connectivity should be a tuple of length 2
+    containing the channel indices for the seed and target channel sets,
+    respectively. Seed and target indices should be equal-length array-likes
+    representing the indices of the channel sets in the data for each
+    connection. The indices for each connection should be an array-like of
+    integers representing the individual channels in the data. The length of
+    indices for each connection do not need to be equal. All indices within a
+    connection must be unique.
+
+    If the seed and target indices are given as lists or tuples, they will be
+    converted to numpy arrays. Because the number of channels can differ across
+    connections or between the seeds and targets for a given connection (i.e.
+    ragged/jagged indices), the returned array will be padded out to a 'full'
+    array with an invalid index (``-1``) according to the maximum number of
+    channels in the seed or target of any one connection. These invalid
+    entries are then masked and returned as numpy masked arrays. E.g. the
+    ragged indices of shape ``(2, n_cons, variable)``::
+
+            indices = ([[0, 1], [0, 1   ]],  # seeds
+                       [[2, 3], [4, 5, 6]])  # targets
+
+    would be padded to full arrays::
+
+            indices = ([[0, 1, -1], [0, 1, -1]],  # seeds
+                       [[2, 3, -1], [4, 5,  6]])  # targets
+
+    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The
+    invalid entries are then masked::
+
+            indices = ([[0, 1, --], [0, 1, --]],  # seeds
+                       [[2, 3, --], [4, 5,  6]])  # targets
+
+    In case "indices" contains negative values to index channels, these will be
+    converted to the corresponding positive-valued index before any masking is
+    applied.
+
+    More information on working with multivariate indices and handling
+    connections where the number of seeds and targets are not equal can be
+    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
+    """
+    if not isinstance(indices, tuple) or len(indices) != 2:
+        raise ValueError('indices must be a tuple of length 2')
+
+    if len(indices[0]) != len(indices[1]):
+        raise ValueError('index arrays indices[0] and indices[1] must '
+                         'have the same length')
+
+    n_cons = len(indices[0])
+    invalid = -1
+
+    max_n_chans = 0
+    for group_idx, group in enumerate(indices):
+        for con_idx, con in enumerate(group):
+            if not isinstance(con, (np.ndarray, list, tuple)):
+                raise TypeError(
+                    'multivariate indices must contain array-likes of channel '
+                    'indices for each seed and target')
+            con = np.array(con)
+            if len(con) != len(np.unique(con)):
+                raise ValueError(
+                    'multivariate indices cannot contain repeated channels '
+                    'within a seed or target')
+            max_n_chans = max(max_n_chans, len(con))
+            # convert negative to positive indices
+            for chan_idx, chan in enumerate(con):
+                if chan < 0:
+                    if chan * -1 >= n_chans:
+                        raise ValueError(
+                            'a negative channel index is not present in the '
+                            'data'
+                        )
+                    indices[group_idx][con_idx][chan_idx] = chan % n_chans
+
+    # pad indices to avoid ragged arrays
+    padded_indices = np.full((2, n_cons, max_n_chans), invalid, dtype=np.int32)
+    for con_i, (seed, target) in enumerate(zip(indices[0], indices[1])):
+        padded_indices[0, con_i, :len(seed)] = seed
+        padded_indices[1, con_i, :len(target)] = target
+
+    # mask invalid indices
+    masked_indices = np.ma.masked_values(padded_indices, invalid)
+
+    return masked_indices
+
+
+def seed_target_indices(seeds, targets):
+    """Generate indices parameter for bivariate seed-based connectivity.
+
+    Parameters
+    ----------
+    seeds : array of int | int, shape (n_unique_seeds)
         Seed indices.
-    targets : array of int | int
+    targets : array of int | int, shape (n_unique_targets)
         Indices of signals for which to compute connectivity.
 
     Returns
     -------
-    indices : tuple of array
+    indices : tuple of array of int, shape (2, n_cons)
         The indices parameter used for connectivity computation.
+
+    Notes
+    -----
+    ``seeds`` and ``targets`` should be array-likes or integers representing
+    the indices of the channel pairs in the data for each connection. ``seeds``
+    and ``targets`` will be expanded such that connectivity will be computed
+    between each seed and each target. E.g. the seeds and targets::
+
+            seeds   = [0, 1]
+            targets = [2, 3, 4]
+
+    would be returned as::
+
+            indices = (np.array([0, 0, 0, 1, 1, 1]),  # seeds
+                       np.array([2, 3, 4, 2, 3, 4]))  # targets
+
+    where the indices have been expanded to have shape ``(2, n_cons)``, where
+    ``n_cons = n_unique_seeds * n_unique_targets``.
     """
     # make them arrays
     seeds = np.asarray((seeds,)).ravel()
@@ -95,6 +229,77 @@ def seed_target_indices(seeds, targets):
 
     indices = (np.concatenate([np.tile(i, n_targets) for i in seeds]),
                np.tile(targets, n_seeds))
+
+    return indices
+
+
+def seed_target_multivariate_indices(seeds, targets):
+    """Generate indices parameter for multivariate seed-based connectivity.
+
+    Parameters
+    ----------
+    seeds : array of array of int, shape (n_unique_seeds, variable)
+        Seed indices.
+
+    targets : array of array of int, shape (n_unique_targets, variable)
+        Target indices.
+
+    Returns
+    -------
+    indices : tuple of array of array of int, shape (2, n_cons, variable)
+        The indices as a numpy object array.
+
+    Notes
+    -----
+    ``seeds`` and ``targets`` should be array-likes representing the indices of
+    the channel sets in the data for each connection. The indices for each
+    connection should be an array-like of integers representing the individual
+    channels in the data. The length of indices for each connection do not need
+    to be equal. Furthermore, all indices within a connection must be unique.
+
+    Because the number of channels per connection can vary, the indices are
+    stored as numpy arrays with ``dtype=object``. E.g. ``seeds`` and
+    ``targets``::
+
+            seeds   = [[0]]
+            targets = [[1, 2], [3, 4, 5]]
+
+    would be returned as::
+
+            indices = (np.array([[0   ], [0      ]], dtype=object),  # seeds
+                       np.array([[1, 2], [3, 4, 5]], dtype=object))  # targets
+
+    Even if the number of channels does not vary, the indices will still be
+    stored as object arrays for compatibility.
+
+    More information on working with multivariate indices and handling
+    connections where the number of seeds and targets are not equal can be
+    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
+    """
+    array_like = (np.ndarray, list, tuple)
+
+    if (
+        not isinstance(seeds, array_like) or
+        not isinstance(targets, array_like)
+    ):
+        raise TypeError('`seeds` and `targets` must be array-like')
+
+    for inds in [*seeds, *targets]:
+        if not isinstance(inds, array_like):
+            raise TypeError(
+                '`seeds` and `targets` must contain nested array-likes')
+        if len(inds) != len(np.unique(inds)):
+            raise ValueError(
+                '`seeds` and `targets` cannot contain repeated channels')
+
+    indices = [[], []]
+    for seed in seeds:
+        for target in targets:
+            indices[0].append(np.array(seed))
+            indices[1].append(np.array(target))
+
+    indices = (np.array(indices[0], dtype=object),
+               np.array(indices[1], dtype=object))
 
     return indices
 

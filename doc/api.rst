@@ -73,6 +73,7 @@ Post-processing on connectivity
 
    degree
    seed_target_indices
+   seed_target_multivariate_indices
    check_indices
    select_order
 
