@@ -70,7 +70,7 @@ from mne_connectivity import spectral_connectivity_epochs
 # about the multiple channel indices for each connection is stored in a nested
 # array. Importantly, these indices are ragged, as the first connection will be
 # computed between 2 seed and 3 target channels, and the second connection
-# between 4 seed and 1 target channel. The connectivity functions will
+# between 4 seed and 1 target channel(s). The connectivity functions will
 # recognise the indices as being ragged, and pad them to a 'full' array by
 # adding placeholder values which are masked accordingly. This makes the
 # indices easier to work with, and also compatible with the engine used to save
