@@ -10,9 +10,10 @@ from mne.filter import filter_data
 from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
     read_connectivity, spectral_connectivity_time)
-from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
-from mne_connectivity.spectral.epochs import (
-    _compute_freq_mask, _compute_freqs)
+from mne_connectivity.spectral.epochs import (_get_n_epochs,
+                                              _compute_freq_mask,
+                                              _compute_freqs)
+from mne_connectivity.spectral.epochs_bivariate import _CohEst
 
 
 def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
