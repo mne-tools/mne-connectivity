@@ -585,7 +585,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         os.path.join(fpath, 'data', 'example_multivariate_data.pkl'))
     sfreq = 100
     indices = (np.array([[0, 1]]), np.array([[2, 3]]))
-    methods = ['mic', 'mim', 'gc', 'gc_tr']
+    methods = ['mic', 'mim', 'cacoh', 'gc', 'gc_tr']
     con = spectral_connectivity_epochs(
         data, method=methods, indices=indices, mode='multitaper', sfreq=sfreq,
         fskip=0, faverage=False, tmin=0, tmax=None, mt_bandwidth=4,
