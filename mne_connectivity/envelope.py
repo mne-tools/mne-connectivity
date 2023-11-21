@@ -100,7 +100,7 @@ def envelope_correlation(data, names=None,
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
         # get the actual data in numpy
-        data = data.get_data()
+        data = data.get_data(copy=False)
     else:
         metadata = None
 

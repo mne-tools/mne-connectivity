@@ -201,7 +201,7 @@ def _check_rank_input(rank, data, indices):
         rank = np.zeros((2, len(indices[0])), dtype=int)
 
         if isinstance(data, BaseEpochs):
-            data_arr = data.get_data()
+            data_arr = data.get_data(copy=False)
         else:
             data_arr = data
 

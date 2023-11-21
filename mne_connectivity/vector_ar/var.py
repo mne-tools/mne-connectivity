@@ -144,7 +144,7 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        data = data.get_data()
+        data = data.get_data(copy=False)
     else:
         metadata = None
 

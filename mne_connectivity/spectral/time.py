@@ -325,7 +325,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         sfreq = data.info['sfreq']
         events = data.events
         event_id = data.event_id
-        n_epochs, n_signals, n_times = data.get_data().shape
+        n_epochs, n_signals, n_times = data.get_data(copy=False).shape
         # Extract metadata from the Epochs data structure.
         # Make Annotations persist through by adding them to the metadata.
         metadata = data.metadata
@@ -338,7 +338,7 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         if hasattr(data, 'annotations') and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
-        data = data.get_data()
+        data = data.get_data(copy=False)
     else:
         data = np.asarray(data)
         n_epochs, n_signals, n_times = data.shape
