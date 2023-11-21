@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 import scipy
 from scipy.linalg import sqrtm
@@ -144,7 +146,12 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        data = data.get_data(copy=False)
+        # get the actual data in numpy
+        # XXX: remove logic once support for mne<1.6 is dropped
+        kwargs = dict()
+        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+            kwargs["copy"] = False
+        data = data.get_data(**kwargs)
     else:
         metadata = None
 
