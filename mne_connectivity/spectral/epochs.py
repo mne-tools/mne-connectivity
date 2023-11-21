@@ -441,7 +441,12 @@ class _ImCohEst(_CohEstBase):
 
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
-    """Base estimator for multivariate coherency methods."""
+    """Base estimator for multivariate coherency methods.
+
+    See:
+    - Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    - Vidaurre et al. (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
+    """
 
     name = None
     accumulate_psd = False
@@ -477,7 +482,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
 
-            # Eqs. 32 & 33
+            # Eqs. 32 & 33 of Ewald et al.; Eq. 15 of Vidaurre et al.
             C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
                 C, seed_idcs, seed_rank, target_rank)
 
@@ -489,11 +494,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         self.reshape_results()
 
     def _csd_svd(self, csd, seed_idcs, seed_rank, target_rank):
-        """Dimensionality reduction of CSD with SVD.
-
-        Eqs. 32 & 33 of Ewald et al. (2012). NeuroImage. DOI:
-        10.1016/j.neuroimage.2011.11.084
-        """
+        """Dimensionality reduction of CSD with SVD."""
         n_times = csd.shape[0]
         n_seeds = len(seed_idcs)
         n_targets = csd.shape[3] - n_seeds
@@ -503,7 +504,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         C_bb = csd[..., n_seeds:, n_seeds:]
         C_ba = csd[..., n_seeds:, :n_seeds]
 
-        # Eq. 32
+        # Eqs. 32 (Ewald et al.) & 15 (Vidaurre et al.)
         if seed_rank != n_seeds:
             U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
             U_bar_aa = U_aa[..., :seed_rank]
@@ -520,7 +521,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 np.identity(n_targets),
                 (n_times, self.n_freqs) + (n_targets, n_targets))
 
-        # Eq. 33
+        # Eq. 33 (Ewald et al.)
         C_bar_aa = np.matmul(
             U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
         C_bar_ab = np.matmul(
@@ -542,7 +543,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         """
 
     def _compute_t(self, C_r, n_seeds):
-        """Compute transformation matrix, T, for frequencies (in parallel)."""
+        """Compute transformation matrix, T, for frequencies (in parallel).
+
+        Eq. 3 of Ewald et al.; part of Eq. 9 of Vidaurre et al.
+        """
         parallel, parallel_invsqrtm, _ = parallel_func(
             _invsqrtm, self.n_jobs, verbose=False)
 
@@ -577,6 +581,9 @@ def _invsqrtm(C, T, n_seeds):
 
     Kept as a standalone function to allow for parallelisation over CSD
     frequencies.
+
+    See Eq. 3 of Ewald et al. (2012). NeuroImage. DOI:
+    10.1016/j.neuroimage.2011.11.084
     """
     for time_i in range(C.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
@@ -614,6 +621,7 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         """Compute E from the CSD."""
         C_r = np.real(C)
 
+        # Eq. 3
         T = self._compute_t(C_r, n_seeds)
 
         # Eq. 4
@@ -730,9 +738,10 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         C_bar_ab = C_bar[..., :n_seeds, n_seeds:]
 
+        # Same as Eq. 3 of Ewald et al. (2012)
         T = self._compute_t(np.real(C_bar), n_seeds=U_bar_aa.shape[3])
-        T_aa = T[..., :n_seeds, :n_seeds]
-        T_bb = T[..., n_seeds:, n_seeds:]
+        T_aa = T[..., :n_seeds, :n_seeds]  # left term in Eq. 9
+        T_bb = T[..., n_seeds:, n_seeds:]  # right term in Eq. 9
 
         max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
 
@@ -745,7 +754,7 @@ class _CaCohEst(_MultivariateCohEstBase):
                                U_bar_bb, n_seeds, n_targets, con_i)
 
     def _first_optimise_phi(self, C_ab, T_aa, T_bb):
-        """Find the rough angle at which coherence is maximised."""
+        """Find the rough angle, phi, at which coherence is maximised."""
         n_iters = 5
 
         # starting phi values to optimise over (in radians)
@@ -758,42 +767,58 @@ class _CaCohEst(_MultivariateCohEstBase):
         return np.max(phis_coh, axis=0), phis[np.argmax(phis_coh, axis=0)]
 
     def _final_optimise_phi(self, C_ab, T_aa, T_bb, max_coh, max_phis):
-        """Fine-tune the angle at which coherence is maximised."""
-        n_iters = 10
+        """Fine-tune the angle at which coherence is maximised.
+
+        Uses a 2nd order Taylor expansion to approximate change in coherence
+        w.r.t. phi, and determining the next phi to evaluate coherence on (over
+        a total of 10 iterations).
+
+        Depending on how the new phi affects coherence, the step size for the
+        subsequent iteration is adjusted, like that in the Levenberg-Marquardt
+        algorithm.
+
+        Each time-freq. entry of coherence has its own corresponding phi.
+        """
+        n_iters = 10  # sufficient for (close to) exact solution
         delta_phi = 1e-6
-        mus = np.ones_like(max_phis)
+        mus = np.ones_like(max_phis)  # optimisation step size
 
         for _ in range(n_iters):
+            # 2nd order Taylor expansion around phi
             coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa,
                                            T_bb)
             coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa,
                                             T_bb)
-
             f_prime = (coh_plus - coh_minus) / (2 * delta_phi)
             f_prime_prime = (coh_plus + coh_minus - 2 * max_coh) / (
                 delta_phi ** 2)
+
+            # determine new phi to test
             phis = max_phis + (-f_prime / (f_prime_prime - mus))
+            # bound phi in range [-pi, pi]
             phis = np.mod(phis + np.pi / 2, np.pi) - np.pi / 2
 
             coh = self._compute_cacoh(phis, C_ab, T_aa, T_bb)
 
+            # find where new phi increases coh & update these values
             greater_coh = coh > max_coh
-
-            mus[greater_coh] /= 2
-            mus[~greater_coh] *= 2
-
-            # update coherence and phis
             max_coh[greater_coh] = coh[greater_coh]
             max_phis[greater_coh] = phis[greater_coh]
+
+            # update step size
+            mus[greater_coh] /= 2
+            mus[~greater_coh] *= 2
 
         return max_coh, phis
 
     def _compute_cacoh(self, phis, C_ab, T_aa, T_bb):
         """Compute the maximum coherence for a given set of phis."""
         # from numerator of Eq. 5
+        # for a given CSD entry, projects it onto a span with angle phi, such
+        # that the magnitude of the projected line is captured in the real part
         C_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_ab)
 
-        # Eq. 9
+        # Eq. 9; T_aa/bb is sqrt(inv(real(C_aa/bb)))
         D = np.matmul(T_aa, np.matmul(C_ab, T_bb))
 
         # Eq. 12
@@ -817,13 +842,16 @@ class _CaCohEst(_MultivariateCohEstBase):
         a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
         b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
 
-        # Eq. 7 rearranged
+        # Eq. 7 rearranged - multiply both sides by sqrt(inv(real(C_aa/bb)))
         alpha = np.matmul(T_aa, np.expand_dims(a, axis=3))  # filter for seeds
         beta = np.matmul(T_bb, np.expand_dims(b, axis=3))  # filter for targets
 
+        # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
+        # seed spatial patterns
         self.patterns[0, con_i, :n_seeds] = (np.matmul(
             np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
         )[..., 0].T
+        # target spatial patterns
         self.patterns[1, con_i, :n_targets] = (np.matmul(
             np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
         )[..., 0].T
