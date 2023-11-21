@@ -749,8 +749,7 @@ class _CaCohEst(_MultivariateCohEstBase):
         n_iters = 5
 
         # starting phi values to optimise over (in radians)
-        phis = np.array([(iter_i + 1) / n_iters * np.pi for iter_i in
-                         range(n_iters)])
+        phis = np.linspace(np.pi / n_iters, np.pi, n_iters)
         phis_coh = np.zeros((n_iters, *C_ab.shape[:2]))
         for iter_i, iter_phi in enumerate(phis):
             phi = np.full(C_ab.shape[:2], fill_value=iter_phi)
