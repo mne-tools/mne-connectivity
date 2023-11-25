@@ -7,6 +7,8 @@
 #
 # License: BSD (3-clause)
 
+import inspect
+
 import numpy as np
 import scipy as sp
 from mne.epochs import BaseEpochs
@@ -21,7 +23,11 @@ def _check_rank_input(rank, data, indices):
         rank = np.zeros((2, len(indices[0])), dtype=int)
 
         if isinstance(data, BaseEpochs):
-            data_arr = data.get_data()
+            # XXX: remove logic once support for mne<1.6 is dropped
+            kwargs = dict()
+            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+                kwargs["copy"] = False
+            data_arr = data.get_data(**kwargs)
         else:
             data_arr = data
 

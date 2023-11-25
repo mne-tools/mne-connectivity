@@ -81,6 +81,7 @@ jobs:
               curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
               chmod +x circleci_dependencies.sh
               ./circleci_dependencies.sh
+              pip install -r requirements_doc.txt
 
         - save_cache:
             key: pip-cache

@@ -5,6 +5,8 @@
 #
 # License: BSD (3-clause)
 
+import inspect
+
 import numpy as np
 from mne import BaseEpochs
 from mne.filter import next_fast_len
@@ -100,7 +102,11 @@ def envelope_correlation(data, names=None,
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
         # get the actual data in numpy
-        data = data.get_data()
+        # XXX: remove logic once support for mne<1.6 is dropped
+        kwargs = dict()
+        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+            kwargs["copy"] = False
+        data = data.get_data(**kwargs)
     else:
         metadata = None
 
