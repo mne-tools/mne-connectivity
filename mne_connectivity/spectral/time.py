@@ -4,6 +4,8 @@
 #
 # License: BSD (3-clause)
 
+import inspect
+
 import numpy as np
 import xarray as xr
 from mne.epochs import BaseEpochs
@@ -325,7 +327,6 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         sfreq = data.info['sfreq']
         events = data.events
         event_id = data.event_id
-        n_epochs, n_signals, n_times = data.get_data().shape
         # Extract metadata from the Epochs data structure.
         # Make Annotations persist through by adding them to the metadata.
         metadata = data.metadata
@@ -338,7 +339,12 @@ def spectral_connectivity_time(data, freqs, method='coh', average=False,
         if hasattr(data, 'annotations') and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
-        data = data.get_data()
+        # XXX: remove logic once support for mne<1.6 is dropped
+        kwargs = dict()
+        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+            kwargs["copy"] = False
+        data = data.get_data(**kwargs)
+        n_epochs, n_signals, n_times = data.shape
     else:
         data = np.asarray(data)
         n_epochs, n_signals, n_times = data.shape
