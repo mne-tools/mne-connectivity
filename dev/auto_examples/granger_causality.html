@@ -452,11 +452,11 @@ to download the full example code</p>
 between sensors in a multivariate manner. Furthermore, the use of time-reversal
 for improving the robustness of directed connectivity estimates to noise in the
 data is discussed <a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id2">2</a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
@@ -558,7 +558,7 @@ nature of the approach can aid in the interpretability and subsequent
 analysis of the results.</p>
 <p>To demonstrate the use of GC for estimating directed connectivity, we start
 by loading some example MEG data and dividing it into two-second-long epochs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><span class="n">data_path</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;SubjectCMC.ds&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><span class="n">data_path</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;SubjectCMC.ds&#39;</span><span class="p">)</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">pick</span><span class="p">(</span><span class="s1">&#39;mag&#39;</span><span class="p">)</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mf">50.</span><span class="p">,</span> <span class="mf">110.</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
@@ -570,61 +570,45 @@ by loading some example MEG data and dividing it into two-second-long epochs.</p
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for fieldtrip_cmc...
 
   0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-  1%|▎                                     | 2.43M/329M [00:00&lt;00:13, 24.3MB/s]
-  2%|▉                                     | 7.78M/329M [00:00&lt;00:07, 41.4MB/s]
-  4%|█▌                                    | 13.1M/329M [00:00&lt;00:06, 46.7MB/s]
-  6%|██                                    | 18.4M/329M [00:00&lt;00:06, 48.9MB/s]
-  7%|██▋                                   | 23.3M/329M [00:00&lt;00:06, 48.3MB/s]
-  9%|███▏                                  | 28.1M/329M [00:00&lt;00:06, 48.3MB/s]
- 10%|███▊                                  | 33.0M/329M [00:00&lt;00:06, 48.5MB/s]
- 12%|████▋                                 | 40.1M/329M [00:00&lt;00:05, 55.8MB/s]
- 14%|█████▎                                | 45.7M/329M [00:00&lt;00:05, 53.5MB/s]
- 16%|█████▉                                | 51.3M/329M [00:01&lt;00:05, 54.3MB/s]
- 17%|██████▌                               | 56.8M/329M [00:01&lt;00:05, 52.4MB/s]
- 19%|███████▏                              | 62.7M/329M [00:01&lt;00:04, 54.4MB/s]
- 21%|███████▊                              | 68.2M/329M [00:01&lt;00:04, 53.8MB/s]
- 23%|████████▋                             | 74.9M/329M [00:01&lt;00:04, 57.8MB/s]
- 25%|█████████▎                            | 81.0M/329M [00:01&lt;00:04, 58.7MB/s]
- 26%|██████████                            | 86.9M/329M [00:01&lt;00:04, 58.9MB/s]
- 28%|██████████▊                           | 93.7M/329M [00:01&lt;00:03, 61.7MB/s]
- 31%|███████████▉                           | 101M/329M [00:01&lt;00:03, 64.0MB/s]
- 33%|████████████▋                          | 107M/329M [00:01&lt;00:03, 61.2MB/s]
- 35%|█████████████▌                         | 114M/329M [00:02&lt;00:03, 64.5MB/s]
- 37%|██████████████▍                        | 121M/329M [00:02&lt;00:03, 66.0MB/s]
- 39%|███████████████▏                       | 128M/329M [00:02&lt;00:03, 62.5MB/s]
- 41%|███████████████▉                       | 135M/329M [00:02&lt;00:03, 64.1MB/s]
- 43%|████████████████▊                      | 142M/329M [00:02&lt;00:02, 66.5MB/s]
- 45%|█████████████████▌                     | 149M/329M [00:02&lt;00:02, 62.6MB/s]
- 47%|██████████████████▍                    | 155M/329M [00:02&lt;00:02, 63.5MB/s]
- 49%|███████████████████▏                   | 162M/329M [00:02&lt;00:02, 65.3MB/s]
- 51%|████████████████████                   | 169M/329M [00:02&lt;00:02, 64.8MB/s]
- 53%|████████████████████▊                  | 175M/329M [00:03&lt;00:02, 64.0MB/s]
- 55%|█████████████████████▋                 | 183M/329M [00:03&lt;00:02, 66.5MB/s]
- 58%|██████████████████████▍                | 189M/329M [00:03&lt;00:02, 63.5MB/s]
- 60%|███████████████████████▎               | 196M/329M [00:03&lt;00:02, 65.4MB/s]
- 62%|████████████████████████               | 203M/329M [00:03&lt;00:02, 63.0MB/s]
- 64%|████████████████████████▊              | 209M/329M [00:03&lt;00:02, 59.4MB/s]
- 65%|█████████████████████████▌             | 215M/329M [00:03&lt;00:01, 59.7MB/s]
- 67%|██████████████████████████▏            | 221M/329M [00:03&lt;00:01, 59.5MB/s]
- 69%|██████████████████████████▉            | 228M/329M [00:03&lt;00:01, 60.6MB/s]
- 71%|███████████████████████████▊           | 235M/329M [00:03&lt;00:01, 62.9MB/s]
- 73%|████████████████████████████▌          | 241M/329M [00:04&lt;00:01, 62.9MB/s]
- 75%|█████████████████████████████▎         | 248M/329M [00:04&lt;00:01, 64.4MB/s]
- 77%|██████████████████████████████▏        | 254M/329M [00:04&lt;00:01, 65.1MB/s]
- 79%|██████████████████████████████▉        | 261M/329M [00:04&lt;00:01, 64.7MB/s]
- 81%|███████████████████████████████▋       | 267M/329M [00:04&lt;00:00, 63.0MB/s]
- 83%|████████████████████████████████▍      | 274M/329M [00:04&lt;00:00, 62.6MB/s]
- 85%|█████████████████████████████████▏     | 280M/329M [00:04&lt;00:00, 58.3MB/s]
- 87%|█████████████████████████████████▉     | 286M/329M [00:04&lt;00:00, 59.2MB/s]
- 89%|██████████████████████████████████▌    | 292M/329M [00:04&lt;00:00, 56.2MB/s]
- 91%|███████████████████████████████████▎   | 298M/329M [00:05&lt;00:00, 58.3MB/s]
- 93%|████████████████████████████████████   | 305M/329M [00:05&lt;00:00, 60.1MB/s]
- 94%|████████████████████████████████████▊  | 311M/329M [00:05&lt;00:00, 54.9MB/s]
- 96%|█████████████████████████████████████▌ | 317M/329M [00:05&lt;00:00, 55.7MB/s]
- 98%|██████████████████████████████████████▎| 324M/329M [00:05&lt;00:00, 59.8MB/s]
+  1%|▍                                     | 4.20M/329M [00:00&lt;00:08, 36.8MB/s]
+  4%|█▌                                    | 13.0M/329M [00:00&lt;00:04, 65.4MB/s]
+  7%|██▍                                   | 21.4M/329M [00:00&lt;00:04, 73.7MB/s]
+  9%|███▍                                  | 30.2M/329M [00:00&lt;00:03, 78.9MB/s]
+ 12%|████▌                                 | 39.2M/329M [00:00&lt;00:03, 83.0MB/s]
+ 15%|█████▌                                | 48.5M/329M [00:00&lt;00:03, 86.4MB/s]
+ 18%|██████▋                               | 57.8M/329M [00:00&lt;00:03, 88.7MB/s]
+ 20%|███████▋                              | 67.0M/329M [00:00&lt;00:02, 89.5MB/s]
+ 23%|████████▊                             | 76.1M/329M [00:00&lt;00:02, 90.0MB/s]
+ 26%|█████████▉                            | 85.6M/329M [00:01&lt;00:02, 91.5MB/s]
+ 29%|██████████▉                           | 95.0M/329M [00:01&lt;00:02, 92.3MB/s]
+ 32%|████████████▎                          | 104M/329M [00:01&lt;00:02, 91.8MB/s]
+ 34%|█████████████▍                         | 114M/329M [00:01&lt;00:02, 92.1MB/s]
+ 37%|██████████████▌                        | 123M/329M [00:01&lt;00:02, 92.0MB/s]
+ 40%|███████████████▋                       | 132M/329M [00:01&lt;00:02, 92.0MB/s]
+ 43%|████████████████▋                      | 141M/329M [00:01&lt;00:02, 92.1MB/s]
+ 46%|█████████████████▊                     | 150M/329M [00:01&lt;00:01, 92.1MB/s]
+ 48%|██████████████████▉                    | 160M/329M [00:01&lt;00:01, 92.0MB/s]
+ 51%|███████████████████▉                   | 169M/329M [00:01&lt;00:01, 92.2MB/s]
+ 54%|█████████████████████                  | 178M/329M [00:02&lt;00:01, 91.4MB/s]
+ 57%|██████████████████████▏                | 187M/329M [00:02&lt;00:01, 91.7MB/s]
+ 60%|███████████████████████▎               | 197M/329M [00:02&lt;00:01, 91.9MB/s]
+ 63%|████████████████████████▍              | 206M/329M [00:02&lt;00:01, 92.5MB/s]
+ 65%|█████████████████████████▌             | 215M/329M [00:02&lt;00:01, 92.8MB/s]
+ 68%|██████████████████████████▋            | 225M/329M [00:02&lt;00:01, 93.6MB/s]
+ 71%|███████████████████████████▋           | 234M/329M [00:02&lt;00:01, 93.5MB/s]
+ 74%|████████████████████████████▊          | 244M/329M [00:02&lt;00:00, 92.9MB/s]
+ 77%|█████████████████████████████▉         | 253M/329M [00:02&lt;00:00, 93.6MB/s]
+ 80%|███████████████████████████████        | 262M/329M [00:02&lt;00:00, 93.1MB/s]
+ 83%|████████████████████████████████▏      | 272M/329M [00:03&lt;00:00, 92.8MB/s]
+ 85%|█████████████████████████████████▎     | 281M/329M [00:03&lt;00:00, 92.8MB/s]
+ 88%|██████████████████████████████████▍    | 290M/329M [00:03&lt;00:00, 91.5MB/s]
+ 91%|███████████████████████████████████▍   | 299M/329M [00:03&lt;00:00, 91.3MB/s]
+ 94%|████████████████████████████████████▌  | 309M/329M [00:03&lt;00:00, 91.7MB/s]
+ 97%|█████████████████████████████████████▋ | 318M/329M [00:03&lt;00:00, 91.8MB/s]
+ 99%|██████████████████████████████████████▊| 327M/329M [00:03&lt;00:00, 91.9MB/s]
   0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-100%|████████████████████████████████████████| 329M/329M [00:00&lt;00:00, 807GB/s]
-Download complete in 12s (314.0 MB)
+100%|███████████████████████████████████████| 329M/329M [00:00&lt;00:00, 1.11TB/s]
+Download complete in 09s (314.0 MB)
 ds directory : /home/circleci/mne_data/MNE-fieldtrip_cmc-data/SubjectCMC.ds
     res4 data read.
     hc data read.
@@ -660,8 +644,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
 - Filter length: 7921 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.3s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.2s
 Not setting metadata
 30 matching events found
 No baseline correction applied
@@ -673,7 +657,7 @@ Using data from preloaded Raw for 30 events and 200 original time points ...
 <p>We will focus on connectivity between sensors over the parietal and occipital
 cortices, with 20 parietal sensors designated as group A, and 22 occipital
 sensors designated as group B.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># parietal sensors</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># parietal sensors</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_a</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">])</span> <span class="k">if</span>
              <span class="n">ch_info</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span><span class="p">]</span>
 <span class="c1"># occipital sensors</span>
@@ -733,11 +717,11 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  685.29it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  731.12it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,  742.90it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  764.16it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  757.61it/s]
+  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:01,   49.44it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  452.12it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  620.35it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  440.16it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  500.19it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -779,19 +763,18 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,  536.88it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,  620.41it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,  694.47it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,  732.22it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,  422.87it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  440.98it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  884.17it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,  927.00it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,  931.85it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  520.27it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  539.19it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
 <p>Plotting the results, we see that there is a flow of information from our
 parietal sensors (group A) to our occipital sensors (group B) with a
 noticeable peak at ~8 Hz, and smaller peaks at 18 and 26 Hz.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s1">&#39;Connectivity (A.U.)&#39;</span><span class="p">)</span>
@@ -814,7 +797,7 @@ F_{B \rightarrow A}\)</span>.</p>
 <p>Doing so, we see that the flow of information across the spectrum remains
 dominant from parietal to occipital sensors (indicated by the positive-valued
 Granger scores), with similar peaks around 10, 18, and 26 Hz.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>  <span class="c1"># [A =&gt; B] - [B =&gt; A]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>  <span class="c1"># [A =&gt; B] - [B =&gt; A]</span>
 
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
@@ -866,7 +849,7 @@ example below, notice how the outputs are not used directly, but rather used
 to produce net scores of the time-reversed signals. The net scores of the
 time-reversed signals can then be subtracted from the net scores of the
 original signals to produce the final TRGC scores.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute GC on time-reversed signals</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute GC on time-reversed signals</span>
 <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_tr_ab</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gc_tr&#39;</span><span class="p">],</span> <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span> <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>  <span class="c1"># TR[A =&gt; B]</span>
@@ -921,11 +904,10 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,  714.27it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,  637.79it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,  620.59it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,  618.96it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  641.53it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  931.02it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,  920.00it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,  880.99it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  887.41it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -967,12 +949,12 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  576.89it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,  597.76it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,  680.39it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,  395.22it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  423.76it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  429.70it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,  560.53it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,  559.42it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  564.35it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,  338.16it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,  370.01it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  401.01it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -985,7 +967,7 @@ prominent. The stark difference between net GC and TRGC results indicates
 that the net GC spectrum was contaminated by spurious connectivity resulting
 from source mixing or correlated noise in the recordings. Altogether, the use
 of TRGC instead of net GC is generally advised.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trgc</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -1012,7 +994,7 @@ lags. In the above examples we used 20 lags, which we will compare to Granger
 scores computed with 60 lags. As you can see, the spectra of Granger scores
 computed with 60 lags is noticeably less smooth, but it does share the same
 overall pattern.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_ab_60</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_ab_60</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gc&#39;</span><span class="p">],</span> <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span> <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># A =&gt; B</span>
 
@@ -1065,34 +1047,32 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   88.80it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,   72.63it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:00,   68.68it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,   45.03it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,   51.68it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   57.38it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   61.80it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   65.37it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   65.02it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   67.50it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   69.94it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   72.02it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   72.41it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   72.12it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   72.12it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   72.23it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   73.68it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   74.91it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,   76.11it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,   77.19it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   77.89it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,   78.28it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,   79.58it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   80.94it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   81.54it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   82.59it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   83.23it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   78.53it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   88.39it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,  101.61it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,   64.11it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,   70.70it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   75.55it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   79.04it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   82.90it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   85.18it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   88.01it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   90.27it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   91.66it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   92.79it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   92.57it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   94.32it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   95.96it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   97.47it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   97.86it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   98.86it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   99.02it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,   99.77it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   99.84it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,  100.57it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  101.11it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  101.45it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,  101.30it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   98.07it/s]
 [Connectivity computation done]
 
 Text(0.5, 0.98, &#39;GC: [A =&gt; B]&#39;)
@@ -1116,7 +1096,7 @@ to identify an appropriate degree of dimensionality reduction to perform,
 which you can then specify manually using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument. The code
 below shows one possible approach for finding an appropriate rank of
 close-to-singular data with a more conservative threshold.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># finds how many singular values are &#39;close&#39; to the largest singular value</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria</span>
@@ -1132,7 +1112,7 @@ non-singular.</p>
 20 channels in the seeds and targets. Attempting to compute GC on the
 original data would not succeed, given that the resulting autocovariance
 sequence is singular, as the example below shows.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
         <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gc&#39;</span><span class="p">],</span> <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># A =&gt; B</span>
@@ -1179,13 +1159,13 @@ and targets <em>across</em> connections.</p>
 </dd>
 </dl>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.006 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.577 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-granger-causality-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/a46ac73a96237f17372f96de9f6d1dce/granger_causality.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">granger_causality.py</span></code></a></p>
-</div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bc4fcabe78bb61cbb3c5dd027303b4da/granger_causality.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">granger_causality.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/a46ac73a96237f17372f96de9f6d1dce/granger_causality.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">granger_causality.py</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1272,7 +1252,7 @@ and targets <em>across</em> connections.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-25.
       <br/>
     
   </p>

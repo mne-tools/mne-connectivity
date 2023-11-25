@@ -453,7 +453,7 @@ activity <a class="footnote-reference brackets" href="#footcite-li-linear-2017" 
 continuous iEEG recording.</p>
 <p>In this example, we will demonstrate how to compute
 a VAR model with different statistical assumptions.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -472,7 +472,7 @@ a VAR model with different statistical assumptions.</p>
 <p>Here, we first download an ECoG dataset that was recorded from a patient with
 epilepsy. To facilitate loading the data, we use <a class="reference external" href="https://mne.tools/mne-bids/">mne-bids</a>.</p>
 <p>Then, we will do some basic filtering and preprocessing using MNE-Python.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># paths to mne datasets - sample ECoG</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># paths to mne datasets - sample ECoG</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.epilepsy_ecog.data_path.html#mne.datasets.epilepsy_ecog.data_path" title="mne.datasets.epilepsy_ecog.data_path" class="sphx-glr-backref-module-mne-datasets-epilepsy_ecog sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">epilepsy_ecog</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># first define the BIDS path</span>
@@ -503,20 +503,20 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
 
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:03, 25.7MB/s]
- 13%|████▉                                | 11.7M/88.2M [00:00&lt;00:01, 48.9MB/s]
- 22%|████████▎                            | 19.8M/88.2M [00:00&lt;00:01, 61.4MB/s]
- 32%|███████████▋                         | 27.9M/88.2M [00:00&lt;00:00, 68.8MB/s]
- 41%|███████████████▏                     | 36.2M/88.2M [00:00&lt;00:00, 73.5MB/s]
- 50%|██████████████████▌                  | 44.3M/88.2M [00:00&lt;00:00, 76.2MB/s]
- 60%|██████████████████████               | 52.6M/88.2M [00:00&lt;00:00, 78.1MB/s]
- 69%|█████████████████████████▌           | 60.8M/88.2M [00:00&lt;00:00, 79.3MB/s]
- 78%|████████████████████████████▉        | 69.0M/88.2M [00:00&lt;00:00, 80.2MB/s]
- 88%|████████████████████████████████▍    | 77.3M/88.2M [00:01&lt;00:00, 80.9MB/s]
- 97%|███████████████████████████████████▊ | 85.5M/88.2M [00:01&lt;00:00, 81.3MB/s]
+  4%|█▌                                   | 3.78M/88.2M [00:00&lt;00:02, 37.8MB/s]
+ 11%|████                                 | 9.53M/88.2M [00:00&lt;00:01, 49.4MB/s]
+ 20%|███████▎                             | 17.6M/88.2M [00:00&lt;00:01, 63.5MB/s]
+ 30%|██████████▉                          | 26.2M/88.2M [00:00&lt;00:00, 72.5MB/s]
+ 38%|██████████████▏                      | 33.8M/88.2M [00:00&lt;00:00, 73.6MB/s]
+ 47%|█████████████████▎                   | 41.3M/88.2M [00:00&lt;00:00, 74.1MB/s]
+ 56%|████████████████████▊                | 49.6M/88.2M [00:00&lt;00:00, 77.2MB/s]
+ 65%|████████████████████████             | 57.4M/88.2M [00:00&lt;00:00, 77.4MB/s]
+ 74%|███████████████████████████▍         | 65.5M/88.2M [00:00&lt;00:00, 78.6MB/s]
+ 83%|██████████████████████████████▊      | 73.4M/88.2M [00:01&lt;00:00, 77.7MB/s]
+ 93%|██████████████████████████████████▌  | 82.4M/88.2M [00:01&lt;00:00, 81.5MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 305GB/s]
-Download complete in 02s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 218GB/s]
+Download complete in 03s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -544,8 +544,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -647,7 +647,7 @@ In this example, we are only interested in analyzing the interictal
 (non-seizure) data period.</p>
 <p>One might be interested in analyzing the seizure period also, which we
 leave as an exercise for our readers!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find the annotated events</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find the annotated events</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
 <span class="c1"># get sample at which seizure starts</span>
@@ -669,9 +669,9 @@ leave as an exercise for our readers!</p>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
-<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
+<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
 representing this sliding window.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.ch_names" title="mne.Epochs.ch_names" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span></a>
 
@@ -1041,7 +1041,7 @@ No baseline correction applied
 each Epoch and return an EpochConnectivity data structure. Each Epoch here
 represents a separate VAR model. Taken together, these represent a
 time-varying linear system.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a><span class="p">)</span>
 
 <span class="c1"># this returns a connectivity structure over time</span>
@@ -1052,22 +1052,20 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 20/302 [00:00&lt;00:01, 191.82it/s]
- 13%|█▎        | 40/302 [00:00&lt;00:01, 192.19it/s]
- 20%|█▉        | 60/302 [00:00&lt;00:01, 187.96it/s]
- 26%|██▌       | 79/302 [00:00&lt;00:01, 181.05it/s]
- 32%|███▏      | 98/302 [00:00&lt;00:01, 176.56it/s]
- 38%|███▊      | 116/302 [00:00&lt;00:01, 176.25it/s]
- 44%|████▍     | 134/302 [00:00&lt;00:00, 170.62it/s]
- 50%|█████     | 152/302 [00:00&lt;00:00, 171.58it/s]
- 57%|█████▋    | 172/302 [00:00&lt;00:00, 178.77it/s]
- 63%|██████▎   | 191/302 [00:01&lt;00:00, 180.90it/s]
- 70%|██████▉   | 210/302 [00:01&lt;00:00, 179.04it/s]
- 76%|███████▌  | 229/302 [00:01&lt;00:00, 179.45it/s]
- 82%|████████▏ | 248/302 [00:01&lt;00:00, 182.01it/s]
- 88%|████████▊ | 267/302 [00:01&lt;00:00, 180.71it/s]
- 95%|█████████▍| 286/302 [00:01&lt;00:00, 182.32it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 180.25it/s]
+  6%|▌         | 18/302 [00:00&lt;00:01, 172.33it/s]
+ 13%|█▎        | 39/302 [00:00&lt;00:01, 189.37it/s]
+ 20%|██        | 61/302 [00:00&lt;00:01, 202.82it/s]
+ 28%|██▊       | 84/302 [00:00&lt;00:01, 211.35it/s]
+ 35%|███▌      | 107/302 [00:00&lt;00:00, 217.78it/s]
+ 43%|████▎     | 129/302 [00:00&lt;00:00, 216.97it/s]
+ 50%|█████     | 152/302 [00:00&lt;00:00, 218.38it/s]
+ 58%|█████▊    | 174/302 [00:00&lt;00:00, 205.85it/s]
+ 65%|██████▍   | 195/302 [00:00&lt;00:00, 205.24it/s]
+ 72%|███████▏  | 218/302 [00:01&lt;00:00, 210.28it/s]
+ 79%|███████▉  | 240/302 [00:01&lt;00:00, 212.76it/s]
+ 87%|████████▋ | 262/302 [00:01&lt;00:00, 214.44it/s]
+ 94%|█████████▍| 285/302 [00:01&lt;00:00, 216.65it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 211.81it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1078,7 +1076,7 @@ time-varying linear system.</p>
 visualizing them. In addition, we can evaluate the covariance of the
 residuals. This will compute an independent VAR model for each epoch (window)
 of data.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.predict" title="mne_connectivity.Connectivity.predict" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">conn</span><span class="o">.</span><span class="n">predict</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.predict" title="mne_connectivity.Connectivity.predict" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">conn</span><span class="o">.</span><span class="n">predict</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
 
 <span class="c1"># compute residuals</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">residuals</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a>
@@ -1117,7 +1115,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f3af7f783d0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f551662f400&gt;
 </pre></div>
 </div>
 </section>
@@ -1127,7 +1125,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
 the same VAR model and thus we only estimate one VAR model. One might do this
 when one suspects the data is stationary and one VAR model represents all
 epochs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_names</span></a><span class="p">,</span>
     <span class="n">model</span><span class="o">=</span><span class="s1">&#39;avg-epochs&#39;</span><span class="p">)</span>
 
@@ -1145,7 +1143,7 @@ epochs.</p>
 <p>We can now evaluate the model fit again as done earlier. This model fit will
 of course have higher residuals than before as we are only fitting 1 VAR
 model to all the epochs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">first_epoch</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">first_epoch</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.predict" title="mne_connectivity.Connectivity.predict" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">conn</span><span class="o">.</span><span class="n">predict</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">first_epoch</span></a><span class="p">)</span>
 
 <span class="c1"># compute residuals</span>
@@ -1184,16 +1182,16 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f3b125b6050&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f5533c0e650&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 45.688 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 3.968 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
-</div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1272,7 +1270,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-03.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-25.
       <br/>
     
   </p>
