@@ -15,14 +15,12 @@ from mne.time_frequency import (tfr_array_morlet, tfr_array_multitaper,
 from mne.utils import (logger, verbose)
 
 from ..base import (SpectralConnectivity, EpochSpectralConnectivity)
-from .epochs import (_MICEst, _MIMEst, _GCEst, _GCTREst, _compute_freq_mask,
-                     _check_rank_input)
+from .epochs import _compute_freq_mask
+from .epochs_multivariate import (_CON_METHOD_MAP_MULTIVARIATE,
+                                  _check_rank_input, _multivariate_methods,
+                                  _gc_methods)
 from .smooth import _create_kernel, _smooth_spectra
 from ..utils import check_indices, _check_multivariate_indices, fill_doc
-
-
-_multivariate_methods = ['mic', 'mim', 'gc', 'gc_tr']
-_gc_methods = ['gc', 'gc_tr']
 
 
 @verbose
@@ -919,8 +917,6 @@ def _multivariate_con(w, seeds, targets, signals_use, method, kernel, foi_idx,
     csd = np.array(csd)
 
     # initialise connectivity estimators and add CSD information
-    conn_class = {'mic': _MICEst, 'mim': _MIMEst, 'gc': _GCEst,
-                  'gc_tr': _GCTREst}
     conn = []
     for m in method:
         call_params = {'n_signals': len(signals_use), 'n_cons': len(seeds),
@@ -928,7 +924,7 @@ def _multivariate_con(w, seeds, targets, signals_use, method, kernel, foi_idx,
                        'n_jobs': n_jobs}
         if m in _gc_methods:
             call_params['n_lags'] = gc_n_lags
-        con_est = conn_class[m](**call_params)
+        con_est = _CON_METHOD_MAP_MULTIVARIATE[m](**call_params)
         for con_i, con_csd in enumerate(csd):
             con_est.accumulate(con_i, con_csd)
         conn.append(con_est)
