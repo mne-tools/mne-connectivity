@@ -740,12 +740,14 @@ class _CaCohEst(_MultivariateCohEstBase):
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
 
-        C_bar_ab = C_bar[..., :n_seeds, n_seeds:]
+        rank_seeds = U_bar_aa.shape[3]  # n_seeds after SVD
+
+        C_bar_ab = C_bar[..., :rank_seeds, rank_seeds:]
 
         # Same as Eq. 3 of Ewald et al. (2012)
-        T = self._compute_t(np.real(C_bar), n_seeds=U_bar_aa.shape[3])
-        T_aa = T[..., :n_seeds, :n_seeds]  # left term in Eq. 9
-        T_bb = T[..., n_seeds:, n_seeds:]  # right term in Eq. 9
+        T = self._compute_t(np.real(C_bar), n_seeds=rank_seeds)
+        T_aa = T[..., :rank_seeds, :rank_seeds]  # left term in Eq. 9
+        T_bb = T[..., rank_seeds:, rank_seeds:]  # right term in Eq. 9
 
         max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
 
