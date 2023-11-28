@@ -10,9 +10,10 @@ from mne.filter import filter_data
 from mne_connectivity import (
     SpectralConnectivity, spectral_connectivity_epochs,
     read_connectivity, spectral_connectivity_time)
-from mne_connectivity.spectral.epochs import _CohEst, _get_n_epochs
-from mne_connectivity.spectral.epochs import (
-    _compute_freq_mask, _compute_freqs)
+from mne_connectivity.spectral.epochs import (_get_n_epochs,
+                                              _compute_freq_mask,
+                                              _compute_freqs)
+from mne_connectivity.spectral.epochs_bivariate import _CohEst
 
 
 def create_test_dataset(sfreq, n_signals, n_epochs, n_times, tmin, tmax,
@@ -585,7 +586,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         os.path.join(fpath, 'data', 'example_multivariate_data.pkl'))
     sfreq = 100
     indices = (np.array([[0, 1]]), np.array([[2, 3]]))
-    methods = ['mic', 'mim', 'cacoh', 'gc', 'gc_tr']
+    methods = ['cacoh', 'mic', 'mim', 'gc', 'gc_tr']
     con = spectral_connectivity_epochs(
         data, method=methods, indices=indices, mode='multitaper', sfreq=sfreq,
         fskip=0, faverage=False, tmin=0, tmax=None, mt_bandwidth=4,
@@ -593,7 +594,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         rank=tuple([[2], [2]]), n_jobs=1)
 
     # should take the absolute of the MIC scores, as the MATLAB implementation
-    # returns the absolute values.
+    # returns the absolute values
     mne_results = {this_con.method: np.abs(this_con.get_data())
                    for this_con in con}
     matlab_results = pd.read_pickle(
