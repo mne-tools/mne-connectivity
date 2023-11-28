@@ -48,6 +48,12 @@ def _check_rank_input(rank, data, indices):
         rank = tuple((np.array(rank[0]), np.array(rank[1])))
 
     else:
+        if (
+            len(rank) != 2 or len(rank[0]) != len(indices[0]) or
+            len(rank[1]) != len(indices[1])
+        ):
+            raise ValueError('rank argument must have shape (2, n_cons), '
+                             'according to n_cons in the indices')
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
                 indices[0], indices[1], rank[0], rank[1]):
             if not (0 < seed_rank <= len(seed_idcs) and
