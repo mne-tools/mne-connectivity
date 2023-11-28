@@ -657,6 +657,16 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=indices,
             sfreq=sfreq, rank=too_high_rank, cwt_freqs=cwt_freqs)
+    too_few_rank = ([], [])
+    with pytest.raises(ValueError, match='rank argument must have shape'):
+        spectral_connectivity_epochs(
+            data, method=method, mode=mode, indices=indices,
+            sfreq=sfreq, rank=too_few_rank, cwt_freqs=cwt_freqs)
+    too_much_rank = (np.array([2, 2]), np.array([2, 2]))
+    with pytest.raises(ValueError, match='rank argument must have shape'):
+        spectral_connectivity_epochs(
+            data, method=method, mode=mode, indices=indices,
+            sfreq=sfreq, rank=too_much_rank, cwt_freqs=cwt_freqs)
 
     # check rank-deficient data caught
     bad_data = data.copy()
@@ -1236,6 +1246,16 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, sfreq=sfreq,
             mode=mode, rank=too_high_rank)
+    too_few_rank = ([], [])
+    with pytest.raises(ValueError, match='rank argument must have shape'):
+        spectral_connectivity_time(
+            data, freqs, method=method, indices=indices, sfreq=sfreq,
+            mode=mode, rank=too_few_rank)
+    too_much_rank = (np.array([2, 2]), np.array([2, 2]))
+    with pytest.raises(ValueError, match='rank argument must have shape'):
+        spectral_connectivity_time(
+            data, freqs, method=method, indices=indices, sfreq=sfreq,
+            mode=mode, rank=too_much_rank)
 
     # check all-to-all conn. computed for MIC/MIM when no indices given
     if method in ['mic', 'mim']:
