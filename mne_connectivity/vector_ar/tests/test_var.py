@@ -1,16 +1,16 @@
 import numpy as np
 import pytest
-from numpy.testing import (
-    assert_array_almost_equal, assert_array_equal,
-    assert_almost_equal
-)
 from mne.utils import assert_object_equal
+from numpy.testing import (
+    assert_almost_equal,
+    assert_array_almost_equal,
+    assert_array_equal,
+)
 
-from mne_connectivity import vector_auto_regression, select_order
-
+from mne_connectivity import select_order, vector_auto_regression
 
 warning_str = dict(
-    sm_depr='ignore:Using or importing*.:DeprecationWarning',  # noqa
+    sm_depr="ignore:Using or importing*.:DeprecationWarning",  # noqa
 )
 
 
@@ -88,19 +88,19 @@ def create_noisy_data(
 
 # XXX: get this to work with all trends
 @pytest.mark.parametrize(
-    ['lags', 'trend'],
+    ["lags", "trend"],
     [
-        (1, 'n'),
-        (2, 'n'),
-        (3, 'n'),
-    ]
+        (1, "n"),
+        (2, "n"),
+        (3, "n"),
+    ],
 )
-@pytest.mark.filterwarnings(warning_str['sm_depr'])
+@pytest.mark.filterwarnings(warning_str["sm_depr"])
 def test_regression_against_statsmodels(lags, trend):
     """Test regression against any statsmodels changes in VAR model."""
     from statsmodels.tsa.vector_ar.var_model import VAR
-    sample_data, _, sample_A = create_noisy_data(
-        add_noise=False, random_state=12345)
+
+    sample_data, _, sample_A = create_noisy_data(add_noise=False, random_state=12345)
     block_size = sample_data.shape[0]
 
     # statsmodels feeds in (n_samples, n_channels)
@@ -114,45 +114,38 @@ def test_regression_against_statsmodels(lags, trend):
     model = vector_auto_regression(sample_data[np.newaxis, ...], lags=lags)
 
     # the models should match against the sample A matrix without noise
-    if lags == 1 and trend == 'n':
-        assert_array_almost_equal(
-            model.get_data(output='dense').squeeze(),
-            sample_A)
+    if lags == 1 and trend == "n":
+        assert_array_almost_equal(model.get_data(output="dense").squeeze(), sample_A)
 
     # the models should match each other
     if lags == 1:
-        assert_array_almost_equal(
-            model.get_data().squeeze(),
-            sm_A.squeeze())
+        assert_array_almost_equal(model.get_data().squeeze(), sm_A.squeeze())
     else:
         for idx in range(lags):
             assert_array_almost_equal(
                 model.get_data().squeeze()[..., idx],
-                sm_A.squeeze()[:, idx * block_size: (idx + 1) * block_size])
+                sm_A.squeeze()[:, idx * block_size : (idx + 1) * block_size],
+            )
 
     if lags == 3:
-        if np.max(np.abs(np.linalg.eigvals(model.companion))) < 1.:
+        if np.max(np.abs(np.linalg.eigvals(model.companion))) < 1.0:
             # the regressed model should be stable for sufficient lags
             assert model.is_stable()
         else:
             assert not model.is_stable()
 
 
-@pytest.mark.filterwarnings(warning_str['sm_depr'])
-@pytest.mark.parametrize(
-    ['lags'],
-    [
-        (None,), (5,), (200,)
-    ]
-)
+@pytest.mark.filterwarnings(warning_str["sm_depr"])
+@pytest.mark.parametrize(["lags"], [(None,), (5,), (200,)])
 def test_regression_select_order(lags):
     from statsmodels.tsa.vector_ar.var_model import VAR
+
     x = bivariate_var_data()
     sm_model = VAR(endog=x)
     if lags != 200:
         results = sm_model.select_order(maxlags=lags)
     else:
-        with pytest.raises(ValueError, match='maxlags is too large'):
+        with pytest.raises(ValueError, match="maxlags is too large"):
             select_order(X=x, maxlags=lags)
         return
 
@@ -169,8 +162,7 @@ def test_regression():
     This was copied over from the working version that
     matches statsmodels VAR answer.
     """
-    sample_data, sample_eigs, sample_A = create_noisy_data(
-        add_noise=True)
+    sample_data, sample_eigs, sample_A = create_noisy_data(add_noise=True)
 
     # create 3D array input
     sample_data = sample_data[np.newaxis, ...]
@@ -179,49 +171,45 @@ def test_regression():
     model = vector_auto_regression(sample_data, lags=1)
 
     # test the recovered model
-    expected_A = np.array([[0.57733211,  0.57736152],
-                           [-0.57735815, 1.15471885]])
-    assert_array_almost_equal(
-        model.get_data(output='dense').squeeze(),
-        expected_A)
+    expected_A = np.array([[0.57733211, 0.57736152], [-0.57735815, 1.15471885]])
+    assert_array_almost_equal(model.get_data(output="dense").squeeze(), expected_A)
 
     assert_array_almost_equal(
-        sample_eigs, np.linalg.eigvals(model.get_data().squeeze()))
+        sample_eigs, np.linalg.eigvals(model.get_data().squeeze())
+    )
 
     # without noise, the estimated A should match exactly
-    sample_data, _, sample_A = create_noisy_data(
-        add_noise=False)
+    sample_data, _, sample_A = create_noisy_data(add_noise=False)
     sample_data = sample_data[np.newaxis, ...]
     model = vector_auto_regression(sample_data)
-    assert_array_almost_equal(model.get_data(output='dense').squeeze(),
-                              sample_A)
+    assert_array_almost_equal(model.get_data(output="dense").squeeze(), sample_A)
 
 
 def test_var_debiased():
     """Test forward backward operator."""
-    sample_data, sample_eigs, _ = create_noisy_data(
-        add_noise=True, sigma=1e-2)
+    sample_data, sample_eigs, _ = create_noisy_data(add_noise=True, sigma=1e-2)
 
     # test without forward backward de-biasing
     model = vector_auto_regression(sample_data[np.newaxis, ...])
 
     # test with forward backward de-biasing
-    model_fb = vector_auto_regression(sample_data[np.newaxis, ...],
-                                      compute_fb_operator=True)
+    model_fb = vector_auto_regression(
+        sample_data[np.newaxis, ...], compute_fb_operator=True
+    )
 
     # manually solve things using pseudoinverse
     eigvals = model.eigvals()
     eigvals_fb = model_fb.eigvals()
 
-    assert np.linalg.norm(eigvals - sample_eigs) > \
-        np.linalg.norm(eigvals_fb - sample_eigs)
+    assert np.linalg.norm(eigvals - sample_eigs) > np.linalg.norm(
+        eigvals_fb - sample_eigs
+    )
 
 
-@pytest.mark.parametrize('l2_reg', np.linspace(0, 5, 10))
+@pytest.mark.parametrize("l2_reg", np.linspace(0, 5, 10))
 def test_var_l2_reg(l2_reg):
     """Test l2 regularization works as expected."""
-    sample_data, _, _ = create_noisy_data(
-        add_noise=True)
+    sample_data, _, _ = create_noisy_data(add_noise=True)
 
     # test l2 regularization
     model = vector_auto_regression(sample_data[np.newaxis, ...], l2_reg=l2_reg)
@@ -231,9 +219,9 @@ def test_var_l2_reg(l2_reg):
     X, Y = sample_data.squeeze()[:-1, :], sample_data.squeeze()[1:, :]
     n_col = X.shape[1]
     manual_A = np.linalg.lstsq(
-        X.T.dot(X) + l2_reg * np.eye(n_col), X.T.dot(Y), rcond=-1)[0].T
-    assert_array_almost_equal(model.get_data().squeeze(),
-                              manual_A)
+        X.T.dot(X) + l2_reg * np.eye(n_col), X.T.dot(Y), rcond=-1
+    )[0].T
+    assert_array_almost_equal(model.get_data().squeeze(), manual_A)
 
 
 @pytest.mark.timeout(15)
@@ -243,8 +231,7 @@ def test_vector_auto_regression_computation():
     Tests eigenvalue and state matrix recovery.
     """
     np.random.RandomState(12345)
-    sample_data, sample_eigs, sample_A = create_noisy_data(
-        add_noise=True)
+    sample_data, sample_eigs, sample_A = create_noisy_data(add_noise=True)
 
     # create 3D array input
     sample_data = sample_data[np.newaxis, ...]
@@ -254,11 +241,11 @@ def test_vector_auto_regression_computation():
 
     # test the recovered model
     assert_array_almost_equal(
-        model.get_data(output='dense').squeeze(), sample_A,
-        decimal=2)
+        model.get_data(output="dense").squeeze(), sample_A, decimal=2
+    )
 
     # get the eigenvalues and test accuracy of recovery
-    eigs = np.linalg.eigvals(model.get_data(output='dense').squeeze())
+    eigs = np.linalg.eigvals(model.get_data(output="dense").squeeze())
     eigvals_diff = np.linalg.norm(eigs - sample_eigs)
     assert_almost_equal(
         np.linalg.norm(eigs[1]), np.linalg.norm(sample_eigs[1]), decimal=2
@@ -274,7 +261,7 @@ def test_vector_auto_regression():
     times = np.arange(n_times)
 
     with pytest.raises(ValueError, match='"model" parameter'):
-        vector_auto_regression(data, model='static')
+        vector_auto_regression(data, model="static")
 
     # compute time-varying var
     conn = vector_auto_regression(data, times=times)
@@ -284,24 +271,24 @@ def test_vector_auto_regression():
     assert_array_equal(parr_conn.get_data(), conn.get_data())
 
     # compute connectivity with forward-backwards operator
-    vector_auto_regression(data, times=times,
-                           compute_fb_operator=True, n_jobs=-1)
+    vector_auto_regression(data, times=times, compute_fb_operator=True, n_jobs=-1)
 
     # compute single var
-    single_conn = vector_auto_regression(data, model='avg-epochs')
-    assert_array_almost_equal(conn.get_data().mean(axis=0),
-                              single_conn.get_data(), decimal=1)
+    single_conn = vector_auto_regression(data, model="avg-epochs")
+    assert_array_almost_equal(
+        conn.get_data().mean(axis=0), single_conn.get_data(), decimal=1
+    )
 
     # compute residuals
     residuals = data - parr_conn.predict(data)
     assert residuals.shape == data.shape
 
     # Dynamic "Connectivity" errors
-    with pytest.raises(ValueError, match='Data passed in must be'):
+    with pytest.raises(ValueError, match="Data passed in must be"):
         parr_conn.predict(np.zeros((4,)))
-    with pytest.raises(RuntimeError, match='If there is a VAR model'):
+    with pytest.raises(RuntimeError, match="If there is a VAR model"):
         parr_conn.predict(np.zeros((4, 4)))
-    with pytest.raises(RuntimeError, match='If there is a single VAR'):
+    with pytest.raises(RuntimeError, match="If there is a single VAR"):
         single_conn.predict(data)
 
     # prediction should work with a 2D array when non epoched

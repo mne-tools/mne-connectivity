@@ -41,7 +41,7 @@ jobs:
           curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh -o get_minimal_commands.sh
           chmod +x get_minimal_commands.sh
           source ./get_minimal_commands.sh
-          pip install -r requirements_testing.txt
+          pip install -r .[test]
         name: 'Install dependencies'
       - run: pip install git+https://github.com/mne-tools/mne-python@main
       - run: pip install -e .

@@ -9,8 +9,8 @@ a dependency on statsmodels.
 """
 import numpy as np
 from memory_profiler import profile
-
 from statsmodels.tsa.vector_ar.var_model import VAR
+
 from mne_connectivity import vector_auto_regression
 
 

@@ -91,11 +91,31 @@ flake:
 	fi;
 	@echo "flake8 passed"
 
+black:
+	@if command -v black > /dev/null; then \
+		echo "Running black"; \
+		black mne_connectivity examples; \
+	else \
+		echo "black not found, please install it!"; \
+		exit 1; \
+	fi;
+	@echo "black passed"
+
+isort:
+	@if command -v isort > /dev/null; then \
+		echo "Running isort"; \
+		isort mne_connectivity examples doc; \
+	else \
+		echo "isort not found, please install it!"; \
+		exit 1; \
+	fi;
+	@echo "isort passed"
+
 codespell:  # running manually
-	@codespell -w -i 3 -q 3 -S $(CODESPELL_SKIPS) --ignore-words=ignore_words.txt $(CODESPELL_DIRS)
+	@codespell -w -i 3 -q 3 -S $(CODESPELL_SKIPS) --ignore-words=.codespellignore $(CODESPELL_DIRS)
 
 codespell-error:  # running on travis
-	@codespell -i 0 -q 7 -S $(CODESPELL_SKIPS) --ignore-words=ignore_words.txt $(CODESPELL_DIRS)
+	@codespell -i 0 -q 7 -S $(CODESPELL_SKIPS) --ignore-words=.codespellignore $(CODESPELL_DIRS)
 
 pydocstyle:
 	@echo "Running pydocstyle"
@@ -117,3 +137,11 @@ build-doc:
 	make -C doc/ clean
 	make -C doc/ html-noplot
 	cd doc/ && make view
+
+run-checks:
+	isort --check .
+	black --check mne_connectivity examples
+	flake8 .
+	mypy ./mne_connectivity
+	@$(MAKE) pydocstyle
+	@$(MAKE) codespell-error

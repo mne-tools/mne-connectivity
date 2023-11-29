@@ -1,15 +1,23 @@
 from copy import copy, deepcopy
 
 import numpy as np
-import xarray as xr
 import pandas as pd
-from mne.utils import (_check_combine, _check_option, _validate_type,
-                       copy_function_doc_to_method_doc, object_size,
-                       sizeof_fmt, _check_event_id, _ensure_events,
-                       _on_missing, warn, check_random_state)
+import xarray as xr
+from mne.utils import (
+    _check_combine,
+    _check_event_id,
+    _check_option,
+    _ensure_events,
+    _on_missing,
+    _validate_type,
+    check_random_state,
+    copy_function_doc_to_method_doc,
+    object_size,
+    sizeof_fmt,
+    warn,
+)
 
-from mne_connectivity.utils import (
-    fill_doc, _prepare_xarray_mne_data_structures)
+from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -20,6 +28,7 @@ class SpectralMixin:
     "spectral" with time-frequency. Reference to
     eigenvalue structure is not captured in this mixin.
     """
+
     @property
     def freqs(self):
         """The frequency points of the connectivity data.
@@ -27,18 +36,18 @@ class SpectralMixin:
         If these are computed over a frequency band, it will
         be the median frequency of the frequency band.
         """
-        return self.xarray.coords.get('freqs').values.tolist()
+        return self.xarray.coords.get("freqs").values.tolist()
 
 
 class TimeMixin:
     @property
     def times(self):
         """The time points of the connectivity data."""
-        return self.xarray.coords.get('times').values.tolist()
+        return self.xarray.coords.get("times").values.tolist()
 
 
 class EpochMixin:
-    def _init_epochs(self, events, event_id, on_missing='warn') -> None:
+    def _init_epochs(self, events, event_id, on_missing="warn") -> None:
         # Epochs should have the events array that informs user of
         # sample points at which each Epoch was taken from.
         # An empty list occurs when NetCDF stores empty arrays.
@@ -55,8 +64,10 @@ class EpochMixin:
         if events is not None:
             for key, val in self.event_id.items():
                 if val not in events[:, 2]:
-                    msg = ('No matching events found for %s '
-                           '(event id %i)' % (key, val))
+                    msg = "No matching events found for %s " "(event id %i)" % (
+                        key,
+                        val,
+                    )
                     _on_missing(on_missing, msg)
 
             # ensure metadata matches original events size
@@ -83,45 +94,49 @@ class EpochMixin:
             The altered Epoched Connectivity class.
         """
         if not isinstance(self, type(epoch_conn)):
-            raise ValueError(f'The type of the epoch connectivity to append '
-                             f'is {type(epoch_conn)}, which does not match '
-                             f'{type(self)}.')
-        if hasattr(self, 'times'):
+            raise ValueError(
+                f"The type of the epoch connectivity to append "
+                f"is {type(epoch_conn)}, which does not match "
+                f"{type(self)}."
+            )
+        if hasattr(self, "times"):
             if not np.allclose(self.times, epoch_conn.times):
-                raise ValueError('Epochs must have same times')
-        if hasattr(self, 'freqs'):
+                raise ValueError("Epochs must have same times")
+        if hasattr(self, "freqs"):
             if not np.allclose(self.freqs, epoch_conn.freqs):
-                raise ValueError('Epochs must have same frequencies')
+                raise ValueError("Epochs must have same frequencies")
 
         events = list(deepcopy(self.events))
         event_id = deepcopy(self.event_id)
         metadata = copy(self.metadata)
 
         # compare event_id
-        common_keys = list(set(event_id).intersection(
-            set(epoch_conn.event_id)))
+        common_keys = list(set(event_id).intersection(set(epoch_conn.event_id)))
         for key in common_keys:
             if not event_id[key] == epoch_conn.event_id[key]:
-                msg = ('event_id values must be the same for identical keys '
-                       'for all concatenated epochs. Key "{}" maps to {} in '
-                       'some epochs and to {} in others.')
-                raise ValueError(msg.format(key, event_id[key],
-                                            epoch_conn.event_id[key]))
+                msg = (
+                    "event_id values must be the same for identical keys "
+                    'for all concatenated epochs. Key "{}" maps to {} in '
+                    "some epochs and to {} in others."
+                )
+                raise ValueError(
+                    msg.format(key, event_id[key], epoch_conn.event_id[key])
+                )
 
         evs = epoch_conn.events.copy()
         if epoch_conn.n_epochs == 0:
-            warn('Epoch Connectivity object to append was empty.')
+            warn("Epoch Connectivity object to append was empty.")
         event_id.update(epoch_conn.event_id)
         events = np.concatenate((events, evs), axis=0)
         metadata = pd.concat([epoch_conn.metadata, metadata])
 
         # now combine the xarray data, altered events and event ID
-        self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim='epochs')
+        self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim="epochs")
         self.events = events
         self.event_id = event_id
         return self
 
-    def combine(self, combine='mean'):
+    def combine(self, combine="mean"):
         """Combine connectivity data over epochs.
 
         Parameters
@@ -141,26 +156,28 @@ class EpochMixin:
         from .io import _xarray_to_conn
 
         if not self.is_epoched:
-            raise RuntimeError('Combine only works over Epoched connectivity. '
-                               f'It does not work with {self}')
+            raise RuntimeError(
+                "Combine only works over Epoched connectivity. "
+                f"It does not work with {self}"
+            )
 
-        fun = _check_combine(combine, valid=('mean', 'median'))
+        fun = _check_combine(combine, valid=("mean", "median"))
 
         # get a copy of metadata into attrs as a dictionary
         self = _prepare_xarray_mne_data_structures(self)
 
         # apply function over the  array
-        new_xr = xr.apply_ufunc(fun, self.xarray,
-                                input_core_dims=[['epochs']],
-                                vectorize=True)
+        new_xr = xr.apply_ufunc(
+            fun, self.xarray, input_core_dims=[["epochs"]], vectorize=True
+        )
         new_xr.attrs = self.xarray.attrs
 
         # map class name to its actual class
         conn_cls = {
-            'EpochConnectivity': Connectivity,
-            'EpochTemporalConnectivity': TemporalConnectivity,
-            'EpochSpectralConnectivity': SpectralConnectivity,
-            'EpochSpectroTemporalConnectivity': SpectroTemporalConnectivity
+            "EpochConnectivity": Connectivity,
+            "EpochTemporalConnectivity": TemporalConnectivity,
+            "EpochSpectralConnectivity": SpectralConnectivity,
+            "EpochSpectroTemporalConnectivity": SpectroTemporalConnectivity,
         }
         cls_func = conn_cls[self.__class__.__name__]
 
@@ -172,7 +189,7 @@ class EpochMixin:
 class DynamicMixin:
     def is_stable(self):
         companion_mat = self.companion
-        return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.
+        return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.0
 
     def eigvals(self):
         return np.linalg.eigvals(self.companion)
@@ -185,16 +202,14 @@ class DynamicMixin:
         """
         from .vector_ar.utils import _block_companion
 
-        lags = self.attrs.get('lags')
+        lags = self.attrs.get("lags")
         data = self.get_data()
         if lags == 1:
             return data
 
         arrs = []
         for idx in range(self.n_epochs):
-            blocks = _block_companion(
-                [data[idx, ..., jdx]for jdx in range(lags)]
-            )
+            blocks = _block_companion([data[idx, ..., jdx] for jdx in range(lags)])
             arrs.append(blocks)
         return arrs
 
@@ -231,24 +246,28 @@ class DynamicMixin:
             rescov = np.cov(sampled_residuals)
         """
         if data.ndim < 2 or data.ndim > 3:
-            raise ValueError(f'Data passed in must be either 2D or 3D. '
-                             f'The data you passed in has {data.ndim} dims.')
+            raise ValueError(
+                f"Data passed in must be either 2D or 3D. "
+                f"The data you passed in has {data.ndim} dims."
+            )
         if data.ndim == 2 and self.is_epoched:
-            raise RuntimeError('If there is a VAR model over epochs, '
-                               'one must pass in a 3D array.')
+            raise RuntimeError(
+                "If there is a VAR model over epochs, " "one must pass in a 3D array."
+            )
         if data.ndim == 3 and not self.is_epoched:
-            raise RuntimeError('If there is a single VAR model, '
-                               'one must pass in a 2D array.')
+            raise RuntimeError(
+                "If there is a single VAR model, " "one must pass in a 2D array."
+            )
 
         # make the data 3D
         if data.ndim == 2:
             data = data[np.newaxis, ...]
 
         n_epochs, _, n_times = data.shape
-        var_model = self.get_data(output='dense')
+        var_model = self.get_data(output="dense")
 
         # get the model order
-        lags = self.attrs.get('lags')
+        lags = self.attrs.get("lags")
 
         # predict the data by applying forward model
         predicted_data = np.zeros(data.shape)
@@ -257,22 +276,19 @@ class DynamicMixin:
             for idx in range(1, lags + 1):
                 for jdx in range(lags, n_times):
                     if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1)::lags]
+                        bp = var_model[jdx, :, (idx - 1) :: lags]
                     else:
-                        bp = var_model[:, (idx - 1)::lags]
-                    predicted_data[:, :,
-                                   jdx] += np.dot(data[:, :, jdx - idx], bp.T)
+                        bp = var_model[:, (idx - 1) :: lags]
+                    predicted_data[:, :, jdx] += np.dot(data[:, :, jdx - idx], bp.T)
         else:
             for idx in range(1, lags + 1):
                 for jdx in range(n_epochs):
                     if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1)::lags]
+                        bp = var_model[jdx, :, (idx - 1) :: lags]
                     else:
-                        bp = var_model[:, (idx - 1)::lags]
-                    predicted_data[jdx, :, lags:] += \
-                        np.dot(
-                            bp,
-                            data[jdx, :, (lags - idx):(n_times - idx)]
+                        bp = var_model[:, (idx - 1) :: lags]
+                    predicted_data[jdx, :, lags:] += np.dot(
+                        bp, data[jdx, :, (lags - idx) : (n_times - idx)]
                     )
 
         return predicted_data
@@ -298,19 +314,18 @@ class DynamicMixin:
         data : array, shape (n_samples, n_channels)
             Generated data.
         """
-        var_model = self.get_data(output='dense')
+        var_model = self.get_data(output="dense")
         if self.is_epoched:
             var_model = var_model.mean(axis=0)
 
         n_nodes = self.n_nodes
-        lags = self.attrs.get('lags')
+        lags = self.attrs.get("lags")
 
         # set noise function
         if noise_func is None:
             rng = check_random_state(random_state)
 
             def noise_func():
-
                 return rng.normal(size=(1, n_nodes))
 
         n = n_samples + 10 * lags
@@ -328,14 +343,11 @@ class DynamicMixin:
             res[jdx, :] = e
             data[jdx, :] = e
             for idx in range(1, lags + 1):
-                data[jdx, :] += \
-                    var_model[:, (idx - 1)::lags].dot(
-                        data[jdx - idx, :]
-                )
+                data[jdx, :] += var_model[:, (idx - 1) :: lags].dot(data[jdx - idx, :])
 
         # self.residuals = res[10 * lags:, :, :].T
         # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
-        return data[10 * lags:, :].transpose()
+        return data[10 * lags :, :].transpose()
 
 
 @fill_doc
@@ -389,46 +401,62 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This
     allows us to optimize storage also for symmetric connectivity.
     """
+
     # whether or not the connectivity occurs over epochs
     is_epoched = False
 
-    def __init__(self, data, names, indices, method,
-                 n_nodes, events=None, event_id=None,
-                 metadata=None, **kwargs):
-
-        if isinstance(indices, str) and \
-                indices not in ['all', 'symmetric']:
-            raise ValueError(f'Indices can only be '
-                             f'"all", otherwise '
-                             f'should be a list of tuples. '
-                             f'It cannot be {indices}.')
+    def __init__(
+        self,
+        data,
+        names,
+        indices,
+        method,
+        n_nodes,
+        events=None,
+        event_id=None,
+        metadata=None,
+        **kwargs,
+    ):
+        if isinstance(indices, str) and indices not in ["all", "symmetric"]:
+            raise ValueError(
+                f"Indices can only be "
+                f'"all", otherwise '
+                f"should be a list of tuples. "
+                f"It cannot be {indices}."
+            )
 
         # prepare metadata pandas dataframe and ensure metadata is a Pandas
         # DataFrame object
         if metadata is None:
-            metadata = pd.DataFrame(dtype='float64')
+            metadata = pd.DataFrame(dtype="float64")
         self.metadata = metadata
 
         # check the incoming data structure
         self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
-        self._prepare_xarray(data, names=names, indices=indices,
-                             n_nodes=n_nodes, method=method, events=events,
-                             event_id=event_id, **kwargs)
+        self._prepare_xarray(
+            data,
+            names=names,
+            indices=indices,
+            n_nodes=n_nodes,
+            method=method,
+            events=events,
+            event_id=event_id,
+            **kwargs,
+        )
 
     def __repr__(self) -> str:
-        r = f'<{self.__class__.__name__} | '
+        r = f"<{self.__class__.__name__} | "
 
         if self.n_epochs is not None:
             r += f"n_epochs : {self.n_epochs}, "
-        if 'freqs' in self.dims:
-            r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])
-        if 'times' in self.dims:
-            r += "time : [%f, %f], " % (self.times[0], self.times[-1])
+        if "freqs" in self.dims:
+            r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])  # type: ignore
+        if "times" in self.dims:
+            r += "time : [%f, %f], " % (self.times[0], self.times[-1])  # type: ignore
         r += f", nave : {self.n_epochs_used}"
-        r += f', nodes, n_estimated : {self.n_nodes}, ' \
-             f'{self.n_estimated_nodes}'
-        r += ', ~%s' % (sizeof_fmt(self._size),)
-        r += '>'
+        r += f", nodes, n_estimated : {self.n_nodes}, " f"{self.n_estimated_nodes}"
+        r += ", ~%s" % (sizeof_fmt(self._size),)
+        r += ">"
         return r
 
     def _get_num_connections(self, data):
@@ -440,13 +468,14 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             start_idx = 0
         self.n_estimated_nodes = data.shape[start_idx]
 
-    def _prepare_xarray(self, data, names, indices, n_nodes, method,
-                        events, event_id, **kwargs):
+    def _prepare_xarray(
+        self, data, names, indices, n_nodes, method, events, event_id, **kwargs
+    ):
         """Prepare xarray data structure."""
         # generate events and event_id that originate from Epochs class
         # which stores the windows of Raw that were used to generate
         # the corresponding connectivity data
-        self._init_epochs(events, event_id, on_missing='warn')
+        self._init_epochs(events, event_id, on_missing="warn")
 
         # set node names
         if names is None:
@@ -455,31 +484,31 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         # the names of each first few dimensions of
         # the data depending if data is epoched or not
         if self.is_epoched:
-            dims = ['epochs', 'node_in -> node_out']
+            dims = ["epochs", "node_in -> node_out"]
         else:
-            dims = ['node_in -> node_out']
+            dims = ["node_in -> node_out"]
 
         # the coordinates of each dimension
         n_estimated_list = list(map(str, range(self.n_estimated_nodes)))
         coords = dict()
         if self.is_epoched:
-            coords['epochs'] = list(map(str, range(data.shape[0])))
+            coords["epochs"] = list(map(str, range(data.shape[0])))
         coords["node_in -> node_out"] = n_estimated_list
-        if 'freqs' in kwargs:
-            coords['freqs'] = kwargs.pop('freqs')
-            dims.append('freqs')
-        if 'times' in kwargs:
-            times = kwargs.pop('times')
+        if "freqs" in kwargs:
+            coords["freqs"] = kwargs.pop("freqs")
+            dims.append("freqs")
+        if "times" in kwargs:
+            times = kwargs.pop("times")
             if times is None:
                 times = list(range(data.shape[-1]))
-            coords['times'] = list(times)
-            dims.append('times')
+            coords["times"] = list(times)
+            dims.append("times")
 
         # convert all numpy arrays to lists
         for key, val in kwargs.items():
             if isinstance(val, np.ndarray):
                 kwargs[key] = val.tolist()
-        kwargs['node_names'] = names
+        kwargs["node_names"] = names
 
         # set method, indices and n_nodes
         if isinstance(indices, tuple):
@@ -492,41 +521,39 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             else:
                 new_indices = (list(indices[0]), list(indices[1]))
             indices = new_indices
-        kwargs['method'] = method
-        kwargs['indices'] = indices
-        kwargs['n_nodes'] = n_nodes
-        kwargs['events'] = self.events
+        kwargs["method"] = method
+        kwargs["indices"] = indices
+        kwargs["n_nodes"] = n_nodes
+        kwargs["events"] = self.events
         # kwargs['event_id'] = self.event_id
 
         # create xarray object
-        xarray_obj = xr.DataArray(
-            data=data,
-            coords=coords,
-            dims=dims,
-            attrs=kwargs
-        )
+        xarray_obj = xr.DataArray(data=data, coords=coords, dims=dims, attrs=kwargs)
         self._obj = xarray_obj
 
     def _check_data_consistency(self, data, indices, n_nodes):
         """Perform data input checks."""
         if not isinstance(data, np.ndarray):
-            raise TypeError('Connectivity data must be passed in as a '
-                            'numpy array.')
+            raise TypeError("Connectivity data must be passed in as a " "numpy array.")
 
         if self.is_epoched:
             if data.ndim < 2 or data.ndim > 4:
-                raise RuntimeError(f'Data using an epoched data '
-                                   f'structure should have at least '
-                                   f'2 dimensions and at most 4 '
-                                   f'dimensions. Your data was '
-                                   f'{data.shape} shape.')
+                raise RuntimeError(
+                    f"Data using an epoched data "
+                    f"structure should have at least "
+                    f"2 dimensions and at most 4 "
+                    f"dimensions. Your data was "
+                    f"{data.shape} shape."
+                )
         else:
             if data.ndim > 3:
-                raise RuntimeError(f'Data not using an epoched data '
-                                   f'structure should have at least '
-                                   f'1 dimensions and at most 3 '
-                                   f'dimensions. Your data was '
-                                   f'{data.shape} shape.')
+                raise RuntimeError(
+                    f"Data not using an epoched data "
+                    f"structure should have at least "
+                    f"1 dimensions and at most 3 "
+                    f"dimensions. Your data was "
+                    f"{data.shape} shape."
+                )
 
         # get the number of estimated nodes
         self._get_num_connections(data)
@@ -538,27 +565,32 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if isinstance(indices, tuple):
             # check that the indices passed in are of the same length
             if len(indices[0]) != len(indices[1]):
-                raise ValueError(f'If indices are passed in '
-                                 f'then they must be the same '
-                                 f'length. They are right now '
-                                 f'{len(indices[0])} and '
-                                 f'{len(indices[1])}.')
+                raise ValueError(
+                    f"If indices are passed in "
+                    f"then they must be the same "
+                    f"length. They are right now "
+                    f"{len(indices[0])} and "
+                    f"{len(indices[1])}."
+                )
             # indices length should match the data length
             if len(indices[0]) != data_len:
                 raise ValueError(
-                    f'The number of indices, {len(indices[0])} '
-                    f'should match the raveled data length passed '
-                    f'in of {data_len}.')
+                    f"The number of indices, {len(indices[0])} "
+                    f"should match the raveled data length passed "
+                    f"in of {data_len}."
+                )
 
-        elif indices == 'symmetric':
+        elif indices == "symmetric":
             expected_len = ((n_nodes + 1) * n_nodes) // 2
             if data_len != expected_len:
-                raise ValueError(f'If "indices" is "symmetric", then '
-                                 f'connectivity data should be the '
-                                 f'upper-triangular part of the matrix. There '
-                                 f'are {data_len} estimated connections. '
-                                 f'But there should be {expected_len} '
-                                 f'estimated connections.')
+                raise ValueError(
+                    f'If "indices" is "symmetric", then '
+                    f"connectivity data should be the "
+                    f"upper-triangular part of the matrix. There "
+                    f"are {data_len} estimated connections. "
+                    f"But there should be {expected_len} "
+                    f"estimated connections."
+                )
 
     def copy(self):
         return deepcopy(self)
@@ -611,12 +643,12 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         were computed, this should be the total number of
         nodes in the original dataset.
         """
-        return self.attrs['n_nodes']
+        return self.attrs["n_nodes"]
 
     @property
     def method(self):
         """The method used to compute connectivity."""
-        return self.attrs['method']
+        return self.attrs["method"]
 
     @property
     def indices(self):
@@ -630,12 +662,12 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             or a tuple of lists representing the node-to-nodes
             that connectivity was computed.
         """
-        return self.attrs['indices']
+        return self.attrs["indices"]
 
     @property
     def names(self):
         """Node names."""
-        return self.attrs['node_names']
+        return self.attrs["node_names"]
 
     @property
     def xarray(self):
@@ -650,7 +682,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         equivalent to the number of epochs, if there is no
         combining of epochs.
         """
-        return self.attrs.get('n_epochs_used')
+        return self.attrs.get("n_epochs_used")
 
     @property
     def _size(self):
@@ -663,7 +695,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         #     size += self.metadata.memory_usage(index=True).sum()
         return size
 
-    def get_data(self, output='compact'):
+    def get_data(self, output="compact"):
         """Get connectivity data as a numpy array.
 
         Parameters
@@ -682,24 +714,25 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         data : np.ndarray
             The output connectivity data.
         """
-        _check_option('output', output, ['raveled', 'dense', 'compact'])
+        _check_option("output", output, ["raveled", "dense", "compact"])
 
-        if output == 'compact':
-            if self.indices in ['all', 'symmetric']:
-                output = 'dense'
+        if output == "compact":
+            if self.indices in ["all", "symmetric"]:
+                output = "dense"
             else:
-                output = 'raveled'
+                output = "raveled"
 
-        if output == 'raveled':
+        if output == "raveled":
             data = self._data
         else:
-            if self.method in ['mic', 'mim', 'gc', 'gc_tr']:
+            if self.method in ["mic", "mim", "gc", "gc_tr"]:
                 # multivariate results cannot be returned in a dense form as a
                 # single set of results would correspond to multiple entries in
                 # the matrix, and there could also be cases where multiple
                 # results correspond to the same entries in the matrix.
-                raise ValueError('cannot return multivariate connectivity '
-                                 'data in a dense form')
+                raise ValueError(
+                    "cannot return multivariate connectivity " "data in a dense form"
+                )
 
             # get the new shape of the data array
             if self.is_epoched:
@@ -711,10 +744,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             # and thus appends the connectivity matrices side by side, so the
             # shape is N x N * lags
             new_shape.extend([self.n_nodes, self.n_nodes])
-            if 'freqs' in self.dims:
-                new_shape.append(len(self.coords['freqs']))
-            if 'times' in self.dims:
-                new_shape.append(len(self.coords['times']))
+            if "freqs" in self.dims:
+                new_shape.append(len(self.coords["freqs"]))
+            if "times" in self.dims:
+                new_shape.append(len(self.coords["times"]))
 
             # handle things differently if indices is defined
             if isinstance(self.indices, tuple):
@@ -728,12 +761,11 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
                     data[:, row_idx, col_idx, ...] = self._data
                 else:
                     data[row_idx, col_idx, ...] = self._data
-            elif self.indices == 'symmetric':
+            elif self.indices == "symmetric":
                 data = np.zeros(new_shape)
 
                 # get the upper/lower triangular indices
-                row_triu_inds, col_triu_inds = np.triu_indices(
-                    self.n_nodes, k=0)
+                row_triu_inds, col_triu_inds = np.triu_indices(self.n_nodes, k=0)
                 if self.is_epoched:
                     data[:, row_triu_inds, col_triu_inds, ...] = self._data
                     data[:, col_triu_inds, row_triu_inds, ...] = self._data
@@ -762,19 +794,21 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             if any(missing):
                 raise ValueError(
                     "Name(s) in mapping missing from info: "
-                    "%s" % np.array(orig_names)[np.array(missing)])
-            new_names = [(names.index(name), new_name)
-                         for name, new_name in mapping.items()]
+                    "%s" % np.array(orig_names)[np.array(missing)]
+                )
+            new_names = [
+                (names.index(name), new_name) for name, new_name in mapping.items()
+            ]
         elif callable(mapping):
-            new_names = [(ci, mapping(name))
-                         for ci, name in enumerate(names)]
+            new_names = [(ci, mapping(name)) for ci, name in enumerate(names)]
         else:
-            raise ValueError('mapping must be callable or dict, not %s'
-                             % (type(mapping),))
+            raise ValueError(
+                "mapping must be callable or dict, not %s" % (type(mapping),)
+            )
 
         # check we got all strings out of the mapping
         for new_name in new_names:
-            _validate_type(new_name[1], 'str', 'New name mappings')
+            _validate_type(new_name[1], "str", "New name mappings")
 
         # do the remapping locally
         for c_ind, new_name in new_names:
@@ -782,18 +816,16 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         # check that all the channel names are unique
         if len(names) != len(np.unique(names)):
-            raise ValueError(
-                'New channel names are not unique, renaming failed')
+            raise ValueError("New channel names are not unique, renaming failed")
 
         # rename the new names
-        self._obj.attrs['node_names'] = names
+        self._obj.attrs["node_names"] = names
 
     @copy_function_doc_to_method_doc(plot_connectivity_circle)
     def plot_circle(self, **kwargs):
         plot_connectivity_circle(
-            self.get_data(),
-            node_names=self.names,
-            indices=self.indices, **kwargs)
+            self.get_data(), node_names=self.names, indices=self.indices, **kwargs
+        )
 
     # def plot_matrix(self):
     #     pass
@@ -821,12 +853,12 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         old_attrs = copy(self.attrs)
 
         # assign these to xarray's attrs
-        self.attrs['method'] = method
-        self.attrs['indices'] = indices
-        self.attrs['n_nodes'] = n_nodes
+        self.attrs["method"] = method
+        self.attrs["indices"] = indices
+        self.attrs["n_nodes"] = n_nodes
 
         # save the name of the connectivity structure
-        self.attrs['data_structure'] = str(self.__class__.__name__)
+        self.attrs["data_structure"] = str(self.__class__.__name__)
 
         # get a copy of metadata into attrs as a dictionary
         self = _prepare_xarray_mne_data_structures(self)
@@ -835,7 +867,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         # so map these to 'n/a'
         for key, val in self.attrs.items():
             if val is None:
-                self.attrs[key] = 'n/a'
+                self.attrs[key] = "n/a"
 
         # save as a netCDF file
         # note this requires the netcdf4 python library
@@ -844,10 +876,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         # complex data types, which was not natively supported
         # in xarray. Therefore, h5netcdf is the only engine
         # to support that feature at this moment.
-        self.xarray.to_netcdf(fname, mode='w',
-                              format='NETCDF4',
-                              engine='h5netcdf',
-                              invalid_netcdf=True)
+        self.xarray.to_netcdf(
+            fname, mode="w", format="NETCDF4", engine="h5netcdf", invalid_netcdf=True
+        )
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
@@ -877,16 +908,32 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
     --------
     mne_connectivity.spectral_connectivity_epochs
     """
+
     expected_n_dim = 2
 
-    def __init__(self, data, freqs, n_nodes, names=None,
-                 indices='all', method=None, spec_method=None,
-                 n_epochs_used=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        freqs,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        spec_method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
         super(SpectralConnectivity, self).__init__(
-            data, names=names, method=method,
-            indices=indices, n_nodes=n_nodes,
-            freqs=freqs, spec_method=spec_method,
-            n_epochs_used=n_epochs_used, **kwargs)
+            data,
+            names=names,
+            method=method,
+            indices=indices,
+            n_nodes=n_nodes,
+            freqs=freqs,
+            spec_method=spec_method,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -919,15 +966,30 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin):
     where the beginning of the trial implies t=0. These Epochs may
     also be discontiguous.
     """
+
     expected_n_dim = 2
 
-    def __init__(self, data, times, n_nodes, names=None, indices='all',
-                 method=None, n_epochs_used=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        times,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
         super(TemporalConnectivity, self).__init__(
-            data, names=names, method=method,
-            n_nodes=n_nodes, indices=indices,
-            times=times, n_epochs_used=n_epochs_used,
-            **kwargs)
+            data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            times=times,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -956,14 +1018,31 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
     %(connectivity_kwargs)s
     """
 
-    def __init__(self, data, freqs, times, n_nodes, names=None,
-                 indices='all', method=None,
-                 spec_method=None, n_epochs_used=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        freqs,
+        times,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        spec_method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
         super(SpectroTemporalConnectivity, self).__init__(
-            data, names=names, method=method, indices=indices,
-            n_nodes=n_nodes, freqs=freqs,
-            spec_method=spec_method, times=times,
-            n_epochs_used=n_epochs_used, **kwargs)
+            data,
+            names=names,
+            method=method,
+            indices=indices,
+            n_nodes=n_nodes,
+            freqs=freqs,
+            spec_method=spec_method,
+            times=times,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -985,16 +1064,31 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     %(spec_method)s
     %(connectivity_kwargs)s
     """
+
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, freqs, n_nodes, names=None,
-                 indices='all', method=None,
-                 spec_method=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        freqs,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        spec_method=None,
+        **kwargs,
+    ):
         super(EpochSpectralConnectivity, self).__init__(
-            data, freqs=freqs, names=names, indices=indices,
-            n_nodes=n_nodes, method=method,
-            spec_method=spec_method, **kwargs)
+            data,
+            freqs=freqs,
+            names=names,
+            indices=indices,
+            n_nodes=n_nodes,
+            method=method,
+            spec_method=spec_method,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -1015,15 +1109,22 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     %(method)s
     %(connectivity_kwargs)s
     """
+
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, times, n_nodes, names=None,
-                 indices='all', method=None, **kwargs):
+    def __init__(
+        self, data, times, n_nodes, names=None, indices="all", method=None, **kwargs
+    ):
         super(EpochTemporalConnectivity, self).__init__(
-            data, times=times, names=names,
-            indices=indices, n_nodes=n_nodes,
-            method=method, **kwargs)
+            data,
+            times=times,
+            names=names,
+            indices=indices,
+            n_nodes=n_nodes,
+            method=method,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -1046,16 +1147,33 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     %(spec_method)s
     %(connectivity_kwargs)s
     """
+
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, freqs, times, n_nodes,
-                 names=None, indices='all', method=None,
-                 spec_method=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        freqs,
+        times,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        spec_method=None,
+        **kwargs,
+    ):
         super(EpochSpectroTemporalConnectivity, self).__init__(
-            data, names=names, freqs=freqs, times=times, indices=indices,
-            n_nodes=n_nodes, method=method, spec_method=spec_method,
-            **kwargs)
+            data,
+            names=names,
+            freqs=freqs,
+            times=times,
+            indices=indices,
+            n_nodes=n_nodes,
+            method=method,
+            spec_method=spec_method,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -1082,12 +1200,25 @@ class Connectivity(BaseConnectivity):
     mne_connectivity.envelope_correlation
     """
 
-    def __init__(self, data, n_nodes, names=None, indices='all',
-                 method=None, n_epochs_used=None, **kwargs):
-        super(Connectivity, self).__init__(data, names=names, method=method,
-                                           n_nodes=n_nodes, indices=indices,
-                                           n_epochs_used=n_epochs_used,
-                                           **kwargs)
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
+        super(Connectivity, self).__init__(
+            data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
 
 
 @fill_doc
@@ -1117,10 +1248,22 @@ class EpochConnectivity(BaseConnectivity):
     # whether or not the connectivity occurs over epochs
     is_epoched = True
 
-    def __init__(self, data, n_nodes, names=None, indices='all',
-                 method=None, n_epochs_used=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
         super(EpochConnectivity, self).__init__(
-            data, names=names, method=method,
-            n_nodes=n_nodes, indices=indices,
+            data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
             n_epochs_used=n_epochs_used,
-            **kwargs)
+            **kwargs,
+        )
