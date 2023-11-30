@@ -1,6 +1,6 @@
 Authors:
 - Thomas S. Binns <t.s.binns@outlook.com>
-- Mohammad Orabe <email>
+- Mohammad Orabe <orabe.mhd@gmail.com>
 
 The files found here are used for the regression test of the multivariate
 connectivity methods for CaCoh, MIC, MIM, GC, and TRGC

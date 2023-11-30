@@ -4,7 +4,7 @@
 #          Thomas S. Binns <t.s.binns@outlook.com>
 #          Tien D. Nguyen <tien-dung.nguyen@charite.de>
 #          Richard M. Köhler <koehler.richard@charite.de>
-#          Mohammad Orabe <email>
+#          Mohammad Orabe <orabe.mhd@gmail.com>
 #
 # License: BSD (3-clause)
 
