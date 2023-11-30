@@ -1,0 +1,199 @@
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = ['setuptools >= 64.0.0']
+
+[project]
+classifiers = [
+  'Intended Audience :: Developers',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: BSD License',
+  'Natural Language :: English',
+  'Operating System :: MacOS',
+  'Operating System :: Microsoft :: Windows',
+  'Operating System :: Unix',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.9',
+  'Topic :: Scientific/Engineering',
+  'Topic :: Software Development',
+]
+dependencies = [
+  'mne >= 1.2',
+  'netCDF4',
+  'numpy >= 1.21',
+  'pandas',
+  'scipy >= 1.4.0',
+  'tqdm',
+  'xarray',
+]
+description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
+keywords = [
+  'connectivity',
+  'eeg',
+  'ieeg',
+  'meg',
+  'neuroscience',
+]
+license = {file = 'LICENSE'}
+maintainers = [
+  {email = 'adam.li@columbia.edu', name = 'Adam Li'},
+]
+name = 'mne-connectivity'
+readme = 'README.md'
+requires-python = '~=3.9'
+version = "0.6.0.dev0"
+
+[project.optional-dependencies]
+all = [
+  'mne-connectivity[build]',
+  'mne-connectivity[doc]',
+  'mne-connectivity[gui]',
+  'mne-connectivity[style]',
+  'mne-connectivity[test]',
+]
+build = [
+  'build',
+  'twine',
+]
+doc = [
+  'memory-profiler',
+  'mne-bids',
+  'mne-connectivity[gui]',
+  'nibabel',
+  'nilearn',
+  'numpydoc',
+  'pooch',
+  'pydata-sphinx-theme==0.14.1',
+  'PyQt6',
+  'sphinx',
+  'sphinx-copybutton',
+  'sphinx-design',
+  'sphinx-gallery',
+  'sphinx-issues',
+  'sphinxcontrib-bibtex',
+]
+full = [
+  'mne-connectivity[all]',
+]
+gui = [
+  'h5netcdf',
+  'matplotlib',
+  'mne-qt-browser>=0.6.0',
+  'PyQt6',
+  'pyvista',
+  'pyvistaqt',
+  'qtpy',
+  'sip',
+  'vtk',
+]
+style = [
+  'black',
+  'codespell',
+  'isort',
+  'pydocstyle',
+  'pydocstyle[toml]',
+  'ruff',
+  'toml-sort',
+  'yamllint',
+]
+test = [
+  'mne-bids',
+  'mne-connectivity[gui]',
+  'pandas',
+  'pymatreader',
+  'PyQt6',
+  'pytest',
+  'pytest-cov',
+]
+
+[project.urls]
+documentation = 'https://mne.tools/mne-connectivity'
+source = 'https://github.com/mne-tools/mne-connectivity'
+tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
+
+[tool.black]
+extend-exclude = '''
+(
+      __pycache__
+    | .github
+    | setup.py
+    | doc/
+    | examples/
+)
+'''
+include = '\.pyi?$'
+line-length = 88
+target-version = ['py39']
+
+[tool.coverage.report]
+exclude_lines = [
+  'if __name__ == .__main__.:',
+  'if TYPE_CHECKING:',
+  'pragma: no cover',
+]
+precision = 2
+
+[tool.coverage.run]
+branch = true
+cover_pylib = false
+omit = [
+  '**/__init__.py',
+  '**/mne_connectivity/_version.py',
+  '**/mne_connectivity/conftest.py',
+  '**/tests/**',
+]
+
+[tool.isort]
+extend_skip_glob = [
+  'doc/*',
+  'examples/*',
+  'setup.py',
+]
+line_length = 88
+multi_line_output = 3
+profile = 'black'
+py_version = 39
+
+[tool.mypy]
+ignore_missing_imports = true
+no_site_packages = true
+
+[tool.pydocstyle]
+add_ignore = 'D100,D104,D107'
+convention = 'numpy'
+ignore-decorators = '(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)'
+match = '^(?!setup|__init__|test_).*\.py'
+match-dir = '^mne_connectivity.*'
+
+[tool.pytest.ini_options]
+addopts = '--durations 20 --junit-xml=junit-results.xml -v --color=yes'
+junit_family = 'xunit2'
+minversion = '6.0'
+
+[tool.ruff]
+extend-exclude = [
+  'benchmarks',
+  'doc',
+  'setup.py',
+]
+line-length = 88
+
+[tool.ruff.per-file-ignores]
+'__init__.py' = ['F401']
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.package-data]
+'mne_connectivity.iclabel.network' = ['assets/*']
+
+[tool.setuptools.packages.find]
+exclude = ['mne_connectivity*tests']
+include = ['mne_connectivity*']
+
+[tool.tomlsort]
+all = true
+ignore_case = true
+trailing_comma_inline_array = true
