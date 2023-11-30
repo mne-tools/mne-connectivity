@@ -468,17 +468,7 @@ class _CaCohEst(_MultivariateCohEstBase):
                                U_bar_bb, n_seeds, n_targets, con_i)
 
     def _first_optimise_phi(self, C_ab, T_aa, T_bb):
-        """Find the rough angle, phi, at which coherence is maximised."""
-        n_iters = 5
-
-        # starting phi values to optimise over (in radians)
-        phis = np.linspace(np.pi / n_iters, np.pi, n_iters)
-        phis_coh = np.zeros((n_iters, *C_ab.shape[:2]))
-        for iter_i, iter_phi in enumerate(phis):
-            phi = np.full(C_ab.shape[:2], fill_value=iter_phi)
-            phis_coh[iter_i] = self._compute_cacoh(phi, C_ab, T_aa, T_bb)
-
-        return np.max(phis_coh, axis=0), phis[np.argmax(phis_coh, axis=0)]
+        pass
 
     def _final_optimise_phi(self, C_ab, T_aa, T_bb, max_coh, max_phis):
         """Fine-tune the angle at which coherence is maximised.
@@ -497,33 +487,6 @@ class _CaCohEst(_MultivariateCohEstBase):
         delta_phi = 1e-6
         mus = np.ones_like(max_phis)  # optimisation step size
 
-        for _ in range(n_iters):
-            # 2nd order Taylor expansion around phi
-            coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa,
-                                           T_bb)
-            coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa,
-                                            T_bb)
-            f_prime = (coh_plus - coh_minus) / (2 * delta_phi)
-            f_prime_prime = (coh_plus + coh_minus - 2 * max_coh) / (
-                delta_phi ** 2)
-
-            # determine new phi to test
-            phis = max_phis + (-f_prime / (f_prime_prime - mus))
-            # bound phi in range [-pi, pi]
-            phis = np.mod(phis + np.pi / 2, np.pi) - np.pi / 2
-
-            coh = self._compute_cacoh(phis, C_ab, T_aa, T_bb)
-
-            # find where new phi increases coh & update these values
-            greater_coh = coh > max_coh
-            max_coh[greater_coh] = coh[greater_coh]
-            max_phis[greater_coh] = phis[greater_coh]
-
-            # update step size
-            mus[greater_coh] /= 2
-            mus[~greater_coh] *= 2
-
-        return max_coh, phis
 
     def _compute_cacoh(self, phis, C_ab, T_aa, T_bb):
         """Compute the maximum coherence for a given set of phis."""
@@ -532,43 +495,11 @@ class _CaCohEst(_MultivariateCohEstBase):
         # that the magnitude of the projected line is captured in the real part
         C_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_ab)
 
-        # Eq. 9; T_aa/bb is sqrt(inv(real(C_aa/bb)))
-        D = np.matmul(T_aa, np.matmul(C_ab, T_bb))
-
-        # Eq. 12
-        a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
-        b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
-
-        # Eq. 8
-        numerator = np.einsum('ijk,ijk->ij', a,
-                              np.matmul(D, np.expand_dims(b, axis=3))[..., 0])
-        denominator = np.sqrt(np.einsum('ijk,ijk->ij', a, a) *
-                              np.einsum('ijk,ijk->ij', b, b))
-
-        return np.abs(numerator / denominator)
-
     def _compute_patterns(self, phis, C, C_bar_ab, T_aa, T_bb, U_bar_aa,
                           U_bar_bb, n_seeds, n_targets, con_i):
         """Compute CaCoh spatial patterns for the optimised phi."""
         C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) *
                            C_bar_ab)
-        D = np.matmul(T_aa, np.matmul(C_bar_ab, T_bb))
-        a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
-        b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
-
-        # Eq. 7 rearranged - multiply both sides by sqrt(inv(real(C_aa/bb)))
-        alpha = np.matmul(T_aa, np.expand_dims(a, axis=3))  # filter for seeds
-        beta = np.matmul(T_bb, np.expand_dims(b, axis=3))  # filter for targets
-
-        # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
-        # seed spatial patterns
-        self.patterns[0, con_i, :n_seeds] = (np.matmul(
-            np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
-        )[..., 0].T
-        # target spatial patterns
-        self.patterns[1, con_i, :n_targets] = (np.matmul(
-            np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
-        )[..., 0].T
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
