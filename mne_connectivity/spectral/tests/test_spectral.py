@@ -604,7 +604,8 @@ def test_multivariate_spectral_connectivity_epochs_regression():
 
 
 @pytest.mark.parametrize(
-    'method', ['cacoh', 'mic', 'mim', 'gc', 'gc_tr', ['cacoh', 'mic', 'mim', 'gc', 'gc_tr']])
+    'method', ['cacoh', 'mic', 'mim', 'gc', 'gc_tr',
+               ['cacoh', 'mic', 'mim', 'gc', 'gc_tr']])
 @pytest.mark.parametrize('mode', ['multitaper', 'fourier', 'cwt_morlet'])
 def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
     """Test error catching for multivar. freq.-domain connectivity methods."""
@@ -862,7 +863,7 @@ def test_epochs_tmin_tmax(kind):
 
 
 @pytest.mark.parametrize(
-    'method', ['cacoh', 'coh', 'mic', 'mim', 'plv', 'pli', 'wpli', 'ciplv'])
+    'method', ['coh', 'cacoh', 'mic', 'mim', 'plv', 'pli', 'wpli', 'ciplv'])
 @pytest.mark.parametrize('mode', ['cwt_morlet', 'multitaper'])
 @pytest.mark.parametrize('data_option', ['sync', 'random'])
 def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
@@ -870,7 +871,7 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     data."""
     rng = np.random.default_rng(0)
     n_epochs = 5
-    n_channels = 3
+    n_channels = 4
     n_times = 1000
     sfreq = 250
     data = np.zeros((n_epochs, n_channels, n_times))
@@ -892,22 +893,29 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
 
     multivar_methods = ['cacoh', 'mic', 'mim']
 
+    if method == 'cacoh':
+        # CaCoh within set of signals will always be 1, so need to specify
+        # distinct seeds and targets
+        indices = ([[0, 1]], [[2, 3]])
+    else:
+        indices = None
+
     # the frequency band should contain the frequency at which there is a
     # hypothesized "connection"
     freq_band_low_limit = (8.)
     freq_band_high_limit = (13.)
     freqs = np.arange(freq_band_low_limit, freq_band_high_limit + 1)
     con = spectral_connectivity_time(
-        data, freqs, method=method, mode=mode, sfreq=sfreq,
+        data, freqs, indices=indices, method=method, mode=mode, sfreq=sfreq,
         fmin=freq_band_low_limit, fmax=freq_band_high_limit, n_jobs=1,
-        faverage=True if method not in ['cacoh', 'mic'] else False,
-        average=True if method not in ['cacoh', 'mic'] else False, sm_times=0)
+        faverage=True if method != 'mic' else False,
+        average=True if method != 'mic' else False, sm_times=0)
     con_matrix = con.get_data()
 
     # MIC values can be pos. and neg., so must be averaged after taking the
     # absolute values for the test to work
     if method in multivar_methods:
-        if method in ['cacoh', 'mic']:
+        if method in ['mic']:
             con_matrix = np.mean(np.abs(con_matrix), axis=(0, 2))
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
@@ -1320,8 +1328,8 @@ def test_multivar_save_load(tmp_path):
     ragged_indices = (np.array([[0, 1]]), np.array([[2]]))
     for indices in [non_ragged_indices, ragged_indices]:
         con = spectral_connectivity_epochs(
-            epochs, method=['cacoh', 'mic', 'mim', 'gc', 'gc_tr'], indices=indices,
-            sfreq=sfreq, fmin=10, fmax=30)
+            epochs, method=['cacoh', 'mic', 'mim', 'gc', 'gc_tr'],
+            indices=indices, sfreq=sfreq, fmin=10, fmax=30)
         for this_con in con:
             this_con.save(tmp_file)
             read_con = read_connectivity(tmp_file)
