@@ -3,7 +3,7 @@
 Generate Test Dataset for Spectral Connectivity Over Time With Frites
 =====================================================================
 
-As of v0.3, mne-connectivity ported over an implemenetation for 
+As of v0.3, mne-connectivity ported over an implementation for 
 spectral connectivity over epochs. This file will generate the test
 dataset used with Frites v0.4.1.
 """

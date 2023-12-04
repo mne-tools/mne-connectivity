@@ -27,7 +27,7 @@ First, you should [fork](https://help.github.com/en/github/getting-started-with-
 
 
 ### Install Python packages required to run tests
-Install the following packages for testing purposes, plus all optonal MNE-connectivity
+Install the following packages for testing purposes, plus all optional MNE-connectivity
 dependencies to ensure you will be able to run all tests.
 
     $ pip install .[test]
