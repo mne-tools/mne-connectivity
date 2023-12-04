@@ -6,6 +6,7 @@
 #
 # License: BSD (3-clause)
 
+from ._version import __version__  # noqa: F401
 from .base import (
     Connectivity,
     EpochConnectivity,
