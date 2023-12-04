@@ -29,10 +29,10 @@ def run_sm_experiment(sample_data):
     """Run RAM expeirment with statsmodels."""
     # statsmodels feeds in (n_samples, n_channels)
     sm_var = VAR(endog=sample_data.squeeze().T)
-    sm_params = sm_var.fit(maxlags=5, trend='n')
+    sm_params = sm_var.fit(maxlags=5, trend="n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     rng = np.random.RandomState(0)
     n_epochs, n_signals, n_times = 1, 50, 100
     data = rng.randn(n_epochs, n_signals, n_times)

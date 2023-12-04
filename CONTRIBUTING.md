@@ -30,7 +30,7 @@ First, you should [fork](https://help.github.com/en/github/getting-started-with-
 Install the following packages for testing purposes, plus all optonal MNE-connectivity
 dependencies to ensure you will be able to run all tests.
 
-    $ pip install -r requirements_testing.txt
+    $ pip install .[test]
 
 ### Invoke pytest
 Now you can finally run the tests by running `pytest` in the
@@ -44,7 +44,7 @@ Now you can finally run the tests by running `pytest` in the
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
-    $ pip install -r requirements_doc.txt
+    $ pip install .[doc]
 
 To build the documentation locally, one can run:
 
