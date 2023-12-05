@@ -133,7 +133,6 @@ jobs:
       - run:
           name: Get data
           command: |
-            python setup.py develop --user
             mkdir -p ~/mne_data
             python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
             python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
