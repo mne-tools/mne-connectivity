@@ -13,7 +13,7 @@ on:
 jobs:
   # Run installation tests
   install:
-    runs-on: ${{ matrix.os }}
+    runs-on: install-${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip setuptools wheel
-          pip install --upgrade --upgrade-strategy eager .[test]
+          pip install --upgrade .[test]
       - run: mne sys_info
       - name: Build sdist
         run: python setup.py sdist
@@ -126,5 +126,5 @@ jobs:
           which python
       - run: pip install -e .
       - run: mne sys_info
-      - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+      - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v3
