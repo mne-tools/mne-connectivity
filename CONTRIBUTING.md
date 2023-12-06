@@ -85,7 +85,7 @@ Then one could plot the memory usage:
 4. Upload to Test PyPi
 
 
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    twine upload dist/* --repository-url https://test.pypi.org/legacy/ --repository mne-connectivity
 
 
 5. Build docs locally
@@ -96,7 +96,6 @@ Then one could plot the memory usage:
 
 
 7. Make release to PyPi
-
 
     twine upload dist/*
 
