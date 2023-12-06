@@ -68,3 +68,38 @@ Some good tools for profiling memory are ``mprof``. For example, one can memory 
 Then one could plot the memory usage:
 
     mprof plot
+
+# Making a Release
+
+1. Ctrl+f and replace all version indicators with the new version. For example,
+
+`0.5.0dev0` -> `0.5.0`
+
+2. Write release notes in `whats_new.rst`
+
+3. Build package locally and test
+
+
+    python -m build
+
+4. Upload to Test PyPi
+
+
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+
+5. Build docs locally
+
+    make -C build-doc
+
+6. Push docs under `doc/_build/html/` to the `stable/` folder in `gh-pages` branch
+
+
+7. Make release to PyPi
+
+
+    twine upload dist/*
+
+or if you have two-factor authentication enabled: <https://pypi.org/help/#apitoken>
+
+    twine upload dist/* --repository mne-connectivity
