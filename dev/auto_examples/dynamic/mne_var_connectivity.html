@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.6.0.dev0 documentation</title>
   
   
   
@@ -19,40 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=71d00d13" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/documentation_options.js?v=06ff0c9e"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/dynamic/mne_var_connectivity';</script>
     <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -67,6 +66,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -107,7 +115,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -118,12 +127,11 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0dev0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.6.0.dev0 documentation</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -175,23 +183,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -200,11 +210,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -222,8 +232,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -233,18 +243,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -312,10 +324,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -324,11 +336,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -346,8 +358,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -410,8 +422,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
@@ -424,7 +436,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Dynamic Connectivity Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Compute vector autoregressive model (linear system)</li>
+    <li class="breadcrumb-item active" aria-current="page">Compute...</li>
   </ul>
 </nav>
 </div>
@@ -447,9 +459,9 @@ document.write(`
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-vector-autoregressive-model-linear-system">
-<span id="ex-var"></span><span id="sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"></span><h1>Compute vector autoregressive model (linear system)<a class="headerlink" href="#compute-vector-autoregressive-model-linear-system" title="Permalink to this heading">#</a></h1>
+<span id="ex-var"></span><span id="sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"></span><h1>Compute vector autoregressive model (linear system)<a class="headerlink" href="#compute-vector-autoregressive-model-linear-system" title="Link to this heading">#</a></h1>
 <p>Compute a VAR (linear system) model from time-series
-activity <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id1">1</a> using a
+activity <a class="footnote-reference brackets" href="#footcite-li-linear-2017" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> using a
 continuous iEEG recording.</p>
 <p>In this example, we will demonstrate how to compute
 a VAR model with different statistical assumptions.</p>
@@ -468,7 +480,7 @@ a VAR model with different statistical assumptions.</p>
 </pre></div>
 </div>
 <section id="load-the-data">
-<h2>Load the data<a class="headerlink" href="#load-the-data" title="Permalink to this heading">#</a></h2>
+<h2>Load the data<a class="headerlink" href="#load-the-data" title="Link to this heading">#</a></h2>
 <p>Here, we first download an ECoG dataset that was recorded from a patient with
 epilepsy. To facilitate loading the data, we use <a class="reference external" href="https://mne.tools/mne-bids/">mne-bids</a>.</p>
 <p>Then, we will do some basic filtering and preprocessing using MNE-Python.</p>
@@ -500,22 +512,22 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▊                                   | 4.23M/88.2M [00:00&lt;00:01, 42.3MB/s]
- 12%|████▍                                | 10.6M/88.2M [00:00&lt;00:01, 54.7MB/s]
- 20%|███████▎                             | 17.6M/88.2M [00:00&lt;00:01, 61.6MB/s]
- 27%|█████████▉                           | 23.7M/88.2M [00:00&lt;00:01, 59.1MB/s]
- 34%|████████████▍                        | 29.6M/88.2M [00:00&lt;00:00, 59.1MB/s]
- 41%|███████████████                      | 35.8M/88.2M [00:00&lt;00:00, 59.8MB/s]
- 50%|██████████████████▍                  | 43.9M/88.2M [00:00&lt;00:00, 66.8MB/s]
- 60%|██████████████████████               | 52.6M/88.2M [00:00&lt;00:00, 73.1MB/s]
- 69%|█████████████████████████▍           | 60.5M/88.2M [00:00&lt;00:00, 75.0MB/s]
- 77%|████████████████████████████▌        | 68.2M/88.2M [00:01&lt;00:00, 75.5MB/s]
- 87%|████████████████████████████████     | 76.4M/88.2M [00:01&lt;00:00, 77.5MB/s]
- 95%|███████████████████████████████████▎ | 84.2M/88.2M [00:01&lt;00:00, 77.7MB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
+
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 282GB/s]
-Download complete in 04s (84.1 MB)
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 30.5MB/s]
+ 13%|████▉                                | 11.7M/88.2M [00:00&lt;00:01, 53.2MB/s]
+ 23%|████████▌                            | 20.5M/88.2M [00:00&lt;00:00, 67.7MB/s]
+ 33%|████████████▎                        | 29.3M/88.2M [00:00&lt;00:00, 75.5MB/s]
+ 43%|████████████████                     | 38.1M/88.2M [00:00&lt;00:00, 80.0MB/s]
+ 53%|███████████████████▊                 | 47.1M/88.2M [00:00&lt;00:00, 83.3MB/s]
+ 64%|███████████████████████▌             | 56.3M/88.2M [00:00&lt;00:00, 85.8MB/s]
+ 74%|███████████████████████████▎         | 65.1M/88.2M [00:00&lt;00:00, 86.8MB/s]
+ 84%|███████████████████████████████      | 73.9M/88.2M [00:00&lt;00:00, 86.2MB/s]
+ 94%|██████████████████████████████████▋  | 82.5M/88.2M [00:01&lt;00:00, 85.4MB/s]
+  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 306GB/s]
+Download complete in 02s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
   bids_path = BIDSPath(root=bids_root, subject=&#39;pt1&#39;, session=&#39;presurgery&#39;,
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:48: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
@@ -543,8 +555,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -640,7 +652,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 <br />
 <br /></section>
 <section id="crop-the-data-for-this-example">
-<h2>Crop the data for this example<a class="headerlink" href="#crop-the-data-for-this-example" title="Permalink to this heading">#</a></h2>
+<h2>Crop the data for this example<a class="headerlink" href="#crop-the-data-for-this-example" title="Link to this heading">#</a></h2>
 <p>We find the onset time of the seizure and remove all data after that time.
 In this example, we are only interested in analyzing the interictal
 (non-seizure) data period.</p>
@@ -664,7 +676,7 @@ leave as an exercise for our readers!</p>
 </div>
 </section>
 <section id="create-windows-of-data-epochs-using-mne-python">
-<h2>Create Windows of Data (Epochs) Using MNE-Python<a class="headerlink" href="#create-windows-of-data-epochs-using-mne-python" title="Permalink to this heading">#</a></h2>
+<h2>Create Windows of Data (Epochs) Using MNE-Python<a class="headerlink" href="#create-windows-of-data-epochs-using-mne-python" title="Link to this heading">#</a></h2>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
@@ -1035,7 +1047,7 @@ No baseline correction applied
 </div>
 </section>
 <section id="compute-the-var-model-for-all-windows">
-<h2>Compute the VAR model for all windows<a class="headerlink" href="#compute-the-var-model-for-all-windows" title="Permalink to this heading">#</a></h2>
+<h2>Compute the VAR model for all windows<a class="headerlink" href="#compute-the-var-model-for-all-windows" title="Link to this heading">#</a></h2>
 <p>Now, we are ready to compute our VAR model. We will compute a VAR model for
 each Epoch and return an EpochConnectivity data structure. Each Epoch here
 represents a separate VAR model. Taken together, these represent a
@@ -1051,30 +1063,27 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|▋         | 19/302 [00:00&lt;00:01, 189.25it/s]
- 13%|█▎        | 38/302 [00:00&lt;00:01, 185.18it/s]
- 19%|█▉        | 57/302 [00:00&lt;00:01, 179.74it/s]
- 25%|██▍       | 75/302 [00:00&lt;00:01, 165.57it/s]
- 30%|███       | 92/302 [00:00&lt;00:01, 159.35it/s]
- 36%|███▌      | 109/302 [00:00&lt;00:01, 156.91it/s]
- 41%|████▏     | 125/302 [00:00&lt;00:01, 156.46it/s]
- 47%|████▋     | 143/302 [00:00&lt;00:00, 162.59it/s]
- 53%|█████▎    | 161/302 [00:00&lt;00:00, 166.56it/s]
- 59%|█████▉    | 179/302 [00:01&lt;00:00, 168.48it/s]
- 65%|██████▍   | 196/302 [00:01&lt;00:00, 163.24it/s]
- 71%|███████   | 213/302 [00:01&lt;00:00, 163.15it/s]
- 76%|███████▌  | 230/302 [00:01&lt;00:00, 159.07it/s]
- 81%|████████▏ | 246/302 [00:01&lt;00:00, 153.01it/s]
- 87%|████████▋ | 263/302 [00:01&lt;00:00, 156.08it/s]
- 92%|█████████▏| 279/302 [00:01&lt;00:00, 153.85it/s]
- 98%|█████████▊| 297/302 [00:01&lt;00:00, 161.20it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 162.12it/s]
+  7%|▋         | 21/302 [00:00&lt;00:01, 206.91it/s]
+ 14%|█▍        | 42/302 [00:00&lt;00:01, 207.28it/s]
+ 21%|██        | 63/302 [00:00&lt;00:01, 207.25it/s]
+ 28%|██▊       | 84/302 [00:00&lt;00:01, 205.83it/s]
+ 35%|███▍      | 105/302 [00:00&lt;00:00, 205.86it/s]
+ 42%|████▏     | 126/302 [00:00&lt;00:00, 194.78it/s]
+ 48%|████▊     | 146/302 [00:00&lt;00:00, 188.08it/s]
+ 55%|█████▍    | 166/302 [00:00&lt;00:00, 190.62it/s]
+ 62%|██████▏   | 188/302 [00:00&lt;00:00, 197.01it/s]
+ 69%|██████▉   | 209/302 [00:01&lt;00:00, 200.72it/s]
+ 76%|███████▌  | 230/302 [00:01&lt;00:00, 201.82it/s]
+ 83%|████████▎ | 251/302 [00:01&lt;00:00, 197.18it/s]
+ 90%|████████▉ | 271/302 [00:01&lt;00:00, 193.97it/s]
+ 97%|█████████▋| 292/302 [00:01&lt;00:00, 198.38it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 198.75it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
 </section>
 <section id="evaluate-the-var-model-fit">
-<h2>Evaluate the VAR model fit<a class="headerlink" href="#evaluate-the-var-model-fit" title="Permalink to this heading">#</a></h2>
+<h2>Evaluate the VAR model fit<a class="headerlink" href="#evaluate-the-var-model-fit" title="Link to this heading">#</a></h2>
 <p>We can now evaluate the model fit by computing the residuals of the model and
 visualizing them. In addition, we can evaluate the covariance of the
 residuals. This will compute an independent VAR model for each epoch (window)
@@ -1118,12 +1127,12 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fe33b6cfa60&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f35d448c850&gt;
 </pre></div>
 </div>
 </section>
 <section id="compute-one-var-model-using-all-epochs">
-<h2>Compute one VAR model using all epochs<a class="headerlink" href="#compute-one-var-model-using-all-epochs" title="Permalink to this heading">#</a></h2>
+<h2>Compute one VAR model using all epochs<a class="headerlink" href="#compute-one-var-model-using-all-epochs" title="Link to this heading">#</a></h2>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">model='dynamic'</span></code>, we instead treat each Epoch as a sample of
 the same VAR model and thus we only estimate one VAR model. One might do this
 when one suspects the data is stationary and one VAR model represents all
@@ -1142,7 +1151,7 @@ epochs.</p>
 </div>
 </section>
 <section id="evaluate-model-fit-again">
-<h2>Evaluate model fit again<a class="headerlink" href="#evaluate-model-fit-again" title="Permalink to this heading">#</a></h2>
+<h2>Evaluate model fit again<a class="headerlink" href="#evaluate-model-fit-again" title="Link to this heading">#</a></h2>
 <p>We can now evaluate the model fit again as done earlier. This model fit will
 of course have higher residuals than before as we are only fitting 1 VAR
 model to all the epochs.</p>
@@ -1185,10 +1194,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fe33b6e9cc0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f35947782e0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 50.157 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 45.373 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1206,11 +1215,10 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -1221,10 +1229,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <p class="prev-next-title">Dynamic Connectivity Examples</p>
       </div>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1262,8 +1267,8 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1273,7 +1278,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-28.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1281,7 +1286,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1289,10 +1294,11 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>

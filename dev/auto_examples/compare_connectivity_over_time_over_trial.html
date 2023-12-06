@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.6.0.dev0 documentation</title>
   
   
   
@@ -19,40 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=71d00d13" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/documentation_options.js?v=06ff0c9e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/compare_connectivity_over_time_over_trial';</script>
     <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -68,6 +67,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -108,7 +116,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,12 +128,11 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0dev0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.6.0.dev0 documentation</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -176,23 +184,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -201,11 +211,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -223,8 +233,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -234,18 +244,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -313,10 +325,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -325,11 +337,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -347,8 +359,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -411,8 +423,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -422,7 +434,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Comparing spectral connectivity computed over time or over trials</li>
+    <li class="breadcrumb-item active" aria-current="page">Comparing...</li>
   </ul>
 </nav>
 </div>
@@ -445,13 +457,13 @@ document.write(`
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="comparing-spectral-connectivity-computed-over-time-or-over-trials">
-<span id="sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"></span><h1>Comparing spectral connectivity computed over time or over trials<a class="headerlink" href="#comparing-spectral-connectivity-computed-over-time-or-over-trials" title="Permalink to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"></span><h1>Comparing spectral connectivity computed over time or over trials<a class="headerlink" href="#comparing-spectral-connectivity-computed-over-time-or-over-trials" title="Link to this heading">#</a></h1>
 <p>This example demonstrates the difference between spectral connectivity
 computed over time or over trials.</p>
 <p>A brief background on the difference between the two conditions is provided,
 followed by examples on simulated data and real EEG data.</p>
 <section id="background">
-<h2>Background<a class="headerlink" href="#background" title="Permalink to this heading">#</a></h2>
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
 <p>Spectral connectivity is a method for inferring the relationship between
 channels decomposed at different frequencies of interest. The channels
 could be M/EEG sensors or brain regions estimated with source localization.</p>
@@ -472,7 +484,7 @@ e.g. <a class="reference external" href="https://mne.tools/stable/auto_tutorials
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a>
 is most likely the corresponding function to utilize.</p>
 <p>If the data is obtained from resting-state or free-moving tasks,
-e.g. a mirror-game paradigm <a class="footnote-reference brackets" href="#footcite-zimmermann2022" id="id1">1</a>, then
+e.g. a mirror-game paradigm <a class="footnote-reference brackets" href="#footcite-zimmermann2022" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, then
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a> might be better suited.</p>
 <p><strong>Assumptions and Interpretations</strong></p>
 <p>The way connectivity is computed for the two functions are slightly
@@ -516,7 +528,7 @@ visual task dataset.</p>
 </div>
 </section>
 <section id="simulated-examples">
-<h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Permalink to this heading">#</a></h2>
+<h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Link to this heading">#</a></h2>
 <p><strong>Case 1: Repetitions of the same trial.</strong></p>
 <p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
 In this case, we will use random data for 3 channels over 5 epochs, but
@@ -546,7 +558,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fe338a6d900&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f3596466290&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -744,7 +756,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fe338b0be20&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f35edca4820&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -854,7 +866,7 @@ Connectivity method: plv
 since the phase differences over time between two channels are synchronized.</p>
 </section>
 <section id="real-data-demonstration">
-<h2>Real data demonstration<a class="headerlink" href="#real-data-demonstration" title="Permalink to this heading">#</a></h2>
+<h2>Real data demonstration<a class="headerlink" href="#real-data-demonstration" title="Link to this heading">#</a></h2>
 <p>To finish this example, we will compute connectivity for a sample EEG data.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s1">&#39;MEG/sample/sample_audvis_filt-0-40_raw.fif&#39;</span>
@@ -921,7 +933,7 @@ to compute connectivity over trials.</p>
 which occurs around 100 and 170 ms after stimuli presentation in
 posterior sites. Additionally, increased theta and alpha phase locking
 have also been observed during the time window of P1 and
-N1 <a class="footnote-reference brackets" href="#footcite-klimeschetal2004" id="id2">2</a>. Here, we will therefore analyze phase
+N1 <a class="footnote-reference brackets" href="#footcite-klimeschetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Here, we will therefore analyze phase
 connectivity in the theta band around P1</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># exclude the baseline period for connectivity estimation</span>
@@ -1085,12 +1097,12 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7fe319326110&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f35936bd990&gt;
 </pre></div>
 </div>
 </section>
 <section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">#</a></h2>
 <p>In this example we have looked at the differences between connectivity over
 time and connectivity over trials and demonstrated the corresponding
 functions implemented in <code class="docutils literal notranslate"><span class="pre">mne_connectivity</span></code> on simulated data.</p>
@@ -1103,18 +1115,20 @@ evoked response. Further analysis revealed the highest connections
 at this timepoint were between occipital and frontal areas.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id3">
-<dl class="footnote brackets">
-<dt class="label" id="footcite-zimmermann2022"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Marius Zimmermann, Arianna Schiano Lomoriello, and Ivana Konvalinka. Intra-individual behavioural and neural signatures of audience effects and interactions in a mirror-game paradigm. <em>Royal Society Open Science</em>, 2022. URL: <a class="reference external" href="https://royalsocietypublishing.org/doi/10.1098/rsos.211352">https://royalsocietypublishing.org/doi/10.1098/rsos.211352</a>, <a class="reference external" href="https://doi.org/10.1098/rsos.211352">doi:10.1098/rsos.211352</a>.</p>
-</dd>
-<dt class="label" id="footcite-klimeschetal2004"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Wolfgang Klimesch, Bärbel Schack, Manuel Schabus, Michael Doppelmayr, Walter Gruber, and Paul Sauseng. Phase-locked alpha and theta oscillations generate the p1–n1 complex and are related to memory performance. <em>Cognitive Brain Research</em>, 19(3):302–316, 2004. <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.cogbrainres.2003.11.016">doi:https://doi.org/10.1016/j.cogbrainres.2003.11.016</a>.</p>
-</dd>
-</dl>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-zimmermann2022" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Marius Zimmermann, Arianna Schiano Lomoriello, and Ivana Konvalinka. Intra-individual behavioural and neural signatures of audience effects and interactions in a mirror-game paradigm. <em>Royal Society Open Science</em>, 2022. <a class="reference external" href="https://doi.org/10.1098/rsos.211352">doi:10.1098/rsos.211352</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-klimeschetal2004" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Wolfgang Klimesch, Bärbel Schack, Manuel Schabus, Michael Doppelmayr, Walter Gruber, and Paul Sauseng. Phase-locked alpha and theta oscillations generate the p1–n1 complex and are related to memory performance. <em>Cognitive Brain Research</em>, 19(3):302–316, 2004. <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.cogbrainres.2003.11.016">doi:https://doi.org/10.1016/j.cogbrainres.2003.11.016</a>.</p>
+</aside>
+</aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.825 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 19.437 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1132,11 +1146,10 @@ at this timepoint were between occipital and frontal areas.</p>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="dpli_wpli_pli.html"
@@ -1156,10 +1169,7 @@ at this timepoint were between occipital and frontal areas.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1195,8 +1205,8 @@ at this timepoint were between occipital and frontal areas.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1206,7 +1216,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-28.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1214,7 +1224,7 @@ at this timepoint were between occipital and frontal areas.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1222,10 +1232,11 @@ at this timepoint were between occipital and frontal areas.</p>
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>

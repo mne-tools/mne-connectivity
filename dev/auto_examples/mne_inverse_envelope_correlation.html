@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.6.0dev0 documentation</title>
+    <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.6.0.dev0 documentation</title>
   
   
   
@@ -19,40 +18,40 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=71d00d13" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/documentation_options.js?v=06ff0c9e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mne_inverse_envelope_correlation';</script>
     <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -68,6 +67,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -108,7 +116,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,12 +128,11 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0dev0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.6.0.dev0 documentation</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -176,23 +184,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -201,11 +211,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -223,8 +233,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -234,18 +244,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -313,10 +325,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -325,11 +337,11 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      dev  <!-- this text may get changed later by javascript -->
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
     <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
@@ -347,8 +359,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -411,8 +423,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -422,7 +434,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Compute envelope correlations in source space</li>
+    <li class="breadcrumb-item active" aria-current="page">Compute...</li>
   </ul>
 </nav>
 </div>
@@ -445,13 +457,13 @@ document.write(`
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-envelope-correlations-in-source-space">
-<span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Permalink to this heading">#</a></h1>
+<span id="ex-envelope-correlation"></span><span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"></span><h1>Compute envelope correlations in source space<a class="headerlink" href="#compute-envelope-correlations-in-source-space" title="Link to this heading">#</a></h1>
 <p>Compute envelope correlations of orthogonalized activity
-<a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1">1</a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2">2</a> using pairwise and symmetric
-orthogonalization <a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id3">3</a> in source space using
+<a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> using pairwise and symmetric
+orthogonalization <a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> in source space using
 resting state CTF data.</p>
 <p>Note that the original procedure for symmetric orthogonalization in
-<a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id4">3</a> is:</p>
+<a class="footnote-reference brackets" href="#footcite-colcloughetal2015" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> is:</p>
 <ol class="arabic simple">
 <li><p>Extract inverse label data from raw</p></li>
 <li><p>Symmetric orthogonalization</p></li>
@@ -468,7 +480,7 @@ resting state CTF data.</p>
 <li><p>Hilbert transform and absolute value (inside envelope_correlation)</p></li>
 </ol>
 <p>The differences between these two should hopefully be fairly minimal given
-the pairwise orthogonalization used in <a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id5">2</a> used a similar
+the pairwise orthogonalization used in <a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> used a similar
 pipeline.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Eric Larson &lt;larson.eric.d@gmail.com&gt;</span>
 <span class="c1">#          Sheraz Khan &lt;sheraz@khansheraz.com&gt;</span>
@@ -600,7 +612,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
@@ -632,7 +644,7 @@ Designing a one-pass, zero-phase, non-causal highpass filter:
 - Filter length: 2641 samples (33.013 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Using up to 300 segments
@@ -641,7 +653,7 @@ Number of samples used : 4800
 </pre></div>
 </div>
 <section id="compute-the-forward-and-inverse">
-<h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Permalink to this heading">#</a></h2>
+<h2>Compute the forward and inverse<a class="headerlink" href="#compute-the-forward-and-inverse" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_source_spaces.html#mne.read_source_spaces" title="mne.read_source_spaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_source_spaces</span></a><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 <span class="n">fwd</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_forward_solution</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bem</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">src</span>
@@ -714,14 +726,14 @@ Checking surface interior status for 4098 points...
     Found    0/2859 points outside using surface Qhull
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3209.8 ms
+Interior check completed in 2935.9 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3230.8 ms
+Interior check completed in 2856.8 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -729,7 +741,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 217.4 ms
+Interior check completed in 198.2 ms
 
 Composing the field computation matrix...
 Computing MEG at 8196 source locations (free orientations)...
@@ -782,7 +794,7 @@ Created an SSP operator (subspace dimension = 4)
 </div>
 </section>
 <section id="do-pairwise-orthogonalized-envelope-correlation">
-<h2>Do pairwise-orthogonalized envelope correlation<a class="headerlink" href="#do-pairwise-orthogonalized-envelope-correlation" title="Permalink to this heading">#</a></h2>
+<h2>Do pairwise-orthogonalized envelope correlation<a class="headerlink" href="#do-pairwise-orthogonalized-envelope-correlation" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_labels_from_annot.html#mne.read_labels_from_annot" title="mne.read_labels_from_annot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;aparc_sub&#39;</span><span class="p">,</span>
@@ -908,7 +920,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Setting up band-pass filter from 14 - 30 Hz
@@ -970,7 +982,7 @@ Using control points [73. 80. 89.]
 </div>
 </section>
 <section id="do-symmetric-orthogonalized-envelope-correlation">
-<h2>Do symmetric-orthogonalized envelope correlation<a class="headerlink" href="#do-symmetric-orthogonalized-envelope-correlation" title="Permalink to this heading">#</a></h2>
+<h2>Do symmetric-orthogonalized envelope correlation<a class="headerlink" href="#do-symmetric-orthogonalized-envelope-correlation" title="Link to this heading">#</a></h2>
 <p>Here we need the number of labels to be less than the rank of the data
 (here around 200), because all label time courses are orthogonalized
 relative to one another. <code class="docutils literal notranslate"><span class="pre">'aparc_sub'</span></code> has over 400 labels, so here we
@@ -1116,26 +1128,31 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7fe306beb400&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f35d65e2a70&gt;
 </pre></div>
 </div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id6">
-<dl class="footnote brackets">
-<dt class="label" id="footcite-hippetal2012"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
-</dd>
-<dt class="label" id="footcite-khanetal2018"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id5">2</a>)</span></dt>
-<dd><p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
-</dd>
-<dt class="label" id="footcite-colcloughetal2015"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>)</span></dt>
-<dd><p>G. L. Colclough, M. J. Brookes, S. M. Smith, and M. W. Woolrich. A symmetric multivariate leakage correction for MEG connectomes. <em>NeuroImage</em>, 117:439–448, August 2015. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2015.03.071">doi:10.1016/j.neuroimage.2015.03.071</a>.</p>
-</dd>
-</dl>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-hippetal2012" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Joerg F Hipp, David J Hawellek, Maurizio Corbetta, Markus Siegel, and Andreas K Engel. Large-scale cortical correlation structure of spontaneous oscillatory activity. <em>Nature Neuroscience</em>, 15(6):884–890, 2012. <a class="reference external" href="https://doi.org/10.1038/nn.3101">doi:10.1038/nn.3101</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-khanetal2018" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Sheraz Khan, Javeria A. Hashmi, Fahimeh Mamashli, Konstantinos Michmizos, Manfred G. Kitzbichler, Hari Bharadwaj, Yousra Bekhti, Santosh Ganesan, Keri-Lee A. Garel, Susan Whitfield-Gabrieli, Randy L. Gollub, Jian Kong, Lucia M. Vaina, Kunjan D. Rana, Steven M. Stufflebeam, Matti S. Hämäläinen, and Tal Kenet. Maturation trajectories of cortical resting-state networks depend on the mediating frequency band. <em>NeuroImage</em>, 174:57–68, 2018. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2018.02.018">doi:10.1016/j.neuroimage.2018.02.018</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-colcloughetal2015" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>G. L. Colclough, M. J. Brookes, S. M. Smith, and M. W. Woolrich. A symmetric multivariate leakage correction for MEG connectomes. <em>NeuroImage</em>, 117:439–448, August 2015. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2015.03.071">doi:10.1016/j.neuroimage.2015.03.071</a>.</p>
+</aside>
+</aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 54.104 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.186 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bd11eaca1da460c062c1190f891509a7/mne_inverse_envelope_correlation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation.ipynb</span></code></a></p>
@@ -1153,11 +1170,10 @@ Using control points [26. 29. 32.]
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="granger_causality.html"
@@ -1177,10 +1193,7 @@ Using control points [26. 29. 32.]
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1215,8 +1228,8 @@ Using control points [26. 29. 32.]
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1226,7 +1239,7 @@ Using control points [26. 29. 32.]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-11-28.
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1234,7 +1247,7 @@ Using control points [26. 29. 32.]
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1242,10 +1255,11 @@ Using control points [26. 29. 32.]
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
 </p></div>
       
     </div>
