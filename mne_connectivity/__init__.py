@@ -6,8 +6,8 @@
 #
 # License: BSD (3-clause)
 
-__version__ = '0.6.0dev0'
 
+from ._version import __version__  # noqa: F401
 from .base import (Connectivity, EpochConnectivity, EpochSpectralConnectivity,
                    EpochSpectroTemporalConnectivity, EpochTemporalConnectivity,
                    SpectralConnectivity, SpectroTemporalConnectivity,

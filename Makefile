@@ -1,4 +1,4 @@
-# simple makefile to simplify repetetive build env management tasks under posix
+# simple makefile to simplify repetitive build env management tasks under posix
 
 # caution: testing won't work on windows, see README
 
@@ -6,7 +6,7 @@ PYTHON ?= python
 PYTESTS ?= pytest
 CTAGS ?= ctags
 CODESPELL_SKIPS ?= "*.fif,*.eve,*.gz,*.tgz,*.zip,*.mat,*.stc,*.label,*.w,*.bz2,*.annot,*.sulc,*.log,*.local-copy,*.orig_avg,*.inflated_avg,*.gii,*.pyc,*.doctree,*.pickle,*.inv,*.png,*.edf,*.touch,*.thickness,*.nofix,*.volume,*.defect_borders,*.mgh,lh.*,rh.*,COR-*,FreeSurferColorLUT.txt,*.examples,.xdebug_mris_calc,bad.segments,BadChannels,*.hist,empty_file,*.orig,*.js,*.map,*.ipynb,searchindex.dat,plot_*.rst,*.rst.txt,*.html,gdf_encodes.txt"
-CODESPELL_DIRS ?= mne_connectivity/ doc/ examples/
+CODESPELL_DIRS ?= mne_connectivity/ doc/ examples/ benchmarks/
 all: clean inplace test test-doc
 
 clean-pyc:
@@ -65,7 +65,7 @@ test-doc: sample_data testing_data
 test-coverage: testing_data
 	rm -rf coverage .coverage
 	$(PYTESTS) --cov=mne_connectivity --cov-report html:coverage
-# whats the difference with test-no-sample-with-coverage?
+# what's the difference with test-no-sample-with-coverage?
 
 test-mem: in testing_data
 	ulimit -v 1097152 && $(PYTESTS) mne
@@ -91,11 +91,31 @@ flake:
 	fi;
 	@echo "flake8 passed"
 
+black:
+	@if command -v black > /dev/null; then \
+		echo "Running black"; \
+		black mne_connectivity examples; \
+	else \
+		echo "black not found, please install it!"; \
+		exit 1; \
+	fi;
+	@echo "black passed"
+
+isort:
+	@if command -v isort > /dev/null; then \
+		echo "Running isort"; \
+		isort mne_connectivity examples doc; \
+	else \
+		echo "isort not found, please install it!"; \
+		exit 1; \
+	fi;
+	@echo "isort passed"
+
 codespell:  # running manually
-	@codespell -w -i 3 -q 3 -S $(CODESPELL_SKIPS) --ignore-words=ignore_words.txt $(CODESPELL_DIRS)
+	@codespell -w -i 3 -q 3 -S $(CODESPELL_SKIPS) --ignore-words=.codespellignore $(CODESPELL_DIRS)
 
 codespell-error:  # running on travis
-	@codespell -i 0 -q 7 -S $(CODESPELL_SKIPS) --ignore-words=ignore_words.txt $(CODESPELL_DIRS)
+	@codespell -i 0 -q 7 -S $(CODESPELL_SKIPS) --ignore-words=.codespellignore $(CODESPELL_DIRS)
 
 pydocstyle:
 	@echo "Running pydocstyle"
@@ -117,3 +137,11 @@ build-doc:
 	make -C doc/ clean
 	make -C doc/ html-noplot
 	cd doc/ && make view
+
+run-checks:
+	isort --check .
+	black --check mne_connectivity examples
+	flake8 .
+	mypy ./mne_connectivity
+	@$(MAKE) pydocstyle
+	@$(MAKE) codespell-error
