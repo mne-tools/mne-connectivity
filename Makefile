@@ -34,6 +34,9 @@ in: inplace # just a shortcut
 inplace:
 	$(PYTHON) setup.py build_ext -i
 
+pre-commit:
+	@pre-commit run -a
+
 pytest: test
 
 test: in
@@ -142,6 +145,8 @@ run-checks:
 	isort --check .
 	black --check mne_connectivity examples
 	flake8 .
-	mypy ./mne_connectivity
 	@$(MAKE) pydocstyle
 	@$(MAKE) codespell-error
+	ruff .
+	toml-sort ./pyproject.toml --check
+	yamllint . -c .yamllint.yml --strict
