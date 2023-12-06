@@ -1,191 +1,226 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.5.0 documentation</title>
-  <script>
+    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=71d00d13" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/documentation_options.js?v=50f829f1"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_connectivity/utils/utils';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="canonical" href="https://mne.tools/mne-connectivity/stable/index.html" />
-    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
-    <script type="text/javascript" src="../../../_static/scrollfix.js"></script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../../index.html">
-
   
   
   
   
   
+    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
   
-  
-
-  
-  
-    <p class="title logo__title">MNE-Connectivity 0.5.0 documentation</p>
-  
-</a>
+</a></div>
     
   </div>
-
   
   <div class="col-lg-9 navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../whats_new.html">
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
                         What’s new?
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../install.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
                         Installation
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
-    </ul>
-</nav>
-      </div>
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
+    
+    
+    <div class="navbar-header-items__end">
       
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
       
-      <div class="navbar-end-item">
-        <div class="dropdown">
-    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.5.0
-        <span class="caret"></span>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
     </button>
-    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
     </div>
-</div>
-      </div>
+  </div>
+`);
+</script></div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -193,116 +228,121 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../whats_new.html">
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
                         What’s new?
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../install.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
                         Installation
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../auto_examples/index.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
                         Examples
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
-    </ul>
-</nav>
-      </div>
-      
+  </ul>
+</nav></div>
+        
       </div>
     
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <div class="dropdown">
-    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.5.0
-        <span class="caret"></span>
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
     </button>
-    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/dev/index.html">v0.6 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/stable/index.html">v0.5 (stable)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.4/index.html">v0.4</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.3/index.html">v0.3</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.2/index.html">v0.2</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-connectivity/v0.1/index.html">v0.1</a>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
     </div>
-</div>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -310,45 +350,76 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
+  
+  <div id="rtd-footer-container"></div>
+
 
       </div>
-      <main class="bd-main">
+      
+      <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">mne_connecti...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <h1>Source code for mne_connectivity.utils.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Authors: Martin Luessi &lt;mluessi@nmr.mgh.harvard.edu&gt;</span>
+<span class="c1">#          Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_prepare_write_metadata</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_prepare_write_metadata</span><span class="p">,</span> <span class="n">logger</span>
 
 
 <span class="k">def</span> <span class="nf">parallel_loop</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -379,57 +450,200 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">n_jobs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;running &#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="s1">&#39; serially&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running &quot;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="s2">&quot; serially&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">par</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;running &#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="s1">&#39; in parallel&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running &quot;</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="s2">&quot; in parallel&quot;</span><span class="p">)</span>
         <span class="n">func</span> <span class="o">=</span> <span class="n">delayed</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="n">par</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">par</span><span class="p">,</span> <span class="n">func</span>
 
 
-<div class="viewcode-block" id="check_indices"><a class="viewcode-back" href="../../../generated/mne_connectivity.check_indices.html#mne_connectivity.check_indices">[docs]</a><span class="k">def</span> <span class="nf">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check indices parameter.</span>
+<div class="viewcode-block" id="check_indices">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.check_indices.html#mne_connectivity.check_indices">[docs]</a>
+<span class="k">def</span> <span class="nf">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check indices parameter for bivariate connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    indices : tuple of array</span>
-<span class="sd">        Tuple of length 2 containing index pairs.</span>
+<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
+<span class="sd">        Tuple containing index pairs.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : tuple of array</span>
+<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
 <span class="sd">        The indices.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Indices for bivariate connectivity should be a tuple of length 2,</span>
+<span class="sd">    containing the channel indices for the seed and target channel pairs,</span>
+<span class="sd">    respectively. Seed and target indices should be equal-length array-likes of</span>
+<span class="sd">    integers representing the indices of the individual channels in the data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;indices must be a tuple of length 2&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;indices must be a tuple of length 2&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Index arrays indices[0] and indices[1] must &#39;</span>
-                         <span class="s1">&#39;have the same length&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Index arrays indices[0] and indices[1] must &quot;</span> <span class="s2">&quot;have the same length&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">inds</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Channel indices must be integers, not array-likes&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">indices</span></div>
 
 
-<div class="viewcode-block" id="seed_target_indices"><a class="viewcode-back" href="../../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices">[docs]</a><span class="k">def</span> <span class="nf">seed_target_indices</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate indices parameter for seed based connectivity analysis.</span>
+
+<span class="k">def</span> <span class="nf">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_chans</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check indices parameter for multivariate connectivity and mask it.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    seeds : array of int | int</span>
+<span class="sd">    indices : tuple of array of array of int, shape (2, n_cons, variable)</span>
+<span class="sd">        Tuple containing index sets.</span>
+
+<span class="sd">    n_chans : int</span>
+<span class="sd">        The number of channels in the data. Used when converting negative</span>
+<span class="sd">        indices to positive indices.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indices : array of array of int, shape of (2, n_cons, max_n_chans)</span>
+<span class="sd">        The padded indices as a masked array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Indices for multivariate connectivity should be a tuple of length 2</span>
+<span class="sd">    containing the channel indices for the seed and target channel sets,</span>
+<span class="sd">    respectively. Seed and target indices should be equal-length array-likes</span>
+<span class="sd">    representing the indices of the channel sets in the data for each</span>
+<span class="sd">    connection. The indices for each connection should be an array-like of</span>
+<span class="sd">    integers representing the individual channels in the data. The length of</span>
+<span class="sd">    indices for each connection do not need to be equal. All indices within a</span>
+<span class="sd">    connection must be unique.</span>
+
+<span class="sd">    If the seed and target indices are given as lists or tuples, they will be</span>
+<span class="sd">    converted to numpy arrays. Because the number of channels can differ across</span>
+<span class="sd">    connections or between the seeds and targets for a given connection (i.e.</span>
+<span class="sd">    ragged/jagged indices), the returned array will be padded out to a &#39;full&#39;</span>
+<span class="sd">    array with an invalid index (``-1``) according to the maximum number of</span>
+<span class="sd">    channels in the seed or target of any one connection. These invalid</span>
+<span class="sd">    entries are then masked and returned as numpy masked arrays. E.g. the</span>
+<span class="sd">    ragged indices of shape ``(2, n_cons, variable)``::</span>
+
+<span class="sd">            indices = ([[0, 1], [0, 1   ]],  # seeds</span>
+<span class="sd">                       [[2, 3], [4, 5, 6]])  # targets</span>
+
+<span class="sd">    would be padded to full arrays::</span>
+
+<span class="sd">            indices = ([[0, 1, -1], [0, 1, -1]],  # seeds</span>
+<span class="sd">                       [[2, 3, -1], [4, 5,  6]])  # targets</span>
+
+<span class="sd">    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The</span>
+<span class="sd">    invalid entries are then masked::</span>
+
+<span class="sd">            indices = ([[0, 1, --], [0, 1, --]],  # seeds</span>
+<span class="sd">                       [[2, 3, --], [4, 5,  6]])  # targets</span>
+
+<span class="sd">    In case &quot;indices&quot; contains negative values to index channels, these will be</span>
+<span class="sd">    converted to the corresponding positive-valued index before any masking is</span>
+<span class="sd">    applied.</span>
+
+<span class="sd">    More information on working with multivariate indices and handling</span>
+<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
+<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;indices must be a tuple of length 2&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;index arrays indices[0] and indices[1] must &quot;</span> <span class="s2">&quot;have the same length&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">invalid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">max_n_chans</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">group_idx</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">con</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;multivariate indices must contain array-likes of channel &quot;</span>
+                    <span class="s2">&quot;indices for each seed and target&quot;</span>
+                <span class="p">)</span>
+            <span class="n">con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">con</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;multivariate indices cannot contain repeated channels &quot;</span>
+                    <span class="s2">&quot;within a seed or target&quot;</span>
+                <span class="p">)</span>
+            <span class="n">max_n_chans</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_n_chans</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">))</span>
+            <span class="c1"># convert negative to positive indices</span>
+            <span class="k">for</span> <span class="n">chan_idx</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">chan</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">chan</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">n_chans</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;a negative channel index is not present in the &quot;</span> <span class="s2">&quot;data&quot;</span>
+                        <span class="p">)</span>
+                    <span class="n">indices</span><span class="p">[</span><span class="n">group_idx</span><span class="p">][</span><span class="n">con_idx</span><span class="p">][</span><span class="n">chan_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">%</span> <span class="n">n_chans</span>
+
+    <span class="c1"># pad indices to avoid ragged arrays</span>
+    <span class="n">padded_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_chans</span><span class="p">),</span> <span class="n">invalid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">con_i</span><span class="p">,</span> <span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+        <span class="n">padded_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">con_i</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed</span><span class="p">)]</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="n">padded_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">con_i</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)]</span> <span class="o">=</span> <span class="n">target</span>
+
+    <span class="c1"># mask invalid indices</span>
+    <span class="n">masked_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">padded_indices</span><span class="p">,</span> <span class="n">invalid</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">masked_indices</span>
+
+
+<div class="viewcode-block" id="seed_target_indices">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices">[docs]</a>
+<span class="k">def</span> <span class="nf">seed_target_indices</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate indices parameter for bivariate seed-based connectivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seeds : array of int | int, shape (n_unique_seeds)</span>
 <span class="sd">        Seed indices.</span>
-<span class="sd">    targets : array of int | int</span>
+<span class="sd">    targets : array of int | int, shape (n_unique_targets)</span>
 <span class="sd">        Indices of signals for which to compute connectivity.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : tuple of array</span>
+<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
 <span class="sd">        The indices parameter used for connectivity computation.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    ``seeds`` and ``targets`` should be array-likes or integers representing</span>
+<span class="sd">    the indices of the channel pairs in the data for each connection. ``seeds``</span>
+<span class="sd">    and ``targets`` will be expanded such that connectivity will be computed</span>
+<span class="sd">    between each seed and each target. E.g. the seeds and targets::</span>
+
+<span class="sd">            seeds   = [0, 1]</span>
+<span class="sd">            targets = [2, 3, 4]</span>
+
+<span class="sd">    would be returned as::</span>
+
+<span class="sd">            indices = (np.array([0, 0, 0, 1, 1, 1]),  # seeds</span>
+<span class="sd">                       np.array([2, 3, 4, 2, 3, 4]))  # targets</span>
+
+<span class="sd">    where the indices have been expanded to have shape ``(2, n_cons)``, where</span>
+<span class="sd">    ``n_cons = n_unique_seeds * n_unique_targets``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># make them arrays</span>
     <span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">seeds</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
@@ -438,13 +652,86 @@
     <span class="n">n_seeds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
     <span class="n">n_targets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
 
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_targets</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seeds</span><span class="p">]),</span>
-               <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">))</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_targets</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seeds</span><span class="p">]),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">indices</span></div>
 
 
-<div class="viewcode-block" id="degree"><a class="viewcode-back" href="../../../generated/mne_connectivity.degree.html#mne_connectivity.degree">[docs]</a><span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">threshold_prop</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="seed_target_multivariate_indices">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.seed_target_multivariate_indices.html#mne_connectivity.seed_target_multivariate_indices">[docs]</a>
+<span class="k">def</span> <span class="nf">seed_target_multivariate_indices</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate indices parameter for multivariate seed-based connectivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seeds : array of array of int, shape (n_unique_seeds, variable)</span>
+<span class="sd">        Seed indices.</span>
+
+<span class="sd">    targets : array of array of int, shape (n_unique_targets, variable)</span>
+<span class="sd">        Target indices.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indices : tuple of array of array of int, shape (2, n_cons, variable)</span>
+<span class="sd">        The indices as a numpy object array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    ``seeds`` and ``targets`` should be array-likes representing the indices of</span>
+<span class="sd">    the channel sets in the data for each connection. The indices for each</span>
+<span class="sd">    connection should be an array-like of integers representing the individual</span>
+<span class="sd">    channels in the data. The length of indices for each connection do not need</span>
+<span class="sd">    to be equal. Furthermore, all indices within a connection must be unique.</span>
+
+<span class="sd">    Because the number of channels per connection can vary, the indices are</span>
+<span class="sd">    stored as numpy arrays with ``dtype=object``. E.g. ``seeds`` and</span>
+<span class="sd">    ``targets``::</span>
+
+<span class="sd">            seeds   = [[0]]</span>
+<span class="sd">            targets = [[1, 2], [3, 4, 5]]</span>
+
+<span class="sd">    would be returned as::</span>
+
+<span class="sd">            indices = (np.array([[0   ], [0      ]], dtype=object),  # seeds</span>
+<span class="sd">                       np.array([[1, 2], [3, 4, 5]], dtype=object))  # targets</span>
+
+<span class="sd">    Even if the number of channels does not vary, the indices will still be</span>
+<span class="sd">    stored as object arrays for compatibility.</span>
+
+<span class="sd">    More information on working with multivariate indices and handling</span>
+<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
+<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array_like</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seeds</span><span class="p">,</span> <span class="n">array_like</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">array_like</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`seeds` and `targets` must be array-like&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">inds</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">seeds</span><span class="p">,</span> <span class="o">*</span><span class="n">targets</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">array_like</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`seeds` and `targets` must contain nested array-likes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">inds</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`seeds` and `targets` cannot contain repeated channels&quot;</span><span class="p">)</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
+    <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">seeds</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seed</span><span class="p">))</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">indices</span></div>
+
+
+
+<div class="viewcode-block" id="degree">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.degree.html#mne_connectivity.degree">[docs]</a>
+<span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">threshold_prop</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the undirected degree of a connectivity matrix.</span>
 
 <span class="sd">    Parameters</span>
@@ -469,33 +756,35 @@
     <span class="kn">from</span> <span class="nn">mne_connectivity.base</span> <span class="kn">import</span> <span class="n">BaseConnectivity</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
-        <span class="n">connectivity</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">connectivity</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
     <span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">connectivity</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> \
-            <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;connectivity must be have shape (n_nodes, n_nodes), &#39;</span>
-                         <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">,))</span>
+    <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;connectivity must be have shape (n_nodes, n_nodes), &quot;</span>
+            <span class="s2">&quot;got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">,)</span>
+        <span class="p">)</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
-        <span class="n">split</span> <span class="o">=</span> <span class="mf">2.</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="mf">2.0</span>
         <span class="n">connectivity</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">split</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">threshold_prop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold_prop</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">threshold_prop</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;threshold must be 0 &lt;= threshold &lt; 1, got </span><span class="si">%s</span><span class="s1">&#39;</span>
-                         <span class="o">%</span> <span class="p">(</span><span class="n">threshold_prop</span><span class="p">,))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;threshold must be 0 &lt;= threshold &lt; 1, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">threshold_prop</span><span class="p">,)</span>
+        <span class="p">)</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># no need to copy because np.array does</span>
-    <span class="n">degree</span><span class="p">[::</span><span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="n">n_keep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">degree</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">))</span> <span class="o">*</span>
-                       <span class="n">threshold_prop</span> <span class="o">/</span> <span class="n">split</span><span class="p">))</span>
+    <span class="n">degree</span><span class="p">[::</span> <span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">n_keep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">degree</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">))</span> <span class="o">*</span> <span class="n">threshold_prop</span> <span class="o">/</span> <span class="n">split</span><span class="p">))</span>
     <span class="n">degree</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">degree</span><span class="p">)[:</span><span class="o">-</span><span class="n">n_keep</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">degree</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">degree</span> <span class="o">+=</span> <span class="n">degree</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># normally unsafe, but we know where our zeros are</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">degree</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">degree</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_prepare_xarray_mne_data_structures</span><span class="p">(</span><span class="n">conn_obj</span><span class="p">):</span>
@@ -506,80 +795,81 @@
 <span class="sd">    - event_id -&gt; stored as two lists</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get a copy of metadata into attrs as a dictionary</span>
-    <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_prepare_write_metadata</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_prepare_write_metadata</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="c1"># write event IDs since they are stored as a list instead</span>
     <span class="k">if</span> <span class="n">conn_obj</span><span class="o">.</span><span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id_keys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;event_id_vals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;event_id_keys&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">conn_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;event_id_vals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn_obj</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="k">return</span> <span class="n">conn_obj</span>
 </pre></div>
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-</div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </article>
               
-<div class="toc-item">
-  
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
 </div>
-
-<div class="toc-item">
-  
-</div>
-
+                </footer>
+              
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
     
-<p class="copyright">
-
-    &copy; Copyright 2021-2023, MNE Developers. Last updated on 2023-01-13.<br>
-
-</p>
-
-  </div>
+      © Copyright 2021-2023, MNE Developers. Last updated on 2023-12-06.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
   
-  <div class="footer-item">
-    
-<p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-
-  </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
   
 </div>
+
   </footer>
   </body>
 </html>
