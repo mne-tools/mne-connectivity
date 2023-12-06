@@ -1,4 +1,4 @@
-'''
+"""
 =============================
 Comparing PLI, wPLI, and dPLI
 =============================
@@ -7,7 +7,7 @@ This example demonstrates the different connectivity information captured by
 the phase lag index (PLI) :footcite:`StamEtAl2007`, weighted phase lag index
 (wPLI) :footcite:`VinckEtAl2011`, and directed phase lag index (dPLI)
 :footcite:`StamEtAl2012` on simulated data.
-'''
+"""
 
 # Authors: Kenji Marshall <kenji.marshall99@gmail.com>
 #          Charlotte Maschke <charlotte.maschke@mail.mcgill.ca>
@@ -102,8 +102,10 @@ phase_differences = [0, -np.pi, -np.pi / 2, 0, np.pi / 2, np.pi]
 for ps in zip(phase_differences):
     sig = []
     for _ in range(n_e):
-        sig.append(np.sin(2 * np.pi * f * t - ps) +
-                   A * np.random.normal(0, sigma, size=t.shape))
+        sig.append(
+            np.sin(2 * np.pi * f * t - ps)
+            + A * np.random.normal(0, sigma, size=t.shape)
+        )
     data.append(sig)
 
 data = np.swapaxes(np.array(data), 0, 1)  # make epochs the first dimension
@@ -135,11 +137,18 @@ plt.show()
 # %%
 conn = []
 indices = ([0, 0, 0, 0, 0], [1, 2, 3, 4, 5])
-for method in ['pli', 'wpli', 'dpli']:
+for method in ["pli", "wpli", "dpli"]:
     conn.append(
         spectral_connectivity_epochs(
-            data, method=method, sfreq=fs, indices=indices,
-            fmin=9, fmax=11, faverage=True).get_data()[:, 0])
+            data,
+            method=method,
+            sfreq=fs,
+            indices=indices,
+            fmin=9,
+            fmax=11,
+            faverage=True,
+        ).get_data()[:, 0]
+    )
 conn = np.array(conn)
 
 ###############################################################################
@@ -166,9 +175,9 @@ conn = np.array(conn)
 x = np.arange(5)
 
 plt.figure()
-plt.bar(x - 0.2, conn[0], 0.2, align='center', label="PLI")
-plt.bar(x, conn[1], 0.2, align='center', label="wPLI")
-plt.bar(x + 0.2, conn[2], 0.2, align='center', label="dPLI")
+plt.bar(x - 0.2, conn[0], 0.2, align="center", label="PLI")
+plt.bar(x, conn[1], 0.2, align="center", label="wPLI")
+plt.bar(x + 0.2, conn[2], 0.2, align="center", label="dPLI")
 
 plt.title("Connectivity Estimation Comparison")
 plt.xticks(x, (r"$-\pi$", r"$-\pi/2$", r"$0$", r"$\pi/2$", r"$\pi$"))
@@ -226,11 +235,11 @@ for A in A_list:
     sig = []
     # Generate other signal
     for _ in range(int(n_e / 2)):  # phase difference -pi/100
-        sig.append(np.sin(2 * np.pi * f * t + np.pi /
-                   100 + A * np.random.uniform(-1, 1)))
+        sig.append(
+            np.sin(2 * np.pi * f * t + np.pi / 100 + A * np.random.uniform(-1, 1))
+        )
     for _ in range(int(n_e / 2), n_e):  # phase difference pi/2
-        sig.append(np.sin(2 * np.pi * f * t - np.pi /
-                   2 + A * np.random.uniform(-1, 1)))
+        sig.append(np.sin(2 * np.pi * f * t - np.pi / 2 + A * np.random.uniform(-1, 1)))
     data.append(sig)
 
 data = np.swapaxes(np.array(data), 0, 1)
@@ -257,11 +266,18 @@ plt.show()
 
 conn = []
 indices = ([0] * n_noise, np.arange(1, n_noise + 1))
-for method in ['pli', 'wpli']:
+for method in ["pli", "wpli"]:
     conn.append(
         spectral_connectivity_epochs(
-            data, method=method, sfreq=fs, indices=indices,
-            fmin=9, fmax=11, faverage=True).get_data()[:, 0])
+            data,
+            method=method,
+            sfreq=fs,
+            indices=indices,
+            fmin=9,
+            fmax=11,
+            faverage=True,
+        ).get_data()[:, 0]
+    )
 conn = np.array(conn)
 
 ###############################################################################
@@ -298,38 +314,74 @@ plt.show()
 # sample MEG data recorded during visual stimulation.
 
 data_path = sample.data_path()
-raw_fname = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
-event_fname = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+raw_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
+event_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw-eve.fif"
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
 
 # Select gradiometers
-picks = mne.pick_types(raw.info, meg='grad', eeg=False, stim=False, eog=True,
-                       exclude='bads')
+picks = mne.pick_types(
+    raw.info, meg="grad", eeg=False, stim=False, eog=True, exclude="bads"
+)
 
 # Create epochs
 event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
-epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
-                    baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
-epochs.load_data().pick_types(meg='grad')  # just keep MEG and no EOG now
+epochs = mne.Epochs(
+    raw,
+    events,
+    event_id,
+    tmin,
+    tmax,
+    picks=picks,
+    baseline=(None, 0),
+    reject=dict(grad=4000e-13, eog=150e-6),
+)
+epochs.load_data().pick_types(meg="grad")  # just keep MEG and no EOG now
 
-fmin, fmax = 4., 9.  # compute connectivity within 4-9 Hz
-sfreq = raw.info['sfreq']  # the sampling frequency
+fmin, fmax = 4.0, 9.0  # compute connectivity within 4-9 Hz
+sfreq = raw.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
 
 # Compute PLI, wPLI, and dPLI
 con_pli = spectral_connectivity_epochs(
-    epochs, method='pli', mode='multitaper', sfreq=sfreq, fmin=fmin,
-    fmax=fmax, faverage=True, tmin=tmin, mt_adaptive=False, n_jobs=1)
+    epochs,
+    method="pli",
+    mode="multitaper",
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+    tmin=tmin,
+    mt_adaptive=False,
+    n_jobs=1,
+)
 
 con_wpli = spectral_connectivity_epochs(
-    epochs, method='wpli', mode='multitaper', sfreq=sfreq, fmin=fmin,
-    fmax=fmax, faverage=True, tmin=tmin, mt_adaptive=False, n_jobs=1)
+    epochs,
+    method="wpli",
+    mode="multitaper",
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+    tmin=tmin,
+    mt_adaptive=False,
+    n_jobs=1,
+)
 
 con_dpli = spectral_connectivity_epochs(
-    epochs, method='dpli', mode='multitaper', sfreq=sfreq, fmin=fmin,
-    fmax=fmax, faverage=True, tmin=tmin, mt_adaptive=False, n_jobs=1)
+    epochs,
+    method="dpli",
+    mode="multitaper",
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+    tmin=tmin,
+    mt_adaptive=False,
+    n_jobs=1,
+)
 
 ###############################################################################
 # In this example, there is strong connectivity between sensors 190-200 and
@@ -346,16 +398,16 @@ con_dpli = spectral_connectivity_epochs(
 # strength, as was mentioned earlier.
 
 fig, axs = plt.subplots(1, 3, figsize=(14, 5), sharey=True)
-axs[0].imshow(con_pli.get_data('dense'), vmin=0, vmax=1)
+axs[0].imshow(con_pli.get_data("dense"), vmin=0, vmax=1)
 axs[0].set_title("PLI")
 axs[0].set_ylabel("Sensor 1")
 axs[0].set_xlabel("Sensor 2")
 
-axs[1].imshow(con_wpli.get_data('dense'), vmin=0, vmax=1)
+axs[1].imshow(con_wpli.get_data("dense"), vmin=0, vmax=1)
 axs[1].set_title("wPLI")
 axs[1].set_xlabel("Sensor 2")
 
-im = axs[2].imshow(con_dpli.get_data('dense'), vmin=0, vmax=1)
+im = axs[2].imshow(con_dpli.get_data("dense"), vmin=0, vmax=1)
 axs[2].set_title("dPLI")
 axs[2].set_xlabel("Sensor 2")
 

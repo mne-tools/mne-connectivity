@@ -415,6 +415,7 @@ document.write(`
                   
   <h1>Source code for mne_connectivity.vector_ar.model_selection</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
 
@@ -478,17 +479,13 @@ document.write(`
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p_min</span><span class="p">,</span> <span class="n">maxlags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># exclude some periods to same amount of data used for each lag</span>
         <span class="c1"># order</span>
-        <span class="n">params</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sigma_u</span> <span class="o">=</span> <span class="n">_estimate_var</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">maxlags</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sigma_u</span> <span class="o">=</span> <span class="n">_estimate_var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">maxlags</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>
 
-        <span class="n">info_criteria</span> <span class="o">=</span> <span class="n">_info_criteria</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">sigma_u</span><span class="o">=</span><span class="n">sigma_u</span><span class="p">,</span>
-                                       <span class="n">lags</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">info_criteria</span> <span class="o">=</span> <span class="n">_info_criteria</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">sigma_u</span><span class="o">=</span><span class="n">sigma_u</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info_criteria</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">ics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="n">selected_orders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">p_min</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">)</span>
+    <span class="n">selected_orders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">p_min</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ics</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">selected_orders</span></div>
 
 
@@ -559,7 +556,7 @@ document.write(`
     <span class="c1"># compute the number of free parameters for degrees of freedom</span>
     <span class="n">coefs_exog</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:</span><span class="n">endog_start</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
     <span class="n">k_exog</span> <span class="o">=</span> <span class="n">coefs_exog</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">free_params</span> <span class="o">=</span> <span class="n">lag_order</span> <span class="o">*</span> <span class="n">neqs</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">neqs</span> <span class="o">*</span> <span class="n">k_exog</span>
+    <span class="n">free_params</span> <span class="o">=</span> <span class="n">lag_order</span> <span class="o">*</span> <span class="n">neqs</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">neqs</span> <span class="o">*</span> <span class="n">k_exog</span>
 
     <span class="c1"># compute the</span>
     <span class="n">df_model</span> <span class="o">=</span> <span class="n">neqs</span> <span class="o">*</span> <span class="n">k_ar</span> <span class="o">+</span> <span class="n">k_exog</span>

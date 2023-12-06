@@ -423,21 +423,34 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
 <span class="kn">from</span> <span class="nn">.spectral</span> <span class="kn">import</span> <span class="n">spectral_connectivity_epochs</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 
 
 <div class="viewcode-block" id="phase_slope_index">
 <a class="viewcode-back" href="../../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index">[docs]</a>
 <span class="nd">@verbose</span>
 <span class="nd">@fill_doc</span>
-<span class="k">def</span> <span class="nf">phase_slope_index</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
-                      <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
-                      <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mt_low_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                      <span class="n">cwt_freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-                      <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">phase_slope_index</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mt_low_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cwt_freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the Phase Slope Index (PSI) connectivity measure.</span>
 
 <span class="sd">    The PSI is an effective connectivity measure, i.e., a measure which can</span>
@@ -528,15 +541,30 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Estimating phase slope index (PSI)&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Estimating phase slope index (PSI)&quot;</span><span class="p">)</span>
     <span class="c1"># estimate the coherency</span>
     <span class="n">cohy</span> <span class="o">=</span> <span class="n">spectral_connectivity_epochs</span><span class="p">(</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cohy&#39;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-        <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
-        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
-        <span class="n">mt_low_bias</span><span class="o">=</span><span class="n">mt_low_bias</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
-        <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="n">cwt_n_cycles</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cohy&quot;</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+        <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
+        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+        <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
+        <span class="n">mt_low_bias</span><span class="o">=</span><span class="n">mt_low_bias</span><span class="p">,</span>
+        <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
+        <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="n">cwt_n_cycles</span><span class="p">,</span>
+        <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># extract class properties from the spectral connectivity structure</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohy</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">):</span>
@@ -545,14 +573,14 @@ document.write(`
         <span class="n">times</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">freqs_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
     <span class="n">names</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">names</span>
-    <span class="n">n_tapers</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_tapers&#39;</span><span class="p">)</span>
+    <span class="n">n_tapers</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_tapers&quot;</span><span class="p">)</span>
     <span class="n">n_epochs_used</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_epochs</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_nodes</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">metadata</span>
     <span class="n">events</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">events</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">event_id</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Computing PSI from estimated Coherency: </span><span class="si">{</span><span class="n">cohy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing PSI from estimated Coherency: </span><span class="si">{</span><span class="n">cohy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># compute PSI in the requested bands</span>
     <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># set it to -inf, so we can adjust it later</span>
@@ -560,7 +588,7 @@ document.write(`
     <span class="n">bands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmin</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmax</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
     <span class="n">n_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
 
-    <span class="n">freq_dim</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">freq_dim</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="c1"># allocate space for output</span>
     <span class="n">out_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -583,27 +611,27 @@ document.write(`
         <span class="n">freqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freqs_</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">])</span>
         <span class="n">freq_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">freqs_</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">]))</span>
 
-        <span class="n">acc</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">acc</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">fj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freq_idx</span><span class="p">,</span> <span class="n">freq_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="n">idx_fi</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">fi</span>
             <span class="n">idx_fj</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">fj</span>
-            <span class="n">acc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span>
-                <span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)])</span> <span class="o">*</span> \
-                <span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fj</span><span class="p">)]</span>
+            <span class="n">acc</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)])</span> <span class="o">*</span> <span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fj</span><span class="p">)]</span>
+            <span class="p">)</span>
 
         <span class="n">idx_fi</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">band_idx</span>
         <span class="n">psi</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;[PSI Estimation Done]&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[PSI Estimation Done]&quot;</span><span class="p">)</span>
 
     <span class="c1"># create a connectivity container</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;multitaper&#39;</span><span class="p">,</span> <span class="s1">&#39;fourier&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
         <span class="c1"># spectral only</span>
         <span class="n">conn</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;phase-slope-index&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
             <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
@@ -611,9 +639,9 @@ document.write(`
             <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cwt_morlet&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
         <span class="c1"># spectrotemporal</span>
         <span class="n">conn</span> <span class="o">=</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
@@ -621,7 +649,7 @@ document.write(`
             <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;phase-slope-index&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
             <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
@@ -629,7 +657,7 @@ document.write(`
             <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">conn</span></div>

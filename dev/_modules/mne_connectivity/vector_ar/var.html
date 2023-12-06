@@ -418,14 +418,13 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">sqrtm</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
 
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
-
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span><span class="p">,</span> <span class="n">EpochTemporalConnectivity</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">fill_doc</span>
 
 
 <div class="viewcode-block" id="vector_auto_regression">
@@ -433,8 +432,16 @@ document.write(`
 <span class="nd">@verbose</span>
 <span class="nd">@fill_doc</span>
 <span class="k">def</span> <span class="nf">vector_auto_regression</span><span class="p">(</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dynamic&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;dynamic&quot;</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
@@ -538,9 +545,10 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
-    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;avg-epochs&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;model&quot; parameter must be one of &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;(avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;avg-epochs&quot;</span><span class="p">,</span> <span class="s2">&quot;dynamic&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&quot;model&quot; parameter must be one of &#39;</span> <span class="sa">f</span><span class="s2">&quot;(avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -557,9 +565,10 @@ document.write(`
             <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="s1">&#39;annot_onset&#39;</span><span class="p">,</span> <span class="s1">&#39;annot_duration&#39;</span><span class="p">,</span> <span class="s1">&#39;annot_description&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;annotations&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
+                <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;annot_onset&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_duration&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_description&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
             <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
 
@@ -577,15 +586,17 @@ document.write(`
     <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;lags&#39;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
-        <span class="s1">&#39;l2_reg&#39;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
+        <span class="s2">&quot;lags&quot;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
+        <span class="s2">&quot;l2_reg&quot;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1"> vector autoregression with parameters: &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{</span><span class="n">model_params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> vector autoregression with parameters: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">model_params</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;avg-epochs&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;avg-epochs&quot;</span><span class="p">:</span>
         <span class="c1"># compute VAR model where each epoch is a</span>
         <span class="c1"># sample of the multivariate time-series of interest</span>
         <span class="c1"># ordinary least squares or regularized least squares</span>
@@ -599,41 +610,58 @@ document.write(`
 
         <span class="c1"># create connectivity</span>
         <span class="n">coef</span> <span class="o">=</span> <span class="n">coef</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">Connectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">coef</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
-                            <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;VAR&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-                            <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">Connectivity</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">coef</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+            <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;VAR&quot;</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">model_params</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;dynamic&#39;</span>
+        <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;dynamic&quot;</span>
         <span class="c1"># compute time-varying VAR model where each epoch</span>
         <span class="c1"># is one sample of a time-varying multivariate time-series</span>
         <span class="c1"># linear system</span>
         <span class="n">A_mats</span> <span class="o">=</span> <span class="n">_system_identification</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
-            <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-            <span class="n">compute_fb_operator</span><span class="o">=</span><span class="n">compute_fb_operator</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
+            <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="n">compute_fb_operator</span><span class="o">=</span><span class="n">compute_fb_operator</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="c1"># create connectivity</span>
         <span class="k">if</span> <span class="n">lags</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span>
-                                             <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
-                                             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                                             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
-                                             <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                                             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(p)&#39;</span><span class="p">,</span>
-                                             <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-                                             <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochTemporalConnectivity</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span>
+                <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
+                <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+                <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Time-varying VAR(p)&quot;</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+                <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">model_params</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-                                     <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                                     <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
-                                     <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                                     <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Time-varying VAR(1)&#39;</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                     <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-                                     <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">,</span>
+                <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+                <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+                <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Time-varying VAR(1)&quot;</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+                <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">model_params</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">return</span> <span class="n">conn</span></div>
 
 
@@ -684,8 +712,7 @@ document.write(`
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">n_signals</span> <span class="o">*</span> <span class="n">lags</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_signals</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">X</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">lags</span> <span class="o">+</span> <span class="n">k</span> <span class="o">-</span>
-                <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">lags</span> <span class="o">-</span> <span class="n">k</span><span class="p">:</span><span class="o">-</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">lags</span> <span class="o">+</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">lags</span> <span class="o">-</span> <span class="n">k</span> <span class="p">:</span> <span class="o">-</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">l2_reg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">l2_reg</span><span class="p">)</span>
@@ -698,8 +725,7 @@ document.write(`
     <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
 
 
-<span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                           <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
 
 <span class="sd">    Treats each epoch as a different window of time to estimate the model:</span>
@@ -714,9 +740,9 @@ document.write(`
     <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;l2_reg&#39;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
-        <span class="s1">&#39;lags&#39;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
-        <span class="s1">&#39;compute_fb_operator&#39;</span><span class="p">:</span> <span class="n">compute_fb_operator</span>
+        <span class="s2">&quot;l2_reg&quot;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
+        <span class="s2">&quot;lags&quot;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
+        <span class="s2">&quot;compute_fb_operator&quot;</span><span class="p">:</span> <span class="n">compute_fb_operator</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># storage for the A matrices, residuals and sum of squared estimated errors</span>
@@ -727,13 +753,12 @@ document.write(`
     <span class="c1"># compute the A matrix for all Epochs</span>
     <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)):</span>
-            <span class="n">adjmat</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">_compute_lds_func</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
+            <span class="n">adjmat</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
             <span class="c1"># add additional order models in dynamic connectivity</span>
             <span class="c1"># along the first node axes</span>
             <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
                 <span class="n">A_mats</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">jdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">adjmat</span><span class="p">[</span>
-                    <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
+                    <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span> <span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">T</span>
             <span class="n">residuals</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">resid</span><span class="o">.</span><span class="n">T</span>
             <span class="n">sse_matrix</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">omega</span>
@@ -747,9 +772,7 @@ document.write(`
 
         <span class="c1"># run parallelized job to compute over all windows</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span>
-            <span class="n">delayed</span><span class="p">(</span><span class="n">_compute_lds_func</span><span class="p">)(</span>
-                <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span>
-            <span class="p">)</span>
+            <span class="n">delayed</span><span class="p">(</span><span class="n">_compute_lds_func</span><span class="p">)(</span><span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="o">**</span><span class="n">model_params</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">))</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)):</span>
@@ -761,7 +784,7 @@ document.write(`
             <span class="c1"># along the first node axes</span>
             <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
                 <span class="n">A_mats</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">jdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">adjmat</span><span class="p">[</span>
-                    <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
+                    <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_nodes</span> <span class="p">:</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">:</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># ravel the matrix</span>
@@ -797,14 +820,14 @@ document.write(`
 
     <span class="c1"># get time-shifted versions</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:]</span>
-    <span class="n">A</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">_estimate_var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                    <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">)</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">resid</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">_estimate_var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">compute_fb_operator</span><span class="p">:</span>
         <span class="c1"># compute backward linear operator</span>
         <span class="c1"># original method</span>
         <span class="n">back_A</span><span class="p">,</span> <span class="n">back_resid</span><span class="p">,</span> <span class="n">back_omega</span> <span class="o">=</span> <span class="n">_estimate_var</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="n">l2_reg</span>
+        <span class="p">)</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">sqrtm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">back_A</span><span class="p">)))</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">real</span>  <span class="c1"># remove numerical noise</span>
 
@@ -850,17 +873,16 @@ document.write(`
     <span class="c1"># with lags and trends.</span>
     <span class="c1"># Note that the pure endogenous VAR model with OLS</span>
     <span class="c1"># makes this matrix a (n_samples - lags, n_channels * lags) matrix</span>
-    <span class="n">temp_z</span> <span class="o">=</span> <span class="n">_get_var_predictor_matrix</span><span class="p">(</span>
-        <span class="n">endog</span><span class="p">,</span> <span class="n">lags</span>
-    <span class="p">)</span>
+    <span class="n">temp_z</span> <span class="o">=</span> <span class="n">_get_var_predictor_matrix</span><span class="p">(</span><span class="n">endog</span><span class="p">,</span> <span class="n">lags</span><span class="p">)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">temp_z</span>
 
     <span class="n">y_sample</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span><span class="n">lags</span><span class="p">:]</span>
     <span class="k">del</span> <span class="n">endog</span><span class="p">,</span> <span class="n">X</span>
     <span class="c1"># Lütkepohl p75, about 5x faster than stated formula</span>
     <span class="k">if</span> <span class="n">l2_reg</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">z</span> <span class="o">+</span> <span class="n">l2_reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_equations</span> <span class="o">*</span> <span class="n">lags</span><span class="p">),</span>
-                                 <span class="n">z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_sample</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">z</span> <span class="o">+</span> <span class="n">l2_reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_equations</span> <span class="o">*</span> <span class="n">lags</span><span class="p">),</span> <span class="n">z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y_sample</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">y_sample</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -901,13 +923,15 @@ document.write(`
     <span class="n">y_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">lags</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
-            <span class="n">first_component</span><span class="p">[</span>
-                <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">:</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> \
-                <span class="n">endog</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-            <span class="n">second_component</span><span class="p">[:,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">:</span> <span class="p">(</span>
-                <span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">]</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">y_component</span><span class="p">[:,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">:</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
-                        <span class="n">n_equations</span><span class="p">]</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">first_component</span><span class="p">[</span><span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span> <span class="p">:</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span>
+                <span class="n">idx</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            <span class="n">second_component</span><span class="p">[:,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span> <span class="p">:</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">]</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span>
+                <span class="n">idx</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">y_component</span><span class="p">[:,</span> <span class="n">jdx</span> <span class="o">*</span> <span class="n">n_equations</span> <span class="p">:</span> <span class="p">(</span><span class="n">jdx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_equations</span><span class="p">]</span> <span class="o">=</span> <span class="n">endog</span><span class="p">[</span>
+                <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">jdx</span><span class="p">,</span> <span class="p">:</span>
+            <span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
         <span class="c1"># second_component = np.hstack([endog[idx + jdx, :]</span>
         <span class="c1"># for jdx in range(lags)])[np.newaxis, :]</span>
         <span class="c1"># print(second_component.shape)</span>
@@ -921,7 +945,8 @@ document.write(`
 
     <span class="k">if</span> <span class="n">l2_reg</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">final_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span>
-            <span class="n">XdotX</span> <span class="o">+</span> <span class="n">l2_reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_equations</span> <span class="o">*</span> <span class="n">lags</span><span class="p">),</span> <span class="n">XdotY</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">XdotX</span> <span class="o">+</span> <span class="n">l2_reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_equations</span> <span class="o">*</span> <span class="n">lags</span><span class="p">),</span> <span class="n">XdotY</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">final_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">XdotX</span><span class="p">,</span> <span class="n">XdotY</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
 
@@ -933,7 +958,8 @@ document.write(`
         <span class="n">start_row</span> <span class="o">=</span> <span class="n">n_equations</span> <span class="o">*</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">stop_row</span> <span class="o">=</span> <span class="n">n_equations</span> <span class="o">*</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="n">idx</span><span class="p">)</span>
         <span class="n">params</span><span class="p">[</span><span class="n">start_row</span><span class="p">:</span><span class="n">stop_row</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_params</span><span class="p">[</span>
-            <span class="n">n_equations</span> <span class="o">*</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):,</span> <span class="n">start_col</span><span class="p">:</span><span class="n">stop_col</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">n_equations</span> <span class="o">*</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:,</span> <span class="n">start_col</span><span class="p">:</span><span class="n">stop_col</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># print(final_params.round(5))</span>
     <span class="c1"># print(params_)</span>
@@ -943,7 +969,7 @@ document.write(`
     <span class="c1"># Note that the pure endogenous VAR model with OLS</span>
     <span class="c1"># makes this matrix a (n_samples - lags, n_channels * lags) matrix</span>
     <span class="c1"># z = _get_var_predictor_matrix(</span>
-        <span class="c1"># endog, lags</span>
+    <span class="c1"># endog, lags</span>
     <span class="c1"># )</span>
     <span class="c1"># (n_samples - lags, n_channels)</span>
     <span class="c1"># resid = y_sample - np.dot(z, params)</span>
@@ -983,7 +1009,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nobs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="c1"># Ravel C order, need to put in descending order</span>
-    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">lags</span><span class="p">:</span> <span class="n">t</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">nobs</span><span class="p">)])</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">lags</span> <span class="p">:</span> <span class="n">t</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">nobs</span><span class="p">)])</span>
 
     <span class="k">return</span> <span class="n">Z</span>
 </pre></div>

@@ -432,16 +432,15 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="n">verbose_dec</span> <span class="o">=</span> <span class="n">verbose</span>
-<span class="n">FIDUCIAL_ORDER</span> <span class="o">=</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">,</span>
-                  <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">)</span>
+<span class="n">FIDUCIAL_ORDER</span> <span class="o">=</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="plot_sensors_connectivity">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">def</span> <span class="nf">plot_sensors_connectivity</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                              <span class="n">cbar_label</span><span class="o">=</span><span class="s1">&#39;Connectivity&#39;</span><span class="p">,</span>
-                              <span class="n">n_con</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_sensors_connectivity</span><span class="p">(</span>
+    <span class="n">info</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cbar_label</span><span class="o">=</span><span class="s2">&quot;Connectivity&quot;</span><span class="p">,</span> <span class="n">n_con</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize the sensor connectivity in 3D.</span>
 
 <span class="sd">    Parameters</span>
@@ -469,6 +468,7 @@ document.write(`
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">)</span>
 
     <span class="kn">from</span> <span class="nn">mne.viz.backends.renderer</span> <span class="kn">import</span> <span class="n">_get_renderer</span>
+
     <span class="kn">from</span> <span class="nn">mne_connectivity.base</span> <span class="kn">import</span> <span class="n">BaseConnectivity</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
@@ -478,16 +478,22 @@ document.write(`
 
     <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of channels picked (</span><span class="si">%s</span><span class="s1">) does not &#39;</span>
-                         <span class="s1">&#39;correspond to the size of the connectivity data &#39;</span>
-                         <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The number of channels picked (</span><span class="si">%s</span><span class="s2">) does not &quot;</span>
+            <span class="s2">&quot;correspond to the size of the connectivity data &quot;</span>
+            <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">))</span>
+        <span class="p">)</span>
 
     <span class="c1"># Plot the sensor locations</span>
-    <span class="n">sens_loc</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">]</span>
+    <span class="n">sens_loc</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">]</span>
     <span class="n">sens_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sens_loc</span><span class="p">)</span>
 
-    <span class="n">renderer</span><span class="o">.</span><span class="n">sphere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]],</span>
-                    <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">sphere</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Get the strongest n_con connections</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="o">-</span><span class="n">n_con</span><span class="p">]</span>
@@ -510,28 +516,33 @@ document.write(`
     <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">con_val</span><span class="p">,</span> <span class="n">con_nodes</span><span class="p">):</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span> <span class="o">=</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-        <span class="n">tube</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">tube</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">],</span>
-                             <span class="n">destination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span>
-                             <span class="n">scalars</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="p">],</span>
-                             <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
-                             <span class="n">reverse_lut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                             <span class="n">colormap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">tube</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">tube</span><span class="p">(</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">],</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span>
+            <span class="n">scalars</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span><span class="p">],</span>
+            <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+            <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+            <span class="n">reverse_lut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">colormap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">renderer</span><span class="o">.</span><span class="n">scalarbar</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">tube</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">cbar_label</span><span class="p">)</span>
 
     <span class="c1"># Add the sensor names for the connections shown</span>
-    <span class="n">nodes_shown</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_nodes</span><span class="p">]</span> <span class="o">+</span>
-                           <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_nodes</span><span class="p">]))</span>
+    <span class="n">nodes_shown</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_nodes</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_nodes</span><span class="p">]))</span>
 
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes_shown</span><span class="p">:</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-        <span class="n">renderer</span><span class="o">.</span><span class="n">text3d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">][</span><span class="n">picks</span><span class="p">[</span><span class="n">node</span><span class="p">]],</span>
-                        <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
-                        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">renderer</span><span class="o">.</span><span class="n">text3d</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">][</span><span class="n">picks</span><span class="p">[</span><span class="n">node</span><span class="p">]],</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
 
-    <span class="n">renderer</span><span class="o">.</span><span class="n">set_camera</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=-</span><span class="mf">88.7</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="mf">40.8</span><span class="p">,</span>
-                        <span class="n">distance</span><span class="o">=</span><span class="mf">0.76</span><span class="p">,</span>
-                        <span class="n">focalpoint</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.9e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.5e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-2</span><span class="p">]))</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">set_camera</span><span class="p">(</span>
+        <span class="n">azimuth</span><span class="o">=-</span><span class="mf">88.7</span><span class="p">,</span>
+        <span class="n">elevation</span><span class="o">=</span><span class="mf">40.8</span><span class="p">,</span>
+        <span class="n">distance</span><span class="o">=</span><span class="mf">0.76</span><span class="p">,</span>
+        <span class="n">focalpoint</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.9e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.5e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-2</span><span class="p">]),</span>
+    <span class="p">)</span>
     <span class="n">renderer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">renderer</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span></div>
 

@@ -59,9 +59,9 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 # %%
 
-raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
-raw.pick('mag')
-raw.crop(50., 110.).load_data()
+raw = mne.io.read_raw_ctf(data_path() / "SubjectCMC.ds")
+raw.pick("mag")
+raw.crop(50.0, 110.0).load_data()
 raw.notch_filter(50)
 raw.resample(100)
 
@@ -75,26 +75,27 @@ epochs = make_fixed_length_epochs(raw, duration=2.0).load_data()
 # %%
 
 # left hemisphere sensors
-seeds = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-         ch_info['loc'][0] < 0]
+seeds = [idx for idx, ch_info in enumerate(epochs.info["chs"]) if ch_info["loc"][0] < 0]
 # right hemisphere sensors
-targets = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-           ch_info['loc'][0] > 0]
+targets = [
+    idx for idx, ch_info in enumerate(epochs.info["chs"]) if ch_info["loc"][0] > 0
+]
 
 multivar_indices = (np.array([seeds]), np.array([targets]))
 
-seed_names = [epochs.info['ch_names'][idx] for idx in seeds]
-target_names = [epochs.info['ch_names'][idx] for idx in targets]
+seed_names = [epochs.info["ch_names"][idx] for idx in seeds]
+target_names = [epochs.info["ch_names"][idx] for idx in targets]
 
 # multivariate imaginary part of coherency
 (mic, mim) = spectral_connectivity_epochs(
-    epochs, method=['mic', 'mim'], indices=multivar_indices, fmin=5, fmax=30,
-    rank=None)
+    epochs, method=["mic", "mim"], indices=multivar_indices, fmin=5, fmax=30, rank=None
+)
 
 # bivariate imaginary part of coherency (for comparison)
 bivar_indices = seed_target_indices(seeds, targets)
 imcoh = spectral_connectivity_epochs(
-    epochs, method='imcoh', indices=bivar_indices, fmin=5, fmax=30)
+    epochs, method="imcoh", indices=bivar_indices, fmin=5, fmax=30
+)
 
 ###############################################################################
 # By averaging across each connection between the seeds and targets, we can see
@@ -104,11 +105,10 @@ imcoh = spectral_connectivity_epochs(
 
 # %%
 fig, axis = plt.subplots(1, 1)
-axis.plot(imcoh.freqs, np.mean(np.abs(imcoh.get_data()), axis=0),
-          linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Absolute connectivity (A.U.)')
-fig.suptitle('Imaginary part of coherency')
+axis.plot(imcoh.freqs, np.mean(np.abs(imcoh.get_data()), axis=0), linewidth=2)
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Absolute connectivity (A.U.)")
+fig.suptitle("Imaginary part of coherency")
 
 
 ###############################################################################
@@ -148,9 +148,9 @@ fig.suptitle('Imaginary part of coherency')
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(mic.freqs, np.abs(mic.get_data()[0]), linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Absolute connectivity (A.U.)')
-fig.suptitle('Maximised imaginary part of coherency')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Absolute connectivity (A.U.)")
+fig.suptitle("Maximised imaginary part of coherency")
 
 
 ###############################################################################
@@ -178,14 +178,12 @@ fband = [13, 18]
 fband_idx = [mic.freqs.index(freq) for freq in fband]
 
 # patterns have shape [seeds/targets x cons x channels x freqs (x times)]
-patterns = np.array(mic.attrs['patterns'])
-seed_pattern = patterns[0, :, :len(seeds)]
-target_pattern = patterns[1, :, :len(targets)]
+patterns = np.array(mic.attrs["patterns"])
+seed_pattern = patterns[0, :, : len(seeds)]
+target_pattern = patterns[1, :, : len(targets)]
 # average across frequencies
-seed_pattern = np.mean(seed_pattern[0, :, fband_idx[0]:fband_idx[1] + 1],
-                       axis=1)
-target_pattern = np.mean(target_pattern[0, :, fband_idx[0]:fband_idx[1] + 1],
-                         axis=1)
+seed_pattern = np.mean(seed_pattern[0, :, fband_idx[0] : fband_idx[1] + 1], axis=1)
+target_pattern = np.mean(target_pattern[0, :, fband_idx[0] : fband_idx[1] + 1], axis=1)
 
 # store the patterns for plotting
 seed_info = epochs.copy().pick(seed_names).info
@@ -196,22 +194,38 @@ target_pattern = EvokedArray(target_pattern[:, np.newaxis], target_info)
 # plot the patterns
 fig, axes = plt.subplots(1, 4)
 seed_pattern.plot_topomap(
-    times=0, sensors='m.', units=dict(mag='A.U.'), cbar_fmt='%.1E',
-    axes=axes[0:2], time_format='', show=False)
+    times=0,
+    sensors="m.",
+    units=dict(mag="A.U."),
+    cbar_fmt="%.1E",
+    axes=axes[0:2],
+    time_format="",
+    show=False,
+)
 target_pattern.plot_topomap(
-    times=0, sensors='m.', units=dict(mag='A.U.'), cbar_fmt='%.1E',
-    axes=axes[2:], time_format='', show=False)
+    times=0,
+    sensors="m.",
+    units=dict(mag="A.U."),
+    cbar_fmt="%.1E",
+    axes=axes[2:],
+    time_format="",
+    show=False,
+)
 axes[0].set_position((0.1, 0.1, 0.35, 0.7))
 axes[1].set_position((0.4, 0.3, 0.02, 0.3))
 axes[2].set_position((0.5, 0.1, 0.35, 0.7))
 axes[3].set_position((0.9, 0.3, 0.02, 0.3))
-axes[0].set_title('Seed spatial pattern\n13-18 Hz')
-axes[2].set_title('Target spatial pattern\n13-18 Hz')
+axes[0].set_title("Seed spatial pattern\n13-18 Hz")
+axes[2].set_title("Target spatial pattern\n13-18 Hz")
 
 # plot the left hemisphere dipole example
 axes[0].plot(
-    [-0.01, -0.07], [-0.07, -0.03], color='lime', linewidth=2,
-    path_effects=[pe.Stroke(linewidth=4, foreground='k'), pe.Normal()])
+    [-0.01, -0.07],
+    [-0.07, -0.03],
+    color="lime",
+    linewidth=2,
+    path_effects=[pe.Stroke(linewidth=4, foreground="k"), pe.Normal()],
+)
 
 plt.show()
 
@@ -257,13 +271,13 @@ plt.show()
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(mim.freqs, mim.get_data()[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Absolute connectivity (A.U.)')
-fig.suptitle('Multivariate interaction measure')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Absolute connectivity (A.U.)")
+fig.suptitle("Multivariate interaction measure")
 
 n_channels = len(seeds) + len(targets)
 normalised_mim = mim.get_data()[0] / n_channels
-print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
+print(f"Normalised MIM has a maximum value of {normalised_mim.max():.2f}")
 
 
 ###############################################################################
@@ -291,18 +305,18 @@ print(f'Normalised MIM has a maximum value of {normalised_mim.max():.2f}')
 
 indices = (np.array([[*seeds, *targets]]), np.array([[*seeds, *targets]]))
 gim = spectral_connectivity_epochs(
-    epochs, method='mim', indices=indices, fmin=5, fmax=30, rank=None,
-    verbose=False)
+    epochs, method="mim", indices=indices, fmin=5, fmax=30, rank=None, verbose=False
+)
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(gim.freqs, gim.get_data()[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('Global interaction measure')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("Global interaction measure")
 
 n_channels = len(seeds) + len(targets)
 normalised_gim = gim.get_data()[0] / n_channels
-print(f'Normalised GIM has a maximum value of {normalised_gim.max():.2f}')
+print(f"Normalised GIM has a maximum value of {normalised_gim.max():.2f}")
 
 
 ###############################################################################
@@ -343,8 +357,13 @@ print(f'Normalised GIM has a maximum value of {normalised_gim.max():.2f}')
 # %%
 
 (mic_red, mim_red) = spectral_connectivity_epochs(
-    epochs, method=['mic', 'mim'], indices=multivar_indices, fmin=5, fmax=30,
-    rank=([25], [25]))
+    epochs,
+    method=["mic", "mim"],
+    indices=multivar_indices,
+    fmin=5,
+    fmax=30,
+    rank=([25], [25]),
+)
 
 # subtract mean of scores for comparison
 mim_red_meansub = mim_red.get_data()[0] - mim_red.get_data()[0].mean()
@@ -352,19 +371,16 @@ mim_meansub = mim.get_data()[0] - mim.get_data()[0].mean()
 
 # compare standard and rank subspace-projected MIM
 fig, axis = plt.subplots(1, 1)
-axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2,
-          label='rank subspace (25) MIM')
-axis.plot(mim.freqs, mim_meansub, linewidth=2, label='standard MIM')
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Mean-corrected connectivity (A.U.)')
+axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2, label="rank subspace (25) MIM")
+axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Mean-corrected connectivity (A.U.)")
 axis.legend()
-fig.suptitle('Multivariate interaction measure (non-normalised)')
+fig.suptitle("Multivariate interaction measure (non-normalised)")
 
 # no. channels equal with and without projecting to rank subspace for patterns
-assert (patterns[0, 0].shape[0] ==
-        np.array(mic_red.attrs['patterns'])[0, 0].shape[0])
-assert (patterns[1, 0].shape[0] ==
-        np.array(mic_red.attrs['patterns'])[1, 0].shape[0])
+assert patterns[0, 0].shape[0] == np.array(mic_red.attrs["patterns"])[0, 0].shape[0]
+assert patterns[1, 0].shape[0] == np.array(mic_red.attrs["patterns"])[1, 0].shape[0]
 
 
 ###############################################################################

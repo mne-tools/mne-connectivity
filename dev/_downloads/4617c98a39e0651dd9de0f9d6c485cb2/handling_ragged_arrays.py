@@ -101,19 +101,23 @@ from mne_connectivity import spectral_connectivity_epochs
 # create random data
 data = np.random.randn(10, 5, 200)  # epochs x channels x times
 sfreq = 50
-ragged_indices = ([[0, 1], [0, 1, 2, 3]],  # seeds
-                  [[2, 3, 4], [4]])  # targets
+ragged_indices = ([[0, 1], [0, 1, 2, 3]], [[2, 3, 4], [4]])  # seeds  # targets
 
 # compute connectivity
 con = spectral_connectivity_epochs(
-    data, method='mic', indices=ragged_indices, sfreq=sfreq, fmin=10, fmax=30,
-    verbose=False)
-patterns = np.array(con.attrs['patterns'])
+    data,
+    method="mic",
+    indices=ragged_indices,
+    sfreq=sfreq,
+    fmin=10,
+    fmax=30,
+    verbose=False,
+)
+patterns = np.array(con.attrs["patterns"])
 padded_indices = con.indices
 n_freqs = con.get_data().shape[-1]
 n_cons = len(ragged_indices[0])
-max_n_chans = max(
-    len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]]))
+max_n_chans = max(len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]]))
 
 # show that the padded indices entries are masked
 assert np.sum(padded_indices[0][0].mask) == 2  # 2 padded channels
@@ -131,14 +135,12 @@ assert not np.any(np.isnan(patterns[0, 1]))  # 0 padded channels
 assert np.all(np.isnan(patterns[1, 1, 1:]))  # 3 padded channels
 
 # extract patterns for first connection using the ragged indices
-seed_patterns_con1 = patterns[0, 0, :len(ragged_indices[0][0])]
-target_patterns_con1 = patterns[1, 0, :len(ragged_indices[1][0])]
+seed_patterns_con1 = patterns[0, 0, : len(ragged_indices[0][0])]
+target_patterns_con1 = patterns[1, 0, : len(ragged_indices[1][0])]
 
 # extract patterns for second connection using the padded, masked indices
-seed_patterns_con2 = (
-    patterns[0, 1, :padded_indices[0][1].count()])
-target_patterns_con2 = (
-    patterns[1, 1, :padded_indices[1][1].count()])
+seed_patterns_con2 = patterns[0, 1, : padded_indices[0][1].count()]
+target_patterns_con2 = patterns[1, 1, : padded_indices[1][1].count()]
 
 # show that shapes of patterns are correct
 assert seed_patterns_con1.shape == (2, n_freqs)  # channels (0, 1)
@@ -146,6 +148,6 @@ assert target_patterns_con1.shape == (3, n_freqs)  # channels (2, 3, 4)
 assert seed_patterns_con2.shape == (4, n_freqs)  # channels (0, 1, 2, 3)
 assert target_patterns_con2.shape == (1, n_freqs)  # channels (4)
 
-print('Assertions completed successfully!')
+print("Assertions completed successfully!")
 
 # %%

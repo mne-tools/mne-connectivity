@@ -78,8 +78,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mne
 
-from mne_connectivity import (spectral_connectivity_epochs,
-                              spectral_connectivity_time)
+from mne_connectivity import spectral_connectivity_epochs, spectral_connectivity_time
 from mne_connectivity.viz import plot_sensors_connectivity
 from mne.datasets import sample
 
@@ -118,9 +117,7 @@ data_epoch.plot(scalings=0.75)  # Visualize the data
 # First we compute connectivity over trials.
 
 # Freq bands of interest
-Freq_Bands = {"theta": [4.0, 8.0],
-              "alpha": [8.0, 13.0],
-              "beta": [13.0, 30.0]}
+Freq_Bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
 n_freq_bands = len(Freq_Bands)
 min_freq = np.min(list(Freq_Bands.values()))
 max_freq = np.max(list(Freq_Bands.values()))
@@ -137,16 +134,22 @@ connectivity_methods = ["coh", "plv"]
 n_con_methods = len(connectivity_methods)
 
 # Pre-allocatate memory for the connectivity matrices
-con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
-                             n_freq_bands, n_times))
+con_epochs_array = np.zeros(
+    (n_con_methods, n_channels, n_channels, n_freq_bands, n_times)
+)
 con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
 
 # Compute connectivity over trials
-con_epochs = spectral_connectivity_epochs(data_epoch,
-                                          method=connectivity_methods,
-                                          sfreq=sfreq, mode="cwt_morlet",
-                                          cwt_freqs=freqs, fmin=fmin,
-                                          fmax=fmax, faverage=True)
+con_epochs = spectral_connectivity_epochs(
+    data_epoch,
+    method=connectivity_methods,
+    sfreq=sfreq,
+    mode="cwt_morlet",
+    cwt_freqs=freqs,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+)
 
 # Get data as connectivity matrices
 for c in range(n_con_methods):
@@ -175,20 +178,22 @@ def plot_con_matrix(con_data, n_con_methods):
     fig, ax = plt.subplots(1, n_con_methods, figsize=(6 * n_con_methods, 6))
     for c in range(n_con_methods):
         # Plot with imshow
-        con_plot = ax[c].imshow(con_data[c, :, :, foi],
-                                cmap="binary", vmin=0, vmax=1)
+        con_plot = ax[c].imshow(con_data[c, :, :, foi], cmap="binary", vmin=0, vmax=1)
         # Set title
         ax[c].set_title(connectivity_methods[c])
         # Add colorbar
-        fig.colorbar(con_plot, ax=ax[c], shrink=0.7, label='Connectivity')
+        fig.colorbar(con_plot, ax=ax[c], shrink=0.7, label="Connectivity")
         # Fix labels
         ax[c].set_xticks(range(len(ch_names)))
         ax[c].set_xticklabels(ch_names)
         ax[c].set_yticks(range(len(ch_names)))
         ax[c].set_yticklabels(ch_names)
-        print(f"Connectivity method: {connectivity_methods[c]}\n" +
-              f"{con_data[c,:,:,foi]}")
+        print(
+            f"Connectivity method: {connectivity_methods[c]}\n"
+            + f"{con_data[c,:,:,foi]}"
+        )
     return fig
+
 
 plot_con_matrix(con_epochs_array, n_con_methods)
 
@@ -199,16 +204,22 @@ plot_con_matrix(con_epochs_array, n_con_methods)
 # We will now compute connectivity over time.
 
 # Pre-allocatate memory for the connectivity matrices
-con_time_array = np.zeros((n_con_methods, n_epochs, n_channels,
-                           n_channels, n_freq_bands))
+con_time_array = np.zeros(
+    (n_con_methods, n_epochs, n_channels, n_channels, n_freq_bands)
+)
 con_time_array[con_time_array == 0] = np.nan  # nan matrix
 
 # Compute connectivity over time
-con_time = spectral_connectivity_time(data_epoch, freqs,
-                                      method=connectivity_methods,
-                                      sfreq=sfreq, mode="cwt_morlet",
-                                      fmin=fmin, fmax=fmax,
-                                      faverage=True)
+con_time = spectral_connectivity_time(
+    data_epoch,
+    freqs,
+    method=connectivity_methods,
+    sfreq=sfreq,
+    mode="cwt_morlet",
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+)
 
 # Get data as connectivity matrices
 for c in range(n_con_methods):
@@ -244,8 +255,11 @@ for i in range(n_epochs):  # ensure each epoch are different
         epoch_len = n_times / sfreq
         phase = rng.random(1) * 10  # Introduce random phase for each channel
         # Generate sinus wave
-        x = np.linspace(-wave_freq * epoch_len * np.pi + phase,
-                        wave_freq * epoch_len * np.pi + phase, n_times)
+        x = np.linspace(
+            -wave_freq * epoch_len * np.pi + phase,
+            wave_freq * epoch_len * np.pi + phase,
+            n_times,
+        )
         data[i, c] = np.squeeze(np.sin(x))  # overwrite to data
 
 data_epoch = mne.EpochsArray(data, info)  # create EpochsArray
@@ -257,16 +271,22 @@ data_epoch.plot(scalings=1, n_epochs=1)
 # First we compute connectivity over trials.
 
 # Pre-allocatate memory for the connectivity matrices
-con_epochs_array = np.zeros((n_con_methods, n_channels, n_channels,
-                             n_freq_bands, n_times))
+con_epochs_array = np.zeros(
+    (n_con_methods, n_channels, n_channels, n_freq_bands, n_times)
+)
 con_epochs_array[con_epochs_array == 0] = np.nan  # nan matrix
 
 # Compute connecitivty over trials
-con_epochs = spectral_connectivity_epochs(data_epoch,
-                                          method=connectivity_methods,
-                                          sfreq=sfreq, mode="cwt_morlet",
-                                          cwt_freqs=freqs, fmin=fmin,
-                                          fmax=fmax, faverage=True)
+con_epochs = spectral_connectivity_epochs(
+    data_epoch,
+    method=connectivity_methods,
+    sfreq=sfreq,
+    mode="cwt_morlet",
+    cwt_freqs=freqs,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+)
 
 # Get data as connectivity matrices
 for c in range(n_con_methods):
@@ -285,14 +305,20 @@ plot_con_matrix(con_epochs_array, n_con_methods)
 # We will now compute connectivity over time.
 
 # Pre-allocatate memory for the connectivity matrices
-con_time_array = np.zeros((n_con_methods, n_epochs,
-                           n_channels, n_channels, n_freq_bands))
+con_time_array = np.zeros(
+    (n_con_methods, n_epochs, n_channels, n_channels, n_freq_bands)
+)
 con_time_array[con_time_array == 0] = np.nan  # nan matrix
 
-con_time = spectral_connectivity_time(data_epoch, freqs,
-                                      method=connectivity_methods,
-                                      sfreq=sfreq, fmin=fmin, fmax=fmax,
-                                      faverage=True)
+con_time = spectral_connectivity_time(
+    data_epoch,
+    freqs,
+    method=connectivity_methods,
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+)
 
 # Get data as connectivity matrices
 for c in range(n_con_methods):
@@ -313,19 +339,19 @@ plot_con_matrix(con_time_array, n_con_methods)
 # To finish this example, we will compute connectivity for a sample EEG data.
 
 data_path = sample.data_path()
-raw_fname = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
-event_fname = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+raw_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
+event_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw-eve.fif"
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
 # Select only the EEG
-picks = mne.pick_types(raw.info, meg=False, eeg=True,
-                       stim=False, eog=False, exclude='bads')
+picks = mne.pick_types(
+    raw.info, meg=False, eeg=True, stim=False, eog=False, exclude="bads"
+)
 
 # Create epochs for left visual field stimulus
 event_id, tmin, tmax = 3, -0.3, 1.6
-epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
-                    baseline=(None, 0))
+epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks, baseline=(None, 0))
 epochs.load_data()  # load the data
 
 ###############################################################################
@@ -340,7 +366,7 @@ epochs.load_data()  # load the data
 # N1 :footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
 # connectivity in the theta band around P1
 
-sfreq = epochs.info['sfreq']  # the sampling frequency
+sfreq = epochs.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period for connectivity estimation
 Freq_Bands = {"theta": [4.0, 8.0]}  # frequency of interest
 n_freq_bands = len(Freq_Bands)
@@ -358,12 +384,18 @@ connectivity_methods = ["wpli"]
 n_con_methods = len(connectivity_methods)
 
 # Compute connectivity over trials
-con_epochs = spectral_connectivity_epochs(epochs,
-                                          method=connectivity_methods,
-                                          sfreq=sfreq, mode="cwt_morlet",
-                                          cwt_freqs=freqs, fmin=fmin,
-                                          fmax=fmax, faverage=True,
-                                          tmin=tmin, cwt_n_cycles=4)
+con_epochs = spectral_connectivity_epochs(
+    epochs,
+    method=connectivity_methods,
+    sfreq=sfreq,
+    mode="cwt_morlet",
+    cwt_freqs=freqs,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+    tmin=tmin,
+    cwt_n_cycles=4,
+)
 
 ###############################################################################
 # Notice we have shortened the wavelets to 4 cycles since we only have 1.6s
@@ -403,7 +435,7 @@ con_epochs_matrix = con_epochs.get_data(output="dense")[:, :, 0, t_con_max]
 
 fig = plt.figure()
 im = plt.imshow(con_epochs_matrix)
-fig.colorbar(im, label='Connectivity')
+fig.colorbar(im, label="Connectivity")
 plt.ylabel("Channels")
 plt.xlabel("Channels")
 plt.show()

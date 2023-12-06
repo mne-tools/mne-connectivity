@@ -427,18 +427,37 @@ document.write(`
 
 <div class="viewcode-block" id="plot_connectivity_circle">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_connectivity_circle</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">node_angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">node_height</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">node_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">textcolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
-                             <span class="n">node_edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-                             <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">colorbar_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">colorbar_pos</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
-                             <span class="n">fontsize_title</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontsize_names</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-                             <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                             <span class="n">node_linewidth</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_connectivity_circle</span><span class="p">(</span>
+    <span class="n">con</span><span class="p">,</span>
+    <span class="n">node_names</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">node_height</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">node_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">textcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+    <span class="n">node_edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;hot&quot;</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">colorbar_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">colorbar_pos</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">fontsize_title</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">fontsize_names</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subplot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">node_linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize connectivity as a circular graph.</span>
 
 <span class="sd">    Parameters</span>
@@ -542,16 +561,20 @@ document.write(`
 <span class="sd">    figure labels, title, and legend may be cut off in the output figure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
     <span class="kn">from</span> <span class="nn">mne_connectivity.base</span> <span class="kn">import</span> <span class="n">BaseConnectivity</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
         <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">subplot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Passing a `fig` and `subplot` is deprecated and not be &#39;</span>
-             <span class="s1">&#39;supported after mne-connectivity version 0.4. Please &#39;</span>
-             <span class="s1">&#39;use the `ax` argument and pass a matplotlib axes object &#39;</span>
-             <span class="s1">&#39;with polar coordinates instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Passing a `fig` and `subplot` is deprecated and not be &quot;</span>
+            <span class="s2">&quot;supported after mne-connectivity version 0.4. Please &quot;</span>
+            <span class="s2">&quot;use the `ax` argument and pass a matplotlib axes object &quot;</span>
+            <span class="s2">&quot;with polar coordinates instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># don&#39;t overwrite ax if passed</span>
             <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">)</span>
@@ -560,16 +583,34 @@ document.write(`
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="o">*</span><span class="n">subplot</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_plot_connectivity_circle</span><span class="p">(</span>
-        <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span> <span class="n">node_names</span><span class="o">=</span><span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_lines</span><span class="o">=</span><span class="n">n_lines</span><span class="p">,</span>
-        <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">,</span> <span class="n">node_width</span><span class="o">=</span><span class="n">node_width</span><span class="p">,</span>
-        <span class="n">node_height</span><span class="o">=</span><span class="n">node_height</span><span class="p">,</span> <span class="n">node_colors</span><span class="o">=</span><span class="n">node_colors</span><span class="p">,</span>
-        <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">textcolor</span><span class="o">=</span><span class="n">textcolor</span><span class="p">,</span>
-        <span class="n">node_edgecolor</span><span class="o">=</span><span class="n">node_edgecolor</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
-        <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">colorbar_size</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span> <span class="n">colorbar_pos</span><span class="o">=</span><span class="n">colorbar_pos</span><span class="p">,</span>
-        <span class="n">fontsize_title</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">,</span> <span class="n">fontsize_names</span><span class="o">=</span><span class="n">fontsize_names</span><span class="p">,</span>
-        <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="n">fontsize_colorbar</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-        <span class="n">interactive</span><span class="o">=</span><span class="n">interactive</span><span class="p">,</span> <span class="n">node_linewidth</span><span class="o">=</span><span class="n">node_linewidth</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span></div>
+        <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span>
+        <span class="n">node_names</span><span class="o">=</span><span class="n">node_names</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+        <span class="n">n_lines</span><span class="o">=</span><span class="n">n_lines</span><span class="p">,</span>
+        <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">,</span>
+        <span class="n">node_width</span><span class="o">=</span><span class="n">node_width</span><span class="p">,</span>
+        <span class="n">node_height</span><span class="o">=</span><span class="n">node_height</span><span class="p">,</span>
+        <span class="n">node_colors</span><span class="o">=</span><span class="n">node_colors</span><span class="p">,</span>
+        <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span>
+        <span class="n">textcolor</span><span class="o">=</span><span class="n">textcolor</span><span class="p">,</span>
+        <span class="n">node_edgecolor</span><span class="o">=</span><span class="n">node_edgecolor</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">colorbar_size</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span>
+        <span class="n">colorbar_pos</span><span class="o">=</span><span class="n">colorbar_pos</span><span class="p">,</span>
+        <span class="n">fontsize_title</span><span class="o">=</span><span class="n">fontsize_title</span><span class="p">,</span>
+        <span class="n">fontsize_names</span><span class="o">=</span><span class="n">fontsize_names</span><span class="p">,</span>
+        <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="n">fontsize_colorbar</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="n">interactive</span><span class="o">=</span><span class="n">interactive</span><span class="p">,</span>
+        <span class="n">node_linewidth</span><span class="o">=</span><span class="n">node_linewidth</span><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
