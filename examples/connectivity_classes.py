@@ -26,38 +26,54 @@ from mne.datasets import sample
 # %%
 # Set parameters
 data_path = sample.data_path()
-raw_fname = op.join(data_path, 'MEG', 'sample',
-                    'sample_audvis_filt-0-40_raw.fif')
-event_fname = op.join(data_path, 'MEG', 'sample',
-                      'sample_audvis_filt-0-40_raw-eve.fif')
+raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif")
+event_fname = op.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw-eve.fif")
 
 # Setup for reading the raw data
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
 # Add a bad channel
-raw.info['bads'] += ['MEG 2443']
+raw.info["bads"] += ["MEG 2443"]
 
 # Pick MEG gradiometers
-picks = mne.pick_types(raw.info, meg='grad', eeg=False, stim=False, eog=True,
-                       exclude='bads')
+picks = mne.pick_types(
+    raw.info, meg="grad", eeg=False, stim=False, eog=True, exclude="bads"
+)
 
 # Create epochs for the visual condition
 event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
-epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
-                    baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6))
+epochs = mne.Epochs(
+    raw,
+    events,
+    event_id,
+    tmin,
+    tmax,
+    picks=picks,
+    baseline=(None, 0),
+    reject=dict(grad=4000e-13, eog=150e-6),
+)
 
 # Compute connectivity for the alpha band that contains the evoked response
 # (4-9 Hz). We exclude the baseline period:
-fmin, fmax = 4., 9.
+fmin, fmax = 4.0, 9.0
 cwt_freqs = np.linspace(fmin, fmax, 5)
-sfreq = raw.info['sfreq']  # the sampling frequency
+sfreq = raw.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
-epochs.load_data().pick_types(meg='grad')  # just keep MEG and no EOG now
+epochs.load_data().pick_types(meg="grad")  # just keep MEG and no EOG now
 con = spectral_connectivity_epochs(
-    epochs, method='pli', mode='cwt_morlet', sfreq=sfreq, fmin=fmin, fmax=fmax,
-    faverage=False, tmin=tmin, cwt_freqs=cwt_freqs, mt_adaptive=False,
-    n_jobs=1)
+    epochs,
+    method="pli",
+    mode="cwt_morlet",
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=False,
+    tmin=tmin,
+    cwt_freqs=cwt_freqs,
+    mt_adaptive=False,
+    n_jobs=1,
+)
 
 # %%
 # Now, we can look at different functionalities of the connectivity
@@ -94,7 +110,7 @@ print(con.names)
 print(con.shape)
 
 # the 'dense' output will show the connectivity measure's N x N axis
-print(con.get_data(output='dense').shape)
+print(con.get_data(output="dense").shape)
 
 # %% Connectivity Measure XArray Attributes
 # The underlying data is stored as an xarray, so we have access
@@ -102,11 +118,11 @@ print(con.get_data(output='dense').shape)
 # stores relevant metadata. For example, the method used in this example
 # is the phase-lag index ('pli').
 print(con.attrs.keys())
-print(con.attrs.get('method'))
+print(con.attrs.get("method"))
 
 # You can also store additional metadata relevant to your experiment, which can
 # easily be done, because ``attrs`` is just a dictionary.
-con.attrs['experimenter'] = 'mne'
+con.attrs["experimenter"] = "mne"
 print(con.attrs.keys())
 
 # %%
