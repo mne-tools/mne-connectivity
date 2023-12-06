@@ -7,19 +7,32 @@ import copy
 import numpy as np
 from mne.utils import logger, verbose
 
-from .utils import fill_doc
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
 from .spectral import spectral_connectivity_epochs
+from .utils import fill_doc
 
 
 @verbose
 @fill_doc
-def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
-                      mode='multitaper', fmin=None, fmax=np.inf,
-                      tmin=None, tmax=None, mt_bandwidth=None,
-                      mt_adaptive=False, mt_low_bias=True,
-                      cwt_freqs=None, cwt_n_cycles=7, block_size=1000,
-                      n_jobs=1, verbose=None):
+def phase_slope_index(
+    data,
+    names=None,
+    indices=None,
+    sfreq=2 * np.pi,
+    mode="multitaper",
+    fmin=None,
+    fmax=np.inf,
+    tmin=None,
+    tmax=None,
+    mt_bandwidth=None,
+    mt_adaptive=False,
+    mt_low_bias=True,
+    cwt_freqs=None,
+    cwt_n_cycles=7,
+    block_size=1000,
+    n_jobs=1,
+    verbose=None,
+):
     """Compute the Phase Slope Index (PSI) connectivity measure.
 
     The PSI is an effective connectivity measure, i.e., a measure which can
@@ -110,15 +123,30 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     ----------
     .. footbibliography::
     """
-    logger.info('Estimating phase slope index (PSI)')
+    logger.info("Estimating phase slope index (PSI)")
     # estimate the coherency
     cohy = spectral_connectivity_epochs(
-        data, names, method='cohy', indices=indices, sfreq=sfreq, mode=mode,
-        fmin=fmin, fmax=fmax, fskip=0, faverage=False, tmin=tmin, tmax=tmax,
-        mt_bandwidth=mt_bandwidth, mt_adaptive=mt_adaptive,
-        mt_low_bias=mt_low_bias, cwt_freqs=cwt_freqs,
-        cwt_n_cycles=cwt_n_cycles, block_size=block_size, n_jobs=n_jobs,
-        verbose=verbose)
+        data,
+        names,
+        method="cohy",
+        indices=indices,
+        sfreq=sfreq,
+        mode=mode,
+        fmin=fmin,
+        fmax=fmax,
+        fskip=0,
+        faverage=False,
+        tmin=tmin,
+        tmax=tmax,
+        mt_bandwidth=mt_bandwidth,
+        mt_adaptive=mt_adaptive,
+        mt_low_bias=mt_low_bias,
+        cwt_freqs=cwt_freqs,
+        cwt_n_cycles=cwt_n_cycles,
+        block_size=block_size,
+        n_jobs=n_jobs,
+        verbose=verbose,
+    )
 
     # extract class properties from the spectral connectivity structure
     if isinstance(cohy, SpectroTemporalConnectivity):
@@ -127,14 +155,14 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
         times = None
     freqs_ = np.array(cohy.freqs)
     names = cohy.names
-    n_tapers = cohy.attrs.get('n_tapers')
+    n_tapers = cohy.attrs.get("n_tapers")
     n_epochs_used = cohy.n_epochs
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
     events = cohy.events
     event_id = cohy.event_id
 
-    logger.info(f'Computing PSI from estimated Coherency: {cohy}')
+    logger.info(f"Computing PSI from estimated Coherency: {cohy}")
     # compute PSI in the requested bands
     if fmin is None:
         fmin = -np.inf  # set it to -inf, so we can adjust it later
@@ -142,7 +170,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
     bands = list(zip(np.asarray((fmin,)).ravel(), np.asarray((fmax,)).ravel()))
     n_bands = len(bands)
 
-    freq_dim = -2 if mode == 'cwt_morlet' else -1
+    freq_dim = -2 if mode == "cwt_morlet" else -1
 
     # allocate space for output
     out_shape = list(cohy.shape)
@@ -165,27 +193,27 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
         freqs.append(freqs_[freq_idx])
         freq_bands.append(np.mean(freqs_[freq_idx]))
 
-        acc.fill(0.)
+        acc.fill(0.0)
         for fi, fj in zip(freq_idx, freq_idx[1:]):
             idx_fi[freq_dim] = fi
             idx_fj[freq_dim] = fj
-            acc += np.conj(
-                cohy.get_data()[tuple(idx_fi)]) * \
-                cohy.get_data()[tuple(idx_fj)]
+            acc += (
+                np.conj(cohy.get_data()[tuple(idx_fi)]) * cohy.get_data()[tuple(idx_fj)]
+            )
 
         idx_fi[freq_dim] = band_idx
         psi[tuple(idx_fi)] = np.imag(acc)
-    logger.info('[PSI Estimation Done]')
+    logger.info("[PSI Estimation Done]")
 
     # create a connectivity container
-    if mode in ['multitaper', 'fourier']:
+    if mode in ["multitaper", "fourier"]:
         # spectral only
         conn = SpectralConnectivity(
             data=psi,
             names=names,
             freqs=freq_bands,
             n_nodes=n_nodes,
-            method='phase-slope-index',
+            method="phase-slope-index",
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs,
@@ -193,9 +221,9 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
             n_tapers=n_tapers,
             metadata=metadata,
             events=events,
-            event_id=event_id
+            event_id=event_id,
         )
-    elif mode == 'cwt_morlet':
+    elif mode == "cwt_morlet":
         # spectrotemporal
         conn = SpectroTemporalConnectivity(
             data=psi,
@@ -203,7 +231,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
             freqs=freq_bands,
             times=times,
             n_nodes=n_nodes,
-            method='phase-slope-index',
+            method="phase-slope-index",
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs,
@@ -211,7 +239,7 @@ def phase_slope_index(data, names=None, indices=None, sfreq=2 * np.pi,
             n_tapers=n_tapers,
             metadata=metadata,
             events=events,
-            event_id=event_id
+            event_id=event_id,
         )
 
     return conn

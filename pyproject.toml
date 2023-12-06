@@ -90,11 +90,13 @@ gui = [
   'vtk',
 ]
 style = [
+  "pre-commit",
   'black',
   'codespell',
   'isort',
   'pydocstyle',
   'pydocstyle[toml]',
+  'rstcheck',
   'ruff',
   'toml-sort',
   'yamllint',
@@ -129,6 +131,11 @@ extend-exclude = '''
 include = '\.pyi?$'
 line-length = 88
 target-version = ['py310']
+
+[tool.codespell]
+builtin = "clear,rare,informal,names,usage"
+ignore-words = ".codespellignore"
+skip = "doc/references.bib"
 
 [tool.coverage.report]
 exclude_lines = [
@@ -174,6 +181,51 @@ match-dir = '^mne_connectivity.*'
 addopts = '--durations 20 --junit-xml=junit-results.xml -v --color=yes'
 junit_family = 'xunit2'
 minversion = '6.0'
+
+[tool.rstcheck]
+ignore_directives = [
+  "autoclass",
+  "autofunction",
+  "automodule",
+  "autosummary",
+  "bibliography",
+  "cssclass",
+  "currentmodule",
+  "dropdown",
+  "footbibliography",
+  "glossary",
+  "graphviz",
+  "grid",
+  "highlight",
+  "minigallery",
+  "rst-class",
+  "tab-set",
+  "tabularcolumns",
+  "toctree",
+]
+ignore_messages = "^.*(Unknown target name|Undefined substitution referenced)[^`]*$"
+ignore_roles = [
+  "attr",
+  "class",
+  "doc",
+  "eq",
+  "exc",
+  "file",
+  "footcite",
+  "footcite:t",
+  "func",
+  "gh",
+  "kbd",
+  "meth",
+  "mod",
+  "newcontrib",
+  "pr",
+  "py:mod",
+  "ref",
+  "samp",
+  "term",
+]
+report_level = "WARNING"
 
 [tool.ruff]
 extend-exclude = [

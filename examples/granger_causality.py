@@ -135,9 +135,9 @@ from mne_connectivity import spectral_connectivity_epochs
 
 # %%
 
-raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
-raw.pick('mag')
-raw.crop(50., 110.).load_data()
+raw = mne.io.read_raw_ctf(data_path() / "SubjectCMC.ds")
+raw.pick("mag")
+raw.crop(50.0, 110.0).load_data()
 raw.notch_filter(50)
 raw.resample(100)
 
@@ -151,22 +151,40 @@ epochs = mne.make_fixed_length_epochs(raw, duration=2.0).load_data()
 # %%
 
 # parietal sensors
-signals_a = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['ch_name'][2] == 'P']
+signals_a = [
+    idx
+    for idx, ch_info in enumerate(epochs.info["chs"])
+    if ch_info["ch_name"][2] == "P"
+]
 # occipital sensors
-signals_b = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['ch_name'][2] == 'O']
+signals_b = [
+    idx
+    for idx, ch_info in enumerate(epochs.info["chs"])
+    if ch_info["ch_name"][2] == "O"
+]
 
 indices_ab = (np.array([signals_a]), np.array([signals_b]))  # A => B
 indices_ba = (np.array([signals_b]), np.array([signals_a]))  # B => A
 
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # A => B
+    epochs,
+    method=["gc"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # A => B
 gc_ba = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # B => A
+    epochs,
+    method=["gc"],
+    indices=indices_ba,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # B => A
 freqs = gc_ab.freqs
 
 
@@ -179,9 +197,9 @@ freqs = gc_ab.freqs
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(freqs, gc_ab.get_data()[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('GC: [A => B]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("GC: [A => B]")
 
 
 ###############################################################################
@@ -206,12 +224,11 @@ fig.suptitle('GC: [A => B]')
 net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A => B] - [B => A]
 
 fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
-          color='k')
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
 axis.plot(freqs, net_gc[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('Net GC: [A => B] - [B => A]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("Net GC: [A => B] - [B => A]")
 
 
 ###############################################################################
@@ -263,11 +280,23 @@ fig.suptitle('Net GC: [A => B] - [B => A]')
 
 # compute GC on time-reversed signals
 gc_tr_ab = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[A => B]
+    epochs,
+    method=["gc_tr"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # TR[A => B]
 gc_tr_ba = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ba, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[B => A]
+    epochs,
+    method=["gc_tr"],
+    indices=indices_ba,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # TR[B => A]
 
 # compute net GC on time-reversed signals (TR[A => B] - TR[B => A])
 net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
@@ -289,12 +318,11 @@ trgc = net_gc - net_gc_tr
 # %%
 
 fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
-          color='k')
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
 axis.plot(freqs, trgc[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("TRGC: net[A => B] - net time-reversed[A => B]")
 
 
 ###############################################################################
@@ -318,16 +346,22 @@ fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
 # %%
 
 gc_ab_60 = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=60)  # A => B
+    epochs,
+    method=["gc"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=60,
+)  # A => B
 
 fig, axis = plt.subplots(1, 1)
-axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label='20 lags')
-axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label='60 lags')
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
+axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label="20 lags")
+axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label="60 lags")
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
 axis.legend()
-fig.suptitle('GC: [A => B]')
+fig.suptitle("GC: [A => B]")
 
 
 ###############################################################################
@@ -376,11 +410,18 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 
 try:
     spectral_connectivity_epochs(
-        epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
-        gc_n_lags=20, verbose=False)  # A => B
-    print('Success!')
+        epochs,
+        method=["gc"],
+        indices=indices_ab,
+        fmin=5,
+        fmax=30,
+        rank=None,
+        gc_n_lags=20,
+        verbose=False,
+    )  # A => B
+    print("Success!")
 except RuntimeError as error:
-    print('\nCaught the following error:\n' + repr(error))
+    print("\nCaught the following error:\n" + repr(error))
 
 ###############################################################################
 # Rigorous checks are implemented to identify any such instances which would

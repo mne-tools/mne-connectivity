@@ -16,14 +16,13 @@ from mne.io.pick import _picks_to_idx
 from mne.utils import _validate_type, fill_doc, verbose
 
 verbose_dec = verbose
-FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION,
-                  FIFF.FIFFV_POINT_RPA)
+FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POINT_RPA)
 
 
 @fill_doc
-def plot_sensors_connectivity(info, con, picks=None,
-                              cbar_label='Connectivity',
-                              n_con=20, cmap='RdBu'):
+def plot_sensors_connectivity(
+    info, con, picks=None, cbar_label="Connectivity", n_con=20, cmap="RdBu"
+):
     """Visualize the sensor connectivity in 3D.
 
     Parameters
@@ -51,6 +50,7 @@ def plot_sensors_connectivity(info, con, picks=None,
     _validate_type(info, "info")
 
     from mne.viz.backends.renderer import _get_renderer
+
     from mne_connectivity.base import BaseConnectivity
 
     if isinstance(con, BaseConnectivity):
@@ -60,16 +60,22 @@ def plot_sensors_connectivity(info, con, picks=None,
 
     picks = _picks_to_idx(info, picks)
     if len(picks) != len(con):
-        raise ValueError('The number of channels picked (%s) does not '
-                         'correspond to the size of the connectivity data '
-                         '(%s)' % (len(picks), len(con)))
+        raise ValueError(
+            "The number of channels picked (%s) does not "
+            "correspond to the size of the connectivity data "
+            "(%s)" % (len(picks), len(con))
+        )
 
     # Plot the sensor locations
-    sens_loc = [info['chs'][k]['loc'][:3] for k in picks]
+    sens_loc = [info["chs"][k]["loc"][:3] for k in picks]
     sens_loc = np.array(sens_loc)
 
-    renderer.sphere(np.c_[sens_loc[:, 0], sens_loc[:, 1], sens_loc[:, 2]],
-                    color=(1, 1, 1), opacity=1, scale=0.005)
+    renderer.sphere(
+        np.c_[sens_loc[:, 0], sens_loc[:, 1], sens_loc[:, 2]],
+        color=(1, 1, 1),
+        opacity=1,
+        scale=0.005,
+    )
 
     # Get the strongest n_con connections
     threshold = np.sort(con, axis=None)[-n_con]
@@ -92,27 +98,32 @@ def plot_sensors_connectivity(info, con, picks=None,
     for val, nodes in zip(con_val, con_nodes):
         x1, y1, z1 = sens_loc[nodes[0]]
         x2, y2, z2 = sens_loc[nodes[1]]
-        tube = renderer.tube(origin=np.c_[x1, y1, z1],
-                             destination=np.c_[x2, y2, z2],
-                             scalars=np.c_[val, val],
-                             vmin=vmin, vmax=vmax,
-                             reverse_lut=True,
-                             colormap=cmap)
+        tube = renderer.tube(
+            origin=np.c_[x1, y1, z1],
+            destination=np.c_[x2, y2, z2],
+            scalars=np.c_[val, val],
+            vmin=vmin,
+            vmax=vmax,
+            reverse_lut=True,
+            colormap=cmap,
+        )
 
     renderer.scalarbar(source=tube, title=cbar_label)
 
     # Add the sensor names for the connections shown
-    nodes_shown = list(set([n[0] for n in con_nodes] +
-                           [n[1] for n in con_nodes]))
+    nodes_shown = list(set([n[0] for n in con_nodes] + [n[1] for n in con_nodes]))
 
     for node in nodes_shown:
         x, y, z = sens_loc[node]
-        renderer.text3d(x, y, z, text=info['ch_names'][picks[node]],
-                        scale=0.005,
-                        color=(0, 0, 0))
+        renderer.text3d(
+            x, y, z, text=info["ch_names"][picks[node]], scale=0.005, color=(0, 0, 0)
+        )
 
-    renderer.set_camera(azimuth=-88.7, elevation=40.8,
-                        distance=0.76,
-                        focalpoint=np.array([-3.9e-4, -8.5e-3, -1e-2]))
+    renderer.set_camera(
+        azimuth=-88.7,
+        elevation=40.8,
+        distance=0.76,
+        focalpoint=np.array([-3.9e-4, -8.5e-3, -1e-2]),
+    )
     renderer.show()
     return renderer.scene()
