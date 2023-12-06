@@ -5,6 +5,10 @@ trigger:
     include:
       - main
       - maint/*
+pr:
+  branches:
+    include:
+      - '*'  # must quote since "*" is a YAML reserved character; we want a string
 
 jobs:
   - job: Windows
@@ -34,7 +38,7 @@ jobs:
           pip install git+https://github.com/mne-tools/mne-python
           pip install --upgrade .[test] codecov
         displayName: "Install dependencies with pip"
-      - script: python setup.py develop
+      - script: pip install .
         displayName: "Install MNE-Connectivity"
       - bash: |
           set -e
