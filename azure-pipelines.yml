@@ -36,7 +36,7 @@ jobs:
           set -e
           pip install --upgrade --pre numpy scipy matplotlib "h5py<3.7"
           pip install git+https://github.com/mne-tools/mne-python
-          pip install --upgrade .[test] codecov
+          pip install --upgrade .[test] codecov pytest-error-for-skips
         displayName: "Install dependencies with pip"
       - script: pip install .
         displayName: "Install MNE-Connectivity"
@@ -48,7 +48,7 @@ jobs:
         displayName: "Print config"
       - script: python -c "import mne; mne.datasets.testing.data_path(verbose=True)"
         displayName: "Get test data"
-      - script: pytest mne_connectivity
+      - script: pytest --cov=mne_connectivity --cov-report=xml --cov-report=html -vv mne_connectivity
         displayName: "Run tests"
       - script: codecov --root %BUILD_REPOSITORY_LOCALPATH% -t %CODECOV_TOKEN%
         displayName: "Codecov"
