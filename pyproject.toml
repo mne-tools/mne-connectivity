@@ -132,6 +132,11 @@ include = '\.pyi?$'
 line-length = 88
 target-version = ['py310']
 
+[tool.codespell]
+builtin = "clear,rare,informal,names,usage"
+ignore-words = ".codespellignore"
+skip = "doc/references.bib"
+
 [tool.coverage.report]
 exclude_lines = [
   'if __name__ == .__main__.:',
@@ -247,8 +252,3 @@ include = ['mne_connectivity*']
 all = true
 ignore_case = true
 trailing_comma_inline_array = true
-
-[tool.codespell]
-ignore-words = ".codespellignore"
-builtin = "clear,rare,informal,names,usage"
-skip = "doc/references.bib"
