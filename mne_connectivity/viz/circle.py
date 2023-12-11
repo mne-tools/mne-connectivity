@@ -9,18 +9,37 @@ from mne.utils import warn
 from mne.viz.circle import _plot_connectivity_circle
 
 
-def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
-                             node_angles=None, node_width=None,
-                             node_height=1.0, node_colors=None,
-                             facecolor='black', textcolor='white',
-                             node_edgecolor='black', linewidth=1.5,
-                             colormap='hot', vmin=None, vmax=None,
-                             colorbar=True, title=None,
-                             colorbar_size=0.2, colorbar_pos=(-0.3, 0.1),
-                             fontsize_title=12, fontsize_names=8,
-                             fontsize_colorbar=8, padding=6., ax=None,
-                             fig=None, subplot=None, interactive=True,
-                             node_linewidth=2., show=True):
+def plot_connectivity_circle(
+    con,
+    node_names,
+    indices=None,
+    n_lines=None,
+    node_angles=None,
+    node_width=None,
+    node_height=1.0,
+    node_colors=None,
+    facecolor="black",
+    textcolor="white",
+    node_edgecolor="black",
+    linewidth=1.5,
+    colormap="hot",
+    vmin=None,
+    vmax=None,
+    colorbar=True,
+    title=None,
+    colorbar_size=0.2,
+    colorbar_pos=(-0.3, 0.1),
+    fontsize_title=12,
+    fontsize_names=8,
+    fontsize_colorbar=8,
+    padding=6.0,
+    ax=None,
+    fig=None,
+    subplot=None,
+    interactive=True,
+    node_linewidth=2.0,
+    show=True,
+):
     """Visualize connectivity as a circular graph.
 
     Parameters
@@ -124,16 +143,20 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
     figure labels, title, and legend may be cut off in the output figure.
     """
     import matplotlib.pyplot as plt
+
     from mne_connectivity.base import BaseConnectivity
 
     if isinstance(con, BaseConnectivity):
         con = con.get_data()
 
     if fig is not None or subplot is not None:
-        warn('Passing a `fig` and `subplot` is deprecated and not be '
-             'supported after mne-connectivity version 0.4. Please '
-             'use the `ax` argument and pass a matplotlib axes object '
-             'with polar coordinates instead', DeprecationWarning)
+        warn(
+            "Passing a `fig` and `subplot` is deprecated and not be "
+            "supported after mne-connectivity version 0.4. Please "
+            "use the `ax` argument and pass a matplotlib axes object "
+            "with polar coordinates instead",
+            DeprecationWarning,
+        )
         if ax is None:  # don't overwrite ax if passed
             if fig is None:
                 fig = plt.figure(figsize=(8, 8), facecolor=facecolor)
@@ -142,13 +165,31 @@ def plot_connectivity_circle(con, node_names, indices=None, n_lines=None,
             ax = plt.subplot(*subplot, polar=True)
 
     return _plot_connectivity_circle(
-        con=con, node_names=node_names, indices=indices, n_lines=n_lines,
-        node_angles=node_angles, node_width=node_width,
-        node_height=node_height, node_colors=node_colors,
-        facecolor=facecolor, textcolor=textcolor,
-        node_edgecolor=node_edgecolor, linewidth=linewidth,
-        colormap=colormap, vmin=vmin, vmax=vmax, colorbar=colorbar,
-        title=title, colorbar_size=colorbar_size, colorbar_pos=colorbar_pos,
-        fontsize_title=fontsize_title, fontsize_names=fontsize_names,
-        fontsize_colorbar=fontsize_colorbar, padding=padding, ax=ax,
-        interactive=interactive, node_linewidth=node_linewidth, show=show)
+        con=con,
+        node_names=node_names,
+        indices=indices,
+        n_lines=n_lines,
+        node_angles=node_angles,
+        node_width=node_width,
+        node_height=node_height,
+        node_colors=node_colors,
+        facecolor=facecolor,
+        textcolor=textcolor,
+        node_edgecolor=node_edgecolor,
+        linewidth=linewidth,
+        colormap=colormap,
+        vmin=vmin,
+        vmax=vmax,
+        colorbar=colorbar,
+        title=title,
+        colorbar_size=colorbar_size,
+        colorbar_pos=colorbar_pos,
+        fontsize_title=fontsize_title,
+        fontsize_names=fontsize_names,
+        fontsize_colorbar=fontsize_colorbar,
+        padding=padding,
+        ax=ax,
+        interactive=interactive,
+        node_linewidth=node_linewidth,
+        show=show,
+    )

@@ -6,7 +6,6 @@
 
 import numpy as np
 
-
 ########################################################################
 # Bivariate connectivity estimators
 
@@ -15,16 +14,16 @@ class _AbstractConEstBase(object):
     """ABC for connectivity estimators."""
 
     def start_epoch(self):
-        raise NotImplementedError('start_epoch method not implemented')
+        raise NotImplementedError("start_epoch method not implemented")
 
     def accumulate(self, con_idx, csd_xy):
-        raise NotImplementedError('accumulate method not implemented')
+        raise NotImplementedError("accumulate method not implemented")
 
     def combine(self, other):
-        raise NotImplementedError('combine method not implemented')
+        raise NotImplementedError("combine method not implemented")
 
     def compute_con(self, con_idx, n_epochs):
-        raise NotImplementedError('compute_con method not implemented')
+        raise NotImplementedError("compute_con method not implemented")
 
 
 class _EpochMeanConEstBase(_AbstractConEstBase):
@@ -72,7 +71,7 @@ class _CohEstBase(_EpochMeanConEstBase):
 class _CohEst(_CohEstBase):
     """Coherence Estimator."""
 
-    name = 'Coherence'
+    name = "Coherence"
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
@@ -85,13 +84,12 @@ class _CohEst(_CohEstBase):
 class _CohyEst(_CohEstBase):
     """Coherency Estimator."""
 
-    name = 'Coherency'
+    name = "Coherency"
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
         if self.con_scores is None:
-            self.con_scores = np.zeros(self.csd_shape,
-                                       dtype=np.complex128)
+            self.con_scores = np.zeros(self.csd_shape, dtype=np.complex128)
         csd_mean = self._acc[con_idx] / n_epochs
         self.con_scores[con_idx] = csd_mean / np.sqrt(psd_xx * psd_yy)
 
@@ -99,7 +97,7 @@ class _CohyEst(_CohEstBase):
 class _ImCohEst(_CohEstBase):
     """Imaginary Coherence Estimator."""
 
-    name = 'Imaginary Coherence'
+    name = "Imaginary Coherence"
 
     def compute_con(self, con_idx, n_epochs, psd_xx, psd_yy):  # lgtm
         """Compute final con. score for some connections."""
@@ -112,7 +110,7 @@ class _ImCohEst(_CohEstBase):
 class _PLVEst(_EpochMeanConEstBase):
     """PLV Estimator."""
 
-    name = 'PLV'
+    name = "PLV"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -136,7 +134,7 @@ class _PLVEst(_EpochMeanConEstBase):
 class _ciPLVEst(_EpochMeanConEstBase):
     """corrected imaginary PLV Estimator."""
 
-    name = 'ciPLV'
+    name = "ciPLV"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -156,16 +154,16 @@ class _ciPLVEst(_EpochMeanConEstBase):
         imag_plv = np.abs(np.imag(self._acc)) / n_epochs
         real_plv = np.real(self._acc) / n_epochs
         real_plv = np.clip(real_plv, -1, 1)  # bounded from -1 to 1
-        mask = (np.abs(real_plv) == 1)  # avoid division by 0
+        mask = np.abs(real_plv) == 1  # avoid division by 0
         real_plv[mask] = 0
-        corrected_imag_plv = imag_plv / np.sqrt(1 - real_plv ** 2)
+        corrected_imag_plv = imag_plv / np.sqrt(1 - real_plv**2)
         self.con_scores[con_idx] = corrected_imag_plv
 
 
 class _PLIEst(_EpochMeanConEstBase):
     """PLI Estimator."""
 
-    name = 'PLI'
+    name = "PLI"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -189,7 +187,7 @@ class _PLIEst(_EpochMeanConEstBase):
 class _PLIUnbiasedEst(_PLIEst):
     """Unbiased PLI Square Estimator."""
 
-    name = 'Unbiased PLI Square'
+    name = "Unbiased PLI Square"
     accumulate_psd = False
 
     def compute_con(self, con_idx, n_epochs):
@@ -199,7 +197,7 @@ class _PLIUnbiasedEst(_PLIEst):
         pli_mean = self._acc[con_idx] / n_epochs
 
         # See Vinck paper Eq. (30)
-        con = (n_epochs * pli_mean ** 2 - 1) / (n_epochs - 1)
+        con = (n_epochs * pli_mean**2 - 1) / (n_epochs - 1)
 
         self.con_scores[con_idx] = con
 
@@ -207,7 +205,7 @@ class _PLIUnbiasedEst(_PLIEst):
 class _DPLIEst(_EpochMeanConEstBase):
     """DPLI Estimator."""
 
-    name = 'DPLI'
+    name = "DPLI"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -233,7 +231,7 @@ class _DPLIEst(_EpochMeanConEstBase):
 class _WPLIEst(_EpochMeanConEstBase):
     """WPLI Estimator."""
 
-    name = 'WPLI'
+    name = "WPLI"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -258,13 +256,13 @@ class _WPLIEst(_EpochMeanConEstBase):
         denom = self._acc[1, con_idx]
 
         # handle zeros in denominator
-        z_denom = np.where(denom == 0.)
-        denom[z_denom] = 1.
+        z_denom = np.where(denom == 0.0)
+        denom[z_denom] = 1.0
 
         con = num / denom
 
         # where we had zeros in denominator, we set con to zero
-        con[z_denom] = 0.
+        con[z_denom] = 0.0
 
         self.con_scores[con_idx] = con
 
@@ -272,7 +270,7 @@ class _WPLIEst(_EpochMeanConEstBase):
 class _WPLIDebiasedEst(_EpochMeanConEstBase):
     """Debiased WPLI Square Estimator."""
 
-    name = 'Debiased WPLI Square'
+    name = "Debiased WPLI Square"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -286,7 +284,7 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
         im_csd = np.imag(csd_xy)
         self._acc[0, con_idx] += im_csd
         self._acc[1, con_idx] += np.abs(im_csd)
-        self._acc[2, con_idx] += im_csd ** 2
+        self._acc[2, con_idx] += im_csd**2
 
     def compute_con(self, con_idx, n_epochs):
         """Compute final con. score for some connections."""
@@ -299,16 +297,16 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
         sum_abs_im_csd = self._acc[1, con_idx]
         sum_sq_im_csd = self._acc[2, con_idx]
 
-        denom = sum_abs_im_csd ** 2 - sum_sq_im_csd
+        denom = sum_abs_im_csd**2 - sum_sq_im_csd
 
         # handle zeros in denominator
-        z_denom = np.where(denom == 0.)
-        denom[z_denom] = 1.
+        z_denom = np.where(denom == 0.0)
+        denom[z_denom] = 1.0
 
-        con = (sum_im_csd ** 2 - sum_sq_im_csd) / denom
+        con = (sum_im_csd**2 - sum_sq_im_csd) / denom
 
         # where we had zeros in denominator, we set con to zero
-        con[z_denom] = 0.
+        con[z_denom] = 0.0
 
         self.con_scores[con_idx] = con
 
@@ -316,7 +314,7 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
 class _PPCEst(_EpochMeanConEstBase):
     """Pairwise Phase Consistency (PPC) Estimator."""
 
-    name = 'PPC'
+    name = "PPC"
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
@@ -328,10 +326,10 @@ class _PPCEst(_EpochMeanConEstBase):
     def accumulate(self, con_idx, csd_xy):
         """Accumulate some connections."""
         denom = np.abs(csd_xy)
-        z_denom = np.where(denom == 0.)
-        denom[z_denom] = 1.
+        z_denom = np.where(denom == 0.0)
+        denom[z_denom] = 1.0
         this_acc = csd_xy / denom
-        this_acc[z_denom] = 0.  # handle division by zero
+        this_acc[z_denom] = 0.0  # handle division by zero
 
         self._acc[con_idx] += this_acc
 
@@ -342,16 +340,24 @@ class _PPCEst(_EpochMeanConEstBase):
 
         # note: we use the trick from fieldtrip to compute the
         # the estimate over all pairwise epoch combinations
-        con = ((self._acc[con_idx] * np.conj(self._acc[con_idx]) - n_epochs) /
-               (n_epochs * (n_epochs - 1.)))
+        con = (self._acc[con_idx] * np.conj(self._acc[con_idx]) - n_epochs) / (
+            n_epochs * (n_epochs - 1.0)
+        )
 
         self.con_scores[con_idx] = np.real(con)
 
 
 # map names to estimator types
 _CON_METHOD_MAP_BIVARIATE = {
-    'coh': _CohEst, 'cohy': _CohyEst, 'imcoh': _ImCohEst, 'plv': _PLVEst,
-    'ciplv': _ciPLVEst, 'ppc': _PPCEst, 'pli': _PLIEst,
-    'pli2_unbiased': _PLIUnbiasedEst, 'dpli': _DPLIEst, 'wpli': _WPLIEst,
-    'wpli2_debiased': _WPLIDebiasedEst
+    "coh": _CohEst,
+    "cohy": _CohyEst,
+    "imcoh": _ImCohEst,
+    "plv": _PLVEst,
+    "ciplv": _ciPLVEst,
+    "ppc": _PPCEst,
+    "pli": _PLIEst,
+    "pli2_unbiased": _PLIUnbiasedEst,
+    "dpli": _DPLIEst,
+    "wpli": _WPLIEst,
+    "wpli2_debiased": _WPLIDebiasedEst,
 }

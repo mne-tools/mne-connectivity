@@ -41,7 +41,7 @@ jobs:
           curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh -o get_minimal_commands.sh
           chmod +x get_minimal_commands.sh
           source ./get_minimal_commands.sh
-          pip install -r requirements_testing.txt
+          pip install .[test]
         name: 'Install dependencies'
       - run: pip install git+https://github.com/mne-tools/mne-python@main
       - run: pip install -e .
@@ -51,5 +51,5 @@ jobs:
           python -c "import numpy; numpy.show_config()"
         name: 'Show infos'
       - name: Run pytest
-        run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+        run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v3

@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 import numpy as np
 from scipy import linalg
 
@@ -60,17 +61,13 @@ def select_order(X, maxlags=None):
     for p in range(p_min, maxlags + 1):
         # exclude some periods to same amount of data used for each lag
         # order
-        params, _, sigma_u = _estimate_var(
-            X, lags=p, offset=maxlags - p)
+        params, _, sigma_u = _estimate_var(X, lags=p, offset=maxlags - p)
 
-        info_criteria = _info_criteria(params, X, sigma_u=sigma_u,
-                                       lags=p)
+        info_criteria = _info_criteria(params, X, sigma_u=sigma_u, lags=p)
         for k, v in info_criteria.items():
             ics[k].append(v)
 
-    selected_orders = dict(
-        (k, np.argmin(v) + p_min) for k, v in ics.items()
-    )
+    selected_orders = dict((k, np.argmin(v) + p_min) for k, v in ics.items())
     return selected_orders
 
 
@@ -140,7 +137,7 @@ def _info_criteria(params, X, sigma_u, lags):
     # compute the number of free parameters for degrees of freedom
     coefs_exog = params[:endog_start].T
     k_exog = coefs_exog.shape[1]
-    free_params = lag_order * neqs ** 2 + neqs * k_exog
+    free_params = lag_order * neqs**2 + neqs * k_exog
 
     # compute the
     df_model = neqs * k_ar + k_exog

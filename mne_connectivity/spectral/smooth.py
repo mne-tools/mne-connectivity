@@ -1,10 +1,9 @@
 import numpy as np
+from mne.utils import logger
 from scipy.signal import fftconvolve
 
-from mne.utils import logger
 
-
-def _create_kernel(sm_times, sm_freqs, kernel='hanning'):
+def _create_kernel(sm_times, sm_freqs, kernel="hanning"):
     """2D (freqs, time) smoothing kernel.
 
     Parameters
@@ -27,8 +26,7 @@ def _create_kernel(sm_times, sm_freqs, kernel='hanning'):
 
     if scale:
         # I know this piece of code is terrible ='D
-        logger.info("For frequency dependent kernel sm_freqs is not used"
-                    "")
+        logger.info("For frequency dependent kernel sm_freqs is not used" "")
         # Number of kernels
         n_kernel = len(sm_times)
         # Get the size of the biggest kernel
@@ -44,18 +42,19 @@ def _create_kernel(sm_times, sm_freqs, kernel='hanning'):
                 pad_size = int(max_size - len(s[i]))
                 # The len(s[i])%2 corrects in case the len is odd
                 s_pad[i, :] = np.pad(
-                    s[i], (pad_size // 2, pad_size // 2 + pad_size % 2))
+                    s[i], (pad_size // 2, pad_size // 2 + pad_size % 2)
+                )
             return s_pad
 
-    if kernel == 'square':
+    if kernel == "square":
         if not scale:
-            return np.full((sm_freqs, sm_times), 1. / (sm_times * sm_freqs))
+            return np.full((sm_freqs, sm_times), 1.0 / (sm_times * sm_freqs))
         else:
             for i in range(n_kernel):
                 s += [np.ones(sm_times[i]) / sm_times[i]]
             # Pad with zeros
             return __pad_kernel(s)
-    elif kernel == 'hanning':
+    elif kernel == "hanning":
         if not scale:
             hann_t, hann_f = np.hanning(sm_times), np.hanning(sm_freqs)
             hann = hann_f.reshape(-1, 1) * hann_t.reshape(1, -1)
@@ -90,8 +89,7 @@ def _smooth_spectra(spectra, kernel, scale=False, decim=1):
         Smoothed spectra of shape (..., n_freqs, n_times)
     """
     # fill potentially missing dimensions
-    kernel = kernel[
-        tuple([np.newaxis] * (spectra.ndim - kernel.ndim)) + (Ellipsis,)]
+    kernel = kernel[tuple([np.newaxis] * (spectra.ndim - kernel.ndim)) + (Ellipsis,)]
 
     # smooth the spectra
     if not scale:
@@ -99,6 +97,6 @@ def _smooth_spectra(spectra, kernel, scale=False, decim=1):
     else:
         axes = -1
 
-    spectra = fftconvolve(spectra, kernel, mode='same', axes=axes)
+    spectra = fftconvolve(spectra, kernel, mode="same", axes=axes)
     # return decimated spectra
     return spectra[..., ::decim]

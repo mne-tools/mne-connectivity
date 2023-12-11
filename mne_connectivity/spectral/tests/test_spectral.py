@@ -1,21 +1,22 @@
 import os
+
 import numpy as np
-from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_less
 import pandas as pd
 import pytest
 from mne import EpochsArray, SourceEstimate, create_info
 from mne.filter import filter_data
+from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_less
 
 from mne_connectivity import (
     SpectralConnectivity,
-    spectral_connectivity_epochs,
     read_connectivity,
+    spectral_connectivity_epochs,
     spectral_connectivity_time,
 )
 from mne_connectivity.spectral.epochs import (
-    _get_n_epochs,
     _compute_freq_mask,
     _compute_freqs,
+    _get_n_epochs,
 )
 from mne_connectivity.spectral.epochs_bivariate import _CohEst
 
@@ -581,7 +582,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
         assert np.allclose(trgc[0, : bidx[0]].mean(), 0, atol=lower_t)
         assert np.allclose(trgc[0, bidx[1] :].mean(), 0, atol=lower_t)
 
-    # check all-to-all conn. computed for MIC/MIM when no indices given
+    # check all-to-all conn. computed for CaCoh/MIC/MIM when no indices given
     if method in ["cacoh", "mic", "mim"]:
         con = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=None, sfreq=sfreq
@@ -600,7 +601,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
         np.array(con.indices) == np.array([np.array([[0, -1]]), np.array([[1, 2]])])
     )
 
-    # check shape of MIC patterns
+    # check shape of CaCoh/MIC patterns
     if method in ["cacoh", "mic"]:
         for mode in ["multitaper", "cwt_morlet"]:
             con = spectral_connectivity_epochs(
@@ -716,7 +717,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
     )
 
     # should take the absolute of the MIC scores, as the MATLAB implementation
-    # returns the absolute values
+    # returns the absolute values.
     mne_results = {this_con.method: np.abs(this_con.get_data()) for this_con in con}
     matlab_results = pd.read_pickle(
         os.path.join(fpath, "data", "example_multivariate_matlab_results.pkl")
@@ -1148,7 +1149,7 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     # MIC values can be pos. and neg., so must be averaged after taking the
     # absolute values for the test to work
     if method in multivar_methods:
-        if method in ["mic"]:
+        if method == "mic":
             con_matrix = np.mean(np.abs(con_matrix), axis=(0, 2))
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
@@ -1485,7 +1486,7 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
     )
     assert con.shape == tuple(con_shape)
 
-    # check shape of MIC patterns are correct
+    # check shape of CaCoh/MIC patterns are correct
     if method in ["cacoh", "mic"]:
         for indices_type in ["full", "ragged"]:
             if indices_type == "full":
@@ -1614,14 +1615,14 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
             rank=too_much_rank,
         )
 
-    # check all-to-all conn. computed for MIC/MIM when no indices given
+    # check all-to-all conn. computed for CaCoh/MIC/MIM when no indices given
     if method in ["cacoh", "mic", "mim"]:
         con = spectral_connectivity_time(
             data, freqs, method=method, indices=None, sfreq=sfreq, mode=mode
         )
         assert con.indices is None
         assert con.n_nodes == n_signals
-        if method == ["cacoh", "mic"]:
+        if method in ["cacoh", "mic"]:
             assert np.array(con.attrs["patterns"]).shape[3] == n_signals
 
     if method in ["gc", "gc_tr"]:

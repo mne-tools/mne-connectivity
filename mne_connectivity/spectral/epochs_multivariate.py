@@ -9,6 +9,7 @@
 # License: BSD (3-clause)
 
 import inspect
+from typing import Optional
 
 import numpy as np
 import scipy as sp
@@ -177,7 +178,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     - Vidaurre et al. (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
-    name = None
+    name: Optional[str] = None
     accumulate_psd = False
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
