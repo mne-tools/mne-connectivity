@@ -34,35 +34,46 @@ def _check_rank_input(rank, data, indices):
 
         for group_i in range(2):  # seeds and targets
             for con_i, con_idcs in enumerate(indices[group_i]):
-                s = np.linalg.svd(data_arr[:, con_idcs.compressed()],
-                                  compute_uv=False)
+                s = np.linalg.svd(data_arr[:, con_idcs.compressed()], compute_uv=False)
                 rank[group_i][con_i] = np.min(
-                    [np.count_nonzero(epoch >= epoch[0] * sv_tol)
-                     for epoch in s])
+                    [np.count_nonzero(epoch >= epoch[0] * sv_tol) for epoch in s]
+                )
 
-        logger.info('Estimated data ranks:')
+        logger.info("Estimated data ranks:")
         con_i = 1
         for seed_rank, target_rank in zip(rank[0], rank[1]):
-            logger.info('    connection %i - seeds (%i); targets (%i)'
-                        % (con_i, seed_rank, target_rank, ))
+            logger.info(
+                "    connection %i - seeds (%i); targets (%i)"
+                % (
+                    con_i,
+                    seed_rank,
+                    target_rank,
+                )
+            )
             con_i += 1
         rank = tuple((np.array(rank[0]), np.array(rank[1])))
 
     else:
         if (
-            len(rank) != 2 or len(rank[0]) != len(indices[0]) or
-            len(rank[1]) != len(indices[1])
+            len(rank) != 2
+            or len(rank[0]) != len(indices[0])
+            or len(rank[1]) != len(indices[1])
         ):
-            raise ValueError('rank argument must have shape (2, n_cons), '
-                             'according to n_cons in the indices')
+            raise ValueError(
+                "rank argument must have shape (2, n_cons), "
+                "according to n_cons in the indices"
+            )
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                indices[0], indices[1], rank[0], rank[1]):
-            if not (0 < seed_rank <= len(seed_idcs) and
-                    0 < target_rank <= len(target_idcs)):
+            indices[0], indices[1], rank[0], rank[1]
+        ):
+            if not (
+                0 < seed_rank <= len(seed_idcs) and 0 < target_rank <= len(target_idcs)
+            ):
                 raise ValueError(
-                    'ranks for seeds and targets must be > 0 and <= the '
-                    'number of channels in the seeds and targets, '
-                    'respectively, for each connection')
+                    "ranks for seeds and targets must be > 0 and <= the "
+                    "number of channels in the seeds and targets, "
+                    "respectively, for each connection"
+                )
 
     return rank
 
@@ -75,16 +86,16 @@ class _AbstractConEstBase(object):
     """ABC for connectivity estimators."""
 
     def start_epoch(self):
-        raise NotImplementedError('start_epoch method not implemented')
+        raise NotImplementedError("start_epoch method not implemented")
 
     def accumulate(self, con_idx, csd_xy):
-        raise NotImplementedError('accumulate method not implemented')
+        raise NotImplementedError("accumulate method not implemented")
 
     def combine(self, other):
-        raise NotImplementedError('combine method not implemented')
+        raise NotImplementedError("combine method not implemented")
 
     def compute_con(self, con_idx, n_epochs):
-        raise NotImplementedError('compute_con method not implemented')
+        raise NotImplementedError("compute_con method not implemented")
 
 
 class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
@@ -131,8 +142,14 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
     def _log_connection_number(self, con_i):
         """Log the number of the connection being computed."""
-        logger.info('Computing %s for connection %i of %i'
-                    % (self.name, con_i + 1, self.n_cons, ))
+        logger.info(
+            "Computing %s for connection %i of %i"
+            % (
+                self.name,
+                con_i + 1,
+                self.n_cons,
+            )
+        )
 
     def _get_block_indices(self, block_i, limit):
         """Get indices for a computation block capped by a limit."""
@@ -143,13 +160,13 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     def reshape_csd(self):
         """Reshape CSD into a matrix of times x freqs x signals x signals."""
         if self.n_times == 0:
-            return (np.reshape(self._acc, (
-                self.n_signals, self.n_signals, self.n_freqs, 1)
-            ).transpose(3, 2, 0, 1))
+            return np.reshape(
+                self._acc, (self.n_signals, self.n_signals, self.n_freqs, 1)
+            ).transpose(3, 2, 0, 1)
 
-        return (np.reshape(self._acc, (
-            self.n_signals, self.n_signals, self.n_freqs, self.n_times)
-        ).transpose(3, 2, 0, 1))
+        return np.reshape(
+            self._acc, (self.n_signals, self.n_signals, self.n_freqs, self.n_times)
+        ).transpose(3, 2, 0, 1)
 
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
@@ -165,27 +182,30 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         super(_MultivariateCohEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs)
+            n_signals, n_cons, n_freqs, n_times, n_jobs
+        )
 
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate coherency methods."""
-        assert self.name in ['CaCoh', 'MIC', 'MIM'], (
-            'the class name is not recognised, please contact the '
-            'mne-connectivity developers')
+        assert self.name in ["CaCoh", "MIC", "MIM"], (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
 
         csd = self.reshape_csd() / n_epochs
         n_times = csd.shape[0]
         times = np.arange(n_times)
         freqs = np.arange(self.n_freqs)
 
-        if self.name in ['CaCoh', 'MIC']:
+        if self.name in ["CaCoh", "MIC"]:
             self.patterns = np.full(
-                (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times),
-                np.nan)
+                (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
+            )
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                indices[0], indices[1], ranks[0], ranks[1]):
+            indices[0], indices[1], ranks[0], ranks[1]
+        ):
             self._log_connection_number(con_i)
 
             seed_idcs = seed_idcs.compressed()
@@ -196,10 +216,12 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
             # Eqs. 32 & 33 of Ewald et al.; Eq. 15 of Vidaurre et al.
             C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
-                C, seed_idcs, seed_rank, target_rank)
+                C, seed_idcs, seed_rank, target_rank
+            )
 
-            self._compute_con_daughter(seed_idcs, target_idcs, C, C_bar,
-                                       U_bar_aa, U_bar_bb, con_i)
+            self._compute_con_daughter(
+                seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+            )
 
             con_i += 1
 
@@ -222,33 +244,33 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             U_bar_aa = U_aa[..., :seed_rank]
         else:
             U_bar_aa = np.broadcast_to(
-                np.identity(n_seeds),
-                (n_times, self.n_freqs) + (n_seeds, n_seeds))
+                np.identity(n_seeds), (n_times, self.n_freqs) + (n_seeds, n_seeds)
+            )
 
         if target_rank != n_targets:
             U_bb = np.linalg.svd(np.real(C_bb), full_matrices=False)[0]
             U_bar_bb = U_bb[..., :target_rank]
         else:
             U_bar_bb = np.broadcast_to(
-                np.identity(n_targets),
-                (n_times, self.n_freqs) + (n_targets, n_targets))
+                np.identity(n_targets), (n_times, self.n_freqs) + (n_targets, n_targets)
+            )
 
         # Eq. 33 (Ewald et al.)
-        C_bar_aa = np.matmul(
-            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
-        C_bar_ab = np.matmul(
-            U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
-        C_bar_bb = np.matmul(
-            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
-        C_bar_ba = np.matmul(
-            U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_ba, U_bar_aa))
-        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
-                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+        C_bar_aa = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(
+            np.append(C_bar_aa, C_bar_ab, axis=3),
+            np.append(C_bar_ba, C_bar_bb, axis=3),
+            axis=2,
+        )
 
         return C_bar, U_bar_aa, U_bar_bb
 
-    def _compute_con_daughter(self, seed_idcs, target_idcs, C, C_bar, U_bar_aa,
-                              U_bar_bb, con_i):
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
         """Compute multivariate coherency for one connection.
 
         An empty method to be implemented by subclasses.
@@ -260,23 +282,24 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         Eq. 3 of Ewald et al.; part of Eq. 9 of Vidaurre et al.
         """
         parallel, parallel_invsqrtm, _ = parallel_func(
-            _invsqrtm, self.n_jobs, verbose=False)
+            _invsqrtm, self.n_jobs, verbose=False
+        )
 
         # imag. part of T filled when data is rank-deficient
         T = np.zeros(C_r.shape, dtype=np.complex128)
-        for block_i in ProgressBar(range(self.n_steps),
-                                   mesg="frequency blocks"):
+        for block_i in ProgressBar(range(self.n_steps), mesg="frequency blocks"):
             freqs = self._get_block_indices(block_i, self.n_freqs)
-            T[:, freqs] = np.array(parallel(parallel_invsqrtm(
-                C_r[:, f], T[:, f], n_seeds) for f in freqs)
+            T[:, freqs] = np.array(
+                parallel(parallel_invsqrtm(C_r[:, f], T[:, f], n_seeds) for f in freqs)
             ).transpose(1, 0, 2, 3)
 
         if not np.isreal(T).all() or not np.isfinite(T).all():
             raise RuntimeError(
-                'the transformation matrix of the data must be real-valued '
-                'and contain no NaN or infinity values; check that you are '
-                'using full rank data or specify an appropriate rank for the '
-                'seeds and targets that is less than or equal to their ranks')
+                "the transformation matrix of the data must be real-valued "
+                "and contain no NaN or infinity values; check that you are "
+                "using full rank data or specify an appropriate rank for the "
+                "seeds and targets that is less than or equal to their ranks"
+            )
 
         return np.real(T)  # make T real if check passes
 
@@ -299,9 +322,11 @@ def _invsqrtm(C, T, n_seeds):
     """
     for time_i in range(C.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
-            C[time_i, :n_seeds, :n_seeds], -0.5)
+            C[time_i, :n_seeds, :n_seeds], -0.5
+        )
         T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
-            C[time_i, n_seeds:, n_seeds:], -0.5)
+            C[time_i, n_seeds:, n_seeds:], -0.5
+        )
 
     return T
 
@@ -313,19 +338,20 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
     for equation references.
     """
 
-    def _compute_con_daughter(self, seed_idcs, target_idcs, C, C_bar, U_bar_aa,
-                              U_bar_bb, con_i):
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
         """Compute multivariate imag. part of coherency for one connection."""
-        assert self.name in ['MIC', 'MIM'], (
-            'the class name is not recognised, please contact the '
-            'mne-connectivity developers')
+        assert self.name in ["MIC", "MIM"], (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
 
         # Eqs. 3 & 4
         E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
 
-        if self.name == 'MIC':
-            self._compute_mic(E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb,
-                              con_i)
+        if self.name == "MIC":
+            self._compute_mic(E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb, con_i)
         else:
             self._compute_mim(E, seed_idcs, target_idcs, con_i)
 
@@ -342,8 +368,7 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         # E as imag. part of D between seeds and targets
         return np.imag(D[..., :n_seeds, n_seeds:])
 
-    def _compute_mic(self, E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb,
-                     con_i):
+    def _compute_mic(self, E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb, con_i):
         """Compute MIC & spatial patterns for one connection."""
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
@@ -352,13 +377,10 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         freqs = np.arange(self.n_freqs)
 
         # Eigendecomp. to find spatial filters for seeds and targets
-        w_seeds, V_seeds = np.linalg.eigh(
-            np.matmul(E, E.transpose(0, 1, 3, 2)))
-        w_targets, V_targets = np.linalg.eigh(
-            np.matmul(E.transpose(0, 1, 3, 2), E))
-        if (
-            len(seed_idcs) == len(target_idcs) and
-            np.all(np.sort(seed_idcs) == np.sort(target_idcs))
+        w_seeds, V_seeds = np.linalg.eigh(np.matmul(E, E.transpose(0, 1, 3, 2)))
+        w_targets, V_targets = np.linalg.eigh(np.matmul(E.transpose(0, 1, 3, 2), E))
+        if len(seed_idcs) == len(target_idcs) and np.all(
+            np.sort(seed_idcs) == np.sort(target_idcs)
         ):
             # strange edge-case where the eigenvectors returned should be a set
             # of identity matrices with one rotated by 90 degrees, but are
@@ -372,8 +394,7 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
             while not create_filter and not stop:
                 for time_i in range(n_times):
                     for freq_i in range(self.n_freqs):
-                        if np.all(V_seeds[time_i, freq_i] ==
-                                  V_targets[time_i, freq_i]):
+                        if np.all(V_seeds[time_i, freq_i] == V_targets[time_i, freq_i]):
                             create_filter = True
                             break
                 stop = True
@@ -389,31 +410,40 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
 
         # Eq. 46 (seed spatial patterns)
-        self.patterns[0, con_i, :n_seeds] = (np.matmul(
-            np.real(C[..., :n_seeds, :n_seeds]),
-            np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))))[..., 0].T
+        self.patterns[0, con_i, :n_seeds] = (
+            np.matmul(
+                np.real(C[..., :n_seeds, :n_seeds]),
+                np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3)),
+            )
+        )[..., 0].T
 
         # Eq. 47 (target spatial patterns)
-        self.patterns[1, con_i, :n_targets] = (np.matmul(
-            np.real(C[..., n_seeds:, n_seeds:]),
-            np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))))[..., 0].T
+        self.patterns[1, con_i, :n_targets] = (
+            np.matmul(
+                np.real(C[..., n_seeds:, n_seeds:]),
+                np.matmul(U_bar_bb, np.expand_dims(beta, axis=3)),
+            )
+        )[..., 0].T
 
         # Eq. 7
-        self.con_scores[con_i] = (np.einsum(
-            'ijk,ijk->ij', alpha, np.matmul(E, np.expand_dims(
-                beta, axis=3))[..., 0]
-        ) / np.linalg.norm(alpha, axis=2) * np.linalg.norm(beta, axis=2)).T
+        self.con_scores[con_i] = (
+            np.einsum(
+                "ijk,ijk->ij", alpha, np.matmul(E, np.expand_dims(beta, axis=3))[..., 0]
+            )
+            / np.linalg.norm(alpha, axis=2)
+            * np.linalg.norm(beta, axis=2)
+        ).T
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
         # Eq. 14
-        self.con_scores[con_i] = np.matmul(
-            E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
+        self.con_scores[con_i] = (
+            np.matmul(E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
+        )
 
         # Eq. 15
-        if (
-            len(seed_idcs) == len(target_idcs) and
-            np.all(np.sort(seed_idcs) == np.sort(target_idcs))
+        if len(seed_idcs) == len(target_idcs) and np.all(
+            np.sort(seed_idcs) == np.sort(target_idcs)
         ):
             self.con_scores[con_i] *= 0.5
 
@@ -421,13 +451,13 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
 class _MICEst(_MultivariateImCohEstBase):
     """Multivariate imaginary part of coherency (MIC) estimator."""
 
-    name = 'MIC'
+    name = "MIC"
 
 
 class _MIMEst(_MultivariateImCohEstBase):
     """Multivariate interaction measure (MIM) estimator."""
 
-    name = 'MIM'
+    name = "MIM"
 
 
 class _CaCohEst(_MultivariateCohEstBase):
@@ -437,14 +467,16 @@ class _CaCohEst(_MultivariateCohEstBase):
     10.1016/j.neuroimage.2019.116009 for equation references.
     """
 
-    name = 'CaCoh'
+    name = "CaCoh"
 
-    def _compute_con_daughter(self, seed_idcs, target_idcs, C, C_bar, U_bar_aa,
-                              U_bar_bb, con_i):
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
         """Compute CaCoh & spatial patterns for one connection."""
-        assert self.name == 'CaCoh', (
-            'the class name is not recognised, please contact the '
-            'mne-connectivity developers')
+        assert self.name == "CaCoh", (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
 
@@ -459,13 +491,24 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
 
-        max_coh, max_phis = self._final_optimise_phi(C_bar_ab, T_aa, T_bb,
-                                                     max_coh, max_phis)
+        max_coh, max_phis = self._final_optimise_phi(
+            C_bar_ab, T_aa, T_bb, max_coh, max_phis
+        )
 
         self.con_scores[con_i] = max_coh.T
 
-        self._compute_patterns(max_phis, C, C_bar_ab, T_aa, T_bb, U_bar_aa,
-                               U_bar_bb, n_seeds, n_targets, con_i)
+        self._compute_patterns(
+            max_phis,
+            C,
+            C_bar_ab,
+            T_aa,
+            T_bb,
+            U_bar_aa,
+            U_bar_bb,
+            n_seeds,
+            n_targets,
+            con_i,
+        )
 
     def _first_optimise_phi(self, C_ab, T_aa, T_bb):
         """Find the rough angle, phi, at which coherence is maximised."""
@@ -499,13 +542,10 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         for _ in range(n_iters):
             # 2nd order Taylor expansion around phi
-            coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa,
-                                           T_bb)
-            coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa,
-                                            T_bb)
+            coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa, T_bb)
+            coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa, T_bb)
             f_prime = (coh_plus - coh_minus) / (2 * delta_phi)
-            f_prime_prime = (coh_plus + coh_minus - 2 * max_coh) / (
-                delta_phi ** 2)
+            f_prime_prime = (coh_plus + coh_minus - 2 * max_coh) / (delta_phi**2)
 
             # determine new phi to test
             phis = max_phis + (-f_prime / (f_prime_prime - mus))
@@ -540,18 +580,30 @@ class _CaCohEst(_MultivariateCohEstBase):
         b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
 
         # Eq. 8
-        numerator = np.einsum('ijk,ijk->ij', a,
-                              np.matmul(D, np.expand_dims(b, axis=3))[..., 0])
-        denominator = np.sqrt(np.einsum('ijk,ijk->ij', a, a) *
-                              np.einsum('ijk,ijk->ij', b, b))
+        numerator = np.einsum(
+            "ijk,ijk->ij", a, np.matmul(D, np.expand_dims(b, axis=3))[..., 0]
+        )
+        denominator = np.sqrt(
+            np.einsum("ijk,ijk->ij", a, a) * np.einsum("ijk,ijk->ij", b, b)
+        )
 
         return np.abs(numerator / denominator)
 
-    def _compute_patterns(self, phis, C, C_bar_ab, T_aa, T_bb, U_bar_aa,
-                          U_bar_bb, n_seeds, n_targets, con_i):
+    def _compute_patterns(
+        self,
+        phis,
+        C,
+        C_bar_ab,
+        T_aa,
+        T_bb,
+        U_bar_aa,
+        U_bar_bb,
+        n_seeds,
+        n_targets,
+        con_i,
+    ):
         """Compute CaCoh spatial patterns for the optimised phi."""
-        C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) *
-                           C_bar_ab)
+        C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_bar_ab)
         D = np.matmul(T_aa, np.matmul(C_bar_ab, T_bb))
         a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
         b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
@@ -562,12 +614,12 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
         # seed spatial patterns
-        self.patterns[0, con_i, :n_seeds] = (np.matmul(
-            np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
+        self.patterns[0, con_i, :n_seeds] = (
+            np.matmul(np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
         )[..., 0].T
         # target spatial patterns
-        self.patterns[1, con_i, :n_targets] = (np.matmul(
-            np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
+        self.patterns[1, con_i, :n_targets] = (
+            np.matmul(np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
         )[..., 0].T
 
 
@@ -577,21 +629,26 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
-        super(_GCEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs)
+        super(_GCEstBase, self).__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
 
         self.freq_res = (self.n_freqs - 1) * 2
         if n_lags >= self.freq_res:
             raise ValueError(
-                'the number of lags (%i) must be less than double the '
-                'frequency resolution (%i)' % (n_lags, self.freq_res, ))
+                "the number of lags (%i) must be less than double the "
+                "frequency resolution (%i)"
+                % (
+                    n_lags,
+                    self.freq_res,
+                )
+            )
         self.n_lags = n_lags
 
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate state-space Granger causality."""
-        assert self.name in ['GC', 'GC time-reversed'], (
-            'the class name is not recognised, please contact the '
-            'mne-connectivity developers')
+        assert self.name in ["GC", "GC time-reversed"], (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
 
         csd = self.reshape_csd() / n_epochs
 
@@ -601,7 +658,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
-                indices[0], indices[1], ranks[0], ranks[1]):
+            indices[0], indices[1], ranks[0], ranks[1]
+        ):
             self._log_connection_number(con_i)
 
             seed_idcs = seed_idcs.compressed()
@@ -621,12 +679,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
             A_f, V = self._autocov_to_full_var(autocov)
             A_f_3d = np.reshape(
-                A_f, (n_times, n_signals, n_signals * self.n_lags),
-                order="F")
+                A_f, (n_times, n_signals, n_signals * self.n_lags), order="F"
+            )
             A, K = self._full_var_to_iss(A_f_3d)
 
             self.con_scores[con_i] = self._iss_to_ugc(
-                A, A_f_3d, K, V, con_seeds, con_targets)
+                A, A_f_3d, K, V, con_seeds, con_targets
+            )
 
             con_i += 1
 
@@ -660,16 +719,15 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         C_bb = csd[..., n_seeds:, n_seeds:]
         C_ba = csd[..., n_seeds:, :n_seeds]
 
-        C_bar_aa = np.matmul(
-            U_bar_aa.transpose(1, 0), np.matmul(C_aa, U_bar_aa))
-        C_bar_ab = np.matmul(
-            U_bar_aa.transpose(1, 0), np.matmul(C_ab, U_bar_bb))
-        C_bar_bb = np.matmul(
-            U_bar_bb.transpose(1, 0), np.matmul(C_bb, U_bar_bb))
-        C_bar_ba = np.matmul(
-            U_bar_bb.transpose(1, 0), np.matmul(C_ba, U_bar_aa))
-        C_bar = np.append(np.append(C_bar_aa, C_bar_ab, axis=3),
-                          np.append(C_bar_ba, C_bar_bb, axis=3), axis=2)
+        C_bar_aa = np.matmul(U_bar_aa.transpose(1, 0), np.matmul(C_aa, U_bar_aa))
+        C_bar_ab = np.matmul(U_bar_aa.transpose(1, 0), np.matmul(C_ab, U_bar_bb))
+        C_bar_bb = np.matmul(U_bar_bb.transpose(1, 0), np.matmul(C_bb, U_bar_bb))
+        C_bar_ba = np.matmul(U_bar_bb.transpose(1, 0), np.matmul(C_ba, U_bar_aa))
+        C_bar = np.append(
+            np.append(C_bar_aa, C_bar_ab, axis=3),
+            np.append(C_bar_ba, C_bar_bb, axis=3),
+            axis=2,
+        )
 
         return C_bar
 
@@ -679,28 +737,33 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         n_signals = csd.shape[2]
 
         circular_shifted_csd = np.concatenate(
-            [np.flip(np.conj(csd[:, 1:]), axis=1), csd[:, :-1]], axis=1)
-        ifft_shifted_csd = self._block_ifft(
-            circular_shifted_csd, self.freq_res)
+            [np.flip(np.conj(csd[:, 1:]), axis=1), csd[:, :-1]], axis=1
+        )
+        ifft_shifted_csd = self._block_ifft(circular_shifted_csd, self.freq_res)
         lags_ifft_shifted_csd = np.reshape(
-            ifft_shifted_csd[:, :self.n_lags + 1],
-            (n_times, self.n_lags + 1, n_signals ** 2), order="F")
+            ifft_shifted_csd[:, : self.n_lags + 1],
+            (n_times, self.n_lags + 1, n_signals**2),
+            order="F",
+        )
 
         signs = np.repeat([1], self.n_lags + 1).tolist()
         signs[1::2] = [x * -1 for x in signs[1::2]]
         sign_matrix = np.repeat(
-            np.tile(np.array(signs), (n_signals ** 2, 1))[np.newaxis],
-            n_times, axis=0).transpose(0, 2, 1)
+            np.tile(np.array(signs), (n_signals**2, 1))[np.newaxis], n_times, axis=0
+        ).transpose(0, 2, 1)
 
-        return np.real(np.reshape(
-            sign_matrix * lags_ifft_shifted_csd,
-            (n_times, self.n_lags + 1, n_signals, n_signals), order="F"))
+        return np.real(
+            np.reshape(
+                sign_matrix * lags_ifft_shifted_csd,
+                (n_times, self.n_lags + 1, n_signals, n_signals),
+                order="F",
+            )
+        )
 
     def _block_ifft(self, csd, n_points):
         """Compute block iFFT with n points."""
         shape = csd.shape
-        csd_3d = np.reshape(
-            csd, (shape[0], shape[1], shape[2] * shape[3]), order="F")
+        csd_3d = np.reshape(csd, (shape[0], shape[1], shape[2] * shape[3]), order="F")
 
         csd_ifft = np.fft.ifft(csd_3d, n=n_points, axis=1)
 
@@ -710,24 +773,28 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """Compute full VAR model using Whittle's LWR recursion."""
         if np.any(np.linalg.det(autocov) == 0):
             raise RuntimeError(
-                'the autocovariance matrix is singular; check if your data is '
-                'rank deficient and specify an appropriate rank argument <= '
-                'the rank of the seeds and targets')
+                "the autocovariance matrix is singular; check if your data is "
+                "rank deficient and specify an appropriate rank argument <= "
+                "the rank of the seeds and targets"
+            )
 
         A_f, V = self._whittle_lwr_recursion(autocov)
 
         if not np.isfinite(A_f).all():
-            raise RuntimeError('at least one VAR model coefficient is '
-                               'infinite or NaN; check the data you are using')
+            raise RuntimeError(
+                "at least one VAR model coefficient is "
+                "infinite or NaN; check the data you are using"
+            )
 
         try:
             np.linalg.cholesky(V)
         except np.linalg.LinAlgError as np_error:
             raise RuntimeError(
-                'the covariance matrix of the residuals is not '
-                'positive-definite; check the singular values of your data '
-                'and specify an appropriate rank argument <= the rank of the '
-                'seeds and targets') from np_error
+                "the covariance matrix of the residuals is not "
+                "positive-definite; check the singular values of your data "
+                "and specify an appropriate rank argument <= the rank of the "
+                "seeds and targets"
+            ) from np_error
 
         return A_f, V
 
@@ -744,11 +811,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         cov = G[:, 0, :, :]  # covariance
         G_f = np.reshape(
-            G[:, 1:, :, :].transpose(0, 3, 1, 2), (t, qn, n),
-            order="F")  # forward autocov
+            G[:, 1:, :, :].transpose(0, 3, 1, 2), (t, qn, n), order="F"
+        )  # forward autocov
         G_b = np.reshape(
-            np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn),
-            order="F").transpose(0, 2, 1)  # backward autocov
+            np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn), order="F"
+        ).transpose(
+            0, 2, 1
+        )  # backward autocov
 
         A_f = np.zeros((t, n, qn))  # forward coefficients
         A_b = np.zeros((t, n, qn))  # backward coefficients
@@ -760,23 +829,29 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
         try:
             A_f[:, :, k_f] = np.linalg.solve(
-                cov, G_b[:, k_b, :].transpose(0, 2, 1)).transpose(0, 2, 1)
+                cov, G_b[:, k_b, :].transpose(0, 2, 1)
+            ).transpose(0, 2, 1)
             A_b[:, :, k_b] = np.linalg.solve(
-                cov, G_f[:, k_f, :].transpose(0, 2, 1)).transpose(0, 2, 1)
+                cov, G_f[:, k_f, :].transpose(0, 2, 1)
+            ).transpose(0, 2, 1)
 
             # Perform recursion
             for k in np.arange(2, q + 1):
-                var_A = (G_b[:, (r - 1) * n: r * n, :] -
-                         np.matmul(A_f[:, :, k_f], G_b[:, k_b, :]))
+                var_A = G_b[:, (r - 1) * n : r * n, :] - np.matmul(
+                    A_f[:, :, k_f], G_b[:, k_b, :]
+                )
                 var_B = cov - np.matmul(A_b[:, :, k_b], G_b[:, k_b, :])
-                AA_f = np.linalg.solve(
-                    var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
+                AA_f = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(
+                    0, 2, 1
+                )
 
-                var_A = (G_f[:, (k - 1) * n: k * n, :] -
-                         np.matmul(A_b[:, :, k_b], G_f[:, k_f, :]))
+                var_A = G_f[:, (k - 1) * n : k * n, :] - np.matmul(
+                    A_b[:, :, k_b], G_f[:, k_f, :]
+                )
                 var_B = cov - np.matmul(A_f[:, :, k_f], G_f[:, k_f, :])
-                AA_b = np.linalg.solve(
-                    var_B, var_A.transpose(0, 2, 1)).transpose(0, 2, 1)
+                AA_b = np.linalg.solve(var_B, var_A.transpose(0, 2, 1)).transpose(
+                    0, 2, 1
+                )
 
                 A_f_previous = A_f[:, :, k_f]
                 A_b_previous = A_b[:, :, k_b]
@@ -786,14 +861,17 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
                 k_b = np.arange(r * n, qn)
 
                 A_f[:, :, k_f] = np.dstack(
-                    (A_f_previous - np.matmul(AA_f, A_b_previous), AA_f))
+                    (A_f_previous - np.matmul(AA_f, A_b_previous), AA_f)
+                )
                 A_b[:, :, k_b] = np.dstack(
-                    (AA_b, A_b_previous - np.matmul(AA_b, A_f_previous)))
+                    (AA_b, A_b_previous - np.matmul(AA_b, A_f_previous))
+                )
         except np.linalg.LinAlgError as np_error:
             raise RuntimeError(
-                'the autocovariance matrix is singular; check if your data is '
-                'rank deficient and specify an appropriate rank argument <= '
-                'the rank of the seeds and targets') from np_error
+                "the autocovariance matrix is singular; check if your data is "
+                "rank deficient and specify an appropriate rank argument <= "
+                "the rank of the seeds and targets"
+            ) from np_error
 
         V = cov - np.matmul(A_f, G_f)
         A_f = np.reshape(A_f, (t, n, n, q), order="F")
@@ -817,9 +895,12 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         I_p = np.dstack(t * [np.eye(m * p)]).transpose(2, 0, 1)
         A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition
         # matrix
-        K = np.hstack((
-            np.dstack(t * [np.eye(m)]).transpose(2, 0, 1),
-            np.zeros((t, (m * (p - 1)), m))))  # Kalman gain matrix
+        K = np.hstack(
+            (
+                np.dstack(t * [np.eye(m)]).transpose(2, 0, 1),
+                np.zeros((t, (m * (p - 1)), m)),
+            )
+        )  # Kalman gain matrix
 
         return A, K
 
@@ -843,8 +924,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         HVH = np.matmul(HV_12, HV_12.conj().transpose(0, 1, 3, 2))
 
         # Eq. 11
-        return np.real(
-            np.log(np.linalg.det(S_11)) - np.log(np.linalg.det(S_11 - HVH)))
+        return np.real(np.log(np.linalg.det(S_11)) - np.log(np.linalg.det(S_11 - HVH)))
 
     def _iss_to_tf(self, A, C, K, z):
         """Compute transfer function for innovations-form state-space params.
@@ -873,12 +953,11 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
             _gc_compute_H, self.n_jobs, verbose=False
         )
         H = np.zeros((h, t, n, n), dtype=np.complex128)
-        for block_i in ProgressBar(
-            range(self.n_steps), mesg="frequency blocks"
-        ):
+        for block_i in ProgressBar(range(self.n_steps), mesg="frequency blocks"):
             freqs = self._get_block_indices(block_i, self.n_freqs)
             H[freqs] = parallel(
-                parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs)
+                parallel_compute_H(A, C, K, z[k], I_n, I_m) for k in freqs
+            )
 
         return H
 
@@ -914,10 +993,12 @@ def _gc_compute_H(A, C, K, z_k, I_n, I_m):
     10.1103/PhysRevE.91.040101, Eq. 4.
     """
     from scipy import linalg  # XXX: is this necessary???
+
     H = np.zeros((A.shape[0], C.shape[1], C.shape[1]), dtype=np.complex128)
     for t in range(A.shape[0]):
         H[t] = I_n + np.matmul(
-            C[t], linalg.lu_solve(linalg.lu_factor(z_k * I_m - A[t]), K[t]))
+            C[t], linalg.lu_solve(linalg.lu_factor(z_k * I_m - A[t]), K[t])
+        )
 
     return H
 
@@ -936,9 +1017,12 @@ class _GCTREst(_GCEstBase):
 
 # map names to estimator types
 _CON_METHOD_MAP_MULTIVARIATE = {
-    'cacoh': _CaCohEst, 'mic': _MICEst, 'mim': _MIMEst, 'gc': _GCEst,
-    'gc_tr': _GCTREst
+    "cacoh": _CaCohEst,
+    "mic": _MICEst,
+    "mim": _MIMEst,
+    "gc": _GCEst,
+    "gc_tr": _GCTREst,
 }
 
-_multivariate_methods = ['cacoh', 'mic', 'mim', 'gc', 'gc_tr']
-_gc_methods = ['gc', 'gc_tr']
+_multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
+_gc_methods = ["gc", "gc_tr"]
