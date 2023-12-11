@@ -553,7 +553,12 @@ def spectral_connectivity_time(
     conn = dict()
     conn_patterns = dict()
     for m in method:
-        conn[m] = np.zeros((n_epochs, n_cons, n_freqs))
+        # CaCoh complex-valued, all other methods real-valued
+        if m == "cacoh":
+            con_scores_dtype = np.complex128
+        else:
+            con_scores_dtype = np.float64
+        conn[m] = np.zeros((n_epochs, n_cons, n_freqs), dtype=con_scores_dtype)
         # patterns shape of [epochs x seeds/targets x cons x channels x freqs]
         conn_patterns[m] = np.full(
             (n_epochs, 2, n_cons, max_n_channels, n_freqs), np.nan

@@ -104,6 +104,7 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
     n_steps = None
     patterns = None
+    con_scores_dtype = np.float64
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         self.n_signals = n_signals
@@ -115,10 +116,14 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         # include time dimension, even when unused for indexing flexibility
         if n_times == 0:
             self.csd_shape = (n_signals**2, n_freqs)
-            self.con_scores = np.zeros((n_cons, n_freqs, 1))
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, 1), dtype=self.con_scores_dtype
+            )
         else:
             self.csd_shape = (n_signals**2, n_freqs, n_times)
-            self.con_scores = np.zeros((n_cons, n_freqs, n_times))
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, n_times), dtype=self.con_scores_dtype
+            )
 
         # allocate space for accumulation of CSD
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
@@ -469,6 +474,7 @@ class _CaCohEst(_MultivariateCohEstBase):
     """
 
     name = "CaCoh"
+    con_scores_dtype = np.complex128  # CaCoh is complex-valued
 
     def _compute_con_daughter(
         self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
@@ -496,7 +502,8 @@ class _CaCohEst(_MultivariateCohEstBase):
             C_bar_ab, T_aa, T_bb, max_coh, max_phis
         )
 
-        self.con_scores[con_i] = max_coh.T
+        # Store connectivity score as complex value
+        self.con_scores[con_i] = (max_coh * np.exp(-1j * max_phis)).T
 
         self._compute_patterns(
             max_phis,
