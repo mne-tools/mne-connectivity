@@ -716,9 +716,15 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         n_jobs=1,
     )
 
-    # should take the absolute of the MIC scores, as the MATLAB implementation
-    # returns the absolute values.
-    mne_results = {this_con.method: np.abs(this_con.get_data()) for this_con in con}
+    mne_results = {}
+    for this_con in con:
+        # must take the absolute of the MIC scores, as the MATLAB
+        # implementation returns the absolute values.
+        if this_con.method == "mic":
+            mne_results[this_con.method] = np.abs(this_con.get_data())
+        else:
+            mne_results[this_con.method] = this_con.get_data()
+
     matlab_results = pd.read_pickle(
         os.path.join(fpath, "data", "example_multivariate_matlab_results.pkl")
     )
@@ -1146,10 +1152,10 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     )
     con_matrix = con.get_data()
 
-    # MIC values can be pos. and neg., so must be averaged after taking the
-    # absolute values for the test to work
+    # CaCoh/MIC values can be pos. and neg., so must be averaged after taking
+    # the absolute values for the test to work
     if method in multivar_methods:
-        if method == "mic":
+        if method in ["cacoh", "mic"]:
             con_matrix = np.mean(np.abs(con_matrix), axis=(0, 2))
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
