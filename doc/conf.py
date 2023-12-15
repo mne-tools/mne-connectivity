@@ -290,8 +290,8 @@ intersphinx_mapping = {
     "nibabel": ("https://nipy.org/nibabel", None),
     "nilearn": ("http://nilearn.github.io/stable", None),
     "dipy": (
-        "https://dipy.org/documentation/1.4.0./",
-        "https://dipy.org/documentation/1.4.0./objects.inv/",
+        "https://dipy.org/documentation/1.7.0./",
+        "https://dipy.org/documentation/1.7.0./objects.inv/",
     ),
 }
 intersphinx_timeout = 5
