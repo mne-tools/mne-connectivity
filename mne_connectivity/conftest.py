@@ -43,6 +43,7 @@ def has_imageio_ffmpeg():
     except ImportError:
         return False
 
+
 def pytest_configure(config):
     """Configure pytest options."""
     # Fixtures
