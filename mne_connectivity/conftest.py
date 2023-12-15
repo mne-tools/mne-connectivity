@@ -12,6 +12,38 @@ import pytest
 from mne.utils import _check_qt_version
 
 
+def has_pyvista():
+    """Check that PyVista is installed."""
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            import pyvista  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def has_pyvistaqt():
+    """Check that PyVistaQt is installed."""
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            import pyvistaqt  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def has_imageio_ffmpeg():
+    """Check if imageio-ffmpeg is installed."""
+    try:
+        import imageio_ffmpeg  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
+
+
 def pytest_configure(config):
     """Configure pytest options."""
     # Fixtures
@@ -153,12 +185,6 @@ def _use_backend(backend_name, interactive):
 
 
 def _check_skip_backend(name):
-    from mne.viz.backends.tests._utils import (
-        has_imageio_ffmpeg,
-        has_pyvista,
-        has_pyvistaqt,
-    )
-
     if name in ("pyvistaqt", "notebook"):
         if not has_pyvista():
             pytest.skip("Test skipped, requires pyvista.")
