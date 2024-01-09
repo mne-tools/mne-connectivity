@@ -131,6 +131,8 @@ jobs:
         - run:
             name: Get data
             command: |
+              pwd
+              ls -al .
               python setup.py develop --user
               mkdir -p ~/mne_data
               python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
