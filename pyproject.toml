@@ -1,0 +1,253 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
+
+[project]
+classifiers = [
+  'Intended Audience :: Developers',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: BSD License',
+  'Natural Language :: English',
+  'Operating System :: MacOS',
+  'Operating System :: Microsoft :: Windows',
+  'Operating System :: Unix',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.9',
+  'Topic :: Scientific/Engineering',
+  'Topic :: Software Development',
+]
+dependencies = [
+  'mne >= 1.6',
+  'netCDF4 >= 1.6.5',
+  'numpy >= 1.21',
+  'pandas >= 1.3.2',
+  'scipy >= 1.4.0',
+  'tqdm',
+  'xarray >= 2023.11.0',
+]
+description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
+keywords = [
+  'connectivity',
+  'eeg',
+  'ieeg',
+  'meg',
+  'neuroscience',
+]
+license = {file = 'LICENSE'}
+maintainers = [
+  {email = 'adam.li@columbia.edu', name = 'Adam Li'},
+]
+name = 'mne-connectivity'
+readme = {content-type = "text/x-rst", file = 'README.rst'}
+requires-python = '>=3.9'
+version = "0.7.0.dev0"
+
+[project.optional-dependencies]
+all = [
+  'mne-connectivity[build]',
+  'mne-connectivity[doc]',
+  'mne-connectivity[gui]',
+  'mne-connectivity[style]',
+  'mne-connectivity[test]',
+]
+build = [
+  'build',
+  'twine',
+]
+doc = [
+  'memory-profiler',
+  'mne-bids',
+  'mne-connectivity[gui]',
+  'nibabel',
+  'nilearn',
+  'numpydoc',
+  'pooch',
+  'pydata-sphinx-theme==0.14.1',
+  'PyQt6',
+  'sphinx',
+  'sphinx-copybutton',
+  'sphinx-design',
+  'sphinx-gallery',
+  'sphinx-issues',
+  'sphinx_autodoc_typehints',
+  'sphinxcontrib-bibtex',
+]
+full = [
+  'mne-connectivity[all]',
+]
+gui = [
+  'h5netcdf',
+  'matplotlib',
+  'mne-qt-browser>=0.6.0',
+  'PyQt6',
+  'pyvista',
+  'pyvistaqt',
+  'qtpy',
+  'sip',
+  'vtk',
+]
+style = [
+  "pre-commit",
+  'black',
+  'codespell',
+  'flake8',
+  'isort',
+  'pydocstyle',
+  'pydocstyle[toml]',
+  'rstcheck',
+  'ruff',
+  'toml-sort',
+  'yamllint',
+]
+test = [
+  "pytest-timeout",
+  'joblib',
+  'mne-bids',
+  'mne-connectivity[gui]',
+  'pandas',
+  'pymatreader',
+  'PyQt6',
+  'pytest',
+  'pytest-cov',
+  'statsmodels',
+]
+
+[project.urls]
+documentation = 'https://mne.tools/mne-connectivity'
+source = 'https://github.com/mne-tools/mne-connectivity'
+tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
+
+[tool.black]
+extend-exclude = '''
+(
+      __pycache__
+    | .github
+    | setup.py
+    | doc/
+    | examples/
+)
+'''
+include = '\.pyi?$'
+line-length = 88
+target-version = ['py310']
+
+[tool.codespell]
+builtin = "clear,rare,informal,names,usage"
+ignore-words = ".codespellignore"
+skip = "doc/references.bib"
+
+[tool.coverage.report]
+exclude_lines = [
+  'if __name__ == .__main__.:',
+  'if TYPE_CHECKING:',
+  'pragma: no cover',
+]
+precision = 2
+
+[tool.coverage.run]
+branch = true
+cover_pylib = false
+omit = [
+  '**/__init__.py',
+  '**/mne_connectivity/_version.py',
+  '**/mne_connectivity/conftest.py',
+  '**/tests/**',
+]
+
+[tool.isort]
+extend_skip_glob = [
+  'doc/*',
+  'examples/*',
+  'setup.py',
+]
+line_length = 88
+multi_line_output = 3
+profile = 'black'
+py_version = 39
+
+[tool.mypy]
+ignore_missing_imports = true
+no_site_packages = true
+
+[tool.pydocstyle]
+add_ignore = 'D100,D104,D107'
+convention = 'numpy'
+ignore-decorators = '(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)'
+match = '^(?!setup|__init__|test_).*\.py'
+match-dir = '^mne_connectivity.*'
+
+[tool.pytest.ini_options]
+addopts = '--durations 20 --junit-xml=junit-results.xml -v --color=yes'
+junit_family = 'xunit2'
+minversion = '6.0'
+
+[tool.rstcheck]
+ignore_directives = [
+  "autoclass",
+  "autofunction",
+  "automodule",
+  "autosummary",
+  "bibliography",
+  "cssclass",
+  "currentmodule",
+  "dropdown",
+  "footbibliography",
+  "glossary",
+  "graphviz",
+  "grid",
+  "highlight",
+  "minigallery",
+  "rst-class",
+  "tab-set",
+  "tabularcolumns",
+  "toctree",
+]
+ignore_messages = "^.*(Unknown target name|Undefined substitution referenced)[^`]*$"
+ignore_roles = [
+  "attr",
+  "class",
+  "doc",
+  "eq",
+  "exc",
+  "file",
+  "footcite",
+  "footcite:t",
+  "func",
+  "gh",
+  "kbd",
+  "meth",
+  "mod",
+  "newcontrib",
+  "pr",
+  "py:mod",
+  "ref",
+  "samp",
+  "term",
+]
+report_level = "WARNING"
+
+[tool.ruff]
+extend-exclude = [
+  'benchmarks',
+  'doc',
+  'setup.py',
+]
+line-length = 88
+
+[tool.ruff.per-file-ignores]
+'__init__.py' = ['F401']
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ['mne_connectivity*tests']
+include = ['mne_connectivity*']
+
+[tool.tomlsort]
+all = true
+ignore_case = true
+trailing_comma_inline_array = true

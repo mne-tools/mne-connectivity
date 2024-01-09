@@ -39,16 +39,22 @@ from mne_connectivity import vector_auto_regression
 bids_root = mne.datasets.epilepsy_ecog.data_path()
 
 # first define the BIDS path
-bids_path = BIDSPath(root=bids_root, subject='pt1', session='presurgery',
-                     task='ictal', datatype='ieeg', extension='vhdr')
+bids_path = BIDSPath(
+    root=bids_root,
+    subject="pt1",
+    session="presurgery",
+    task="ictal",
+    datatype="ieeg",
+    extension="vhdr",
+)
 
 # Then we'll use it to load in the sample dataset. Here we use a format (iEEG)
 # that is only available in MNE-BIDS 0.7+, so it will emit a warning on
 # versions <= 0.6
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
-line_freq = raw.info['line_freq']
-print(f'Data has a power line frequency at {line_freq}.')
+line_freq = raw.info["line_freq"]
+print(f"Data has a power line frequency at {line_freq}.")
 
 # Pick only the ECoG channels, removing the ECG channels
 raw.pick_types(ecog=True)
@@ -60,7 +66,7 @@ raw.load_data()
 raw.notch_filter(line_freq)
 
 # drop bad channels
-raw.drop_channels(raw.info['bads'])
+raw.drop_channels(raw.info["bads"])
 
 # %%
 # Crop the data for this example
@@ -77,10 +83,10 @@ raw.drop_channels(raw.info['bads'])
 events, event_id = mne.events_from_annotations(raw)
 
 # get sample at which seizure starts
-onset_id = event_id['onset']
+onset_id = event_id["onset"]
 onset_idx = np.argwhere(events[:, 2] == onset_id)
 onset_sample = events[onset_idx, 0].squeeze()
-onset_sec = onset_sample / raw.info['sfreq']
+onset_sec = onset_sample / raw.info["sfreq"]
 
 # remove all data after the seizure onset
 raw = raw.crop(tmin=0, tmax=onset_sec, include_tmax=False)
@@ -113,8 +119,7 @@ print(epochs.events)
 # represents a separate VAR model. Taken together, these represent a
 # time-varying linear system.
 
-conn = vector_auto_regression(
-    data=epochs.get_data(), times=times, names=ch_names)
+conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -134,18 +139,14 @@ residuals = epochs.get_data() - predicted_data
 
 # visualize the residuals
 fig, ax = plt.subplots()
-ax.plot(residuals.flatten(), '*')
-ax.set(
-    title='Residuals of fitted VAR model',
-    ylabel='Magnitude'
-)
+ax.plot(residuals.flatten(), "*")
+ax.set(title="Residuals of fitted VAR model", ylabel="Magnitude")
 
 # compute the covariance of the residuals
-model_order = conn.attrs.get('model_order')
+model_order = conn.attrs.get("model_order")
 t = residuals.shape[0]
 sampled_residuals = np.concatenate(
-    np.split(residuals[:, :, model_order:], t, 0),
-    axis=2
+    np.split(residuals[:, :, model_order:], t, 0), axis=2
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
@@ -155,8 +156,8 @@ rescov = np.cov(sampled_residuals)
 # should come with low covariances.
 fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
-im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
-fig.colorbar(im, cax=cax, orientation='horizontal')
+im = ax.imshow(rescov, cmap="viridis", aspect="equal", interpolation="none")
+fig.colorbar(im, cax=cax, orientation="horizontal")
 
 # %%
 # Compute one VAR model using all epochs
@@ -167,8 +168,8 @@ fig.colorbar(im, cax=cax, orientation='horizontal')
 # epochs.
 
 conn = vector_auto_regression(
-    data=epochs.get_data(), times=times, names=ch_names,
-    model='avg-epochs')
+    data=epochs.get_data(), times=times, names=ch_names, model="avg-epochs"
+)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -188,18 +189,14 @@ residuals = epochs.get_data() - predicted_data
 
 # visualize the residuals
 fig, ax = plt.subplots()
-ax.plot(residuals.flatten(), '*')
-ax.set(
-    title='Residuals of fitted VAR model',
-    ylabel='Magnitude'
-)
+ax.plot(residuals.flatten(), "*")
+ax.set(title="Residuals of fitted VAR model", ylabel="Magnitude")
 
 # compute the covariance of the residuals
-model_order = conn.attrs.get('model_order')
+model_order = conn.attrs.get("model_order")
 t = residuals.shape[0]
 sampled_residuals = np.concatenate(
-    np.split(residuals[:, :, model_order:], t, 0),
-    axis=2
+    np.split(residuals[:, :, model_order:], t, 0), axis=2
 ).squeeze(0)
 rescov = np.cov(sampled_residuals)
 
@@ -208,5 +205,5 @@ rescov = np.cov(sampled_residuals)
 # with the covariances for time-varying VAR model.
 fig, ax = plt.subplots()
 cax = fig.add_axes([0.27, 0.8, 0.5, 0.05])
-im = ax.imshow(rescov, cmap='viridis', aspect='equal', interpolation='none')
-fig.colorbar(im, cax=cax, orientation='horizontal')
+im = ax.imshow(rescov, cmap="viridis", aspect="equal", interpolation="none")
+fig.colorbar(im, cax=cax, orientation="horizontal")

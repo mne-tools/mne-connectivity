@@ -3,20 +3,52 @@
 #
 # License: BSD-3-Clause
 
-from contextlib import contextmanager
-import pytest
-import os
 import gc
+import os
 import warnings
+from contextlib import contextmanager
 
+import pytest
 from mne.utils import _check_qt_version
+
+
+def has_pyvista():
+    """Check that PyVista is installed."""
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            import pyvista  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def has_pyvistaqt():
+    """Check that PyVistaQt is installed."""
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            import pyvistaqt  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def has_imageio_ffmpeg():
+    """Check if imageio-ffmpeg is installed."""
+    try:
+        import imageio_ffmpeg  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
 
 
 def pytest_configure(config):
     """Configure pytest options."""
     # Fixtures
-    for fixture in ('matplotlib_config',):
-        config.addinivalue_line('usefixtures', fixture)
+    for fixture in ("matplotlib_config",):
+        config.addinivalue_line("usefixtures", fixture)
 
     warning_lines = r"""
     error::
@@ -36,44 +68,49 @@ def pytest_configure(config):
     # imageio-ffmpeg (still happening as of version 0.4.8):
     ignore:pkg_resources is deprecated as an API:DeprecationWarning
     ignore:Deprecated call to `pkg_resources.declare_namespace.*:DeprecationWarning
+    # HDF5
+    ignore:`product` is deprecated as of NumPy.*:DeprecationWarning
     """  # noqa: E501
-    for warning_line in warning_lines.split('\n'):
+    for warning_line in warning_lines.split("\n"):
         warning_line = warning_line.strip()
-        if warning_line and not warning_line.startswith('#'):
-            config.addinivalue_line('filterwarnings', warning_line)
+        if warning_line and not warning_line.startswith("#"):
+            config.addinivalue_line("filterwarnings", warning_line)
 
 
 @pytest.fixture(autouse=True)
 def close_all():
     """Close all matplotlib plots, regardless of test status."""
     import matplotlib.pyplot as plt
+
     yield
-    plt.close('all')
+    plt.close("all")
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def matplotlib_config():
     """Configure matplotlib for viz tests."""
     import matplotlib
     from matplotlib import cbook
+
     # Allow for easy interactive debugging with a call like:
     #
     #     $ MNE_MPL_TESTING_BACKEND=Qt5Agg pytest mne/viz/tests/test_raw.py -k annotation -x --pdb  # noqa: E501
     #
     try:
-        want = os.environ['MNE_MPL_TESTING_BACKEND']
+        want = os.environ["MNE_MPL_TESTING_BACKEND"]
     except KeyError:
-        want = 'agg'  # don't pop up windows
+        want = "agg"  # don't pop up windows
     with warnings.catch_warnings(record=True):  # ignore warning
-        warnings.filterwarnings('ignore')
+        warnings.filterwarnings("ignore")
         matplotlib.use(want, force=True)
     import matplotlib.pyplot as plt
+
     assert plt.get_backend() == want
     # overwrite some params that can horribly slow down tests that
     # users might have changed locally (but should not otherwise affect
     # functionality)
     plt.ioff()
-    plt.rcParams['figure.dpi'] = 100
+    plt.rcParams["figure.dpi"] = 100
 
     # Make sure that we always reraise exceptions in handlers
     orig = cbook.CallbackRegistry
@@ -124,21 +161,23 @@ def renderer_interactive_pyvistaqt(request):
 def renderer_interactive(request):
     """Yield the interactive 3D backends."""
     with _use_backend(request.param, interactive=True) as renderer:
-        if renderer._get_3d_backend() == 'mayavi':
+        if renderer._get_3d_backend() == "mayavi":
             with warnings.catch_warnings(record=True):
                 try:
-                    from surfer import Brain  # noqa: 401 analysis:ignore
+                    pass  # noqa: 401 analysis:ignore
                 except Exception:
-                    pytest.skip('Requires PySurfer')
+                    pytest.skip("Requires PySurfer")
         yield renderer
 
 
 @contextmanager
 def _use_backend(backend_name, interactive):
     from mne.viz.backends.renderer import _use_test_3d_backend
+
     _check_skip_backend(backend_name)
     with _use_test_3d_backend(backend_name, interactive=interactive):
         from mne.viz.backends import renderer
+
         try:
             yield renderer
         finally:
@@ -146,14 +185,12 @@ def _use_backend(backend_name, interactive):
 
 
 def _check_skip_backend(name):
-    from mne.viz.backends.tests._utils import (has_pyvista, has_imageio_ffmpeg,
-                                               has_pyvistaqt)
-    if name in ('pyvistaqt', 'notebook'):
+    if name in ("pyvistaqt", "notebook"):
         if not has_pyvista():
             pytest.skip("Test skipped, requires pyvista.")
         if not has_imageio_ffmpeg():
             pytest.skip("Test skipped, requires imageio-ffmpeg")
-    if name == 'pyvistaqt' and not _check_qt_version():
+    if name == "pyvistaqt" and not _check_qt_version():
         pytest.skip("Test skipped, requires Python Qt bindings.")
-    if name == 'pyvistaqt' and not has_pyvistaqt():
+    if name == "pyvistaqt" and not has_pyvistaqt():
         pytest.skip("Test skipped, requires pyvistaqt")

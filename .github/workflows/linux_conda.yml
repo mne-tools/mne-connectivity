@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-20.04
     defaults:
       run:
-        shell: bash
+        shell: bash -el {0}
     env:
       CONDA_ENV: 'environment.yml'
       DISPLAY: ':99.0'
@@ -27,47 +27,29 @@ jobs:
       PYTHONUNBUFFERED: '1'
       PYTHON_VERSION: '3.9'
     steps:
-      - uses: actions/checkout@v2
-      - run: |
-          curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
-          chmod +x setup_xvfb.sh
-          ./setup_xvfb.sh
-        name: 'Setup xvfb'
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: pyvista/setup-headless-display-action@main
         with:
-          activate-environment: 'mne'
-          python-version: ${{ env.PYTHON_VERSION }}
+          qt: true
+          pyvista: false
+      - uses: mamba-org/setup-micromamba@v1
+        with:
           environment-file: ${{ env.CONDA_ENV }}
-        name: 'Setup conda'
-      - shell: bash -el {0}
-        run: |
-          conda activate mne
+          create-args: >- # beware the >- instead of |, we don't split on newlines but on spaces
+            python=${{ env.PYTHON_VERSION }}
+      - run: |
           curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/get_minimal_commands.sh -o get_minimal_commands.sh
           chmod +x get_minimal_commands.sh
           source ./get_minimal_commands.sh
-          pip install -r requirements_testing.txt
+          pip install .[test]
         name: 'Install dependencies'
-
-      - shell: bash -el {0}
-        name: Install MNE (main)
-        run: |
-          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-          pip install -e ./mne-python
-
-      - shell: bash -el {0}
-        run: |
-          python setup.py build
-          python setup.py install
-        name: 'Install MNE'
-      
-      - shell: bash -el {0}
-        run: |
+      - run: pip install git+https://github.com/mne-tools/mne-python@main
+      - run: pip install -e .
+      - run: |
           which mne
           mne sys_info -pd
           python -c "import numpy; numpy.show_config()"
         name: 'Show infos'
-      
       - name: Run pytest
-        run: |
-          python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
-        shell: bash -el {0}
+        run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
+      - uses: codecov/codecov-action@v3

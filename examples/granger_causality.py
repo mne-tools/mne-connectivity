@@ -135,9 +135,9 @@ from mne_connectivity import spectral_connectivity_epochs
 
 # %%
 
-raw = mne.io.read_raw_ctf(data_path() / 'SubjectCMC.ds')
-raw.pick('mag')
-raw.crop(50., 110.).load_data()
+raw = mne.io.read_raw_ctf(data_path() / "SubjectCMC.ds")
+raw.pick("mag")
+raw.crop(50.0, 110.0).load_data()
 raw.notch_filter(50)
 raw.resample(100)
 
@@ -145,52 +145,61 @@ epochs = mne.make_fixed_length_epochs(raw, duration=2.0).load_data()
 
 ###############################################################################
 # We will focus on connectivity between sensors over the parietal and occipital
-# cortices, with 20 parietal sensors designated as group A, and 20 occipital
+# cortices, with 20 parietal sensors designated as group A, and 22 occipital
 # sensors designated as group B.
 
 # %%
 
 # parietal sensors
-signals_a = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['ch_name'][2] == 'P']
+signals_a = [
+    idx
+    for idx, ch_info in enumerate(epochs.info["chs"])
+    if ch_info["ch_name"][2] == "P"
+]
 # occipital sensors
-signals_b = [idx for idx, ch_info in enumerate(epochs.info['chs']) if
-             ch_info['ch_name'][2] == 'O']
+signals_b = [
+    idx
+    for idx, ch_info in enumerate(epochs.info["chs"])
+    if ch_info["ch_name"][2] == "O"
+]
 
-# XXX: Currently ragged indices are not supported, so we only consider a single
-# list of indices with an equal number of seeds and targets
-min_n_chs = min(len(signals_a), len(signals_b))
-signals_a = signals_a[:min_n_chs]
-signals_b = signals_b[:min_n_chs]
-
-indices_ab = (np.array(signals_a), np.array(signals_b))  # A => B
-indices_ba = (np.array(signals_b), np.array(signals_a))  # B => A
-
-signals_a_names = [epochs.info['ch_names'][idx] for idx in signals_a]
-signals_b_names = [epochs.info['ch_names'][idx] for idx in signals_b]
+indices_ab = (np.array([signals_a]), np.array([signals_b]))  # A => B
+indices_ba = (np.array([signals_b]), np.array([signals_a]))  # B => A
 
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # A => B
+    epochs,
+    method=["gc"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # A => B
 gc_ba = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ba, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # B => A
+    epochs,
+    method=["gc"],
+    indices=indices_ba,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # B => A
 freqs = gc_ab.freqs
 
 
 ###############################################################################
 # Plotting the results, we see that there is a flow of information from our
-# parietal sensors (group A) to our occipital sensors (group B) with noticeable
-# peaks at around 8, 18, and 26 Hz.
+# parietal sensors (group A) to our occipital sensors (group B) with a
+# noticeable peak at ~8 Hz, and smaller peaks at 18 and 26 Hz.
 
 # %%
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(freqs, gc_ab.get_data()[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('GC: [A => B]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("GC: [A => B]")
 
 
 ###############################################################################
@@ -208,20 +217,18 @@ fig.suptitle('GC: [A => B]')
 #
 # Doing so, we see that the flow of information across the spectrum remains
 # dominant from parietal to occipital sensors (indicated by the positive-valued
-# Granger scores). However, the pattern of connectivity is altered, such as
-# around 10 and 12 Hz where peaks of net information flow are now present.
+# Granger scores), with similar peaks around 10, 18, and 26 Hz.
 
 # %%
 
 net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A => B] - [B => A]
 
 fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
-          color='k')
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
 axis.plot(freqs, net_gc[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('Net GC: [A => B] - [B => A]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("Net GC: [A => B] - [B => A]")
 
 
 ###############################################################################
@@ -273,11 +280,23 @@ fig.suptitle('Net GC: [A => B] - [B => A]')
 
 # compute GC on time-reversed signals
 gc_tr_ab = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[A => B]
+    epochs,
+    method=["gc_tr"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # TR[A => B]
 gc_tr_ba = spectral_connectivity_epochs(
-    epochs, method=['gc_tr'], indices=indices_ba, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=20)  # TR[B => A]
+    epochs,
+    method=["gc_tr"],
+    indices=indices_ba,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=20,
+)  # TR[B => A]
 
 # compute net GC on time-reversed signals (TR[A => B] - TR[B => A])
 net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
@@ -289,8 +308,8 @@ trgc = net_gc - net_gc_tr
 # Plotting the TRGC results, reveals a very different picture compared to net
 # GC. For one, there is now a dominance of information flow ~6 Hz from
 # occipital to parietal sensors (indicated by the negative-valued Granger
-# scores). Additionally, the peaks ~10 Hz are less dominant in the spectrum,
-# with parietal to occipital information flow between 13-20 Hz being much more
+# scores). Additionally, the peak ~10 Hz is less dominant in the spectrum, with
+# parietal to occipital information flow between 13-20 Hz being much more
 # prominent. The stark difference between net GC and TRGC results indicates
 # that the net GC spectrum was contaminated by spurious connectivity resulting
 # from source mixing or correlated noise in the recordings. Altogether, the use
@@ -299,12 +318,11 @@ trgc = net_gc - net_gc_tr
 # %%
 
 fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle='--',
-          color='k')
+axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
 axis.plot(freqs, trgc[0], linewidth=2)
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
-fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("TRGC: net[A => B] - net time-reversed[A => B]")
 
 
 ###############################################################################
@@ -328,16 +346,22 @@ fig.suptitle('TRGC: net[A => B] - net time-reversed[A => B]')
 # %%
 
 gc_ab_60 = spectral_connectivity_epochs(
-    epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30,
-    rank=(np.array([5]), np.array([5])), gc_n_lags=60)  # A => B
+    epochs,
+    method=["gc"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=(np.array([5]), np.array([5])),
+    gc_n_lags=60,
+)  # A => B
 
 fig, axis = plt.subplots(1, 1)
-axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label='20 lags')
-axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label='60 lags')
-axis.set_xlabel('Frequency (Hz)')
-axis.set_ylabel('Connectivity (A.U.)')
+axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label="20 lags")
+axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label="60 lags")
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
 axis.legend()
-fig.suptitle('GC: [A => B]')
+fig.suptitle("GC: [A => B]")
 
 
 ###############################################################################
@@ -353,21 +377,21 @@ fig.suptitle('GC: [A => B]')
 # an automatic rank computation is performed and an appropriate degree of
 # dimensionality reduction will be enforced. The rank of the data is determined
 # by computing the singular values of the data and finding those within a
-# factor of :math:`1e^{-10}` relative to the largest singular value.
+# factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# In some circumstances, this threshold may be too lenient, in which case you
-# should inspect the singular values of your data to identify an appropriate
-# degree of dimensionality reduction to perform, which you can then specify
-# manually using the ``rank`` argument. The code below shows one possible
-# approach for finding an appropriate rank of close-to-singular data with a
-# more conservative threshold of :math:`1e^{-5}`.
+# Whilst unlikely, there may be scenarios in which this threshold may be too
+# lenient. In these cases, you should inspect the singular values of your data
+# to identify an appropriate degree of dimensionality reduction to perform,
+# which you can then specify manually using the ``rank`` argument. The code
+# below shows one possible approach for finding an appropriate rank of
+# close-to-singular data with a more conservative threshold.
 
 # %%
 
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
-# finds how many singular values are "close" to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
+# finds how many singular values are 'close' to the largest singular value
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 
 ###############################################################################
 # Nonethless, even in situations where you specify an appropriate rank, it is
@@ -386,11 +410,18 @@ rank = np.count_nonzero(s >= s[0] * 1e-5)  # 1e-5 is the "closeness" criteria
 
 try:
     spectral_connectivity_epochs(
-        epochs, method=['gc'], indices=indices_ab, fmin=5, fmax=30, rank=None,
-        gc_n_lags=20)  # A => B
-    print('Success!')
+        epochs,
+        method=["gc"],
+        indices=indices_ab,
+        fmin=5,
+        fmax=30,
+        rank=None,
+        gc_n_lags=20,
+        verbose=False,
+    )  # A => B
+    print("Success!")
 except RuntimeError as error:
-    print('\nCaught the following error:\n' + repr(error))
+    print("\nCaught the following error:\n" + repr(error))
 
 ###############################################################################
 # Rigorous checks are implemented to identify any such instances which would

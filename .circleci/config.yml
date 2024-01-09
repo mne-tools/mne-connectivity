@@ -1,219 +1,218 @@
 version: 2.1
 
 jobs:
-    build_docs:
-      docker:
-        - image: cimg/base:current-22.04
-      steps:
-        - restore_cache:
-            keys:
-              - source-cache-connectivity
+  build_docs:
+    docker:
+      - image: cimg/base:current-22.04
+    steps:
+      - restore_cache:
+          keys:
+            - source-cache-connectivity
 
-        - checkout
+      - checkout
 
-        - run:
-            name: Complete checkout
-            command: |
-              if ! git remote -v | grep upstream; then
-                git remote add upstream https://github.com/mne-tools/mne-connectivity.git
-              fi
-              git remote set-url upstream https://github.com/mne-tools/mne-connectivity.git
-              git fetch upstream
+      - run:
+          name: Complete checkout
+          command: |
+            if ! git remote -v | grep upstream; then
+              git remote add upstream https://github.com/mne-tools/mne-connectivity.git
+            fi
+            git remote set-url upstream https://github.com/mne-tools/mne-connectivity.git
+            git fetch upstream
 
-        - save_cache:
-            key: source-cache-connectivity
-            paths:
-              - ".git"
+      - save_cache:
+          key: source-cache-connectivity
+          paths:
+            - ".git"
 
-        - add_ssh_keys:
-            fingerprints:
-              - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
+      - add_ssh_keys:
+          fingerprints:
+            - "d6:88:6b:a0:80:bf:14:8e:80:2e:ed:11:52:26:37:68"
 
-        - run:
-            name: Set BASH_ENV
-            command: |
-              set -e
-              curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
-              chmod +x setup_xvfb.sh
-              ./setup_xvfb.sh
-              sudo apt install -qq graphviz optipng python3.10-venv python3-venv libxft2 ffmpeg
-              python3.10 -m venv ~/python_env
-              echo "set -e" >> $BASH_ENV
-              echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
-              echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" >> $BASH_ENV
-              echo "export MNE_FULL_DATE=true" >> $BASH_ENV
-              echo "export MNE_3D_BACKEND=pyvistaqt" >> $BASH_ENV
-              echo "export MNE_3D_OPTION_MULTI_SAMPLES=1" >> $BASH_ENV
-              echo "export MNE_BROWSER_BACKEND=qt" >> $BASH_ENV
-              echo "export MNE_BROWSER_PRECOMPUTE=false" >> $BASH_ENV
-              echo "export PATH=~/.local/bin/:$PATH" >> $BASH_ENV
-              echo "export DISPLAY=:99" >> $BASH_ENV
-              echo "source ~/python_env/bin/activate" >> $BASH_ENV
-              mkdir -p ~/.local/bin
-              ln -s ~/python_env/bin/python ~/.local/bin/python
-              echo "BASH_ENV:"
-              cat $BASH_ENV
-              mkdir -p ~/mne_data
-              touch pattern.txt;
+      - run:
+          name: Set BASH_ENV
+          command: |
+            set -e
+            curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
+            chmod +x setup_xvfb.sh
+            ./setup_xvfb.sh
+            sudo apt install -qq graphviz optipng python3.10-venv python3-venv libxft2 ffmpeg
+            python3.10 -m venv ~/python_env
+            echo "set -e" >> $BASH_ENV
+            echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
+            echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" >> $BASH_ENV
+            echo "export MNE_FULL_DATE=true" >> $BASH_ENV
+            echo "export MNE_3D_BACKEND=pyvistaqt" >> $BASH_ENV
+            echo "export MNE_3D_OPTION_MULTI_SAMPLES=1" >> $BASH_ENV
+            echo "export MNE_BROWSER_BACKEND=qt" >> $BASH_ENV
+            echo "export MNE_BROWSER_PRECOMPUTE=false" >> $BASH_ENV
+            echo "export PATH=~/.local/bin/:$PATH" >> $BASH_ENV
+            echo "export DISPLAY=:99" >> $BASH_ENV
+            echo "source ~/python_env/bin/activate" >> $BASH_ENV
+            mkdir -p ~/.local/bin
+            ln -s ~/python_env/bin/python ~/.local/bin/python
+            echo "BASH_ENV:"
+            cat $BASH_ENV
+            mkdir -p ~/mne_data
+            touch pattern.txt;
 
-        - run:
-            name: Merge with upstream
-            command: |
-              echo $(git log -1 --pretty=%B) | tee gitlog.txt
-              echo ${CI_PULL_REQUEST//*pull\//} | tee merge.txt
-              if [[ $(cat merge.txt) != "" ]]; then
-                echo "Merging $(cat merge.txt)";
-                git pull --ff-only upstream "refs/pull/$(cat merge.txt)/merge";
-              fi
+      - run:
+          name: Merge with upstream
+          command: |
+            echo $(git log -1 --pretty=%B) | tee gitlog.txt
+            echo ${CI_PULL_REQUEST//*pull\//} | tee merge.txt
+            if [[ $(cat merge.txt) != "" ]]; then
+              echo "Merging $(cat merge.txt)";
+              git pull --ff-only upstream "refs/pull/$(cat merge.txt)/merge";
+            fi
 
-        # Load pip cache
-        - restore_cache:
-            keys:
-              - pip-cache
-        - restore_cache:
-            keys:
-              - user-install-bin-cache-310
+      # Load pip cache
+      - restore_cache:
+          keys:
+            - pip-cache
+      - restore_cache:
+          keys:
+            - user-install-bin-cache-310
 
-        - run:
-            name: Get Python running and install dependencies
-            command: |
-              curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
-              chmod +x circleci_dependencies.sh
-              ./circleci_dependencies.sh
+      - run:
+          name: Get Python running and install dependencies
+          command: |
+            pip install git+https://github.com/mne-tools/mne-python@main
+            curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
+            chmod +x circleci_dependencies.sh
+            ./circleci_dependencies.sh
+            pip install .[doc]
 
-        - save_cache:
-            key: pip-cache
-            paths:
-              - ~/.cache/pip
+      - save_cache:
+          key: pip-cache
+          paths:
+            - ~/.cache/pip
 
-        - save_cache:
-            key: user-install-bin-cache-310
-            paths:
-              - ~/.local/lib/python3.10/site-packages
-              - ~/.local/bin
+      - save_cache:
+          key: user-install-bin-cache-310
+          paths:
+            - ~/.local/lib/python3.10/site-packages
+            - ~/.local/bin
 
-        # Look at what we have and fail early if there is some library conflict
-        - run:
-            name: Check installation
-            command: |
-               which python
-               python -c "import mne; mne.sys_info()"
-               LIBGL_DEBUG=verbose python -c "import matplotlib.pyplot as plt; plt.figure()"
-               python -c "import mne; mne.set_config('MNE_LOGGING_LEVEL', 'info')"
-               python -c "import mne; level = mne.get_config('MNE_LOGGING_LEVEL'); assert level.lower() == 'info', repr(level)"
+      # Look at what we have and fail early if there is some library conflict
+      - run:
+          name: Check installation
+          command: |
+            which python
+            python -c "import mne; mne.sys_info()"
+            LIBGL_DEBUG=verbose python -c "import matplotlib.pyplot as plt; plt.figure()"
+            python -c "import mne; mne.set_config('MNE_LOGGING_LEVEL', 'info')"
+            python -c "import mne; level = mne.get_config('MNE_LOGGING_LEVEL'); assert level.lower() == 'info', repr(level)"
 
-        # Load our data
-        - restore_cache:
-            keys:
-              - data-cache-sample
+      # Load our data
+      - restore_cache:
+          keys:
+            - data-cache-sample
 
-        # Load our data
-        - restore_cache:
-            keys:
-              - data-cache-bst-resting
+      # Load our data
+      - restore_cache:
+          keys:
+            - data-cache-bst-resting
 
-        - run:
-            name: Check PyQt6
-            command: LD_DEBUG=libs python -c "from PyQt6.QtWidgets import QApplication, QWidget; app = QApplication([])"
+      - run:
+          name: Check PyQt6
+          command: LD_DEBUG=libs python -c "from PyQt6.QtWidgets import QApplication, QWidget; app = QApplication([])"
 
-        # Look at what we have and fail early if there is some library conflict
-        - run:
-            name: Check installation
-            command: |
-               which python
-               QT_DEBUG_PLUGINS=1 mne sys_info
-               python -c "import numpy; numpy.show_config()"
-               LIBGL_DEBUG=verbose python -c "import pyvistaqt; pyvistaqt.BackgroundPlotter(show=True)"
-               python -c "import mne; mne.set_config('MNE_USE_CUDA', 'false')"  # this is needed for the config tutorial
-               python -c "import mne; mne.set_config('MNE_LOGGING_LEVEL', 'info')"
-               python -c "import mne; level = mne.get_config('MNE_LOGGING_LEVEL'); assert level.lower() == 'info', repr(level)"
+      # Look at what we have and fail early if there is some library conflict
+      - run:
+          name: Check installation
+          command: |
+            which python
+            QT_DEBUG_PLUGINS=1 mne sys_info
+            python -c "import numpy; numpy.show_config()"
+            LIBGL_DEBUG=verbose python -c "import pyvistaqt; pyvistaqt.BackgroundPlotter(show=True)"
+            python -c "import mne; mne.set_config('MNE_USE_CUDA', 'false')"  # this is needed for the config tutorial
+            python -c "import mne; mne.set_config('MNE_LOGGING_LEVEL', 'info')"
+            python -c "import mne; level = mne.get_config('MNE_LOGGING_LEVEL'); assert level.lower() == 'info', repr(level)"
 
-        - run:
-            name: Get data
-            command: |
-              pwd
-              ls -al .
-              python setup.py develop --user
-              mkdir -p ~/mne_data
-              python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
-              python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
+      - run:
+          name: Get data
+          command: |
+            mkdir -p ~/mne_data
+            python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
 
-        # Build docs
-        - run:
-            name: make html
-            command: |
-              cd doc;
-              make html;
+      # Build docs
+      - run:
+          name: make html
+          command: |
+            cd doc;
+            make html;
 
-        # Save the JUnit file
-        - store_test_results:
-            path: doc/_build/test-results
-        - store_artifacts:
-            path: doc/_build/test-results
-            destination: test-results
+      # Save the JUnit file
+      - store_test_results:
+          path: doc/_build/test-results
+      - store_artifacts:
+          path: doc/_build/test-results
+          destination: test-results
 
-        # Save the outputs
-        - store_artifacts:
-            path: doc/_build/html/
-            destination: dev
-        - persist_to_workspace:
-            root: doc/_build
-            paths:
-              - html
+      # Save the outputs
+      - store_artifacts:
+          path: doc/_build/html/
+          destination: dev
+      - persist_to_workspace:
+          root: doc/_build
+          paths:
+            - html
 
-        # Keep these separate, maybe better in terms of size limitations (?)
-        - save_cache:
-            key: data-cache-sample
-            paths:
-              - ~/.mne
-              - ~/mne_data/MNE-sample-data
+      # Keep these separate, maybe better in terms of size limitations (?)
+      - save_cache:
+          key: data-cache-sample
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-sample-data
 
-        - save_cache:
-            key: data-cache-bst-resting
-            paths:
-              - ~/.mne
-              - ~/mne_data/MNE-brainstorm-data/bst_resting
+      - save_cache:
+          key: data-cache-bst-resting
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-brainstorm-data/bst_resting
 
-    docs-deploy:
-        docker:
-          - image: node:8
-        steps:
-          - checkout
+  docs-deploy:
+    docker:
+      - image: node:8
+    steps:
+      - checkout
 
-          - attach_workspace:
-              at: doc/_build
+      - attach_workspace:
+          at: doc/_build
 
-          - restore_cache:
-              keys:
-                - website-cache
+      - restore_cache:
+          keys:
+            - website-cache
 
-          - run:
-              name: Install and configure dependencies
-              command: |
-                npm install --global gh-pages@3.0
-                git config --global user.email "circle@mne.com"
-                git config --global user.name "Circle Ci"
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install --global gh-pages@3.0
+            git config --global user.email "circle@mne.com"
+            git config --global user.name "Circle Ci"
 
-          - add_ssh_keys:
-              fingerprints:
-                - "2d:3e:74:bc:d4:55:4f:75:dd:13:cf:59:ac:45:dc:de"
+      - add_ssh_keys:
+          fingerprints:
+            - "2d:3e:74:bc:d4:55:4f:75:dd:13:cf:59:ac:45:dc:de"
 
-          - run:
-              # push built docs into the `dev` directory on the `gh-pages` branch
-              name: Deploy docs to gh-pages branch
-              command: |
-                if [ "${CIRCLE_BRANCH}" == "main" ]; then
-                  echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
-                  gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./dev
-                else
-                  echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
-                  gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./stable
-                fi;
+      - run:
+          # push built docs into the `dev` directory on the `gh-pages` branch
+          name: Deploy docs to gh-pages branch
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo "Deploying dev docs for ${CIRCLE_BRANCH}.";
+              gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./dev
+            else
+              echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
+              gh-pages --dotfiles --message "doc updates [skip ci] (${CIRCLE_BUILD_NUM})" --dist doc/_build/html --dest ./stable
+            fi;
 
-          - save_cache:
-              key: website-cache
-              paths:
-                - ~/mne-connectivity
+      - save_cache:
+          key: website-cache
+          paths:
+            - ~/mne-connectivity
 
 workflows:
   version: 2

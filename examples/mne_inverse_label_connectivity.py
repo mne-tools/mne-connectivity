@@ -34,10 +34,10 @@ print(__doc__)
 # the sample MEG data provided with MNE.
 
 data_path = sample.data_path()
-subjects_dir = data_path / 'subjects'
-fname_inv = data_path / 'MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif'
-fname_raw = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw.fif'
-fname_event = data_path / 'MEG/sample/sample_audvis_filt-0-40_raw-eve.fif'
+subjects_dir = data_path / "subjects"
+fname_inv = data_path / "MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif"
+fname_raw = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
+fname_event = data_path / "MEG/sample/sample_audvis_filt-0-40_raw-eve.fif"
 
 # Load data
 inverse_operator = read_inverse_operator(fname_inv)
@@ -45,17 +45,25 @@ raw = mne.io.read_raw_fif(fname_raw)
 events = mne.read_events(fname_event)
 
 # Add a bad channel
-raw.info['bads'] += ['MEG 2443']
+raw.info["bads"] += ["MEG 2443"]
 
 # Pick MEG channels
-picks = mne.pick_types(raw.info, meg=True, eeg=False, stim=False, eog=True,
-                       exclude='bads')
+picks = mne.pick_types(
+    raw.info, meg=True, eeg=False, stim=False, eog=True, exclude="bads"
+)
 
 # Define epochs for left-auditory condition
 event_id, tmin, tmax = 1, -0.2, 0.5
-epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
-                    baseline=(None, 0), reject=dict(mag=4e-12, grad=4000e-13,
-                                                    eog=150e-6))
+epochs = mne.Epochs(
+    raw,
+    events,
+    event_id,
+    tmin,
+    tmax,
+    picks=picks,
+    baseline=(None, 0),
+    reject=dict(mag=4e-12, grad=4000e-13, eog=150e-6),
+)
 
 ###############################################################################
 # Compute inverse solutions and their connectivity
@@ -82,35 +90,44 @@ epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
 # Compute inverse solution and for each epoch. By using "return_generator=True"
 # stcs will be a generator object instead of a list.
 snr = 1.0  # use lower SNR for single epochs
-lambda2 = 1.0 / snr ** 2
+lambda2 = 1.0 / snr**2
 method = "dSPM"  # use dSPM method (could also be MNE or sLORETA)
-stcs = apply_inverse_epochs(epochs, inverse_operator, lambda2, method,
-                            pick_ori="normal", return_generator=True)
+stcs = apply_inverse_epochs(
+    epochs, inverse_operator, lambda2, method, pick_ori="normal", return_generator=True
+)
 
 # Get labels for FreeSurfer 'aparc' cortical parcellation with 34 labels/hemi
-labels = mne.read_labels_from_annot('sample', parc='aparc',
-                                    subjects_dir=subjects_dir)
+labels = mne.read_labels_from_annot("sample", parc="aparc", subjects_dir=subjects_dir)
 label_colors = [label.color for label in labels]
 
 # Average the source estimates within each label using sign-flips to reduce
 # signal cancellations, also here we return a generator
-src = inverse_operator['src']
+src = inverse_operator["src"]
 label_ts = mne.extract_label_time_course(
-    stcs, labels, src, mode='mean_flip', return_generator=True)
+    stcs, labels, src, mode="mean_flip", return_generator=True
+)
 
-fmin = 8.
-fmax = 13.
-sfreq = raw.info['sfreq']  # the sampling frequency
-con_methods = ['pli', 'wpli2_debiased', 'ciplv']
+fmin = 8.0
+fmax = 13.0
+sfreq = raw.info["sfreq"]  # the sampling frequency
+con_methods = ["pli", "wpli2_debiased", "ciplv"]
 con = spectral_connectivity_epochs(
-    label_ts, method=con_methods, mode='multitaper', sfreq=sfreq, fmin=fmin,
-    fmax=fmax, faverage=True, mt_adaptive=True, n_jobs=1)
+    label_ts,
+    method=con_methods,
+    mode="multitaper",
+    sfreq=sfreq,
+    fmin=fmin,
+    fmax=fmax,
+    faverage=True,
+    mt_adaptive=True,
+    n_jobs=1,
+)
 
 # con is a 3D array, get the connectivity for the first (and only) freq. band
 # for each method
 con_res = dict()
 for method, c in zip(con_methods, con):
-    con_res[method] = c.get_data(output='dense')[:, :, 0]
+    con_res[method] = c.get_data(output="dense")[:, :, 0]
 
 ###############################################################################
 # Make a connectivity plot
@@ -121,7 +138,7 @@ for method, c in zip(con_methods, con):
 # First, we reorder the labels based on their location in the left hemi
 label_names = [label.name for label in labels]
 
-lh_labels = [name for name in label_names if name.endswith('lh')]
+lh_labels = [name for name in label_names if name.endswith("lh")]
 
 # Get the y-location of the label
 label_ypos = list()
@@ -134,24 +151,29 @@ for name in lh_labels:
 lh_labels = [label for (yp, label) in sorted(zip(label_ypos, lh_labels))]
 
 # For the right hemi
-rh_labels = [label[:-2] + 'rh' for label in lh_labels]
+rh_labels = [label[:-2] + "rh" for label in lh_labels]
 
 # Save the plot order and create a circular layout
 node_order = list()
 node_order.extend(lh_labels[::-1])  # reverse the order
 node_order.extend(rh_labels)
 
-node_angles = circular_layout(label_names, node_order, start_pos=90,
-                              group_boundaries=[0, len(label_names) / 2])
+node_angles = circular_layout(
+    label_names, node_order, start_pos=90, group_boundaries=[0, len(label_names) / 2]
+)
 
 # Plot the graph using node colors from the FreeSurfer parcellation. We only
 # show the 300 strongest connections.
-fig, ax = plt.subplots(figsize=(8, 8), facecolor='black',
-                       subplot_kw=dict(polar=True))
-plot_connectivity_circle(con_res['pli'], label_names, n_lines=300,
-                         node_angles=node_angles, node_colors=label_colors,
-                         title='All-to-All Connectivity left-Auditory '
-                               'Condition (PLI)', ax=ax)
+fig, ax = plt.subplots(figsize=(8, 8), facecolor="black", subplot_kw=dict(polar=True))
+plot_connectivity_circle(
+    con_res["pli"],
+    label_names,
+    n_lines=300,
+    node_angles=node_angles,
+    node_colors=label_colors,
+    title="All-to-All Connectivity left-Auditory " "Condition (PLI)",
+    ax=ax,
+)
 fig.tight_layout()
 
 ###############################################################################
@@ -161,14 +183,22 @@ fig.tight_layout()
 # We can also assign these connectivity plots to axes in a figure. Below we'll
 # show the connectivity plot using two different connectivity methods.
 
-fig, axes = plt.subplots(1, 3, figsize=(8, 4), facecolor='black',
-                         subplot_kw=dict(polar=True))
-no_names = [''] * len(label_names)
+fig, axes = plt.subplots(
+    1, 3, figsize=(8, 4), facecolor="black", subplot_kw=dict(polar=True)
+)
+no_names = [""] * len(label_names)
 for ax, method in zip(axes, con_methods):
-    plot_connectivity_circle(con_res[method], no_names, n_lines=300,
-                             node_angles=node_angles, node_colors=label_colors,
-                             title=method, padding=0, fontsize_colorbar=6,
-                             ax=ax)
+    plot_connectivity_circle(
+        con_res[method],
+        no_names,
+        n_lines=300,
+        node_angles=node_angles,
+        node_colors=label_colors,
+        title=method,
+        padding=0,
+        fontsize_colorbar=6,
+        ax=ax,
+    )
 
 
 ###############################################################################

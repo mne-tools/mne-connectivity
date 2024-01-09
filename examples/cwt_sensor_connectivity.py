@@ -26,30 +26,37 @@ print(__doc__)
 ###############################################################################
 # Set parameters
 data_path = sample.data_path()
-raw_fname = op.join(data_path, 'MEG', 'sample',
-                    'sample_audvis_filt-0-40_raw.fif')
-event_fname = op.join(data_path, 'MEG', 'sample',
-                      'sample_audvis_filt-0-40_raw-eve.fif')
+raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif")
+event_fname = op.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw-eve.fif")
 
 # Setup for reading the raw data
 raw = io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
 # Add a bad channel
-raw.info['bads'] += ['MEG 2443']
+raw.info["bads"] += ["MEG 2443"]
 
 # Pick MEG gradiometers
-picks = mne.pick_types(raw.info, meg='grad', eeg=False, stim=False, eog=True,
-                       exclude='bads')
+picks = mne.pick_types(
+    raw.info, meg="grad", eeg=False, stim=False, eog=True, exclude="bads"
+)
 
 # Create epochs for left-visual condition
 event_id, tmin, tmax = 3, -0.2, 0.5
-epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
-                    baseline=(None, 0), reject=dict(grad=4000e-13, eog=150e-6),
-                    preload=True)
+epochs = mne.Epochs(
+    raw,
+    events,
+    event_id,
+    tmin,
+    tmax,
+    picks=picks,
+    baseline=(None, 0),
+    reject=dict(grad=4000e-13, eog=150e-6),
+    preload=True,
+)
 
 # Use 'MEG 2343' as seed
-seed_ch = 'MEG 2343'
+seed_ch = "MEG 2343"
 picks_ch_names = [raw.ch_names[i] for i in picks]
 
 # Create seed-target indices for connectivity computation
@@ -59,14 +66,20 @@ indices = seed_target_indices(seed, targets)
 
 # Define wavelet frequencies and number of cycles
 cwt_freqs = np.arange(7, 30, 2)
-cwt_n_cycles = cwt_freqs / 7.
+cwt_n_cycles = cwt_freqs / 7.0
 
 # Run the connectivity analysis using 2 parallel jobs
-sfreq = raw.info['sfreq']  # the sampling frequency
+sfreq = raw.info["sfreq"]  # the sampling frequency
 con = spectral_connectivity_epochs(
-    epochs, indices=indices,
-    method='wpli2_debiased', mode='cwt_morlet', sfreq=sfreq,
-    cwt_freqs=cwt_freqs, cwt_n_cycles=cwt_n_cycles, n_jobs=1)
+    epochs,
+    indices=indices,
+    method="wpli2_debiased",
+    mode="cwt_morlet",
+    sfreq=sfreq,
+    cwt_freqs=cwt_freqs,
+    cwt_n_cycles=cwt_n_cycles,
+    n_jobs=1,
+)
 times = con.times
 freqs = con.freqs
 
@@ -74,12 +87,12 @@ freqs = con.freqs
 con.get_data()[np.where(indices[1] == seed)] = 1.0
 
 # Show topography of connectivity from seed
-title = 'WPLI2 - Visual - Seed %s' % seed_ch
+title = "WPLI2 - Visual - Seed %s" % seed_ch
 
-layout = mne.find_layout(epochs.info, 'meg')  # use full layout
+layout = mne.find_layout(epochs.info, "meg")  # use full layout
 
 tfr = AverageTFR(epochs.info, con.get_data(), times, freqs, len(epochs))
-tfr.plot_topo(fig_facecolor='w', font_color='k', border='k')
+tfr.plot_topo(fig_facecolor="w", font_color="k", border="k")
 
 
 ###############################################################################
