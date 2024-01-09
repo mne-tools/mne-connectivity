@@ -485,37 +485,89 @@ is ordered based on the locations of the regions in the axial plane.</p>
 <h2>Load our data<a class="headerlink" href="#load-our-data" title="Link to this heading">#</a></h2>
 <p>First we’ll load the data we’ll use in connectivity estimation. We’ll use
 the sample MEG data provided with MNE.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
-<span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s2">&quot;subjects&quot;</span>
-<span class="n">fname_inv</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif&quot;</span>
-<span class="n">fname_raw</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis_filt-0-40_raw.fif&quot;</span>
-<span class="n">fname_event</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;subjects&quot;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_inv</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif&quot;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis_filt-0-40_raw.fif&quot;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_event</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG/sample/sample_audvis_filt-0-40_raw-eve.fif&quot;</span>
 
 <span class="c1"># Load data</span>
-<span class="n">inverse_operator</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a><span class="p">(</span><span class="n">fname_inv</span><span class="p">)</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">fname_raw</span><span class="p">)</span>
-<span class="n">events</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><span class="n">fname_event</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_inv</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_raw</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname_event</span></a><span class="p">)</span>
 
 <span class="c1"># Add a bad channel</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;MEG 2443&quot;</span><span class="p">]</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;MEG 2443&quot;</span><span class="p">]</span>
 
 <span class="c1"># Pick MEG channels</span>
-<span class="n">picks</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Define epochs for left-auditory condition</span>
-<span class="n">event_id</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span>
-<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span>
-    <span class="n">raw</span><span class="p">,</span>
-    <span class="n">events</span><span class="p">,</span>
-    <span class="n">event_id</span><span class="p">,</span>
-    <span class="n">tmin</span><span class="p">,</span>
-    <span class="n">tmax</span><span class="p">,</span>
-    <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmin</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tmax</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">picks</span></a><span class="p">,</span>
     <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
     <span class="n">reject</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mag</span><span class="o">=</span><span class="mf">4e-12</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="mf">4000e-13</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="mf">150e-6</span><span class="p">),</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading inverse operator decomposition from /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis-meg-oct-6-meg-inv.fif...
+    Reading inverse operator info...
+    [done]
+    Reading inverse operator decomposition...
+    [done]
+    305 x 305 full covariance (kind = 1) found.
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102) active
+        PCA-v2 (1 x 102) active
+        PCA-v3 (1 x 102) active
+        Average EEG reference (1 x 60) active
+    Noise covariance matrix read.
+    22494 x 22494 diagonal covariance (kind = 2) found.
+    Source covariance matrix read.
+    22494 x 22494 diagonal covariance (kind = 6) found.
+    Orientation priors read.
+    22494 x 22494 diagonal covariance (kind = 5) found.
+    Depth priors read.
+    Did not find the desired covariance matrix (kind = 3)
+    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    Reading a source space...
+    Computing patch statistics...
+    Patch information added...
+    Distance information added...
+    [done]
+    2 source spaces read
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102) active
+        PCA-v2 (1 x 102) active
+        PCA-v3 (1 x 102) active
+        Average EEG reference (1 x 60) active
+    Source spaces transformed to the inverse solution coordinate frame
+Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_filt-0-40_raw.fif...
+    Read a total of 4 projection items:
+        PCA-v1 (1 x 102)  idle
+        PCA-v2 (1 x 102)  idle
+        PCA-v3 (1 x 102)  idle
+        Average EEG reference (1 x 60)  idle
+    Range : 6450 ... 48149 =     42.956 ...   320.665 secs
+Ready.
+Not setting metadata
+72 matching events found
+Setting baseline interval to [-0.19979521315838786, 0.0] s
+Applying baseline correction (mode: mean)
+Created an SSP operator (subspace dimension = 3)
+4 projection items activated
 </pre></div>
 </div>
 </section>
@@ -540,35 +592,35 @@ compute connectivity in a computationally efficient manner where the amount
 of memory (RAM) needed is independent from the number of epochs.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute inverse solution and for each epoch. By using &quot;return_generator=True&quot;</span>
 <span class="c1"># stcs will be a generator object instead of a list.</span>
-<span class="n">snr</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># use lower SNR for single epochs</span>
-<span class="n">lambda2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">snr</span><span class="o">**</span><span class="mi">2</span>
-<span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;dSPM&quot;</span>  <span class="c1"># use dSPM method (could also be MNE or sLORETA)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># use lower SNR for single epochs</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a><span class="o">**</span><span class="mi">2</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a> <span class="o">=</span> <span class="s2">&quot;dSPM&quot;</span>  <span class="c1"># use dSPM method (could also be MNE or sLORETA)</span>
 <span class="n">stcs</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">(</span>
-    <span class="n">epochs</span><span class="p">,</span> <span class="n">inverse_operator</span><span class="p">,</span> <span class="n">lambda2</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span>
+    <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lambda2</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">,</span> <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># Get labels for FreeSurfer &#39;aparc&#39; cortical parcellation with 34 labels/hemi</span>
-<span class="n">labels</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_labels_from_annot.html#mne.read_labels_from_annot" title="mne.read_labels_from_annot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span></a><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s2">&quot;aparc&quot;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
-<span class="n">label_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">color</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_labels_from_annot.html#mne.read_labels_from_annot" title="mne.read_labels_from_annot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span></a><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="s2">&quot;aparc&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_colors</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">color</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">]</span>
 
 <span class="c1"># Average the source estimates within each label using sign-flips to reduce</span>
 <span class="c1"># signal cancellations, also here we return a generator</span>
-<span class="n">src</span> <span class="o">=</span> <span class="n">inverse_operator</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
+<a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.InverseOperator.html#mne.minimum_norm.InverseOperator" title="mne.minimum_norm.InverseOperator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">inverse_operator</span></a><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
 <span class="n">label_ts</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.extract_label_time_course.html#mne.extract_label_time_course" title="mne.extract_label_time_course" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">extract_label_time_course</span></a><span class="p">(</span>
-    <span class="n">stcs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean_flip&quot;</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">stcs</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean_flip&quot;</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 
-<span class="n">fmin</span> <span class="o">=</span> <span class="mf">8.0</span>
-<span class="n">fmax</span> <span class="o">=</span> <span class="mf">13.0</span>
-<span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
-<span class="n">con_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pli&quot;</span><span class="p">,</span> <span class="s2">&quot;wpli2_debiased&quot;</span><span class="p">,</span> <span class="s2">&quot;ciplv&quot;</span><span class="p">]</span>
-<span class="n">con</span> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a> <span class="o">=</span> <span class="mf">8.0</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mf">13.0</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>  <span class="c1"># the sampling frequency</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_methods</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pli&quot;</span><span class="p">,</span> <span class="s2">&quot;wpli2_debiased&quot;</span><span class="p">,</span> <span class="s2">&quot;ciplv&quot;</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <span class="n">label_ts</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="n">con_methods</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_methods</span></a><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
-    <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
-    <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
-    <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span>
     <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -576,9 +628,217 @@ of memory (RAM) needed is independent from the number of epochs.</p>
 
 <span class="c1"># con is a 3D array, get the connectivity for the first (and only) freq. band</span>
 <span class="c1"># for each method</span>
-<span class="n">con_res</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">con_methods</span><span class="p">,</span> <span class="n">con</span><span class="p">):</span>
-    <span class="n">con_res</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_res</span></a> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_methods</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_res</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">]</span> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">c</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Reading labels from parcellation...
+   read 34 labels from /home/circleci/mne_data/MNE-sample-data/subjects/sample/label/lh.aparc.annot
+   read 34 labels from /home/circleci/mne_data/MNE-sample-data/subjects/sample/label/rh.aparc.annot
+Connectivity computation...
+Preparing the inverse operator for use...
+    Scaled noise and source covariance from nave = 1 to nave = 1
+    Created the regularized inverter
+    Created an SSP operator (subspace dimension = 3)
+    Created the whitener using a noise covariance matrix with rank 302 (3 small eigenvalues omitted)
+    Computing noise-normalization factors (dSPM)...
+[done]
+Picked 305 channels from the data
+Computing inverse...
+    Eigenleads need to be weighted ...
+Processing epoch : 1 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+only using indices for lower-triangular matrix
+    computing connectivity for 2278 connections
+    using t=0.000s..0.699s for estimation (106 points)
+    frequencies: 8.5Hz..12.7Hz (4 points)
+    connectivity scores will be averaged for each band
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: PLI, Debiased WPLI Square, ciPLV
+    computing cross-spectral density for epoch 1
+Processing epoch : 2 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 2
+Processing epoch : 3 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 3
+Processing epoch : 4 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 4
+Processing epoch : 5 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 5
+Processing epoch : 6 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 6
+Processing epoch : 7 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 7
+Processing epoch : 8 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 8
+Processing epoch : 9 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 9
+Processing epoch : 10 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 10
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 11 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 11
+Processing epoch : 12 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 12
+Processing epoch : 13 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 13
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 14 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 14
+Processing epoch : 15 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 15
+Processing epoch : 16 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 16
+Processing epoch : 17 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 17
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 18 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 18
+Processing epoch : 19 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 19
+Processing epoch : 20 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 20
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 21 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 21
+Processing epoch : 22 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 22
+Processing epoch : 23 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 23
+    Rejecting  epoch based on MAG : [&#39;MEG 1711&#39;]
+Processing epoch : 24 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 24
+Processing epoch : 25 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 25
+Processing epoch : 26 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 26
+Processing epoch : 27 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 27
+Processing epoch : 28 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 28
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 29 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 29
+Processing epoch : 30 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 30
+Processing epoch : 31 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 31
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 32 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 32
+Processing epoch : 33 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 33
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 34 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 34
+Processing epoch : 35 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 35
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 36 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 36
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 37 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 37
+Processing epoch : 38 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 38
+Processing epoch : 39 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 39
+Processing epoch : 40 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 40
+Processing epoch : 41 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 41
+Processing epoch : 42 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 42
+Processing epoch : 43 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 43
+Processing epoch : 44 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 44
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 45 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 45
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 46 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 46
+Processing epoch : 47 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 47
+Processing epoch : 48 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 48
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+    Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
+Processing epoch : 49 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 49
+Processing epoch : 50 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 50
+Processing epoch : 51 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 51
+Processing epoch : 52 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 52
+Processing epoch : 53 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 53
+Processing epoch : 54 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 54
+Processing epoch : 55 / 72 (at most)
+Extracting time courses for 68 labels (mode: mean_flip)
+    computing cross-spectral density for epoch 55
+[done]
+    assembling connectivity matrix
+[Connectivity computation done]
 </pre></div>
 </div>
 </section>
@@ -586,82 +846,83 @@ of memory (RAM) needed is independent from the number of epochs.</p>
 <h2>Make a connectivity plot<a class="headerlink" href="#make-a-connectivity-plot" title="Link to this heading">#</a></h2>
 <p>Now, we visualize this connectivity using a circular graph layout.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># First, we reorder the labels based on their location in the left hemi</span>
-<span class="n">label_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">]</span>
 
-<span class="n">lh_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">label_names</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;lh&quot;</span><span class="p">)]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a> <span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;lh&quot;</span><span class="p">)]</span>
 
 <span class="c1"># Get the y-location of the label</span>
-<span class="n">label_ypos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">lh_labels</span><span class="p">:</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">label_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">ypos</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="n">label_ypos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ypos</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_ypos</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">idx</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">name</span></a><span class="p">)</span>
+    <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">ypos</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">idx</span></a><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_ypos</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">ypos</span></a><span class="p">)</span>
 
 <span class="c1"># Reorder the labels based on their location</span>
-<span class="n">lh_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="p">(</span><span class="n">yp</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">label_ypos</span><span class="p">,</span> <span class="n">lh_labels</span><span class="p">))]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="p">(</span><span class="n">yp</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_ypos</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a><span class="p">))]</span>
 
 <span class="c1"># For the right hemi</span>
-<span class="n">rh_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;rh&quot;</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">lh_labels</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rh_labels</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;rh&quot;</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a><span class="p">]</span>
 
 <span class="c1"># Save the plot order and create a circular layout</span>
-<span class="n">node_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-<span class="n">node_order</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lh_labels</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># reverse the order</span>
-<span class="n">node_order</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rh_labels</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_order</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_order</span></a><span class="o">.</span><span class="n">extend</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lh_labels</span></a><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># reverse the order</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_order</span></a><span class="o">.</span><span class="n">extend</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rh_labels</span></a><span class="p">)</span>
 
-<span class="n">node_angles</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.viz.circular_layout.html#mne.viz.circular_layout" title="mne.viz.circular_layout" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">circular_layout</span></a><span class="p">(</span>
-    <span class="n">label_names</span><span class="p">,</span> <span class="n">node_order</span><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">group_boundaries</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_names</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_angles</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.viz.circular_layout.html#mne.viz.circular_layout" title="mne.viz.circular_layout" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">circular_layout</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_order</span></a><span class="p">,</span> <span class="n">start_pos</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">group_boundaries</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="c1"># Plot the graph using node colors from the FreeSurfer parcellation. We only</span>
 <span class="c1"># show the 300 strongest connections.</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <a href="../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle" class="sphx-glr-backref-module-mne_connectivity-viz sphx-glr-backref-type-py-function"><span class="n">plot_connectivity_circle</span></a><span class="p">(</span>
-    <span class="n">con_res</span><span class="p">[</span><span class="s2">&quot;pli&quot;</span><span class="p">],</span>
-    <span class="n">label_names</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_res</span></a><span class="p">[</span><span class="s2">&quot;pli&quot;</span><span class="p">],</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="p">,</span>
     <span class="n">n_lines</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-    <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">,</span>
-    <span class="n">node_colors</span><span class="o">=</span><span class="n">label_colors</span><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_angles</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_angles</span></a><span class="p">,</span>
+    <span class="n">node_colors</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_colors</span></a><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">&quot;All-to-All Connectivity left-Auditory &quot;</span> <span class="s2">&quot;Condition (PLI)&quot;</span><span class="p">,</span>
-    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
-</section>
+<img src="../_images/sphx_glr_mne_inverse_label_connectivity_001.png" srcset="../_images/sphx_glr_mne_inverse_label_connectivity_001.png" alt="All-to-All Connectivity left-Auditory Condition (PLI)" class = "sphx-glr-single-img"/></section>
 <section id="make-multiple-connectivity-plots-in-the-same-figure">
 <h2>Make multiple connectivity plots in the same figure<a class="headerlink" href="#make-multiple-connectivity-plots-in-the-same-figure" title="Link to this heading">#</a></h2>
 <p>We can also assign these connectivity plots to axes in a figure. Below we’ll
 show the connectivity plot using two different connectivity methods.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span>
     <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">)</span>
-<span class="n">no_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_names</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">con_methods</span><span class="p">):</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">no_names</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="p">)</span>
+<span class="k">for</span> <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_methods</span></a><span class="p">):</span>
     <a href="../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle" class="sphx-glr-backref-module-mne_connectivity-viz sphx-glr-backref-type-py-function"><span class="n">plot_connectivity_circle</span></a><span class="p">(</span>
-        <span class="n">con_res</span><span class="p">[</span><span class="n">method</span><span class="p">],</span>
-        <span class="n">no_names</span><span class="p">,</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_res</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">],</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">no_names</span></a><span class="p">,</span>
         <span class="n">n_lines</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">node_angles</span><span class="o">=</span><span class="n">node_angles</span><span class="p">,</span>
-        <span class="n">node_colors</span><span class="o">=</span><span class="n">label_colors</span><span class="p">,</span>
-        <span class="n">title</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_angles</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_angles</span></a><span class="p">,</span>
+        <span class="n">node_colors</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_colors</span></a><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">method</span></a><span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">fontsize_colorbar</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
-</section>
+<img src="../_images/sphx_glr_mne_inverse_label_connectivity_002.png" srcset="../_images/sphx_glr_mne_inverse_label_connectivity_002.png" alt="pli, wpli2_debiased, ciplv" class = "sphx-glr-single-img"/></section>
 <section id="save-the-figure-optional">
 <h2>Save the figure (optional)<a class="headerlink" href="#save-the-figure-optional" title="Link to this heading">#</a></h2>
 <p>By default matplotlib does not save using the facecolor, even though this was
 set when the figure was generated. If not set via savefig, the labels, title,
 and legend will be cut off from the output png file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="n">fname_fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span>
+<span class="n">fname_fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;plot_inverse_connect.png&#39;</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
+<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
 </pre></div>
 </div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.853 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-label-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c06a13323b7062a90818137e2468ba31/mne_inverse_label_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_label_connectivity.ipynb</span></code></a></p>
@@ -749,7 +1010,7 @@ and legend will be cut off from the output png file.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2023, MNE Developers. Last updated on 2023-12-06.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
       <br/>
     
   </p>
