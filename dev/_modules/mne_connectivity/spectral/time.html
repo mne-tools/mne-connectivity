@@ -427,7 +427,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.epochs</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
 <span class="kn">from</span> <span class="nn">mne.parallel</span> <span class="kn">import</span> <span class="n">parallel_func</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="n">dpss_windows</span><span class="p">,</span> <span class="n">tfr_array_morlet</span><span class="p">,</span> <span class="n">tfr_array_multitaper</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">EpochSpectralConnectivity</span><span class="p">,</span> <span class="n">SpectralConnectivity</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
@@ -757,6 +757,7 @@ document.write(`
     <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># extract data from Epochs object</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">),</span> <span class="s2">&quot;`data`&quot;</span><span class="p">,</span> <span class="s2">&quot;Epochs or a NumPy array&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
         <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
@@ -1707,7 +1708,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-23.
       <br/>
     
   </p>
