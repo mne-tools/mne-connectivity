@@ -1540,6 +1540,10 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     indices = ([[0, 1]], [[2, 3]])
     freqs = np.arange(10, 25 + 1)
 
+    # test type-checking of data
+    with pytest.raises(TypeError, match="must be an instance of Epochs or a NumPy arr"):
+        spectral_connectivity_time(data="foo", freqs=freqs)
+
     # check bad indices without nested array caught
     with pytest.raises(
         TypeError, match="multivariate indices must contain array-likes"

@@ -11,7 +11,7 @@ import xarray as xr
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import dpss_windows, tfr_array_morlet, tfr_array_multitaper
-from mne.utils import logger, verbose
+from mne.utils import _validate_type, logger, verbose
 
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -354,6 +354,7 @@ def spectral_connectivity_time(
     events = None
     event_id = None
     # extract data from Epochs object
+    _validate_type(data, (np.ndarray, BaseEpochs), "`data`", "Epochs or a NumPy array")
     if isinstance(data, BaseEpochs):
         names = data.ch_names
         sfreq = data.info["sfreq"]
