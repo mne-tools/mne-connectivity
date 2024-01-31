@@ -321,6 +321,23 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 def _invsqrtm(C, T, n_seeds):
     """Compute inverse sqrt of CSD over times (used for CaCoh, MIC, & MIM).
 
+    Parameters
+    ----------
+    C : np.ndarray, shape=(n_times, n_channels, n_channels)
+        CSD for a single frequency and all times (n_times=1 if the mode is not
+        time-frequency resolved, e.g. multitaper).
+    T : np.ndarray, shape=(n_times, n_channels, n_channels)
+        Empty array to store the inverse square root of the CSD in.
+    n_seeds : int
+        Number of seed channels for the connection.
+
+    Returns
+    -------
+    T : np.ndarray, shape=(n_times, n_channels, n_channels)
+        Inverse square root of the CSD. Name comes from Ewald et al. (2012).
+
+    Notes
+    -----
     Kept as a standalone function to allow for parallelisation over CSD
     frequencies.
 
