@@ -15,3 +15,4 @@
 .. _Tien Nguyen: https://github.com/nguyen-td
 .. _Richard Köhler: https://github.com/richardkoehler
 .. _Mohammad Orabe: https://github.com/orabe
+.. _Mina Jamshidi: https://github.com/minajamshidi
