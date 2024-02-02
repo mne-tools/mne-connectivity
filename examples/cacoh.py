@@ -3,7 +3,7 @@
 Compute multivariate measure of (absolute) coherence
 ====================================================
 
-This example showcases the application of the Canonical Coherence (CaCoh) method, as detailed :footcite: `Vidaurre et al. (2019)`, for detecting neural synchronization in multivariate signal spaces.
+This example showcases the application of the Canonical Coherence (CaCoh) method, as detailed :footcite: `VidaurreEtAl2019`, for detecting neural synchronization in multivariate signal spaces.
 
 The method maximizes the absolute value of the coherence between two sets of multivariate spaces directly in the frequency domain. For each frequency bin two spatial filters are computed in order to maximize the coherence between the projected components.
 """
@@ -31,10 +31,10 @@ import mne_connectivity
 # challenges such as volume conduction and source mixing—where signals from distinct
 # neural sources blend or appear falsely synchronized due to the conductive properties
 # of brain tissue, complicate the interpretation of connectivity data. While other
-# multivariate methods like `MIC` specifically exclude zero time-lag interactions to
-# avoid volume conduction artifacts, assuming these to be non-physiological, the
-# Canonical Coherence (Cacoh) method can capture and analyze interactions between
-# signals with both zero and non-zero time-lag.
+# multivariate methods like [``MIC``](https://mne.tools/mne-connectivity/stable/auto_examples/mic_mim.html) by (:footcite:`EwaldEtAl2012`) specifically exclude
+# zero time-lag interactions to avoid volume conduction artifacts, assuming these to be
+# non-physiological, the Canonical Coherence (Cacoh) method can capture and analyze
+# interactions between signals with both zero and non-zero time-lag.
 #
 # This capability allows Cacoh to  identify neural interactions that occur
 # simultaneously, offering insights into connectivity that may be overlooked by other
@@ -301,15 +301,14 @@ plot_absolute_coherency(con, "Non-zero-lag interaction")
 # sensors. The primary goal of CaCoh is to find real-valued linear combinations of
 # signals from these spaces that maximize coherence at a specific frequency.
 #
-# This maximization is formulated as:
+# This maximization is formulated as (Eq. of 8 in :footcite: `VidaurreEtAl2019`):
 #
 # :math:`\[ CaCoh = \lambda(\Phi)=\frac{\mathbf{a}^T \mathbf{D}(\Phi) \mathbf{b}}{\sqrt
 # {\mathbf{a}^T \mathbf{a} \cdot \mathbf{b}^T \mathbf{b}}} \]`
 #
-# where :math:`\(\mathbf{D}(\Phi) = \mathbf{C}_{AA}^{-1/2} \mathbf{C}_{AB, \Phi}^R
-# \mathbf{C}_{BB}^{-1/2}\)`. Here, :math:`\(\mathbf{C}_{AB, \Phi}^R\)` denotes the real
-# part of the cross-spectrum, while :math:`\(\mathbf{C}_{AA}\)` and :math:`\(\mathbf{C}_
-# {BB}\)` are the auto-spectral matrices for spaces :math:`\(\alpha\)` and
+# where :math:`\(\mathbf{D}(\Phi, \a, \b) = \mathbf{C}_{AA}^{-1/2} \mathbf{C}_{AB, \Phi}
+# ^R \mathbf{C}_{BB}^{-1/2}\)`. Here, :math:`\(\mathbf{C}_{AB, \Phi}^R\)` denotes the
+# real part of the cross-spectrum, while :math:`\(\mathbf{C}_{AA}\)` and :math:`\
 # :math:`\(\beta\)`, respectively.
 #
 # The method inherently assumes instantaneous mixing of the signals, which justifies
@@ -318,7 +317,8 @@ plot_absolute_coherency(con, "Non-zero-lag interaction")
 # matrices means that their imaginary components do not contribute to the maximization
 # process and are thus typically set to zero.
 #
-# The analytical resolution of CaCoh leads to an eigenvalue problem:
+# The analytical resolution of CaCoh leads to an eigenvalue problem (Eq. 12 of
+# VidaurreEtAl2019):
 #
 # :math:`\[ \mathbf{D}(\Phi)^T \mathbf{D}(\Phi) \mathbf{b} = \lambda \mathbf{b} \]`
 # :math:`\[ \mathbf{D}(\Phi) \mathbf{D}(\Phi)^T \mathbf{a} = \lambda \mathbf{a} \]`
@@ -329,7 +329,25 @@ plot_absolute_coherency(con, "Non-zero-lag interaction")
 # numerical estimation of the phase of coherence, where its absolute value is maximal,
 # is achieved through a nonlinear search, emphasizing the method's robustness in
 # identifying the most coherent signal combinations across different modalities.
+#
+# To provide insights into the locations of sources influencing connectivity, spatial
+# patterns can be obtained through spatial filters. To identify the topographies
+# corresponding to the spatial filters :math:`\alpha` and :math:`\beta`, the filters
+# are multiplied by their respective real part of the cross-spectral matrix, as follows
+# (Eq. 14 of :footcite: `VidaurreEtAl2019`):
 
+# For :math:`\alpha`, calculate: :math:`t_{\boldsymbol{\alpha}} = \mathbf{C}_{A A}^R
+# \boldsymbol{\alpha}`
+# For :math:`\beta`, calculate: :math:`t_{\boldsymbol{\beta}} = \mathbf{C}_{B B}^R
+# \boldsymbol{\beta}`
+
+# These topographies represent the patterns of the sources with maximum coherence. The
+# time courses of CaCoh components directly indicate the activity of neuronal sources.
+# The spatial patterns, stored under the connectivity class's 'attrs['patterns']',
+# assign a frequency-specific value to each seed and target channel. For simulated
+# data, our focus is on coherence analysis without visualizing spatial patterns.
+# An example for the visualization for the spatial patterns can be similarly
+# accomplished using a the [``MIC``](https://mne.tools/mne-connectivity/stable/auto_examples/mic_mim.html) method (:footcite:`EwaldEtAl2012`).
 
 ###############################################################################
 # Overfitting
@@ -488,6 +506,8 @@ print(rank)
 #
 
 ###############################################################################
-# (CaCoh): Vidaurre et al. (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
-# (MIC) Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
-# TODO: cite: NolteEtAl2004
+# References
+# ----------
+# .. footbibliography::
+
+# %%
