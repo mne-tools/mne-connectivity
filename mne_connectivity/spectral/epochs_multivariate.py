@@ -180,11 +180,11 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     """Base estimator for multivariate coherency methods.
 
     See:
-    - Imaginary part of coherency, i.e. multivariate imaginary part of coherency (MIC)
-    and multivariate interaction measure (MIM): Ewald et al. (2012). NeuroImage. DOI:
-    10.1016/j.neuroimage.2011.11.084
-    - Coherency/coherence, i.e. canonical coherence (CaCoh): Vidaurre et al. (2019).
-    NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
+    - Imaginary part of coherency, i.e. multivariate imaginary part of
+    coherency (MIC) and multivariate interaction measure (MIM): Ewald et al.
+    (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    - Coherency/coherence, i.e. canonical coherency (CaCoh): Vidaurre et al.
+    (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
     name: Optional[str] = None
@@ -345,7 +345,7 @@ def _invsqrtm(C, T, n_seeds):
     frequencies.
 
     See Eq. 3 of Ewald et al. (2012). NeuroImage. DOI:
-    10.1016/j.neuroimage.2011.11.084
+    10.1016/j.neuroimage.2011.11.084.
     """
     for time_i in range(C.shape[0]):
         T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(

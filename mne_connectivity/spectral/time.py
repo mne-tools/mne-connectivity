@@ -73,7 +73,7 @@ def spectral_connectivity_time(
         ``['coh', 'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc',
         'gc_tr']``. These are:
         * 'coh'   : Coherence
-        * 'cacoh' : Canonical Coherence (CaCoh)
+        * 'cacoh' : Canonical Coherency (CaCoh)
         * 'mic'   : Maximised Imaginary part of Coherency (MIC)
         * 'mim'   : Multivariate Interaction Measure (MIM)
         * 'plv'   : Phase-Locking Value (PLV)
@@ -252,26 +252,27 @@ def spectral_connectivity_time(
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
-        'cacoh' : Canonical Coherence (CaCoh) :footcite:`VidaurreEtAl2019`
+        'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
         given by:
 
-            :math:`CaCoh=\Large{\frac{\mid\boldsymbol{a}^T\boldsymbol{D}(\Phi)
-            \boldsymbol{b}\mid}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
+            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
+            (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
             \boldsymbol{b}^T\boldsymbol{b}}}}`
 
             where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density
             between seeds and targets transformed for a given phase angle
             :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`
-            are eigenvectors for the seeds and targets, such that :math:`\mid
-            \boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}\mid` maximises
-            coherence between the seeds and targets.
+            are eigenvectors for the seeds and targets, such that
+            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`
+            maximises coherency between the seeds and targets. Taking the
+            absolute value of the results gives maximised coherence.
 
         'mic' : Maximised Imaginary part of Coherency (MIC)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
-            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-            \parallel}}`
+            :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
+            \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
+            \parallel\boldsymbol{\beta}\parallel}}`
 
             where: :math:`\boldsymbol{E}` is the imaginary part of the
             transformed cross-spectral density between seeds and targets; and
@@ -283,7 +284,10 @@ def spectral_connectivity_time(
         'mim' : Multivariate Interaction Measure (MIM)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIM=tr(\boldsymbol{EE}^T)`
+            :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`
+
+            where :math:`\boldsymbol{E}` is the imaginary part of the
+            transformed cross-spectral density between seeds and targets.
 
         'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
         by::
