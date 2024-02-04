@@ -52,7 +52,9 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # increases the signal-to-noise ratio and allows signals to be analysed in a
 # multivariate manner :footcite:`EwaldEtAl2012`. This approach leads to the
 # following methods: the maximised imaginary part of coherency (MIC); and the
-# multivariate interaction measure (MIM).
+# multivariate interaction measure (MIM). These methods are similar to the
+# multivariate method based on coherency (CaCoh; see :doc:`cacoh`), which is
+# also supported by MNE-Connectivity.
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
@@ -121,8 +123,9 @@ fig.suptitle("Imaginary part of coherency")
 # eigendecomposition of information from the cross-spectral density (Eq. 7 of
 # :footcite:`EwaldEtAl2012`):
 #
-# :math:`MIC=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}{\parallel
-# \boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}\parallel}`,
+# :math:`\textrm{MIC}=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+# {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+# \parallel}`,
 #
 # where :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are the
 # spatial filters for the seeds and targets, respectively, and
@@ -155,13 +158,13 @@ fig.suptitle("Maximised imaginary part of coherency")
 
 ###############################################################################
 # Furthermore, spatial patterns of connectivity can be constructed from the
-# spatial filters to give a picture of the location of the sources involved in
-# the connectivity. This information is stored under ``attrs['patterns']`` of
-# the connectivity class, with one value per frequency for each channel in the
-# seeds and targets. As with MIC, the absolute value of the patterns reflect
-# the strength, however the sign differences can be used to visualise the
-# orientation of the underlying dipole sources. The spatial patterns are
-# **not** bound between :math:`[-1, 1]`.
+# spatial filters to give a picture of the location of the channels involved in
+# the connectivity :footcite:`HaufeEtAl2014`. This information is stored under
+# ``attrs['patterns']`` of the connectivity class, with one value per frequency
+# for each channel in the seeds and targets. As with MIC, the absolute value of
+# the patterns reflect the strength, however the sign differences can be used
+# to visualise the orientation of the underlying dipole sources. The spatial
+# patterns are **not** bound between :math:`[-1, 1]`.
 #
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
@@ -242,7 +245,7 @@ plt.show()
 # component explicitly, and instead the desired result can be achieved from
 # :math:`E` alone (Eq. 14 of :footcite:`EwaldEtAl2012`):
 #
-# :math:`MIM=tr(\boldsymbol{EE}^T)`,
+# :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`,
 #
 # where again the frequency dependence is omitted. Unlike MIC, MIM is
 # positive-valued and can be > 1. Without normalisation, MIM can be
@@ -371,6 +374,7 @@ mim_meansub = mim.get_data()[0] - mim.get_data()[0].mean()
 
 # compare standard and rank subspace-projected MIM
 fig, axis = plt.subplots(1, 1)
+axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
 axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2, label="rank subspace (25) MIM")
 axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
 axis.set_xlabel("Frequency (Hz)")
