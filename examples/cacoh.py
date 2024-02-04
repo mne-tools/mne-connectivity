@@ -1,16 +1,16 @@
 """
-====================================================
-Compute multivariate measure of (absolute) coherence
-====================================================
+========================================
+Compute multivariate coherency/coherence
+========================================
 
-This example showcases the application of the Canonical Coherence (CaCoh) method, as detailed :footcite: `VidaurreEtAl2019`, for detecting neural synchronization in multivariate signal spaces.
-
-The method maximizes the absolute value of the coherence between two sets of multivariate spaces directly in the frequency domain. For each frequency bin two spatial filters are computed in order to maximize the coherence between the projected components.
+This example demonstrates how canonical coherency (CaCoh)
+:footcite:`VidaurreEtAl2019` - a multivariate method based on coherency - can
+be used to compute connectivity between whole sets of sensors, alongside
+spatial patterns of the connectivity.
 """
 
 # Authors: Mohammad Orabe <orabe.mhd@gmail.com>
 #          Thomas S. Binns <t.s.binns@outlook.com>
-#
 # License: BSD (3-clause)
 
 # %%
@@ -18,61 +18,55 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 import mne
-import mne_connectivity
+from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 ###############################################################################
 # Background
 # ----------
 #
-# Multivariate connectivity methods have emerged as a sophisticated approach to
-# understand the complex interplay between multiple brain regions simultaneously. These
-# methods transcend the limitations of bivariate analyses, which focus on pairwise
-# interactions, by offering a holistic view of brain network dynamics. However,
-# challenges such as volume conduction and source mixing—where signals from distinct
-# neural sources blend or appear falsely synchronized due to the conductive properties
-# of brain tissue, complicate the interpretation of connectivity data. While other
-# multivariate methods like [``MIC``](https://mne.tools/mne-connectivity/stable/auto_examples/mic_mim.html) by (:footcite:`EwaldEtAl2012`) specifically exclude
-# zero time-lag interactions to avoid volume conduction artifacts, assuming these to be
-# non-physiological, the Canonical Coherence (Cacoh) method can capture and analyze
-# interactions between signals with both zero and non-zero time-lag.
+# Multivariate forms of signal analysis allow you to simultaneously consider
+# the activity of multiple signals. In the case of connectivity, the
+# interaction between multiple sensors can be analysed at once, producing a
+# single connectivity spectrum. This approach brings not only practical
+# benefits (e.g. easier interpretability of results from the dimensionality
+# reduction), but can also offer methodological improvements (e.g. enhanced
+# signal-to-noise ratio).
 #
-# This capability allows Cacoh to  identify neural interactions that occur
-# simultaneously, offering insights into connectivity that may be overlooked by other
-# methods. The Cacoh method utilizes spatial filters to isolate true neural
-# interactions. This approach not only simplifies the interpretation of complex neural
-# interactions but also potentially enhances the signal-to-noise ratio, offering
-# methodological advantages such as reduced bias from source mixing.
+# A popular bivariate measure of connectivity is coherency/coherence, which
+# looks at the correlation between two signals in the frequency domain.
+# However, in cases where interactions between multiple signals are of
+# interest, computing connectivity between all possible combinations of signals
+# leads to a very large number of results which is difficult to interpret. A
+# common approach is to average results across these connections, however this
+# risks reducing the signal-to-noise ratio of results and burying interactions
+# that are present between only a small number of channels.
 #
-# CaCoh maximizes the absolute value of the coherence between the two multivariate
-# spaces directly in the frequency domain, where for each frequency bin, two spatial
-# filters are computed in order to maximize the coherence between the projected
-# components.
+# Canonical coherency (CaCoh) is a multivariate form of coherency that uses
+# spatial filters to extract the relevant components of connectivity in a
+# frequency-resolved manner :footcite:`VidaurreEtAl2019`. It is similar to
+# multivariate methods based on the imaginary part of coherency (MIC & MIM; see
+# :doc:`mic_mim`), which are also supported by MNE-Connectivity.
 
 
 ###############################################################################
 # Data Simulation
 # ---------------
 #
-# The CaCoh method can be used to investigate the synchronization between two
-# modalities. For instance it can be applied to optimize (in a non-invasive way) the
-# cortico-muscular coherence between a central set of electroencephalographic (EEG)
-# sensors and a peripheral set of electromyographic (EMG) electrodes, where each
-# subspaces is multivariate CaCoh is capable of taking into account the fact that
-# cortico-spinal interactions are multivariate in nature not only on the cortical level
-# but also at the level of the spinal cord, where multiple afferent and efferent
-# processes occur.
+# To demonstrate the CaCoh method, will we use some simulated data consisting
+# of an interaction between signals in a given frequency range. Here, we
+# simulate two sets of interactions:
 #
-# CaCoh extends beyond analyzing cortico-muscular interactions. It is also applicable
-# in various EEG/MEG/LFP research scenarios, such as studying the interactions between
-# cortical (EEG/MEG) and subcortical activities, or in examining intracortical local
-# field potentials (LFP).
+# - 5 seeds and 3 targets interacting in the 10-12 Hz frequency range.
+# - 5 seeds and 3 targets interacting in the 23-25 Hz frequency range.
 #
-# In this demo script, we will generates synthetic EEG signals. Let's define a function
-# that enables the study of both zero-lag and non-zero-lag interactions by adjusting
-# the parameter `connection_delay`.
-
+# We can consider the seeds and targets to be signals of different modalities,
+# e.g. cortical EEG signals and subcortical local field potential signals,
+# cortical EEG signals and muscular EMG signals, etc.... We use the function
+# below to simulate these signals.
 
 # %%
+
+
 def simulate_connectivity(
     n_seeds: int,
     n_targets: int,
@@ -81,9 +75,9 @@ def simulate_connectivity(
     n_times: int,
     sfreq: int,
     snr: float,
-    connection_delay,
+    connection_delay: int,
     rng_seed: int | None = None,
-) -> mne.Epochs:
+) -> np.ndarray:
     """Simulates signals interacting in a given frequency band.
 
     Parameters
@@ -95,8 +89,9 @@ def simulate_connectivity(
         Number of target channels to simulate.
 
     freq_band : tuple of int, int
-        Frequency band where the connectivity should be simulated, where the first entry corresponds
-        to the lower frequency, and the second entry to the higher frequency.
+        Frequency band where the connectivity should be simulated, where the
+        first entry corresponds to the lower frequency, and the second entry to
+        the higher frequency.
 
     n_epochs : int
         Number of epochs in the simulated data.
@@ -111,17 +106,19 @@ def simulate_connectivity(
         Signal-to-noise ratio of the simulated data.
 
     connection_delay :
-        Number of timepoints for the delay of connectivity between the seeds and targets. If > 0,
-        the target data is a delayed form of the seed data by this many timepoints.
+        Number of timepoints for the delay of connectivity between the seeds
+        and targets. If > 0, the target data is a delayed form of the seed data
+        by this many timepoints.
 
     rng_seed : int | None (default None)
-        Seed to use for the random number generator. If `None`, no seed is specified.
+        Seed to use for the random number generator. If `None`, no seed is
+        specified.
 
     Returns
     -------
-    epochs : mne.Epochs
-        The simulated data stored in an Epochs object. The channels are arranged according to seeds,
-        then targets.
+    data : numpy.ndarray
+        The simulated data stored in an array. The channels are arranged
+        according to seeds, then targets.
     """
     if rng_seed is not None:
         np.random.seed(rng_seed)
@@ -159,351 +156,387 @@ def simulate_connectivity(
     data = data.reshape(n_channels, n_epochs, n_times)
     data = data.transpose((1, 0, 2))  # (epochs x channels x times)
 
-    # store data in an MNE Epochs object
-    ch_names = [f"{ch_i}_{freq_band[0]}_{freq_band[1]}" for ch_i in range(n_channels)]
-    info = mne.create_info(
-        ch_names=ch_names, sfreq=sfreq, ch_types="eeg", verbose=False
-    )
-    epochs = mne.EpochsArray(data=data, info=info, verbose=False)
+    return data
 
-    return epochs
 
+###############################################################################
 
 # %%
-def plot_absolute_coherency(conn_data, label):
-    """Plot the absolute value of coherency across frequencies"""
-    _, axis = plt.subplots()
-    axis.plot(
-        conn_data.freqs, np.abs(conn_data.get_data()[0]), linewidth=2, label=label
-    )
-    axis.set_xlabel("Frequency (Hz)")
-    axis.set_ylabel("Absolute connectivity (A.U.)")
-    plt.title("CaCoh")
-    plt.legend(loc="upper right")
-    plt.show()
 
-
-# %%
-# Set parameters
-n_epochs = 10
-n_times = 200
-sfreq = 100
-snr = 0.7
-freq_bands = {
-    "theta": [4.0, 8],
-    "alpha": [8.0, 12],
-    "beta": [12.0, 25],
-    "Gamma": [30.0, 45.0],
-}
-
-n_seeds = 4
+# Define simulation parameters
+n_seeds = 5
 n_targets = 3
-indices = ([np.arange(n_seeds)], [n_seeds + np.arange(n_targets)])
-
-# %%we will generates synthetic EEG signals
-# First we will simulate a small dataset that consists of 3 synthetic EEG sensors
-# designed as seed channels and 4 synthetic EEG sensors designed as target channels
-# Then we will consider two cases; one with zero- and one with non zero time-lag to
-# explore the CaCoh of each frequency bin. The seed data is initially generated as
-# noise. The target data are a band-pass filtered version of the seed channels.
-
-# %%
-# Case 1: Zero time-lag interactions.
-#
-# In our first scenario, we explore connectivity dynamics without any temporal
-# separation between the seed and target channels, setting the connectivity delay to
-# zero. This configuration will allow us to investigate instantaneous interactions,
-# simulating conditions where neural signals are synchronized without time lag.
-delay = 0
+n_channels = n_seeds + n_targets
+n_epochs = 10
+n_times = 200  # samples
+sfreq = 100  # Hz
+snr = 0.7
+connection_delay = 10  # samples
+rng_seed = 44
 
 # Generate simulated data
-con_data = simulate_connectivity(
+data_10_12 = simulate_connectivity(
     n_seeds=n_seeds,
     n_targets=n_targets,
-    freq_band=freq_bands["beta"],
+    freq_band=(10, 12),  # 10-12 Hz interaction
     n_epochs=n_epochs,
     n_times=n_times,
     sfreq=sfreq,
     snr=snr,
-    connection_delay=delay,
+    connection_delay=connection_delay,
     rng_seed=42,
 )
 
-# %%
-# Compute the multivariate connectivity using the CaCoh method.
-con = mne_connectivity.spectral_connectivity_epochs(
-    con_data, indices=indices, method="cacoh"
-)
-
-# %%
-# Plot the absolute coherence value for each frequency bin.
-plot_absolute_coherency(con, "Zero-lag interaction")
-
-# We observe a significant peak in the beta frequency band, indicating a high level of
-# coherence. This suggests a strong synchronization between the seed and target
-# channels within that frequency range. One might assume that such synchronization
-# could be due to genuine neural connectivity. However, without phase lag, it's also
-# possible that this result could stem from volume conduction or common reference
-# artifacts, rather than direct physiological interactions.
-#
-# In the context of EEG analysis, volume conduction is a prevalent concern; yet, for
-# example for LFP recordings, the spatial resolution is higher, and signals are less
-# likely to be confounded by this phenomenon. Therefore, when interpreting such a peak
-# in LFP data, one could be more confident that it reflects true neural interactions.
-
-
-# %%
-# Case 2: Non-zero time-lag interactions.
-#
-# For the exploration of non-zero time-lag interactions, we adjust the simulation to
-# include a delay of 10 timepoints between the seed and target signals. This will model
-# the temporal delays in neural communication.
-
-delay = 10
-
-# Generate new simulated data
-con_data = simulate_connectivity(
+data_23_25 = simulate_connectivity(
     n_seeds=n_seeds,
     n_targets=n_targets,
-    freq_band=freq_bands["beta"],
+    freq_band=(23, 25),  # 23-25 Hz interaction
     n_epochs=n_epochs,
     n_times=n_times,
     sfreq=sfreq,
     snr=snr,
-    connection_delay=delay,
-    rng_seed=42,
+    connection_delay=connection_delay,
+    rng_seed=44,
 )
 
-# %%
-# Compute the multivariate connectivity for the new simulated data.
-con = mne_connectivity.spectral_connectivity_epochs(
-    con_data, indices=indices, method="cacoh"
-)
-
-# %%
-# Plot the absolute coherence value for each frequency bin.
-plot_absolute_coherency(con, "Non-zero-lag interaction")
-
-# We can see the coherence across frequencies with a notable peak also in the beta
-# band, but the coherence values are overall a bit lower than in the zero-lag scenario.
-# This illustrates the temporal delay introduced between seed and target signals,
-# simulating a more realistic scenario where neuronal communications involve
-# transmission delays (such as synaptic or axonal delays).
-
+# Combine data into a single array
+data = np.concatenate((data_10_12, data_23_25), axis=1)
 
 ###############################################################################
-# Theoretical description of canonical Coherence (CaCoh)
+# Computing CaCoh
+# ---------------
 #
-# In methematical terms, the Canonical Coherence (CaCoh) method aims to maximize the
-# coherence between two signal spaces, :math:`A` and :math:`B`, each
-# of dimension :math:`\(N_A\)` and :math:`\(N_B\)` respectively. In a practical
-# scenario, :math:`A` might represent signals from EMG sensors, and :math:`B` from EEG
-# sensors. The primary goal of CaCoh is to find real-valued linear combinations of
-# signals from these spaces that maximize coherence at a specific frequency.
+# Having simulated the signals, we can create the indices for computing
+# connectivity between all seeds and all targets in a single multivariate
+# connection (see :doc:`handling_ragged_arrays` for more information), after
+# which we compute connectivity.
 #
-# This maximization is formulated as (Eq. of 8 in :footcite: `VidaurreEtAl2019`):
+# For CaCoh, a set of spatial filters are found that will maximise the
+# estimated connectivity between the seed and target signals. These maximising
+# filters correspond to the eigenvectors with the largest eigenvalue, derived
+# from an eigendecomposition of information from the cross-spectral density
+# (Eq. 8 of :footcite:`VidaurreEtAl2019`):
 #
-# :math:`\[ CaCoh = \lambda(\Phi)=\frac{\mathbf{a}^T \mathbf{D}(\Phi) \mathbf{b}}{\sqrt
-# {\mathbf{a}^T \mathbf{a} \cdot \mathbf{b}^T \mathbf{b}}} \]`
+# :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}(\Phi)
+# \boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}\boldsymbol{b}^T
+# \boldsymbol{b}}}}`
 #
-# where :math:`\(\mathbf{D}(\Phi, \a, \b) = \mathbf{C}_{AA}^{-1/2} \mathbf{C}_{AB, \Phi}
-# ^R \mathbf{C}_{BB}^{-1/2}\)`. Here, :math:`\(\mathbf{C}_{AB, \Phi}^R\)` denotes the
-# real part of the cross-spectrum, while :math:`\(\mathbf{C}_{AA}\)` and :math:`\
-# :math:`\(\beta\)`, respectively.
+# where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density between
+# seeds and targets transformed for a given phase angle :math:`\Phi`; and
+# :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}` are eigenvectors for the
+# seeds and targets, such that :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)
+# \boldsymbol{b}` maximises coherency between the seeds and targets. All
+# elements are frequency-dependent, however this is omitted for readability.
 #
-# The method inherently assumes instantaneous mixing of the signals, which justifies
-# focusing on the real parts of the cross-spectral matrices. The complex Hermitian
-# nature (where a square matrix is equal to its own conjugate transpose) of these
-# matrices means that their imaginary components do not contribute to the maximization
-# process and are thus typically set to zero.
-#
-# The analytical resolution of CaCoh leads to an eigenvalue problem (Eq. 12 of
-# VidaurreEtAl2019):
-#
-# :math:`\[ \mathbf{D}(\Phi)^T \mathbf{D}(\Phi) \mathbf{b} = \lambda \mathbf{b} \]`
-# :math:`\[ \mathbf{D}(\Phi) \mathbf{D}(\Phi)^T \mathbf{a} = \lambda \mathbf{a} \]`
-#
-# where :math:`\(\mathbf{a}\)` and :math:`\(\mathbf{b}\)` are the eigenvectors derived
-# from the respective spaces :math:`\(\alpha\)` and :math:`\(\beta\)`.
-# :math:`\(\lambda\)`, the maximal eigenvalue, represents the maximal CaCoh. The
-# numerical estimation of the phase of coherence, where its absolute value is maximal,
-# is achieved through a nonlinear search, emphasizing the method's robustness in
-# identifying the most coherent signal combinations across different modalities.
-#
-# To provide insights into the locations of sources influencing connectivity, spatial
-# patterns can be obtained through spatial filters. To identify the topographies
-# corresponding to the spatial filters :math:`\alpha` and :math:`\beta`, the filters
-# are multiplied by their respective real part of the cross-spectral matrix, as follows
-# (Eq. 14 of :footcite: `VidaurreEtAl2019`):
+# CaCoh is complex-valued in the range :math:`[-1, 1]` where the sign reflects
+# the phase angle of the interaction (akin to coherency). Taking the absolute
+# value is akin to taking the coherence, which is the magnitude of the
+# interaction regardless of phase angle.
 
-# For :math:`\alpha`, calculate: :math:`t_{\boldsymbol{\alpha}} = \mathbf{C}_{A A}^R
-# \boldsymbol{\alpha}`
-# For :math:`\beta`, calculate: :math:`t_{\boldsymbol{\beta}} = \mathbf{C}_{B B}^R
-# \boldsymbol{\beta}`
+# %%
 
-# These topographies represent the patterns of the sources with maximum coherence. The
-# time courses of CaCoh components directly indicate the activity of neuronal sources.
-# The spatial patterns, stored under the connectivity class's 'attrs['patterns']',
-# assign a frequency-specific value to each seed and target channel. For simulated
-# data, our focus is on coherence analysis without visualizing spatial patterns.
-# An example for the visualization for the spatial patterns can be similarly
-# accomplished using a the [``MIC``](https://mne.tools/mne-connectivity/stable/auto_examples/mic_mim.html) method (:footcite:`EwaldEtAl2012`).
+# Generate connectivity indices
+seeds = np.concatenate(
+    (np.arange(n_seeds), np.arange(n_channels, n_seeds + n_channels))
+)
+targets = np.concatenate(
+    (np.arange(n_seeds, n_channels), np.arange(n_channels + n_seeds, n_channels * 2))
+)
+
+multivar_indices = ([seeds], [targets])
+
+# Compute CaCoh
+cacoh = spectral_connectivity_epochs(
+    data, method="cacoh", indices=multivar_indices, sfreq=sfreq, fmin=3, fmax=35
+)
 
 ###############################################################################
-# Overfitting
-# -----------
-# The concern regarding overfitting arises when the spatial filters :math:`\(\alpha\)`
-# and :math:`\(\beta\)`, designed to maximize Canonical Coherence (CaCoh), overly adapt
-# to the specific dataset, compromising their applicability to new data. This is
-# particularly relevant in high-dimensional datasets. To mitigate this, dimensionality
-# reduction via Singular Value Decomposition (SVD) is applied to the real part of the
-# cross-spectra in the spaces \(A\) and \(B\) before computing the spatial filters
-# (Eqs. 14 & 15 of [1]). This process involves selecting singular vectors that preserve
-# most of the data's information, ensuring that the derived filters are both effective
-# and generalizable.
-#
-# The dimensionality of data can be controlled using the ``rank`` parameter, which by
-# default assumes data is of full rank and does not reduce dimensionality. To
-# accurately reflect the data's structure and avoid bias, it's important to choose a
-# rank based on the expected number of significant components. This selection helps
-# standardize connectivity estimates across different recordings, even when the number
-# of channels varies. Note that this does not refer to the number of seeds and targets
-# within a connection being identical, rather to the number of seeds and targets across
-# connections.
-#
-# In the following example, we will create two datasets with a larger number of seeds
-# and targets. In the first dataet we apply the dimensionality reduction approach to
-# only the first component in our rank subspace. We aim to compare the effects on
-# connectivity patterns with the second dataset.
-#
-# The result indicate that essential connectivity patterns are preserved even after
-# dimensionality reduction, implying that much of the connectivity information in the
-# additional components may be redundant. This approach underscores the efficiency of
-# focusing analysis on the most significant data dimensions.
+# As you can see below, using CaCoh we have summarised the most relevant
+# connectivity information from our 10 seed channels and 6 target channels as a
+# single spectrum of connectivity values. This lower-dimensional representation
+# of signal interactions is much more interpretable when analysing connectivity
+# in complex systems such as the brain.
 
 # %%
-n_seeds = 15
-n_targets = 10
-indices = ([np.arange(n_seeds)], [n_seeds + np.arange(n_targets)])
-delay = 10
 
-con_data = simulate_connectivity(
-    n_seeds=n_seeds,
-    n_targets=n_targets,
-    freq_band=freq_bands["beta"],
-    n_epochs=n_epochs,
-    n_times=n_times,
-    sfreq=sfreq,
-    snr=snr,
-    connection_delay=delay,
-    rng_seed=42,
-)
+print(f"Results shape: {cacoh.get_data().shape} (connections x frequencies)")
 
-con_data_red = simulate_connectivity(
-    n_seeds=n_seeds,
-    n_targets=n_targets,
-    freq_band=freq_bands["beta"],
-    n_epochs=n_epochs,
-    n_times=n_times,
-    sfreq=sfreq,
-    snr=snr,
-    connection_delay=delay,
-    rng_seed=42,
-)
+fig, axis = plt.subplots(1, 1)
+axis.plot(cacoh.freqs, np.abs(cacoh.get_data()[0]), linewidth=2)
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+fig.suptitle("CaCoh")
+
+###############################################################################
+# Note that we plot the absolute values of the results (coherence) rather than
+# the complex values (coherency). The absolute value of connectivity will
+# generally be of most interest, however information such as the phase of
+# interaction can only be extracted from the complex-valued results, e.g. with
+# the :func:`numpy.angle` function.
 
 # %%
-# Compute the multivariate connectivity using the CaCoh method.
-con = mne_connectivity.spectral_connectivity_epochs(
-    con_data, indices=indices, method="cacoh"
+
+fig, axis = plt.subplots(1, 1)
+axis.plot(cacoh.freqs, np.angle(cacoh.get_data()[0]), linewidth=2)
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Phase of connectivity (radians)")
+fig.suptitle("CaCoh")
+
+###############################################################################
+# CaCoh versus coherence
+# ----------------------
+#
+# To further demonstrate the signal-to-noise ratio benefits of CaCoh, below we
+# compute connectivity between each seed and target using bivariate coherence.
+# With our 10 seeds and 6 targets, this gives us a total of 60 unique
+# connections which is very difficult to interpret without aggregating some
+# information. A common approach is to simply average across these connections,
+# which we do below.
+
+# %%
+
+# Define bivariate connectivity indices
+bivar_indices = seed_target_indices(seeds=seeds, targets=targets)
+
+# Compute bivariate coherence
+coh = spectral_connectivity_epochs(
+    data, method="coh", indices=bivar_indices, sfreq=sfreq, fmin=3, fmax=35
 )
 
-con_red = mne_connectivity.spectral_connectivity_epochs(
-    con_data, indices=indices, method="cacoh", rank=([1], [1])
-)
+###############################################################################
+# Plotting the bivariate and multivariate results together, we can see that
+# coherence still captures the interactions at 10-12 Hz and 23-25 Hz, however
+# the scale of the connectivity is much smaller. This reflects the fact that
+# CaCoh is able to capture the relevant components of interactions between
+# multiple signals, regardless of whether they are present in all channels.
+#
+# The ability of multivariate connectivity methods to capture the underlying
+# components of connectivity is extremely useful when dealing with data from
+# a large number of channels, with inter-channel interactions at distinct
+# frequencies, a problem explored in more detail in the :doc:`mic_mim` example.
 
-# subtract mean of scores for comparison
-con_meansub = con.get_data()[0] - con.get_data()[0].mean()
-con_red_meansub = con_red.get_data()[0] - con_red.get_data()[0].mean()
+# %%
 
-# no. channels equal with and without projecting to rank subspace for patterns
-assert (
-    np.array(con_red.attrs["patterns"])[0, 0].shape[0]
-    == np.array(con_red.attrs["patterns"])[0, 0].shape[0]
-)
-assert (
-    np.array(con.attrs["patterns"])[1, 0].shape[0]
-    == np.array(con.attrs["patterns"])[1, 0].shape[0]
-)
+print(f"Results shape: {coh.get_data().shape} (connections x frequencies)")
 
-_, axis = plt.subplots()
-axis.plot(con.freqs, con_meansub, linewidth=2, label="Standard cacoh")
+cacoh_min = np.min(np.abs(cacoh.get_data()[0]))
+coh_min = np.min(np.mean(coh.get_data(), axis=0))
+
+fig, axis = plt.subplots(1, 1)
 axis.plot(
-    con_red.freqs,
-    con_red_meansub,
-    linewidth=2,
-    label="Rank subspace (1) cacoh",
+    coh.freqs, np.abs(cacoh.get_data()[0]) - cacoh_min, linewidth=2, label="CaCoh"
+)
+axis.plot(
+    coh.freqs, np.mean(coh.get_data(), axis=0) - coh_min, linewidth=2, label="Coh"
 )
 axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Absolute connectivity (A.U.)")
-plt.title("CaCoh")
-plt.legend(loc="upper right")
-plt.show()
-
-# In the case that your data is not full rank and rank is left as None, an automatic
-# rank computation is performed and an appropriate degree of dimensionality reduction
-# will be enforced. The rank of the data is determined by computing the singular values
-# of the data and finding those within a factor of :math: `1e-6` relative to the
-# largest singular value.
-
-# Whilst unlikely, there may be scenarios in which this threshold may be too lenient.
-# In these cases, you should inspect the singular values of your data to identify an
-# appropriate degree of dimensionality reduction to perform, which you can then specify
-# manually using the ``rank`` argument. The code below shows one possible approach for
-# finding an appropriate rank of close-to-singular data with a more conservative
-# threshold.
-
-# %%
-# gets the singular values of the data
-s = np.linalg.svd(con.get_data(), compute_uv=False)
-# finds how many singular values are 'close' to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
-print(rank)
+axis.set_ylabel("Baseline-corrected connectivity (A.U.)")
+axis.legend()
+fig.suptitle("CaCoh vs. coherence")
 
 ###############################################################################
-# Advantages and disadvantages
+# Extracting spatial information from CaCoh
+# -----------------------------------------
 #
-# In EEG data analysis, zero-lag interactions are typically viewed with suspicion
-# because they often indicate volume conduction rather than genuine physiological
-# interactions. Volume conduction is a phenomenon where electrical currents from active
-# neurons spread passively through the brain tissue and skull to reach the scalp, where
-# they are recorded. This can make spatially distinct but electrically active areas
-# appear to be synchronously active, creating artificial coherence at zero lag.
-# However, it is possible that some zero-lag interactions are real, especially if the
-# neural sources are physically close to each other or if there is a common driver
-# influencing multiple regions simultaneously.
+# Whilst a lower-dimensional representation of connectivity information is
+# useful, we lose information about which channels are involved in the
+# connectivity. Thankfully, this information can be recovered by constructing
+# spatial patterns of connectivity from the spatial filters
+# :footcite:`HaufeEtAl2014`.
 #
-# CaCoh, by design, does not specifically distinguish between zero-lag interactions
-# that are physiological and those that are artifacts of volume conduction. Its main
-# purpose is to identify patterns of maximal coherence across multiple channels or
-# conditions. However, because it does not exclude zero-lag interactions, it might not
-# inherently differentiate between true connectivity and volume conduction effects.
+# The spatial patterns are stored under ``attrs['patterns']`` of the
+# connectivity class, with one value per frequency for each channel in the
+# seeds and targets. The patterns can be positive- and negative-valued. Sign
+# differences of the patterns can be used to visualise the orientation of
+# underlying dipole sources, whereas their absolute value reflects the strength
+# of a channel's contribution to the connectivity component. The spatial
+# patterns are **not** bound between :math:`[-1, 1]`.
 #
-# Nevertheless, in the context of LFP signals, which typically represent local field
-# potentials recorded from electrodes implanted in the brain, the concern for volume
-# conduction is less pronounced compared to EEG because LFP signals are less influenced
-# by the spread of electrical activity through the scalp and skull. In this domain, the
-# CaCoh method still operates and can potentially capture true zero-lag interactions
-# that are physiological in nature. The method could distinguish between true zero-lag
-# interactions and those resulting from volume conduction if the spatial resolution is
-# high enough to separate the sources of the signals, which is often the case with LFPs
-# due to their proximity to the neural sources.
+# Averaging across the patterns in the 10-12 Hz and 23-25 Hz ranges, we can see
+# how it is possible to identify which channels are contributing to
+# connectivity at different frequencies.
+
+# %%
+
+freqs = cacoh.freqs
+fbands = ((10, 12), ((23, 25)))
+
+fig, axes = plt.subplots(1, 2)
+
+# patterns have shape [seeds/targets x cons x channels x freqs (x times)]
+patterns = np.abs(np.array(cacoh.attrs["patterns"]))
+seed_pattern = patterns[0, :, : len(seeds)]
+target_pattern = patterns[1, :, : len(targets)]
+
+vmin = np.nanmin(patterns)
+vmax = np.nanmax(patterns)
+
+for axis, fband in zip(axes, fbands):
+    # average across frequencies
+    seed_pattern_fband = np.mean(
+        seed_pattern[0, :, freqs.index(fband[0]) : freqs.index(fband[1]) + 1], axis=1
+    )
+    target_pattern_fband = np.mean(
+        target_pattern[0, :, freqs.index(fband[0]) : freqs.index(fband[1]) + 1], axis=1
+    )
+
+    # combine into a single array
+    pattern_fband = np.concatenate((seed_pattern_fband, target_pattern_fband), axis=0)
+
+    # plot the pattern
+    mesh = axis.pcolormesh(
+        np.flip(np.expand_dims(pattern_fband, 1)), vmin=vmin, vmax=vmax
+    )
+    axis.set_yticks([1.5, 4.5, 8.5, 13.5])
+    axis.set_xticks([0.5])
+    axis.set_xticklabels([f"{fband[0]}-{fband[1]}"])
+
+# Label axes
+fig.suptitle("Spatial patterns")
+axes[0].set_yticklabels(
+    [
+        "Targets\n(23-25 Hz)",
+        "Targets\n(10-12 Hz)",
+        "Seeds\n(23-25 Hz)",
+        "Seeds\n(10-12 Hz)",
+    ],
+    rotation=45,
+    va="center",
+)
+axes[0].set_ylabel("Channels")
+axes[1].get_yaxis().set_visible(False)
+fig.text(0.47, 0.02, "Frequency band (Hz)", ha="center")
+
+# Set colourbar
+fig.subplots_adjust(right=0.8)
+cbar_axis = fig.add_axes([0.85, 0.15, 0.02, 0.7])
+fig.colorbar(mesh, cax=cbar_axis)
+cbar_axis.set_ylabel("Contribution to connectivity (A.U.)")
+cbar_axis.set_yticks([vmin, vmax])
+cbar_axis.set_yticklabels(["Low", "High"])
+
+plt.show()
+
+###############################################################################
+# For an example on interpreting spatial filters with real data, see the
+# :doc:`mic_mim` example.
+
+###############################################################################
+# Handling high-dimensional data
+# ------------------------------
 #
-# On the other hand, the presence of a non-zero lag is often indicative of genuine
-# physiological interactions, as it suggests a time course for signal transmission
-# across neural pathways. This is especially pertinent in EEG/MEG and LFP analyses.
-# CaCoh capture those interactions and help to understand the dynamics of these
-# time-lagged connections.
+# An important issue to consider when using these multivariate methods is
+# overfitting, which risks biasing connectivity estimates to maximise noise in
+# the data. This risk can be reduced by performing a preliminary dimensionality
+# reduction prior to estimating the connectivity with a singular value
+# decomposition (Eq. 15 of :footcite:`VidaurreEtAl2019`). The degree of this
+# dimensionality reduction can be specified using the ``rank`` argument, which
+# by default will not perform any dimensionality reduction (assuming your data
+# is full rank; see below if not). Choosing an expected rank of the data
+# requires *a priori* knowledge about the number of components you expect to
+# observe in the data.
 #
+# When comparing CaCoh scores across recordings, **it is highly recommended
+# to estimate connectivity from the same number of channels (or equally from
+# the same degree of rank subspace projection)** to avoid biases in
+# connectivity estimates. Bias can be avoided by specifying a consistent rank
+# subspace to project to using the ``rank`` argument, standardising your
+# connectivity estimates regardless of changes in e.g. the number of channels
+# across recordings. Note that this does not refer to the number of seeds and
+# targets *within* a connection being identical, rather to the number of seeds
+# and targets *across* connections.
+#
+# Here, we project our seed and target data to only the first 2 components of
+# our rank subspace. Results show that the general spectral pattern of
+# connectivity is retained in the rank subspace-projected data, suggesting that
+# a fair degree of redundant connectivity information is contained in the
+# excluded components of the seed and target data.
+#
+# We also assert that the spatial patterns of MIC are returned in the original
+# sensor space despite this rank subspace projection, being reconstructed using
+# the products of the singular value decomposition (Eqs. 46 & 47 of
+# :footcite:`EwaldEtAl2012`).
+
+# %%
+
+# Compute CaCoh following rank subspace projection
+cacoh_red = spectral_connectivity_epochs(
+    data,
+    method="cacoh",
+    indices=multivar_indices,
+    sfreq=sfreq,
+    fmin=3,
+    fmax=35,
+    rank=([2], [2]),
+)
+
+# compare standard and rank subspace-projected CaCoh
+fig, axis = plt.subplots(1, 1)
+axis.plot(cacoh.freqs, np.abs(cacoh.get_data()[0]), linewidth=2, label="standard CaCoh")
+axis.plot(
+    cacoh_red.freqs,
+    np.abs(cacoh_red.get_data()[0]),
+    linewidth=2,
+    label="rank subspace (2) CaCoh",
+)
+axis.set_xlabel("Frequency (Hz)")
+axis.set_ylabel("Connectivity (A.U.)")
+axis.legend()
+fig.suptitle("CaCoh")
+
+# no. channels equal with and without projecting to rank subspace for patterns
+assert patterns[0, 0].shape[0] == np.array(cacoh_red.attrs["patterns"])[0, 0].shape[0]
+assert patterns[1, 0].shape[0] == np.array(cacoh_red.attrs["patterns"])[1, 0].shape[0]
+
+###############################################################################
+# See :doc:`mic_mim` for an example of applying the rank subspace
+# projection to real data with a large number of channels.
+#
+# In the case that your data is not full rank and ``rank`` is left as ``None``,
+# an automatic rank computation is performed and an appropriate degree of
+# dimensionality reduction will be enforced. The rank of the data is determined
+# by computing the singular values of the data and finding those within a
+# factor of :math:`1e^{-6}` relative to the largest singular value.
+#
+# Whilst unlikely, there may be scenarios in which this threshold may be too
+# lenient. In these cases, you should inspect the singular values of your data
+# to identify an appropriate degree of dimensionality reduction to perform,
+# which you can then specify manually using the ``rank`` argument. The code
+# below shows one possible approach for finding an appropriate rank of
+# close-to-singular data with a more conservative threshold.
+
+# %%
+
+# gets the singular values of the data across epochs
+s = np.linalg.svd(data, compute_uv=False).min(axis=0)
+# finds how many singular values are 'close' to the largest singular value
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
+
+###############################################################################
+# Limitations
+# -----------
+#
+# Multivariate methods offer many benefits in the form of dimensionality
+# reduction and signal-to-noise ratio improvements, however no method is
+# perfect. When we simulated the data, we mentioned how we considered the seeds
+# and targets to be signals of different modalities. This is an important
+# factor in whether CaCoh should be used over methods based solely on the
+# imaginary part of coherency such as MIC and MIM.
+#
+# In short, if you want to examine connectivity between signals from the same
+# modality, you should consider not using CaCoh. Instead, methods based on the
+# imaginary part of coherency such as MIC and MIM should be used to avoid
+# spurious connectivity estimates stemming from e.g. volume conduction
+# artefacts.
+#
+# On the other hand, if you want to examine connectivity between signals from
+# different modalities, CaCoh is a more appropriate method than MIC/MIM. This
+# is because voilume conduction artefacts are not a concern, and CaCoh does not
+# risk biasing connectivity estimates towards interactions with particular
+# phase lags like MIC/MIM.
+#
+# These scenarios are described in more detail in the :doc:`cacoh_vs_mic`
+# example.
 
 ###############################################################################
 # References
