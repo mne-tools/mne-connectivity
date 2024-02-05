@@ -60,9 +60,9 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # - 5 seeds and 3 targets interacting in the 23-25 Hz frequency range.
 #
 # We can consider the seeds and targets to be signals of different modalities,
-# e.g. cortical EEG signals and subcortical local field potential signals,
-# cortical EEG signals and muscular EMG signals, etc.... We use the function
-# below to simulate these signals.
+# e.g. cortical EEG signals and subcortical LFP signals, cortical EEG signals
+# and muscular EMG signals, etc.... We use the function below to simulate these
+# signals.
 
 # %%
 
@@ -531,7 +531,7 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 #
 # On the other hand, if you want to examine connectivity between signals from
 # different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-# is because voilume conduction artefacts are not a concern, and CaCoh does not
+# is because volume conduction artefacts are not a concern, and CaCoh does not
 # risk biasing connectivity estimates towards interactions with particular
 # phase lags like MIC/MIM.
 #
