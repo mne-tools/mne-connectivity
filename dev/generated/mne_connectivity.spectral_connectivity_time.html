@@ -483,19 +483,20 @@ power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 Only the frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and
 <code class="docutils literal notranslate"><span class="pre">fmax</span></code> are used.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be
-<code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'gc',</span>
-<span class="pre">'gc_tr']</span></code>. These are:
-* ‘coh’   : Coherence
-* ‘mic’   : Maximised Imaginary part of Coherency (MIC)
-* ‘mim’   : Multivariate Interaction Measure (MIM)
-* ‘plv’   : Phase-Locking Value (PLV)
-* ‘ciplv’ : Corrected imaginary Phase-Locking Value
-* ‘pli’   : Phase-Lag Index
-* ‘wpli’  : Weighted Phase-Lag Index
-* ‘gc’    : State-space Granger Causality (GC)
-* ‘gc_tr’ : State-space GC on time-reversed signals
-Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'mic',</span>
+<span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These are:</p>
+<ul class="simple">
+<li><p>‘coh’ : Coherence</p></li>
+<li><p>‘mic’ : Maximised Imaginary part of Coherency (MIC)</p></li>
+<li><p>‘mim’ : Multivariate Interaction Measure (MIM)</p></li>
+<li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
+<li><p>‘ciplv’ : Corrected Imaginary PLV (ciPLV)</p></li>
+<li><p>‘pli’ : Phase Lag Index (PLI)</p></li>
+<li><p>‘wpli’ : Weighted PLI (WPLI)</p></li>
+<li><p>‘gc’ : State-space Granger Causality (GC)</p></li>
+<li><p>‘gc_tr’ : State-space GC on time-reversed signals</p></li>
+</ul>
+<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be
 called with the other methods.</p>
 </dd>
 <dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Average connectivity scores over epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output will be

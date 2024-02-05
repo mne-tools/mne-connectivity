@@ -490,8 +490,26 @@ of names, then it must be equal in length to <code class="docutils literal notra
 </dd>
 <dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'cohy',</span>
 <span class="pre">'imcoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'ppc',</span> <span class="pre">'pli',</span> <span class="pre">'dpli',</span> <span class="pre">'wpli',</span>
-<span class="pre">'wpli2_debiased',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span>
-<span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be called with the other methods.</p>
+<span class="pre">'wpli2_debiased',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These are:</p>
+<ul class="simple">
+<li><p>‘coh’ : Coherence</p></li>
+<li><p>‘cohy’ : Coherency</p></li>
+<li><p>‘imcoh’ : Imaginary part of coherency</p></li>
+<li><p>‘mic’ : Maximised Imaginary part of Coherency (MIC)</p></li>
+<li><p>‘mim’ : Multivariate Interaction Measure (MIM)</p></li>
+<li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
+<li><p>‘ciplv’ : Corrected Imaginary PLV (ciPLV)</p></li>
+<li><p>‘ppc’ : Pairwise Phase Consistency (PPC)</p></li>
+<li><p>‘pli’ : Phase Lag Index (PLI)</p></li>
+<li><p>‘pli2_unbiased’ : Unbiased estimator of squared PLI</p></li>
+<li><p>‘dpli’ : Directed PLI (DPLI)</p></li>
+<li><p>‘wpli’ : Weighted PLI (WPLI)</p></li>
+<li><p>‘wpli2_debiased’ : Debiased estimator of squared WPLI</p></li>
+<li><p>‘gc’ : State-space Granger Causality (GC)</p></li>
+<li><p>‘gc_tr’ : State-space GC on time-reversed signals</p></li>
+</ul>
+<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be
+called with the other methods.</p>
 </dd>
 <dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which to compute
 connectivity. If a bivariate method is called, each array for the seeds
