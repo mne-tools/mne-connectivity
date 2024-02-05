@@ -7,6 +7,7 @@ This file benchmarks mne-connectivity VAR implementation
 against that of statsmodels to prevent us from creating
 a dependency on statsmodels.
 """
+
 import numpy as np
 from memory_profiler import profile
 from statsmodels.tsa.vector_ar.var_model import VAR
