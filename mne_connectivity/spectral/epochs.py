@@ -645,8 +645,26 @@ def spectral_connectivity_epochs(
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
         'imcoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
-        'wpli2_debiased', 'gc', 'gc_tr']``. Multivariate methods (``['mic',
-        'mim', 'gc', 'gc_tr]``) cannot be called with the other methods.
+        'wpli2_debiased', 'gc', 'gc_tr']``. These are:
+
+        * %(coh)s
+        * %(cohy)s
+        * %(imcoh)s
+        * %(mic)s
+        * %(mim)s
+        * %(plv)s
+        * %(ciplv)s
+        * %(ppc)s
+        * %(pli)s
+        * %(pli2_unbiased)s
+        * %(dpli)s
+        * %(wpli)s
+        * %(wpli2_debiased)s
+        * %(gc)s
+        * %(gc_tr)s
+
+        Multivariate methods (``['mic', 'mim', 'gc', 'gc_tr]``) cannot be
+        called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If a bivariate method is called, each array for the seeds

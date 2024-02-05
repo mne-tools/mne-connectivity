@@ -69,18 +69,19 @@ def spectral_connectivity_time(
         Only the frequencies within the range specified by ``fmin`` and
         ``fmax`` are used.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be
-        ``['coh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc',
-        'gc_tr']``. These are:
-        * 'coh'   : Coherence
-        * 'mic'   : Maximised Imaginary part of Coherency (MIC)
-        * 'mim'   : Multivariate Interaction Measure (MIM)
-        * 'plv'   : Phase-Locking Value (PLV)
-        * 'ciplv' : Corrected imaginary Phase-Locking Value
-        * 'pli'   : Phase-Lag Index
-        * 'wpli'  : Weighted Phase-Lag Index
-        * 'gc'    : State-space Granger Causality (GC)
-        * 'gc_tr' : State-space GC on time-reversed signals
+        Connectivity measure(s) to compute. These can be ``['coh', 'mic',
+        'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These are:
+
+        * %(coh)s
+        * %(mic)s
+        * %(mim)s
+        * %(plv)s
+        * %(ciplv)s
+        * %(pli)s
+        * %(wpli)s
+        * %(gc)s
+        * %(gc_tr)s
+
         Multivariate methods (``['mic', 'mim', 'gc', 'gc_tr]``) cannot be
         called with the other methods.
     average : bool
