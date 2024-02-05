@@ -51,7 +51,7 @@ jobs:
           pyvista: false
       - name: Install dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip setuptools wheel
           pip install --upgrade --upgrade-strategy eager .[test]
       - if: matrix.mne-version == 'mne-stable'
         run: pip install --upgrade mne
