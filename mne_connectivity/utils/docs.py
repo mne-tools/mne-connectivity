@@ -68,6 +68,22 @@ docdict[
         as xarray ``attrs``.
 """
 
+docdict["coh"] = "'coh' : Coherence"
+docdict["cohy"] = "'cohy' : Coherency"
+docdict["imcoh"] = "'imcoh' : Imaginary part of coherency"
+docdict["mic"] = "'mic' : Maximised Imaginary part of Coherency (MIC)"
+docdict["mim"] = "'mim' : Multivariate Interaction Measure (MIM)"
+docdict["plv"] = "'plv' : Phase-Locking Value (PLV)"
+docdict["ciplv"] = "'ciplv' : Corrected Imaginary PLV (ciPLV)"
+docdict["ppc"] = "'ppc' : Pairwise Phase Consistency (PPC)"
+docdict["pli"] = "'pli' : Phase Lag Index (PLI)"
+docdict["pli2_unbiased"] = "'pli2_unbiased' : Unbiased estimator of squared PLI"
+docdict["dpli"] = "'dpli' : Directed PLI (DPLI)"
+docdict["wpli"] = "'wpli' : Weighted PLI (WPLI)"
+docdict["wpli2_debiased"] = "'wpli2_debiased' : Debiased estimator of squared WPLI"
+docdict["gc"] = "'gc' : State-space Granger Causality (GC)"
+docdict["gc_tr"] = "'gc_tr' : State-space GC on time-reversed signals"
+
 # Downstream container variables
 docdict[
     "freqs"
