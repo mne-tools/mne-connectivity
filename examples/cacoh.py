@@ -44,8 +44,9 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # Canonical coherency (CaCoh) is a multivariate form of coherency that uses
 # spatial filters to extract the relevant components of connectivity in a
 # frequency-resolved manner :footcite:`VidaurreEtAl2019`. It is similar to
-# multivariate methods based on the imaginary part of coherency (MIC & MIM; see
-# :doc:`mic_mim`), which are also supported by MNE-Connectivity.
+# multivariate methods based on the imaginary part of coherency (MIC & MIM
+# :footcite:`EwaldEtAl2012`; see :doc:`mic_mim`), which are also supported by
+# MNE-Connectivity.
 
 
 ###############################################################################
@@ -67,52 +68,18 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # %%
 
 
-def simulate_connectivity(
-    n_seeds: int,
-    n_targets: int,
-    freq_band: tuple[int, int],
-    n_epochs: int,
-    n_times: int,
-    sfreq: int,
-    snr: float,
-    connection_delay: int,
-    rng_seed: int | None = None,
-) -> np.ndarray:
+def simulate_connectivity(freq_band: tuple[int, int], rng_seed: int) -> np.ndarray:
     """Simulates signals interacting in a given frequency band.
 
     Parameters
     ----------
-    n_seeds : int
-        Number of seed channels to simulate.
-
-    n_targets : int
-        Number of target channels to simulate.
-
     freq_band : tuple of int, int
         Frequency band where the connectivity should be simulated, where the
         first entry corresponds to the lower frequency, and the second entry to
         the higher frequency.
 
-    n_epochs : int
-        Number of epochs in the simulated data.
-
-    n_times : int
-        Number of timepoints each epoch of the simulated data.
-
-    sfreq : int
-        Sampling frequency of the simulated data, in Hz.
-
-    snr : float
-        Signal-to-noise ratio of the simulated data.
-
-    connection_delay :
-        Number of timepoints for the delay of connectivity between the seeds
-        and targets. If > 0, the target data is a delayed form of the seed data
-        by this many timepoints.
-
-    rng_seed : int | None (default None)
-        Seed to use for the random number generator. If `None`, no seed is
-        specified.
+    rng_seed : int
+        Seed to use for the random number generator.
 
     Returns
     -------
@@ -120,11 +87,19 @@ def simulate_connectivity(
         The simulated data stored in an array. The channels are arranged
         according to seeds, then targets.
     """
-    if rng_seed is not None:
-        np.random.seed(rng_seed)
+    # Define fixed simulation parameters
+    n_seeds = 5
+    n_targets = 3
+    n_epochs = 10
+    n_times = 200  # samples
+    sfreq = 100  # Hz
+    snr = 0.7
+    trans_bandwidth = 1  # Hz
+    connection_delay = 1  # sample
+
+    np.random.seed(rng_seed)
 
     n_channels = n_seeds + n_targets
-    trans_bandwidth = 1  # Hz
 
     # simulate signal source at desired frequency band
     signal = np.random.randn(1, n_epochs * n_times + connection_delay)
@@ -163,39 +138,14 @@ def simulate_connectivity(
 
 # %%
 
-# Define simulation parameters
-n_seeds = 5
-n_targets = 3
-n_channels = n_seeds + n_targets
-n_epochs = 10
-n_times = 200  # samples
-sfreq = 100  # Hz
-snr = 0.7
-connection_delay = 10  # samples
-rng_seed = 44
-
 # Generate simulated data
 data_10_12 = simulate_connectivity(
-    n_seeds=n_seeds,
-    n_targets=n_targets,
     freq_band=(10, 12),  # 10-12 Hz interaction
-    n_epochs=n_epochs,
-    n_times=n_times,
-    sfreq=sfreq,
-    snr=snr,
-    connection_delay=connection_delay,
     rng_seed=42,
 )
 
 data_23_25 = simulate_connectivity(
-    n_seeds=n_seeds,
-    n_targets=n_targets,
     freq_band=(23, 25),  # 23-25 Hz interaction
-    n_epochs=n_epochs,
-    n_times=n_times,
-    sfreq=sfreq,
-    snr=snr,
-    connection_delay=connection_delay,
     rng_seed=44,
 )
 
@@ -236,18 +186,13 @@ data = np.concatenate((data_10_12, data_23_25), axis=1)
 # %%
 
 # Generate connectivity indices
-seeds = np.concatenate(
-    (np.arange(n_seeds), np.arange(n_channels, n_seeds + n_channels))
-)
-targets = np.concatenate(
-    (np.arange(n_seeds, n_channels), np.arange(n_channels + n_seeds, n_channels * 2))
-)
-
+seeds = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12]
+targets = [5, 6, 7, 13, 14, 15]
 multivar_indices = ([seeds], [targets])
 
 # Compute CaCoh
 cacoh = spectral_connectivity_epochs(
-    data, method="cacoh", indices=multivar_indices, sfreq=sfreq, fmin=3, fmax=35
+    data, method="cacoh", indices=multivar_indices, sfreq=100, fmin=3, fmax=35
 )
 
 ###############################################################################
@@ -261,6 +206,7 @@ cacoh = spectral_connectivity_epochs(
 
 print(f"Results shape: {cacoh.get_data().shape} (connections x frequencies)")
 
+# Plot CaCoh
 fig, axis = plt.subplots(1, 1)
 axis.plot(cacoh.freqs, np.abs(cacoh.get_data()[0]), linewidth=2)
 axis.set_xlabel("Frequency (Hz)")
@@ -276,6 +222,7 @@ fig.suptitle("CaCoh")
 
 # %%
 
+# Plot phase of connectivity
 fig, axis = plt.subplots(1, 1)
 axis.plot(cacoh.freqs, np.angle(cacoh.get_data()[0]), linewidth=2)
 axis.set_xlabel("Frequency (Hz)")
@@ -296,11 +243,11 @@ fig.suptitle("CaCoh")
 # %%
 
 # Define bivariate connectivity indices
-bivar_indices = seed_target_indices(seeds=seeds, targets=targets)
+bivar_indices = seed_target_indices(seeds, targets)
 
 # Compute bivariate coherence
 coh = spectral_connectivity_epochs(
-    data, method="coh", indices=bivar_indices, sfreq=sfreq, fmin=3, fmax=35
+    data, method="coh", indices=bivar_indices, sfreq=100, fmin=3, fmax=35
 )
 
 ###############################################################################
@@ -309,11 +256,6 @@ coh = spectral_connectivity_epochs(
 # the scale of the connectivity is much smaller. This reflects the fact that
 # CaCoh is able to capture the relevant components of interactions between
 # multiple signals, regardless of whether they are present in all channels.
-#
-# The ability of multivariate connectivity methods to capture the underlying
-# components of connectivity is extremely useful when dealing with data from
-# a large number of channels, with inter-channel interactions at distinct
-# frequencies, a problem explored in more detail in the :doc:`mic_mim` example.
 
 # %%
 
@@ -322,6 +264,7 @@ print(f"Results shape: {coh.get_data().shape} (connections x frequencies)")
 cacoh_min = np.min(np.abs(cacoh.get_data()[0]))
 coh_min = np.min(np.mean(coh.get_data(), axis=0))
 
+# Plot CaCoh & Coh
 fig, axis = plt.subplots(1, 1)
 axis.plot(
     coh.freqs, np.abs(cacoh.get_data()[0]) - cacoh_min, linewidth=2, label="CaCoh"
@@ -333,6 +276,12 @@ axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Baseline-corrected connectivity (A.U.)")
 axis.legend()
 fig.suptitle("CaCoh vs. coherence")
+
+###############################################################################
+# The ability of multivariate connectivity methods to capture the underlying
+# components of connectivity is extremely useful when dealing with data from
+# a large number of channels, with inter-channel interactions at distinct
+# frequencies, a problem explored in more detail in the :doc:`mic_mim` example.
 
 ###############################################################################
 # Extracting spatial information from CaCoh
@@ -464,7 +413,7 @@ cacoh_red = spectral_connectivity_epochs(
     data,
     method="cacoh",
     indices=multivar_indices,
-    sfreq=sfreq,
+    sfreq=100,
     fmin=3,
     fmax=35,
     rank=([2], [2]),
@@ -481,7 +430,7 @@ axis.plot(
 )
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Connectivity (A.U.)")
-axis.legend()
+axis.legend(loc="lower right")
 fig.suptitle("CaCoh")
 
 # no. channels equal with and without projecting to rank subspace for patterns
@@ -531,8 +480,8 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 #
 # On the other hand, if you want to examine connectivity between signals from
 # different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-# is because volume conduction artefacts are not a concern, and CaCoh does not
-# risk biasing connectivity estimates towards interactions with particular
+# is because volume conduction artefacts are of less concern, and CaCoh does
+# not risk biasing connectivity estimates towards interactions with particular
 # phase lags like MIC/MIM.
 #
 # These scenarios are described in more detail in the :doc:`cacoh_vs_mic`

@@ -53,8 +53,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # multivariate manner :footcite:`EwaldEtAl2012`. This approach leads to the
 # following methods: the maximised imaginary part of coherency (MIC); and the
 # multivariate interaction measure (MIM). These methods are similar to the
-# multivariate method based on coherency (CaCoh; see :doc:`cacoh`), which is
-# also supported by MNE-Connectivity.
+# multivariate method based on coherency (CaCoh :footcite:`VidaurreEtAl2019`;
+# see :doc:`cacoh`), which is also supported by MNE-Connectivity.
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
@@ -376,7 +376,6 @@ mim_meansub = mim.get_data()[0] - mim.get_data()[0].mean()
 fig, axis = plt.subplots(1, 1)
 axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
 axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2, label="rank subspace (25) MIM")
-axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Mean-corrected connectivity (A.U.)")
 axis.legend()
@@ -415,27 +414,24 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 #
 # These multivariate methods offer many benefits in the form of dimensionality
 # reduction, signal-to-noise ratio improvements, and invariance to
-# estimate-biasing source mixing; however, no method is perfect. The immunity
-# of the imaginary part of coherency to volume conduction comes from the fact
-# that these artefacts have zero phase lag, and hence a zero-valued imaginary
-# component. By projecting the complex-valued coherency to the imaginary axis,
-# signals of a given magnitude with phase lag differences close to 90° or 270°
-# see their contributions to the connectivity estimate increased relative to
-# comparable signals with phase lag differences close to 0° or 180°. Therefore,
-# the imaginary part of coherency is biased towards connectivity involving 90°
-# and 270° phase lag difference components.
+# estimate-biasing source mixing; however, no method is perfect. Important
+# considerations must be taken into account when choosing methods based on the
+# imaginary part of coherency such as MIC or MIM versus those based on
+# coherency/coherence, such as CaCoh.
 #
-# Whilst this is not a limitation specific to the multivariate extension of
-# this measure, these multivariate methods can introduce further bias: when
-# maximising the imaginary part of coherency, components with phase lag
-# differences close to 90° and 270° will likely give higher connectivity
-# estimates, and so may be prioritised by the spatial filters.
+# In short, if you want to examine connectivity between signals from the same
+# modality, you should consider using MIC and MIM to avoid spurious
+# connectivity estimates stemming from e.g. volume conduction artefacts.
 #
-# Such a limitation should be kept in mind when estimating connectivity using
-# these methods. Possible sanity checks can involve comparing the spectral
-# profiles of MIC/MIM to coherence and the imaginary part of coherency
-# computed on the same data, as well as comparing to other multivariate
-# measures, such as canonical coherence :footcite:`VidaurreEtAl2019`.
+# On the other hand, if you want to examine connectivity between signals from
+# different modalities, CaCoh is a more appropriate method than MIC/MIM. This
+# is because voilume conduction artefacts are of less concern, and CaCoh does
+# not risk biasing connectivity estimates towards interactions with particular
+# phase lags like MIC/MIM.
+#
+# These scenarios are described in more detail in the :doc:`cacoh_vs_mic`
+# example.
+
 
 ###############################################################################
 # References
