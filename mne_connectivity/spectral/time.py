@@ -84,8 +84,8 @@ def spectral_connectivity_time(
         * %(gc)s
         * %(gc_tr)s
 
-        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr]``) cannot
-        be called with the other methods.
+        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``)
+        cannot be called with the other methods.
     average : bool
         Average connectivity scores over epochs. If ``True``, output will be
         an instance of :class:`SpectralConnectivity`, otherwise

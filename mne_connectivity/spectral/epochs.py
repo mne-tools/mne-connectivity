@@ -664,8 +664,8 @@ def spectral_connectivity_epochs(
         * %(gc)s
         * %(gc_tr)s
 
-        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr]``) cannot
-        be called with the other methods.
+        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``)
+        cannot be called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If a bivariate method is called, each array for the seeds
