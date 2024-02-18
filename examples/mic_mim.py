@@ -54,7 +54,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # following methods: the maximised imaginary part of coherency (MIC); and the
 # multivariate interaction measure (MIM). These methods are similar to the
 # multivariate method based on coherency (CaCoh :footcite:`VidaurreEtAl2019`;
-# see :doc:`cacoh`), which is also supported by MNE-Connectivity.
+# see :doc:`cacoh` and :doc:`compare_coherency_methods`), which is also
+# supported by MNE-Connectivity.
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
@@ -173,6 +174,11 @@ fig.suptitle("Maximised imaginary part of coherency")
 # values, we can infer the existence of a dipole source between the central and
 # posterior regions of the left hemisphere accounting for the connectivity
 # contributions (represented on the plot as a green line).
+#
+# **N.B.** The spatial patterns are not a substitute for source reconstruction.
+# If you need the spatial patterns in source space, you should perform source
+# reconstruction before computing connectivity (see e.g.
+# :doc:`mne_inverse_coherence_epochs`).
 
 # %%
 
@@ -429,8 +435,8 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 # not risk biasing connectivity estimates towards interactions with particular
 # phase lags like MIC/MIM.
 #
-# These scenarios are described in more detail in the :doc:`cacoh_vs_mic`
-# example.
+# These scenarios are described in more detail in the
+# :doc:`compare_coherency_methods` example.
 
 
 ###############################################################################

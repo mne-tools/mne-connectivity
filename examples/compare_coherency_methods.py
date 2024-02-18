@@ -30,19 +30,22 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # - imaginary part of coherency (ImCoh)
 # - canonical coherency (CaCoh)
 # - maximised imaginary part of coherency (MIC)
-# - multivariate interaction measure (MIM; based on ImCoh)
+# - multivariate interaction measure (MIM)
 #
 # |
 #
-# All of these methods centre on Cohy, a complex-valued estimate of
-# of connectivity between signals in the frequency domain.
+# All of these methods centre on Cohy, a complex-valued estimate of the
+# correlation between signals in the frequency domain. It is an undirected
+# measure of connectivity, being invariant to the direction of information flow
+# between signals.
 #
 # The common approach for handling these complex-valued coherency scores is to
 # either take their absolute values (Coh) or their imaginary values (ImCoh
 # :footcite:`NolteEtAl2004`).
 #
-# In addition to these traditional bivariate connectivity measures, advanced
-# multivariate measures have also been developed based on Cohy (CaCoh
+# In addition to these traditional bivariate connectivity measures (i.e.
+# between two signals), advanced multivariate measures (i.e. between groups of
+# signals) have also been developed based on Cohy (CaCoh
 # :footcite:`VidaurreEtAl2019`; can take the absolute value for a multivariate
 # form of Coh) or ImCoh (MIC & MIM :footcite:`EwaldEtAl2012`).
 #
@@ -178,10 +181,6 @@ data = np.concatenate((data_delay, data_no_delay), axis=1)
 # multivariate form of Cohy/Coh) and MIC (a multivariate form of ImCoh).
 
 # %%
-
-n_seeds = 3
-n_targets = 3
-n_channels = n_seeds + n_targets
 
 # Generate connectivity indices
 seeds = [0, 1, 2, 6, 7, 8]
@@ -322,7 +321,8 @@ axis.legend(loc="upper right", bbox_to_anchor=[1.1, 1.1])
 # component (ImCoh, MIC, MIM) capture only non-zero time-lag interactions.
 #
 # The ability to capture these different interactions is not a feature specific
-# to multivariate connectivity methods, as shown below for Coh and ImCoh.
+# to multivariate connectivity methods, as shown below for the bivariate
+# methods Coh and ImCoh.
 
 # %%
 
@@ -361,11 +361,13 @@ fig.suptitle("Coh vs. ImCoh\nNon-zero & zero time-lags")
 # assumed, methods based on only the imaginary part of coherency (ImCoh, MIC,
 # MIM) should be used.** Examples of situations include:
 #
-# - Connectivity between channels of a single modality where volume conduction
-#   is expected, e.g. connectivity between EEG channels.
-# - Connectivity between channels of different modalities where a common
-#   reference is used, e.g. connectivity between EEG and subcortical LFP using
-#   the same LFP reference.
+# - Connectivity between channels of a single modality.
+# - Connectivity between channels of different modalities where the same
+#   reference is used.
+#
+# Note that this applies not only to sensor-space signals, but also to
+# source-space signals where remnants of these non-physiological interactions
+# may remain even after source reconstruction.
 #
 # |
 #
@@ -373,18 +375,14 @@ fig.suptitle("Coh vs. ImCoh\nNon-zero & zero time-lags")
 # assumed, methods based on real and imaginary parts of coherency (Cohy, Coh,
 # CaCoh) should be used.** Examples of situations include:
 #
-# - Connectivity between channels of a single modality where volume conduction
-#   is not expected, e.g. connectivity between ECoG channels.
 # - Connectivity between channels of different modalities where different
-#   references are used, e.g. connectivity between EEG and subcortical LFP
-#   using cortical and subcortical references, respectively.
+#   references are used.
 #
 # |
 #
-# Although methods based on only the imaginary part of coherency should be used
-# when non-physiological zero time-lag interactions are present, these methods
-# should equally be avoided when such non-physiological interactions are
-# absent. There are 2 key reasons:
+# Equally, it is important to avoid methods based on only the imaginary part of
+# coherency when non-physiological zero time-lag interactions are absent. There
+# are two key reasons:
 #
 # **1. Discarding physiological zero time-lag interactions**
 #
@@ -393,10 +391,10 @@ fig.suptitle("Coh vs. ImCoh\nNon-zero & zero time-lags")
 # imaginary part of coherency may lead to information about genuine
 # connectivity being lost.
 #
-# In situations where non-physiological zero time-lag
-# interactions are present, the potential loss of physiological information is
-# generally acceptable to avoid spurious connectivity estimates. However,
-# unnecessarily discarding this information can be detrimental.
+# In situations where non-physiological zero time-lag interactions are present,
+# the potential loss of physiological information is generally acceptable to
+# avoid spurious connectivity estimates. However, unnecessarily discarding this
+# information can of course be detrimental.
 #
 # **2. Biasing interactions based on the angle of interaction**
 #
@@ -466,13 +464,14 @@ axis.legend(loc="upper right", bbox_to_anchor=[1.1, 1.1])
 
 ###############################################################################
 # Plotting the connectivity values for CaCoh and MIC, we see how the 10-12 Hz
-# and 23-25 Hz interactions only have a similar magnitude for CaCoh, whereas
-# the MIC scores for the 10-12 Hz interaction are lower than for the 23-25 Hz
+# and 23-25 Hz interactions have a similar magnitude for CaCoh, whereas the MIC
+# scores for the 10-12 Hz interaction are lower than for the 23-25 Hz
 # interaction.
 #
 # This difference reflects the fact that as the angle of interaction deviates
 # from :math:`\pm` 90°, less information will be represented in the imaginary
-# part of coherency.
+# part of coherency. Accordingly, considering only the imaginary part of
+# coherency can bias connectivity estimates based on the angle of interaction.
 
 # %%
 
@@ -490,16 +489,10 @@ axis.legend(loc="upper left")
 fig.suptitle("CaCoh vs. MIC\n$\pm$45° & $\pm$90° interactions")
 
 ###############################################################################
-# Accordingly, considering only the imaginary part of coherency can bias
-# connectivity estimates based on the proximity of the phase angle of
-# interactions to :math:`\pm` 90°, with closer angles leading to higher
-# estimates of connectivity.
-#
-# Again, in situations where non-physiological zero time-lag interactions are
-# present, this phase angle-dependent bias is generally acceptable to avoid
-# spurious connectivity estimates. However, such a bias in situations where
-# non-physiological zero time-lag interactions are not present is clearly
-# problematic.
+# In situations where non-physiological zero time-lag interactions are present,
+# this phase angle-dependent bias is generally acceptable to avoid spurious
+# connectivity estimates. However in situations where non-physiological zero
+# time-lag interactions are not present, such a bias is clearly problematic.
 #
 # |
 #
@@ -531,6 +524,54 @@ axis.legend(loc="upper left")
 fig.suptitle("Coh vs. ImCoh\n$\pm$45° & $\pm$90° interactions")
 
 ###############################################################################
+# Bivariate vs. multivariate coherency methods
+# --------------------------------------------
+#
+# As we have seen, coherency-based methods can be bivariate (Cohy, Coh, ImCoh)
+# and multivariate (CaCoh, MIC, MIM). Whilst both forms capture the same
+# information, there are several benefits to using multivariate methods when
+# investigating connectivity between many signals.
+#
+# The multivariate methods can be used to capture the most relevant
+# interactions between two groups of signals, representing this information in
+# the component, rather than signal space.
+#
+# The dimensionality reduction associated with these methods offers: a much
+# easier interpretation of the results; a higher signal-to-noise ratio compared
+# to e.g. averaging bivariate connectivity estimates across multiple pairs of
+# signals; and even reduced bias in what information is captured
+# :footcite:`EwaldEtAl2012`.
+#
+# Furthermore, despite the dimensionality reduction of multivariate methods it
+# is still possible to investigate the topographies of connectivity, with
+# spatial patterns of connectivity being returned alongside the connectivity
+# values themselves :footcite:`HaufeEtAl2014`.
+#
+# More information about the multivariate coherency-based methods can be found
+# in the following examples:
+#
+# - CaCoh - :doc:`cacoh`
+# - MIC & MIM - :doc:`mic_mim`
+
+###############################################################################
+# Alternative approaches to computing connectivity
+# ------------------------------------------------
+#
+# Coherency-based methods are only some of the many approaches available in
+# MNE-Connectivity for studying interactions between signals. Other
+# non-directed measures include those based on the phase-lag index
+# :footcite:`StamEtAl2007,VinckEtAl2011` (see also :doc:`dpli_wpli_pli`) and
+# phase locking value :footcite:`LachauxEtAl1999,BrunaEtAl2018`.
+#
+# Furthermore, directed measures of connectivity which determine the direction
+# of information flow are also available, including a variant of the phase-lag
+# index :footcite:`StamEtAl2012` (see also :doc:`dpli_wpli_pli`), the phase
+# slope index :footcite:`NolteEtAl2008` (see also
+# :func:`mne_connectivity.phase_slope_index`), and Granger causality
+# :footcite:`BarnettSeth2015,WinklerEtAl2016` (see also
+# :doc:`granger_causality`).
+
+###############################################################################
 # Conclusion
 # ----------
 #
@@ -538,12 +579,11 @@ fig.suptitle("Coh vs. ImCoh\n$\pm$45° & $\pm$90° interactions")
 # methods are appropriate.
 #
 # Methods based on the imaginary part of coherency alone (ImCoh, MIC, MIM)
-# should only be used when non-physiological zero time-lag interactions (e.g.
-# volume conduction) are present.
+# should be used when non-physiological zero time-lag interactions are present.
 #
-# Methods based on the real and imaginary parts of coherency (Cohy, Coh, CaCoh)
-# should only be used when non-physiological zero time-lag interactions are not
-# present.
+# In contrast, methods based on the real and imaginary parts of coherency
+# (Cohy, Coh, CaCoh) should be used when non-physiological zero time-lag
+# interactions are absent.
 
 ###############################################################################
 # References

@@ -45,7 +45,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # spatial filters to extract the relevant components of connectivity in a
 # frequency-resolved manner :footcite:`VidaurreEtAl2019`. It is similar to
 # multivariate methods based on the imaginary part of coherency (MIC & MIM
-# :footcite:`EwaldEtAl2012`; see :doc:`mic_mim`), which are also supported by
+# :footcite:`EwaldEtAl2012`; see :doc:`mic_mim` and
+# :doc:`compare_coherency_methods`), which are also supported by
 # MNE-Connectivity.
 
 
@@ -484,8 +485,8 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 # not risk biasing connectivity estimates towards interactions with particular
 # phase lags like MIC/MIM.
 #
-# These scenarios are described in more detail in the :doc:`cacoh_vs_mic`
-# example.
+# These scenarios are described in more detail in the
+# :doc:`compare_coherency_methods` example.
 
 ###############################################################################
 # References
