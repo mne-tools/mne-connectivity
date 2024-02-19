@@ -47,7 +47,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # between two signals), advanced multivariate measures (i.e. between groups of
 # signals) have also been developed based on Cohy (CaCoh
 # :footcite:`VidaurreEtAl2019`; can take the absolute value for a multivariate
-# form of Coh) or ImCoh (MIC & MIM :footcite:`EwaldEtAl2012`).
+# form of Coh; see :doc:`cacoh`) or ImCoh (MIC & MIM :footcite:`EwaldEtAl2012`;
+# see :doc:`mic_mim`).
 #
 # Despite their similarities, there are distinct scenarios in which these
 # different methods are most appropriate, as we will show in this example.

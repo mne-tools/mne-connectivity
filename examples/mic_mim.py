@@ -42,19 +42,32 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # A popular bivariate measure of connectivity is the imaginary part of
 # coherency, which looks at the correlation between two signals in the
 # frequency domain and is immune to spurious connectivity arising from volume
-# conduction artefacts :footcite:`NolteEtAl2004`. However, depending on the
-# degree of source mixing, this measure is susceptible to biased estimates of
-# connectivity based on the spatial proximity of sensors
-# :footcite:`EwaldEtAl2012`.
+# conduction artefacts :footcite:`NolteEtAl2004`. However, in cases where
+# interactions between multiple signals are of interest, computing connectivity
+# between all possible combinations of signals leads to a very large number of
+# results which is difficult to interpret. A common approach is to average
+# results across these connections, however this risks reducing the
+# signal-to-noise ratio of results and burying interactions that are present
+# between only a small number of channels.
 #
-# To overcome this limitation, spatial filters can be used to estimate
-# connectivity free from this source mixing-dependent bias, which additionally
-# increases the signal-to-noise ratio and allows signals to be analysed in a
-# multivariate manner :footcite:`EwaldEtAl2012`. This approach leads to the
-# following methods: the maximised imaginary part of coherency (MIC); and the
-# multivariate interaction measure (MIM). These methods are similar to the
-# multivariate method based on coherency (CaCoh :footcite:`VidaurreEtAl2019`;
-# see :doc:`cacoh` and :doc:`compare_coherency_methods`).
+# Additionally, this bivariate measure is susceptible to biased estimates of
+# connectivity based on the spatial proximity of sensors
+# :footcite:`EwaldEtAl2012` depending on the degree of source mixing in the
+# signals.
+#
+# To overcome this limitation, spatial filters derived from eigendecompositions
+# allows connectivity to be analysed in a multivariate manner, removing the
+# source mixing-dependent bias and increase the signal-to-noise ratio of
+# connectivity estimates :footcite:`EwaldEtAl2012`. This approach goes beyond
+# simply aggregating information across all possible combinations of signals,
+# extracting the underlying components of connectivity in a frequency-resolved
+# manner.
+#
+# This leads to the following methods: the maximised imaginary part of
+# coherency (MIC); and the multivariate interaction measure (MIM). These
+# methods are similar to the multivariate method based on coherency (CaCoh
+# :footcite:`VidaurreEtAl2019`; see :doc:`cacoh` and
+# :doc:`compare_coherency_methods`).
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.

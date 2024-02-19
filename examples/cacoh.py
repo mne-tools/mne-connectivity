@@ -42,10 +42,13 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # that are present between only a small number of channels.
 #
 # Canonical coherency (CaCoh) is a multivariate form of coherency that uses
-# spatial filters to extract the relevant components of connectivity in a
-# frequency-resolved manner :footcite:`VidaurreEtAl2019`. It is similar to
-# multivariate methods based on the imaginary part of coherency (MIC & MIM
-# :footcite:`EwaldEtAl2012`; see :doc:`mic_mim` and
+# eigendecomposition-derived spatial filters to extract the underlying
+# components of connectivity in a frequency-resolved manner
+# :footcite:`VidaurreEtAl2019`. This approach goes beyond simply aggregating
+# information across all possible combinations of signals.
+#
+# It is similar to multivariate methods based on the imaginary part of
+# coherency (MIC & MIM :footcite:`EwaldEtAl2012`; see :doc:`mic_mim` and
 # :doc:`compare_coherency_methods`).
 
 
