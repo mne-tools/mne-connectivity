@@ -74,8 +74,8 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # having a method that can discard spurious zero time-lag connectivity
 # estimates is very desirable.
 #
-# **N.B.** Not all zero time-lag interactions are necessarily non-physiological
-# :footcite:`ViriyopaseEtAl2012`.
+# **Note:** Not all zero time-lag interactions are necessarily
+# non-physiological :footcite:`ViriyopaseEtAl2012`.
 #
 # To demonstrate the differences in how Cohy/Coh and ImCoh handle zero time-lag
 # interactions, we simulate two sets of data with:

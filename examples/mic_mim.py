@@ -175,9 +175,9 @@ fig.suptitle("Maximised imaginary part of coherency")
 # posterior regions of the left hemisphere accounting for the connectivity
 # contributions (represented on the plot as a green line).
 #
-# **N.B.** The spatial patterns are not a substitute for source reconstruction.
-# If you need the spatial patterns in source space, you should perform source
-# reconstruction before computing connectivity (see e.g.
+# **Note:** The spatial patterns are not a substitute for source
+# reconstruction. If you need the spatial patterns in source space, you should
+# perform source reconstruction before computing connectivity (see e.g.
 # :doc:`mne_inverse_coherence_epochs`).
 
 # %%
