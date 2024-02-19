@@ -54,8 +54,7 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # following methods: the maximised imaginary part of coherency (MIC); and the
 # multivariate interaction measure (MIM). These methods are similar to the
 # multivariate method based on coherency (CaCoh :footcite:`VidaurreEtAl2019`;
-# see :doc:`cacoh` and :doc:`compare_coherency_methods`), which is also
-# supported by MNE-Connectivity.
+# see :doc:`cacoh` and :doc:`compare_coherency_methods`).
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
@@ -411,7 +410,8 @@ assert patterns[1, 0].shape[0] == np.array(mic_red.attrs["patterns"])[1, 0].shap
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
 # finds how many singular values are 'close' to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria, which is
+# a hyper-parameter
 
 
 ###############################################################################

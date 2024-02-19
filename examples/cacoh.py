@@ -55,8 +55,7 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # ---------------
 #
 # To demonstrate the CaCoh method, will we use some simulated data consisting
-# of an interaction between signals in a given frequency range. Here, we
-# simulate two sets of interactions:
+# of two sets of interactions between signals in a given frequency range:
 #
 # - 5 seeds and 3 targets interacting in the 10-12 Hz frequency range.
 # - 5 seeds and 3 targets interacting in the 23-25 Hz frequency range.
@@ -195,6 +194,10 @@ multivar_indices = ([seeds], [targets])
 cacoh = spectral_connectivity_epochs(
     data, method="cacoh", indices=multivar_indices, sfreq=100, fmin=3, fmax=35
 )
+print(f"Results shape: {cacoh.get_data().shape} (connections x frequencies)")
+
+# Get absolute CaCoh
+cacoh_abs = np.abs(cacoh.get_data())[0]
 
 ###############################################################################
 # As you can see below, using CaCoh we have summarised the most relevant
@@ -205,11 +208,9 @@ cacoh = spectral_connectivity_epochs(
 
 # %%
 
-print(f"Results shape: {cacoh.get_data().shape} (connections x frequencies)")
-
 # Plot CaCoh
 fig, axis = plt.subplots(1, 1)
-axis.plot(cacoh.freqs, np.abs(cacoh.get_data()[0]), linewidth=2)
+axis.plot(cacoh.freqs, cacoh_abs, linewidth=2)
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Connectivity (A.U.)")
 fig.suptitle("CaCoh")
@@ -217,7 +218,7 @@ fig.suptitle("CaCoh")
 ###############################################################################
 # Note that we plot the absolute values of the results (coherence) rather than
 # the complex values (coherency). The absolute value of connectivity will
-# generally be of most interest, however information such as the phase of
+# generally be of most interest. However, information such as the phase of
 # interaction can only be extracted from the complex-valued results, e.g. with
 # the :func:`numpy.angle` function.
 
@@ -250,6 +251,11 @@ bivar_indices = seed_target_indices(seeds, targets)
 coh = spectral_connectivity_epochs(
     data, method="coh", indices=bivar_indices, sfreq=100, fmin=3, fmax=35
 )
+print(f"Original results shape: {coh.get_data().shape} (connections x frequencies)")
+
+# Average results across connections
+coh_mean = np.mean(coh.get_data(), axis=0)
+print(f"Averaged results shape: {coh_mean.shape} (connections x frequencies)")
 
 ###############################################################################
 # Plotting the bivariate and multivariate results together, we can see that
@@ -260,19 +266,10 @@ coh = spectral_connectivity_epochs(
 
 # %%
 
-print(f"Results shape: {coh.get_data().shape} (connections x frequencies)")
-
-cacoh_min = np.min(np.abs(cacoh.get_data()[0]))
-coh_min = np.min(np.mean(coh.get_data(), axis=0))
-
 # Plot CaCoh & Coh
 fig, axis = plt.subplots(1, 1)
-axis.plot(
-    coh.freqs, np.abs(cacoh.get_data()[0]) - cacoh_min, linewidth=2, label="CaCoh"
-)
-axis.plot(
-    coh.freqs, np.mean(coh.get_data(), axis=0) - coh_min, linewidth=2, label="Coh"
-)
+axis.plot(cacoh.freqs, cacoh_abs - np.min(cacoh_abs), linewidth=2, label="CaCoh")
+axis.plot(coh.freqs, coh_mean - np.min(coh_mean), linewidth=2, label="Coh")
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Baseline-corrected connectivity (A.U.)")
 axis.legend()
@@ -460,24 +457,25 @@ assert patterns[1, 0].shape[0] == np.array(cacoh_red.attrs["patterns"])[1, 0].sh
 # gets the singular values of the data across epochs
 s = np.linalg.svd(data, compute_uv=False).min(axis=0)
 # finds how many singular values are 'close' to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria, which is
+# a hyper-parameter
 
 ###############################################################################
 # Limitations
 # -----------
 #
 # Multivariate methods offer many benefits in the form of dimensionality
-# reduction and signal-to-noise ratio improvements, however no method is
+# reduction and signal-to-noise ratio improvements. However, no method is
 # perfect. When we simulated the data, we mentioned how we considered the seeds
 # and targets to be signals of different modalities. This is an important
 # factor in whether CaCoh should be used over methods based solely on the
 # imaginary part of coherency such as MIC and MIM.
 #
 # In short, if you want to examine connectivity between signals from the same
-# modality, you should consider not using CaCoh. Instead, methods based on the
-# imaginary part of coherency such as MIC and MIM should be used to avoid
-# spurious connectivity estimates stemming from e.g. volume conduction
-# artefacts.
+# modality, you should consider using another method instead of CaCoh. Rather,
+# methods based on the imaginary part of coherency such as MIC and MIM should
+# be used to avoid spurious connectivity estimates stemming from e.g. volume
+# conduction artefacts.
 #
 # On the other hand, if you want to examine connectivity between signals from
 # different modalities, CaCoh is a more appropriate method than MIC/MIM. This
