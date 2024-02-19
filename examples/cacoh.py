@@ -46,15 +46,15 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # frequency-resolved manner :footcite:`VidaurreEtAl2019`. It is similar to
 # multivariate methods based on the imaginary part of coherency (MIC & MIM
 # :footcite:`EwaldEtAl2012`; see :doc:`mic_mim` and
-# :doc:`compare_coherency_methods`), which are also supported by
-# MNE-Connectivity.
+# :doc:`compare_coherency_methods`).
 
 
 ###############################################################################
 # Data Simulation
 # ---------------
 #
-# To demonstrate the CaCoh method, will we use some simulated data consisting
+# To demonstrate the CaCoh method, we will use some simulated data consisting
+
 # of two sets of interactions between signals in a given frequency range:
 #
 # - 5 seeds and 3 targets interacting in the 10-12 Hz frequency range.
