@@ -54,7 +54,6 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # ---------------
 #
 # To demonstrate the CaCoh method, we will use some simulated data consisting
-
 # of two sets of interactions between signals in a given frequency range:
 #
 # - 5 seeds and 3 targets interacting in the 10-12 Hz frequency range.
