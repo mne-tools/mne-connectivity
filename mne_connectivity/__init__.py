@@ -19,6 +19,7 @@ from .base import (
 )
 from .effective import phase_slope_index
 from .envelope import envelope_correlation, symmetric_orth
+from .datasets import make_signals_in_freq_bands
 from .io import read_connectivity
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import (
