@@ -65,11 +65,11 @@ def test_make_signals_in_freq_bands(n_seeds, n_targets, snr, connection_delay, m
     thresh_bad["coh"] = (0.0, 0.2)
     # ImCoh
     if connection_delay == 0:
-        thresh_good["imcoh"] = (0.0, 0.2)
-        thresh_bad["imcoh"] = (0.0, 0.2)
+        thresh_good["imcoh"] = (0.0, 0.17)
+        thresh_bad["imcoh"] = (0.0, 0.17)
     else:
-        thresh_good["imcoh"] = (0.2, 0.8)
-        thresh_bad["imcoh"] = (0.0, 0.2)
+        thresh_good["imcoh"] = (0.17, 0.8)
+        thresh_bad["imcoh"] = (0.0, 0.17)
     # DPLI
     if connection_delay == 0:
         thresh_good["dpli"] = (0.3, 0.6)
