@@ -106,7 +106,9 @@ def make_signals_in_freq_bands(
     rng = np.random.default_rng(rng_seed)
 
     # simulate signal source at desired frequency band
-    signal = rng.standard_normal(size=(1, n_epochs * n_times + np.abs(connection_delay)))
+    signal = rng.standard_normal(
+        size=(1, n_epochs * n_times + np.abs(connection_delay))
+    )
     signal = filter_data(
         data=signal,
         sfreq=sfreq,
@@ -118,7 +120,9 @@ def make_signals_in_freq_bands(
     )
 
     # simulate noise for each channel
-    noise = rng.standard_normal(size=(n_channels, n_epochs * n_times + np.abs(connection_delay)))
+    noise = rng.standard_normal(
+        size=(n_channels, n_epochs * n_times + np.abs(connection_delay))
+    )
 
     # create data by projecting signal into each channel of noise
     data = (signal * snr) + (noise * (1 - snr))
