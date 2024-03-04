@@ -21,6 +21,7 @@ from mne_connectivity.spectral.epochs import (
 from mne_connectivity.spectral.epochs_bivariate import _CohEst
 
 
+# TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
 def create_test_dataset(
     sfreq, n_signals, n_epochs, n_times, tmin, tmax, fstart, fend, trans_bandwidth=2.0
 ):
@@ -114,6 +115,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
     n_times = 256
     n_jobs = 2  # test with parallelization
 
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data = rng.randn(n_signals, n_epochs * n_times)
     # simulate connectivity from 5Hz..15Hz
     fstart, fend = 5.0, 15.0
@@ -210,6 +212,7 @@ def test_spectral_connectivity(method, mode):
 
     # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data, times_data = create_test_dataset(
         sfreq,
         n_signals=n_signals,
@@ -501,6 +504,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
     # 15-25 Hz connectivity
     fstart, fend = 15.0, 25.0
     rng = np.random.RandomState(0)
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data = rng.randn(n_signals, n_epochs * n_times + delay)
     # simulate connectivity from fstart to fend
     data[n_seeds:, :] = filter_data(
@@ -1183,6 +1187,7 @@ def test_spectral_connectivity_time_delayed():
     # 20-30 Hz connectivity
     fstart, fend = 20.0, 30.0
     rng = np.random.RandomState(0)
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data = rng.randn(n_signals, n_epochs * n_times + delay)
     # simulate connectivity from fstart to fend
     data[n_seeds:, :] = filter_data(
@@ -1313,6 +1318,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
     tmax = (n_times - 1) / sfreq
     # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data, _ = create_test_dataset(
         sfreq,
         n_signals=n_signals,
@@ -1372,6 +1378,7 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
     tmax = (n_times - 1) / sfreq
     # 5Hz..15Hz
     fstart, fend = 5.0, 15.0
+    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
     data, _ = create_test_dataset(
         sfreq,
         n_signals=n_signals,
