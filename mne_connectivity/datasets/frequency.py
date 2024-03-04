@@ -43,7 +43,8 @@ def make_signals_in_freq_bands(
         Sampling frequency of the simulated data, in Hz.
     trans_bandwidth : int | float (default 1)
         Transition bandwidth of the filter to apply to isolate activity in
-        ``freq_band``, in Hz.
+        ``freq_band``, in Hz. These are passed to the ``l_bandwidth`` and ``h_bandwidth``
+        keyword arguments in :func:`mne.filter.create_filter`.
     snr : float (default 0.7)
         Signal-to-noise ratio of the simulated data in the range [0, 1].
     connection_delay : int (default 5)
@@ -54,7 +55,8 @@ def make_signals_in_freq_bands(
         Earliest time of each epoch.
     ch_names : list of str | None (default None)
         Names of the channels in the simulated data. If `None`, the channels are named
-        according to their index and the frequency band of interaction.
+        according to their index and the frequency band of interaction. If specified, must be a list of
+        ``n_seeds + n_targets`` channel names.
     ch_types : str | list of str (default "eeg")
         Types of the channels in the simulated data. If specified as a list, must be a
         list of ``n_seeds + n_targets`` channel names.
@@ -63,7 +65,7 @@ def make_signals_in_freq_bands(
 
     Returns
     -------
-    epochs : mne.EpochsArray
+    epochs : mne.EpochsArray of shape (n_epochs, n_seeds + n_targets, n_times)
         The simulated data stored in an `mne.EpochsArray` object. The channels are
         arranged according to seeds, then targets.
 
@@ -101,10 +103,10 @@ def make_signals_in_freq_bands(
         )
 
     # simulate data
-    rng = np.random.RandomState(rng_seed)
+    rng = np.random.default_rng(rng_seed)
 
     # simulate signal source at desired frequency band
-    signal = rng.randn(1, n_epochs * n_times + np.abs(connection_delay))
+    signal = rng.standard_normal(size=(1, n_epochs * n_times + np.abs(connection_delay)))
     signal = filter_data(
         data=signal,
         sfreq=sfreq,
@@ -116,7 +118,7 @@ def make_signals_in_freq_bands(
     )
 
     # simulate noise for each channel
-    noise = rng.randn(n_channels, n_epochs * n_times + np.abs(connection_delay))
+    noise = rng.standard_normal(size=(n_channels, n_epochs * n_times + np.abs(connection_delay)))
 
     # create data by projecting signal into each channel of noise
     data = (signal * snr) + (noise * (1 - snr))
