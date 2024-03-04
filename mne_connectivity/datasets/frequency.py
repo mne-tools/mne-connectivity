@@ -56,7 +56,8 @@ def make_signals_in_freq_bands(
         Names of the channels in the simulated data. If `None`, the channels are named
         according to their index and the frequency band of interaction.
     ch_types : str | list of str (default "eeg")
-        Types of the channels in the simulated data.
+        Types of the channels in the simulated data. If specified as a list, must be a
+        list of ``n_seeds + n_targets`` channel names.
     rng_seed : int | None (default None)
         Seed to use for the random number generator. If `None`, no seed is specified.
 
