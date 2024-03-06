@@ -542,6 +542,7 @@ def spectral_connectivity_time(
     conn_patterns = dict()
     for m in method:
         conn[m] = np.zeros((n_epochs, n_cons, n_freqs))
+        # prevent allocating memory for a huge array if not required
         if m in _patterns_methods:
             # patterns shape of [epochs x seeds/targets x cons x channels x freqs]
             conn_patterns[m] = np.full(
