@@ -1055,3 +1055,4 @@ _CON_METHOD_MAP_MULTIVARIATE = {
 
 _multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
 _gc_methods = ["gc", "gc_tr"]
+_patterns_methods = ["cacoh", "mic"]  # methods with spatial patterns

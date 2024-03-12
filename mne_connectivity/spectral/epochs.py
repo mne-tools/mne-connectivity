@@ -931,7 +931,7 @@ def spectral_connectivity_epochs(
     .. footbibliography::
     """
     if n_jobs != 1:
-        parallel, my_epoch_spectral_connectivity, _ = parallel_func(
+        parallel, my_epoch_spectral_connectivity, n_jobs = parallel_func(
             _epoch_spectral_connectivity, n_jobs, verbose=verbose
         )
 
@@ -1113,7 +1113,7 @@ def spectral_connectivity_epochs(
                     n_cons=n_cons, n_freqs=n_freqs, n_times=n_times_spectrum
                 )
                 if method[mtype_i] in _multivariate_methods:
-                    method_params.update(dict(n_signals=n_signals_use))
+                    method_params.update(dict(n_signals=n_signals_use, n_jobs=n_jobs))
                     if method[mtype_i] in _gc_methods:
                         method_params.update(dict(n_lags=gc_n_lags))
                 con_methods.append(mtype(**method_params))
