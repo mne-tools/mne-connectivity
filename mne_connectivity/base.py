@@ -17,7 +17,6 @@ from mne.utils import (
     warn,
 )
 
-from mne_connectivity.spectral.epochs_multivariate import _multivariate_methods
 from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
 
@@ -726,7 +725,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if self.method in _multivariate_methods:
+            if self.method in ["mic", "mim", "gc", "gc_tr"]:
                 # multivariate results cannot be returned in a dense form as a
                 # single set of results would correspond to multiple entries in
                 # the matrix, and there could also be cases where multiple
