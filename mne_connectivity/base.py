@@ -725,7 +725,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if self.method in ["mic", "mim", "gc", "gc_tr"]:
+            if self.method in ["cacoh", "mic", "mim", "gc", "gc_tr"]:
                 # multivariate results cannot be returned in a dense form as a
                 # single set of results would correspond to multiple entries in
                 # the matrix, and there could also be cases where multiple
