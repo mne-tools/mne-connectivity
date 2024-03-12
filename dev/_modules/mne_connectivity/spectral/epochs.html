@@ -1330,7 +1330,7 @@ document.write(`
 <span class="sd">    .. footbibliography::</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">parallel</span><span class="p">,</span> <span class="n">my_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
+        <span class="n">parallel</span><span class="p">,</span> <span class="n">my_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
             <span class="n">_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
         <span class="p">)</span>
 
@@ -1512,7 +1512,7 @@ document.write(`
                     <span class="n">n_cons</span><span class="o">=</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="o">=</span><span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="n">n_times_spectrum</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">method</span><span class="p">[</span><span class="n">mtype_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span><span class="p">:</span>
-                    <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_signals</span><span class="o">=</span><span class="n">n_signals_use</span><span class="p">))</span>
+                    <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_signals</span><span class="o">=</span><span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">method</span><span class="p">[</span><span class="n">mtype_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_gc_methods</span><span class="p">:</span>
                         <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">))</span>
                 <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtype</span><span class="p">(</span><span class="o">**</span><span class="n">method_params</span><span class="p">))</span>
@@ -1761,7 +1761,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-06.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-12.
       <br/>
     
   </p>
