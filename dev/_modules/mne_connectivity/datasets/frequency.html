@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.datasets.frequency &#8212; MNE-Connectivity 0.7.0.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=71d00d13" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../../_static/documentation_options.js?v=7b845e85"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_connectivity/datasets/frequency';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.7.0.dev0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">mne_connecti...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for mne_connectivity.datasets.frequency</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#          Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">EpochsArray</span><span class="p">,</span> <span class="n">create_info</span>
+<span class="kn">from</span> <span class="nn">mne.filter</span> <span class="kn">import</span> <span class="n">filter_data</span>
+
+
+<div class="viewcode-block" id="make_signals_in_freq_bands">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands">[docs]</a>
+<span class="k">def</span> <span class="nf">make_signals_in_freq_bands</span><span class="p">(</span>
+    <span class="n">n_seeds</span><span class="p">,</span>
+    <span class="n">n_targets</span><span class="p">,</span>
+    <span class="n">freq_band</span><span class="p">,</span>
+    <span class="n">n_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">trans_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">snr</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">connection_delay</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ch_types</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate signals interacting in a given frequency band.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_seeds : int</span>
+<span class="sd">        Number of seed channels to simulate.</span>
+<span class="sd">    n_targets : int</span>
+<span class="sd">        Number of target channels to simulate.</span>
+<span class="sd">    freq_band : tuple of int or float</span>
+<span class="sd">        Frequency band where the connectivity should be simulated, where the first entry</span>
+<span class="sd">        corresponds to the lower frequency, and the second entry to the higher</span>
+<span class="sd">        frequency.</span>
+<span class="sd">    n_epochs : int (default 10)</span>
+<span class="sd">        Number of epochs in the simulated data.</span>
+<span class="sd">    n_times : int (default 200)</span>
+<span class="sd">        Number of timepoints each epoch of the simulated data.</span>
+<span class="sd">    sfreq : int | float (default 100)</span>
+<span class="sd">        Sampling frequency of the simulated data, in Hz.</span>
+<span class="sd">    trans_bandwidth : int | float (default 1)</span>
+<span class="sd">        Transition bandwidth of the filter to apply to isolate activity in</span>
+<span class="sd">        ``freq_band``, in Hz. These are passed to the ``l_bandwidth`` and</span>
+<span class="sd">        ``h_bandwidth`` keyword arguments in :func:`mne.filter.create_filter`.</span>
+<span class="sd">    snr : float (default 0.7)</span>
+<span class="sd">        Signal-to-noise ratio of the simulated data in the range [0, 1].</span>
+<span class="sd">    connection_delay : int (default 5)</span>
+<span class="sd">        Number of timepoints for the delay of connectivity between the seeds and</span>
+<span class="sd">        targets. If &gt; 0, the target data is a delayed form of the seed data. If &lt; 0, the</span>
+<span class="sd">        seed data is a delayed form of the target data.</span>
+<span class="sd">    tmin : int | float (default 0)</span>
+<span class="sd">        Earliest time of each epoch.</span>
+<span class="sd">    ch_names : list of str | None (default None)</span>
+<span class="sd">        Names of the channels in the simulated data. If `None`, the channels are named</span>
+<span class="sd">        according to their index and the frequency band of interaction. If specified,</span>
+<span class="sd">        must be a list of ``n_seeds + n_targets`` channel names.</span>
+<span class="sd">    ch_types : str | list of str (default &quot;eeg&quot;)</span>
+<span class="sd">        Types of the channels in the simulated data. If specified as a list, must be a</span>
+<span class="sd">        list of ``n_seeds + n_targets`` channel names.</span>
+<span class="sd">    rng_seed : int | None (default None)</span>
+<span class="sd">        Seed to use for the random number generator. If `None`, no seed is specified.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epochs : mne.EpochsArray of shape (n_epochs, ``n_seeds + n_targets``, n_times)</span>
+<span class="sd">        The simulated data stored in an `mne.EpochsArray` object. The channels are</span>
+<span class="sd">        arranged according to seeds, then targets.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Signals are simulated as a single source of activity in the given frequency band and</span>
+<span class="sd">    projected into ``n_seeds + n_targets`` noise channels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="n">n_seeds</span> <span class="o">+</span> <span class="n">n_targets</span>
+
+    <span class="c1"># check inputs</span>
+    <span class="k">if</span> <span class="n">n_seeds</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">n_targets</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of seeds and targets must each be at least 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">freq_band</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Frequency band must be a tuple.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq_band</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Frequency band must contain two numbers.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n_times</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of timepoints must be at least 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n_epochs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of epochs must be at least 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sfreq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency must be &gt; 0.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">snr</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">snr</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal-to-noise ratio must be between 0 and 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">connection_delay</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">n_epochs</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Connection delay must be less than the total number of timepoints.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># simulate data</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">rng_seed</span><span class="p">)</span>
+
+    <span class="c1"># simulate signal source at desired frequency band</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_epochs</span> <span class="o">*</span> <span class="n">n_times</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">connection_delay</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">filter_data</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+        <span class="n">l_freq</span><span class="o">=</span><span class="n">freq_band</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">h_freq</span><span class="o">=</span><span class="n">freq_band</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">l_trans_bandwidth</span><span class="o">=</span><span class="n">trans_bandwidth</span><span class="p">,</span>
+        <span class="n">h_trans_bandwidth</span><span class="o">=</span><span class="n">trans_bandwidth</span><span class="p">,</span>
+        <span class="n">fir_design</span><span class="o">=</span><span class="s2">&quot;firwin2&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># simulate noise for each channel</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_epochs</span> <span class="o">*</span> <span class="n">n_times</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">connection_delay</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="c1"># create data by projecting signal into each channel of noise</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span> <span class="o">*</span> <span class="n">snr</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">noise</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">snr</span><span class="p">))</span>
+
+    <span class="c1"># shift data by desired delay and remove extra time</span>
+    <span class="k">if</span> <span class="n">connection_delay</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">connection_delay</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">delay_chans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_seeds</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>  <span class="c1"># delay targets</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">delay_chans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_seeds</span><span class="p">)</span>  <span class="c1"># delay seeds</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">delay_chans</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">connection_delay</span><span class="p">)</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span>
+            <span class="n">delay_chans</span><span class="p">,</span> <span class="p">:</span> <span class="n">n_epochs</span> <span class="o">*</span> <span class="n">n_times</span>
+        <span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">n_epochs</span> <span class="o">*</span> <span class="n">n_times</span><span class="p">]</span>
+
+    <span class="c1"># reshape data into epochs</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># (epochs x channels x times)</span>
+
+    <span class="c1"># store data in an MNE EpochsArray object</span>
+    <span class="k">if</span> <span class="n">ch_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ch_i</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">freq_band</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">freq_band</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">create_info</span><span class="p">(</span><span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="n">ch_types</span><span class="p">)</span>
+    <span class="n">epochs</span> <span class="o">=</span> <span class="n">EpochsArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">epochs</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
