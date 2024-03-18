@@ -87,3 +87,13 @@ Visualization functions
 
    plot_sensors_connectivity
    plot_connectivity_circle
+
+Dataset functions
+=================
+
+.. currentmodule:: mne_connectivity
+
+.. autosummary::
+   :toctree: generated/
+
+   make_signals_in_freq_bands

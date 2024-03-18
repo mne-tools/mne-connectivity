@@ -17,6 +17,7 @@ from .base import (
     SpectroTemporalConnectivity,
     TemporalConnectivity,
 )
+from .datasets import make_signals_in_freq_bands
 from .effective import phase_slope_index
 from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity
