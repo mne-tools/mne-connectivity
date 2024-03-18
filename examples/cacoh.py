@@ -9,16 +9,19 @@ be used to compute connectivity between whole sets of sensors, alongside
 spatial patterns of the connectivity.
 """
 
-# Authors: Mohammad Orabe <orabe.mhd@gmail.com>
-#          Thomas S. Binns <t.s.binns@outlook.com>
+# Authors: Thomas S. Binns <t.s.binns@outlook.com>
+#          Mohammad Orabe <orabe.mhd@gmail.com>
 # License: BSD (3-clause)
 
 # %%
 import numpy as np
 from matplotlib import pyplot as plt
 
-import mne
-from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
+from mne_connectivity import (
+    make_signals_in_freq_bands,
+    seed_target_indices,
+    spectral_connectivity_epochs,
+)
 
 ###############################################################################
 # Background
@@ -64,95 +67,29 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 #
 # We can consider the seeds and targets to be signals of different modalities,
 # e.g. cortical EEG signals and subcortical LFP signals, cortical EEG signals
-# and muscular EMG signals, etc.... We use the function below to simulate these
-# signals.
-
-# %%
-
-
-def simulate_connectivity(freq_band: tuple[int, int], rng_seed: int) -> np.ndarray:
-    """Simulates signals interacting in a given frequency band.
-
-    Parameters
-    ----------
-    freq_band : tuple of int, int
-        Frequency band where the connectivity should be simulated, where the
-        first entry corresponds to the lower frequency, and the second entry to
-        the higher frequency.
-
-    rng_seed : int
-        Seed to use for the random number generator.
-
-    Returns
-    -------
-    data : numpy.ndarray
-        The simulated data stored in an array. The channels are arranged
-        according to seeds, then targets.
-    """
-    # Define fixed simulation parameters
-    n_seeds = 5
-    n_targets = 3
-    n_epochs = 10
-    n_times = 200  # samples
-    sfreq = 100  # Hz
-    snr = 0.7
-    trans_bandwidth = 1  # Hz
-    connection_delay = 1  # sample
-
-    np.random.seed(rng_seed)
-
-    n_channels = n_seeds + n_targets
-
-    # simulate signal source at desired frequency band
-    signal = np.random.randn(1, n_epochs * n_times + connection_delay)
-    signal = mne.filter.filter_data(
-        data=signal,
-        sfreq=sfreq,
-        l_freq=freq_band[0],
-        h_freq=freq_band[1],
-        l_trans_bandwidth=trans_bandwidth,
-        h_trans_bandwidth=trans_bandwidth,
-        fir_design="firwin2",
-        verbose=False,
-    )
-
-    # simulate noise for each channel
-    noise = np.random.randn(n_channels, n_epochs * n_times + connection_delay)
-
-    # create data by projecting signal into noise
-    data = (signal * snr) + (noise * (1 - snr))
-
-    # shift target data by desired delay
-    if connection_delay > 0:
-        # shift target data
-        data[n_seeds:, connection_delay:] = data[n_seeds:, : n_epochs * n_times]
-        # remove extra time
-        data = data[:, : n_epochs * n_times]
-
-    # reshape data into epochs
-    data = data.reshape(n_channels, n_epochs, n_times)
-    data = data.transpose((1, 0, 2))  # (epochs x channels x times)
-
-    return data
-
-
-###############################################################################
+# and muscular EMG signals, etc.... We use the
+# :func:`~mne_connectivity.make_signals_in_freq_bands` function to simulate
+# these signals.
 
 # %%
 
 # Generate simulated data
-data_10_12 = simulate_connectivity(
+data_10_12 = make_signals_in_freq_bands(
+    n_seeds=5,
+    n_targets=3,
     freq_band=(10, 12),  # 10-12 Hz interaction
     rng_seed=42,
 )
 
-data_23_25 = simulate_connectivity(
+data_23_25 = make_signals_in_freq_bands(
+    n_seeds=5,
+    n_targets=3,
     freq_band=(23, 25),  # 23-25 Hz interaction
     rng_seed=44,
 )
 
-# Combine data into a single array
-data = np.concatenate((data_10_12, data_23_25), axis=1)
+# Combine data into a single object
+data = data_10_12.add_channels([data_23_25])
 
 ###############################################################################
 # Computing CaCoh
