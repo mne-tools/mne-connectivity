@@ -644,12 +644,13 @@ def spectral_connectivity_epochs(
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
-        'imcoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli', 'wpli',
-        'wpli2_debiased', 'gc', 'gc_tr']``. These are:
+        'imcoh', 'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'ppc', 'pli', 'dpli',
+        'wpli', 'wpli2_debiased', 'gc', 'gc_tr']``. These are:
 
         * %(coh)s
         * %(cohy)s
         * %(imcoh)s
+        * %(cacoh)s
         * %(mic)s
         * %(mim)s
         * %(plv)s
@@ -663,8 +664,8 @@ def spectral_connectivity_epochs(
         * %(gc)s
         * %(gc_tr)s
 
-        Multivariate methods (``['mic', 'mim', 'gc', 'gc_tr]``) cannot be
-        called with the other methods.
+        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``)
+        cannot be called with the other methods.
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If a bivariate method is called, each array for the seeds
@@ -726,7 +727,7 @@ def spectral_connectivity_epochs(
         Two arrays with the rank to project the seed and target data to,
         respectively, using singular value decomposition. If None, the rank of
         the data is computed and projected to. Only used if ``method`` contains
-        any of ``['mic', 'mim', 'gc', 'gc_tr']``.
+        any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
@@ -832,24 +833,42 @@ def spectral_connectivity_epochs(
             C = ----------------------
                 sqrt(E[Sxx] * E[Syy])
 
+        'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
+        given by:
+
+            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
+            (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
+            \boldsymbol{b}^T\boldsymbol{b}}}}`
+
+            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density
+            between seeds and targets transformed for a given phase angle
+            :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`
+            are eigenvectors for the seeds and targets, such that
+            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`
+            maximises coherency between the seeds and targets. Taking the
+            absolute value of the results gives maximised coherence.
+
         'mic' : Maximised Imaginary part of Coherency (MIC)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
-            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-            \parallel}}`
+            :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
+            \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
+            \parallel\boldsymbol{\beta}\parallel}}`
 
             where: :math:`\boldsymbol{E}` is the imaginary part of the
             transformed cross-spectral density between seeds and targets; and
             :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are
             eigenvectors for the seeds and targets, such that
-            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises
-            connectivity between the seeds and targets.
+            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises the
+            imaginary part of coherency between the seeds and targets.
 
         'mim' : Multivariate Interaction Measure (MIM)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIM=tr(\boldsymbol{EE}^T)`
+            :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`
+
+            where :math:`\boldsymbol{E}` is the imaginary part of the
+            transformed cross-spectral density between seeds and targets.
 
         'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
         by::
@@ -893,7 +912,7 @@ def spectral_connectivity_epochs(
 
             :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
             \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
-            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,
+            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`
 
             where: :math:`s` and :math:`t` represent the seeds and targets,
             respectively; :math:`\boldsymbol{H}` is the spectral transfer

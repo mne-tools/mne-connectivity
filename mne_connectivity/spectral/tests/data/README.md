@@ -1,7 +1,9 @@
-Author: Thomas S. Binns <t.s.binns@outlook.com>
+Authors:
+- Thomas S. Binns <t.s.binns@outlook.com>
+- Mohammad Orabe <orabe.mhd@gmail.com>
 
 The files found here are used for the regression test of the multivariate
-connectivity methods for MIC, MIM, GC, and TRGC
+connectivity methods for CaCoh, MIC, MIM, GC, and TRGC
 (`test_multivariate_spectral_connectivity_epochs_regression()` of
 `test_spectral.py`).
 
@@ -9,8 +11,8 @@ connectivity methods for MIC, MIM, GC, and TRGC
 data with 15 epochs and 200 timepoints per epoch. Connectivity was computed in
 MATLAB using the original implementations of these methods and saved as a
 dictionary in `example_multivariate_matlab_results.pkl`. A publicly-available
-implementation of the methods in MATLAB can be found here:
-https://github.com/sccn/roiconnect. 
+implementation of the methods in MATLAB (except CaCoh) can be found here:
+https://github.com/sccn/roiconnect.
 
 As the MNE code for computing the cross-spectral density matrix is not
 available in MATLAB, the CSD matrix was computed using MNE and then loaded into

@@ -4,6 +4,8 @@
 #          Thomas S. Binns <t.s.binns@outlook.com>
 #          Tien D. Nguyen <tien-dung.nguyen@charite.de>
 #          Richard M. Köhler <koehler.richard@charite.de>
+#          Mohammad Orabe <orabe.mhd@gmail.com>
+#          Mina Jamshidi Idaji <minajamshidi91@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -103,6 +105,7 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
     n_steps = None
     patterns = None
+    con_scores_dtype = np.float64
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
         self.n_signals = n_signals
@@ -114,10 +117,14 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         # include time dimension, even when unused for indexing flexibility
         if n_times == 0:
             self.csd_shape = (n_signals**2, n_freqs)
-            self.con_scores = np.zeros((n_cons, n_freqs, 1))
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, 1), dtype=self.con_scores_dtype
+            )
         else:
             self.csd_shape = (n_signals**2, n_freqs, n_times)
-            self.con_scores = np.zeros((n_cons, n_freqs, n_times))
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, n_times), dtype=self.con_scores_dtype
+            )
 
         # allocate space for accumulation of CSD
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
@@ -170,10 +177,14 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
-    """Base estimator for multivariate imag. part of coherency methods.
+    """Base estimator for multivariate coherency methods.
 
-    See Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
-    for equation references.
+    See:
+    - Imaginary part of coherency, i.e. multivariate imaginary part of
+    coherency (MIC) and multivariate interaction measure (MIM): Ewald et al.
+    (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    - Coherency/coherence, i.e. canonical coherency (CaCoh): Vidaurre et al.
+    (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
     name: Optional[str] = None
@@ -185,8 +196,8 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         )
 
     def compute_con(self, indices, ranks, n_epochs=1):
-        """Compute multivariate imag. part of coherency between signals."""
-        assert self.name in ["MIC", "MIM"], (
+        """Compute multivariate coherency methods."""
+        assert self.name in ["CaCoh", "MIC", "MIM"], (
             "the class name is not recognised, please contact the "
             "mne-connectivity developers"
         )
@@ -196,7 +207,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         times = np.arange(n_times)
         freqs = np.arange(self.n_freqs)
 
-        if self.name == "MIC":
+        if self.name in ["CaCoh", "MIC"]:
             self.patterns = np.full(
                 (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
             )
@@ -213,20 +224,14 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
             C = csd[np.ix_(times, freqs, con_idcs, con_idcs)]
 
-            # Eqs. 32 & 33
+            # Eqs. 32 & 33 of Ewald et al.; Eq. 15 of Vidaurre et al.
             C_bar, U_bar_aa, U_bar_bb = self._csd_svd(
                 C, seed_idcs, seed_rank, target_rank
             )
 
-            # Eqs. 3 & 4
-            E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
-
-            if self.name == "MIC":
-                self._compute_mic(
-                    E, C, seed_idcs, target_idcs, n_times, U_bar_aa, U_bar_bb, con_i
-                )
-            else:
-                self._compute_mim(E, seed_idcs, target_idcs, con_i)
+            self._compute_con_daughter(
+                seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+            )
 
             con_i += 1
 
@@ -243,7 +248,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         C_bb = csd[..., n_seeds:, n_seeds:]
         C_ba = csd[..., n_seeds:, :n_seeds]
 
-        # Eq. 32
+        # Eqs. 32 (Ewald et al.) & 15 (Vidaurre et al.)
         if seed_rank != n_seeds:
             U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
             U_bar_aa = U_aa[..., :seed_rank]
@@ -260,7 +265,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 np.identity(n_targets), (n_times, self.n_freqs) + (n_targets, n_targets)
             )
 
-        # Eq. 33
+        # Eq. 33 (Ewald et al.)
         C_bar_aa = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_aa, U_bar_aa))
         C_bar_ab = np.matmul(U_bar_aa.transpose(0, 1, 3, 2), np.matmul(C_ab, U_bar_bb))
         C_bar_bb = np.matmul(U_bar_bb.transpose(0, 1, 3, 2), np.matmul(C_bb, U_bar_bb))
@@ -273,20 +278,29 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         return C_bar, U_bar_aa, U_bar_bb
 
-    def _compute_e(self, csd, n_seeds):
-        """Compute E from the CSD."""
-        C_r = np.real(csd)
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
+        """Compute multivariate coherency for one connection.
 
-        parallel, parallel_compute_t, _ = parallel_func(
-            _mic_mim_compute_t, self.n_jobs, verbose=False
+        An empty method to be implemented by subclasses.
+        """
+
+    def _compute_t(self, C_r, n_seeds):
+        """Compute transformation matrix, T, for frequencies (in parallel).
+
+        Eq. 3 of Ewald et al.; part of Eq. 9 of Vidaurre et al.
+        """
+        parallel, parallel_invsqrtm, _ = parallel_func(
+            _invsqrtm, self.n_jobs, verbose=False
         )
 
         # imag. part of T filled when data is rank-deficient
-        T = np.zeros(csd.shape, dtype=np.complex128)
+        T = np.zeros(C_r.shape, dtype=np.complex128)
         for block_i in ProgressBar(range(self.n_steps), mesg="frequency blocks"):
             freqs = self._get_block_indices(block_i, self.n_freqs)
             T[:, freqs] = np.array(
-                parallel(parallel_compute_t(C_r[:, f], T[:, f], n_seeds) for f in freqs)
+                parallel(parallel_invsqrtm(C_r[:, f], T[:, f], n_seeds) for f in freqs)
             ).transpose(1, 0, 2, 3)
 
         if not np.isreal(T).all() or not np.isfinite(T).all():
@@ -296,20 +310,96 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
                 "using full rank data or specify an appropriate rank for the "
                 "seeds and targets that is less than or equal to their ranks"
             )
-        T = np.real(T)  # make T real if check passes
+
+        return np.real(T)  # make T real if check passes
+
+    def reshape_results(self):
+        """Remove time dimension from results, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[..., 0]
+            if self.patterns is not None:
+                self.patterns = self.patterns[..., 0]
+
+
+def _invsqrtm(C, T, n_seeds):
+    """Compute inverse sqrt of CSD over times (used for CaCoh, MIC, & MIM).
+
+    Parameters
+    ----------
+    C : np.ndarray, shape=(n_times, n_channels, n_channels)
+        CSD for a single frequency and all times (n_times=1 if the mode is not
+        time-frequency resolved, e.g. multitaper).
+    T : np.ndarray, shape=(n_times, n_channels, n_channels)
+        Empty array to store the inverse square root of the CSD in.
+    n_seeds : int
+        Number of seed channels for the connection.
+
+    Returns
+    -------
+    T : np.ndarray, shape=(n_times, n_channels, n_channels)
+        Inverse square root of the CSD. Name comes from Ewald et al. (2012).
+
+    Notes
+    -----
+    Kept as a standalone function to allow for parallelisation over CSD
+    frequencies.
+
+    See Eq. 3 of Ewald et al. (2012). NeuroImage. DOI:
+    10.1016/j.neuroimage.2011.11.084.
+    """
+    for time_i in range(C.shape[0]):
+        T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
+            C[time_i, :n_seeds, :n_seeds], -0.5
+        )
+        T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
+            C[time_i, n_seeds:, n_seeds:], -0.5
+        )
+
+    return T
+
+
+class _MultivariateImCohEstBase(_MultivariateCohEstBase):
+    """Base estimator for multivariate imag. part of coherency methods.
+
+    See Ewald et al. (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
+    for equation references.
+    """
+
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
+        """Compute multivariate imag. part of coherency for one connection."""
+        assert self.name in ["MIC", "MIM"], (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
+
+        # Eqs. 3 & 4
+        E = self._compute_e(C_bar, n_seeds=U_bar_aa.shape[3])
+
+        if self.name == "MIC":
+            self._compute_mic(E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb, con_i)
+        else:
+            self._compute_mim(E, seed_idcs, target_idcs, con_i)
+
+    def _compute_e(self, C, n_seeds):
+        """Compute E from the CSD."""
+        C_r = np.real(C)
+
+        # Eq. 3
+        T = self._compute_t(C_r, n_seeds)
 
         # Eq. 4
-        D = np.matmul(T, np.matmul(csd, T))
+        D = np.matmul(T, np.matmul(C, T))
 
         # E as imag. part of D between seeds and targets
         return np.imag(D[..., :n_seeds, n_seeds:])
 
-    def _compute_mic(
-        self, E, C, seed_idcs, target_idcs, n_times, U_bar_aa, U_bar_bb, con_i
-    ):
-        """Compute MIC and the associated spatial patterns."""
+    def _compute_mic(self, E, C, seed_idcs, target_idcs, U_bar_aa, U_bar_bb, con_i):
+        """Compute MIC & spatial patterns for one connection."""
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
+        n_times = C.shape[0]
         times = np.arange(n_times)
         freqs = np.arange(self.n_freqs)
 
@@ -372,7 +462,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         ).T
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
-        """Compute MIM (a.k.a. GIM if seeds == targets)."""
+        """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
         # Eq. 14
         self.con_scores[con_i] = (
             np.matmul(E, E.transpose(0, 1, 3, 2)).trace(axis1=2, axis2=3).T
@@ -384,37 +474,182 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         ):
             self.con_scores[con_i] *= 0.5
 
-    def reshape_results(self):
-        """Remove time dimension from results, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[..., 0]
-            if self.patterns is not None:
-                self.patterns = self.patterns[..., 0]
 
-
-def _mic_mim_compute_t(C, T, n_seeds):
-    """Compute T for a single frequency (used for MIC and MIM)."""
-    for time_i in range(C.shape[0]):
-        T[time_i, :n_seeds, :n_seeds] = sp.linalg.fractional_matrix_power(
-            C[time_i, :n_seeds, :n_seeds], -0.5
-        )
-        T[time_i, n_seeds:, n_seeds:] = sp.linalg.fractional_matrix_power(
-            C[time_i, n_seeds:, n_seeds:], -0.5
-        )
-
-    return T
-
-
-class _MICEst(_MultivariateCohEstBase):
+class _MICEst(_MultivariateImCohEstBase):
     """Multivariate imaginary part of coherency (MIC) estimator."""
 
     name = "MIC"
 
 
-class _MIMEst(_MultivariateCohEstBase):
+class _MIMEst(_MultivariateImCohEstBase):
     """Multivariate interaction measure (MIM) estimator."""
 
     name = "MIM"
+
+
+class _CaCohEst(_MultivariateCohEstBase):
+    """Canonical coherence (CaCoh) estimator.
+
+    See Vidaurre et al. (2019). NeuroImage. DOI:
+    10.1016/j.neuroimage.2019.116009 for equation references.
+    """
+
+    name = "CaCoh"
+    con_scores_dtype = np.complex128  # CaCoh is complex-valued
+
+    def _compute_con_daughter(
+        self, seed_idcs, target_idcs, C, C_bar, U_bar_aa, U_bar_bb, con_i
+    ):
+        """Compute CaCoh & spatial patterns for one connection."""
+        assert self.name == "CaCoh", (
+            "the class name is not recognised, please contact the "
+            "mne-connectivity developers"
+        )
+        n_seeds = len(seed_idcs)
+        n_targets = len(target_idcs)
+
+        rank_seeds = U_bar_aa.shape[3]  # n_seeds after SVD
+
+        C_bar_ab = C_bar[..., :rank_seeds, rank_seeds:]
+
+        # Same as Eq. 3 of Ewald et al. (2012)
+        T = self._compute_t(np.real(C_bar), n_seeds=rank_seeds)
+        T_aa = T[..., :rank_seeds, :rank_seeds]  # left term in Eq. 9
+        T_bb = T[..., rank_seeds:, rank_seeds:]  # right term in Eq. 9
+
+        max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
+
+        max_coh, max_phis = self._final_optimise_phi(
+            C_bar_ab, T_aa, T_bb, max_coh, max_phis
+        )
+
+        # Store connectivity score as complex value
+        self.con_scores[con_i] = (max_coh * np.exp(-1j * max_phis)).T
+
+        self._compute_patterns(
+            max_phis,
+            C,
+            C_bar_ab,
+            T_aa,
+            T_bb,
+            U_bar_aa,
+            U_bar_bb,
+            n_seeds,
+            n_targets,
+            con_i,
+        )
+
+    def _first_optimise_phi(self, C_ab, T_aa, T_bb):
+        """Find the rough angle, phi, at which coherence is maximised."""
+        n_iters = 5
+
+        # starting phi values to optimise over (in radians)
+        phis = np.linspace(np.pi / n_iters, np.pi, n_iters)
+        phis_coh = np.zeros((n_iters, *C_ab.shape[:2]))
+        for iter_i, iter_phi in enumerate(phis):
+            phi = np.full(C_ab.shape[:2], fill_value=iter_phi)
+            phis_coh[iter_i] = self._compute_cacoh(phi, C_ab, T_aa, T_bb)
+
+        return np.max(phis_coh, axis=0), phis[np.argmax(phis_coh, axis=0)]
+
+    def _final_optimise_phi(self, C_ab, T_aa, T_bb, max_coh, max_phis):
+        """Fine-tune the angle at which coherence is maximised.
+
+        Uses a 2nd order Taylor expansion to approximate change in coherence
+        w.r.t. phi, and determining the next phi to evaluate coherence on (over
+        a total of 10 iterations).
+
+        Depending on how the new phi affects coherence, the step size for the
+        subsequent iteration is adjusted, like that in the Levenberg-Marquardt
+        algorithm.
+
+        Each time-freq. entry of coherence has its own corresponding phi.
+        """
+        n_iters = 10  # sufficient for (close to) exact solution
+        delta_phi = 1e-6
+        mus = np.ones_like(max_phis)  # optimisation step size
+
+        for _ in range(n_iters):
+            # 2nd order Taylor expansion around phi
+            coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa, T_bb)
+            coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa, T_bb)
+            f_prime = (coh_plus - coh_minus) / (2 * delta_phi)
+            f_prime_prime = (coh_plus + coh_minus - 2 * max_coh) / (delta_phi**2)
+
+            # determine new phi to test
+            phis = max_phis + (-f_prime / (f_prime_prime - mus))
+            # bound phi in range [-pi, pi]
+            phis = np.mod(phis + np.pi / 2, np.pi) - np.pi / 2
+
+            coh = self._compute_cacoh(phis, C_ab, T_aa, T_bb)
+
+            # find where new phi increases coh & update these values
+            greater_coh = coh > max_coh
+            max_coh[greater_coh] = coh[greater_coh]
+            max_phis[greater_coh] = phis[greater_coh]
+
+            # update step size
+            mus[greater_coh] /= 2
+            mus[~greater_coh] *= 2
+
+        return max_coh, phis
+
+    def _compute_cacoh(self, phis, C_ab, T_aa, T_bb):
+        """Compute the maximum coherence for a given set of phis."""
+        # from numerator of Eq. 5
+        # for a given CSD entry, projects it onto a span with angle phi, such
+        # that the magnitude of the projected line is captured in the real part
+        C_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_ab)
+
+        # Eq. 9; T_aa/bb is sqrt(inv(real(C_aa/bb)))
+        D = np.matmul(T_aa, np.matmul(C_ab, T_bb))
+
+        # Eq. 12
+        a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
+        b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
+
+        # Eq. 8
+        numerator = np.einsum(
+            "ijk,ijk->ij", a, np.matmul(D, np.expand_dims(b, axis=3))[..., 0]
+        )
+        denominator = np.sqrt(
+            np.einsum("ijk,ijk->ij", a, a) * np.einsum("ijk,ijk->ij", b, b)
+        )
+
+        return np.abs(numerator / denominator)
+
+    def _compute_patterns(
+        self,
+        phis,
+        C,
+        C_bar_ab,
+        T_aa,
+        T_bb,
+        U_bar_aa,
+        U_bar_bb,
+        n_seeds,
+        n_targets,
+        con_i,
+    ):
+        """Compute CaCoh spatial patterns for the optimised phi."""
+        C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_bar_ab)
+        D = np.matmul(T_aa, np.matmul(C_bar_ab, T_bb))
+        a = np.linalg.eigh(np.matmul(D, D.transpose(0, 1, 3, 2)))[1][..., -1]
+        b = np.linalg.eigh(np.matmul(D.transpose(0, 1, 3, 2), D))[1][..., -1]
+
+        # Eq. 7 rearranged - multiply both sides by sqrt(inv(real(C_aa/bb)))
+        alpha = np.matmul(T_aa, np.expand_dims(a, axis=3))  # filter for seeds
+        beta = np.matmul(T_bb, np.expand_dims(b, axis=3))  # filter for targets
+
+        # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
+        # seed spatial patterns
+        self.patterns[0, con_i, :n_seeds] = (
+            np.matmul(np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
+        )[..., 0].T
+        # target spatial patterns
+        self.patterns[1, con_i, :n_targets] = (
+            np.matmul(np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
+        )[..., 0].T
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
@@ -811,12 +1046,13 @@ class _GCTREst(_GCEstBase):
 
 # map names to estimator types
 _CON_METHOD_MAP_MULTIVARIATE = {
+    "cacoh": _CaCohEst,
     "mic": _MICEst,
     "mim": _MIMEst,
     "gc": _GCEst,
     "gc_tr": _GCTREst,
 }
 
-_multivariate_methods = ["mic", "mim", "gc", "gc_tr"]
+_multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
 _gc_methods = ["gc", "gc_tr"]
-_patterns_methods = ["mic"]  # methods with spatial patterns
+_patterns_methods = ["cacoh", "mic"]  # methods with spatial patterns

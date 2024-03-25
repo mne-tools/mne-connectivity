@@ -70,10 +70,12 @@ def spectral_connectivity_time(
         Only the frequencies within the range specified by ``fmin`` and
         ``fmax`` are used.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'mic',
-        'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These are:
+        Connectivity measure(s) to compute. These can be ``['coh', 'cacoh',
+        'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
+        are:
 
         * %(coh)s
+        * %(cacoh)s
         * %(mic)s
         * %(mim)s
         * %(plv)s
@@ -83,8 +85,8 @@ def spectral_connectivity_time(
         * %(gc)s
         * %(gc_tr)s
 
-        Multivariate methods (``['mic', 'mim', 'gc', 'gc_tr]``) cannot be
-        called with the other methods.
+        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``)
+        cannot be called with the other methods.
     average : bool
         Average connectivity scores over epochs. If ``True``, output will be
         an instance of :class:`SpectralConnectivity`, otherwise
@@ -152,7 +154,7 @@ def spectral_connectivity_time(
         Two arrays with the rank to project the seed and target data to,
         respectively, using singular value decomposition. If `None`, the rank
         of the data is computed and projected to. Only used if ``method``
-        contains any of ``['mic', 'mim', 'gc', 'gc_tr']``.
+        contains any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
@@ -253,24 +255,42 @@ def spectral_connectivity_time(
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
+        'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
+        given by:
+
+            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
+            (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
+            \boldsymbol{b}^T\boldsymbol{b}}}}`
+
+            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density
+            between seeds and targets transformed for a given phase angle
+            :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`
+            are eigenvectors for the seeds and targets, such that
+            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`
+            maximises coherency between the seeds and targets. Taking the
+            absolute value of the results gives maximised coherence.
+
         'mic' : Maximised Imaginary part of Coherency (MIC)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
-            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-            \parallel}}`
+            :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
+            \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
+            \parallel\boldsymbol{\beta}\parallel}}`
 
             where: :math:`\boldsymbol{E}` is the imaginary part of the
             transformed cross-spectral density between seeds and targets; and
             :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are
             eigenvectors for the seeds and targets, such that
-            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises
-            connectivity between the seeds and targets.
+            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises the
+            imaginary part of coherency between the seeds and targets.
 
         'mim' : Multivariate Interaction Measure (MIM)
         :footcite:`EwaldEtAl2012` given by:
 
-            :math:`MIM=tr(\boldsymbol{EE}^T)`
+            :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`
+
+            where :math:`\boldsymbol{E}` is the imaginary part of the
+            transformed cross-spectral density between seeds and targets.
 
         'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
         by::
@@ -300,7 +320,7 @@ def spectral_connectivity_time(
 
             :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
             \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
-            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,
+            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`
 
             where: :math:`s` and :math:`t` represent the seeds and targets,
             respectively; :math:`\boldsymbol{H}` is the spectral transfer
@@ -541,7 +561,12 @@ def spectral_connectivity_time(
     conn = dict()
     conn_patterns = dict()
     for m in method:
-        conn[m] = np.zeros((n_epochs, n_cons, n_freqs))
+        # CaCoh complex-valued, all other methods real-valued
+        if m == "cacoh":
+            con_scores_dtype = np.complex128
+        else:
+            con_scores_dtype = np.float64
+        conn[m] = np.zeros((n_epochs, n_cons, n_freqs), dtype=con_scores_dtype)
         # prevent allocating memory for a huge array if not required
         if m in _patterns_methods:
             # patterns shape of [epochs x seeds/targets x cons x channels x freqs]

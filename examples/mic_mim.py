@@ -42,17 +42,32 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # A popular bivariate measure of connectivity is the imaginary part of
 # coherency, which looks at the correlation between two signals in the
 # frequency domain and is immune to spurious connectivity arising from volume
-# conduction artefacts :footcite:`NolteEtAl2004`. However, depending on the
-# degree of source mixing, this measure is susceptible to biased estimates of
-# connectivity based on the spatial proximity of sensors
-# :footcite:`EwaldEtAl2012`.
+# conduction artefacts :footcite:`NolteEtAl2004`. However, in cases where
+# interactions between multiple signals are of interest, computing connectivity
+# between all possible combinations of signals leads to a very large number of
+# results which is difficult to interpret. A common approach is to average
+# results across these connections, however this risks reducing the
+# signal-to-noise ratio of results and burying interactions that are present
+# between only a small number of channels.
 #
-# To overcome this limitation, spatial filters can be used to estimate
-# connectivity free from this source mixing-dependent bias, which additionally
-# increases the signal-to-noise ratio and allows signals to be analysed in a
-# multivariate manner :footcite:`EwaldEtAl2012`. This approach leads to the
-# following methods: the maximised imaginary part of coherency (MIC); and the
-# multivariate interaction measure (MIM).
+# Additionally, this bivariate measure is susceptible to biased estimates of
+# connectivity based on the spatial proximity of sensors
+# :footcite:`EwaldEtAl2012` depending on the degree of source mixing in the
+# signals.
+#
+# To overcome this limitation, spatial filters derived from eigendecompositions
+# allows connectivity to be analysed in a multivariate manner, removing the
+# source mixing-dependent bias and increase the signal-to-noise ratio of
+# connectivity estimates :footcite:`EwaldEtAl2012`. This approach goes beyond
+# simply aggregating information across all possible combinations of signals,
+# extracting the underlying components of connectivity in a frequency-resolved
+# manner.
+#
+# This leads to the following methods: the maximised imaginary part of
+# coherency (MIC); and the multivariate interaction measure (MIM). These
+# methods are similar to the multivariate method based on coherency (CaCoh
+# :footcite:`VidaurreEtAl2019`; see :doc:`cacoh` and
+# :doc:`compare_coherency_methods`).
 #
 # We start by loading some example MEG data and dividing it into
 # two-second-long epochs.
@@ -121,8 +136,9 @@ fig.suptitle("Imaginary part of coherency")
 # eigendecomposition of information from the cross-spectral density (Eq. 7 of
 # :footcite:`EwaldEtAl2012`):
 #
-# :math:`MIC=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}{\parallel
-# \boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}\parallel}`,
+# :math:`\textrm{MIC}=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+# {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+# \parallel}`,
 #
 # where :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are the
 # spatial filters for the seeds and targets, respectively, and
@@ -155,13 +171,13 @@ fig.suptitle("Maximised imaginary part of coherency")
 
 ###############################################################################
 # Furthermore, spatial patterns of connectivity can be constructed from the
-# spatial filters to give a picture of the location of the sources involved in
-# the connectivity. This information is stored under ``attrs['patterns']`` of
-# the connectivity class, with one value per frequency for each channel in the
-# seeds and targets. As with MIC, the absolute value of the patterns reflect
-# the strength, however the sign differences can be used to visualise the
-# orientation of the underlying dipole sources. The spatial patterns are
-# **not** bound between :math:`[-1, 1]`.
+# spatial filters to give a picture of the location of the channels involved in
+# the connectivity :footcite:`HaufeEtAl2014`. This information is stored under
+# ``attrs['patterns']`` of the connectivity class, with one value per frequency
+# for each channel in the seeds and targets. As with MIC, the absolute value of
+# the patterns reflect the strength, however the sign differences can be used
+# to visualise the orientation of the underlying dipole sources. The spatial
+# patterns are **not** bound between :math:`[-1, 1]`.
 #
 # Here, we average across the patterns in the 13-18 Hz range. Plotting the
 # patterns shows that the greatest connectivity between the left and right
@@ -170,6 +186,11 @@ fig.suptitle("Maximised imaginary part of coherency")
 # values, we can infer the existence of a dipole source between the central and
 # posterior regions of the left hemisphere accounting for the connectivity
 # contributions (represented on the plot as a green line).
+#
+# **Note:** The spatial patterns are not a substitute for source
+# reconstruction. If you need the spatial patterns in source space, you should
+# perform source reconstruction before computing connectivity (see e.g.
+# :doc:`mne_inverse_coherence_epochs`).
 
 # %%
 
@@ -242,7 +263,7 @@ plt.show()
 # component explicitly, and instead the desired result can be achieved from
 # :math:`E` alone (Eq. 14 of :footcite:`EwaldEtAl2012`):
 #
-# :math:`MIM=tr(\boldsymbol{EE}^T)`,
+# :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`,
 #
 # where again the frequency dependence is omitted. Unlike MIC, MIM is
 # positive-valued and can be > 1. Without normalisation, MIM can be
@@ -371,8 +392,8 @@ mim_meansub = mim.get_data()[0] - mim.get_data()[0].mean()
 
 # compare standard and rank subspace-projected MIM
 fig, axis = plt.subplots(1, 1)
-axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2, label="rank subspace (25) MIM")
 axis.plot(mim.freqs, mim_meansub, linewidth=2, label="standard MIM")
+axis.plot(mim_red.freqs, mim_red_meansub, linewidth=2, label="rank subspace (25) MIM")
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Mean-corrected connectivity (A.U.)")
 axis.legend()
@@ -402,7 +423,8 @@ assert patterns[1, 0].shape[0] == np.array(mic_red.attrs["patterns"])[1, 0].shap
 # gets the singular values of the data
 s = np.linalg.svd(raw.get_data(), compute_uv=False)
 # finds how many singular values are 'close' to the largest singular value
-rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
+rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria, which is
+# a hyper-parameter
 
 
 ###############################################################################
@@ -411,27 +433,24 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 #
 # These multivariate methods offer many benefits in the form of dimensionality
 # reduction, signal-to-noise ratio improvements, and invariance to
-# estimate-biasing source mixing; however, no method is perfect. The immunity
-# of the imaginary part of coherency to volume conduction comes from the fact
-# that these artefacts have zero phase lag, and hence a zero-valued imaginary
-# component. By projecting the complex-valued coherency to the imaginary axis,
-# signals of a given magnitude with phase lag differences close to 90° or 270°
-# see their contributions to the connectivity estimate increased relative to
-# comparable signals with phase lag differences close to 0° or 180°. Therefore,
-# the imaginary part of coherency is biased towards connectivity involving 90°
-# and 270° phase lag difference components.
+# estimate-biasing source mixing; however, no method is perfect. Important
+# considerations must be taken into account when choosing methods based on the
+# imaginary part of coherency such as MIC or MIM versus those based on
+# coherency/coherence, such as CaCoh.
 #
-# Whilst this is not a limitation specific to the multivariate extension of
-# this measure, these multivariate methods can introduce further bias: when
-# maximising the imaginary part of coherency, components with phase lag
-# differences close to 90° and 270° will likely give higher connectivity
-# estimates, and so may be prioritised by the spatial filters.
+# In short, if you want to examine connectivity between signals from the same
+# modality, you should consider using MIC and MIM to avoid spurious
+# connectivity estimates stemming from e.g. volume conduction artefacts.
 #
-# Such a limitation should be kept in mind when estimating connectivity using
-# these methods. Possible sanity checks can involve comparing the spectral
-# profiles of MIC/MIM to coherence and the imaginary part of coherency
-# computed on the same data, as well as comparing to other multivariate
-# measures, such as canonical coherence :footcite:`VidaurreEtAl2019`.
+# On the other hand, if you want to examine connectivity between signals from
+# different modalities, CaCoh is a more appropriate method than MIC/MIM. This
+# is because voilume conduction artefacts are of less concern, and CaCoh does
+# not risk biasing connectivity estimates towards interactions with particular
+# phase lags like MIC/MIM.
+#
+# These scenarios are described in more detail in the
+# :doc:`compare_coherency_methods` example.
+
 
 ###############################################################################
 # References

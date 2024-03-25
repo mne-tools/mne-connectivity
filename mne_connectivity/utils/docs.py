@@ -70,7 +70,8 @@ docdict[
 
 docdict["coh"] = "'coh' : Coherence"
 docdict["cohy"] = "'cohy' : Coherency"
-docdict["imcoh"] = "'imcoh' : Imaginary part of coherency"
+docdict["imcoh"] = "'imcoh' : Imaginary part of Coherency"
+docdict["cacoh"] = "'cacoh' : Canonical Coherency (CaCoh)"
 docdict["mic"] = "'mic' : Maximised Imaginary part of Coherency (MIC)"
 docdict["mim"] = "'mim' : Multivariate Interaction Measure (MIM)"
 docdict["plv"] = "'plv' : Phase-Locking Value (PLV)"

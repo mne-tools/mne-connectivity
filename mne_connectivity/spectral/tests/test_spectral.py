@@ -466,7 +466,7 @@ def test_spectral_connectivity(method, mode):
     assert out_lens[0] == 10
 
 
-@pytest.mark.parametrize("method", ["mic", "mim", "gc"])
+@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", "gc"])
 def test_spectral_connectivity_epochs_multivariate(method):
     """Test over-epoch multivariate connectivity methods."""
     mode = "multitaper"  # stick with single mode in interest of time
@@ -519,7 +519,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
         freqs.index(fend + trans_bandwidth * 2) + 1,
     )
 
-    if method in ["mic", "mim"]:
+    if method in ["cacoh", "mic", "mim"]:
         lower_t = 0.2
         upper_t = 0.5
 
@@ -570,27 +570,25 @@ def test_spectral_connectivity_epochs_multivariate(method):
         assert np.allclose(trgc[0, : bidx[0]].mean(), 0, atol=lower_t)
         assert np.allclose(trgc[0, bidx[1] :].mean(), 0, atol=lower_t)
 
-    # check all-to-all conn. computed for MIC/MIM when no indices given
-    if method in ["mic", "mim"]:
+    # check all-to-all conn. computed for CaCoh/MIC/MIM when no indices given
+    if method in ["cacoh", "mic", "mim"]:
         con = spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=None, sfreq=sfreq
         )
         assert con.indices is None
         assert con.n_nodes == n_signals
-        if method == "mic":
+        if method in ["cacoh", "mic"]:
             assert np.array(con.attrs["patterns"]).shape[2] == n_signals
 
     # check ragged indices padded correctly
-    ragged_indices = (np.array([[0]]), np.array([[1, 2]]))
+    ragged_indices = ([[0]], [[1, 2]])
     con = spectral_connectivity_epochs(
         data, method=method, mode=mode, indices=ragged_indices, sfreq=sfreq
     )
-    assert np.all(
-        np.array(con.indices) == np.array([np.array([[0, -1]]), np.array([[1, 2]])])
-    )
+    assert np.all(np.array(con.indices) == np.array([[[0, -1]], [[1, 2]]]))
 
-    # check shape of MIC patterns
-    if method == "mic":
+    # check shape of CaCoh/MIC patterns
+    if method in ["cacoh", "mic"]:
         for mode in ["multitaper", "cwt_morlet"]:
             con = spectral_connectivity_epochs(
                 data,
@@ -636,7 +634,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
                 assert np.shape(con.attrs["patterns"][1][0])[1] == len(fmin)
 
                 # check patterns shape matches input data, not rank
-                rank = (np.array([1]), np.array([1]))
+                rank = ([1], [1])
                 con = spectral_connectivity_epochs(
                     data,
                     method=method,
@@ -649,7 +647,7 @@ def test_spectral_connectivity_epochs_multivariate(method):
                 assert np.shape(con.attrs["patterns"][1][0])[0] == n_targets
 
                 # check patterns padded correctly
-                ragged_indices = (np.array([[0]]), np.array([[1, 2]]))
+                ragged_indices = ([[0]], [[1, 2]])
                 con = spectral_connectivity_epochs(
                     data, method=method, mode=mode, indices=ragged_indices, sfreq=sfreq
                 )
@@ -684,8 +682,8 @@ def test_multivariate_spectral_connectivity_epochs_regression():
     fpath = os.path.dirname(os.path.realpath(__file__))
     data = pd.read_pickle(os.path.join(fpath, "data", "example_multivariate_data.pkl"))
     sfreq = 100
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
-    methods = ["mic", "mim", "gc", "gc_tr"]
+    indices = ([[0, 1]], [[2, 3]])
+    methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
     con = spectral_connectivity_epochs(
         data,
         method=methods,
@@ -704,9 +702,15 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         n_jobs=1,
     )
 
-    # should take the absolute of the MIC scores, as the MATLAB implementation
-    # returns the absolute values.
-    mne_results = {this_con.method: np.abs(this_con.get_data()) for this_con in con}
+    mne_results = {}
+    for this_con in con:
+        # must take the absolute of the MIC scores, as the MATLAB
+        # implementation returns the absolute values.
+        if this_con.method == "mic":
+            mne_results[this_con.method] = np.abs(this_con.get_data())
+        else:
+            mne_results[this_con.method] = this_con.get_data()
+
     matlab_results = pd.read_pickle(
         os.path.join(fpath, "data", "example_multivariate_matlab_results.pkl")
     )
@@ -715,7 +719,8 @@ def test_multivariate_spectral_connectivity_epochs_regression():
 
 
 @pytest.mark.parametrize(
-    "method", ["mic", "mim", "gc", "gc_tr", ["mic", "mim", "gc", "gc_tr"]]
+    "method",
+    ["cacoh", "mic", "mim", "gc", "gc_tr", ["cacoh", "mic", "mim", "gc", "gc_tr"]],
 )
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
@@ -731,14 +736,14 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         rng_seed=0,
     )
 
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    indices = ([[0, 1]], [[2, 3]])
     cwt_freqs = np.arange(10, 25 + 1)
 
     # check bad indices without nested array caught
     with pytest.raises(
         TypeError, match="multivariate indices must contain array-likes"
     ):
-        non_nested_indices = (np.array([0, 1]), np.array([2, 3]))
+        non_nested_indices = ([0, 1], [2, 3])
         spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=non_nested_indices, gc_n_lags=10
         )
@@ -747,7 +752,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
     with pytest.raises(
         ValueError, match="multivariate indices cannot contain repeated"
     ):
-        repeated_indices = (np.array([[0, 1, 1]]), np.array([[2, 2, 3]]))
+        repeated_indices = ([[0, 1, 1]], [[2, 2, 3]])
         spectral_connectivity_epochs(
             data, method=method, mode=mode, indices=repeated_indices, gc_n_lags=10
         )
@@ -763,7 +768,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         )
 
     # check bad rank args caught
-    too_low_rank = (np.array([0]), np.array([0]))
+    too_low_rank = ([0], [0])
     with pytest.raises(ValueError, match="ranks for seeds and targets must be"):
         spectral_connectivity_epochs(
             data,
@@ -773,7 +778,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
             rank=too_low_rank,
             cwt_freqs=cwt_freqs,
         )
-    too_high_rank = (np.array([3]), np.array([3]))
+    too_high_rank = ([3], [3])
     with pytest.raises(ValueError, match="ranks for seeds and targets must be"):
         spectral_connectivity_epochs(
             data,
@@ -793,7 +798,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
             rank=too_few_rank,
             cwt_freqs=cwt_freqs,
         )
-    too_much_rank = (np.array([2, 2]), np.array([2, 2]))
+    too_much_rank = ([2, 2], [2, 2])
     with pytest.raises(ValueError, match="rank argument must have shape"):
         spectral_connectivity_epochs(
             data,
@@ -824,9 +829,9 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
             gc_n_lags=10,
             cwt_freqs=cwt_freqs,
         )
-        assert rank_con.attrs["rank"] == (np.array([1]), np.array([1]))
+        assert rank_con.attrs["rank"] == ([1], [1])
 
-    if method in ["mic", "mim"]:
+    if method in ["cacoh", "mic", "mim"]:
         # check rank-deficient transformation matrix caught
         with pytest.raises(RuntimeError, match="the transformation matrix"):
             spectral_connectivity_epochs(
@@ -835,7 +840,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
                 mode=mode,
                 indices=indices,
                 sfreq=sfreq,
-                rank=(np.array([2]), np.array([2])),
+                rank=([2], [2]),
                 cwt_freqs=cwt_freqs,
             )
 
@@ -863,7 +868,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
             )
 
         # check intersecting indices caught
-        bad_indices = (np.array([[0, 1]]), np.array([[0, 2]]))
+        bad_indices = ([[0, 1]], [[0, 2]])
         with pytest.raises(
             ValueError, match="seed and target indices must not intersect"
         ):
@@ -891,12 +896,12 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
                 mode=mode,
                 indices=indices,
                 sfreq=sfreq,
-                rank=(np.array([2]), np.array([2])),
+                rank=([2], [2]),
                 cwt_freqs=cwt_freqs,
             )
 
 
-@pytest.mark.parametrize("method", ["mic", "mim", "gc", "gc_tr"])
+@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", "gc", "gc_tr"])
 def test_multivar_spectral_connectivity_parallel(method):
     """Test multivar. freq.-domain connectivity methods run in parallel."""
     data = make_signals_in_freq_bands(
@@ -909,7 +914,7 @@ def test_multivar_spectral_connectivity_parallel(method):
         rng_seed=0,
     )
 
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    indices = ([[0, 1]], [[2, 3]])
 
     spectral_connectivity_epochs(
         data, method=method, mode="multitaper", indices=indices, gc_n_lags=10, n_jobs=2
@@ -941,9 +946,9 @@ def test_multivar_spectral_connectivity_flipped_indices():
 
     # if we're not careful, when finding the channels we need to compute the
     # CSD for, we might accidentally reorder the connectivity indices
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
-    flipped_indices = (np.array([[2, 3]]), np.array([[0, 1]]))
-    concat_indices = (np.array([[0, 1], [2, 3]]), np.array([[2, 3], [0, 1]]))
+    indices = ([[0, 1]], [[2, 3]])
+    flipped_indices = ([[2, 3]], [[0, 1]])
+    concat_indices = ([[0, 1], [2, 3]], [[2, 3], [0, 1]])
 
     # we test on GC since this is a directed connectivity measure
     method = "gc"
@@ -1050,7 +1055,9 @@ def test_epochs_tmin_tmax(kind):
     assert len(w) == 1  # just one even though there were multiple epochs
 
 
-@pytest.mark.parametrize("method", ["coh", "mic", "mim", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize(
+    "method", ["coh", "cacoh", "mic", "mim", "plv", "pli", "wpli", "ciplv"]
+)
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("data_option", ["sync", "random"])
 def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
@@ -1058,7 +1065,7 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     data."""
     rng = np.random.default_rng(0)
     n_epochs = 5
-    n_channels = 3
+    n_channels = 4
     n_times = 1000
     sfreq = 250
     data = np.zeros((n_epochs, n_channels, n_times))
@@ -1080,7 +1087,14 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
                 )
                 data[i, c] = np.squeeze(np.sin(x))
 
-    multivar_methods = ["mic", "mim"]
+    multivar_methods = ["cacoh", "mic", "mim"]
+
+    if method == "cacoh":
+        # CaCoh within set of signals will always be 1, so need to specify
+        # distinct seeds and targets
+        indices = ([[0, 1]], [[2, 3]])
+    else:
+        indices = None
 
     # the frequency band should contain the frequency at which there is a
     # hypothesized "connection"
@@ -1090,22 +1104,23 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
     con = spectral_connectivity_time(
         data,
         freqs,
+        indices=indices,
         method=method,
         mode=mode,
         sfreq=sfreq,
         fmin=freq_band_low_limit,
         fmax=freq_band_high_limit,
         n_jobs=1,
-        faverage=True if method != "mic" else False,
-        average=True if method != "mic" else False,
+        faverage=method not in ["cacoh", "mic"],
+        average=method not in ["cacoh", "mic"],
         sm_times=0,
     )
     con_matrix = con.get_data()
 
-    # MIC values can be pos. and neg., so must be averaged after taking the
-    # absolute values for the test to work
+    # CaCoh/MIC values can be pos. and neg., so must be averaged after taking
+    # the absolute values for the test to work
     if method in multivar_methods:
-        if method == "mic":
+        if method in ["cacoh", "mic"]:
             con_matrix = np.mean(np.abs(con_matrix), axis=(0, 2))
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
@@ -1145,7 +1160,7 @@ def test_spectral_connectivity_time_delayed():
     trans_bandwidth = 2.0  # Hz
     delay = 5  # samples (non-zero delay needed for GC to be >> 0)
 
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    indices = ([[0, 1]], [[2, 3]])
 
     # 20-30 Hz connectivity
     fstart, fend = 20.0, 30.0
@@ -1409,7 +1424,7 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
         )
 
 
-@pytest.mark.parametrize("method", ["mic", "mim", "gc", "gc_tr"])
+@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", "gc", "gc_tr"])
 @pytest.mark.parametrize("average", [True, False])
 @pytest.mark.parametrize("faverage", [True, False])
 def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
@@ -1425,7 +1440,7 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
         rng_seed=0,
     )
 
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    indices = ([[0, 1]], [[2, 3]])
     n_cons = len(indices[0])
     freqs = np.arange(10, 25 + 1)
 
@@ -1449,13 +1464,13 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
     )
     assert con.shape == tuple(con_shape)
 
-    # check shape of MIC patterns are correct
-    if method == "mic":
+    # check shape of CaCoh/MIC patterns are correct
+    if method in ["cacoh", "mic"]:
         for indices_type in ["full", "ragged"]:
             if indices_type == "full":
-                indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+                indices = ([[0, 1]], [[2, 3]])
             else:
-                indices = (np.array([[0, 1]]), np.array([[2]]))
+                indices = ([[0, 1]], [[2]])
             max_n_chans = 2
             patterns_shape = [n_cons, max_n_chans]
             if faverage:
@@ -1483,13 +1498,10 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
                 assert not np.any(np.isnan(patterns[0, ..., :, :]))
                 assert not np.any(np.isnan(patterns[0, ..., 0, :]))
                 assert np.all(np.isnan(patterns[1, ..., 1, :]))  # padded entry
-                assert np.all(
-                    np.array(con.indices)
-                    == np.array((np.array([[0, 1]]), np.array([[2, -1]])))
-                )
+                assert np.all(np.array(con.indices) == np.array(([[0, 1]], [[2, -1]])))
 
 
-@pytest.mark.parametrize("method", ["mic", "mim", "gc", "gc_tr"])
+@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", "gc", "gc_tr"])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
 def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     """Test error catching for time-resolved multivar. connectivity methods."""
@@ -1506,7 +1518,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         rng_seed=0,
     )
 
-    indices = (np.array([[0, 1]]), np.array([[2, 3]]))
+    indices = ([[0, 1]], [[2, 3]])
     freqs = np.arange(10, 25 + 1)
 
     # test type-checking of data
@@ -1517,7 +1529,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     with pytest.raises(
         TypeError, match="multivariate indices must contain array-likes"
     ):
-        non_nested_indices = (np.array([0, 1]), np.array([2, 3]))
+        non_nested_indices = ([0, 1], [2, 3])
         spectral_connectivity_time(
             data, freqs, method=method, mode=mode, indices=non_nested_indices
         )
@@ -1526,7 +1538,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     with pytest.raises(
         ValueError, match="multivariate indices cannot contain repeated"
     ):
-        repeated_indices = (np.array([[0, 1, 1]]), np.array([[2, 2, 3]]))
+        repeated_indices = ([[0, 1, 1]], [[2, 2, 3]])
         spectral_connectivity_time(
             data, freqs, method=method, mode=mode, indices=repeated_indices
         )
@@ -1539,12 +1551,12 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         )
 
     # check bad rank args caught
-    too_low_rank = (np.array([0]), np.array([0]))
+    too_low_rank = ([0], [0])
     with pytest.raises(ValueError, match="ranks for seeds and targets must be"):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, mode=mode, rank=too_low_rank
         )
-    too_high_rank = (np.array([3]), np.array([3]))
+    too_high_rank = ([3], [3])
     with pytest.raises(ValueError, match="ranks for seeds and targets must be"):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, mode=mode, rank=too_high_rank
@@ -1554,20 +1566,20 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, mode=mode, rank=too_few_rank
         )
-    too_much_rank = (np.array([2, 2]), np.array([2, 2]))
+    too_much_rank = ([2, 2], [2, 2])
     with pytest.raises(ValueError, match="rank argument must have shape"):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, mode=mode, rank=too_much_rank
         )
 
-    # check all-to-all conn. computed for MIC/MIM when no indices given
-    if method in ["mic", "mim"]:
+    # check all-to-all conn. computed for CaCoh/MIC/MIM when no indices given
+    if method in ["cacoh", "mic", "mim"]:
         con = spectral_connectivity_time(
             data, freqs, method=method, indices=None, mode=mode
         )
         assert con.indices is None
         assert con.n_nodes == n_signals
-        if method == "mic":
+        if method in ["cacoh", "mic"]:
             assert np.array(con.attrs["patterns"]).shape[3] == n_signals
 
     if method in ["gc", "gc_tr"]:
@@ -1578,7 +1590,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
             )
 
         # check intersecting indices caught
-        bad_indices = (np.array([[0, 1]]), np.array([[0, 2]]))
+        bad_indices = ([[0, 1]], [[0, 2]])
         with pytest.raises(
             ValueError, match="seed and target indices must not intersect"
         ):
@@ -1631,12 +1643,12 @@ def test_multivar_save_load(tmp_path):
 
     tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
 
-    non_ragged_indices = (np.array([[0, 1]]), np.array([[2, 3]]))
-    ragged_indices = (np.array([[0, 1]]), np.array([[2]]))
+    non_ragged_indices = ([[0, 1]], [[2, 3]])
+    ragged_indices = ([[0, 1]], [[2]])
     for indices in [non_ragged_indices, ragged_indices]:
         con = spectral_connectivity_epochs(
             epochs,
-            method=["mic", "mim", "gc", "gc_tr"],
+            method=["cacoh", "mic", "mim", "gc", "gc_tr"],
             indices=indices,
             fmin=10,
             fmax=30,
@@ -1657,7 +1669,7 @@ def test_multivar_save_load(tmp_path):
 
 
 @pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli", "ciplv"])
-@pytest.mark.parametrize("indices", [None, (np.array([0, 1]), np.array([2, 3]))])
+@pytest.mark.parametrize("indices", [None, ([0, 1], [2, 3])])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
 
@@ -1699,8 +1711,8 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
             assert con.indices is None and read_con.indices is None
 
 
-@pytest.mark.parametrize("method", ["mic", "mim", "gc", "gc_tr"])
-@pytest.mark.parametrize("indices", [None, (np.array([[0, 1]]), np.array([[2, 3]]))])
+@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", "gc", "gc_tr"])
+@pytest.mark.parametrize("indices", [None, ([[0, 1]], [[2, 3]])])
 def test_multivar_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
 
