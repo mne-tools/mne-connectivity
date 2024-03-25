@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -590,7 +592,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -645,7 +647,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -711,26 +713,26 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 724.4 ms
+Interior check completed in 763.3 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
 Adjusting the neighborhood info.
 Source space : MRI voxel -&gt; MRI (surface RAS)
-     0.015000  0.000000  0.000000     -75.00 mm
-     0.000000  0.015000  0.000000    -120.00 mm
-     0.000000  0.000000  0.015000     -60.00 mm
-     0.000000  0.000000  0.000000       1.00
+    0.015000 0.000000 0.000000     -75.00 mm
+    0.000000 0.015000 0.000000    -120.00 mm
+    0.000000 0.000000 0.015000     -60.00 mm
+    0.000000 0.000000 0.000000       1.00
 MRI volume : MRI voxel -&gt; MRI (surface RAS)
-    -0.001000  0.000000  0.000000     128.00 mm
-     0.000000  0.000000  0.001000    -128.00 mm
-     0.000000 -0.001000  0.000000     128.00 mm
-     0.000000  0.000000  0.000000       1.00
+    -0.001000 0.000000 0.000000     128.00 mm
+    0.000000 0.000000 0.001000    -128.00 mm
+    0.000000 -0.001000 0.000000     128.00 mm
+    0.000000 0.000000 0.000000       1.00
 MRI volume : MRI (surface RAS) -&gt; RAS (non-zero origin)
-     1.000000  0.000000  0.000000       0.00 mm
-     0.000000  1.000000  0.000000       0.00 mm
-     0.000000  0.000000  1.000000       0.00 mm
-     0.000000  0.000000  0.000000       1.00
+    1.000000 0.000000 0.000000       0.00 mm
+    0.000000 1.000000 0.000000       0.00 mm
+    0.000000 0.000000 1.000000       0.00 mm
+    0.000000 0.000000 0.000000       1.00
 Setting up volume interpolation ...
     18327567/16777216 nonzero values for the whole brain
 [done]
@@ -745,10 +747,10 @@ Free source orientations
 Read 1 source spaces a total of 479 active source locations
 
 Coordinate transformation: MRI (surface RAS) -&gt; head
-     0.999797 -0.005775 -0.019288       2.71 mm
-     0.011390  0.952195  0.305279      16.66 mm
-     0.016602 -0.305437  0.952068      28.47 mm
-     0.000000  0.000000  0.000000       1.00
+    0.999797 -0.005775 -0.019288       2.71 mm
+    0.011390 0.952195 0.305279      16.66 mm
+    0.016602 -0.305437 0.952068      28.47 mm
+    0.000000 0.000000 0.000000       1.00
 
 Read 298 MEG channels from info
 Read 26 MEG compensation channels from info
@@ -761,10 +763,10 @@ Setting up compensation data...
     Postselector created.
 105 coil definitions read
 Coordinate transformation: MEG device -&gt; head
-     0.998490 -0.050225 -0.022235       1.90 mm
-     0.052235  0.993447  0.101656      13.13 mm
-     0.016984 -0.102664  0.994571      66.69 mm
-     0.000000  0.000000  0.000000       1.00
+    0.998490 -0.050225 -0.022235       1.90 mm
+    0.052235 0.993447 0.101656      13.13 mm
+    0.016984 -0.102664 0.994571      66.69 mm
+    0.000000 0.000000 0.000000       1.00
 MEG coil definitions created in head coordinates.
 Removing 5 compensators from info because not all compensation channels were picked.
 Source spaces are now in head coordinates.
@@ -788,7 +790,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 609.0 ms
+Interior check completed in 620.8 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -796,7 +798,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 215.4 ms
+Interior check completed in 195.0 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -862,10 +864,10 @@ Processing epoch : 10
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_001.png" srcset="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_001.png" alt="mne inverse envelope correlation volume" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Transforming subject RAS (non-zero origin) -&gt; MNI Talairach
-     1.029906  0.008134 -0.048341      -1.23 mm
-     0.013579  0.955254  0.160974      -9.34 mm
-     0.075120 -0.143988  1.092494     -28.73 mm
-     0.000000  0.000000  0.000000       1.00
+    1.029906 0.008134 -0.048341      -1.23 mm
+    0.013579 0.955254 0.160974      -9.34 mm
+    0.075120 -0.143988 1.092494     -28.73 mm
+    0.000000 0.000000 0.000000       1.00
 
 Showing: t = 0.000 s, (43.2, -61.2, 16.1) mm, [8, 4, 6] vox, 1136 vertex
 Using control points [ 82.5  92.3 107. ]
@@ -886,7 +888,7 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.911 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.496 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5e9e1bddc9260a1e0fcb115d04581984/mne_inverse_envelope_correlation_volume.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation_volume.ipynb</span></code></a></p>
@@ -973,7 +975,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>

@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -558,9 +560,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 88 matching events found
 No baseline correction applied
@@ -613,7 +615,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
@@ -645,9 +647,9 @@ Designing a one-pass, zero-phase, non-causal highpass filter:
 - Filter length: 2641 samples (33.013 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Using up to 300 segments
 Number of samples used : 4800
 [done]
@@ -684,10 +686,10 @@ Free source orientations
 Read 2 source spaces a total of 8196 active source locations
 
 Coordinate transformation: MRI (surface RAS) -&gt; head
-     0.999797 -0.005775 -0.019288       2.71 mm
-     0.011390  0.952195  0.305279      16.66 mm
-     0.016602 -0.305437  0.952068      28.47 mm
-     0.000000  0.000000  0.000000       1.00
+    0.999797 -0.005775 -0.019288       2.71 mm
+    0.011390 0.952195 0.305279      16.66 mm
+    0.016602 -0.305437 0.952068      28.47 mm
+    0.000000 0.000000 0.000000       1.00
 
 Read 298 MEG channels from info
 Read 26 MEG compensation channels from info
@@ -700,10 +702,10 @@ Setting up compensation data...
     Postselector created.
 105 coil definitions read
 Coordinate transformation: MEG device -&gt; head
-     0.998490 -0.050225 -0.022235       1.90 mm
-     0.052235  0.993447  0.101656      13.13 mm
-     0.016984 -0.102664  0.994571      66.69 mm
-     0.000000  0.000000  0.000000       1.00
+    0.998490 -0.050225 -0.022235       1.90 mm
+    0.052235 0.993447 0.101656      13.13 mm
+    0.016984 -0.102664 0.994571      66.69 mm
+    0.000000 0.000000 0.000000       1.00
 MEG coil definitions created in head coordinates.
 Removing 5 compensators from info because not all compensation channels were picked.
 Source spaces are now in head coordinates.
@@ -727,14 +729,14 @@ Checking surface interior status for 4098 points...
     Found    0/2859 points outside using surface Qhull
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 2837.0 ms
+Interior check completed in 3319.1 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 2833.8 ms
+Interior check completed in 3500.5 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -742,7 +744,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 201.0 ms
+Interior check completed in 304.8 ms
 
 Composing the field computation matrix...
 Computing MEG at 8196 source locations (free orientations)...
@@ -893,7 +895,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Setting up band-pass filter from 14 - 30 Hz
@@ -911,7 +913,43 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.2s
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.2s
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Setting up band-pass filter from 14 - 30 Hz
@@ -929,45 +967,9 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 s)
-
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 s)
-
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.2s
 Setting up band-pass filter from 14 - 30 Hz
 
 FIR filter parameters
@@ -1139,7 +1141,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7fa43d1f59c0&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f4d228edae0&gt;
 </pre></div>
 </div>
 </section>
@@ -1163,7 +1165,7 @@ Using control points [26. 29. 32.]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 46.229 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 6.266 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bd11eaca1da460c062c1190f891509a7/mne_inverse_envelope_correlation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation.ipynb</span></code></a></p>
@@ -1250,7 +1252,7 @@ Using control points [26. 29. 32.]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>

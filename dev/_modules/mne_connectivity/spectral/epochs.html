@@ -1062,12 +1062,13 @@ document.write(`
 <span class="sd">    %(names)s</span>
 <span class="sd">    method : str | list of str</span>
 <span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cohy&#39;,</span>
-<span class="sd">        &#39;imcoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;ppc&#39;, &#39;pli&#39;, &#39;dpli&#39;, &#39;wpli&#39;,</span>
-<span class="sd">        &#39;wpli2_debiased&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``. These are:</span>
+<span class="sd">        &#39;imcoh&#39;, &#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;ppc&#39;, &#39;pli&#39;, &#39;dpli&#39;,</span>
+<span class="sd">        &#39;wpli&#39;, &#39;wpli2_debiased&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``. These are:</span>
 
 <span class="sd">        * %(coh)s</span>
 <span class="sd">        * %(cohy)s</span>
 <span class="sd">        * %(imcoh)s</span>
+<span class="sd">        * %(cacoh)s</span>
 <span class="sd">        * %(mic)s</span>
 <span class="sd">        * %(mim)s</span>
 <span class="sd">        * %(plv)s</span>
@@ -1081,8 +1082,8 @@ document.write(`
 <span class="sd">        * %(gc)s</span>
 <span class="sd">        * %(gc_tr)s</span>
 
-<span class="sd">        Multivariate methods (``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr]``) cannot be</span>
-<span class="sd">        called with the other methods.</span>
+<span class="sd">        Multivariate methods (``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``)</span>
+<span class="sd">        cannot be called with the other methods.</span>
 <span class="sd">    indices : tuple of array | None</span>
 <span class="sd">        Two arrays with indices of connections for which to compute</span>
 <span class="sd">        connectivity. If a bivariate method is called, each array for the seeds</span>
@@ -1144,7 +1145,7 @@ document.write(`
 <span class="sd">        Two arrays with the rank to project the seed and target data to,</span>
 <span class="sd">        respectively, using singular value decomposition. If None, the rank of</span>
 <span class="sd">        the data is computed and projected to. Only used if ``method`` contains</span>
-<span class="sd">        any of ``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">        any of ``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
 <span class="sd">    block_size : int</span>
 <span class="sd">        How many connections to compute at once (higher numbers are faster</span>
 <span class="sd">        but require more memory).</span>
@@ -1250,24 +1251,42 @@ document.write(`
 <span class="sd">            C = ----------------------</span>
 <span class="sd">                sqrt(E[Sxx] * E[Syy])</span>
 
+<span class="sd">        &#39;cacoh&#39; : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`</span>
+<span class="sd">        given by:</span>
+
+<span class="sd">            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}</span>
+<span class="sd">            (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}</span>
+<span class="sd">            \boldsymbol{b}^T\boldsymbol{b}}}}`</span>
+
+<span class="sd">            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density</span>
+<span class="sd">            between seeds and targets transformed for a given phase angle</span>
+<span class="sd">            :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`</span>
+<span class="sd">            are eigenvectors for the seeds and targets, such that</span>
+<span class="sd">            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`</span>
+<span class="sd">            maximises coherency between the seeds and targets. Taking the</span>
+<span class="sd">            absolute value of the results gives maximised coherence.</span>
+
 <span class="sd">        &#39;mic&#39; : Maximised Imaginary part of Coherency (MIC)</span>
 <span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
 
-<span class="sd">            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}</span>
-<span class="sd">            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}</span>
-<span class="sd">            \parallel}}`</span>
+<span class="sd">            :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T</span>
+<span class="sd">            \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel</span>
+<span class="sd">            \parallel\boldsymbol{\beta}\parallel}}`</span>
 
 <span class="sd">            where: :math:`\boldsymbol{E}` is the imaginary part of the</span>
 <span class="sd">            transformed cross-spectral density between seeds and targets; and</span>
 <span class="sd">            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are</span>
 <span class="sd">            eigenvectors for the seeds and targets, such that</span>
-<span class="sd">            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises</span>
-<span class="sd">            connectivity between the seeds and targets.</span>
+<span class="sd">            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises the</span>
+<span class="sd">            imaginary part of coherency between the seeds and targets.</span>
 
 <span class="sd">        &#39;mim&#39; : Multivariate Interaction Measure (MIM)</span>
 <span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
 
-<span class="sd">            :math:`MIM=tr(\boldsymbol{EE}^T)`</span>
+<span class="sd">            :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`</span>
+
+<span class="sd">            where :math:`\boldsymbol{E}` is the imaginary part of the</span>
+<span class="sd">            transformed cross-spectral density between seeds and targets.</span>
 
 <span class="sd">        &#39;plv&#39; : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given</span>
 <span class="sd">        by::</span>
@@ -1311,7 +1330,7 @@ document.write(`
 
 <span class="sd">            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert</span>
 <span class="sd">            \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss</span>
-<span class="sd">            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,</span>
+<span class="sd">            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`</span>
 
 <span class="sd">            where: :math:`s` and :math:`t` represent the seeds and targets,</span>
 <span class="sd">            respectively; :math:`\boldsymbol{H}` is the spectral transfer</span>
@@ -1761,7 +1780,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>

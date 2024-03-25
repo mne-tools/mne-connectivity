@@ -492,12 +492,13 @@ a list of integers from 0 to <code class="docutils literal notranslate"><span cl
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </dd>
 <dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'cohy',</span>
-<span class="pre">'imcoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'ppc',</span> <span class="pre">'pli',</span> <span class="pre">'dpli',</span> <span class="pre">'wpli',</span>
-<span class="pre">'wpli2_debiased',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These are:</p>
+<span class="pre">'imcoh',</span> <span class="pre">'cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'ppc',</span> <span class="pre">'pli',</span> <span class="pre">'dpli',</span>
+<span class="pre">'wpli',</span> <span class="pre">'wpli2_debiased',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These are:</p>
 <ul class="simple">
 <li><p>‘coh’ : Coherence</p></li>
 <li><p>‘cohy’ : Coherency</p></li>
-<li><p>‘imcoh’ : Imaginary part of coherency</p></li>
+<li><p>‘imcoh’ : Imaginary part of Coherency</p></li>
+<li><p>‘cacoh’ : Canonical Coherency (CaCoh)</p></li>
 <li><p>‘mic’ : Maximised Imaginary part of Coherency (MIC)</p></li>
 <li><p>‘mim’ : Multivariate Interaction Measure (MIM)</p></li>
 <li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
@@ -511,8 +512,8 @@ of names, then it must be equal in length to <code class="docutils literal notra
 <li><p>‘gc’ : State-space Granger Causality (GC)</p></li>
 <li><p>‘gc_tr’ : State-space GC on time-reversed signals</p></li>
 </ul>
-<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be
-called with the other methods.</p>
+<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>)
+cannot be called with the other methods.</p>
 </dd>
 <dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which to compute
 connectivity. If a bivariate method is called, each array for the seeds
@@ -574,7 +575,7 @@ if <code class="docutils literal notranslate"><span class="pre">method</span></c
 <dt><strong>rank</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with the rank to project the seed and target data to,
 respectively, using singular value decomposition. If None, the rank of
 the data is computed and projected to. Only used if <code class="docutils literal notranslate"><span class="pre">method</span></code> contains
-any of <code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
+any of <code class="docutils literal notranslate"><span class="pre">['cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
 </dd>
 <dt><strong>block_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many connections to compute at once (higher numbers are faster
 but require more memory).</p>
@@ -683,50 +684,66 @@ e.g., <code class="docutils literal notranslate"><span class="pre">['coh',</span
     <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxx</span><span class="p">]</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="n">Syy</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>‘mic’ : Maximised Imaginary part of Coherency (MIC)
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> given by:</p>
+<p>‘cacoh’ : Canonical Coherency (CaCoh) <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>
+given by:</p>
 <blockquote>
-<div><p><span class="math notranslate nohighlight">\(MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
-{\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-\parallel}}\)</span></p>
+<div><p><span class="math notranslate nohighlight">\(\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
+(\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
+\boldsymbol{b}^T\boldsymbol{b}}}}\)</span></p>
+<p>where: <span class="math notranslate nohighlight">\(\boldsymbol{D}(\Phi)\)</span> is the cross-spectral density
+between seeds and targets transformed for a given phase angle
+<span class="math notranslate nohighlight">\(\Phi\)</span>; and <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{b}\)</span>
+are eigenvectors for the seeds and targets, such that
+<span class="math notranslate nohighlight">\(\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}\)</span>
+maximises coherency between the seeds and targets. Taking the
+absolute value of the results gives maximised coherence.</p>
+</div></blockquote>
+<p>‘mic’ : Maximised Imaginary part of Coherency (MIC)
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> given by:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
+\boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
+\parallel\boldsymbol{\beta}\parallel}}\)</span></p>
 <p>where: <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the
 transformed cross-spectral density between seeds and targets; and
 <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\beta}\)</span> are
 eigenvectors for the seeds and targets, such that
-<span class="math notranslate nohighlight">\(\boldsymbol{\alpha}^T \boldsymbol{E \beta}\)</span> maximises
-connectivity between the seeds and targets.</p>
+<span class="math notranslate nohighlight">\(\boldsymbol{\alpha}^T \boldsymbol{E \beta}\)</span> maximises the
+imaginary part of coherency between the seeds and targets.</p>
 </div></blockquote>
 <p>‘mim’ : Multivariate Interaction Measure (MIM)
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> given by:</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> given by:</p>
 <blockquote>
-<div><p><span class="math notranslate nohighlight">\(MIM=tr(\boldsymbol{EE}^T)\)</span></p>
+<div><p><span class="math notranslate nohighlight">\(\textrm{MIM}=tr(\boldsymbol{EE}^T)\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the
+transformed cross-spectral density between seeds and targets.</p>
 </div></blockquote>
-<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> given
+<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> given
 by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLV</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">]</span><span class="o">|</span>
 </pre></div>
 </div>
 <p>‘ciplv’ : corrected imaginary PLV (ciPLV)
-<a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> given by:</p>
+<a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">ciPLV</span> <span class="o">=</span> <span class="o">------------------------------------</span>
          <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>‘ppc’ : Pairwise Phase Consistency (PPC), an unbiased estimator
-of squared PLV <a class="footnote-reference brackets" href="#footcite-vincketal2010" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
-<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> given by:</p>
+of squared PLV <a class="footnote-reference brackets" href="#footcite-vincketal2010" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>.</p>
+<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLI</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">sign</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span><span class="o">|</span>
 </pre></div>
 </div>
 <p>‘pli2_unbiased’ : Unbiased estimator of squared PLI
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>.</p>
-<p>‘dpli’ : Directed Phase Lag Index (DPLI) <a class="footnote-reference brackets" href="#footcite-stametal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>.</p>
+<p>‘dpli’ : Directed Phase Lag Index (DPLI) <a class="footnote-reference brackets" href="#footcite-stametal2012" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>
 given by (where H is the Heaviside function):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DPLI</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">H</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span>
 </pre></div>
 </div>
-<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>
+<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">WPLI</span> <span class="o">=</span> <span class="o">------------------</span>
@@ -734,13 +751,13 @@ given by:</p>
 </pre></div>
 </div>
 <p>‘wpli2_debiased’ : Debiased estimator of squared WPLI
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>.</p>
-<p>‘gc’ : State-space Granger Causality (GC) <a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>
+<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>.</p>
+<p>‘gc’ : State-space Granger Causality (GC) <a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a>
 given by:</p>
 <blockquote>
 <div><p><span class="math notranslate nohighlight">\(GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
 \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
-\lvert t}\boldsymbol{H}_{ts}^*\rvert}})\)</span>,</p>
+\lvert t}\boldsymbol{H}_{ts}^*\rvert}})\)</span></p>
 <p>where: <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(t\)</span> represent the seeds and targets,
 respectively; <span class="math notranslate nohighlight">\(\boldsymbol{H}\)</span> is the spectral transfer
 function; <span class="math notranslate nohighlight">\(\boldsymbol{\Sigma}\)</span> is the residuals matrix of
@@ -748,55 +765,59 @@ the autoregressive model; and <span class="math notranslate nohighlight">\(\bold
 <span class="math notranslate nohighlight">\(\boldsymbol{\Sigma}\)</span> transformed by <span class="math notranslate nohighlight">\(\boldsymbol{H}\)</span>.</p>
 </div></blockquote>
 <p>‘gc_tr’ : State-space GC on time-reversed signals
-<a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> given by the same equation
+<a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> given by the same equation
 as for ‘gc’, but where the autocovariance sequence from which the
 autoregressive model is produced is transposed to mimic the reversal of
 the original signal in time.</p>
 </div></blockquote>
 <p class="rubric">References</p>
-<div class="docutils container" id="id15">
+<div class="docutils container" id="id16">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-nolteetal2004" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Guido Nolte, Ou Bai, Lewis Wheaton, Zoltan Mari, Sherry Vorbach, and Mark Hallett. Identifying true brain interaction from EEG data using the imaginary part of coherency. <em>Clinical Neurophysiology</em>, 115(10):2292–2307, 2004. <a class="reference external" href="https://doi.org/10.1016/j.clinph.2004.04.029">doi:10.1016/j.clinph.2004.04.029</a>.</p>
 </aside>
+<aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
 <aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-lachauxetal1999" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
 <p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-brunaetal2018" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
 <p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-vincketal2010" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">6</a><span class="fn-bracket">]</span></span>
 <p>Martin Vinck, Marijn van Wingerden, Thilo Womelsdorf, Pascal Fries, and Cyriel M.A. Pennartz. The pairwise phase consistency: a bias-free measure of rhythmic neuronal synchronization. <em>NeuroImage</em>, 51(1):112–122, 2010. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2010.01.073">doi:10.1016/j.neuroimage.2010.01.073</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-stametal2007" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">6</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">7</a><span class="fn-bracket">]</span></span>
 <p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-vincketal2011" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id10">2</a>,<a role="doc-backlink" href="#id11">3</a>)</span>
+<span class="label"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id11">2</a>,<a role="doc-backlink" href="#id12">3</a>)</span>
 <p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-stametal2012" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">8</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">9</a><span class="fn-bracket">]</span></span>
 <p>C. J. Stam and E. C. W. van Straaten. Go with the flow: use of a directed phase lag index (dpli) to characterize patterns of phase relations in a large-scale model of brain dynamics. <em>NeuroImage</em>, 62(3):1415–1428, Sep 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2012.05.050">doi:10.1016/j.neuroimage.2012.05.050</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-barnettseth2015" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id12">1</a>,<a role="doc-backlink" href="#id13">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id13">1</a>,<a role="doc-backlink" href="#id14">2</a>)</span>
 <p>Lionel Barnett and Anil K. Seth. Granger causality for state-space models. <em>Physical Review E</em>, 91(4):040101, 2015. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.91.040101">doi:10.1103/PhysRevE.91.040101</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-winkleretal2016" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">10</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">11</a><span class="fn-bracket">]</span></span>
 <p>Irene Winkler, Danny Panknin, Daniel Bartz, Klaus-Robert Müller, and Stefan Haufe. Validity of time reversal for testing granger causality. <em>IEEE Transactions on Signal Processing</em>, 64(11):2746–2760, 2016. <a class="reference external" href="https://doi.org/10.1109/TSP.2016.2531628">doi:10.1109/TSP.2016.2531628</a>.</p>
 </aside>
 </aside>
@@ -811,6 +832,9 @@ the original signal in time.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the difference between spectral connectivity computed over time or ov..."><img alt="" src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a></p>
   <div class="sphx-glr-thumbnail-title">Comparing spectral connectivity computed over time or over trials</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the distinct forms of information captured by coherency-based connect..."><img alt="" src="../_images/sphx_glr_compare_coherency_methods_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Comparison of coherency-based methods</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Computes the Phase Lag Index (PLI) between all gradiometers and shows the connectivity in 3D us..."><img alt="" src="../_images/sphx_glr_sensor_connectivity_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute all-to-all connectivity in sensor space</div>
@@ -826,6 +850,9 @@ the original signal in time.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the all-to-all connectivity between 75 regions in a mixed source space ba..."><img alt="" src="../_images/sphx_glr_mixed_source_space_connectivity_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute mixed source space connectivity and visualize it using a circular graph</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how canonical coherency (CaCoh) VidaurreEtAl2019 - a multivariate met..."><img alt="" src="../_images/sphx_glr_cacoh_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/cacoh.html#sphx-glr-auto-examples-cacoh-py"><span class="std std-ref">Compute multivariate coherency/coherence</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compute multivariate coherency/coherence</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how multivariate methods based on the imaginary part of coherency Ewa..."><img alt="" src="../_images/sphx_glr_mic_mim_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute multivariate measures of the imaginary part of coherency</div>
@@ -916,7 +943,7 @@ the original signal in time.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>

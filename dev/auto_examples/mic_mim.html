@@ -57,7 +57,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute seed-based time-frequency connectivity in sensor space" href="cwt_sensor_connectivity.html" />
-    <link rel="prev" title="Compute mixed source space connectivity and visualize it using a circular graph" href="mixed_source_space_connectivity.html" />
+    <link rel="prev" title="Compute multivariate coherency/coherence" href="cacoh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -376,6 +376,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -384,6 +385,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -492,16 +494,29 @@ signal-to-noise ratio and reduced bias).</p>
 <p>A popular bivariate measure of connectivity is the imaginary part of
 coherency, which looks at the correlation between two signals in the
 frequency domain and is immune to spurious connectivity arising from volume
-conduction artefacts <a class="footnote-reference brackets" href="#footcite-nolteetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. However, depending on the
-degree of source mixing, this measure is susceptible to biased estimates of
+conduction artefacts <a class="footnote-reference brackets" href="#footcite-nolteetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. However, in cases where
+interactions between multiple signals are of interest, computing connectivity
+between all possible combinations of signals leads to a very large number of
+results which is difficult to interpret. A common approach is to average
+results across these connections, however this risks reducing the
+signal-to-noise ratio of results and burying interactions that are present
+between only a small number of channels.</p>
+<p>Additionally, this bivariate measure is susceptible to biased estimates of
 connectivity based on the spatial proximity of sensors
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
-<p>To overcome this limitation, spatial filters can be used to estimate
-connectivity free from this source mixing-dependent bias, which additionally
-increases the signal-to-noise ratio and allows signals to be analysed in a
-multivariate manner <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. This approach leads to the
-following methods: the maximised imaginary part of coherency (MIC); and the
-multivariate interaction measure (MIM).</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> depending on the degree of source mixing in the
+signals.</p>
+<p>To overcome this limitation, spatial filters derived from eigendecompositions
+allows connectivity to be analysed in a multivariate manner, removing the
+source mixing-dependent bias and increase the signal-to-noise ratio of
+connectivity estimates <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. This approach goes beyond
+simply aggregating information across all possible combinations of signals,
+extracting the underlying components of connectivity in a frequency-resolved
+manner.</p>
+<p>This leads to the following methods: the maximised imaginary part of
+coherency (MIC); and the multivariate interaction measure (MIM). These
+methods are similar to the multivariate method based on coherency (CaCoh
+<a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>; see <a class="reference internal" href="cacoh.html"><span class="doc">Compute multivariate coherency/coherence</span></a> and
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a>).</p>
 <p>We start by loading some example MEG data and dividing it into
 two-second-long epochs.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><span class="n">data_path</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;SubjectCMC.ds&quot;</span><span class="p">)</span>
@@ -548,7 +563,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
 - Filter length: 7921 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.2s
 Not setting metadata
 30 matching events found
@@ -627,113 +642,113 @@ Estimated data ranks:
 Computing MIC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   51.66it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   54.01it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:01,   35.43it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   39.45it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   41.65it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   32.04it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   34.48it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   36.56it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   31.14it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   32.99it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   34.70it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   36.22it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   32.48it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   33.87it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   35.13it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   31.76it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   32.92it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   34.04it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:01,   30.44it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:01,   30.91it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:01,   28.65it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   29.56it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   30.59it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   28.67it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   29.48it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   27.55it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   28.46it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   29.37it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   28.04it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:01&lt;00:00,   28.80it/s]
- 61%|██████    | frequency blocks : 31/51 [00:01&lt;00:00,   29.63it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:01&lt;00:00,   28.11it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:01&lt;00:00,   28.48it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   29.27it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   27.91it/s]
- 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   28.66it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   29.43it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   28.03it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   28.81it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   27.39it/s]
- 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   28.14it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   28.88it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   27.55it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   28.19it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   28.68it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   27.18it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   27.40it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   26.38it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   27.10it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   27.86it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   26.83it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   28.44it/s]
+  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:01,   29.55it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   29.87it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:02,   22.84it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   26.61it/s]
+ 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:02,   22.63it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   25.33it/s]
+ 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   27.57it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   25.18it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   26.40it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   27.85it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   25.49it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   26.48it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   24.62it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   25.26it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   23.51it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   24.26it/s]
+ 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   22.79it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:01,   23.39it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:01,   22.19it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:01,   23.27it/s]
+ 41%|████      | frequency blocks : 21/51 [00:00&lt;00:01,   24.36it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:01,   23.57it/s]
+ 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:01,   24.26it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:01,   25.02it/s]
+ 49%|████▉     | frequency blocks : 25/51 [00:01&lt;00:01,   24.23it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:01&lt;00:01,   24.99it/s]
+ 53%|█████▎    | frequency blocks : 27/51 [00:01&lt;00:01,   23.76it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:01&lt;00:00,   24.62it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:01&lt;00:00,   25.27it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:01&lt;00:00,   24.19it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:01&lt;00:00,   24.96it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:01&lt;00:00,   24.04it/s]
+ 65%|██████▍   | frequency blocks : 33/51 [00:01&lt;00:00,   24.79it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   25.55it/s]
+ 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   24.50it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   25.31it/s]
+ 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   26.15it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   25.12it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   25.90it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   26.67it/s]
+ 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   25.82it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   26.63it/s]
+ 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   27.43it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   26.30it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   27.01it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   27.70it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   26.66it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   27.30it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   26.18it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   26.75it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   27.37it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   26.00it/s]
 Computing MIM for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   54.17it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   47.92it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,   50.03it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   32.92it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   36.11it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   38.48it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   30.30it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   31.50it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   27.54it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   29.22it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   30.73it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   27.76it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   29.19it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   30.28it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   27.89it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   29.01it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   26.83it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:01,   27.93it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:01,   29.00it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:01,   27.03it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:01,   27.85it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:01,   28.78it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:01,   27.24it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   27.76it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   26.32it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   26.74it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   27.64it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:01&lt;00:00,   26.31it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:01&lt;00:00,   27.23it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:01&lt;00:00,   28.01it/s]
- 61%|██████    | frequency blocks : 31/51 [00:01&lt;00:00,   26.73it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:01&lt;00:00,   27.49it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:01&lt;00:00,   26.18it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   26.58it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   25.17it/s]
- 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   25.68it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   26.37it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   25.30it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   26.13it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   25.18it/s]
- 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   25.80it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   26.43it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   25.11it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   25.35it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   24.23it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   25.00it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   24.36it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   25.10it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   25.76it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   24.91it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   25.55it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   26.36it/s]
+  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   55.79it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   40.62it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:01,   44.66it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,   47.04it/s]
+ 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   32.75it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   35.34it/s]
+ 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   37.52it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   31.26it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   32.94it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   34.46it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   30.14it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   31.42it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   28.40it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   29.74it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   30.84it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   28.45it/s]
+ 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   29.54it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:01,   30.60it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:01,   28.19it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:01,   29.08it/s]
+ 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   30.00it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:01,   28.39it/s]
+ 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   29.40it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   30.43it/s]
+ 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   28.33it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   28.70it/s]
+ 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   26.82it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   27.76it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:01&lt;00:00,   26.38it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:01&lt;00:00,   27.26it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:01&lt;00:00,   28.15it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:01&lt;00:00,   29.04it/s]
+ 65%|██████▍   | frequency blocks : 33/51 [00:01&lt;00:00,   27.77it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   28.32it/s]
+ 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   26.89it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   27.71it/s]
+ 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   28.55it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   27.25it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   28.04it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   28.40it/s]
+ 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   27.29it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   28.14it/s]
+ 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   28.97it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   27.77it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   28.59it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   29.40it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   28.26it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   28.92it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   29.67it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   28.30it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   28.84it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   28.88it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -796,9 +811,10 @@ weaker peak around 27 Hz.</p>
 connectivity between the seed and target signals. These maximising filters
 correspond to the eigenvectors with the largest eigenvalue, derived from an
 eigendecomposition of information from the cross-spectral density (Eq. 7 of
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
-<p><span class="math notranslate nohighlight">\(MIC=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}{\parallel
-\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}\parallel}\)</span>,</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><span class="math notranslate nohighlight">\(\textrm{MIC}=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+{\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+\parallel}\)</span>,</p>
 <p>where <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\beta}\)</span> are the
 spatial filters for the seeds and targets, respectively, and
 <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the transformed
@@ -827,13 +843,13 @@ estimate.</p>
 </pre></div>
 </div>
 <p>Furthermore, spatial patterns of connectivity can be constructed from the
-spatial filters to give a picture of the location of the sources involved in
-the connectivity. This information is stored under <code class="docutils literal notranslate"><span class="pre">attrs['patterns']</span></code> of
-the connectivity class, with one value per frequency for each channel in the
-seeds and targets. As with MIC, the absolute value of the patterns reflect
-the strength, however the sign differences can be used to visualise the
-orientation of the underlying dipole sources. The spatial patterns are
-<strong>not</strong> bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
+spatial filters to give a picture of the location of the channels involved in
+the connectivity <a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. This information is stored under
+<code class="docutils literal notranslate"><span class="pre">attrs['patterns']</span></code> of the connectivity class, with one value per frequency
+for each channel in the seeds and targets. As with MIC, the absolute value of
+the patterns reflect the strength, however the sign differences can be used
+to visualise the orientation of the underlying dipole sources. The spatial
+patterns are <strong>not</strong> bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
 <p>Here, we average across the patterns in the 13-18 Hz range. Plotting the
 patterns shows that the greatest connectivity between the left and right
 hemispheres occurs at the left and right posterior and left central regions,
@@ -841,6 +857,10 @@ based on the areas with the largest absolute values. Using the signs of the
 values, we can infer the existence of a dipole source between the central and
 posterior regions of the left hemisphere accounting for the connectivity
 contributions (represented on the plot as a green line).</p>
+<p><strong>Note:</strong> The spatial patterns are not a substitute for source
+reconstruction. If you need the spatial patterns in source space, you should
+perform source reconstruction before computing connectivity (see e.g.
+<a class="reference internal" href="mne_inverse_coherence_epochs.html"><span class="doc">Compute coherence in source space using a MNE inverse solution</span></a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute average of patterns in desired frequency range</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">18</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband_idx</span></a> <span class="o">=</span> <span class="p">[</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mic</span><span class="o">.</span><span class="n">freqs</span><span class="o">.</span><span class="n">index</span></a><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="k">for</span> <span class="n">freq</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">]</span>
@@ -907,8 +927,8 @@ MIM. MIM can be thought of as an average of all connectivity components
 between the seeds and targets, and can be useful for an exploration of all
 available components. It is unnecessary to use the spatial filters of each
 component explicitly, and instead the desired result can be achieved from
-<span class="math notranslate nohighlight">\(E\)</span> alone (Eq. 14 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
-<p><span class="math notranslate nohighlight">\(MIM=tr(\boldsymbol{EE}^T)\)</span>,</p>
+<span class="math notranslate nohighlight">\(E\)</span> alone (Eq. 14 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><span class="math notranslate nohighlight">\(\textrm{MIM}=tr(\boldsymbol{EE}^T)\)</span>,</p>
 <p>where again the frequency dependence is omitted. Unlike MIC, MIM is
 positive-valued and can be &gt; 1. Without normalisation, MIM can be
 thought of as reflecting the total interaction between the seeds and targets.
@@ -916,7 +936,7 @@ MIM can be normalised to lie in the range <span class="math notranslate nohighli
 scores by the number of unique channels in the seeds and targets. Normalised
 MIM represents the interaction <em>per channel</em>, which can be biased by factors
 such as the presence of channels with little to no interaction. In line with
-the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, since
+the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, since
 normalisation alters the interpretability of the results, <strong>normalisation is
 not performed by default</strong>.</p>
 <p>Here we see MIM reveal the strongest connectivity component to be around 10
@@ -945,7 +965,7 @@ channels show little to no interaction.</p>
 </div>
 <p>Additionally, the instance where the seeds and targets are identical can be
 considered as a special case of MIM: the global interaction measure (GIM; Eq.
-15 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). Again, this allows connectivity within a
+15 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). Again, this allows connectivity within a
 single set of signals to be estimated. Computing GIM follows from Eq. 14,
 however since each interaction is considered twice, correcting the
 connectivity by a factor of <span class="math notranslate nohighlight">\(\frac{1}{2}\)</span> is necessary (<strong>the
@@ -987,7 +1007,7 @@ channels within each hemisphere.</p>
 overfitting, which risks biasing connectivity estimates to maximise noise in
 the data. This risk can be reduced by performing a preliminary dimensionality
 reduction prior to estimating the connectivity with a singular value
-decomposition (Eqs. 32 &amp; 33 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). The degree of this
+decomposition (Eqs. 32 &amp; 33 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). The degree of this
 dimensionality reduction can be specified using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument, which
 by default will not perform any dimensionality reduction (assuming your data
 is full rank; see below if not). Choosing an expected rank of the data
@@ -1010,7 +1030,7 @@ contained in the remaining 50 components of the seed and target data. We also
 assert that the spatial patterns of MIC are returned in the original sensor
 space despite this rank subspace projection, being reconstructed using the
 products of the singular value decomposition (Eqs. 46 &amp; 47 of
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mic_red</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red</span></a><span class="p">)</span> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="s2">&quot;mim&quot;</span><span class="p">],</span>
@@ -1026,8 +1046,8 @@ products of the singular value decomposition (Eqs. 46 &amp; 47 of
 
 <span class="c1"># compare standard and rank subspace-projected MIM</span>
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim_red</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank subspace (25) MIM&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;standard MIM&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim_red</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank subspace (25) MIM&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Mean-corrected connectivity (A.U.)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
@@ -1078,47 +1098,53 @@ Connectivity computation...
 Computing MIC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  148.40it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,   91.69it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,  106.05it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,  115.37it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   84.80it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   92.74it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   99.55it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   84.96it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   90.48it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   95.53it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   83.58it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   85.83it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   89.46it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   81.38it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   85.31it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   88.97it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   81.23it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,   84.73it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   86.70it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  148.34it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,  150.49it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,   89.21it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   94.01it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,  101.83it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   81.08it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   87.34it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   91.84it/s]
+ 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   77.10it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   82.98it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   88.05it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   77.35it/s]
+ 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   78.83it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   83.40it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   76.84it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   80.89it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   84.65it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   77.91it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,   81.43it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   82.85it/s]
 Computing MIM for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  147.96it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,  150.72it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:00,   88.47it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  102.11it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,  111.43it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   83.86it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   91.61it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   98.20it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   84.39it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   89.78it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   94.61it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   83.25it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,   87.65it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   91.77it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,   83.78it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,   87.53it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   91.07it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   83.07it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   86.83it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  146.74it/s]
+ 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:00,   90.82it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  107.66it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  117.24it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,   84.02it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   91.85it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   93.66it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   74.92it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   76.49it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   78.03it/s]
+ 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   67.34it/s]
+ 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   69.20it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   70.94it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   62.17it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   63.97it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   65.75it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   60.33it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   62.40it/s]
+ 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,   66.86it/s]
+ 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,   62.52it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,   66.57it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   70.47it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   66.19it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   67.88it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1136,7 +1162,8 @@ close-to-singular data with a more conservative threshold.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># finds how many singular values are &#39;close&#39; to the largest singular value</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria, which is</span>
+<span class="c1"># a hyper-parameter</span>
 </pre></div>
 </div>
 </section>
@@ -1144,33 +1171,28 @@ close-to-singular data with a more conservative threshold.</p>
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
 <p>These multivariate methods offer many benefits in the form of dimensionality
 reduction, signal-to-noise ratio improvements, and invariance to
-estimate-biasing source mixing; however, no method is perfect. The immunity
-of the imaginary part of coherency to volume conduction comes from the fact
-that these artefacts have zero phase lag, and hence a zero-valued imaginary
-component. By projecting the complex-valued coherency to the imaginary axis,
-signals of a given magnitude with phase lag differences close to 90° or 270°
-see their contributions to the connectivity estimate increased relative to
-comparable signals with phase lag differences close to 0° or 180°. Therefore,
-the imaginary part of coherency is biased towards connectivity involving 90°
-and 270° phase lag difference components.</p>
-<p>Whilst this is not a limitation specific to the multivariate extension of
-this measure, these multivariate methods can introduce further bias: when
-maximising the imaginary part of coherency, components with phase lag
-differences close to 90° and 270° will likely give higher connectivity
-estimates, and so may be prioritised by the spatial filters.</p>
-<p>Such a limitation should be kept in mind when estimating connectivity using
-these methods. Possible sanity checks can involve comparing the spectral
-profiles of MIC/MIM to coherence and the imaginary part of coherency
-computed on the same data, as well as comparing to other multivariate
-measures, such as canonical coherence <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+estimate-biasing source mixing; however, no method is perfect. Important
+considerations must be taken into account when choosing methods based on the
+imaginary part of coherency such as MIC or MIM versus those based on
+coherency/coherence, such as CaCoh.</p>
+<p>In short, if you want to examine connectivity between signals from the same
+modality, you should consider using MIC and MIM to avoid spurious
+connectivity estimates stemming from e.g. volume conduction artefacts.</p>
+<p>On the other hand, if you want to examine connectivity between signals from
+different modalities, CaCoh is a more appropriate method than MIC/MIM. This
+is because voilume conduction artefacts are of less concern, and CaCoh does
+not risk biasing connectivity estimates towards interactions with particular
+phase lags like MIC/MIM.</p>
+<p>These scenarios are described in more detail in the
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> example.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<div class="docutils container" id="id12">
+<div class="docutils container" id="id13">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id5">4</a>,<a role="doc-backlink" href="#id6">5</a>,<a role="doc-backlink" href="#id7">6</a>,<a role="doc-backlink" href="#id8">7</a>,<a role="doc-backlink" href="#id9">8</a>,<a role="doc-backlink" href="#id10">9</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id6">4</a>,<a role="doc-backlink" href="#id8">5</a>,<a role="doc-backlink" href="#id9">6</a>,<a role="doc-backlink" href="#id10">7</a>,<a role="doc-backlink" href="#id11">8</a>,<a role="doc-backlink" href="#id12">9</a>)</span>
 <p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-nolteetal2004" role="doc-footnote">
@@ -1178,12 +1200,16 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
 <p>Guido Nolte, Ou Bai, Lewis Wheaton, Zoltan Mari, Sherry Vorbach, and Mark Hallett. Identifying true brain interaction from EEG data using the imaginary part of coherency. <em>Clinical Neurophysiology</em>, 115(10):2292–2307, 2004. <a class="reference external" href="https://doi.org/10.1016/j.clinph.2004.04.029">doi:10.1016/j.clinph.2004.04.029</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
 <p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-haufeetal2014" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">4</a><span class="fn-bracket">]</span></span>
+<p>Stefan Haufe, Frank Meinecke, Kai Görgen, Sven Dähne, John-Dylan Haynes, Benjamin Blankertz, and Felix Bießmann. On the interpretation of weight vectors of linear models in multivariate neuroimaging. <em>NeuroImage</em>, 87:96–110, 2014. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2013.10.067">doi:10.1016/j.neuroimage.2013.10.067</a>.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 35.093 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 36.774 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mic-mim-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/799bb176de53e03eae2c7f13f6e52594/mic_mim.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mic_mim.ipynb</span></code></a></p>
@@ -1207,12 +1233,12 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mixed_source_space_connectivity.html"
+       href="cacoh.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Compute mixed source space connectivity and visualize it using a circular graph</p>
+        <p class="prev-next-title">Compute multivariate coherency/coherence</p>
       </div>
     </a>
     <a class="right-next"
@@ -1272,7 +1298,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>

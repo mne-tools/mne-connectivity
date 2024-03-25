@@ -486,10 +486,12 @@ power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 Only the frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and
 <code class="docutils literal notranslate"><span class="pre">fmax</span></code> are used.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'mic',</span>
-<span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These are:</p>
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Connectivity measure(s) to compute. These can be <code class="docutils literal notranslate"><span class="pre">['coh',</span> <span class="pre">'cacoh',</span>
+<span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'plv',</span> <span class="pre">'ciplv',</span> <span class="pre">'pli',</span> <span class="pre">'wpli',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>. These
+are:</p>
 <ul class="simple">
 <li><p>‘coh’ : Coherence</p></li>
+<li><p>‘cacoh’ : Canonical Coherency (CaCoh)</p></li>
 <li><p>‘mic’ : Maximised Imaginary part of Coherency (MIC)</p></li>
 <li><p>‘mim’ : Multivariate Interaction Measure (MIM)</p></li>
 <li><p>‘plv’ : Phase-Locking Value (PLV)</p></li>
@@ -499,8 +501,8 @@ Only the frequencies within the range specified by <code class="docutils literal
 <li><p>‘gc’ : State-space Granger Causality (GC)</p></li>
 <li><p>‘gc_tr’ : State-space GC on time-reversed signals</p></li>
 </ul>
-<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr]</span></code>) cannot be
-called with the other methods.</p>
+<p>Multivariate methods (<code class="docutils literal notranslate"><span class="pre">['cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>)
+cannot be called with the other methods.</p>
 </dd>
 <dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Average connectivity scores over epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output will be
 an instance of <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>, otherwise
@@ -568,7 +570,7 @@ if <code class="docutils literal notranslate"><span class="pre">method</span></c
 <dt><strong>rank</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with the rank to project the seed and target data to,
 respectively, using singular value decomposition. If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, the rank
 of the data is computed and projected to. Only used if <code class="docutils literal notranslate"><span class="pre">method</span></code>
-contains any of <code class="docutils literal notranslate"><span class="pre">['mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
+contains any of <code class="docutils literal notranslate"><span class="pre">['cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
 </dd>
 <dt><strong>decim</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>To reduce memory usage, decimation factor after time-frequency
 decomposition. Returns <code class="docutils literal notranslate"><span class="pre">tfr[…,</span> <span class="pre">::decim]</span></code>.</p>
@@ -669,53 +671,69 @@ e.g., <code class="docutils literal notranslate"><span class="pre">['coh',</span
     <span class="n">sqrt</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">Sxx</span><span class="p">]</span> <span class="o">*</span> <span class="n">E</span><span class="p">[</span><span class="n">Syy</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>‘mic’ : Maximised Imaginary part of Coherency (MIC)
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> given by:</p>
+<p>‘cacoh’ : Canonical Coherency (CaCoh) <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>
+given by:</p>
 <blockquote>
-<div><p><span class="math notranslate nohighlight">\(MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
-{\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-\parallel}}\)</span></p>
+<div><p><span class="math notranslate nohighlight">\(\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
+(\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
+\boldsymbol{b}^T\boldsymbol{b}}}}\)</span></p>
+<p>where: <span class="math notranslate nohighlight">\(\boldsymbol{D}(\Phi)\)</span> is the cross-spectral density
+between seeds and targets transformed for a given phase angle
+<span class="math notranslate nohighlight">\(\Phi\)</span>; and <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{b}\)</span>
+are eigenvectors for the seeds and targets, such that
+<span class="math notranslate nohighlight">\(\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}\)</span>
+maximises coherency between the seeds and targets. Taking the
+absolute value of the results gives maximised coherence.</p>
+</div></blockquote>
+<p>‘mic’ : Maximised Imaginary part of Coherency (MIC)
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> given by:</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
+\boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
+\parallel\boldsymbol{\beta}\parallel}}\)</span></p>
 <p>where: <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the
 transformed cross-spectral density between seeds and targets; and
 <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\beta}\)</span> are
 eigenvectors for the seeds and targets, such that
-<span class="math notranslate nohighlight">\(\boldsymbol{\alpha}^T \boldsymbol{E \beta}\)</span> maximises
-connectivity between the seeds and targets.</p>
+<span class="math notranslate nohighlight">\(\boldsymbol{\alpha}^T \boldsymbol{E \beta}\)</span> maximises the
+imaginary part of coherency between the seeds and targets.</p>
 </div></blockquote>
 <p>‘mim’ : Multivariate Interaction Measure (MIM)
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> given by:</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> given by:</p>
 <blockquote>
-<div><p><span class="math notranslate nohighlight">\(MIM=tr(\boldsymbol{EE}^T)\)</span></p>
+<div><p><span class="math notranslate nohighlight">\(\textrm{MIM}=tr(\boldsymbol{EE}^T)\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the
+transformed cross-spectral density between seeds and targets.</p>
 </div></blockquote>
-<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> given
+<p>‘plv’ : Phase-Locking Value (PLV) <a class="footnote-reference brackets" href="#footcite-lachauxetal1999" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> given
 by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLV</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘ciplv’ : Corrected imaginary PLV (ciPLV) <a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
+<p>‘ciplv’ : Corrected imaginary PLV (ciPLV) <a class="footnote-reference brackets" href="#footcite-brunaetal2018" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">ciPLV</span> <span class="o">=</span> <span class="o">------------------------------------</span>
          <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="n">Sxy</span><span class="o">/|</span><span class="n">Sxy</span><span class="o">|</span><span class="p">)]</span><span class="o">|</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> given by:</p>
+<p>‘pli’ : Phase Lag Index (PLI) <a class="footnote-reference brackets" href="#footcite-stametal2007" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PLI</span> <span class="o">=</span> <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">sign</span><span class="p">(</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">))]</span><span class="o">|</span>
 </pre></div>
 </div>
-<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>
+<p>‘wpli’ : Weighted Phase Lag Index (WPLI) <a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>
 given by:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="o">|</span><span class="n">E</span><span class="p">[</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)]</span><span class="o">|</span>
 <span class="n">WPLI</span> <span class="o">=</span> <span class="o">------------------</span>
           <span class="n">E</span><span class="p">[</span><span class="o">|</span><span class="n">Im</span><span class="p">(</span><span class="n">Sxy</span><span class="p">)</span><span class="o">|</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>‘gc’ : State-space Granger Causality (GC) <a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>
+<p>‘gc’ : State-space Granger Causality (GC) <a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>
 given by:</p>
 <blockquote>
 <div><p><span class="math notranslate nohighlight">\(GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
 \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
-\lvert t}\boldsymbol{H}_{ts}^*\rvert}})\)</span>,</p>
+\lvert t}\boldsymbol{H}_{ts}^*\rvert}})\)</span></p>
 <p>where: <span class="math notranslate nohighlight">\(s\)</span> and <span class="math notranslate nohighlight">\(t\)</span> represent the seeds and targets,
 respectively; <span class="math notranslate nohighlight">\(\boldsymbol{H}\)</span> is the spectral transfer
 function; <span class="math notranslate nohighlight">\(\boldsymbol{\Sigma}\)</span> is the residuals matrix of
@@ -723,7 +741,7 @@ the autoregressive model; and <span class="math notranslate nohighlight">\(\bold
 <span class="math notranslate nohighlight">\(\boldsymbol{\Sigma}\)</span> transformed by <span class="math notranslate nohighlight">\(\boldsymbol{H}\)</span>.</p>
 </div></blockquote>
 <p>‘gc_tr’ : State-space GC on time-reversed signals
-<a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> given by the same equation
+<a class="footnote-reference brackets" href="#footcite-barnettseth2015" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> given by the same equation
 as for ‘gc’, but where the autocovariance sequence from which the
 autoregressive model is produced is transposed to mimic the reversal of
 the original signal in time.</p>
@@ -748,36 +766,40 @@ Frites.</p>
 <p><span class="versionmodified added">New in version 0.3.</span></p>
 </div>
 <p class="rubric">References</p>
-<div class="docutils container" id="id10">
+<div class="docutils container" id="id11">
 <aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
 <aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-lachauxetal1999" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
 <p>Jean-Philippe Lachaux, Eugenio Rodriguez, Jacques Martinerie, and Francisco J. Varela. Measuring phase synchrony in brain signals. <em>Human Brain Mapping</em>, 8(4):194–208, 1999. <a class="reference external" href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C">doi:10.1002/(SICI)1097-0193(1999)8:4&lt;194::AID-HBM4&gt;3.0.CO;2-C</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-brunaetal2018" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
 <p>Ernesto Pereda Ricardo Bruña, Fernando Maestú. Phase locking value revisited: teaching new tricks to an old dog. <em>Journal of Neural Engineering</em>, 15(5):056011, 2018. <a class="reference external" href="https://doi.org/10.1088/1741-2552/aacfe4">doi:10.1088/1741-2552/aacfe4</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-stametal2007" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
 <p>Cornelis J. Stam, Guido Nolte, and Andreas Daffertshofer. Phase lag index: assessment of functional connectivity from multi channel EEG and MEG with diminished bias from common sources. <em>Human Brain Mapping</em>, 28(11):1178–1193, 2007. <a class="reference external" href="https://doi.org/10.1002/hbm.20346">doi:10.1002/hbm.20346</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-vincketal2011" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">5</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">6</a><span class="fn-bracket">]</span></span>
 <p>Martin Vinck, Robert Oostenveld, Marijn van Wingerden, Franscesco Battaglia, and Cyriel M.A. Pennartz. An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias. <em>NeuroImage</em>, 55(4):1548–1565, 2011. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.01.055">doi:10.1016/j.neuroimage.2011.01.055</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-barnettseth2015" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
 <p>Lionel Barnett and Anil K. Seth. Granger causality for state-space models. <em>Physical Review E</em>, 91(4):040101, 2015. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.91.040101">doi:10.1103/PhysRevE.91.040101</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-winkleretal2016" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">7</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">8</a><span class="fn-bracket">]</span></span>
 <p>Irene Winkler, Danny Panknin, Daniel Bartz, Klaus-Robert Müller, and Stefan Haufe. Validity of time reversal for testing granger causality. <em>IEEE Transactions on Signal Processing</em>, 64(11):2746–2760, 2016. <a class="reference external" href="https://doi.org/10.1109/TSP.2016.2531628">doi:10.1109/TSP.2016.2531628</a>.</p>
 </aside>
 </aside>
@@ -864,7 +886,7 @@ Frites.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
       <br/>
     
   </p>
