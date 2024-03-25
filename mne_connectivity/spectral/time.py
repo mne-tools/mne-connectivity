@@ -755,6 +755,7 @@ def _spectral_connectivity(
     """
     n_cons = len(source_idx)
     data = np.expand_dims(data, axis=0)
+    kw_cwt.setdefault("zero_mean", False)  # avoid FutureWarning
     if mode == "cwt_morlet":
         out = tfr_array_morlet(
             data,
