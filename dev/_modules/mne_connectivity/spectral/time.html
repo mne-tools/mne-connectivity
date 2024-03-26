@@ -1174,6 +1174,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">kw_cwt</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;zero_mean&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># avoid FutureWarning</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_morlet</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span>
@@ -1737,7 +1738,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-25.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-26.
       <br/>
     
   </p>
