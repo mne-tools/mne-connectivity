@@ -42,7 +42,7 @@
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
     <script src="../_static/documentation_options.js?v=7b845e85"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -548,8 +548,8 @@ Using data from preloaded Raw for 88 events and 49 original time points ...
     Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
 4 bad epochs dropped
 No channels &#39;grad&#39; found. Skipping.
-Adding projection: axial--0.200-0.400-PCA-01
-Adding projection: axial--0.200-0.400-PCA-02
+Adding projection: axial--0.200-0.400-PCA-01 (exp var=37.7%)
+Adding projection: axial--0.200-0.400-PCA-02 (exp var=22.8%)
 No channels &#39;eeg&#39; found. Skipping.
 Done.
 Including 0 SSP projectors from raw file
@@ -590,9 +590,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -601,8 +601,8 @@ Using data from preloaded Raw for 12 events and 33 original time points ...
     Rejecting  epoch based on MAG : [&#39;MRT41-4407&#39;]
 1 bad epochs dropped
 No channels &#39;grad&#39; found. Skipping.
-Adding projection: axial--0.200-0.200-PCA-01
-Adding projection: axial--0.200-0.200-PCA-02
+Adding projection: axial--0.200-0.200-PCA-01 (exp var=92.2%)
+Adding projection: axial--0.200-0.200-PCA-02 (exp var=2.4%)
 No channels &#39;eeg&#39; found. Skipping.
 Done.
 4 projection items deactivated
@@ -657,10 +657,6 @@ Using data from preloaded Raw for 12 events and 401 original time points ...
     Rejecting  epoch based on MAG : [&#39;MRC42-4407&#39;, &#39;MRC54-4407&#39;, &#39;MRP12-4407&#39;, &#39;MRP22-4407&#39;, &#39;MRP23-4407&#39;]
 2 bad epochs dropped
 Removing 5 compensators from info because not all compensation channels were picked.
-Computing rank from data with rank=None
-    Using tolerance 1e-09 (2.2e-16 eps * 272 dim * 1.7e+04  max singular value)
-    Estimated rank (mag): 268
-    MAG: rank 268 computed from 272 data channels with 4 projectors
     Created an SSP operator (subspace dimension = 4)
     Setting small MAG eigenvalues to zero (without PCA)
 Reducing data rank from 272 -&gt; 268
@@ -713,7 +709,7 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 713.8 ms
+Interior check completed in 744.7 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -790,7 +786,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 584.4 ms
+Interior check completed in 616.3 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -798,7 +794,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 213.4 ms
+Interior check completed in 202.8 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -807,9 +803,9 @@ Finished.
 Removing 5 compensators from info because not all compensation channels were picked.
 Removing 5 compensators from info because not all compensation channels were picked.
 Computing rank from covariance with rank=&#39;info&#39;
-    MAG: rank 268 after 4 projectors applied to 272 channels
+    MAG: rank 268 after 4 projectors applied to {n_chan} channel{_pl(n_chan)}
 Computing rank from covariance with rank=&#39;info&#39;
-    MAG: rank 268 after 4 projectors applied to 272 channels
+    MAG: rank 268 after 4 projectors applied to {n_chan} channel{_pl(n_chan)}
 Making LCMV beamformer with rank {&#39;mag&#39;: 268}
 Computing inverse operator with 272 channels.
     272 out of 272 channels remain after picking
@@ -888,7 +884,7 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.306 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.827 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5e9e1bddc9260a1e0fcb115d04581984/mne_inverse_envelope_correlation_volume.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation_volume.ipynb</span></code></a></p>
@@ -975,7 +971,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-26.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
       <br/>
     
   </p>
@@ -983,7 +979,7 @@ Using control points [ 82.5  92.3 107. ]
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

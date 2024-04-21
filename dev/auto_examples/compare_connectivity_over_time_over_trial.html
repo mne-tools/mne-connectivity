@@ -42,7 +42,7 @@
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
     <script src="../_static/documentation_options.js?v=7b845e85"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -474,7 +474,7 @@ imaginary part of coherence, phase locking value, and envelope correlations.
 Additionally, there are also multiple methods to estimate the frequency
 content, e.g. Fourier transforms, Morlet wavelets and multitapers.</p>
 <p>In this example, we focus on the two functions, which both computes
-connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
+connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a> and
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>.</p>
 <p>Both functions contain the options to choose the connectivity measurements
@@ -504,7 +504,7 @@ result in errorful values when computed on one epoch.</p>
 time for single-trials or from experiments that do not involve exactly
 repeated trials, then <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>
 should be employed. This function also takes data in the form of
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
 If there are multiple epochs, the connectivity over time is computed for
 epoch separately, with the option to average over epochs.</p>
 <p>To better illustrate the differences and usages for the two functions,
@@ -531,7 +531,7 @@ visual task dataset.</p>
 <section id="simulated-examples">
 <h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Link to this heading">#</a></h2>
 <p><strong>Case 1: Repetitions of the same trial.</strong></p>
-<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
+<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
 In this case, we will use random data for 3 channels over 5 epochs, but
 all the epochs are just exact replicates of the first epoch. This simulates
 when data is collected over an event of interest where we <strong>assume</strong> the
@@ -559,7 +559,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7ff253f83370&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fb8d3e4d120&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -772,7 +772,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7ff254028ee0&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fb92be30790&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -1131,7 +1131,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7ff25112ab30&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7fb8d0f7c9d0&gt;
 </pre></div>
 </div>
 </section>
@@ -1162,7 +1162,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.558 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.202 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1250,7 +1250,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-03-26.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
       <br/>
     
   </p>
@@ -1258,7 +1258,7 @@ at this timepoint were between occipital and frontal areas.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>
