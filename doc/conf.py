@@ -351,3 +351,7 @@ bibtex_footbibliography_header = ""
 
 nitpicky = True
 nitpick_ignore = []
+
+suppress_warnings = [
+    "config.cache",  # our rebuild is okay
+]
