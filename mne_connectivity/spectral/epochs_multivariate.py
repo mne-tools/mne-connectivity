@@ -294,10 +294,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             return self._invsqrtm(C_r, n_seeds)
         except np.linalg.LinAlgError as error:
             raise RuntimeError(
-                "the transformation matrix of the data must be real-valued "
-                "and contain no NaN or infinity values; check that you are "
-                "using full rank data or specify an appropriate rank for the "
-                "seeds and targets that is less than or equal to their ranks"
+                "the transformation matrix of the data could not be computed "
+                "from the cross-spectral density; check that you are using "
+                "full rank data or specify an appropriate rank for the seeds "
+                "and targets that is less than or equal to their ranks"
             ) from error
 
     def _invsqrtm(self, C_r, n_seeds):
