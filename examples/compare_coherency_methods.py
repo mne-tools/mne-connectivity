@@ -512,7 +512,7 @@ fig.suptitle("Coh vs. ImCoh\n$\pm$45° & $\pm$90° interactions")
 # Conclusion
 # ----------
 #
-# Altogether, there are clear scenarious in which different coherency-based
+# Altogether, there are clear scenarios in which different coherency-based
 # methods are appropriate.
 #
 # Methods based on the imaginary part of coherency alone (ImCoh, MIC, MIM)
