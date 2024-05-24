@@ -83,7 +83,7 @@ def _check_rank_input(rank, data, indices):
 # Multivariate connectivity estimators
 
 
-class _AbstractConEstBase(object):
+class _AbstractConEstBase:
     """ABC for connectivity estimators."""
 
     def start_epoch(self):
@@ -131,7 +131,7 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         self._compute_n_progress_bar_steps()
 
     def start_epoch(self):  # noqa: D401
-        """Called at the start of each epoch."""
+        """Call at the start of each epoch."""
         pass  # for this type of con. method we don't do anything
 
     def combine(self, other):

@@ -18,13 +18,13 @@ global interaction measure, GIM).
 
 # %%
 
-import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib import patheffects as pe
-
 import mne
+import numpy as np
+from matplotlib import patheffects as pe
+from matplotlib import pyplot as plt
 from mne import EvokedArray, make_fixed_length_epochs
 from mne.datasets.fieldtrip_cmc import data_path
+
 from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 ###############################################################################

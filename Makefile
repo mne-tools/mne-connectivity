@@ -85,24 +85,7 @@ upload-pipy:
 	python setup.py sdist bdist_egg register upload
 
 flake:
-	@if command -v flake8 > /dev/null; then \
-		echo "Running flake8"; \
-		flake8 --count mne_connectivity examples; \
-	else \
-		echo "flake8 not found, please install it!"; \
-		exit 1; \
-	fi;
-	@echo "flake8 passed"
-
-black:
-	@if command -v black > /dev/null; then \
-		echo "Running black"; \
-		black mne_connectivity examples; \
-	else \
-		echo "black not found, please install it!"; \
-		exit 1; \
-	fi;
-	@echo "black passed"
+	ruff check .
 
 isort:
 	@if command -v isort > /dev/null; then \
@@ -140,13 +123,3 @@ build-doc:
 	make -C doc/ clean
 	make -C doc/ html-noplot
 	cd doc/ && make view
-
-run-checks:
-	isort --check .
-	black --check mne_connectivity examples
-	flake8 .
-	@$(MAKE) pydocstyle
-	@$(MAKE) codespell-error
-	ruff .
-	toml-sort ./pyproject.toml --check
-	yamllint . -c .yamllint.yml --strict
