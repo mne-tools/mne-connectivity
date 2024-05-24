@@ -469,16 +469,16 @@ is ordered based on the locations of the regions in the axial plane.</p>
 <span class="c1"># License: BSD (3-clause)</span>
 
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_forward_solution</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.setup_source_space.html#mne.setup_source_space" title="mne.setup_source_space" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">setup_source_space</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.setup_volume_source_space.html#mne.setup_volume_source_space" title="mne.setup_volume_source_space" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">setup_volume_source_space</span></a>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.setup_volume_source_space.html#mne.setup_volume_source_space" title="mne.setup_volume_source_space" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">setup_volume_source_space</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.setup_source_space.html#mne.setup_source_space" title="mne.setup_source_space" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">setup_source_space</span></a>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_forward_solution.html#mne.make_forward_solution" title="mne.make_forward_solution" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_forward_solution</span></a>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">read_raw_fif</span></a>
-<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.make_inverse_operator.html#mne.minimum_norm.make_inverse_operator" title="mne.minimum_norm.make_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">make_inverse_operator</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.make_inverse_operator.html#mne.minimum_norm.make_inverse_operator" title="mne.minimum_norm.make_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">make_inverse_operator</span></a>
 <span class="kn">from</span> <span class="nn">mne.viz</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.viz.circular_layout.html#mne.viz.circular_layout" title="mne.viz.circular_layout" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-function"><span class="n">circular_layout</span></a>
+
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
 <span class="kn">from</span> <span class="nn">mne_connectivity.viz</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle" class="sphx-glr-backref-module-mne_connectivity-viz sphx-glr-backref-type-py-function"><span class="n">plot_connectivity_circle</span></a>
 
@@ -645,7 +645,7 @@ is ordered based on the locations of the regions in the axial plane.</p>
 <span class="c1"># Plot the graph using node colors from the FreeSurfer parcellation. We only</span>
 <span class="c1"># show the 300 strongest connections.</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conmat</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <a href="../generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle" class="sphx-glr-backref-module-mne_connectivity-viz sphx-glr-backref-type-py-function"><span class="n">plot_connectivity_circle</span></a><span class="p">(</span>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conmat</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">label_names</span></a><span class="p">,</span>
@@ -655,7 +655,7 @@ is ordered based on the locations of the regions in the axial plane.</p>
     <span class="n">title</span><span class="o">=</span><span class="s2">&quot;All-to-All Connectivity left-Auditory &quot;</span> <span class="s2">&quot;Condition (PLI)&quot;</span><span class="p">,</span>
     <a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/projections/polar.html#matplotlib.projections.polar.PolarAxes" title="matplotlib.projections.polar.PolarAxes" class="sphx-glr-backref-module-matplotlib-projections-polar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
 <span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_mixed_source_space_connectivity_001.png" srcset="../_images/sphx_glr_mixed_source_space_connectivity_001.png" alt="All-to-All Connectivity left-Auditory Condition (PLI)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting up the source space with the following parameters:
@@ -711,7 +711,7 @@ Checking surface interior status for 2961 points...
     Found 1275/2615 points outside using surface Qhull
     Found   97/1340 points outside using solid angles
     Total 1589/2961 points inside the surface
-Interior check completed in 1508.6 ms
+Interior check completed in 1644.5 ms
     1372 source space points omitted because they are outside the inner skull surface.
     283 source space points omitted because of the    5.0-mm distance limit.
 1306 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -800,7 +800,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 815 points outside using surface Qhull
     Found    0/ 815 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1136.7 ms
+Interior check completed in 1138.2 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 1026 points...
     Found  219/1026 points inside  an interior sphere of radius   43.6 mm
@@ -808,7 +808,7 @@ Checking surface interior status for 1026 points...
     Found    0/ 807 points outside using surface Qhull
     Found    0/ 807 points outside using solid angles
     Total 1026/1026 points inside the surface
-Interior check completed in 1099.3 ms
+Interior check completed in 1316.1 ms
     84 source space point omitted because of the    5.0-mm distance limit.
 Checking surface interior status for 2 points...
     Found 2/2 points inside  an interior sphere of radius   43.6 mm
@@ -816,49 +816,49 @@ Checking surface interior status for 2 points...
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 2/2 points inside the surface
-Interior check completed in 204.5 ms
+Interior check completed in 277.7 ms
 Checking surface interior status for 9 points...
     Found 9/9 points inside  an interior sphere of radius   43.6 mm
     Found 0/9 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 9/9 points inside the surface
-Interior check completed in 201.7 ms
+Interior check completed in 219.9 ms
 Checking surface interior status for 33 points...
     Found  1/33 point  inside  an interior sphere of radius   43.6 mm
     Found  0/33 points outside an exterior sphere of radius   91.8 mm
     Found  0/32 points outside using surface Qhull
     Found  0/32 points outside using solid angles
     Total 33/33 points inside the surface
-Interior check completed in 279.2 ms
+Interior check completed in 317.8 ms
 Checking surface interior status for 21 points...
     Found  8/21 points inside  an interior sphere of radius   43.6 mm
     Found  0/21 points outside an exterior sphere of radius   91.8 mm
     Found  0/13 points outside using surface Qhull
     Found  0/13 points outside using solid angles
     Total 21/21 points inside the surface
-Interior check completed in 243.2 ms
+Interior check completed in 250.8 ms
 Checking surface interior status for 1 point ...
     Found 1/1 point  inside  an interior sphere of radius   43.6 mm
     Found 0/1 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 1/1 point  inside the surface
-Interior check completed in 200.3 ms
+Interior check completed in 233.0 ms
 Checking surface interior status for 7 points...
     Found 7/7 points inside  an interior sphere of radius   43.6 mm
     Found 0/7 points outside an exterior sphere of radius   91.8 mm
     Found 0/0 points outside using surface Qhull
     Found 0/0 points outside using solid angles
     Total 7/7 points inside the surface
-Interior check completed in 200.3 ms
+Interior check completed in 203.0 ms
 Checking surface interior status for 44 points...
     Found  1/44 point  inside  an interior sphere of radius   43.6 mm
     Found  0/44 points outside an exterior sphere of radius   91.8 mm
     Found  0/43 points outside using surface Qhull
     Found  0/43 points outside using solid angles
     Total 44/44 points inside the surface
-Interior check completed in 303.2 ms
+Interior check completed in 316.7 ms
 
 Checking surface interior status for 305 points...
     Found   0/305 points inside  an interior sphere of radius   43.6 mm
@@ -866,7 +866,7 @@ Checking surface interior status for 305 points...
     Found   0/  0 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/305 points inside the surface
-Interior check completed in 201.7 ms
+Interior check completed in 207.1 ms
 
 Composing the field computation matrix...
 Computing MEG at 2001 source locations (free orientations)...
@@ -1163,10 +1163,10 @@ Extracting time courses for 75 labels (mode: mean_flip)
 set when the figure was generated. If not set via savefig, the labels, title,
 and legend will be cut off from the output png file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fname_fig</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;plot_mixed_connect.png&#39;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname_fig</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.165 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.701 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mixed-source-space-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/d02f059f9b3d3c2f63a16d1f2578b4c1/mixed_source_space_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mixed_source_space_connectivity.ipynb</span></code></a></p>
@@ -1250,7 +1250,7 @@ and legend will be cut off from the output png file.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-05-24.
       <br/>
     
   </p>

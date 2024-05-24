@@ -420,10 +420,10 @@ axis.plot(
 )
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Connectivity (A.U.)")
-axis.annotate("$\pm$45°\ninteraction", xy=(12.5, 0.9))
-axis.annotate("$\pm$90°\ninteraction", xy=(26.5, 0.9))
+axis.annotate("$\\pm$45°\ninteraction", xy=(12.5, 0.9))
+axis.annotate("$\\pm$90°\ninteraction", xy=(26.5, 0.9))
 axis.legend(loc="upper left")
-fig.suptitle("CaCoh vs. MIC\n$\pm$45° & $\pm$90° interactions")
+fig.suptitle("CaCoh vs. MIC\n$\\pm$45° & $\\pm$90° interactions")
 
 ###############################################################################
 # In situations where non-physiological zero time-lag interactions are present,
@@ -455,10 +455,10 @@ axis.plot(coh.freqs, coh_mean_subbed, linewidth=2, label="Coh")
 axis.plot(imcoh.freqs, imcoh_mean_subbed, linewidth=2, label="ImCoh", linestyle="--")
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Mean-corrected connectivity (A.U.)")
-axis.annotate("$\pm$45°\ninteraction", xy=(13, 0.25))
-axis.annotate("$\pm$90°\ninteraction", xy=(26.5, 0.25))
+axis.annotate("$\\pm$45°\ninteraction", xy=(13, 0.25))
+axis.annotate("$\\pm$90°\ninteraction", xy=(26.5, 0.25))
 axis.legend(loc="upper left")
-fig.suptitle("Coh vs. ImCoh\n$\pm$45° & $\pm$90° interactions")
+fig.suptitle("Coh vs. ImCoh\n$\\pm$45° & $\\pm$90° interactions")
 
 ###############################################################################
 # Bivariate vs. multivariate coherency methods
@@ -512,7 +512,7 @@ fig.suptitle("Coh vs. ImCoh\n$\pm$45° & $\pm$90° interactions")
 # Conclusion
 # ----------
 #
-# Altogether, there are clear scenarious in which different coherency-based
+# Altogether, there are clear scenarios in which different coherency-based
 # methods are appropriate.
 #
 # Methods based on the imaginary part of coherency alone (ImCoh, MIC, MIM)

@@ -492,7 +492,7 @@ document.write(`
             <span class="k">del</span> <span class="n">events</span>
 
             <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">values</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">values</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span>
 
@@ -1747,7 +1747,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-05-24.
       <br/>
     
   </p>

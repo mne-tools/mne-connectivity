@@ -442,7 +442,7 @@ document.write(`
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -505,7 +505,7 @@ document.write(`
 <span class="sd">    from the following model over **all** epochs:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        X(t+1) = \\sum_{i=0}^{order} A_i X(t-i)</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)</span>
 
 <span class="sd">    This results in one VAR model over all the epochs.</span>
 
@@ -516,7 +516,7 @@ document.write(`
 <span class="sd">    would be the following for **each** epoch:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        X(t+1) = \\sum_{i=0}^{order} A_i X(t-i)</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)</span>
 
 <span class="sd">    This results in one VAR model for each epoch. This is done according</span>
 <span class="sd">    to the model in :footcite:`li_linear_2017`.</span>
@@ -726,12 +726,12 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
 
 <span class="sd">    Treats each epoch as a different window of time to estimate the model:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        X(t+1) = \\sum_{i=0}^{order} A_i X(t - i)</span>
+<span class="sd">        X(t+1) = \sum_{i=0}^{order} A_i X(t - i)</span>
 
 <span class="sd">    where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are</span>
 <span class="sd">    the data snapshots.</span>
@@ -1052,7 +1052,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-05-24.
       <br/>
     
   </p>

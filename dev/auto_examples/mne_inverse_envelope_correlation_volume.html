@@ -472,9 +472,10 @@ CTF data in a volume source space.</p>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">mne_connectivity</span>
-<span class="kn">from</span> <span class="nn">mne.beamformer</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.beamformer.make_lcmv.html#mne.beamformer.make_lcmv" title="mne.beamformer.make_lcmv" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">make_lcmv</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.beamformer.apply_lcmv_epochs.html#mne.beamformer.apply_lcmv_epochs" title="mne.beamformer.apply_lcmv_epochs" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">apply_lcmv_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne.beamformer</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.beamformer.apply_lcmv_epochs.html#mne.beamformer.apply_lcmv_epochs" title="mne.beamformer.apply_lcmv_epochs" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">apply_lcmv_epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.beamformer.make_lcmv.html#mne.beamformer.make_lcmv" title="mne.beamformer.make_lcmv" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">make_lcmv</span></a>
 <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_ecg.html#mne.preprocessing.compute_proj_ecg" title="mne.preprocessing.compute_proj_ecg" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_ecg</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_eog.html#mne.preprocessing.compute_proj_eog" title="mne.preprocessing.compute_proj_eog" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_eog</span></a>
+
+<span class="kn">import</span> <span class="nn">mne_connectivity</span>
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.envelope_correlation.html#mne_connectivity.envelope_correlation" title="mne_connectivity.envelope_correlation" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">envelope_correlation</span></a>
 
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.brainstorm.bst_resting.data_path.html#mne.datasets.brainstorm.bst_resting.data_path" title="mne.datasets.brainstorm.bst_resting.data_path" class="sphx-glr-backref-module-mne-datasets-brainstorm-bst_resting sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">brainstorm</span><span class="o">.</span><span class="n">bst_resting</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
@@ -590,9 +591,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -647,7 +648,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -709,7 +710,7 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 744.7 ms
+Interior check completed in 943.8 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
@@ -786,7 +787,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 616.3 ms
+Interior check completed in 677.3 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -794,7 +795,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 202.8 ms
+Interior check completed in 207.8 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -850,7 +851,7 @@ Processing epoch : 10
 <h2>Compute the degree and plot it<a class="headerlink" href="#compute-the-degree-and-plot-it" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.degree.html#mne_connectivity.degree" title="mne_connectivity.degree" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">mne_connectivity</span><span class="o">.</span><span class="n">degree</span></a><span class="p">(</span><a href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
 <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="mne.VolSourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="mne.VolSourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">VolSourceEstimate</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a><span class="p">,</span> <span class="p">[</span><a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;vertno&quot;</span><span class="p">]],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bst_resting&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate.plot" title="mne.VolSourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate.plot" title="mne.VolSourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a><span class="p">,</span>
     <span class="n">clim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;percent&quot;</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">95</span><span class="p">]),</span>
     <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;gnuplot&quot;</span><span class="p">,</span>
@@ -884,7 +885,7 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.827 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.441 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5e9e1bddc9260a1e0fcb115d04581984/mne_inverse_envelope_correlation_volume.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation_volume.ipynb</span></code></a></p>
@@ -971,7 +972,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-04-21.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-05-24.
       <br/>
     
   </p>

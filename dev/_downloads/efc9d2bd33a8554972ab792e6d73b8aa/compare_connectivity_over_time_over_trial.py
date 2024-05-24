@@ -74,13 +74,13 @@ followed by examples on simulated data and real EEG data.
 #
 # License: BSD (3-clause)
 
-import numpy as np
 import matplotlib.pyplot as plt
 import mne
+import numpy as np
+from mne.datasets import sample
 
 from mne_connectivity import spectral_connectivity_epochs, spectral_connectivity_time
 from mne_connectivity.viz import plot_sensors_connectivity
-from mne.datasets import sample
 
 rng = np.random.default_rng(1234)  # set seed for reproducibility
 

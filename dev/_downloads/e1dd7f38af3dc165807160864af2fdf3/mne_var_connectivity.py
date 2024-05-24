@@ -16,13 +16,11 @@ a VAR model with different statistical assumptions.
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
-import numpy as np
-
+import matplotlib.pyplot as plt
 import mne
+import numpy as np
 from mne import make_fixed_length_epochs
 from mne_bids import BIDSPath, read_raw_bids
-
-import matplotlib.pyplot as plt
 
 from mne_connectivity import vector_auto_regression
 

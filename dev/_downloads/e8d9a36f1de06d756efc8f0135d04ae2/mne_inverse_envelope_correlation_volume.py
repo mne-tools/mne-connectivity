@@ -17,9 +17,10 @@ CTF data in a volume source space.
 import os.path as op
 
 import mne
-import mne_connectivity
-from mne.beamformer import make_lcmv, apply_lcmv_epochs
+from mne.beamformer import apply_lcmv_epochs, make_lcmv
 from mne.preprocessing import compute_proj_ecg, compute_proj_eog
+
+import mne_connectivity
 from mne_connectivity import envelope_correlation
 
 data_path = mne.datasets.brainstorm.bst_resting.data_path()

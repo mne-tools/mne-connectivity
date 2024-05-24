@@ -11,11 +11,11 @@ MNE-dSPM inverse solutions.
 #
 # License: BSD (3-clause)
 
-import numpy as np
-
 import mne
+import numpy as np
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse, apply_inverse_epochs, read_inverse_operator
+
 from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 print(__doc__)
