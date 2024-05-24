@@ -76,7 +76,7 @@ class EpochMixin:
             del events
 
             values = list(self.event_id.values())
-            selected = np.where(np.in1d(self.events[:, 2], values))[0]
+            selected = np.where(np.isin(self.events[:, 2], values))[0]
 
             self.events = self.events[selected]
 

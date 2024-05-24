@@ -975,8 +975,8 @@ def test_multivar_spectral_connectivity_flipped_indices():
         data, method=method, indices=concat_indices, gc_n_lags=10
     )
     assert not np.all(con_st.get_data() == con_ts.get_data())
-    assert np.all(con_st.get_data()[0] == con_st_ts.get_data()[0])
-    assert np.all(con_ts.get_data()[0] == con_st_ts.get_data()[1])
+    assert_allclose(con_st.get_data()[0], con_st_ts.get_data()[0])
+    assert_allclose(con_ts.get_data()[0], con_st_ts.get_data()[1])
 
     con_st = spectral_connectivity_time(  # seed -> target
         data, freqs, method=method, indices=indices, gc_n_lags=10
@@ -988,8 +988,8 @@ def test_multivar_spectral_connectivity_flipped_indices():
         data, freqs, method=method, indices=concat_indices, gc_n_lags=10
     )
     assert not np.all(con_st.get_data() == con_ts.get_data())
-    assert np.all(con_st.get_data()[:, 0] == con_st_ts.get_data()[:, 0])
-    assert np.all(con_ts.get_data()[:, 0] == con_st_ts.get_data()[:, 1])
+    assert_allclose(con_st.get_data()[:, 0], con_st_ts.get_data()[:, 0])
+    assert_allclose(con_ts.get_data()[:, 0], con_st_ts.get_data()[:, 1])
 
 
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))
