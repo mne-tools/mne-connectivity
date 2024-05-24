@@ -8,6 +8,7 @@ and all other gradiometers. The connectivity is computed in the time-frequency
 domain using Morlet wavelets and the debiased squared weighted phase lag index
 :footcite:`VinckEtAl2011` is used as connectivity metric.
 """
+
 # Author: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
 #
 # License: BSD (3-clause)
@@ -18,7 +19,7 @@ import mne
 import numpy as np
 from mne import io
 from mne.datasets import sample
-from mne.time_frequency import AverageTFR
+from mne.time_frequency import AverageTFRArray
 
 from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
@@ -92,7 +93,8 @@ title = "WPLI2 - Visual - Seed %s" % seed_ch
 
 layout = mne.find_layout(epochs.info, "meg")  # use full layout
 
-tfr = AverageTFR(epochs.info, con.get_data(), times, freqs, len(epochs))
+# Note that users of mne < 1.7 should use the `AverageTFR` class
+tfr = AverageTFRArray(epochs.info, con.get_data(), times, freqs, nave=len(epochs))
 tfr.plot_topo(fig_facecolor="w", font_color="k", border="k")
 
 
