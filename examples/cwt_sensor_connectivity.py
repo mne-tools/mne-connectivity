@@ -20,12 +20,7 @@ import mne
 from mne import io
 from mne_connectivity import spectral_connectivity_epochs, seed_target_indices
 from mne.datasets import sample
-
-# XXX: remove logic once support for mne<1.7 is dropped
-try:
-    from mne.time_frequency import AverageTFRArray as AverageTFR
-except ImportError:
-    from mne.time_frequency import AverageTFR
+from mne.time_frequency import AverageTFRArray
 
 print(__doc__)
 
@@ -97,7 +92,8 @@ title = "WPLI2 - Visual - Seed %s" % seed_ch
 
 layout = mne.find_layout(epochs.info, "meg")  # use full layout
 
-tfr = AverageTFR(epochs.info, con.get_data(), times, freqs, nave=len(epochs))
+# Note that users of mne < 1.7 should use the `AverageTFR` class
+tfr = AverageTFRArray(epochs.info, con.get_data(), times, freqs, nave=len(epochs))
 tfr.plot_topo(fig_facecolor="w", font_color="k", border="k")
 
 
