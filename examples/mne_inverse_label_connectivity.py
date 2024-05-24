@@ -14,13 +14,13 @@ is ordered based on the locations of the regions in the axial plane.
 #
 # License: BSD (3-clause)
 
-import numpy as np
 import matplotlib.pyplot as plt
-
 import mne
+import numpy as np
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
 from mne.viz import circular_layout
+
 from mne_connectivity import spectral_connectivity_epochs
 from mne_connectivity.viz import plot_connectivity_circle
 

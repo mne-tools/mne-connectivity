@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
@@ -164,7 +163,7 @@ def renderer_interactive(request):
         if renderer._get_3d_backend() == "mayavi":
             with warnings.catch_warnings(record=True):
                 try:
-                    pass  # noqa: 401 analysis:ignore
+                    pass  # noqa: E401, analysis:ignore
                 except Exception:
                     pytest.skip("Requires PySurfer")
         yield renderer

@@ -1,16 +1,10 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.11.0
-    hooks:
-      - id: black
-        args: [--quiet]
-
   # Ruff mne_connectivity
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.6
+    rev: v0.4.4
     hooks:
       - id: ruff
-        name: ruff mne_connectivity
+        name: ruff lint mne_connectivity
         args: ["--fix"]
         files: ^mne_connectivity/
 
@@ -19,7 +13,7 @@ repos:
     rev: v0.1.6
     hooks:
       - id: ruff
-        name: ruff tutorials and examples
+        name: ruff lint tutorials and examples
         # D103: missing docstring in public function
         # D400: docstring first line must end with period
         args: ["--ignore=D103,D400", "--fix"]
@@ -50,6 +44,12 @@ repos:
         additional_dependencies:
           - tomli
         files: ^doc/.*\.(rst|inc)$
+
+  # toml-sort
+  - repo: https://github.com/pappasam/toml-sort.git
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
 
 ci:
   autofix_prs: false

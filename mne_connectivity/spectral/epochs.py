@@ -300,7 +300,7 @@ def _assemble_spectral_params(
 # Connectivity estimators base class
 
 
-class _AbstractConEstBase(object):
+class _AbstractConEstBase:
     """ABC for connectivity estimators."""
 
     def start_epoch(self):

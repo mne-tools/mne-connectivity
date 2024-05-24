@@ -15,11 +15,11 @@ data is discussed :footcite:`WinklerEtAl2016`.
 
 # %%
 
+import mne
 import numpy as np
 from matplotlib import pyplot as plt
-
-import mne
 from mne.datasets.fieldtrip_cmc import data_path
+
 from mne_connectivity import spectral_connectivity_epochs
 
 ###############################################################################
