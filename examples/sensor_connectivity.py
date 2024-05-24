@@ -15,8 +15,9 @@ are used which produces strong connectvitiy in the right occipital sensors.
 import os.path as op
 
 import mne
-from mne_connectivity import spectral_connectivity_epochs
 from mne.datasets import sample
+
+from mne_connectivity import spectral_connectivity_epochs
 from mne_connectivity.viz import plot_sensors_connectivity
 
 print(__doc__)

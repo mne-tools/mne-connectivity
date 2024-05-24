@@ -162,6 +162,7 @@ def test_envelope_correlation():
     ],
 )
 def test_symmetric_orth(ndim, generator):
+    """Test symmetric_orth."""
     n_ch, n_time = 5, 1000
     rng = np.random.RandomState(0)
     Z = rng.randn(n_ch, n_time)

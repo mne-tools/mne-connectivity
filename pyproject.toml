@@ -91,9 +91,7 @@ gui = [
 ]
 style = [
   "pre-commit",
-  'black',
   'codespell',
-  'flake8',
   'isort',
   'pydocstyle',
   'pydocstyle[toml]',
@@ -119,20 +117,6 @@ test = [
 documentation = 'https://mne.tools/mne-connectivity'
 source = 'https://github.com/mne-tools/mne-connectivity'
 tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
-
-[tool.black]
-extend-exclude = '''
-(
-      __pycache__
-    | .github
-    | setup.py
-    | doc/
-    | examples/
-)
-'''
-include = '\.pyi?$'
-line-length = 88
-target-version = ['py310']
 
 [tool.codespell]
 builtin = "clear,rare,informal,names,usage"
@@ -165,7 +149,6 @@ extend_skip_glob = [
 ]
 line_length = 88
 multi_line_output = 3
-profile = 'black'
 py_version = 39
 
 [tool.mypy]
@@ -237,8 +220,30 @@ extend-exclude = [
 ]
 line-length = 88
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+ignore = [
+  "D100", # Missing docstring in public module
+  "D104", # Missing docstring in public package
+  "D413", # Missing blank line after last section
+  "UP008", # TODO: Use `super()`
+  "UP031", # TODO: Use format specifiers
+]
+select = ["A", "B006", "D", "E", "F", "I", "UP", "W"]
+
+[tool.ruff.lint.per-file-ignores]
 '__init__.py' = ['F401']
+'examples/*.py' = ["D205"]
+'mne_connectivity/base.py' = ["D101", "D102", "D105"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+ignore-decorators = [
+  "mne.utils.copy_doc",
+  "mne.utils.copy_function_doc_to_method_doc",
+  "mne.utils.deprecated",
+  "property",
+  "setter",
+]
 
 [tool.setuptools]
 include-package-data = true

@@ -10,7 +10,7 @@ import numpy as np
 # Bivariate connectivity estimators
 
 
-class _AbstractConEstBase(object):
+class _AbstractConEstBase:
     """ABC for connectivity estimators."""
 
     def start_epoch(self):
@@ -44,7 +44,7 @@ class _EpochMeanConEstBase(_AbstractConEstBase):
         self.con_scores = None
 
     def start_epoch(self):  # noqa: D401
-        """Called at the start of each epoch."""
+        """Call at the start of each epoch."""
         pass  # for this type of con. method we don't do anything
 
     def combine(self, other):

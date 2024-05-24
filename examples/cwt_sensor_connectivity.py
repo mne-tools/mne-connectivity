@@ -13,13 +13,14 @@ domain using Morlet wavelets and the debiased squared weighted phase lag index
 # License: BSD (3-clause)
 
 import os.path as op
-import numpy as np
 
 import mne
+import numpy as np
 from mne import io
-from mne_connectivity import spectral_connectivity_epochs, seed_target_indices
 from mne.datasets import sample
 from mne.time_frequency import AverageTFR
+
+from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 print(__doc__)
 

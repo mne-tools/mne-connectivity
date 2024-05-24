@@ -7,7 +7,7 @@ from mne.utils import _prepare_write_metadata, logger
 
 
 def parallel_loop(func, n_jobs=1, verbose=1):
-    """run loops in parallel, if joblib is available.
+    """Run loops in parallel, if joblib is available.
 
     Parameters
     ----------
