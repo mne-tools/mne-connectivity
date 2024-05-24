@@ -25,13 +25,16 @@ jobs:
             python-version: "3.9"
             mne-version: mne-main
           - os: ubuntu-latest
-            python-version: "3.11"
+            python-version: "3.12"
             mne-version: mne-main
-          - os: macos-latest
-            python-version: "3.11"
+          - os: macos-13  # Intel
+            python-version: "3.12"
+            mne-version: mne-main
+          - os: macos-14  # arm64
+            python-version: "3.12"
             mne-version: mne-main
           - os: windows-latest
-            python-version: "3.11"
+            python-version: "3.12"
             mne-version: mne-main
     env:
       TZ: Europe/Berlin

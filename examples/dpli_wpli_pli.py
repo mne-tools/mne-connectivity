@@ -16,12 +16,12 @@ the phase lag index (PLI) :footcite:`StamEtAl2007`, weighted phase lag index
 # License: BSD (3-clause)
 
 
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
-import matplotlib.pyplot as plt
+from mne.datasets import sample
 
 from mne_connectivity import spectral_connectivity_epochs
-from mne.datasets import sample
 
 ###############################################################################
 # Background

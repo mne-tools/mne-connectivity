@@ -15,7 +15,7 @@ warning_str = dict(
 
 
 def bivariate_var_data():
-    """A bivariate dataset for VAR estimation."""
+    """Bivariate dataset for VAR estimation."""
     rng = np.random.RandomState(12345)
     e = rng.standard_normal((252, 2))
     y = np.zeros_like(e)
@@ -138,6 +138,7 @@ def test_regression_against_statsmodels(lags, trend):
 @pytest.mark.filterwarnings(warning_str["sm_depr"])
 @pytest.mark.parametrize(["lags"], [(None,), (5,), (200,)])
 def test_regression_select_order(lags):
+    """Test regression select_order."""
     from statsmodels.tsa.vector_ar.var_model import VAR
 
     x = bivariate_var_data()

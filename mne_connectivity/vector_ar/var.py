@@ -24,7 +24,7 @@ def vector_auto_regression(
     n_jobs=1,
     verbose=None,
 ):
-    """Compute vector auto-regresssive (VAR) model.
+    r"""Compute vector auto-regresssive (VAR) model.
 
     Parameters
     ----------
@@ -87,7 +87,7 @@ def vector_auto_regression(
     from the following model over **all** epochs:
 
     .. math::
-        X(t+1) = \\sum_{i=0}^{order} A_i X(t-i)
+        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
 
     This results in one VAR model over all the epochs.
 
@@ -98,7 +98,7 @@ def vector_auto_regression(
     would be the following for **each** epoch:
 
     .. math::
-        X(t+1) = \\sum_{i=0}^{order} A_i X(t-i)
+        X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
 
     This results in one VAR model for each epoch. This is done according
     to the model in :footcite:`li_linear_2017`.
@@ -307,12 +307,12 @@ def _construct_var_eqns(data, lags, l2_reg=None):
 
 
 def _system_identification(data, lags, l2_reg=0, n_jobs=-1, compute_fb_operator=False):
-    """Solve system identification using least-squares over all epochs.
+    r"""Solve system identification using least-squares over all epochs.
 
     Treats each epoch as a different window of time to estimate the model:
 
     .. math::
-        X(t+1) = \\sum_{i=0}^{order} A_i X(t - i)
+        X(t+1) = \sum_{i=0}^{order} A_i X(t - i)
 
     where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are
     the data snapshots.

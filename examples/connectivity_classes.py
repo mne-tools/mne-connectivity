@@ -17,11 +17,12 @@ how we can interact with the connectivity class.
 # License: BSD (3-clause)
 
 import os.path as op
-import numpy as np
 
 import mne
-from mne_connectivity import spectral_connectivity_epochs
+import numpy as np
 from mne.datasets import sample
+
+from mne_connectivity import spectral_connectivity_epochs
 
 # %%
 # Set parameters
