@@ -467,12 +467,19 @@ def test_spectral_connectivity(method, mode):
     assert out_lens[0] == 10
 
 
+_coh_marks = []
 _gc_marks = []
 if platform.system() == "Darwin" and platform.processor() == "arm":
+    _coh_marks.extend([
+        pytest.mark.filterwarnings("ignore:invalid value encountered in sqrt:")
+    ])
     _gc_marks.extend([
         pytest.mark.filterwarnings("ignore:divide by zero encountered in det:"),
         pytest.mark.filterwarnings("ignore:invalid value encountered in det:"),
         ])
+_cacoh = pytest.param("cacoh", marks=_coh_marks, id="cacoh")
+_mic = pytest.param("mic", marks=_coh_marks, id="mic")
+_mim = pytest.param("mim", marks=_coh_marks, id="mim")
 _gc = pytest.param("gc", marks=_gc_marks, id="gc")
 _gc_tr = pytest.param("gc_tr", marks=_gc_marks, id="gc_tr")
 
@@ -732,7 +739,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
 
 @pytest.mark.parametrize(
     "method",
-    ["cacoh", "mic", "mim", _gc, _gc_tr, ["cacoh", "mic", "mim", "gc", "gc_tr"]],
+    [_cacoh, _mic, _mim, _gc, _gc_tr, ["cacoh", "mic", "mim", "gc", "gc_tr"]],
 )
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
@@ -913,7 +920,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
             )
 
 
-@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
+@pytest.mark.parametrize("method", [_cacoh, _mic, _mim, _gc, _gc_tr])
 def test_multivar_spectral_connectivity_parallel(method):
     """Test multivar. freq.-domain connectivity methods run in parallel."""
     data = make_signals_in_freq_bands(
@@ -1434,7 +1441,7 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
         )
 
 
-@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
+@pytest.mark.parametrize("method", [_cacoh, _mic, _mim, _gc, _gc_tr])
 @pytest.mark.parametrize("average", [True, False])
 @pytest.mark.parametrize("faverage", [True, False])
 def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
@@ -1511,7 +1518,7 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
                 assert np.all(np.array(con.indices) == np.array(([[0, 1]], [[2, -1]])))
 
 
-@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
+@pytest.mark.parametrize("method", [_cacoh, _mic, _mim, _gc, _gc_tr])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
 def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     """Test error catching for time-resolved multivar. connectivity methods."""
@@ -1722,7 +1729,7 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
             assert con.indices is None and read_con.indices is None
 
 
-@pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
+@pytest.mark.parametrize("method", [_cacoh, _mic, _mim, _gc, _gc_tr])
 @pytest.mark.parametrize("indices", [None, ([[0, 1]], [[2, 3]])])
 def test_multivar_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
