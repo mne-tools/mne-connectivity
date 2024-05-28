@@ -179,6 +179,15 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
             self._acc, (self.n_signals, self.n_signals, self.n_freqs, self.n_times)
         ).transpose(3, 2, 0, 1)
 
+    def reshape_results(self):
+        """Remove time dimension from results, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = self.con_scores[..., 0]
+            if self.patterns is not None:
+                self.patterns = self.patterns[..., 0]
+            if self.filters is not None:
+                self.filters = self.filters[..., 0]
+
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     """Base estimator for multivariate coherency methods.
@@ -322,13 +331,6 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             )
 
         return np.real(T)  # make T real if check passes
-
-    def reshape_results(self):
-        """Remove time dimension from results, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[..., 0]
-            if self.patterns is not None:
-                self.patterns = self.patterns[..., 0]
 
 
 def _invsqrtm(C, T, n_seeds):
@@ -1026,11 +1028,6 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         W = np.matmul(W.transpose(0, 2, 1), W)
 
         return V[np.ix_(times, seeds, seeds)] - W
-
-    def reshape_results(self):
-        """Remove time dimension from con. scores, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[:, :, 0]
 
 
 def _gc_compute_H(A, C, K, z_k, I_n, I_m):
