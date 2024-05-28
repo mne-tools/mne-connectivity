@@ -105,14 +105,18 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
     n_steps = None
     patterns = None
+    filters = None
     con_scores_dtype = np.float64
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+    def __init__(
+        self, n_signals, n_cons, n_freqs, n_times, n_jobs=1, store_filters=False
+    ):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
         self.n_jobs = n_jobs
+        self.store_filters = store_filters
 
         # include time dimension, even when unused for indexing flexibility
         if n_times == 0:
@@ -190,9 +194,11 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     name: Optional[str] = None
     accumulate_psd = False
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+    def __init__(
+        self, n_signals, n_cons, n_freqs, n_times, n_jobs=1, store_filters=False
+    ):
         super(_MultivariateCohEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs
+            n_signals, n_cons, n_freqs, n_times, n_jobs, store_filters
         )
 
     def compute_con(self, indices, ranks, n_epochs=1):
@@ -211,6 +217,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             self.patterns = np.full(
                 (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
             )
+            if self.store_filters:
+                self.filters = np.full(
+                    (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
+                )
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
@@ -436,20 +446,18 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         alpha = V_seeds[times[:, None], freqs, :, w_seeds.argmax(axis=2)]
         beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
 
+        # Part of Eqs. 46 & 47; i.e. transform filters to channel space
+        alpha_Ubar = np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))
+        beta_Ubar = np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))
+
         # Eq. 46 (seed spatial patterns)
         self.patterns[0, con_i, :n_seeds] = (
-            np.matmul(
-                np.real(C[..., :n_seeds, :n_seeds]),
-                np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3)),
-            )
+            np.matmul(np.real(C[..., :n_seeds, :n_seeds]), alpha_Ubar)
         )[..., 0].T
 
         # Eq. 47 (target spatial patterns)
         self.patterns[1, con_i, :n_targets] = (
-            np.matmul(
-                np.real(C[..., n_seeds:, n_seeds:]),
-                np.matmul(U_bar_bb, np.expand_dims(beta, axis=3)),
-            )
+            np.matmul(np.real(C[..., n_seeds:, n_seeds:]), beta_Ubar)
         )[..., 0].T
 
         # Eq. 7
@@ -460,6 +468,10 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
             / np.linalg.norm(alpha, axis=2)
             * np.linalg.norm(beta, axis=2)
         ).T
+
+        if self.store_filters:
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar
+            self.filters[1, con_i, :n_targets] = beta_Ubar
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
@@ -641,15 +653,23 @@ class _CaCohEst(_MultivariateCohEstBase):
         alpha = np.matmul(T_aa, np.expand_dims(a, axis=3))  # filter for seeds
         beta = np.matmul(T_bb, np.expand_dims(b, axis=3))  # filter for targets
 
-        # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
+        # Eqs. 46 & 47 of Ewald et al. (2012); i.e. transform filters to channel space
+        alpha_Ubar = np.matmul(U_bar_aa, alpha)
+        beta_Ubar = np.matmul(U_bar_bb, beta)
+
+        # Eq. 14
         # seed spatial patterns
         self.patterns[0, con_i, :n_seeds] = (
-            np.matmul(np.real(C[..., :n_seeds, :n_seeds]), np.matmul(U_bar_aa, alpha))
+            np.matmul(np.real(C[..., :n_seeds, :n_seeds]), alpha_Ubar)
         )[..., 0].T
         # target spatial patterns
         self.patterns[1, con_i, :n_targets] = (
-            np.matmul(np.real(C[..., n_seeds:, n_seeds:]), np.matmul(U_bar_bb, beta))
+            np.matmul(np.real(C[..., n_seeds:, n_seeds:]), beta_Ubar)
         )[..., 0].T
+
+        if self.store_filters:
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar
+            self.filters[1, con_i, :n_targets] = beta_Ubar
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
@@ -844,9 +864,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         )  # forward autocov
         G_b = np.reshape(
             np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn), order="F"
-        ).transpose(
-            0, 2, 1
-        )  # backward autocov
+        ).transpose(0, 2, 1)  # backward autocov
 
         A_f = np.zeros((t, n, qn))  # forward coefficients
         A_b = np.zeros((t, n, qn))  # backward coefficients
