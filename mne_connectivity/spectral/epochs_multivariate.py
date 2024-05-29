@@ -336,21 +336,19 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         # seeds
         eigvals, eigvects = np.linalg.eigh(C_r[:, :, :n_seeds, :n_seeds])
-        T[:, :, :n_seeds, :n_seeds] = np.linalg.inv(
-            np.matmul(
-                (eigvects * np.expand_dims(np.sqrt(eigvals), (2))),
-                eigvects.transpose(0, 1, 3, 2),
-            )
-        )
+        if (eigvals == 0).any():  # sign of non-full rank data
+            raise np.linalg.LinAlgError()
+        T[:, :, :n_seeds, :n_seeds] = (
+            eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
+        ) @ eigvects.transpose(0, 1, 3, 2)
 
         # targets
         eigvals, eigvects = np.linalg.eigh(C_r[:, :, n_seeds:, n_seeds:])
-        T[:, :, n_seeds:, n_seeds:] = np.linalg.inv(
-            np.matmul(
-                (eigvects * np.expand_dims(np.sqrt(eigvals), (2))),
-                eigvects.transpose(0, 1, 3, 2),
-            )
-        )
+        if (eigvals == 0).any():  # sign of non-full rank data
+            raise np.linalg.LinAlgError()
+        T[:, :, n_seeds:, n_seeds:] = (
+            eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
+        ) @ eigvects.transpose(0, 1, 3, 2)
 
         return T
 
@@ -848,9 +846,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         )  # forward autocov
         G_b = np.reshape(
             np.flip(G[:, 1:, :, :], 1).transpose(0, 3, 2, 1), (t, n, qn), order="F"
-        ).transpose(
-            0, 2, 1
-        )  # backward autocov
+        ).transpose(0, 2, 1)  # backward autocov
 
         A_f = np.zeros((t, n, qn))  # forward coefficients
         A_b = np.zeros((t, n, qn))  # backward coefficients
