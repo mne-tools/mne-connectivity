@@ -8,7 +8,7 @@ import numpy as np
 from mne import Info
 from mne.decoding.mixin import TransformerMixin
 from mne.fixes import BaseEstimator
-from mne.time_frequency import csd_array_fourier, csd_array_multitaper
+from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
 
 from ..spectral.epochs_multivariate import (
@@ -60,6 +60,8 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         mt_bandwidth=None,
         mt_adaptive=False,
         mt_low_bias=True,
+        cwt_freq_resolution=1,
+        cwt_n_cycles=7,
         n_components=None,
         rank=None,
         n_jobs=1,
@@ -76,7 +78,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         if fmax > info["sfreq"] / 2:
             raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
 
-        _validate_type(indices, tuple, "`indices`", "tuple of lists")
+        _validate_type(indices, tuple, "`indices`", "tuple of array-like")
         if len(indices) != 2:
             raise ValueError("`indices` must be have length 2")
         for indices_group in indices:
@@ -84,16 +86,27 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
                 indices_group,
                 (list, tuple, np.ndarray),
                 "`indices`",
-                "tuple of lists, tuples, or NumPy arrays",
+                "tuple of array-likes",
             )
         _indices = self._check_indices(indices, info["nchan"])
 
-        _check_option("mode", mode, ("multitaper", "fourier"))
+        _check_option("mode", mode, ("multitaper", "fourier", "cwt_morlet"))
+
         _validate_type(
             mt_bandwidth, (int, float, None), "`mt_bandwidth`", "int, float, or None"
         )
         _validate_type(mt_adaptive, bool, "`mt_adaptive`", "bool")
         _validate_type(mt_low_bias, bool, "`mt_low_bias`", "bool")
+
+        _validate_type(
+            cwt_freq_resolution, (int, float), "`cwt_freq_resolution`", "int or float"
+        )
+        _validate_type(
+            cwt_n_cycles,
+            (int, float, tuple, list, np.ndarray),
+            "`cwt_n_cycles`",
+            "int, float, or array-like of ints or floats",
+        )
 
         _validate_type(n_components, (int, None), "`n_components`", "int or None")
 
@@ -120,6 +133,8 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         self.mt_bandwidth = mt_bandwidth
         self.mt_adaptive = mt_adaptive
         self.mt_low_bias = mt_low_bias
+        self.cwt_freq_resolution = cwt_freq_resolution
+        self.cwt_n_cycles = cwt_n_cycles
         self.n_components = 1  # XXX: fixed until n_comps > 1 supported
         self._rank = _rank  # uses getter/setter for public parameter
         self.n_jobs = n_jobs
@@ -134,8 +149,8 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         max_idx = np.max(indices.compressed())
         if max_idx + 1 > n_chans:
             raise ValueError(
-                "At least one entry in `indices` is greater than the number "
-                "of channels in `info`"
+                "At least one entry in `indices` is greater than the number of "
+                "channels in `info`"
             )
 
         return indices
@@ -149,8 +164,8 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             # find whether entries of rank exceed number of channels in indices
             if rank[0][0] > len(indices[0]) or rank[1][0] > len(indices[1]):
                 raise ValueError(
-                    "At least one entry in `rank` is greater than the number "
-                    "of seed/target channels in `indices`"
+                    "At least one entry in `rank` is greater than the number of "
+                    "seed/target channels in `indices`"
                 )
 
         return rank
@@ -161,8 +176,8 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array, shape=(n_epochs, n_signals, n_times)
-            The input data which the connectivity decomposition filters should
-            be fit to.
+            The input data which the connectivity decomposition filters should be fit
+            to.
         y : None
             Used for scikit-learn compatibility.
 
@@ -230,21 +245,34 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         csd_kwargs = {
             "X": X,
             "sfreq": self.info["sfreq"],
-            "fmin": self.fmin,
-            "fmax": self.fmax,
             "n_jobs": self.n_jobs,
         }
         if self.mode == "multitaper":
             csd_kwargs.update(
                 {
+                    "fmin": self.fmin,
+                    "fmax": self.fmax,
                     "bandwidth": self.mt_bandwidth,
                     "adaptive": self.mt_adaptive,
                     "low_bias": self.mt_low_bias,
                 }
             )
             csd = csd_array_multitaper(**csd_kwargs)
-        else:
+        elif self.mode == "fourier":
+            csd_kwargs.update({"fmin": self.fmin, "fmax": self.fmax})
             csd = csd_array_fourier(**csd_kwargs)
+        else:
+            csd_kwargs.update(
+                {
+                    "frequencies": np.arange(
+                        self.fmin,
+                        self.fmax + self.cwt_freq_resolution,
+                        self.cwt_freq_resolution,
+                    ),
+                    "n_cycles": self.cwt_n_cycles,
+                }
+            )
+            csd = csd_array_morlet(**csd_kwargs)
 
         csd = csd.sum(self.fmin, self.fmax).get_data(index=0)
         csd = np.reshape(csd, csd.shape[0] ** 2)
@@ -280,8 +308,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array, shape=((n_epochs, ) n_signals, n_times)
-            The data to be transformed by the connectivity decoposition
-            filters.
+            The data to be transformed by the connectivity decomposition filters.
 
         Returns
         -------
@@ -308,13 +335,13 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array, shape=(n_epochs, n_signals, n_times)
-            The input data which the connectivity decomposition filters should
-            be fit to and subsequently transformed.
+            The input data which the connectivity decomposition filters should be fit to
+            and subsequently transformed.
         y : None
             Used for scikit-learn compatibility.
         **fit_params : dict
-            Additional fitting parameters passed to the ``fit`` method. Not
-            used for this class.
+            Additional fitting parameters passed to the ``fit`` method. Not used for
+            this class.
 
         Returns
         -------
@@ -323,7 +350,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             transformed seeds, and the last ``n_components`` channels are the
             transformed targets.
         """
-        # custom docstring, but uses parent TransformerMixin method
+        # use parent TransformerMixin method but with custom docstring
 
     def get_transformed_indices(self):
         """Get indices for the transformed data.
@@ -331,13 +358,13 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         Returns
         -------
         indices_transformed : tuple of array
-            Indices of seeds and targets in the transformed data with the form
-            (seeds, targets) to be used when passing the data to
+            Indices of seeds and targets in the transformed data with the form (seeds,
+            targets) to be used when passing the data to
             `~mne_connectivity.spectral_connectivity_epochs` and
-            `~mne_connectivity.spectral_connectivity_time`. Entries of the
-            indices are arranged such that connectivity would be computed
-            between the first seed component and first target component, second
-            seed component and second target component, etc...
+            `~mne_connectivity.spectral_connectivity_time`. Entries of the indices are
+            arranged such that connectivity would be computed between the first seed
+            component and first target component, second seed component and second
+            target component, etc...
         """
         return (
             np.arange(self.n_components),
@@ -349,23 +376,22 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 class CaCoh(_AbstractDecompositionBase):
     """Decompose connectivity sources using canonical coherency (CaCoh).
 
-    CaCoh is a multivariate approach to maximise coherency/coherence between a
-    set of seed and target signals in a frequency-resolved manner
-    :footcite:`VidaurreEtAl2019`. The maximisation of connectivity involves
-    fitting spatial filters to the cross-spectral density of the seed and
-    target data, alongisde which spatial patterns of the contributions to
-    connectivity can be computed :footcite:`HaufeEtAl2014`.
+    CaCoh is a multivariate approach to maximise coherency/coherence between a set of
+    seed and target signals in a frequency-resolved manner :footcite:`VidaurreEtAl2019`.
+    The maximisation of connectivity involves fitting spatial filters to the
+    cross-spectral density of the seed and target data, alongisde which spatial patterns
+    of the contributions to connectivity can be computed :footcite:`HaufeEtAl2014`.
 
-    Once fit, the filters can be used to transform data into the underlying
-    connectivity components. Connectivity can be computed on this transformed
-    data using the ``"coh"`` and ``"cohy"`` methods of the
+    Once fit, the filters can be used to transform data into the underlying connectivity
+    components. Connectivity can be computed on this transformed data using the
+    ``"coh"`` and ``"cohy"`` methods of the
     `mne_connectivity.spectral_connectivity_epochs` and
     `mne_connectivity.spectral_connectivity_time` functions.
 
-    The approach taken here is to optimise the connectivity in a given
-    frequency band. Frequency bin-wise optimisation is offered in the
-    ``"cacoh"`` method of the `mne_connectivity.spectral_connectivity_epochs`
-    and `mne_connectivity.spectral_connectivity_time` functions.
+    The approach taken here is to optimise the connectivity in a given frequency band.
+    Frequency bin-wise optimisation is offered in the ``"cacoh"`` method of the
+    `mne_connectivity.spectral_connectivity_epochs` and
+    `mne_connectivity.spectral_connectivity_time` functions.
 
     Parameters
     ----------
@@ -373,10 +399,12 @@ class CaCoh(_AbstractDecompositionBase):
     %(fmin_decoding)s
     %(fmax_decoding)s
     %(indices_decoding)s
-    %(mode_decoding)s
+    %(mode)s
     %(mt_bandwidth)s
     %(mt_adaptive)s
     %(mt_low_bias)s
+    %(cwt_freq_resolution)s
+    %(cwt_n_cycles)s
     %(n_components)s
     %(rank)s
     %(n_jobs)s
@@ -399,23 +427,22 @@ class CaCoh(_AbstractDecompositionBase):
 class MIC(_AbstractDecompositionBase):
     """Decompose connectivity sources using maximised imaginary coherency (MIC).
 
-    MIC is a multivariate approach to maximise the imaginary part of coherency
-    between a set of seed and target signals in a frequency-resolved manner
-    :footcite:`EwaldEtAl2012`. The maximisation of connectivity involves
-    fitting spatial filters to the cross-spectral density of the seed and
-    target data, alongisde which spatial patterns of the contributions to
-    connectivity can be computed :footcite:`HaufeEtAl2014`.
+    MIC is a multivariate approach to maximise the imaginary part of coherency between a
+    set of seed and target signals in a frequency-resolved manner
+    :footcite:`EwaldEtAl2012`. The maximisation of connectivity involves fitting spatial
+    filters to the cross-spectral density of the seed and target data, alongisde which
+    spatial patterns of the contributions to connectivity can be computed
+    :footcite:`HaufeEtAl2014`.
 
-    Once fit, the filters can be used to transform data into the underlying
-    connectivity components. Connectivity can be computed on this transformed
-    data using the ``"imcoh"`` method of the
-    `mne_connectivity.spectral_connectivity_epochs` and
+    Once fit, the filters can be used to transform data into the underlying connectivity
+    components. Connectivity can be computed on this transformed data using the
+    ``"imcoh"`` method of the `mne_connectivity.spectral_connectivity_epochs` and
     `mne_connectivity.spectral_connectivity_time` functions.
 
-    The approach taken here is to optimise the connectivity in a given
-    frequency band. Frequency bin-wise optimisation is offered in the
-    ``"mic"`` method of the `mne_connectivity.spectral_connectivity_epochs`
-    and `mne_connectivity.spectral_connectivity_time` functions.
+    The approach taken here is to optimise the connectivity in a given frequency band.
+    Frequency bin-wise optimisation is offered in the ``"mic"`` method of the
+    `mne_connectivity.spectral_connectivity_epochs` and
+    `mne_connectivity.spectral_connectivity_time` functions.
 
     Parameters
     ----------
@@ -423,10 +450,12 @@ class MIC(_AbstractDecompositionBase):
     %(fmin_decoding)s
     %(fmax_decoding)s
     %(indices_decoding)s
-    %(mode_decoding)s
+    %(mode)s
     %(mt_bandwidth)s
     %(mt_adaptive)s
     %(mt_low_bias)s
+    %(cwt_freq_resolution)s
+    %(cwt_n_cycles)s
     %(n_components)s
     %(rank)s
     %(n_jobs)s
