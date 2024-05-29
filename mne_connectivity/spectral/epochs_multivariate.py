@@ -472,8 +472,8 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         ).T
 
         if self.store_filters:
-            self.filters[0, con_i, :n_seeds] = alpha_Ubar
-            self.filters[1, con_i, :n_targets] = beta_Ubar
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
+            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
@@ -670,8 +670,8 @@ class _CaCohEst(_MultivariateCohEstBase):
         )[..., 0].T
 
         if self.store_filters:
-            self.filters[0, con_i, :n_seeds] = alpha_Ubar
-            self.filters[1, con_i, :n_targets] = beta_Ubar
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
+            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
