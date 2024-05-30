@@ -6,7 +6,7 @@ Compute multivariate coherency/coherence
 This example demonstrates how canonical coherency (CaCoh)
 :footcite:`VidaurreEtAl2019` - a multivariate method based on coherency - can
 be used to compute connectivity between whole sets of sensors, alongside
-spatial patterns of the connectivity
+spatial patterns of the connectivity.
 """
 
 # Authors: Thomas S. Binns <t.s.binns@outlook.com>
