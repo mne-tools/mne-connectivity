@@ -24,16 +24,17 @@ from mne_connectivity import spectral_connectivity_epochs
 # considered together, and the number of signals designated as seeds and
 # targets does not have to be equal within or across connections. Issues can
 # arise from this when storing information associated with connectivity in
-# arrays, as the number of entries within each dimension can vary within and
-# across connections depending on the number of seeds and targets. Such arrays
-# are 'ragged', and support for ragged arrays is limited in NumPy to the
-# ``object`` datatype. Not only is working with ragged arrays is cumbersome,
-# but saving arrays with ``dtype='object'`` is not supported by the h5netcdf
-# engine used to save connectivity objects. The workaround used in
-# MNE-Connectivity is to pad ragged arrays with some known values according to
-# the largest number of entries in each dimension, such that there is an equal
-# amount of information across and within connections for each dimension of the
 # arrays.
+#
+# Such arrays are 'ragged', and support for ragged arrays is limited in NumPy
+# to the ``object`` datatype. Not only is working with ragged arrays
+# cumbersome, but saving arrays with ``dtype='object'`` is not supported by the
+# h5netcdf engine used to save connectivity objects.
+#
+# The workaround used in MNE-Connectivity is to pad ragged arrays with some
+# known values according to the largest number of entries in each dimension,
+# such that there is an equal amount of information across and within
+# connections for each dimension of the arrays.
 #
 # As an example, consider we have 5 channels and want to compute 2 connections:
 # the first between channels in indices 0 and 1 with those in indices 2, 3,
@@ -56,7 +57,7 @@ from mne_connectivity import spectral_connectivity_epochs
 #
 #   # tuple of tuples
 #   ragged_indices = (((0, 1   ), (0, 1, 2, 3)),
-#                     ((2, 3, 4), (4         )))
+#                     ((2, 3, 4), (4,        )))
 #
 #   # tuple of arrays
 #   ragged_indices = (np.array([[0, 1   ], [0, 1, 2, 3]], dtype='object'),
@@ -68,7 +69,9 @@ from mne_connectivity import spectral_connectivity_epochs
 # Just as for bivariate connectivity, the length of ``indices[0]`` and
 # ``indices[1]`` is equal (i.e. the number of connections), however information
 # about the multiple channel indices for each connection is stored in a nested
-# array. Importantly, these indices are ragged, as the first connection will be
+# array.
+#
+# Importantly, these indices are ragged, as the first connection will be
 # computed between 2 seed and 3 target channels, and the second connection
 # between 4 seed and 1 target channel(s). The connectivity functions will
 # recognise the indices as being ragged, and pad them to a 'full' array by
@@ -86,15 +89,18 @@ from mne_connectivity import spectral_connectivity_epochs
 # MNE-Connectivity combine information across the different channels into a
 # single (time-)frequency-resolved connectivity spectrum, regardless of the
 # number of seed and target channels, so ragged arrays are not a concern here.
+#
 # However, the maximised imaginary part of coherency (MIC) method also returns
 # spatial patterns of connectivity, which show the contribution of each channel
 # to the dimensionality-reduced connectivity estimate (explained in more detail
 # in :doc:`mic_mim`). Because these patterns are returned for each channel,
 # their shape can vary depending on the number of seeds and targets in each
-# connection, making them ragged. To avoid this, the patterns are padded along
-# the channel axis with the known and invalid entry ``np.nan``, in line with
-# that applied to ``indices``. Extracting only the valid spatial patterns from
-# the connectivity object is trivial, as shown below:
+# connection, making them ragged.
+#
+# To avoid this, the patterns are padded along the channel axis with the known
+# and invalid entry ``np.nan``, in line with that applied to ``indices``.
+# Extracting only the valid spatial patterns from the connectivity object is
+# trivial, as shown below:
 
 # %%
 
