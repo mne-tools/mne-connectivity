@@ -1,4 +1,6 @@
 """
+.. _ex-compare-cohy-methods:
+
 =====================================
 Comparison of coherency-based methods
 =====================================
