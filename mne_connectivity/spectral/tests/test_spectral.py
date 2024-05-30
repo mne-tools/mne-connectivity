@@ -320,7 +320,7 @@ def test_spectral_connectivity(method, mode):
                 con.get_data(output="dense")[1, 0, gidx[0] : gidx[1]], lower_t
             )
             assert_array_less(con.get_data(output="dense")[1, 0, : bidx[0]], lower_t)
-            assert_array_less(con.get_data(output="dense")[1, 0, bidx[1] :], lower_t),
+            assert_array_less(con.get_data(output="dense")[1, 0, bidx[1] :], lower_t)
             assert np.all(
                 con.get_data(output="dense")[1, 0, bidx[1] :] < lower_t
             ), con.get_data()[1, 0, bidx[1] :].max()
@@ -469,10 +469,12 @@ def test_spectral_connectivity(method, mode):
 
 _gc_marks = []
 if platform.system() == "Darwin" and platform.processor() == "arm":
-    _gc_marks.extend([
-        pytest.mark.filterwarnings("ignore:divide by zero encountered in det:"),
-        pytest.mark.filterwarnings("ignore:invalid value encountered in det:"),
-        ])
+    _gc_marks.extend(
+        [
+            pytest.mark.filterwarnings("ignore:divide by zero encountered in det:"),
+            pytest.mark.filterwarnings("ignore:invalid value encountered in det:"),
+        ]
+    )
 _gc = pytest.param("gc", marks=_gc_marks, id="gc")
 _gc_tr = pytest.param("gc_tr", marks=_gc_marks, id="gc_tr")
 
