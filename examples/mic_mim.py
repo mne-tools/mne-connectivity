@@ -15,6 +15,7 @@ global interaction measure, GIM).
 
 # Author: Thomas S. Binns <t.s.binns@outlook.com>
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 3
 
 # %%
 
@@ -55,13 +56,13 @@ from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 # :footcite:`EwaldEtAl2012` depending on the degree of source mixing in the
 # signals.
 #
-# To overcome this limitation, spatial filters derived from eigendecompositions
-# allows connectivity to be analysed in a multivariate manner, removing the
-# source mixing-dependent bias and increase the signal-to-noise ratio of
-# connectivity estimates :footcite:`EwaldEtAl2012`. This approach goes beyond
-# simply aggregating information across all possible combinations of signals,
-# extracting the underlying components of connectivity in a frequency-resolved
-# manner.
+# To overcome these limitations, spatial filters derived from
+# eigendecompositions allow connectivity to be analysed in a multivariate
+# manner, removing the source mixing-dependent bias and increasing the
+# signal-to-noise ratio of connectivity estimates :footcite:`EwaldEtAl2012`.
+# This approach goes beyond simply aggregating information across all possible
+# combinations of signals, instead extracting the underlying components of
+# connectivity in a frequency-resolved manner.
 #
 # This leads to the following methods: the maximised imaginary part of
 # coherency (MIC); and the multivariate interaction measure (MIM). These
@@ -136,9 +137,9 @@ fig.suptitle("Imaginary part of coherency")
 # eigendecomposition of information from the cross-spectral density (Eq. 7 of
 # :footcite:`EwaldEtAl2012`):
 #
-# :math:`\textrm{MIC}=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+# :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
 # {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-# \parallel}`,
+# \parallel}}`,
 #
 # where :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are the
 # spatial filters for the seeds and targets, respectively, and
@@ -265,16 +266,17 @@ plt.show()
 #
 # :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`,
 #
-# where again the frequency dependence is omitted. Unlike MIC, MIM is
-# positive-valued and can be > 1. Without normalisation, MIM can be
-# thought of as reflecting the total interaction between the seeds and targets.
-# MIM can be normalised to lie in the range :math:`[0, 1]` by dividing the
-# scores by the number of unique channels in the seeds and targets. Normalised
-# MIM represents the interaction *per channel*, which can be biased by factors
-# such as the presence of channels with little to no interaction. In line with
-# the preferences of the method's authors :footcite:`EwaldEtAl2012`, since
-# normalisation alters the interpretability of the results, **normalisation is
-# not performed by default**.
+# where again the frequency dependence is omitted.
+#
+# Unlike MIC, MIM is positive-valued and can be > 1. Without normalisation, MIM
+# can be thought of as reflecting the total interaction between the seeds and
+# targets. MIM can be normalised to lie in the range :math:`[0, 1]` by dividing
+# the scores by the number of unique channels in the seeds and targets.
+# Normalised MIM represents the interaction *per channel*, which can be biased
+# by factors such as the presence of channels with little to no interaction. In
+# line with the preferences of the method's authors :footcite:`EwaldEtAl2012`,
+# since normalisation alters the interpretability of the results,
+# **normalisation is not performed by default**.
 #
 # Here we see MIM reveal the strongest connectivity component to be around 10
 # Hz, with the higher frequency 13-18 Hz connectivity no longer being so
@@ -411,7 +413,7 @@ assert patterns[1, 0].shape[0] == np.array(mic_red.attrs["patterns"])[1, 0].shap
 # by computing the singular values of the data and finding those within a
 # factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# Whilst unlikely, there may be scenarios in which this threshold may be too
+# Whilst unlikely, there may be scenarios in which this threshold is too
 # lenient. In these cases, you should inspect the singular values of your data
 # to identify an appropriate degree of dimensionality reduction to perform,
 # which you can then specify manually using the ``rank`` argument. The code
@@ -439,14 +441,15 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria, w
 # coherency/coherence, such as CaCoh.
 #
 # In short, if you want to examine connectivity between signals from the same
-# modality, you should consider using MIC and MIM to avoid spurious
-# connectivity estimates stemming from e.g. volume conduction artefacts.
+# modality or from different modalities using a shared reference, you should
+# consider using MIC and MIM to avoid spurious connectivity estimates stemming
+# from e.g. volume conduction artefacts.
 #
 # On the other hand, if you want to examine connectivity between signals from
-# different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-# is because voilume conduction artefacts are of less concern, and CaCoh does
-# not risk biasing connectivity estimates towards interactions with particular
-# phase lags like MIC/MIM.
+# different modalities using different references, CaCoh is a more appropriate
+# method than MIC/MIM. This is because volume conduction artefacts are of less
+# concern, and CaCoh does not risk biasing connectivity estimates towards
+# interactions with particular phase lags like MIC/MIM.
 #
 # These scenarios are described in more detail in the
 # :doc:`compare_coherency_methods` example.
