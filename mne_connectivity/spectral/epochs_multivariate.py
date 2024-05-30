@@ -336,16 +336,24 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         # seeds
         eigvals, eigvects = np.linalg.eigh(C_r[:, :, :n_seeds, :n_seeds])
-        if (eigvals == 0).any():  # sign of non-full rank data
-            raise np.linalg.LinAlgError()
+        n_zero = (eigvals == 0).sum()
+        if n_zero:  # sign of non-full rank data
+            raise np.linalg.LinAlgError(
+                "Cannot compute inverse square root of rank-deficient matrix "
+                f"with {n_zero}/{len(eigvals)} zero eigenvalue(s)"
+            )
         T[:, :, :n_seeds, :n_seeds] = (
             eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
         ) @ eigvects.transpose(0, 1, 3, 2)
 
         # targets
         eigvals, eigvects = np.linalg.eigh(C_r[:, :, n_seeds:, n_seeds:])
-        if (eigvals == 0).any():  # sign of non-full rank data
-            raise np.linalg.LinAlgError()
+        n_zero = (eigvals == 0).sum()
+        if n_zero:  # sign of non-full rank data
+            raise np.linalg.LinAlgError(
+                "Cannot compute inverse square root of rank-deficient matrix "
+                f"with {n_zero}/{len(eigvals)} zero eigenvalue(s)"
+            )
         T[:, :, n_seeds:, n_seeds:] = (
             eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
         ) @ eigvects.transpose(0, 1, 3, 2)
