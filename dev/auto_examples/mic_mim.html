@@ -470,6 +470,7 @@ and the multivariate interaction measure (MIM; as well as its extension, the
 global interaction measure, GIM).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mne</span>
@@ -505,13 +506,13 @@ between only a small number of channels.</p>
 connectivity based on the spatial proximity of sensors
 <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> depending on the degree of source mixing in the
 signals.</p>
-<p>To overcome this limitation, spatial filters derived from eigendecompositions
-allows connectivity to be analysed in a multivariate manner, removing the
-source mixing-dependent bias and increase the signal-to-noise ratio of
-connectivity estimates <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. This approach goes beyond
-simply aggregating information across all possible combinations of signals,
-extracting the underlying components of connectivity in a frequency-resolved
-manner.</p>
+<p>To overcome these limitations, spatial filters derived from
+eigendecompositions allow connectivity to be analysed in a multivariate
+manner, removing the source mixing-dependent bias and increasing the
+signal-to-noise ratio of connectivity estimates <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+This approach goes beyond simply aggregating information across all possible
+combinations of signals, instead extracting the underlying components of
+connectivity in a frequency-resolved manner.</p>
 <p>This leads to the following methods: the maximised imaginary part of
 coherency (MIC); and the multivariate interaction measure (MIM). These
 methods are similar to the multivariate method based on coherency (CaCoh
@@ -704,9 +705,9 @@ connectivity between the seed and target signals. These maximising filters
 correspond to the eigenvectors with the largest eigenvalue, derived from an
 eigendecomposition of information from the cross-spectral density (Eq. 7 of
 <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
-<p><span class="math notranslate nohighlight">\(\textrm{MIC}=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+<p><span class="math notranslate nohighlight">\(\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
 {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
-\parallel}\)</span>,</p>
+\parallel}}\)</span>,</p>
 <p>where <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\beta}\)</span> are the
 spatial filters for the seeds and targets, respectively, and
 <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the transformed
@@ -821,16 +822,16 @@ available components. It is unnecessary to use the spatial filters of each
 component explicitly, and instead the desired result can be achieved from
 <span class="math notranslate nohighlight">\(E\)</span> alone (Eq. 14 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
 <p><span class="math notranslate nohighlight">\(\textrm{MIM}=tr(\boldsymbol{EE}^T)\)</span>,</p>
-<p>where again the frequency dependence is omitted. Unlike MIC, MIM is
-positive-valued and can be &gt; 1. Without normalisation, MIM can be
-thought of as reflecting the total interaction between the seeds and targets.
-MIM can be normalised to lie in the range <span class="math notranslate nohighlight">\([0, 1]\)</span> by dividing the
-scores by the number of unique channels in the seeds and targets. Normalised
-MIM represents the interaction <em>per channel</em>, which can be biased by factors
-such as the presence of channels with little to no interaction. In line with
-the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, since
-normalisation alters the interpretability of the results, <strong>normalisation is
-not performed by default</strong>.</p>
+<p>where again the frequency dependence is omitted.</p>
+<p>Unlike MIC, MIM is positive-valued and can be &gt; 1. Without normalisation, MIM
+can be thought of as reflecting the total interaction between the seeds and
+targets. MIM can be normalised to lie in the range <span class="math notranslate nohighlight">\([0, 1]\)</span> by dividing
+the scores by the number of unique channels in the seeds and targets.
+Normalised MIM represents the interaction <em>per channel</em>, which can be biased
+by factors such as the presence of channels with little to no interaction. In
+line with the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>,
+since normalisation alters the interpretability of the results,
+<strong>normalisation is not performed by default</strong>.</p>
 <p>Here we see MIM reveal the strongest connectivity component to be around 10
 Hz, with the higher frequency 13-18 Hz connectivity no longer being so
 prominent. This suggests that, across all components in the data, there may
@@ -997,7 +998,7 @@ an automatic rank computation is performed and an appropriate degree of
 dimensionality reduction will be enforced. The rank of the data is determined
 by computing the singular values of the data and finding those within a
 factor of <span class="math notranslate nohighlight">\(1e^{-6}\)</span> relative to the largest singular value.</p>
-<p>Whilst unlikely, there may be scenarios in which this threshold may be too
+<p>Whilst unlikely, there may be scenarios in which this threshold is too
 lenient. In these cases, you should inspect the singular values of your data
 to identify an appropriate degree of dimensionality reduction to perform,
 which you can then specify manually using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument. The code
@@ -1020,13 +1021,14 @@ considerations must be taken into account when choosing methods based on the
 imaginary part of coherency such as MIC or MIM versus those based on
 coherency/coherence, such as CaCoh.</p>
 <p>In short, if you want to examine connectivity between signals from the same
-modality, you should consider using MIC and MIM to avoid spurious
-connectivity estimates stemming from e.g. volume conduction artefacts.</p>
+modality or from different modalities using a shared reference, you should
+consider using MIC and MIM to avoid spurious connectivity estimates stemming
+from e.g. volume conduction artefacts.</p>
 <p>On the other hand, if you want to examine connectivity between signals from
-different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-is because voilume conduction artefacts are of less concern, and CaCoh does
-not risk biasing connectivity estimates towards interactions with particular
-phase lags like MIC/MIM.</p>
+different modalities using different references, CaCoh is a more appropriate
+method than MIC/MIM. This is because volume conduction artefacts are of less
+concern, and CaCoh does not risk biasing connectivity estimates towards
+interactions with particular phase lags like MIC/MIM.</p>
 <p>These scenarios are described in more detail in the
 <a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> example.</p>
 </section>
@@ -1053,7 +1055,7 @@ phase lags like MIC/MIM.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.600 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.347 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mic-mim-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/799bb176de53e03eae2c7f13f6e52594/mic_mim.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mic_mim.ipynb</span></code></a></p>

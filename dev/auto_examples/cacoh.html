@@ -468,6 +468,7 @@ spatial patterns of the connectivity.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1">#          Mohammad Orabe &lt;orabe.mhd@gmail.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -596,7 +597,7 @@ seeds and targets, such that <span class="math notranslate nohighlight">\(\bolds
 \boldsymbol{b}\)</span> maximises coherency between the seeds and targets. All
 elements are frequency-dependent, however this is omitted for readability.</p>
 <p>CaCoh is complex-valued in the range <span class="math notranslate nohighlight">\([-1, 1]\)</span> where the sign reflects
-the phase angle of the interaction (akin to coherency). Taking the absolute
+the phase angle of the interaction (like for coherency). Taking the absolute
 value is akin to taking the coherence, which is the magnitude of the
 interaction regardless of phase angle.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate connectivity indices</span>
@@ -912,7 +913,7 @@ an automatic rank computation is performed and an appropriate degree of
 dimensionality reduction will be enforced. The rank of the data is determined
 by computing the singular values of the data and finding those within a
 factor of <span class="math notranslate nohighlight">\(1e^{-6}\)</span> relative to the largest singular value.</p>
-<p>Whilst unlikely, there may be scenarios in which this threshold may be too
+<p>Whilst unlikely, there may be scenarios in which this threshold is too
 lenient. In these cases, you should inspect the singular values of your data
 to identify an appropriate degree of dimensionality reduction to perform,
 which you can then specify manually using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument. The code
@@ -935,15 +936,16 @@ and targets to be signals of different modalities. This is an important
 factor in whether CaCoh should be used over methods based solely on the
 imaginary part of coherency such as MIC and MIM.</p>
 <p>In short, if you want to examine connectivity between signals from the same
-modality, you should consider using another method instead of CaCoh. Rather,
-methods based on the imaginary part of coherency such as MIC and MIM should
-be used to avoid spurious connectivity estimates stemming from e.g. volume
-conduction artefacts.</p>
+modality or from different modalities using a shared reference, you should
+consider using another method instead of CaCoh. Rather, methods based on the
+imaginary part of coherency such as MIC and MIM should be used to avoid
+spurious connectivity estimates stemming from e.g. volume conduction
+artefacts.</p>
 <p>On the other hand, if you want to examine connectivity between signals from
-different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-is because volume conduction artefacts are of less concern, and CaCoh does
-not risk biasing connectivity estimates towards interactions with particular
-phase lags like MIC/MIM.</p>
+different modalities using different references, CaCoh is a more appropriate
+method than MIC/MIM. This is because volume conduction artefacts are of less
+concern, and CaCoh does not risk biasing connectivity estimates towards
+interactions with particular phase lags like MIC/MIM.</p>
 <p>These scenarios are described in more detail in the
 <a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> example.</p>
 </section>
@@ -967,7 +969,7 @@ phase lags like MIC/MIM.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.363 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.587 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-cacoh-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4c001e012a0d3de05adb67e035906af3/cacoh.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cacoh.ipynb</span></code></a></p>

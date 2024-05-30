@@ -477,16 +477,15 @@ numbers of seeds and targets can be handled in MNE-Connectivity.</p>
 considered together, and the number of signals designated as seeds and
 targets does not have to be equal within or across connections. Issues can
 arise from this when storing information associated with connectivity in
-arrays, as the number of entries within each dimension can vary within and
-across connections depending on the number of seeds and targets. Such arrays
-are ‘ragged’, and support for ragged arrays is limited in NumPy to the
-<code class="docutils literal notranslate"><span class="pre">object</span></code> datatype. Not only is working with ragged arrays is cumbersome,
-but saving arrays with <code class="docutils literal notranslate"><span class="pre">dtype='object'</span></code> is not supported by the h5netcdf
-engine used to save connectivity objects. The workaround used in
-MNE-Connectivity is to pad ragged arrays with some known values according to
-the largest number of entries in each dimension, such that there is an equal
-amount of information across and within connections for each dimension of the
 arrays.</p>
+<p>Such arrays are ‘ragged’, and support for ragged arrays is limited in NumPy
+to the <code class="docutils literal notranslate"><span class="pre">object</span></code> datatype. Not only is working with ragged arrays
+cumbersome, but saving arrays with <code class="docutils literal notranslate"><span class="pre">dtype='object'</span></code> is not supported by the
+h5netcdf engine used to save connectivity objects.</p>
+<p>The workaround used in MNE-Connectivity is to pad ragged arrays with some
+known values according to the largest number of entries in each dimension,
+such that there is an equal amount of information across and within
+connections for each dimension of the arrays.</p>
 <p>As an example, consider we have 5 channels and want to compute 2 connections:
 the first between channels in indices 0 and 1 with those in indices 2, 3,
 and 4; and the second between channels 0, 1, 2, and 3 with channel 4. The
@@ -507,7 +506,7 @@ Examples of how <code class="docutils literal notranslate"><span class="pre">ind
 
 <span class="c1"># tuple of tuples</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ragged_indices</span></a> <span class="o">=</span> <span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>   <span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
-                  <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span>         <span class="p">)))</span>
+                  <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span>        <span class="p">)))</span>
 
 <span class="c1"># tuple of arrays</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ragged_indices</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>   <span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">),</span>
@@ -519,7 +518,8 @@ forming ragged arrays.</strong></p>
 <p>Just as for bivariate connectivity, the length of <code class="docutils literal notranslate"><span class="pre">indices[0]</span></code> and
 <code class="docutils literal notranslate"><span class="pre">indices[1]</span></code> is equal (i.e. the number of connections), however information
 about the multiple channel indices for each connection is stored in a nested
-array. Importantly, these indices are ragged, as the first connection will be
+array.</p>
+<p>Importantly, these indices are ragged, as the first connection will be
 computed between 2 seed and 3 target channels, and the second connection
 between 4 seed and 1 target channel(s). The connectivity functions will
 recognise the indices as being ragged, and pad them to a ‘full’ array by
@@ -535,16 +535,17 @@ returned connectivity objects.</p>
 <p>For the connectivity results themselves, the methods available in
 MNE-Connectivity combine information across the different channels into a
 single (time-)frequency-resolved connectivity spectrum, regardless of the
-number of seed and target channels, so ragged arrays are not a concern here.
-However, the maximised imaginary part of coherency (MIC) method also returns
+number of seed and target channels, so ragged arrays are not a concern here.</p>
+<p>However, the maximised imaginary part of coherency (MIC) method also returns
 spatial patterns of connectivity, which show the contribution of each channel
 to the dimensionality-reduced connectivity estimate (explained in more detail
 in <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a>). Because these patterns are returned for each channel,
 their shape can vary depending on the number of seeds and targets in each
-connection, making them ragged. To avoid this, the patterns are padded along
-the channel axis with the known and invalid entry <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>, in line with
-that applied to <code class="docutils literal notranslate"><span class="pre">indices</span></code>. Extracting only the valid spatial patterns from
-the connectivity object is trivial, as shown below:</p>
+connection, making them ragged.</p>
+<p>To avoid this, the patterns are padded along the channel axis with the known
+and invalid entry <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>, in line with that applied to <code class="docutils literal notranslate"><span class="pre">indices</span></code>.
+Extracting only the valid spatial patterns from the connectivity object is
+trivial, as shown below:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create random data</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.randn.html#numpy.random.randn" title="numpy.random.randn" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>  <span class="c1"># epochs x channels x times</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">50</span>
@@ -601,7 +602,7 @@ the connectivity object is trivial, as shown below:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assertions completed successfully!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.013 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.015 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-handling-ragged-arrays-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/627c6a640d649eb934528032e8142ffb/handling_ragged_arrays.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">handling_ragged_arrays.ipynb</span></code></a></p>
