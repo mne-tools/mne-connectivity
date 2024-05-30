@@ -12,6 +12,7 @@ spatial patterns of the connectivity.
 # Authors: Thomas S. Binns <t.s.binns@outlook.com>
 #          Mohammad Orabe <orabe.mhd@gmail.com>
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 3
 
 # %%
 import numpy as np

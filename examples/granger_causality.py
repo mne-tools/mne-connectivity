@@ -12,6 +12,7 @@ data is discussed :footcite:`WinklerEtAl2016`.
 
 # Author: Thomas S. Binns <t.s.binns@outlook.com>
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 3
 
 # %%
 
