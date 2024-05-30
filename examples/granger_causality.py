@@ -252,9 +252,8 @@ fig.suptitle("Net GC: [A => B] - [B => A]")
 # as follows: if temporal order is crucial in distinguishing a driver from a
 # recipient, then reversing the temporal order should reduce, if not flip, an
 # estimate of directed connectivity. In practice, time-reversal is implemented
-# as a transposition of the autocovariance sequence used to compute GC. Several
-# studies have shown that that such an approach can reduce the degree of
-# false-positive connectivity estimates (even performing favourably against
+# as a transposition of the autocovariance sequence used to compute GC
+# :footcite:`HaufeEtAl2012`.
 # other methods such as the phase slope index) :footcite:`VinckEtAl2015` and
 # retain the ability to correctly identify the net direction of information
 # flow akin to net GC :footcite:`WinklerEtAl2016,HaufeEtAl2013`. This approach

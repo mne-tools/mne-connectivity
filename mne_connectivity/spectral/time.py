@@ -332,7 +332,7 @@ def spectral_connectivity_time(
         :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation
         as for 'gc', but where the autocovariance sequence from which the
         autoregressive model is produced is transposed to mimic the reversal of
-        the original signal in time.
+        the original signal in time :footcite:`HaufeEtAl2012`.
 
     Parallel computation can be activated by setting the ``n_jobs`` parameter.
     Under the hood, this utilizes the ``joblib`` library. For effective
