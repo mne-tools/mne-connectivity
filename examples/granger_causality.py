@@ -254,6 +254,9 @@ fig.suptitle("Net GC: [A => B] - [B => A]")
 # estimate of directed connectivity. In practice, time-reversal is implemented
 # as a transposition of the autocovariance sequence used to compute GC
 # :footcite:`HaufeEtAl2012`.
+#
+# Several studies have shown that that such an approach can reduce the degree
+# of false-positive connectivity estimates (even performing favourably against
 # other methods such as the phase slope index) :footcite:`VinckEtAl2015` and
 # retain the ability to correctly identify the net direction of information
 # flow akin to net GC :footcite:`WinklerEtAl2016,HaufeEtAl2013`. This approach
@@ -305,7 +308,7 @@ net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
 trgc = net_gc - net_gc_tr
 
 ###############################################################################
-# Plotting the TRGC results, reveals a very different picture compared to net
+# Plotting the TRGC results reveals a very different picture compared to net
 # GC. For one, there is now a dominance of information flow ~6 Hz from
 # occipital to parietal sensors (indicated by the negative-valued Granger
 # scores). Additionally, the peak ~10 Hz is less dominant in the spectrum, with
@@ -379,7 +382,7 @@ fig.suptitle("GC: [A => B]")
 # by computing the singular values of the data and finding those within a
 # factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# Whilst unlikely, there may be scenarios in which this threshold may be too
+# Whilst unlikely, there may be scenarios in which this threshold is too
 # lenient. In these cases, you should inspect the singular values of your data
 # to identify an appropriate degree of dimensionality reduction to perform,
 # which you can then specify manually using the ``rank`` argument. The code

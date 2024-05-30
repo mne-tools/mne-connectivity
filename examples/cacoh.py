@@ -119,7 +119,7 @@ data = data_10_12.add_channels([data_23_25])
 # elements are frequency-dependent, however this is omitted for readability.
 #
 # CaCoh is complex-valued in the range :math:`[-1, 1]` where the sign reflects
-# the phase angle of the interaction (akin to coherency). Taking the absolute
+# the phase angle of the interaction (like for coherency). Taking the absolute
 # value is akin to taking the coherence, which is the magnitude of the
 # interaction regardless of phase angle.
 
@@ -385,7 +385,7 @@ assert patterns[1, 0].shape[0] == np.array(cacoh_red.attrs["patterns"])[1, 0].sh
 # by computing the singular values of the data and finding those within a
 # factor of :math:`1e^{-6}` relative to the largest singular value.
 #
-# Whilst unlikely, there may be scenarios in which this threshold may be too
+# Whilst unlikely, there may be scenarios in which this threshold is too
 # lenient. In these cases, you should inspect the singular values of your data
 # to identify an appropriate degree of dimensionality reduction to perform,
 # which you can then specify manually using the ``rank`` argument. The code
@@ -412,16 +412,17 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria, w
 # imaginary part of coherency such as MIC and MIM.
 #
 # In short, if you want to examine connectivity between signals from the same
-# modality, you should consider using another method instead of CaCoh. Rather,
-# methods based on the imaginary part of coherency such as MIC and MIM should
-# be used to avoid spurious connectivity estimates stemming from e.g. volume
-# conduction artefacts.
+# modality or from different modalities using a shared reference, you should
+# consider using another method instead of CaCoh. Rather, methods based on the
+# imaginary part of coherency such as MIC and MIM should be used to avoid
+# spurious connectivity estimates stemming from e.g. volume conduction
+# artefacts.
 #
 # On the other hand, if you want to examine connectivity between signals from
-# different modalities, CaCoh is a more appropriate method than MIC/MIM. This
-# is because volume conduction artefacts are of less concern, and CaCoh does
-# not risk biasing connectivity estimates towards interactions with particular
-# phase lags like MIC/MIM.
+# different modalities using different references, CaCoh is a more appropriate
+# method than MIC/MIM. This is because volume conduction artefacts are of less
+# concern, and CaCoh does not risk biasing connectivity estimates towards
+# interactions with particular phase lags like MIC/MIM.
 #
 # These scenarios are described in more detail in the
 # :doc:`compare_coherency_methods` example.

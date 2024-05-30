@@ -314,7 +314,7 @@ fig.suptitle("Coh vs. ImCoh\nNon-zero & zero time-lags")
 # |
 #
 # Equally, when there are no non-physiological zero time-lag interactions, one
-# should not used methods based on only the imaginary part of coherency. There
+# should not use methods based on only the imaginary part of coherency. There
 # are two key reasons:
 #
 # **1. Discarding physiological zero time-lag interactions**
