@@ -12,7 +12,7 @@ Version 0.7 (2024-05-31)
 
 This version adds a new multivariate connectivity method to the ``spectral`` connectivity analysis functions,
 an example explaining when certain connectivity methods should be used, and a function for simulating connectivity.
-Compute efficiency has also been improved in some cases, including a bug fix for parallel processing.
+Computation time has also been improved in some cases, including a bug fix for parallel processing.
 
 Enhancements
 ~~~~~~~~~~~~
