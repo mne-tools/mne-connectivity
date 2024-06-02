@@ -7,7 +7,7 @@
 What was new in previous releases?
 ==================================
 
-Version 0.7 (2024-05-31)
+Version 0.7 (2024-06-03)
 ------------------------
 
 This version adds a new multivariate connectivity method to the ``spectral`` connectivity analysis functions,
