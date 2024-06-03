@@ -225,7 +225,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         # check data is a 2/3D array
         _validate_type(X, np.ndarray, "`X`", "NumPy array")
         _check_option("`X.ndim`", X.ndim, ndim)
-        n_chans = X.shape[1]
+        n_chans = X.shape[-2]
         if n_chans != self.info["nchan"]:
             raise ValueError(
                 "`X` does not match Info\nExpected %i channels, got %i"
