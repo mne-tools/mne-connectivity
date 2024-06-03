@@ -32,7 +32,10 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
     @property
     def indices(self):
-        """Get ``indices`` parameter in the input format."""
+        """Get ``indices`` parameter in the input format.
+
+        :meta private:
+        """
         return (self._indices[0].compressed(), self._indices[1].compressed())
 
     @indices.setter
@@ -42,7 +45,10 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
     @property
     def rank(self):
-        """Get ``rank`` parameter in the input format."""
+        """Get ``rank`` parameter in the input format.
+
+        :meta private:
+        """
         return (self._rank[0][0], self._rank[1][0])
 
     @rank.setter
