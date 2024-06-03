@@ -357,6 +357,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             transformed targets.
         """
         # use parent TransformerMixin method but with custom docstring
+        return super().fit_transform(X, y=y, **fit_params)
 
     def get_transformed_indices(self):
         """Get indices for the transformed data.
