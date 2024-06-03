@@ -118,7 +118,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
         _validate_type(rank, (tuple, None), "`rank`", "tuple of ints or None")
         if rank is not None:
-            if len(rank != 2):
+            if len(rank) != 2:
                 raise ValueError("`rank` must be have length 2")
             for rank_group in rank:
                 _validate_type(rank_group, int, "`rank`", "tuple of ints or None")
