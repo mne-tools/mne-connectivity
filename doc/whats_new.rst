@@ -16,31 +16,22 @@ Here we list a changelog of MNE-connectivity.
 
 .. _current:
 
-Version 0.7 (in dev)
+Version 0.8 (in dev)
 --------------------
-
-
 
 Enhancements
 ~~~~~~~~~~~~
 
-- Add support for a new multivariate connectivity method (canonical coherence; ``cacoh``) in :func:`mne_connectivity.spectral_connectivity_epochs` and :func:`mne_connectivity.spectral_connectivity_time` by `Thomas Binns`_ and `Mohammad Orabe`_ and `Mina Jamshidi`_ (:pr:`163`).
+
 
 Bug
 ~~~
 
--
 
-API
-~~~
-
--
 
 Authors
 ~~~~~~~
-* `Thomas Binns`_
-* `Mohammad Orabe`_
-* `Mina Jamshidi`_
+
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
