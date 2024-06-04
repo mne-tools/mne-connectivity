@@ -474,7 +474,7 @@ a VAR model with different statistical assumptions.</p>
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">read_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a>
 
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a>
 </pre></div>
@@ -488,7 +488,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.epilepsy_ecog.data_path.html#mne.datasets.epilepsy_ecog.data_path" title="mne.datasets.epilepsy_ecog.data_path" class="sphx-glr-backref-module-mne-datasets-epilepsy_ecog sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">epilepsy_ecog</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># first define the BIDS path</span>
-<span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+<a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
     <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;pt1&quot;</span><span class="p">,</span>
     <span class="n">session</span><span class="o">=</span><span class="s2">&quot;presurgery&quot;</span><span class="p">,</span>
@@ -500,7 +500,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="c1"># Then we&#39;ll use it to load in the sample dataset. Here we use a format (iEEG)</span>
 <span class="c1"># that is only available in MNE-BIDS 0.7+, so it will emit a warning on</span>
 <span class="c1"># versions &lt;= 0.6</span>
-<span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data has a power line frequency at </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -519,24 +519,179 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▉                                   | 4.58M/88.2M [00:00&lt;00:01, 45.8MB/s]
- 12%|████▍                                | 10.6M/88.2M [00:00&lt;00:01, 54.4MB/s]
- 19%|██████▉                              | 16.5M/88.2M [00:00&lt;00:01, 56.3MB/s]
- 25%|█████████▎                           | 22.1M/88.2M [00:00&lt;00:01, 42.6MB/s]
- 31%|███████████▌                         | 27.5M/88.2M [00:00&lt;00:01, 45.9MB/s]
- 39%|██████████████▎                      | 34.2M/88.2M [00:00&lt;00:01, 52.2MB/s]
- 48%|█████████████████▌                   | 41.9M/88.2M [00:00&lt;00:00, 59.8MB/s]
- 55%|████████████████████▏                | 48.2M/88.2M [00:01&lt;00:01, 38.5MB/s]
- 62%|███████████████████████              | 55.0M/88.2M [00:01&lt;00:00, 44.9MB/s]
- 69%|█████████████████████████▍           | 60.6M/88.2M [00:01&lt;00:00, 43.1MB/s]
- 77%|████████████████████████████▌        | 68.0M/88.2M [00:01&lt;00:00, 50.4MB/s]
- 86%|███████████████████████████████▊     | 75.9M/88.2M [00:01&lt;00:00, 57.5MB/s]
- 95%|███████████████████████████████████▏ | 83.8M/88.2M [00:01&lt;00:00, 63.1MB/s]
+  0%|▏                                     | 298k/88.2M [00:00&lt;00:30, 2.85MB/s]
+  1%|▎                                     | 814k/88.2M [00:00&lt;00:26, 3.28MB/s]
+  2%|▌                                    | 1.33M/88.2M [00:00&lt;00:25, 3.45MB/s]
+  2%|▊                                    | 1.85M/88.2M [00:00&lt;00:24, 3.59MB/s]
+  3%|█                                    | 2.64M/88.2M [00:00&lt;00:19, 4.43MB/s]
+  4%|█▎                                   | 3.16M/88.2M [00:00&lt;00:19, 4.36MB/s]
+  4%|█▌                                   | 3.69M/88.2M [00:00&lt;00:19, 4.26MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:01&lt;00:22, 3.72MB/s]
+  5%|█▉                                   | 4.73M/88.2M [00:01&lt;00:21, 3.90MB/s]
+  6%|██▏                                  | 5.25M/88.2M [00:01&lt;00:20, 4.03MB/s]
+  7%|██▍                                  | 5.78M/88.2M [00:01&lt;00:20, 3.98MB/s]
+  7%|██▋                                  | 6.30M/88.2M [00:01&lt;00:20, 4.06MB/s]
+  8%|██▊                                  | 6.82M/88.2M [00:01&lt;00:18, 4.29MB/s]
+  8%|███                                  | 7.34M/88.2M [00:01&lt;00:19, 4.21MB/s]
+  9%|███▎                                 | 7.86M/88.2M [00:01&lt;00:19, 4.21MB/s]
+ 10%|███▌                                 | 8.39M/88.2M [00:02&lt;00:17, 4.46MB/s]
+ 10%|███▋                                 | 8.91M/88.2M [00:02&lt;00:17, 4.59MB/s]
+ 11%|███▉                                 | 9.44M/88.2M [00:02&lt;00:16, 4.66MB/s]
+ 11%|████▏                                | 9.96M/88.2M [00:02&lt;00:16, 4.61MB/s]
+ 12%|████▍                                | 10.7M/88.2M [00:02&lt;00:14, 5.37MB/s]
+ 13%|████▋                                | 11.2M/88.2M [00:02&lt;00:14, 5.38MB/s]
+ 13%|████▉                                | 11.8M/88.2M [00:02&lt;00:20, 3.74MB/s]
+ 14%|█████▏                               | 12.3M/88.2M [00:02&lt;00:20, 3.64MB/s]
+ 15%|█████▍                               | 12.8M/88.2M [00:03&lt;00:21, 3.46MB/s]
+ 15%|█████▌                               | 13.4M/88.2M [00:03&lt;00:21, 3.48MB/s]
+ 16%|█████▊                               | 13.9M/88.2M [00:03&lt;00:20, 3.65MB/s]
+ 16%|██████                               | 14.4M/88.2M [00:03&lt;00:20, 3.55MB/s]
+ 17%|██████▎                              | 14.9M/88.2M [00:03&lt;00:20, 3.54MB/s]
+ 18%|██████▍                              | 15.4M/88.2M [00:03&lt;00:20, 3.52MB/s]
+ 18%|██████▋                              | 16.0M/88.2M [00:04&lt;00:19, 3.80MB/s]
+ 19%|██████▉                              | 16.5M/88.2M [00:04&lt;00:17, 3.99MB/s]
+ 19%|███████▏                             | 17.0M/88.2M [00:04&lt;00:16, 4.21MB/s]
+ 20%|███████▎                             | 17.5M/88.2M [00:04&lt;00:16, 4.26MB/s]
+ 20%|███████▌                             | 18.1M/88.2M [00:04&lt;00:15, 4.49MB/s]
+ 21%|███████▊                             | 18.6M/88.2M [00:04&lt;00:16, 4.31MB/s]
+ 22%|████████                             | 19.1M/88.2M [00:04&lt;00:15, 4.55MB/s]
+ 22%|████████▏                            | 19.6M/88.2M [00:04&lt;00:15, 4.43MB/s]
+ 23%|████████▍                            | 20.2M/88.2M [00:04&lt;00:16, 4.24MB/s]
+ 23%|████████▋                            | 20.7M/88.2M [00:05&lt;00:15, 4.24MB/s]
+ 24%|████████▉                            | 21.2M/88.2M [00:05&lt;00:16, 3.99MB/s]
+ 25%|█████████                            | 21.7M/88.2M [00:05&lt;00:18, 3.56MB/s]
+ 25%|█████████▎                           | 22.1M/88.2M [00:05&lt;00:18, 3.58MB/s]
+ 25%|█████████▍                           | 22.5M/88.2M [00:05&lt;00:19, 3.39MB/s]
+ 26%|█████████▌                           | 22.8M/88.2M [00:05&lt;00:22, 2.91MB/s]
+ 26%|█████████▊                           | 23.3M/88.2M [00:05&lt;00:23, 2.75MB/s]
+ 27%|█████████▉                           | 23.8M/88.2M [00:06&lt;00:21, 2.96MB/s]
+ 28%|██████████▏                          | 24.3M/88.2M [00:06&lt;00:20, 3.04MB/s]
+ 28%|██████████▍                          | 24.9M/88.2M [00:06&lt;00:20, 3.15MB/s]
+ 29%|██████████▋                          | 25.4M/88.2M [00:06&lt;00:17, 3.52MB/s]
+ 30%|██████████▉                          | 26.2M/88.2M [00:06&lt;00:15, 4.12MB/s]
+ 30%|███████████▏                         | 26.7M/88.2M [00:06&lt;00:14, 4.13MB/s]
+ 31%|███████████▍                         | 27.2M/88.2M [00:06&lt;00:15, 4.04MB/s]
+ 31%|███████████▋                         | 27.7M/88.2M [00:07&lt;00:15, 3.80MB/s]
+ 32%|███████████▊                         | 28.3M/88.2M [00:07&lt;00:16, 3.58MB/s]
+ 33%|████████████                         | 28.8M/88.2M [00:07&lt;00:17, 3.34MB/s]
+ 33%|████████████▎                        | 29.3M/88.2M [00:07&lt;00:18, 3.20MB/s]
+ 34%|████████████▌                        | 29.8M/88.2M [00:07&lt;00:17, 3.36MB/s]
+ 34%|████████████▋                        | 30.3M/88.2M [00:07&lt;00:17, 3.40MB/s]
+ 35%|████████████▉                        | 30.9M/88.2M [00:08&lt;00:15, 3.79MB/s]
+ 36%|█████████████▏                       | 31.4M/88.2M [00:08&lt;00:14, 4.01MB/s]
+ 36%|█████████████▍                       | 31.9M/88.2M [00:08&lt;00:13, 4.28MB/s]
+ 37%|█████████████▌                       | 32.4M/88.2M [00:08&lt;00:12, 4.46MB/s]
+ 37%|█████████████▊                       | 33.0M/88.2M [00:08&lt;00:12, 4.50MB/s]
+ 38%|██████████████                       | 33.5M/88.2M [00:08&lt;00:11, 4.58MB/s]
+ 39%|██████████████▎                      | 34.0M/88.2M [00:08&lt;00:11, 4.69MB/s]
+ 39%|██████████████▌                      | 34.8M/88.2M [00:08&lt;00:10, 5.01MB/s]
+ 40%|██████████████▊                      | 35.3M/88.2M [00:08&lt;00:10, 5.00MB/s]
+ 41%|███████████████▏                     | 36.1M/88.2M [00:09&lt;00:10, 5.14MB/s]
+ 42%|███████████████▎                     | 36.6M/88.2M [00:09&lt;00:10, 5.15MB/s]
+ 42%|███████████████▋                     | 37.3M/88.2M [00:09&lt;00:09, 5.54MB/s]
+ 43%|███████████████▉                     | 37.8M/88.2M [00:09&lt;00:10, 4.92MB/s]
+ 43%|████████████████                     | 38.3M/88.2M [00:09&lt;00:11, 4.31MB/s]
+ 44%|████████████████▎                    | 38.8M/88.2M [00:09&lt;00:12, 3.87MB/s]
+ 45%|████████████████▍                    | 39.2M/88.2M [00:09&lt;00:15, 3.22MB/s]
+ 45%|████████████████▌                    | 39.6M/88.2M [00:10&lt;00:16, 3.00MB/s]
+ 45%|████████████████▋                    | 39.9M/88.2M [00:10&lt;00:16, 2.92MB/s]
+ 46%|████████████████▉                    | 40.3M/88.2M [00:10&lt;00:16, 2.86MB/s]
+ 46%|█████████████████▏                   | 40.8M/88.2M [00:10&lt;00:15, 3.09MB/s]
+ 47%|█████████████████▎                   | 41.3M/88.2M [00:10&lt;00:14, 3.22MB/s]
+ 47%|█████████████████▌                   | 41.8M/88.2M [00:10&lt;00:12, 3.59MB/s]
+ 48%|█████████████████▉                   | 42.6M/88.2M [00:10&lt;00:11, 4.10MB/s]
+ 49%|██████████████████                   | 43.2M/88.2M [00:11&lt;00:10, 4.10MB/s]
+ 50%|██████████████████▎                  | 43.7M/88.2M [00:11&lt;00:10, 4.18MB/s]
+ 50%|██████████████████▌                  | 44.2M/88.2M [00:11&lt;00:10, 4.19MB/s]
+ 51%|██████████████████▊                  | 44.7M/88.2M [00:11&lt;00:11, 3.78MB/s]
+ 51%|██████████████████▉                  | 45.1M/88.2M [00:11&lt;00:11, 3.64MB/s]
+ 52%|███████████████████                  | 45.5M/88.2M [00:11&lt;00:12, 3.42MB/s]
+ 52%|███████████████████▏                 | 45.8M/88.2M [00:11&lt;00:13, 3.12MB/s]
+ 53%|███████████████████▍                 | 46.3M/88.2M [00:11&lt;00:13, 3.21MB/s]
+ 53%|███████████████████▋                 | 46.8M/88.2M [00:12&lt;00:11, 3.68MB/s]
+ 54%|███████████████████▊                 | 47.3M/88.2M [00:12&lt;00:10, 4.04MB/s]
+ 54%|████████████████████                 | 47.9M/88.2M [00:12&lt;00:09, 4.12MB/s]
+ 55%|████████████████████▎                | 48.4M/88.2M [00:12&lt;00:09, 4.22MB/s]
+ 56%|████████████████████▌                | 49.0M/88.2M [00:12&lt;00:08, 4.69MB/s]
+ 56%|████████████████████▊                | 49.5M/88.2M [00:12&lt;00:08, 4.67MB/s]
+ 57%|████████████████████▉                | 50.0M/88.2M [00:12&lt;00:08, 4.69MB/s]
+ 57%|█████████████████████▏               | 50.5M/88.2M [00:12&lt;00:08, 4.40MB/s]
+ 58%|█████████████████████▍               | 51.0M/88.2M [00:12&lt;00:08, 4.32MB/s]
+ 58%|█████████████████████▌               | 51.5M/88.2M [00:13&lt;00:09, 4.04MB/s]
+ 59%|█████████████████████▊               | 52.0M/88.2M [00:13&lt;00:09, 3.88MB/s]
+ 60%|██████████████████████               | 52.6M/88.2M [00:13&lt;00:09, 3.63MB/s]
+ 60%|██████████████████████▎              | 53.1M/88.2M [00:13&lt;00:10, 3.46MB/s]
+ 61%|██████████████████████▌              | 53.6M/88.2M [00:13&lt;00:10, 3.31MB/s]
+ 61%|██████████████████████▋              | 54.1M/88.2M [00:13&lt;00:10, 3.16MB/s]
+ 62%|██████████████████████▉              | 54.7M/88.2M [00:14&lt;00:10, 3.13MB/s]
+ 62%|███████████████████████              | 55.0M/88.2M [00:14&lt;00:10, 3.04MB/s]
+ 63%|███████████████████████▎             | 55.4M/88.2M [00:14&lt;00:09, 3.34MB/s]
+ 63%|███████████████████████▍             | 56.0M/88.2M [00:14&lt;00:08, 3.76MB/s]
+ 64%|███████████████████████▋             | 56.5M/88.2M [00:14&lt;00:07, 4.02MB/s]
+ 65%|███████████████████████▉             | 57.0M/88.2M [00:14&lt;00:08, 3.66MB/s]
+ 65%|████████████████████████▏            | 57.5M/88.2M [00:14&lt;00:08, 3.53MB/s]
+ 66%|████████████████████████▎            | 58.1M/88.2M [00:15&lt;00:08, 3.37MB/s]
+ 66%|████████████████████████▌            | 58.4M/88.2M [00:15&lt;00:09, 3.29MB/s]
+ 67%|████████████████████████▋            | 58.8M/88.2M [00:15&lt;00:08, 3.35MB/s]
+ 67%|████████████████████████▉            | 59.4M/88.2M [00:15&lt;00:07, 3.64MB/s]
+ 68%|█████████████████████████▏           | 59.9M/88.2M [00:15&lt;00:07, 3.94MB/s]
+ 69%|█████████████████████████▎           | 60.4M/88.2M [00:15&lt;00:06, 4.10MB/s]
+ 69%|█████████████████████████▌           | 60.9M/88.2M [00:15&lt;00:06, 4.22MB/s]
+ 70%|█████████████████████████▊           | 61.6M/88.2M [00:15&lt;00:05, 4.74MB/s]
+ 70%|██████████████████████████           | 62.0M/88.2M [00:15&lt;00:05, 4.60MB/s]
+ 71%|██████████████████████████▏          | 62.5M/88.2M [00:16&lt;00:05, 4.51MB/s]
+ 71%|██████████████████████████▍          | 63.0M/88.2M [00:16&lt;00:05, 4.67MB/s]
+ 72%|██████████████████████████▋          | 63.6M/88.2M [00:16&lt;00:05, 4.65MB/s]
+ 73%|██████████████████████████▊          | 64.0M/88.2M [00:16&lt;00:05, 4.54MB/s]
+ 73%|███████████████████████████          | 64.5M/88.2M [00:16&lt;00:06, 3.79MB/s]
+ 74%|███████████████████████████▏         | 64.9M/88.2M [00:16&lt;00:06, 3.46MB/s]
+ 74%|███████████████████████████▍         | 65.2M/88.2M [00:16&lt;00:07, 3.25MB/s]
+ 74%|███████████████████████████▌         | 65.6M/88.2M [00:16&lt;00:07, 3.15MB/s]
+ 75%|███████████████████████████▋         | 65.9M/88.2M [00:17&lt;00:07, 3.07MB/s]
+ 75%|███████████████████████████▊         | 66.2M/88.2M [00:17&lt;00:08, 2.54MB/s]
+ 76%|███████████████████████████▉         | 66.7M/88.2M [00:17&lt;00:08, 2.52MB/s]
+ 76%|████████████████████████████▏        | 67.2M/88.2M [00:17&lt;00:07, 2.75MB/s]
+ 77%|████████████████████████████▎        | 67.6M/88.2M [00:17&lt;00:07, 2.93MB/s]
+ 77%|████████████████████████████▌        | 68.0M/88.2M [00:17&lt;00:06, 3.15MB/s]
+ 78%|████████████████████████████▊        | 68.5M/88.2M [00:17&lt;00:05, 3.39MB/s]
+ 78%|████████████████████████████▉        | 69.0M/88.2M [00:18&lt;00:05, 3.27MB/s]
+ 79%|█████████████████████████████▏       | 69.5M/88.2M [00:18&lt;00:05, 3.47MB/s]
+ 79%|█████████████████████████████▎       | 69.8M/88.2M [00:18&lt;00:06, 3.00MB/s]
+ 80%|█████████████████████████████▌       | 70.4M/88.2M [00:18&lt;00:05, 3.28MB/s]
+ 81%|█████████████████████████████▊       | 71.1M/88.2M [00:18&lt;00:04, 3.96MB/s]
+ 82%|██████████████████████████████▏      | 71.9M/88.2M [00:18&lt;00:03, 4.33MB/s]
+ 82%|██████████████████████████████▍      | 72.4M/88.2M [00:18&lt;00:03, 4.42MB/s]
+ 83%|██████████████████████████████▌      | 73.0M/88.2M [00:19&lt;00:03, 4.62MB/s]
+ 83%|██████████████████████████████▊      | 73.5M/88.2M [00:19&lt;00:03, 4.07MB/s]
+ 84%|███████████████████████████████      | 74.0M/88.2M [00:19&lt;00:03, 3.72MB/s]
+ 85%|███████████████████████████████▎     | 74.5M/88.2M [00:19&lt;00:03, 3.54MB/s]
+ 85%|███████████████████████████████▍     | 75.1M/88.2M [00:19&lt;00:03, 3.57MB/s]
+ 86%|███████████████████████████████▊     | 75.8M/88.2M [00:19&lt;00:02, 4.18MB/s]
+ 87%|████████████████████████████████     | 76.4M/88.2M [00:19&lt;00:02, 4.35MB/s]
+ 88%|████████████████████████████████▍    | 77.2M/88.2M [00:20&lt;00:02, 4.79MB/s]
+ 88%|████████████████████████████████▌    | 77.7M/88.2M [00:20&lt;00:02, 4.43MB/s]
+ 89%|████████████████████████████████▊    | 78.2M/88.2M [00:20&lt;00:02, 4.22MB/s]
+ 89%|█████████████████████████████████    | 78.7M/88.2M [00:20&lt;00:02, 4.45MB/s]
+ 90%|█████████████████████████████████▎   | 79.5M/88.2M [00:20&lt;00:01, 5.04MB/s]
+ 91%|█████████████████████████████████▋   | 80.3M/88.2M [00:20&lt;00:01, 5.57MB/s]
+ 92%|█████████████████████████████████▉   | 80.9M/88.2M [00:20&lt;00:01, 5.38MB/s]
+ 92%|██████████████████████████████████▏  | 81.4M/88.2M [00:20&lt;00:01, 5.07MB/s]
+ 93%|██████████████████████████████████▍  | 81.9M/88.2M [00:21&lt;00:01, 4.26MB/s]
+ 93%|██████████████████████████████████▌  | 82.4M/88.2M [00:21&lt;00:01, 3.87MB/s]
+ 94%|██████████████████████████████████▊  | 82.9M/88.2M [00:21&lt;00:01, 3.46MB/s]
+ 95%|███████████████████████████████████  | 83.4M/88.2M [00:21&lt;00:01, 3.52MB/s]
+ 95%|███████████████████████████████████▏ | 83.9M/88.2M [00:21&lt;00:01, 3.52MB/s]
+ 96%|███████████████████████████████████▍ | 84.5M/88.2M [00:21&lt;00:01, 3.32MB/s]
+ 96%|███████████████████████████████████▌ | 84.8M/88.2M [00:22&lt;00:01, 3.30MB/s]
+ 97%|███████████████████████████████████▊ | 85.3M/88.2M [00:22&lt;00:00, 3.44MB/s]
+ 97%|███████████████████████████████████▉ | 85.8M/88.2M [00:22&lt;00:00, 3.83MB/s]
+ 98%|████████████████████████████████████▏| 86.3M/88.2M [00:22&lt;00:00, 3.89MB/s]
+ 98%|████████████████████████████████████▍| 86.8M/88.2M [00:22&lt;00:00, 4.15MB/s]
+ 99%|████████████████████████████████████▋| 87.6M/88.2M [00:22&lt;00:00, 5.01MB/s]
+100%|████████████████████████████████████▉| 88.1M/88.2M [00:22&lt;00:00, 4.72MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 300GB/s]
-Download complete in 04s (84.1 MB)
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:40: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
-  bids_path = BIDSPath(
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 461GB/s]
+Download complete in 26s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
@@ -562,8 +717,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.9s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -724,8 +879,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-474398a1-1e98-4766-8cbf-8978bdcf2363"  title="Hide section"
-    onclick="toggleVisibility('general-474398a1-1e98-4766-8cbf-8978bdcf2363')">
+<tr class="repr-section-header general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8"  title="Hide section"
+    onclick="toggleVisibility('general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -737,7 +892,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-474398a1-1e98-4766-8cbf-8978bdcf2363 ">
+<tr class="repr-element general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8 ">
     <td class="repr-section-toggle-col"></td>
     <td>Filename(s)</td>
     <td>
@@ -748,19 +903,19 @@ span.collapse-uncollapse-caret {
     </td>
 </tr>
 
-<tr class="repr-element general-474398a1-1e98-4766-8cbf-8978bdcf2363 ">
+<tr class="repr-element general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-474398a1-1e98-4766-8cbf-8978bdcf2363 ">
+<tr class="repr-element general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-474398a1-1e98-4766-8cbf-8978bdcf2363 ">
+<tr class="repr-element general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
@@ -769,7 +924,7 @@ span.collapse-uncollapse-caret {
 
 
 </tr>
-<tr class="repr-element general-474398a1-1e98-4766-8cbf-8978bdcf2363 ">
+<tr class="repr-element general-49a58b64-0d11-4b9a-9c52-8c6d6a2d51d8 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -784,8 +939,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-87cbdb23-a3f8-4bb1-84f6-891c9a398a22"  title="Hide section"
-    onclick="toggleVisibility('acquisition-87cbdb23-a3f8-4bb1-84f6-891c9a398a22')">
+<tr class="repr-section-header acquisition-13848be1-68b6-48f1-81ee-c4f928245427"  title="Hide section"
+    onclick="toggleVisibility('acquisition-13848be1-68b6-48f1-81ee-c4f928245427')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -797,7 +952,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element acquisition-87cbdb23-a3f8-4bb1-84f6-891c9a398a22 ">
+<tr class="repr-element acquisition-13848be1-68b6-48f1-81ee-c4f928245427 ">
     <td class="repr-section-toggle-col"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -810,14 +965,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-87cbdb23-a3f8-4bb1-84f6-891c9a398a22 ">
+<tr class="repr-element acquisition-13848be1-68b6-48f1-81ee-c4f928245427 ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-87cbdb23-a3f8-4bb1-84f6-891c9a398a22 ">
+<tr class="repr-element acquisition-13848be1-68b6-48f1-81ee-c4f928245427 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -831,8 +986,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-a6a0b3a6-7de6-48d0-b34a-ded2dd173fd9"  title="Hide section"
-    onclick="toggleVisibility('channels-a6a0b3a6-7de6-48d0-b34a-ded2dd173fd9')">
+<tr class="repr-section-header channels-a681b42a-3c92-44af-b6f7-4b767e16c0b5"  title="Hide section"
+    onclick="toggleVisibility('channels-a681b42a-3c92-44af-b6f7-4b767e16c0b5')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -845,7 +1000,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-a6a0b3a6-7de6-48d0-b34a-ded2dd173fd9 ">
+<tr class="repr-element channels-a681b42a-3c92-44af-b6f7-4b767e16c0b5 ">
     <td class="repr-section-toggle-col"></td>
     <td>ECoG</td>
     <td>
@@ -858,7 +1013,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-a6a0b3a6-7de6-48d0-b34a-ded2dd173fd9 ">
+<tr class="repr-element channels-a681b42a-3c92-44af-b6f7-4b767e16c0b5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -873,8 +1028,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-b3f02b56-705e-4ca3-ab10-308f954fe3bf"  title="Hide section"
-    onclick="toggleVisibility('filters-b3f02b56-705e-4ca3-ab10-308f954fe3bf')">
+<tr class="repr-section-header filters-de00568b-7096-4c4f-aabd-b35ec1742649"  title="Hide section"
+    onclick="toggleVisibility('filters-de00568b-7096-4c4f-aabd-b35ec1742649')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -886,14 +1041,14 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-b3f02b56-705e-4ca3-ab10-308f954fe3bf ">
+<tr class="repr-element filters-de00568b-7096-4c4f-aabd-b35ec1742649 ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-b3f02b56-705e-4ca3-ab10-308f954fe3bf ">
+<tr class="repr-element filters-de00568b-7096-4c4f-aabd-b35ec1742649 ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1315,25 +1470,22 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  5%|▍         | 15/302 [00:00&lt;00:01, 145.09it/s]
- 10%|▉         | 30/302 [00:00&lt;00:01, 142.81it/s]
- 15%|█▍        | 45/302 [00:00&lt;00:02, 123.89it/s]
- 20%|█▉        | 60/302 [00:00&lt;00:01, 130.90it/s]
- 25%|██▍       | 75/302 [00:00&lt;00:01, 135.52it/s]
- 30%|██▉       | 90/302 [00:00&lt;00:01, 138.64it/s]
- 35%|███▍      | 105/302 [00:00&lt;00:01, 141.19it/s]
- 40%|███▉      | 120/302 [00:00&lt;00:01, 141.95it/s]
- 45%|████▍     | 135/302 [00:00&lt;00:01, 141.68it/s]
- 50%|████▉     | 150/302 [00:01&lt;00:01, 142.74it/s]
- 55%|█████▍    | 165/302 [00:01&lt;00:00, 143.27it/s]
- 60%|██████    | 182/302 [00:01&lt;00:00, 149.21it/s]
- 67%|██████▋   | 202/302 [00:01&lt;00:00, 163.02it/s]
- 74%|███████▍  | 223/302 [00:01&lt;00:00, 173.36it/s]
- 80%|███████▉  | 241/302 [00:01&lt;00:00, 167.07it/s]
- 86%|████████▌ | 260/302 [00:01&lt;00:00, 173.53it/s]
- 92%|█████████▏| 278/302 [00:01&lt;00:00, 165.02it/s]
- 98%|█████████▊| 296/302 [00:01&lt;00:00, 168.00it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 153.06it/s]
+  5%|▍         | 15/302 [00:00&lt;00:01, 148.84it/s]
+ 12%|█▏        | 35/302 [00:00&lt;00:01, 174.78it/s]
+ 18%|█▊        | 54/302 [00:00&lt;00:01, 181.61it/s]
+ 25%|██▍       | 74/302 [00:00&lt;00:01, 186.45it/s]
+ 31%|███       | 94/302 [00:00&lt;00:01, 189.64it/s]
+ 38%|███▊      | 114/302 [00:00&lt;00:00, 191.80it/s]
+ 44%|████▍     | 134/302 [00:00&lt;00:00, 190.23it/s]
+ 51%|█████     | 154/302 [00:00&lt;00:00, 190.58it/s]
+ 58%|█████▊    | 174/302 [00:00&lt;00:00, 192.13it/s]
+ 64%|██████▍   | 194/302 [00:01&lt;00:00, 191.91it/s]
+ 71%|███████   | 214/302 [00:01&lt;00:00, 191.71it/s]
+ 77%|███████▋  | 234/302 [00:01&lt;00:00, 192.30it/s]
+ 84%|████████▍ | 254/302 [00:01&lt;00:00, 194.05it/s]
+ 91%|█████████ | 274/302 [00:01&lt;00:00, 193.37it/s]
+ 97%|█████████▋| 294/302 [00:01&lt;00:00, 195.28it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 190.73it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1379,7 +1531,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f9222ef77f0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f122a63e0b0&gt;
 </pre></div>
 </div>
 </section>
@@ -1442,10 +1594,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f925fb8b8e0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f126a6ae0e0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 55.276 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 10.470 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1529,7 +1681,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-03.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-04.
       <br/>
     
   </p>
