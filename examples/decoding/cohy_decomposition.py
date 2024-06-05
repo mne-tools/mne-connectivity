@@ -121,12 +121,11 @@ indices = (np.arange(N_SEEDS), np.arange(N_TARGETS) + N_SEEDS)
 
 # Connectivity profile of first 30 epochs (filters fit to these epochs)
 con_cacoh_first = spectral_connectivity_epochs(
-    epochs.get_data(item=np.arange(N_EPOCHS // 2)),
+    epochs[: N_EPOCHS // 2],
     method="cacoh",
     indices=([indices[0]], [indices[1]]),
     fmin=5,
     fmax=35,
-    sfreq=epochs.info["sfreq"],
     rank=([3], [3]),
 )
 ax = plt.subplot(111)
@@ -134,12 +133,11 @@ ax.plot(con_cacoh_first.freqs, np.abs(con_cacoh_first.get_data()[0]), label="CaC
 
 # Connectivity profile of first 30 epochs (no filters)
 con_coh_first = spectral_connectivity_epochs(
-    epochs.get_data(item=np.arange(N_EPOCHS // 2)),
+    epochs[: N_EPOCHS // 2],
     method="coh",
     indices=seed_target_indices(indices[0], indices[1]),
     fmin=5,
     fmax=35,
-    sfreq=epochs.info["sfreq"],
 )
 ax.plot(con_coh_first.freqs, np.mean(con_coh_first.get_data(), axis=0), label="Coh")
 ax.axvspan(FMIN, FMAX, color="grey", alpha=0.2, label="Fitted freq. band")
@@ -174,12 +172,10 @@ plt.show()
 
 # Fit filters to first 30 epochs
 cacoh = CaCoh(info=epochs.info, fmin=FMIN, fmax=FMAX, indices=indices, rank=(3, 3))
-cacoh.fit(epochs.get_data(item=np.arange(N_EPOCHS // 2)))
+cacoh.fit(epochs[: N_EPOCHS // 2].get_data())
 
 # Use filters to transform data from last 30 epochs
-epochs_transformed = cacoh.transform(
-    epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS))
-)
+epochs_transformed = cacoh.transform(epochs[N_EPOCHS // 2 :].get_data())
 indices_transformed = cacoh.get_transformed_indices()
 
 ########################################################################################
@@ -203,12 +199,11 @@ indices_transformed = cacoh.get_transformed_indices()
 
 # Connectivity profile of last 30 epochs (filters fit to these epochs)
 con_cacoh_last = spectral_connectivity_epochs(
-    epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS)),
+    epochs[N_EPOCHS // 2 :],
     method="cacoh",
     indices=([indices[0]], [indices[1]]),
     fmin=5,
     fmax=35,
-    sfreq=epochs.info["sfreq"],
     rank=([3], [3]),
 )
 ax = plt.subplot(111)
@@ -220,12 +215,11 @@ ax.plot(
 
 # Connectivity profile of last 30 epochs (no filters)
 con_coh_last = spectral_connectivity_epochs(
-    epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS)),
+    epochs[N_EPOCHS // 2 :],
     method="coh",
     indices=seed_target_indices(indices[0], indices[1]),
     fmin=5,
     fmax=35,
-    sfreq=epochs.info["sfreq"],
 )
 ax.plot(
     con_coh_last.freqs, np.mean(np.abs(con_coh_last.get_data()), axis=0), label="Coh"
@@ -269,12 +263,12 @@ cacoh = CaCoh(info=epochs.info, fmin=FMIN, fmax=FMAX, indices=indices, rank=(3, 
 
 # Time fitting of filters
 start_fit = time.time()
-cacoh.fit(epochs.get_data(item=np.arange(N_EPOCHS // 2)))
+cacoh.fit(epochs[: N_EPOCHS // 2].get_data())
 fit_duration = (time.time() - start_fit) * 1000
 
 # Time transforming data of each epoch iteratively
 start_transform = time.time()
-for epoch in epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS)):
+for epoch in epochs[N_EPOCHS // 2 :]:
     epoch_transformed = cacoh.transform(epoch)
     spectral_connectivity_epochs(
         np.expand_dims(epoch_transformed, axis=0),
@@ -306,7 +300,7 @@ print(
 
 # Time fitting and transforming data of each epoch iteratively
 start_fit_transform = time.time()
-for epoch in epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS)):
+for epoch in epochs[N_EPOCHS // 2 :]:
     spectral_connectivity_epochs(
         np.expand_dims(epoch, axis=0),
         method="cacoh",
@@ -338,7 +332,7 @@ print(
 
 # Time transforming data of each epoch iteratively
 start = time.time()
-for epoch in epochs.get_data(item=np.arange(N_EPOCHS // 2, N_EPOCHS)):
+for epoch in epochs[N_EPOCHS // 2 :]:
     spectral_connectivity_epochs(
         np.expand_dims(epoch, axis=0),
         method="coh",
@@ -441,23 +435,21 @@ plt.show()
 
 start = time.time()
 con_mic_func = spectral_connectivity_epochs(
-    epochs.get_data(),
+    epochs,
     method="mic",
     indices=([seeds], [targets]),
     fmin=5,
     fmax=30,
-    sfreq=epochs.info["sfreq"],
     rank=([3], [3]),
 )
 func_duration = time.time() - start
 
 con_imcoh = spectral_connectivity_epochs(
-    epochs.get_data(),
+    epochs,
     method="imcoh",
     indices=seed_target_indices(seeds, targets),
     fmin=5,
     fmax=30,
-    sfreq=epochs.info["sfreq"],
     rank=([3], [3]),
 )
 
