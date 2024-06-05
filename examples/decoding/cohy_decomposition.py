@@ -324,7 +324,7 @@ print(
 )
 
 ########################################################################################
-# As a side note, it is important to consider that a multivariate approache may be as
+# As a side note, it is important to consider that a multivariate approach may be as
 # fast or even faster than a bivariate approach, depending on the number of connections
 # and degree of rank subspace projection being performed.
 
