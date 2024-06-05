@@ -84,9 +84,9 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         if fmax > info["sfreq"] / 2:
             raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
 
-        _validate_type(indices, tuple, "`indices`", "tuple of array-like")
+        _validate_type(indices, tuple, "`indices`", "tuple of array-likes")
         if len(indices) != 2:
-            raise ValueError("`indices` must be have length 2")
+            raise ValueError("`indices` must have length 2")
         for indices_group in indices:
             _validate_type(
                 indices_group,
@@ -119,7 +119,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         _validate_type(rank, (tuple, None), "`rank`", "tuple of ints or None")
         if rank is not None:
             if len(rank) != 2:
-                raise ValueError("`rank` must be have length 2")
+                raise ValueError("`rank` must have length 2")
             for rank_group in rank:
                 _validate_type(rank_group, int, "`rank`", "tuple of ints or None")
         _rank = self._check_rank(rank, indices)
@@ -155,7 +155,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         max_idx = np.max(indices.compressed())
         if max_idx + 1 > n_chans:
             raise ValueError(
-                "At least one entry in `indices` is greater than the number of "
+                "at least one entry in `indices` is greater than the number of "
                 "channels in `info`"
             )
 
@@ -167,10 +167,14 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             # convert to multivariate format
             rank = ([rank[0]], [rank[1]])
 
+            # make sure ranks are > 0
+            if np.any(np.array(rank) <= 0):
+                raise ValueError("entries of `rank` must be > 0")
+
             # find whether entries of rank exceed number of channels in indices
             if rank[0][0] > len(indices[0]) or rank[1][0] > len(indices[1]):
                 raise ValueError(
-                    "At least one entry in `rank` is greater than the number of "
+                    "at least one entry in `rank` is greater than the number of "
                     "seed/target channels in `indices`"
                 )
 
