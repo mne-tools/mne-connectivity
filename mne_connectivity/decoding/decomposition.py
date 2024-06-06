@@ -41,7 +41,9 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
     @indices.setter
     def indices(self, indices):
         """Set ``indices`` parameter using the input format."""
-        self._indices = (np.array([indices[0]]), np.array([indices[1]]))
+        self._indices = _check_multivariate_indices(
+            ([indices[0]], [indices[1]]), self.info["nchan"]
+        )
 
     @property
     def rank(self):
