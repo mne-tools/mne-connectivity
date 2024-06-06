@@ -7,13 +7,13 @@ from mne_connectivity import (
     seed_target_indices,
     spectral_connectivity_epochs,
 )
-from mne_connectivity.decoding import MIC, CaCoh
+from mne_connectivity.decoding import CoherencyDecomposition
 from mne_connectivity.utils import _check_multivariate_indices
 
 
-@pytest.mark.parametrize("DecompClass", [CaCoh, MIC])
+@pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
-def test_spectral_decomposition(DecompClass, mode):
+def test_spectral_decomposition(method, mode):
     """Test spectral decomposition classes run and give expected results."""
     # SIMULATE DATA
     # Settings
@@ -61,16 +61,21 @@ def test_spectral_decomposition(DecompClass, mode):
     )
     indices = (seeds, targets)
 
-    bivariate_method = "coh" if DecompClass == CaCoh else "imcoh"
-    multivariate_method = "cacoh" if DecompClass == CaCoh else "mic"
+    if method == "cacoh":
+        bivariate_method = "coh"
+        multivariate_method = "cacoh"
+    else:
+        bivariate_method = "imcoh"
+        multivariate_method = "mic"
 
     cwt_freq_res = 0.5
     cwt_freqs = np.arange(fmin_optimise, fmax_optimise + cwt_freq_res, cwt_freq_res)
     cwt_n_cycles = 6
 
     # TEST FITTING AND TRANSFORMING SAME DATA EXTRACTS CONNECTIVITY
-    decomp_class = DecompClass(
+    decomp_class = CoherencyDecomposition(
         info=epochs.info,
+        method=method,
         indices=indices,
         mode=mode,
         fmin=fmin_optimise,
@@ -145,8 +150,9 @@ def test_spectral_decomposition(DecompClass, mode):
     )  # check connectivity for ignored freq. band lower than with optimisation
 
     # Test `fit_transform` equivalent to `fit` and `transform` separately
-    decomp_class_2 = DecompClass(
+    decomp_class_2 = CoherencyDecomposition(
         info=epochs.info,
+        method=method,
         indices=indices,
         mode=mode,
         fmin=fmin_optimise,
@@ -207,9 +213,9 @@ def test_spectral_decomposition(DecompClass, mode):
     assert np.all(decomp_class._rank == ([1], [2]))
 
 
-@pytest.mark.parametrize("DecompClass", [CaCoh, MIC])
+@pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
-def test_spectral_decomposition_parallel(DecompClass, mode):
+def test_spectral_decomposition_parallel(method, mode):
     """Test spectral decomposition classes run with parallelisation."""
     # SIMULATE DATA
     n_seeds = 3
@@ -225,8 +231,9 @@ def test_spectral_decomposition_parallel(DecompClass, mode):
     )
 
     # RUN DECOMPOSITION
-    decomp_class = DecompClass(
+    decomp_class = CoherencyDecomposition(
         info=epochs.info,
+        method=method,
         indices=(np.arange(n_seeds), np.arange(n_targets) + n_seeds),
         mode=mode,
         fmin=fmin,
@@ -238,9 +245,9 @@ def test_spectral_decomposition_parallel(DecompClass, mode):
     decomp_class.fit_transform(X=epochs.get_data())
 
 
-@pytest.mark.parametrize("DecompClass", [CaCoh, MIC])
+@pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
-def test_spectral_decomposition_error_catch(DecompClass, mode):
+def test_spectral_decomposition_error_catch(method, mode):
     """Test error catching for spectral decomposition classes."""
     # SIMULATE DATA
     n_seeds = 3
@@ -257,19 +264,19 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
     # TEST BAD INITIALISATION
     # Test info
     with pytest.raises(TypeError, match="`info` must be an instance of mne.Info"):
-        DecompClass(info="info", indices=indices)
+        CoherencyDecomposition(info="info", method=method, indices=indices)
 
     # Test indices
     with pytest.raises(
         TypeError, match="`indices` must be an instance of tuple of array-likes"
     ):
-        DecompClass(info=epochs.info, indices=list(indices))
+        CoherencyDecomposition(info=epochs.info, method=method, indices=list(indices))
     with pytest.raises(
         TypeError, match="`indices` must be an instance of tuple of array-likes"
     ):
-        DecompClass(info=epochs.info, indices=(0, 1))
+        CoherencyDecomposition(info=epochs.info, method=method, indices=(0, 1))
     with pytest.raises(ValueError, match="`indices` must have length 2"):
-        DecompClass(info=epochs.info, indices=(indices[0],))
+        CoherencyDecomposition(info=epochs.info, method=method, indices=(indices[0],))
     with pytest.raises(
         ValueError,
         match=(
@@ -277,7 +284,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             "target"
         ),
     ):
-        DecompClass(info=epochs.info, indices=([0, 0], [1, 2]))
+        CoherencyDecomposition(
+            info=epochs.info, method=method, indices=([0, 0], [1, 2])
+        )
     with pytest.raises(
         ValueError,
         match=(
@@ -285,11 +294,15 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             "target"
         ),
     ):
-        DecompClass(info=epochs.info, indices=([0, 1], [2, 2]))
+        CoherencyDecomposition(
+            info=epochs.info, method=method, indices=([0, 1], [2, 2])
+        )
     with pytest.raises(
         ValueError, match="a negative channel index is not present in the data"
     ):
-        DecompClass(info=epochs.info, indices=([0], [(n_seeds + n_targets) * -1]))
+        CoherencyDecomposition(
+            info=epochs.info, method=method, indices=([0], [(n_seeds + n_targets) * -1])
+        )
     with pytest.raises(
         ValueError,
         match=(
@@ -297,11 +310,15 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             "`info`"
         ),
     ):
-        DecompClass(info=epochs.info, indices=([0], [n_seeds + n_targets]))
+        CoherencyDecomposition(
+            info=epochs.info, method=method, indices=([0], [n_seeds + n_targets])
+        )
 
     # Test mode
     with pytest.raises(ValueError, match="Invalid value for the 'mode' parameter"):
-        DecompClass(info=epochs.info, indices=indices, mode="notamode")
+        CoherencyDecomposition(
+            info=epochs.info, method=method, indices=indices, mode="notamode"
+        )
 
     # Test fmin & fmax
     if mode in ["multitaper", "fourier"]:
@@ -312,8 +329,13 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
                 "'fourier'"
             ),
         ):
-            DecompClass(
-                info=epochs.info, indices=indices, mode=mode, fmin=None, fmax=fmax
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                fmin=None,
+                fmax=fmax,
             )
         with pytest.raises(
             TypeError,
@@ -322,30 +344,51 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
                 "'fourier'"
             ),
         ):
-            DecompClass(
-                info=epochs.info, indices=indices, mode=mode, fmin=fmin, fmax=None
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax=None,
             )
         with pytest.raises(
             TypeError, match="`fmin` must be an instance of int or float"
         ):
-            DecompClass(
-                info=epochs.info, indices=indices, mode=mode, fmin="15", fmax=fmax
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                fmin="15",
+                fmax=fmax,
             )
         with pytest.raises(
             TypeError, match="`fmax` must be an instance of int or float"
         ):
-            DecompClass(
-                info=epochs.info, indices=indices, mode=mode, fmin=fmin, fmax="20"
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax="20",
             )
         with pytest.raises(ValueError, match="`fmax` must be larger than `fmin`"):
-            DecompClass(
-                info=epochs.info, indices=indices, mode=mode, fmin=fmax, fmax=fmin
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                fmin=fmax,
+                fmax=fmin,
             )
         with pytest.raises(
             ValueError, match="`fmax` cannot be larger than the Nyquist frequency"
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 fmin=fmin,
@@ -357,8 +400,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
         with pytest.raises(
             TypeError, match="`mt_bandwidth` must be an instance of int, float, or None"
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 fmin=fmin,
@@ -368,8 +412,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
         with pytest.raises(
             TypeError, match="`mt_adaptive` must be an instance of bool"
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 fmin=fmin,
@@ -379,8 +424,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
         with pytest.raises(
             TypeError, match="`mt_low_bias` must be an instance of bool"
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 fmin=fmin,
@@ -393,12 +439,19 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
         with pytest.raises(
             TypeError, match="`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"
         ):
-            DecompClass(info=epochs.info, indices=indices, mode=mode, cwt_freqs=None)
+            CoherencyDecomposition(
+                info=epochs.info,
+                method=method,
+                indices=indices,
+                mode=mode,
+                cwt_freqs=None,
+            )
         with pytest.raises(
             TypeError, match="`cwt_freqs` must be an instance of array-like"
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 cwt_freqs="1",
@@ -409,8 +462,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
                 "last entry of `cwt_freqs` cannot be larger than the Nyquist frequency"
             ),
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 cwt_freqs=np.array([epochs.info["sfreq"] / 2 + 1]),
@@ -420,8 +474,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             TypeError,
             match="`cwt_n_cycles` must be an instance of int, float, or array-like",
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 cwt_freqs=cwt_freqs,
@@ -431,8 +486,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             ValueError,
             match="`cwt_n_cycles` array-like must have the same length as `cwt_freqs`",
         ):
-            DecompClass(
+            CoherencyDecomposition(
                 info=epochs.info,
+                method=method,
                 indices=indices,
                 mode=mode,
                 cwt_freqs=cwt_freqs,
@@ -443,8 +499,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
     with pytest.raises(
         TypeError, match="`n_components` must be an instance of int or None"
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -458,8 +515,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -471,8 +529,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -482,8 +541,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             rank=("2", "2"),
         )
     with pytest.raises(ValueError, match="`rank` must have length 2"):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -493,8 +553,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             rank=(2,),
         )
     with pytest.raises(ValueError, match="entries of `rank` must be > 0"):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -510,8 +571,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             "channels in `indices`"
         ),
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -527,8 +589,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             "channels in `indices`"
         ),
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -540,8 +603,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
 
     # Test n_jobs
     with pytest.raises(TypeError, match="`n_jobs` must be an instance of int"):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -555,8 +619,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
     with pytest.raises(
         TypeError, match="`verbose` must be an instance of bool, str, int, or None"
     ):
-        DecompClass(
+        CoherencyDecomposition(
             info=epochs.info,
+            method=method,
             indices=indices,
             mode=mode,
             fmin=fmin,
@@ -566,8 +631,9 @@ def test_spectral_decomposition_error_catch(DecompClass, mode):
             verbose=[True],
         )
 
-    decomp_class = DecompClass(
+    decomp_class = CoherencyDecomposition(
         info=epochs.info,
+        method=method,
         indices=indices,
         mode=mode,
         fmin=fmin,

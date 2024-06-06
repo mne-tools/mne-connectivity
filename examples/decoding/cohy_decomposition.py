@@ -28,7 +28,7 @@ from mne_connectivity import (
     seed_target_indices,
     spectral_connectivity_epochs,
 )
-from mne_connectivity.decoding import MIC, CaCoh
+from mne_connectivity.decoding import CoherencyDecomposition
 
 ########################################################################################
 # Background
@@ -65,12 +65,12 @@ from mne_connectivity.decoding import MIC, CaCoh
 # setups where the rapid analysis of data is paramount, or even in offline analyses
 # with huge datasets.
 #
-# These issues are addressed by the :class:`~mne_connectivity.decoding.CaCoh` and
-# :class:`~mne_connectivity.decoding.MIC` decomposition classes of the decoding module.
-# Here, the filters are fit for a given frequency band collectively (not each frequency
-# bin!) and are stored, allowing them to be applied to the same data they were fit on
-# (e.g. for offline analyses of huge datasets) or to new data (e.g. for online analyses
-# of streamed data).
+# These issues are addressed by the
+# :class:`~mne_connectivity.decoding.CoherencyDecomposition` class of the decoding
+# module. Here, the filters are fit for a given frequency band collectively (not each
+# frequency bin!) and are stored, allowing them to be applied to the same data they were
+# fit on (e.g. for offline analyses of huge datasets) or to new data (e.g. for online
+# analyses of streamed data).
 #
 # In this example, we show how the tools of the decoding module compare to the standard
 # ``spectral_connectivity_...()`` functions in terms of their run time, and their
@@ -152,27 +152,31 @@ plt.show()
 # epochs to fit the filters, and then use these filters to extract the same components
 # from the last 30 epochs.
 #
-# For this, we instantiate the :class:`~mne_connectivity.decoding.CaCoh` class with: the
+# For this, we instantiate the
+# :class:`~mne_connectivity.decoding.CoherencyDecomposition` class with: the
 # information about the data being fit/transformed (using an :class:`~mne.Info` object);
-# the frequency band of the components we want to decompose (here 15-20 Hz); and the
-# channel indices of the seeds and targets.
+# the type of connectivity we want to decompose (here CaCoh); the frequency band of the
+# components we want to decompose (here 15-20 Hz); and the channel indices of the seeds
+# and targets.
 #
-# Next, we call the :meth:`~mne_connectivity.decoding.CaCoh.fit` method, passing in the
-# first 30 epochs of data we want to fit the filters to. Once the filters are fit, we
-# can apply them to the last 30 epochs using the
-# :meth:`~mne_connectivity.decoding.CaCoh.transform` method.
+# Next, we call the :meth:`~mne_connectivity.decoding.CoherencyDecomposition.fit`
+# method, passing in the first 30 epochs of data we want to fit the filters to. Once the
+# filters are fit, we can apply them to the last 30 epochs using the
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.transform` method.
 #
 # The transformed data has shape ``(epochs x components*2 x times)``, where the new
 # 'channels' are organised as the seed components, then target components. For
-# convenience, the :meth:`~mne_connectivity.decoding.CaCoh.get_transformed_indices`
+# convenience, the
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices`
 # method can be used to get the ``indices`` of the transformed data for use in the
 # ``spectral_connectivity_...()`` functions.
 
 # %%
 
 # Fit filters to first 30 epochs
-cacoh = CaCoh(
+cacoh = CoherencyDecomposition(
     info=epochs.info,
+    method="cacoh",
     indices=indices,
     mode="multitaper",
     fmin=FMIN,
@@ -193,7 +197,8 @@ indices_transformed = cacoh.get_transformed_indices()
 #
 # To compute connectivity of the transformed data, it is simply a case of passing to the
 # ``spectral_connectivity_...()`` functions: the transformed data; the indices
-# returned from :meth:`~mne_connectivity.decoding.CaCoh.get_transformed_indices`; and
+# returned from
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices`; and
 # the corresponding bivariate method (``"coh"`` and ``"cohy"`` for CaCoh; ``"imcoh"``
 # for MIC).
 #
@@ -266,8 +271,9 @@ plt.show()
 
 # %%
 
-cacoh = CaCoh(
+cacoh = CoherencyDecomposition(
     info=epochs.info,
+    method="cacoh",
     indices=indices,
     mode="multitaper",
     fmin=FMIN,
@@ -405,9 +411,10 @@ targets = [
 
 ########################################################################################
 # There are two equivalent options for fitting and transforming the same data: 1)
-# passing the data to the :meth:`~mne_connectivity.decoding.MIC.fit` and
-# :meth:`~mne_connectivity.decoding.MIC.transform` methods sequentially; or 2) using the
-# combined :meth:`~mne_connectivity.decoding.MIC.fit_transform` method.
+# passing the data to the :meth:`~mne_connectivity.decoding.CoherencyDecomposition.fit`
+# and :meth:`~mne_connectivity.decoding.CoherencyDecomposition.transform` methods
+# sequentially; or 2) using the combined
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.fit_transform` method.
 #
 # We use the latter approach below, fitting the filters to the 15-20 Hz band and using
 # the ``"imcoh"`` method in the call to the ``spectral_connectivity_...()`` functions.
@@ -415,8 +422,9 @@ targets = [
 
 # %%
 
-mic = MIC(
+mic = CoherencyDecomposition(
     info=epochs.info,
+    method="mic",
     indices=(seeds, targets),
     mode="multitaper",
     fmin=FMIN,

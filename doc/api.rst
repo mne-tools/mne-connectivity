@@ -60,8 +60,7 @@ connectivity, amplifying the signal-to-noise ratio of these interactions.
 .. autosummary::
    :toctree: generated/
 
-   CaCoh
-   MIC
+   CoherencyDecomposition
 
 Reading functions
 =================

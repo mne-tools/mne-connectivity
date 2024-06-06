@@ -1,1 +1,1 @@
-from .decomposition import MIC, CaCoh
+from .decomposition import CoherencyDecomposition

@@ -11,24 +11,70 @@ from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
 
-from ..spectral.epochs_multivariate import (
-    _CaCohEst,
-    _check_rank_input,
-    _EpochMeanMultivariateConEstBase,
-    _MICEst,
-)
+from ..spectral.epochs_multivariate import _CaCohEst, _check_rank_input, _MICEst
 from ..utils import _check_multivariate_indices, fill_doc
 
 
-class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
-    """ABC for multivariate connectivity signal decomposition."""
+@fill_doc
+class CoherencyDecomposition(BaseEstimator, TransformerMixin):
+    """Decompose connectivity sources using multivariate coherency-based methods.
+
+    Parameters
+    ----------
+    %(info_decoding)s
+    %(method_decoding)s
+    %(indices_decoding)s
+    %(mode)s
+    %(fmin_decoding)s
+    %(fmax_decoding)s
+    %(mt_bandwidth)s
+    %(mt_adaptive)s
+    %(mt_low_bias)s
+    %(cwt_freqs)s
+    %(cwt_n_cycles)s
+    %(n_components)s
+    %(rank)s
+    %(n_jobs)s
+    %(verbose)s
+
+    Attributes
+    ----------
+    %(filters_)s
+    %(patterns_)s
+
+    Notes
+    -----
+    The multivariate methods maximise connectivity between a set of seed and target
+    signals in a frequency-resolved manner. The maximisation of connectivity involves
+    fitting spatial filters to the cross-spectral density of the seed and target data,
+    alongisde which spatial patterns of the contributions to connectivity can be
+    computed :footcite:`HaufeEtAl2014`.
+
+    Once fit, the filters can be used to transform data into the underlying connectivity
+    components. Connectivity can be computed on this transformed data using the
+    bivariate coherency-based methods of the
+    `mne_connectivity.spectral_connectivity_epochs` and
+    `mne_connectivity.spectral_connectivity_time` functions. These bivariate methods
+    are:
+
+    * ``"cohy"`` and ``"coh"`` for CaCoh :footcite:`VidaurreEtAl2019`
+    * ``"imcoh"`` for MIC :footcite:`EwaldEtAl2012`
+
+    The approach taken here is to optimise the connectivity in a given frequency band.
+    Frequency bin-wise optimisation is offered in the multivariate coherency-based
+    methods of the `mne_connectivity.spectral_connectivity_epochs` and
+    `mne_connectivity.spectral_connectivity_time` functions.
+
+    References
+    ----------
+    .. footbibliography::
+    """
 
     filters_: Optional[tuple] = None
     patterns_: Optional[tuple] = None
 
     _indices: Optional[tuple] = None
     _rank: Optional[tuple] = None
-    _conn_estimator: Optional[_EpochMeanMultivariateConEstBase] = None
 
     @property
     def indices(self):
@@ -61,6 +107,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         info,
+        method,
         indices,
         mode="multitaper",
         fmin=None,
@@ -78,6 +125,12 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         """Initialise instance."""
         # Validate inputs
         _validate_type(info, Info, "`info`", "mne.Info")
+
+        _check_option("method", method, ("cacoh", "mic"))
+        if method == "cacoh":
+            _conn_estimator = _CaCohEst
+        else:
+            _conn_estimator = _MICEst
 
         _validate_type(indices, tuple, "`indices`", "tuple of array-likes")
         if len(indices) != 2:
@@ -157,6 +210,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
         # Store inputs
         self.info = info
+        self._conn_estimator = _conn_estimator
         self._indices = _indices  # uses getter/setter for public parameter
         self.mode = mode
         self.fmin = fmin
@@ -218,7 +272,7 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
         Returns
         -------
-        self : instance of CaCoh | MIC
+        self : instance of CoherencyDecomposition
             The modified class instance.
         """
         # validate input data
@@ -405,105 +459,3 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             np.arange(self.n_components),
             np.arange(self.n_components) + self.n_components,
         )
-
-
-@fill_doc
-class CaCoh(_AbstractDecompositionBase):
-    """Decompose connectivity sources using canonical coherency (CaCoh).
-
-    CaCoh is a multivariate approach to maximise coherency/coherence between a set of
-    seed and target signals in a frequency-resolved manner :footcite:`VidaurreEtAl2019`.
-    The maximisation of connectivity involves fitting spatial filters to the
-    cross-spectral density of the seed and target data, alongisde which spatial patterns
-    of the contributions to connectivity can be computed :footcite:`HaufeEtAl2014`.
-
-    Once fit, the filters can be used to transform data into the underlying connectivity
-    components. Connectivity can be computed on this transformed data using the
-    ``"coh"`` and ``"cohy"`` methods of the
-    `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
-
-    The approach taken here is to optimise the connectivity in a given frequency band.
-    Frequency bin-wise optimisation is offered in the ``"cacoh"`` method of the
-    `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
-
-    Parameters
-    ----------
-    %(info_decoding)s
-    %(indices_decoding)s
-    %(mode)s
-    %(fmin_decoding)s
-    %(fmax_decoding)s
-    %(mt_bandwidth)s
-    %(mt_adaptive)s
-    %(mt_low_bias)s
-    %(cwt_freqs)s
-    %(cwt_n_cycles)s
-    %(n_components)s
-    %(rank)s
-    %(n_jobs)s
-    %(verbose)s
-
-    Attributes
-    ----------
-    %(filters_)s
-    %(patterns_)s
-
-    References
-    ----------
-    .. footbibliography::
-    """
-
-    _conn_estimator = _CaCohEst
-
-
-@fill_doc
-class MIC(_AbstractDecompositionBase):
-    """Decompose connectivity sources using maximised imaginary coherency (MIC).
-
-    MIC is a multivariate approach to maximise the imaginary part of coherency between a
-    set of seed and target signals in a frequency-resolved manner
-    :footcite:`EwaldEtAl2012`. The maximisation of connectivity involves fitting spatial
-    filters to the cross-spectral density of the seed and target data, alongisde which
-    spatial patterns of the contributions to connectivity can be computed
-    :footcite:`HaufeEtAl2014`.
-
-    Once fit, the filters can be used to transform data into the underlying connectivity
-    components. Connectivity can be computed on this transformed data using the
-    ``"imcoh"`` method of the `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
-
-    The approach taken here is to optimise the connectivity in a given frequency band.
-    Frequency bin-wise optimisation is offered in the ``"mic"`` method of the
-    `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
-
-    Parameters
-    ----------
-    %(info_decoding)s
-    %(indices_decoding)s
-    %(mode)s
-    %(fmin_decoding)s
-    %(fmax_decoding)s
-    %(mt_bandwidth)s
-    %(mt_adaptive)s
-    %(mt_low_bias)s
-    %(cwt_freqs)s
-    %(cwt_n_cycles)s
-    %(n_components)s
-    %(rank)s
-    %(n_jobs)s
-    %(verbose)s
-
-    Attributes
-    ----------
-    %(filters_)s
-    %(patterns_)s
-
-    References
-    ----------
-    .. footbibliography::
-    """
-
-    _conn_estimator = _MICEst

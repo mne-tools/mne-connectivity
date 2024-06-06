@@ -191,6 +191,14 @@ info : mne.Info
     subsequent input data.
 """
 
+docdict["method_decoding"] = """
+method : str
+    The multivariate method to use for the decomposition. Can be:
+
+    * ``"cacoh"`` - Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
+    * ``"mic"`` - Maximised Imaginary part of Coherency (MIC) :footcite:`EwaldEtAl2012`
+"""
+
 docdict["fmin_decoding"] = """
 fmin : int | float | None (default None)
     The lowest frequency of interest in Hz. Must not be ``None`` and only used if
