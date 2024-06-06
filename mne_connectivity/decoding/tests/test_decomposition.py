@@ -22,6 +22,8 @@ def test_spectral_decomposition(DecompClass, mode):
     n_signals = n_seeds + n_targets
     n_epochs = 60
     trans_bandwidth = 1
+    fstart = 5  # start computing connectivity
+    fend = 30  # stop computing connectivity
 
     # Get data with connectivity to optimise (~90° angle good for MIC & CaCoh)
     fmin_optimise = 11
@@ -62,18 +64,18 @@ def test_spectral_decomposition(DecompClass, mode):
     bivariate_method = "coh" if DecompClass == CaCoh else "imcoh"
     multivariate_method = "cacoh" if DecompClass == CaCoh else "mic"
 
-    cwt_freq_resolution = 0.5
-    cwt_freqs = np.arange(5, 30, cwt_freq_resolution)
+    cwt_freq_res = 0.5
+    cwt_freqs = np.arange(fmin_optimise, fmax_optimise + cwt_freq_res, cwt_freq_res)
     cwt_n_cycles = 6
 
     # TEST FITTING AND TRANSFORMING SAME DATA EXTRACTS CONNECTIVITY
     decomp_class = DecompClass(
         info=epochs.info,
-        fmin=fmin_optimise,
-        fmax=fmax_optimise,
         indices=indices,
         mode=mode,
-        cwt_freq_resolution=cwt_freq_resolution,
+        fmin=fmin_optimise,
+        fmax=fmax_optimise,
+        cwt_freqs=cwt_freqs,
         cwt_n_cycles=cwt_n_cycles,
     )
     epochs_transformed = decomp_class.fit_transform(
@@ -85,7 +87,9 @@ def test_spectral_decomposition(DecompClass, mode):
         indices=decomp_class.get_transformed_indices(),
         sfreq=epochs.info["sfreq"],
         mode=mode,
-        cwt_freqs=cwt_freqs,
+        fmin=fstart,
+        fmax=fend,
+        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
         cwt_n_cycles=cwt_n_cycles,
     )
     con_mv_func = spectral_connectivity_epochs(
@@ -93,7 +97,9 @@ def test_spectral_decomposition(DecompClass, mode):
         method=multivariate_method,
         indices=([seeds], [targets]),
         mode=mode,
-        cwt_freqs=cwt_freqs,
+        fmin=fstart,
+        fmax=fend,
+        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
         cwt_n_cycles=cwt_n_cycles,
     )
     con_bv_func = spectral_connectivity_epochs(
@@ -101,7 +107,9 @@ def test_spectral_decomposition(DecompClass, mode):
         method=bivariate_method,
         indices=seed_target_indices(seeds, targets),
         mode=mode,
-        cwt_freqs=cwt_freqs,
+        fmin=fstart,
+        fmax=fend,
+        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
         cwt_n_cycles=cwt_n_cycles,
     )
 
@@ -137,21 +145,22 @@ def test_spectral_decomposition(DecompClass, mode):
     )  # check connectivity for ignored freq. band lower than with optimisation
 
     # Test `fit_transform` equivalent to `fit` and `transform` separately
-    if mode == "multitaper":  # only need to test once
-        decomp_class_2 = DecompClass(
-            info=epochs.info,
-            fmin=fmin_optimise,
-            fmax=fmax_optimise,
-            indices=indices,
-            mode=mode,
-        )
-        decomp_class_2.fit(X=epochs[: n_epochs // 2].get_data())
-        epochs_transformed_2 = decomp_class_2.transform(
-            X=epochs[: n_epochs // 2].get_data()
-        )
-        assert_allclose(epochs_transformed, epochs_transformed_2)
-        assert_allclose(decomp_class.filters_, decomp_class_2.filters_)
-        assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_)
+    decomp_class_2 = DecompClass(
+        info=epochs.info,
+        indices=indices,
+        mode=mode,
+        fmin=fmin_optimise,
+        fmax=fmax_optimise,
+        cwt_freqs=cwt_freqs,
+        cwt_n_cycles=cwt_n_cycles,
+    )
+    decomp_class_2.fit(X=epochs[: n_epochs // 2].get_data())
+    epochs_transformed_2 = decomp_class_2.transform(
+        X=epochs[: n_epochs // 2].get_data()
+    )
+    assert_allclose(epochs_transformed, epochs_transformed_2)
+    assert_allclose(decomp_class.filters_, decomp_class_2.filters_)
+    assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_)
 
     # TEST FITTING ON ONE PIECE OF DATA AND TRANSFORMING ANOTHER
     con_mv_class_unseen_data = spectral_connectivity_epochs(
@@ -160,7 +169,9 @@ def test_spectral_decomposition(DecompClass, mode):
         indices=decomp_class.get_transformed_indices(),
         sfreq=epochs.info["sfreq"],
         mode=mode,
-        cwt_freqs=cwt_freqs,
+        fmin=fstart,
+        fmax=fend,
+        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
         cwt_n_cycles=cwt_n_cycles,
     )
     assert_allclose(
@@ -176,25 +187,24 @@ def test_spectral_decomposition(DecompClass, mode):
 
     # TEST GETTERS & SETTERS
     # Test indices internal storage and returned format
-    if mode == "multitaper":  # only need to test once
-        assert np.all(np.array(decomp_class.indices) == np.array((seeds, targets)))
-        assert np.all(
-            decomp_class._indices
-            == _check_multivariate_indices(([seeds], [targets]), n_signals)
-        )
-        decomp_class.set_params(indices=(targets, seeds))
-        assert np.all(np.array(decomp_class.indices) == np.array((targets, seeds)))
-        assert np.all(
-            decomp_class._indices
-            == _check_multivariate_indices(([targets], [seeds]), n_signals)
-        )
+    assert np.all(np.array(decomp_class.indices) == np.array((seeds, targets)))
+    assert np.all(
+        decomp_class._indices
+        == _check_multivariate_indices(([seeds], [targets]), n_signals)
+    )
+    decomp_class.set_params(indices=(targets, seeds))
+    assert np.all(np.array(decomp_class.indices) == np.array((targets, seeds)))
+    assert np.all(
+        decomp_class._indices
+        == _check_multivariate_indices(([targets], [seeds]), n_signals)
+    )
 
-        # Test rank internal storage and returned format
-        assert np.all(decomp_class.rank == (n_signals, n_signals))
-        assert np.all(decomp_class._rank == ([n_signals], [n_signals]))
-        decomp_class.set_params(rank=(1, 2))
-        assert np.all(decomp_class.rank == (1, 2))
-        assert np.all(decomp_class._rank == ([1], [2]))
+    # Test rank internal storage and returned format
+    assert np.all(decomp_class.rank == (n_signals, n_signals))
+    assert np.all(decomp_class._rank == ([n_signals], [n_signals]))
+    decomp_class.set_params(rank=(1, 2))
+    assert np.all(decomp_class.rank == (1, 2))
+    assert np.all(decomp_class._rank == ([1], [2]))
 
 
 @pytest.mark.parametrize("DecompClass", [CaCoh, MIC])
@@ -217,11 +227,11 @@ def test_spectral_decomposition_parallel(DecompClass, mode):
     # RUN DECOMPOSITION
     decomp_class = DecompClass(
         info=epochs.info,
-        fmin=fmin,
-        fmax=fmax,
         indices=(np.arange(n_seeds), np.arange(n_targets) + n_seeds),
         mode=mode,
-        cwt_freq_resolution=1,
+        fmin=fmin,
+        fmax=fmax,
+        cwt_freqs=np.arange(fmin, fmax + 0.5, 0.5),
         cwt_n_cycles=6,
         n_jobs=2,  # use parallelisation
     )
@@ -229,7 +239,8 @@ def test_spectral_decomposition_parallel(DecompClass, mode):
 
 
 @pytest.mark.parametrize("DecompClass", [CaCoh, MIC])
-def test_spectral_decomposition_error_catch(DecompClass):
+@pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
+def test_spectral_decomposition_error_catch(DecompClass, mode):
     """Test error catching for spectral decomposition classes."""
     # SIMULATE DATA
     n_seeds = 3
@@ -240,40 +251,25 @@ def test_spectral_decomposition_error_catch(DecompClass):
         n_seeds=n_seeds, n_targets=n_targets, freq_band=(fmin, fmax), rng_seed=44
     )
     indices = (np.arange(n_seeds), np.arange(n_targets) + n_seeds)
+    cwt_freqs = np.arange(fmin, fmax + 0.5, 0.5)
+    cwt_n_cycles = 6
 
     # TEST BAD INITIALISATION
     # Test info
     with pytest.raises(TypeError, match="`info` must be an instance of mne.Info"):
-        DecompClass(info="info", fmin=fmin, fmax=fmax, indices=indices)
-
-    # Test fmin & fmax
-    with pytest.raises(TypeError, match="`fmin` must be an instance of int or float"):
-        DecompClass(info=epochs.info, fmin="15", fmax=fmax, indices=indices)
-    with pytest.raises(TypeError, match="`fmax` must be an instance of int or float"):
-        DecompClass(info=epochs.info, fmin=fmin, fmax="20", indices=indices)
-    with pytest.raises(ValueError, match="`fmax` must be larger than `fmin`"):
-        DecompClass(info=epochs.info, fmin=fmax, fmax=fmin, indices=indices)
-    with pytest.raises(
-        ValueError, match="`fmax` cannot be larger than the Nyquist frequency"
-    ):
-        DecompClass(
-            info=epochs.info,
-            fmin=fmin,
-            fmax=epochs.info["sfreq"] / 2 + 1,
-            indices=indices,
-        )
+        DecompClass(info="info", indices=indices)
 
     # Test indices
     with pytest.raises(
         TypeError, match="`indices` must be an instance of tuple of array-likes"
     ):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=list(indices))
+        DecompClass(info=epochs.info, indices=list(indices))
     with pytest.raises(
         TypeError, match="`indices` must be an instance of tuple of array-likes"
     ):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=(0, 1))
+        DecompClass(info=epochs.info, indices=(0, 1))
     with pytest.raises(ValueError, match="`indices` must have length 2"):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=(indices[0],))
+        DecompClass(info=epochs.info, indices=(indices[0],))
     with pytest.raises(
         ValueError,
         match=(
@@ -281,7 +277,7 @@ def test_spectral_decomposition_error_catch(DecompClass):
             "target"
         ),
     ):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=([0, 0], [1, 2]))
+        DecompClass(info=epochs.info, indices=([0, 0], [1, 2]))
     with pytest.raises(
         ValueError,
         match=(
@@ -289,16 +285,11 @@ def test_spectral_decomposition_error_catch(DecompClass):
             "target"
         ),
     ):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=([0, 1], [2, 2]))
+        DecompClass(info=epochs.info, indices=([0, 1], [2, 2]))
     with pytest.raises(
         ValueError, match="a negative channel index is not present in the data"
     ):
-        DecompClass(
-            info=epochs.info,
-            fmin=fmin,
-            fmax=fmax,
-            indices=([0], [(n_seeds + n_targets) * -1]),
-        )
+        DecompClass(info=epochs.info, indices=([0], [(n_seeds + n_targets) * -1]))
     with pytest.raises(
         ValueError,
         match=(
@@ -306,81 +297,211 @@ def test_spectral_decomposition_error_catch(DecompClass):
             "`info`"
         ),
     ):
-        DecompClass(
-            info=epochs.info,
-            fmin=fmin,
-            fmax=fmax,
-            indices=([0], [n_seeds + n_targets]),
-        )
+        DecompClass(info=epochs.info, indices=([0], [n_seeds + n_targets]))
 
     # Test mode
     with pytest.raises(ValueError, match="Invalid value for the 'mode' parameter"):
-        DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, mode="notamode"
-        )
+        DecompClass(info=epochs.info, indices=indices, mode="notamode")
+
+    # Test fmin & fmax
+    if mode in ["multitaper", "fourier"]:
+        with pytest.raises(
+            TypeError,
+            match=(
+                "`fmin` and `fmax` must not be None if `mode` is 'multitaper' or "
+                "'fourier'"
+            ),
+        ):
+            DecompClass(
+                info=epochs.info, indices=indices, mode=mode, fmin=None, fmax=fmax
+            )
+        with pytest.raises(
+            TypeError,
+            match=(
+                "`fmin` and `fmax` must not be None if `mode` is 'multitaper' or "
+                "'fourier'"
+            ),
+        ):
+            DecompClass(
+                info=epochs.info, indices=indices, mode=mode, fmin=fmin, fmax=None
+            )
+        with pytest.raises(
+            TypeError, match="`fmin` must be an instance of int or float"
+        ):
+            DecompClass(
+                info=epochs.info, indices=indices, mode=mode, fmin="15", fmax=fmax
+            )
+        with pytest.raises(
+            TypeError, match="`fmax` must be an instance of int or float"
+        ):
+            DecompClass(
+                info=epochs.info, indices=indices, mode=mode, fmin=fmin, fmax="20"
+            )
+        with pytest.raises(ValueError, match="`fmax` must be larger than `fmin`"):
+            DecompClass(
+                info=epochs.info, indices=indices, mode=mode, fmin=fmax, fmax=fmin
+            )
+        with pytest.raises(
+            ValueError, match="`fmax` cannot be larger than the Nyquist frequency"
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax=epochs.info["sfreq"] / 2 + 1,
+            )
 
     # Test multitaper settings
-    with pytest.raises(
-        TypeError, match="`mt_bandwidth` must be an instance of int, float, or None"
-    ):
-        DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, mt_bandwidth="5"
-        )
-    with pytest.raises(TypeError, match="`mt_adaptive` must be an instance of bool"):
-        DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, mt_adaptive=1
-        )
-    with pytest.raises(TypeError, match="`mt_low_bias` must be an instance of bool"):
-        DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, mt_low_bias=1
-        )
+    if mode == "multitaper":
+        with pytest.raises(
+            TypeError, match="`mt_bandwidth` must be an instance of int, float, or None"
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax=fmax,
+                mt_bandwidth="5",
+            )
+        with pytest.raises(
+            TypeError, match="`mt_adaptive` must be an instance of bool"
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax=fmax,
+                mt_adaptive=1,
+            )
+        with pytest.raises(
+            TypeError, match="`mt_low_bias` must be an instance of bool"
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                fmin=fmin,
+                fmax=fmax,
+                mt_low_bias=1,
+            )
 
     # Test wavelet settings
-    with pytest.raises(
-        TypeError, match="`cwt_freq_resolution` must be an instance of int or float"
-    ):
-        DecompClass(
-            info=epochs.info,
-            fmin=fmin,
-            fmax=fmax,
-            indices=indices,
-            cwt_freq_resolution="1",
-        )
-    with pytest.raises(
-        TypeError,
-        match=(
-            "`cwt_n_cycles` must be an instance of int, float, or array-like of ints "
-            "or floats"
-        ),
-    ):
-        DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, cwt_n_cycles="5"
-        )
+    if mode == "cwt_morlet":
+        with pytest.raises(
+            TypeError, match="`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"
+        ):
+            DecompClass(info=epochs.info, indices=indices, mode=mode, cwt_freqs=None)
+        with pytest.raises(
+            TypeError, match="`cwt_freqs` must be an instance of array-like"
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                cwt_freqs="1",
+            )
+        with pytest.raises(
+            ValueError,
+            match=(
+                "last entry of `cwt_freqs` cannot be larger than the Nyquist frequency"
+            ),
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                cwt_freqs=np.array([epochs.info["sfreq"] / 2 + 1]),
+                cwt_n_cycles=cwt_n_cycles,
+            )
+        with pytest.raises(
+            TypeError,
+            match="`cwt_n_cycles` must be an instance of int, float, or array-like",
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                cwt_freqs=cwt_freqs,
+                cwt_n_cycles="5",
+            )
+        with pytest.raises(
+            ValueError,
+            match="`cwt_n_cycles` array-like must have the same length as `cwt_freqs`",
+        ):
+            DecompClass(
+                info=epochs.info,
+                indices=indices,
+                mode=mode,
+                cwt_freqs=cwt_freqs,
+                cwt_n_cycles=np.full(cwt_freqs.shape[0] - 1, 5),
+            )
 
     # Test n_components
     with pytest.raises(
         TypeError, match="`n_components` must be an instance of int or None"
     ):
         DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, n_components="2"
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            n_components="2",
         )
 
     # Test rank
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, rank="2")
+        DecompClass(
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            rank="2",
+        )
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
         DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, rank=("2", "2")
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            rank=("2", "2"),
         )
     with pytest.raises(ValueError, match="`rank` must have length 2"):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, rank=(2,))
+        DecompClass(
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            rank=(2,),
+        )
     with pytest.raises(ValueError, match="entries of `rank` must be > 0"):
         DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, rank=(0, 1)
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            rank=(0, 1),
         )
     with pytest.raises(
         ValueError,
@@ -391,9 +512,12 @@ def test_spectral_decomposition_error_catch(DecompClass):
     ):
         DecompClass(
             info=epochs.info,
+            indices=indices,
+            mode=mode,
             fmin=fmin,
             fmax=fmax,
-            indices=indices,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
             rank=(n_seeds + 1, n_targets),
         )
     with pytest.raises(
@@ -405,25 +529,52 @@ def test_spectral_decomposition_error_catch(DecompClass):
     ):
         DecompClass(
             info=epochs.info,
+            indices=indices,
+            mode=mode,
             fmin=fmin,
             fmax=fmax,
-            indices=indices,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
             rank=(n_seeds, n_targets + 1),
         )
 
     # Test n_jobs
     with pytest.raises(TypeError, match="`n_jobs` must be an instance of int"):
-        DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, n_jobs="1")
+        DecompClass(
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            n_jobs="1",
+        )
 
     # Test verbose
     with pytest.raises(
         TypeError, match="`verbose` must be an instance of bool, str, int, or None"
     ):
         DecompClass(
-            info=epochs.info, fmin=fmin, fmax=fmax, indices=indices, verbose=[True]
+            info=epochs.info,
+            indices=indices,
+            mode=mode,
+            fmin=fmin,
+            fmax=fmax,
+            cwt_freqs=cwt_freqs,
+            cwt_n_cycles=cwt_n_cycles,
+            verbose=[True],
         )
 
-    decomp_class = DecompClass(info=epochs.info, fmin=fmin, fmax=fmax, indices=indices)
+    decomp_class = DecompClass(
+        info=epochs.info,
+        indices=indices,
+        mode=mode,
+        fmin=fmin,
+        fmax=fmax,
+        cwt_freqs=cwt_freqs,
+        cwt_n_cycles=cwt_n_cycles,
+    )
 
     # TEST BAD FITTING
     # Test input data

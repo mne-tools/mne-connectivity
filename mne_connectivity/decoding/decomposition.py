@@ -61,14 +61,14 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         info,
-        fmin,
-        fmax,
         indices,
         mode="multitaper",
+        fmin=None,
+        fmax=None,
         mt_bandwidth=None,
         mt_adaptive=False,
         mt_low_bias=True,
-        cwt_freq_resolution=1,
+        cwt_freqs=None,
         cwt_n_cycles=7,
         n_components=None,
         rank=None,
@@ -78,13 +78,6 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         """Initialise instance."""
         # Validate inputs
         _validate_type(info, Info, "`info`", "mne.Info")
-
-        _validate_type(fmin, (int, float), "`fmin`", "int or float")
-        _validate_type(fmax, (int, float), "`fmax`", "int or float")
-        if fmin > fmax:
-            raise ValueError("`fmax` must be larger than `fmin`")
-        if fmax > info["sfreq"] / 2:
-            raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
 
         _validate_type(indices, tuple, "`indices`", "tuple of array-likes")
         if len(indices) != 2:
@@ -99,22 +92,52 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
         _indices = self._check_indices(indices, info["nchan"])
 
         _check_option("mode", mode, ("multitaper", "fourier", "cwt_morlet"))
-
-        _validate_type(
-            mt_bandwidth, (int, float, None), "`mt_bandwidth`", "int, float, or None"
-        )
-        _validate_type(mt_adaptive, bool, "`mt_adaptive`", "bool")
-        _validate_type(mt_low_bias, bool, "`mt_low_bias`", "bool")
-
-        _validate_type(
-            cwt_freq_resolution, (int, float), "`cwt_freq_resolution`", "int or float"
-        )
-        _validate_type(
-            cwt_n_cycles,
-            (int, float, tuple, list, np.ndarray),
-            "`cwt_n_cycles`",
-            "int, float, or array-like of ints or floats",
-        )
+        if mode in ["multitaper", "fourier"]:
+            if fmin is None or fmax is None:
+                raise TypeError(
+                    "`fmin` and `fmax` must not be None if `mode` is 'multitaper' or "
+                    "'fourier'"
+                )
+            _validate_type(fmin, (int, float), "`fmin`", "int or float")
+            _validate_type(fmax, (int, float), "`fmax`", "int or float")
+            if fmin > fmax:
+                raise ValueError("`fmax` must be larger than `fmin`")
+            if fmax > info["sfreq"] / 2:
+                raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
+            if mode == "multitaper":
+                _validate_type(
+                    mt_bandwidth,
+                    (int, float, None),
+                    "`mt_bandwidth`",
+                    "int, float, or None",
+                )
+                _validate_type(mt_adaptive, bool, "`mt_adaptive`", "bool")
+                _validate_type(mt_low_bias, bool, "`mt_low_bias`", "bool")
+        else:
+            if cwt_freqs is None:
+                raise TypeError(
+                    "`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"
+                )
+            _validate_type(
+                cwt_freqs, (tuple, list, np.ndarray), "`cwt_freqs`", "array-like"
+            )
+            if cwt_freqs[-1] > info["sfreq"] / 2:
+                raise ValueError(
+                    "last entry of `cwt_freqs` cannot be larger than the Nyquist "
+                    "frequency"
+                )
+            _validate_type(
+                cwt_n_cycles,
+                (int, float, tuple, list, np.ndarray),
+                "`cwt_n_cycles`",
+                "int, float, or array-like",
+            )
+            if isinstance(cwt_n_cycles, (tuple, list, np.ndarray)) and len(
+                cwt_n_cycles
+            ) != len(cwt_freqs):
+                raise ValueError(
+                    "`cwt_n_cycles` array-like must have the same length as `cwt_freqs`"
+                )
 
         _validate_type(n_components, (int, None), "`n_components`", "int or None")
 
@@ -134,14 +157,14 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
 
         # Store inputs
         self.info = info
-        self.fmin = fmin
-        self.fmax = fmax
         self._indices = _indices  # uses getter/setter for public parameter
         self.mode = mode
+        self.fmin = fmin
+        self.fmax = fmax
         self.mt_bandwidth = mt_bandwidth
         self.mt_adaptive = mt_adaptive
         self.mt_low_bias = mt_low_bias
-        self.cwt_freq_resolution = cwt_freq_resolution
+        self.cwt_freqs = cwt_freqs
         self.cwt_n_cycles = cwt_n_cycles
         self.n_components = 1  # XXX: fixed until n_comps > 1 supported
         self._rank = _rank  # uses getter/setter for public parameter
@@ -275,18 +298,17 @@ class _AbstractDecompositionBase(BaseEstimator, TransformerMixin):
             csd = csd_array_fourier(**csd_kwargs)
         else:
             csd_kwargs.update(
-                {
-                    "frequencies": np.arange(
-                        self.fmin,
-                        self.fmax + self.cwt_freq_resolution,
-                        self.cwt_freq_resolution,
-                    ),
-                    "n_cycles": self.cwt_n_cycles,
-                }
+                {"frequencies": self.cwt_freqs, "n_cycles": self.cwt_n_cycles}
             )
             csd = csd_array_morlet(**csd_kwargs)
 
-        csd = csd.sum(self.fmin, self.fmax).get_data(index=0)
+        if self.mode in ["multitaper", "fourier"]:
+            fmin = self.fmin
+            fmax = self.fmax
+        else:
+            fmin = self.cwt_freqs[0]
+            fmax = self.cwt_freqs[-1]
+        csd = csd.sum(fmin, fmax).get_data(index=0)
         csd = np.reshape(csd, csd.shape[0] ** 2)
 
         return np.expand_dims(csd, 1)
@@ -409,14 +431,14 @@ class CaCoh(_AbstractDecompositionBase):
     Parameters
     ----------
     %(info_decoding)s
-    %(fmin_decoding)s
-    %(fmax_decoding)s
     %(indices_decoding)s
     %(mode)s
+    %(fmin_decoding)s
+    %(fmax_decoding)s
     %(mt_bandwidth)s
     %(mt_adaptive)s
     %(mt_low_bias)s
-    %(cwt_freq_resolution)s
+    %(cwt_freqs)s
     %(cwt_n_cycles)s
     %(n_components)s
     %(rank)s
@@ -460,14 +482,14 @@ class MIC(_AbstractDecompositionBase):
     Parameters
     ----------
     %(info_decoding)s
-    %(fmin_decoding)s
-    %(fmax_decoding)s
     %(indices_decoding)s
     %(mode)s
+    %(fmin_decoding)s
+    %(fmax_decoding)s
     %(mt_bandwidth)s
     %(mt_adaptive)s
     %(mt_low_bias)s
-    %(cwt_freq_resolution)s
+    %(cwt_freqs)s
     %(cwt_n_cycles)s
     %(n_components)s
     %(rank)s

@@ -171,7 +171,14 @@ plt.show()
 # %%
 
 # Fit filters to first 30 epochs
-cacoh = CaCoh(info=epochs.info, fmin=FMIN, fmax=FMAX, indices=indices, rank=(3, 3))
+cacoh = CaCoh(
+    info=epochs.info,
+    indices=indices,
+    mode="multitaper",
+    fmin=FMIN,
+    fmax=FMAX,
+    rank=(3, 3),
+)
 cacoh.fit(epochs[: N_EPOCHS // 2].get_data())
 
 # Use filters to transform data from last 30 epochs
@@ -259,7 +266,14 @@ plt.show()
 
 # %%
 
-cacoh = CaCoh(info=epochs.info, fmin=FMIN, fmax=FMAX, indices=indices, rank=(3, 3))
+cacoh = CaCoh(
+    info=epochs.info,
+    indices=indices,
+    mode="multitaper",
+    fmin=FMIN,
+    fmax=FMAX,
+    rank=(3, 3),
+)
 
 # Time fitting of filters
 start_fit = time.time()
@@ -401,7 +415,14 @@ targets = [
 
 # %%
 
-mic = MIC(info=epochs.info, fmin=FMIN, fmax=FMAX, indices=(seeds, targets), rank=(3, 3))
+mic = MIC(
+    info=epochs.info,
+    indices=(seeds, targets),
+    mode="multitaper",
+    fmin=FMIN,
+    fmax=FMAX,
+    rank=(3, 3),
+)
 
 start = time.time()
 epochs_transformed = mic.fit_transform(epochs.get_data())

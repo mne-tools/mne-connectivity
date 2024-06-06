@@ -82,10 +82,10 @@ mt_low_bias : bool (default True)
     ``mode="multitaper"``.
 """
 
-docdict["cwt_freq_resolution"] = """
-cwt_freq_resolution : int | float (default 1)
-    The frequency resolution of the cross-spectral density in Hz. Only used if
-    ``mode=cwt_morlet``.
+docdict["cwt_freqs"] = """
+cwt_freqs : array of int or float | None (default None)
+    The frequencies of interest in Hz. Must not be ``None`` and only used if
+    ``mode="cwt_morlet"``.
 """
 
 docdict["cwt_n_cycles"] = """
@@ -192,13 +192,15 @@ info : mne.Info
 """
 
 docdict["fmin_decoding"] = """
-fmin : int | float
-    The lowest frequency of interest in Hz.
+fmin : int | float | None (default None)
+    The lowest frequency of interest in Hz. Must not be ``None`` and only used if
+    ``mode in ["multitaper", "fourier"]``.
 """
 
 docdict["fmax_decoding"] = """
-fmax : int | float
-    The highest frequency of interest in Hz.
+fmax : int | float | None (default None)
+    The highest frequency of interest in Hz. Must not be ``None`` and only used if
+    ``mode in ["multitaper", "fourier"]``.
 """
 
 docdict["indices_decoding"] = """
