@@ -295,6 +295,11 @@ print(
 # In contrast, here we follow the same sequential window approach, but fit filters to
 # each window separately rather than using a pre-computed set. Naturally, the process of
 # fitting and transforming the data for each window is considerably slower.
+#
+# Furthermore, given the noisy nature of single windows of data, there is a risk of
+# overfitting the filters to this noise as opposed to the genuine interaction(s) of
+# interest. This risk is mitigated by performing the initial filter fitting on a larger
+# set of data.
 
 # %%
 
@@ -416,20 +421,20 @@ ax.plot(
     con_mic_class.freqs,
     np.abs(con_mic_class.get_data()[0]),
     color=plt.rcParams["axes.prop_cycle"].by_key()["color"][2],
-    label="Decomposition class",
+    label="MIC (decomposition\nclass)",
 )
 ax.axvspan(FMIN, FMAX, color="grey", alpha=0.2, label="Fitted freq. band")
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Connectivity (A.U.)")
-ax.set_title("MIC")
 plt.legend()
 plt.show()
 
 ########################################################################################
 # For comparison, we can also use the standard approach of the
 # ``spectral_connectivity_...()`` functions, which shows a very similar connectivity
-# profile in the 15-20 Hz frequency range. Bivariate coherence is again shown to
-# demonstrate the signal-to-noise enhancements the multivariate approach offers.
+# profile in the 15-20 Hz frequency range (but not identical due to band- vs. bin-wise
+# filter fitting approaches). Bivariate coherence is again shown to demonstrate the
+# signal-to-noise enhancements the multivariate approach offers.
 
 # %%
 
@@ -472,7 +477,6 @@ ax.plot(
 ax.axvspan(FMIN, FMAX, color="grey", alpha=0.2, label="Fitted freq. band")
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Connectivity (A.U.)")
-ax.set_title("MIC")
 plt.legend()
 plt.show()
 
