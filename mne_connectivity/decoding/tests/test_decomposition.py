@@ -191,6 +191,8 @@ def test_spectral_decomposition(method, mode):
         atol=similarity_thresh,
     )  # check connectivity for optimised freq. band similarly low for seen & unseen
 
+    # XXX: TEST FILTERS/PATTERNS HAS CORRECT SHAPE WHEN N_COMPONENTS > 1 SUPPORTED
+
     # TEST GETTERS & SETTERS
     # Test indices internal storage and returned format
     assert np.all(np.array(decomp_class.indices) == np.array((seeds, targets)))
