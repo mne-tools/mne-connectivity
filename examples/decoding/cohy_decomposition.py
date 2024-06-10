@@ -45,13 +45,15 @@ from mne_connectivity.decoding import CoherencyDecomposition
 # Coherency-based methods are popular approaches for analysing connectivity, capturing
 # correlation between signals in the frequency domain. Various coherency-based
 # multivariate methods exist, including: canonical coherency (CaCoh; multivariate
-# measure of coherency/coherence); and maximised imaginary coherency (MIC; multivariate
-# measure of the imaginary part of coherency).
+# measure of coherency/coherence) :footcite:`VidaurreEtAl2019` ; and maximised imaginary
+# coherency (MIC; multivariate measure of the imaginary part of coherency)
+# :footcite:`EwaldEtAl2012`.
 #
 # These methods are described in detail in the following examples:
-#  - comparison of coherency-based methods - :doc:`../compare_coherency_methods`
-#  - CaCoh - :doc:`../cacoh`
-#  - MIC - :doc:`../mic_mim`
+#
+# - comparison of coherency-based methods - :doc:`../compare_coherency_methods`
+# - CaCoh - :doc:`../cacoh`
+# - MIC - :doc:`../mic_mim`
 #
 # The CaCoh and MIC methods work by finding spatial filters that decompose the data into
 # components of connectivity, and applying them to the data. With the implementations
@@ -527,6 +529,55 @@ print(
 )
 
 ########################################################################################
+# Visualising filters and patterns
+# --------------------------------
+# In addition to the connectivity scores, useful insights about the data can be gained
+# by visualising the topographies of the filters and patterns, which represent two
+# complementary aspects:
+#
+# - The filters represent how the connectivity sources are extracted from the channel
+#   data, akin to an inverse model.
+# - The patterns represent how the channel data is formed by the connectivity sources,
+#   akin to a forward model.
+#
+# This distinction is discussed further in Haufe *et al.* (2014)
+# :footcite:`HaufeEtAl2014`, but in short: **the patterns should be used to interpret
+# the contribution of distinct brain regions/sensors to a given component of
+# connectivity**. Accordingly, keep in mind that the filters and patterns are not a
+# replacement for source reconstruction, as without this the patterns will still only
+# tell you about the spatial contributions of sensors, not underlying brain regions,
+# to connectivity.
+#
+# Visualising these topographies can be done using the
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_filters` and
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_patterns` methods.
+#
+# When interpreting patterns, note that the absolute value reflects the strength of the
+# contribution to connectivity, however the sign differences can be used to visualise
+# the orientation of the underlying dipole sources. The spatial patterns are **not**
+# bound between :math:`[-1, 1]`.
+#
+# Plotting the patterns below, we can infer the existence of postcentral, generally
+# medial dipole sources contributing to the connectivity between sensors over left and
+# right hemispheres at 15-20 Hz.
+
+# %%
+
+# Plot patterns
+mic.plot_patterns(epochs.info, sensors="m.", size=2)
+
+########################################################################################
+# For comparison we can also plot the filters, and here we see that they show a very
+# similar topography to the patterns. However, this is not always the case, and you
+# should never confuse the information represented by the filters and patterns, which
+# can lead to very incorrect interpretations of the data :footcite:`HaufeEtAl2014`.
+
+# %%
+
+# Plot filters
+mic.plot_filters(epochs.info, sensors="m.", size=2)
+
+########################################################################################
 # Limitations
 # -----------
 # Finally, it is important to discuss a key limitation of the decoding module approach:
@@ -553,5 +604,10 @@ print(
 #
 # Ultimately, there are distinct advantages and disadvantages to both approaches, and
 # one may be more suitable than the other depending on your use case.
+
+########################################################################################
+# References
+# ----------
+# .. footbibliography::
 
 # %%

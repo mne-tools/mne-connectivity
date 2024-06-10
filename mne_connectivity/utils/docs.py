@@ -8,6 +8,8 @@ try:  # 1.0+
 except ImportError:
     from mne.externals.doccer import indentcount_lines as _indentcount_lines  # noqa
 
+from mne.utils.docs import docdict as mne_docdict
+
 ##############################################################################
 # Define our standard documentation entries
 
@@ -250,6 +252,9 @@ patterns_ : tuple of array, shape=(n_components, n_signals)
     filters for the seed and target data, respectively.
 """
 
+for key, val in mne_docdict.items():
+    if key not in docdict:
+        docdict[key] = val
 
 docdict_indented = dict()  # type: ignore
 

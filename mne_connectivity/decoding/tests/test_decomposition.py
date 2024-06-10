@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from mne.channels import make_dig_montage, make_standard_montage
 from numpy.testing import assert_allclose
 
 from mne_connectivity import (
@@ -211,6 +212,27 @@ def test_spectral_decomposition(method, mode):
     decomp_class.set_params(rank=(1, 2))
     assert np.all(decomp_class.rank == (1, 2))
     assert np.all(decomp_class._rank == ([1], [2]))
+
+    # TEST PLOTTING
+    # Test plot filters/patterns
+    # use standard montage to avoid errors around weird fiducial positions
+    standard_1020_pos = make_standard_montage("standard_1020").get_positions()
+    epochs.info.set_montage(
+        make_dig_montage(
+            ch_pos={
+                name: [idx, idx, idx]
+                for idx, name in enumerate(epochs.info["ch_names"])
+            },  # avoid overlapping positions for channels (raises error)
+            nasion=standard_1020_pos["nasion"],
+            lpa=standard_1020_pos["lpa"],
+            rpa=standard_1020_pos["rpa"],
+        )
+    )
+    for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
+        # XXX: required for this to be picked up by coverage
+        figs = plot(epochs.info, components=0, units="A.U.", show=False)
+        figs = plot(epochs.info, components=None, units=None, show=False)
+        assert len(figs) == 2
 
 
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
@@ -659,6 +681,19 @@ def test_spectral_decomposition_error_catch(method, mode):
     ):
         decomp_class.transform(X=epochs.get_data())
 
+    # TEST PLOTTING BEFORE FITTING
+    with pytest.raises(
+        RuntimeError,
+        match="no filters are available, please call the `fit` method first",
+    ):
+        decomp_class.plot_filters(epochs.info)
+
+    with pytest.raises(
+        RuntimeError,
+        match="no patterns are available, please call the `fit` method first",
+    ):
+        decomp_class.plot_patterns(epochs.info)
+
     decomp_class.fit(X=epochs.get_data())
 
     # TEST BAD TRANSFORMING
@@ -668,3 +703,8 @@ def test_spectral_decomposition_error_catch(method, mode):
         decomp_class.transform(X=epochs.get_data()[0, 0])
     with pytest.raises(ValueError, match="`X` does not match Info"):
         decomp_class.transform(X=epochs.get_data()[:, :-1])
+
+    # TEST BAD PLOTTING
+    for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
+        with pytest.raises(TypeError, match="`info` must be an instance of mne.Info"):
+            plot({"info": epochs.info})

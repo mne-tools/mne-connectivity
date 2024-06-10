@@ -2,11 +2,15 @@
 #
 # License: BSD (3-clause)
 
+import copy as cp
 from typing import Optional
 
 import numpy as np
 from mne import Info
+from mne._fiff.pick import pick_info
 from mne.decoding.mixin import TransformerMixin
+from mne.defaults import _BORDER_DEFAULT, _EXTRAPOLATE_DEFAULT, _INTERPOLATION_DEFAULT
+from mne.evoked import EvokedArray
 from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
@@ -459,3 +463,205 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             np.arange(self.n_components),
             np.arange(self.n_components) + self.n_components,
         )
+
+    @fill_doc
+    def plot_patterns(self, info, **kwargs):
+        """Plot topographic patterns of components.
+
+        The patterns explain how the measured data was generated from the
+        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
+
+        Seed and target patterns are plotted separately.
+
+        Parameters
+        ----------
+        %(info_not_none)s
+        components : float | array of float | None
+            The patterns to plot. If ``None``, all components will be shown.
+        %(average_plot_evoked_topomap)s
+        %(ch_type_topomap)s
+        scalings : dict | float | None
+            The scalings of the channel types to be applied for plotting.
+            If None, defaults to ``dict(eeg=1e6, grad=1e13, mag=1e15)``.
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_patterns_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap_auto)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_plot_topomap)s
+        %(cnorm)s
+        %(colorbar_topomap)s
+        %(cbar_fmt_topomap)s
+        %(units_topomap)s
+        %(axes_evoked_plot_topomap)s
+        name_format : str | None
+            String format for topomap values. ``None`` defaults to f"{method}%%01d".
+        %(nrows_ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        figs : list of instance of matplotlib.figure.Figure
+           The seed and target figures, respectively.
+        """
+        if self.patterns_ is None:
+            raise RuntimeError(
+                "no patterns are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            (self.patterns_[0].T, self.patterns_[1].T), info, **kwargs
+        )
+
+    @fill_doc
+    def plot_filters(self, info, **kwargs):
+        """Plot topographic filters of components.
+
+        The filters are used to extract discriminant neural sources from the measured
+        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.
+
+        Seed and target filters are plotted separately.
+
+        Parameters
+        ----------
+        %(info_not_none)s
+        components : float | array of float | None
+            The filters to plot. If ``None``, all components will be shown.
+        %(average_plot_evoked_topomap)s
+        %(ch_type_topomap)s
+        scalings : dict | float | None
+            The scalings of the channel types to be applied for plotting.
+            If None, defaults to ``dict(eeg=1e6, grad=1e13, mag=1e15)``.
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_patterns_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap_auto)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_plot_topomap)s
+        %(cnorm)s
+        %(colorbar_topomap)s
+        %(cbar_fmt_topomap)s
+        %(units_topomap)s
+        %(axes_evoked_plot_topomap)s
+        name_format : str | None
+            String format for topomap values. ``None`` defaults to f"{method}%%01d".
+        %(nrows_ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        figs : list of instance of matplotlib.figure.Figure
+           The seed and target figures, respectively.
+        """
+        if self.filters_ is None:
+            raise RuntimeError(
+                "no filters are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(self.filters_, info, **kwargs)
+
+    def _plot_filters_patterns(
+        self,
+        plot_data,
+        info,
+        components=None,
+        average=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units=None,
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot filters/targets for components."""
+        # Sort inputs
+        _validate_type(info, Info, "`info`", "mne.Info")
+        if units is None:
+            units = "AU"
+        if components is None:
+            components = np.arange(self.n_components)
+
+        # plot seeds and targets
+        figs = []
+        for group_idx, group_name in zip([0, 1], ["Seeds", "Targets"]):
+            # create info for seeds/targets
+            group_info = cp.deepcopy(info)
+            group_info = pick_info(group_info, self.indices[group_idx], copy=False)
+            with group_info._unlock():
+                group_info["sfreq"] = 1.0  # 1 component per time point
+            # create Evoked object
+            evoked = EvokedArray(plot_data[group_idx], group_info, tmin=0)
+            # then call plot_topomap
+            figs.append(
+                evoked.plot_topomap(
+                    times=components,
+                    average=average,
+                    ch_type=ch_type,
+                    scalings=scalings,
+                    sensors=sensors,
+                    show_names=show_names,
+                    mask=mask,
+                    mask_params=mask_params,
+                    contours=contours,
+                    outlines=outlines,
+                    sphere=sphere,
+                    image_interp=image_interp,
+                    extrapolate=extrapolate,
+                    border=border,
+                    res=res,
+                    size=size,
+                    cmap=cmap,
+                    vlim=vlim,
+                    cnorm=cnorm,
+                    colorbar=colorbar,
+                    cbar_fmt=cbar_fmt,
+                    units=units,
+                    axes=axes,
+                    time_format=f"{self._conn_estimator.name}%01d"
+                    if name_format is None
+                    else name_format,
+                    nrows=nrows,
+                    ncols=ncols,
+                    show=False,  # set Seeds/Targets suptitle first
+                )
+            )
+            figs[-1].suptitle(group_name)  # differentiate seeds from targets
+            if show:
+                figs[-1].show()
+
+        return figs
