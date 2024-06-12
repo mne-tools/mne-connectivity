@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 0.7.0 documentation</title>
+    <title>Compute envelope correlations in source space &#8212; MNE-Connectivity 1.8.0.dev66+g382c7bae5 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/documentation_options.js?v=d794b80a"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev66+g382c7bae5 documentation</p>
   
 </a></div>
     
@@ -562,7 +562,7 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 88 matching events found
 No baseline correction applied
@@ -615,9 +615,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -647,7 +647,7 @@ Designing a one-pass, zero-phase, non-causal highpass filter:
 - Filter length: 2641 samples (33.013 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Using up to 300 segments
@@ -729,14 +729,14 @@ Checking surface interior status for 4098 points...
     Found    0/2859 points outside using surface Qhull
     Found    0/2859 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3524.5 ms
+Interior check completed in 3133.6 ms
 Checking surface interior status for 4098 points...
     Found 1235/4098 points inside  an interior sphere of radius   49.6 mm
     Found    0/4098 points outside an exterior sphere of radius  105.3 mm
     Found    0/2863 points outside using surface Qhull
     Found    0/2863 points outside using solid angles
     Total 4098/4098 points inside the surface
-Interior check completed in 3230.6 ms
+Interior check completed in 3079.0 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -744,7 +744,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 249.8 ms
+Interior check completed in 248.2 ms
 
 Composing the field computation matrix...
 Computing MEG at 8196 source locations (free orientations)...
@@ -913,26 +913,44 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
+Setting up band-pass filter from 14 - 30 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 14.00
+- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
+- Upper passband edge: 30.00 Hz
+- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
+- Filter length: 77 samples (0.963 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.2s
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 s)
-
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Setting up band-pass filter from 14 - 30 Hz
 
@@ -967,25 +985,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
-Setting up band-pass filter from 14 - 30 Hz
-
-FIR filter parameters
----------------------
-Designing a one-pass, zero-phase, non-causal bandpass filter:
-- Windowed time-domain design (firwin) method
-- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
-- Lower passband edge: 14.00
-- Lower transition bandwidth: 3.50 Hz (-6 dB cutoff frequency: 12.25 Hz)
-- Upper passband edge: 30.00 Hz
-- Upper transition bandwidth: 7.50 Hz (-6 dB cutoff frequency: 33.75 Hz)
-- Filter length: 77 samples (0.963 s)
-
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 [Parallel(n_jobs=1)]: Done 449 tasks      | elapsed:    0.1s
 Using control points [73. 80. 89.]
@@ -1141,7 +1141,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [done]
 Using control points [26. 29. 32.]
 
-&lt;mne.viz._brain._brain.Brain object at 0x7f230adedc30&gt;
+&lt;mne.viz._brain._brain.Brain object at 0x7f3ef92fb8e0&gt;
 </pre></div>
 </div>
 </section>
@@ -1165,7 +1165,7 @@ Using control points [26. 29. 32.]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 6.574 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 55.320 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bd11eaca1da460c062c1190f891509a7/mne_inverse_envelope_correlation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation.ipynb</span></code></a></p>
@@ -1255,7 +1255,7 @@ Using control points [26. 29. 32.]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-10.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-12.
       <br/>
     
   </p>
