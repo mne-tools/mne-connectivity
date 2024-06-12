@@ -6,7 +6,13 @@
 #
 # License: BSD (3-clause)
 
-from ._version import __version__  # noqa: F401
+try:
+    from importlib.metadata import version
+
+    __version__ = version("mne")
+except Exception:
+    __version__ = "0.0.0"
+
 from .base import (
     Connectivity,
     EpochConnectivity,
