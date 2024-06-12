@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "wheel"]
 
 [project]
 classifiers = [
@@ -43,7 +43,7 @@ maintainers = [
 name = 'mne-connectivity'
 readme = {content-type = "text/x-rst", file = 'README.rst'}
 requires-python = '>=3.9'
-version = "0.7.0"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 all = [
@@ -118,6 +118,9 @@ documentation = 'https://mne.tools/mne-connectivity'
 source = 'https://github.com/mne-tools/mne-connectivity'
 tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
 
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
+
 [tool.codespell]
 builtin = "clear,rare,informal,names,usage"
 ignore-words = ".codespellignore"
@@ -136,7 +139,6 @@ branch = true
 cover_pylib = false
 omit = [
   '**/__init__.py',
-  '**/mne_connectivity/_version.py',
   '**/mne_connectivity/conftest.py',
   '**/tests/**',
 ]

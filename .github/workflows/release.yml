@@ -42,6 +42,8 @@ jobs:
     needs: package
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
