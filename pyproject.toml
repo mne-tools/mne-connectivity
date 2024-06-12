@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "wheel"]
 
 [project]
 classifiers = [
@@ -29,6 +29,7 @@ dependencies = [
   'xarray >= 2023.11.0',
 ]
 description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
+dynamic = ["version"]
 keywords = [
   'connectivity',
   'eeg',
@@ -43,7 +44,6 @@ maintainers = [
 name = 'mne-connectivity'
 readme = {content-type = "text/x-rst", file = 'README.rst'}
 requires-python = '>=3.9'
-version = "0.7.0"
 
 [project.optional-dependencies]
 all = [
@@ -136,7 +136,6 @@ branch = true
 cover_pylib = false
 omit = [
   '**/__init__.py',
-  '**/mne_connectivity/_version.py',
   '**/mne_connectivity/conftest.py',
   '**/tests/**',
 ]
@@ -251,6 +250,9 @@ include-package-data = true
 [tool.setuptools.packages.find]
 exclude = ['mne_connectivity*tests']
 include = ['mne_connectivity*']
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
 
 [tool.tomlsort]
 all = true
