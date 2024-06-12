@@ -214,6 +214,9 @@ def test_spectral_decomposition(method, mode):
     assert np.all(decomp_class.rank == (1, 2))
     assert np.all(decomp_class._rank == ([1], [2]))
 
+    # Test rank can be reset to default
+    decomp_class.set_params(rank=None)
+
 
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
@@ -645,14 +648,29 @@ def test_spectral_decomposition_error_catch(method, mode):
     )
 
     # TEST BAD FITTING
-    # Test input data
+    # Test input data format
     with pytest.raises(TypeError, match="`X` must be an instance of NumPy array"):
         decomp_class.fit(X=epochs.get_data().tolist())
     with pytest.raises(ValueError, match="Invalid value for the '`X.ndim`' parameter"):
         decomp_class.fit(X=epochs.get_data()[0])
     with pytest.raises(ValueError, match="`X` does not match Info"):
         decomp_class.fit(X=epochs.get_data()[:, :-1])
-    # XXX: Add test for rank of X being <= n_components when n_components can be > 1
+    # Test rank of input data is compatible with n_components
+    decomp_class.set_params(n_components=3)
+    with pytest.raises(
+        ValueError, match="`n_components` is greater than the minimum rank of the data"
+    ):
+        rank_def_data = epochs.get_data(copy=True)
+        rank_def_data[:, n_seeds - 1] = rank_def_data[:, n_seeds - 2]
+        decomp_class.fit(X=rank_def_data)
+    with pytest.raises(
+        ValueError, match="`n_components` is greater than the minimum rank of the data"
+    ):
+        rank_def_data = epochs.get_data(copy=True)
+        rank_def_data[:, n_seeds + n_targets - 1] = rank_def_data[
+            :, n_seeds + n_targets - 2
+        ]
+        decomp_class.fit(X=rank_def_data)
 
     # TEST TRANSFORM BEFORE FITTING
     with pytest.raises(
@@ -661,6 +679,7 @@ def test_spectral_decomposition_error_catch(method, mode):
     ):
         decomp_class.transform(X=epochs.get_data())
 
+    decomp_class.set_params(n_components=None)  # reset to default
     decomp_class.fit(X=epochs.get_data())
 
     # TEST BAD TRANSFORMING

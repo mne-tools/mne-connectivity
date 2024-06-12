@@ -97,12 +97,17 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         :meta private:
         """
-        return (self._rank[0][0], self._rank[1][0])
+        if self._rank is not None:
+            return (self._rank[0][0], self._rank[1][0])
+        return None
 
     @rank.setter
     def rank(self, rank):
         """Set ``rank`` parameter using the input format."""
-        self._rank = ([rank[0]], [rank[1]])
+        if rank is None:
+            self._rank = None
+        else:
+            self._rank = ([rank[0]], [rank[1]])
 
     def __init__(
         self,
@@ -318,15 +323,19 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     def _get_rank_and_ncomps_from_X(self, X):
         """Get/validate rank and n_components parameters using the data."""
         # compute rank from data if necessary / check it is valid for the indices
-        self._rank = _check_rank_input(self._rank, X, self._indices)
+        rank = _check_rank_input(self._rank, X, self._indices)
 
         # set n_components if necessary / check it is valid for the rank
         if self.n_components is None:
-            self.n_components = np.min(self.rank)
-        elif self.n_components > np.min(self.rank):
+            self.n_components = np.min(rank)
+        elif self.n_components > np.min(rank):
             raise ValueError(
                 "`n_components` is greater than the minimum rank of the data"
             )
+
+        # set rank if necessary
+        if self._rank is None:
+            self._rank = rank
 
     def _compute_csd(self, X):
         """Compute the cross-spectral density of the input data."""
