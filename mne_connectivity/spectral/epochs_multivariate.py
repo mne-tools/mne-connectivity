@@ -459,8 +459,8 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
 
         # Part of Eqs. 46 & 47; i.e. transform filters to channel space
-        alpha_Ubar = np.matmul(U_bar_aa, np.expand_dims(alpha, axis=3))
-        beta_Ubar = np.matmul(U_bar_bb, np.expand_dims(beta, axis=3))
+        alpha_Ubar = U_bar_aa @ np.expand_dims(alpha, axis=3)
+        beta_Ubar = U_bar_bb @ np.expand_dims(beta, axis=3)
 
         # Eq. 46 (seed spatial patterns)
         self.patterns[0, con_i, :n_seeds] = (
@@ -660,8 +660,8 @@ class _CaCohEst(_MultivariateCohEstBase):
         beta = T_bb @ np.expand_dims(b, axis=3)  # filter for targets
 
         # Eqs. 46 & 47 of Ewald et al. (2012); i.e. transform filters to channel space
-        alpha_Ubar = np.matmul(U_bar_aa, alpha)
-        beta_Ubar = np.matmul(U_bar_bb, beta)
+        alpha_Ubar = U_bar_aa @ alpha
+        beta_Ubar = U_bar_bb @ beta
 
         # Eq. 14
         # seed spatial patterns
