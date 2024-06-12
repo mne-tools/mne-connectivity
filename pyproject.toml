@@ -29,6 +29,7 @@ dependencies = [
   'xarray >= 2023.11.0',
 ]
 description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
+dynamic = ["version"]
 keywords = [
   'connectivity',
   'eeg',
@@ -43,7 +44,6 @@ maintainers = [
 name = 'mne-connectivity'
 readme = {content-type = "text/x-rst", file = 'README.rst'}
 requires-python = '>=3.9'
-dynamic = ["version"]
 
 [project.optional-dependencies]
 all = [
@@ -117,9 +117,6 @@ test = [
 documentation = 'https://mne.tools/mne-connectivity'
 source = 'https://github.com/mne-tools/mne-connectivity'
 tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
-
-[tool.setuptools_scm]
-version_scheme = "release-branch-semver"
 
 [tool.codespell]
 builtin = "clear,rare,informal,names,usage"
@@ -253,6 +250,9 @@ include-package-data = true
 [tool.setuptools.packages.find]
 exclude = ['mne_connectivity*tests']
 include = ['mne_connectivity*']
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
 
 [tool.tomlsort]
 all = true
