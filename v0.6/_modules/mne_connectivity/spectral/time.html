@@ -1,0 +1,1739 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=71d00d13" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../../_static/documentation_options.js?v=50f829f1"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_connectivity/spectral/time';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">mne_connecti...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for mne_connectivity.spectral.time</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#          Santeri Ruuskanen &lt;santeriruuskanen@gmail.com&gt;</span>
+<span class="c1">#          Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">mne.epochs</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
+<span class="kn">from</span> <span class="nn">mne.parallel</span> <span class="kn">import</span> <span class="n">parallel_func</span>
+<span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="n">dpss_windows</span><span class="p">,</span> <span class="n">tfr_array_morlet</span><span class="p">,</span> <span class="n">tfr_array_multitaper</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">EpochSpectralConnectivity</span><span class="p">,</span> <span class="n">SpectralConnectivity</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
+<span class="kn">from</span> <span class="nn">.epochs</span> <span class="kn">import</span> <span class="n">_compute_freq_mask</span>
+<span class="kn">from</span> <span class="nn">.epochs_multivariate</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">,</span>
+    <span class="n">_check_rank_input</span><span class="p">,</span>
+    <span class="n">_gc_methods</span><span class="p">,</span>
+    <span class="n">_multivariate_methods</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.smooth</span> <span class="kn">import</span> <span class="n">_create_kernel</span><span class="p">,</span> <span class="n">_smooth_spectra</span>
+
+
+<div class="viewcode-block" id="spectral_connectivity_time">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time">[docs]</a>
+<span class="nd">@verbose</span>
+<span class="nd">@fill_doc</span>
+<span class="k">def</span> <span class="nf">spectral_connectivity_time</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+    <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">sm_times</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">sm_freqs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">sm_kernel</span><span class="o">=</span><span class="s2">&quot;hanning&quot;</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;cwt_morlet&quot;</span><span class="p">,</span>
+    <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">decim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute time-frequency-domain connectivity measures.</span>
+
+<span class="sd">    This function computes spectral connectivity over time from epoched data.</span>
+<span class="sd">    The data may consist of a single epoch.</span>
+
+<span class="sd">    The connectivity method(s) are specified using the ``method`` parameter.</span>
+<span class="sd">    All methods are based on time-resolved estimates of the cross- and</span>
+<span class="sd">    power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs</span>
+<span class="sd">        The data from which to compute connectivity.</span>
+<span class="sd">    freqs : array_like</span>
+<span class="sd">        Array of frequencies of interest for time-frequency decomposition.</span>
+<span class="sd">        Only the frequencies within the range specified by ``fmin`` and</span>
+<span class="sd">        ``fmax`` are used.</span>
+<span class="sd">    method : str | list of str</span>
+<span class="sd">        Connectivity measure(s) to compute. These can be</span>
+<span class="sd">        ``[&#39;coh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;gc&#39;,</span>
+<span class="sd">        &#39;gc_tr&#39;]``. These are:</span>
+<span class="sd">        * &#39;coh&#39;   : Coherence</span>
+<span class="sd">        * &#39;mic&#39;   : Maximised Imaginary part of Coherency (MIC)</span>
+<span class="sd">        * &#39;mim&#39;   : Multivariate Interaction Measure (MIM)</span>
+<span class="sd">        * &#39;plv&#39;   : Phase-Locking Value (PLV)</span>
+<span class="sd">        * &#39;ciplv&#39; : Corrected imaginary Phase-Locking Value</span>
+<span class="sd">        * &#39;pli&#39;   : Phase-Lag Index</span>
+<span class="sd">        * &#39;wpli&#39;  : Weighted Phase-Lag Index</span>
+<span class="sd">        * &#39;gc&#39;    : State-space Granger Causality (GC)</span>
+<span class="sd">        * &#39;gc_tr&#39; : State-space GC on time-reversed signals</span>
+<span class="sd">        Multivariate methods (``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr]``) cannot be</span>
+<span class="sd">        called with the other methods.</span>
+<span class="sd">    average : bool</span>
+<span class="sd">        Average connectivity scores over epochs. If ``True``, output will be</span>
+<span class="sd">        an instance of :class:`SpectralConnectivity`, otherwise</span>
+<span class="sd">        :class:`EpochSpectralConnectivity`.</span>
+<span class="sd">    indices : tuple of array_like | None</span>
+<span class="sd">        Two arrays with indices of connections for which to compute</span>
+<span class="sd">        connectivity. If a bivariate method is called, each array for the seeds</span>
+<span class="sd">        and targets should contain the channel indices for the each bivariate</span>
+<span class="sd">        connection. If a multivariate method is called, each array for the</span>
+<span class="sd">        seeds and targets should consist of nested arrays containing</span>
+<span class="sd">        the channel indices for each multivariate connection. If None,</span>
+<span class="sd">        connections between all channels are computed, unless a Granger</span>
+<span class="sd">        causality method is called, in which case an error is raised.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        The sampling frequency. Required if data is not</span>
+<span class="sd">        :class:`Epochs &lt;mne.Epochs&gt;`.</span>
+<span class="sd">    fmin : float | tuple of float | None</span>
+<span class="sd">        The lower frequency of interest. Multiple bands are defined using</span>
+<span class="sd">        a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower</span>
+<span class="sd">        bounds. If `None`, the lowest frequency in ``freqs`` is used.</span>
+<span class="sd">    fmax : float | tuple of float | None</span>
+<span class="sd">        The upper frequency of interest. Multiple bands are defined using</span>
+<span class="sd">        a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper</span>
+<span class="sd">        bounds. If `None`, the highest frequency in ``freqs`` is used.</span>
+<span class="sd">    fskip : int</span>
+<span class="sd">        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency</span>
+<span class="sd">        domain.</span>
+<span class="sd">    faverage : bool</span>
+<span class="sd">        Average connectivity scores for each frequency band. If `True`,</span>
+<span class="sd">        the output ``freqs`` will be an array of the median frequencies of each</span>
+<span class="sd">        band.</span>
+<span class="sd">    sm_times : float</span>
+<span class="sd">        Amount of time to consider for the temporal smoothing in seconds.</span>
+<span class="sd">        If zero, no temporal smoothing is applied.</span>
+<span class="sd">    sm_freqs : int</span>
+<span class="sd">        Number of points for frequency smoothing. By default, 1 is used which</span>
+<span class="sd">        is equivalent to no smoothing.</span>
+<span class="sd">    sm_kernel : {&#39;square&#39;, &#39;hanning&#39;}</span>
+<span class="sd">        Smoothing kernel type. Choose either &#39;square&#39; or &#39;hanning&#39;.</span>
+<span class="sd">    padding : float</span>
+<span class="sd">        Amount of time to consider as padding at the beginning and end of each</span>
+<span class="sd">        epoch in seconds. See Notes for more information.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Time-frequency decomposition method. Can be either: &#39;multitaper&#39;, or</span>
+<span class="sd">        &#39;cwt_morlet&#39;. See :func:`mne.time_frequency.tfr_array_multitaper` and</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_morlet` for reference.</span>
+<span class="sd">    mt_bandwidth : float | None</span>
+<span class="sd">        Product between the temporal window length (in seconds) and the full</span>
+<span class="sd">        frequency bandwidth (in Hz). This product can be seen as the surface</span>
+<span class="sd">        of the window on the time/frequency plane and controls the frequency</span>
+<span class="sd">        bandwidth (thus the frequency resolution) and the number of good</span>
+<span class="sd">        tapers. See :func:`mne.time_frequency.tfr_array_multitaper`</span>
+<span class="sd">        documentation.</span>
+<span class="sd">    n_cycles : float | array_like of float</span>
+<span class="sd">        Number of cycles in the wavelet, either a fixed number or one per</span>
+<span class="sd">        frequency. The number of cycles ``n_cycles`` and the frequencies of</span>
+<span class="sd">        interest ``cwt_freqs`` define the temporal window length. For details,</span>
+<span class="sd">        see :func:`mne.time_frequency.tfr_array_morlet` documentation.</span>
+<span class="sd">    gc_n_lags : int</span>
+<span class="sd">        Number of lags to use for the vector autoregressive model when</span>
+<span class="sd">        computing Granger causality. Higher values increase computational cost,</span>
+<span class="sd">        but reduce the degree of spectral smoothing in the results. Only used</span>
+<span class="sd">        if ``method`` contains any of ``[&#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">    rank : tuple of array | None</span>
+<span class="sd">        Two arrays with the rank to project the seed and target data to,</span>
+<span class="sd">        respectively, using singular value decomposition. If `None`, the rank</span>
+<span class="sd">        of the data is computed and projected to. Only used if ``method``</span>
+<span class="sd">        contains any of ``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">    decim : int</span>
+<span class="sd">        To reduce memory usage, decimation factor after time-frequency</span>
+<span class="sd">        decomposition. Returns ``tfr[…, ::decim]``.</span>
+<span class="sd">    n_jobs : int</span>
+<span class="sd">        Number of connections to compute in parallel. Memory mapping must be</span>
+<span class="sd">        activated. Please see the Notes section for details.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    con : instance of Connectivity | list</span>
+<span class="sd">        Computed connectivity measure(s). An instance of</span>
+<span class="sd">        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`</span>
+<span class="sd">        or a list of instances corresponding to connectivity measures if</span>
+<span class="sd">        several connectivity measures are specified.</span>
+<span class="sd">        The shape of each connectivity dataset is (n_epochs, n_cons, n_freqs).</span>
+<span class="sd">        When &quot;indices&quot; is None and a bivariate method is called,</span>
+<span class="sd">        &quot;n_cons = n_signals ** 2&quot;, or if a multivariate method is called</span>
+<span class="sd">        &quot;n_cons = 1&quot;. When &quot;indices&quot; is specified, &quot;n_con = len(indices[0])&quot;</span>
+<span class="sd">        for bivariate and multivariate methods.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.spectral_connectivity_epochs</span>
+<span class="sd">    mne_connectivity.SpectralConnectivity</span>
+<span class="sd">    mne_connectivity.EpochSpectralConnectivity</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Please note that the interpretation of the measures in this function</span>
+<span class="sd">    depends on the data and underlying assumptions and does not necessarily</span>
+<span class="sd">    reflect a causal relationship between brain regions.</span>
+
+<span class="sd">    The connectivity measures are computed over time within each epoch and</span>
+<span class="sd">    optionally averaged over epochs. High connectivity values indicate that</span>
+<span class="sd">    the phase coupling (interpreted as estimated connectivity) differences</span>
+<span class="sd">    between signals stay consistent over time.</span>
+
+<span class="sd">    The spectral densities can be estimated using a multitaper method with</span>
+<span class="sd">    digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet</span>
+<span class="sd">    transform using Morlet wavelets. The spectral estimation mode is specified</span>
+<span class="sd">    using the ``mode`` parameter.</span>
+
+<span class="sd">    When using the multitaper spectral estimation method, the</span>
+<span class="sd">    cross-spectral density is computed separately for each taper and aggregated</span>
+<span class="sd">    using a weighted average, where the weights correspond to the concentration</span>
+<span class="sd">    ratios between the DPSS windows.</span>
+
+<span class="sd">    Spectral estimation using multitaper or Morlet wavelets introduces edge</span>
+<span class="sd">    effects that depend on the length of the wavelet. To remove edge effects,</span>
+<span class="sd">    the parameter ``padding`` can be used to prune the edges of the signal.</span>
+<span class="sd">    Please see the documentation of</span>
+<span class="sd">    :func:`mne.time_frequency.tfr_array_multitaper` and</span>
+<span class="sd">    :func:`mne.time_frequency.tfr_array_morlet` for details on wavelet length</span>
+<span class="sd">    (i.e., time window length).</span>
+
+<span class="sd">    By default, the connectivity between all signals is computed (only</span>
+<span class="sd">    connections corresponding to the lower-triangular part of the connectivity</span>
+<span class="sd">    matrix). If one is only interested in the connectivity between some</span>
+<span class="sd">    signals, the &quot;indices&quot; parameter can be used. For example, to compute the</span>
+<span class="sd">    connectivity between the signal with index 0 and signals &quot;2, 3, 4&quot; (a total</span>
+<span class="sd">    of 3 connections) one can use the following::</span>
+
+<span class="sd">        indices = (np.array([0, 0, 0]),    # row indices</span>
+<span class="sd">                   np.array([2, 3, 4]))    # col indices</span>
+
+<span class="sd">        con = spectral_connectivity_time(data, method=&#39;coh&#39;,</span>
+<span class="sd">                                         indices=indices, ...)</span>
+
+<span class="sd">    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity</span>
+<span class="sd">    scores are in the same order as defined indices.</span>
+
+<span class="sd">    For multivariate methods, this is handled differently. If &quot;indices&quot; is</span>
+<span class="sd">    None, connectivity between all signals will be computed and a single</span>
+<span class="sd">    connectivity spectrum will be returned (this is not possible if a Granger</span>
+<span class="sd">    causality method is called). If &quot;indices&quot; is specified, seed and target</span>
+<span class="sd">    indices for each connection should be specified as nested array-likes. For</span>
+<span class="sd">    example, to compute the connectivity between signals (0, 1) -&gt; (2, 3) and</span>
+<span class="sd">    (0, 1) -&gt; (4, 5), indices should be specified as::</span>
+
+<span class="sd">        indices = (np.array([[0, 1], [0, 1]]),  # seeds</span>
+<span class="sd">                   np.array([[2, 3], [4, 5]]))  # targets</span>
+
+<span class="sd">    More information on working with multivariate indices and handling</span>
+<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
+<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+
+<span class="sd">    **Supported Connectivity Measures**</span>
+
+<span class="sd">    The connectivity method(s) is specified using the ``method`` parameter. The</span>
+<span class="sd">    following methods are supported (note: ``E[]`` denotes average over</span>
+<span class="sd">    epochs). Multiple measures can be computed at once by using a list/tuple,</span>
+<span class="sd">    e.g., ``[&#39;coh&#39;, &#39;pli&#39;]`` to compute coherence and PLI.</span>
+
+<span class="sd">        &#39;coh&#39; : Coherence given by::</span>
+
+<span class="sd">                     | E[Sxy] |</span>
+<span class="sd">            C = ---------------------</span>
+<span class="sd">                sqrt(E[Sxx] * E[Syy])</span>
+
+<span class="sd">        &#39;mic&#39; : Maximised Imaginary part of Coherency (MIC)</span>
+<span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
+
+<span class="sd">            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}</span>
+<span class="sd">            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}</span>
+<span class="sd">            \parallel}}`</span>
+
+<span class="sd">            where: :math:`\boldsymbol{E}` is the imaginary part of the</span>
+<span class="sd">            transformed cross-spectral density between seeds and targets; and</span>
+<span class="sd">            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are</span>
+<span class="sd">            eigenvectors for the seeds and targets, such that</span>
+<span class="sd">            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises</span>
+<span class="sd">            connectivity between the seeds and targets.</span>
+
+<span class="sd">        &#39;mim&#39; : Multivariate Interaction Measure (MIM)</span>
+<span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
+
+<span class="sd">            :math:`MIM=tr(\boldsymbol{EE}^T)`</span>
+
+<span class="sd">        &#39;plv&#39; : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given</span>
+<span class="sd">        by::</span>
+
+<span class="sd">            PLV = |E[Sxy/|Sxy|]|</span>
+
+<span class="sd">        &#39;ciplv&#39; : Corrected imaginary PLV (ciPLV) :footcite:`BrunaEtAl2018`</span>
+<span class="sd">        given by::</span>
+
+<span class="sd">                             |E[Im(Sxy/|Sxy|)]|</span>
+<span class="sd">            ciPLV = ------------------------------------</span>
+<span class="sd">                     sqrt(1 - |E[real(Sxy/|Sxy|)]| ** 2)</span>
+
+<span class="sd">        &#39;pli&#39; : Phase Lag Index (PLI) :footcite:`StamEtAl2007` given by::</span>
+
+<span class="sd">            PLI = |E[sign(Im(Sxy))]|</span>
+
+<span class="sd">        &#39;wpli&#39; : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011`</span>
+<span class="sd">        given by::</span>
+
+<span class="sd">                      |E[Im(Sxy)]|</span>
+<span class="sd">            WPLI = ------------------</span>
+<span class="sd">                      E[|Im(Sxy)|]</span>
+
+<span class="sd">        &#39;gc&#39; : State-space Granger Causality (GC) :footcite:`BarnettSeth2015`</span>
+<span class="sd">        given by:</span>
+
+<span class="sd">            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert</span>
+<span class="sd">            \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss</span>
+<span class="sd">            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,</span>
+
+<span class="sd">            where: :math:`s` and :math:`t` represent the seeds and targets,</span>
+<span class="sd">            respectively; :math:`\boldsymbol{H}` is the spectral transfer</span>
+<span class="sd">            function; :math:`\boldsymbol{\Sigma}` is the residuals matrix of</span>
+<span class="sd">            the autoregressive model; and :math:`\boldsymbol{S}` is</span>
+<span class="sd">            :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.</span>
+
+<span class="sd">        &#39;gc_tr&#39; : State-space GC on time-reversed signals</span>
+<span class="sd">        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation</span>
+<span class="sd">        as for &#39;gc&#39;, but where the autocovariance sequence from which the</span>
+<span class="sd">        autoregressive model is produced is transposed to mimic the reversal of</span>
+<span class="sd">        the original signal in time.</span>
+
+<span class="sd">    Parallel computation can be activated by setting the ``n_jobs`` parameter.</span>
+<span class="sd">    Under the hood, this utilizes the ``joblib`` library. For effective</span>
+<span class="sd">    parallelization, you should activate memory mapping in MNE-Python by</span>
+<span class="sd">    setting ``MNE_MEMMAP_MIN_SIZE`` and ``MNE_CACHE_DIR``. Activating memory</span>
+<span class="sd">    mapping will make ``joblib`` store arrays greater than the minimum size on</span>
+<span class="sd">    disc, and forego direct RAM access for more efficient processing.</span>
+<span class="sd">    For example, in your code, run</span>
+
+<span class="sd">        mne.set_config(&#39;MNE_MEMMAP_MIN_SIZE&#39;, &#39;10M&#39;)</span>
+<span class="sd">        mne.set_config(&#39;MNE_CACHE_DIR&#39;, &#39;/dev/shm&#39;)</span>
+
+<span class="sd">    When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation</span>
+<span class="sd">    results in pickling and unpickling the whole array each time a pair of</span>
+<span class="sd">    indices is accessed, which is slow, compared to memory mapping the array.</span>
+
+<span class="sd">    This function is based on the ``frites.conn.conn_spec`` implementation in</span>
+<span class="sd">    Frites.</span>
+
+<span class="sd">    .. versionadded:: 0.3</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. footbibliography::</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># extract data from Epochs object</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
+        <span class="c1"># Extract metadata from the Epochs data structure.</span>
+        <span class="c1"># Make Annotations persist through by adding them to the metadata.</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;annot_onset&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_duration&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_description&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="c1"># XXX: remove logic once support for mne&lt;1.6 is dropped</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;copy&quot;</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">)</span><span class="o">.</span><span class="n">kwonlyargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;copy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Sampling frequency (sfreq) is required with &quot;</span> <span class="s2">&quot;array input.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># check that method is a list</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="p">[</span><span class="n">method</span><span class="p">]</span>
+
+    <span class="c1"># defaults for fmin and fmax</span>
+    <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fmin was not specified. Using fmin=min(freqs)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fmax was not specified. Using fmax=max(freqs).&quot;</span><span class="p">)</span>
+
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">fmin</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">fmax</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmax</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fmin and fmax must have the same length&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fmin</span> <span class="o">&gt;</span> <span class="n">fmax</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fmax must be larger than fmin&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;computing Granger causality on multiple frequency &quot;</span>
+            <span class="s2">&quot;bands is not yet supported&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;bivariate and multivariate connectivity methods cannot be &quot;</span>
+                <span class="s2">&quot;used in the same function call&quot;</span>
+            <span class="p">)</span>
+        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># convert kernel width in time to samples</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sm_times</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">))</span>
+
+    <span class="c1"># convert frequency smoothing from hz to samples</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sm_freqs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">sm_freqs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">sm_freqs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="c1"># temporal decimation</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sm_times</span> <span class="o">/</span> <span class="n">decim</span><span class="p">))</span>
+        <span class="n">sm_times</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Create smoothing kernel</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">_create_kernel</span><span class="p">(</span><span class="n">sm_times</span><span class="p">,</span> <span class="n">sm_freqs</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">sm_kernel</span><span class="p">)</span>
+
+    <span class="c1"># get indices of pairs of (group) regions</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;indices must be specified when computing Granger &quot;</span>
+                    <span class="s2">&quot;causality, as all-to-all connectivity is not supported&quot;</span>
+                <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all indices for multivariate connectivity&quot;</span><span class="p">)</span>
+            <span class="c1"># indices expected to be a masked array, even if not ragged</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="p">)</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;only using indices for lower-triangular matrix&quot;</span><span class="p">)</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="c1"># pad ragged indices and mask the invalid entries</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">seed</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span>
+                        <span class="n">seed</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;seed and target indices must not intersect when &quot;</span>
+                            <span class="s2">&quot;computing Granger causality&quot;</span>
+                        <span class="p">)</span>
+            <span class="c1"># make sure padded indices are stored in the connectivity object</span>
+            <span class="c1"># create a copy so that `indices_use` can be modified</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># unique signals for which we actually need to compute the CSD of</span>
+    <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+        <span class="n">signals_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices_use</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+        <span class="n">remapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch_i</span><span class="p">:</span> <span class="n">sig_i</span> <span class="k">for</span> <span class="n">sig_i</span><span class="p">,</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signals_use</span><span class="p">)}</span>
+        <span class="n">remapped_inds</span> <span class="o">=</span> <span class="n">indices_use</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># multivariate functions expect seed/target remapping</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">signals_use</span><span class="p">:</span>
+            <span class="n">remapped_inds</span><span class="p">[</span><span class="n">indices_use</span> <span class="o">==</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">remapping</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">source_idx</span> <span class="o">=</span> <span class="n">remapped_inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">target_idx</span> <span class="o">=</span> <span class="n">remapped_inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">max_n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># no indices remapping required for bivariate functions</span>
+        <span class="n">signals_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">source_idx</span> <span class="o">=</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">target_idx</span> <span class="o">=</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">max_n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># check rank input and compute data ranks if necessary</span>
+    <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">gc_n_lags</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># check freqs</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="n">freqs</span><span class="p">]</span>
+    <span class="c1"># array conversion</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+    <span class="c1"># check order for multiple frequencies</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">delta_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">increase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">delta_f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">increase</span><span class="p">,</span> <span class="s2">&quot;Frequencies should be in increasing order&quot;</span>
+
+    <span class="c1"># check that freqs corresponds to at least n_cycles cycles</span>
+    <span class="n">dur</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span> <span class="o">/</span> <span class="n">sfreq</span>
+    <span class="n">cycle_freq</span> <span class="o">=</span> <span class="n">n_cycles</span> <span class="o">/</span> <span class="n">dur</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;</span> <span class="n">cycle_freq</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;At least one value in n_cycles corresponds to a&quot;</span>
+            <span class="s2">&quot;wavelet longer than the signal. Use less cycles, &quot;</span>
+            <span class="s2">&quot;higher frequencies, or longer epochs.&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># check for Nyquist</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Frequencies </span><span class="si">{</span><span class="n">freqs</span><span class="p">[</span><span class="n">freqs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz are &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;larger than Nyquist = </span><span class="si">{</span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># compute frequency mask based on specified min/max and decimation factor</span>
+    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">)</span>
+
+    <span class="c1"># the frequency points where we compute connectivity</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">]</span>
+
+    <span class="c1"># compute central frequencies</span>
+    <span class="n">_f</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)),</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;freqs&quot;</span><span class="p">,),</span> <span class="n">coords</span><span class="o">=</span><span class="p">(</span><span class="n">freqs</span><span class="p">,))</span>
+    <span class="n">foi_s</span> <span class="o">=</span> <span class="n">_f</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freqs</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">foi_e</span> <span class="o">=</span> <span class="n">_f</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">freqs</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">foi_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">foi_s</span><span class="p">,</span> <span class="n">foi_e</span><span class="p">]</span>
+    <span class="n">f_vec</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">foi_idx</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
+        <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span>
+        <span class="n">out_freqs</span> <span class="o">=</span> <span class="n">f_vec</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">out_freqs</span> <span class="o">=</span> <span class="n">freqs</span>
+
+    <span class="n">conn</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">conn_patterns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">))</span>
+        <span class="c1"># patterns shape of [epochs x seeds/targets x cons x channels x freqs]</span>
+        <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_channels</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connectivity computation...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># parameters to pass to the connectivity function</span>
+    <span class="n">call_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
+        <span class="n">foi_idx</span><span class="o">=</span><span class="n">foi_idx</span><span class="p">,</span>
+        <span class="n">source_idx</span><span class="o">=</span><span class="n">source_idx</span><span class="p">,</span>
+        <span class="n">target_idx</span><span class="o">=</span><span class="n">target_idx</span><span class="p">,</span>
+        <span class="n">signals_use</span><span class="o">=</span><span class="n">signals_use</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+        <span class="n">faverage</span><span class="o">=</span><span class="n">faverage</span><span class="p">,</span>
+        <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+        <span class="n">gc_n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">,</span>
+        <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span>
+        <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+        <span class="n">kw_cwt</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kw_mt</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="n">multivariate_con</span><span class="o">=</span><span class="n">multivariate_con</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Processing epoch </span><span class="si">{</span><span class="n">epoch_idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
+        <span class="n">scores</span><span class="p">,</span> <span class="n">patterns</span> <span class="o">=</span> <span class="n">_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">epoch_idx</span><span class="p">],</span> <span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+            <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">epoch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">multivariate_con</span> <span class="ow">and</span> <span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">epoch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># transpose to [seeds/targets x epochs x cons x channels x freqs]</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">multivariate_con</span><span class="p">:</span>
+        <span class="n">conn_flat</span> <span class="o">=</span> <span class="n">conn</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+            <span class="n">this_conn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span> <span class="o">+</span> <span class="n">conn_flat</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">conn_flat</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">this_conn</span><span class="p">[:,</span> <span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_flat</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+            <span class="n">this_conn</span> <span class="o">=</span> <span class="n">this_conn</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">n_epochs</span><span class="p">,</span>
+                    <span class="n">n_signals</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">+</span> <span class="n">conn_flat</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_conn</span>
+
+    <span class="c1"># create the connectivity containers</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">store_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
+            <span class="s2">&quot;patterns&quot;</span><span class="p">:</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">],</span>
+            <span class="s2">&quot;freqs&quot;</span><span class="p">:</span> <span class="n">out_freqs</span><span class="p">,</span>
+            <span class="s2">&quot;n_nodes&quot;</span><span class="p">:</span> <span class="n">n_signals</span><span class="p">,</span>
+            <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span>
+            <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+            <span class="s2">&quot;spec_method&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+            <span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="n">events</span><span class="p">,</span>
+            <span class="s2">&quot;event_id&quot;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="p">,</span>
+            <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="n">rank</span><span class="p">,</span>
+            <span class="s2">&quot;n_lags&quot;</span><span class="p">:</span> <span class="n">gc_n_lags</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">(</span><span class="o">**</span><span class="n">store_params</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EpochSpectralConnectivity</span><span class="p">(</span><span class="o">**</span><span class="n">store_params</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[Connectivity computation done]&quot;</span><span class="p">)</span>
+
+    <span class="c1"># return the object instead of list of length one</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_spectral_connectivity</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">,</span>
+    <span class="n">foi_idx</span><span class="p">,</span>
+    <span class="n">source_idx</span><span class="p">,</span>
+    <span class="n">target_idx</span><span class="p">,</span>
+    <span class="n">signals_use</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">,</span>
+    <span class="n">faverage</span><span class="p">,</span>
+    <span class="n">n_cycles</span><span class="p">,</span>
+    <span class="n">mt_bandwidth</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="p">,</span>
+    <span class="n">rank</span><span class="p">,</span>
+    <span class="n">decim</span><span class="p">,</span>
+    <span class="n">padding</span><span class="p">,</span>
+    <span class="n">kw_cwt</span><span class="p">,</span>
+    <span class="n">kw_mt</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">,</span>
+    <span class="n">multivariate_con</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate time-resolved connectivity for one epoch.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array_like, shape (n_channels, n_times)</span>
+<span class="sd">        Time-series data.</span>
+<span class="sd">    method : list of str</span>
+<span class="sd">        List of connectivity metrics to compute.</span>
+<span class="sd">    kernel : array_like, shape (n_sm_fres, n_sm_times)</span>
+<span class="sd">        Smoothing kernel.</span>
+<span class="sd">    foi_idx : array_like, shape (n_foi, 2)</span>
+<span class="sd">        Upper and lower bound indices of frequency bands.</span>
+<span class="sd">    source_idx : array_like, shape (n_cons,) or (n_cons, n_channels)</span>
+<span class="sd">        Defines the signal pairs of interest together with ``target_idx``.</span>
+<span class="sd">    target_idx : array_like, shape (n_cons,) or (n_cons, n_channels)</span>
+<span class="sd">        Defines the signal pairs of interest together with ``source_idx``.</span>
+<span class="sd">    signals_use : list of int</span>
+<span class="sd">        The unique signals on which connectivity is to be computed.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Time-frequency transformation method.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Sampling frequency.</span>
+<span class="sd">    freqs : array_like</span>
+<span class="sd">        Array of frequencies of interest for time-frequency decomposition.</span>
+<span class="sd">        Only the frequencies within the range specified by ``fmin`` and</span>
+<span class="sd">        ``fmax`` are used.</span>
+<span class="sd">    faverage : bool</span>
+<span class="sd">        Average over frequency bands.</span>
+<span class="sd">    n_cycles : float | array_like of float</span>
+<span class="sd">        Number of cycles in the wavelet, either a fixed number or one per</span>
+<span class="sd">        frequency.</span>
+<span class="sd">    mt_bandwidth : float | None</span>
+<span class="sd">        Multitaper time-bandwidth.</span>
+<span class="sd">    gc_n_lags : int</span>
+<span class="sd">        Number of lags to use for the vector autoregressive model when</span>
+<span class="sd">        computing Granger causality.</span>
+<span class="sd">    rank : tuple of array</span>
+<span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    decim : int</span>
+<span class="sd">        Decimation factor after time-frequency</span>
+<span class="sd">        decomposition.</span>
+<span class="sd">    padding : float</span>
+<span class="sd">        Amount of time to consider as padding at the beginning and end of each</span>
+<span class="sd">        epoch in seconds.</span>
+<span class="sd">    multivariate_con : bool</span>
+<span class="sd">        Whether or not multivariate connectivity is to be computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scores : dict</span>
+<span class="sd">        Dictionary containing the connectivity estimates corresponding to the</span>
+<span class="sd">        metrics in ``method``. Each element is an array of shape (n_cons,</span>
+<span class="sd">        n_freqs) or (n_cons, n_fbands) if ``faverage`` is `True`.</span>
+
+<span class="sd">    patterns : dict</span>
+<span class="sd">        Dictionary containing the connectivity patterns (for reconstructing the</span>
+<span class="sd">        connectivity components in source-space) corresponding to the metrics</span>
+<span class="sd">        in ``method``, if multivariate methods are called, else an empty</span>
+<span class="sd">        dictionary. Each element is an array of shape (2, n_channels, n_freqs)</span>
+<span class="sd">        or (2, n_channels, 1) if ``faverage`` is `True`, where 2 corresponds to</span>
+<span class="sd">        the seed and target signals (respectively).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_morlet</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="p">,</span>
+            <span class="n">freqs</span><span class="p">,</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span>
+            <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kw_cwt</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># same dims with multitaper</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_multitaper</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="p">,</span>
+            <span class="n">freqs</span><span class="p">,</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+            <span class="n">time_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span>
+            <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kw_mt</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">n_cycles</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_cycles</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+        <span class="n">mt_bandwidth</span> <span class="o">=</span> <span class="n">mt_bandwidth</span> <span class="k">if</span> <span class="n">mt_bandwidth</span> <span class="k">else</span> <span class="mi">4</span>
+        <span class="n">n_tapers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">mt_bandwidth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_tapers</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">),</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">n_c</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">)):</span>
+            <span class="n">window_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">n_c</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">half_nbw</span> <span class="o">=</span> <span class="n">mt_bandwidth</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">n_tapers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">mt_bandwidth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">eigvals</span> <span class="o">=</span> <span class="n">dpss_windows</span><span class="p">(</span><span class="n">window_length</span><span class="p">,</span> <span class="n">half_nbw</span><span class="p">,</span> <span class="n">n_tapers</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">weights</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eigvals</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+            <span class="c1"># weights have shape (n_tapers, n_freqs, n_times)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mode must be &#39;cwt_morlet&#39; or &#39;multitaper&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">padding</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">padding</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Padding cannot be negative, got </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Padding cannot be larger than half of data &quot;</span> <span class="sa">f</span><span class="s2">&quot;length, got </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">pad_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">padding</span> <span class="o">*</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="n">decim</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">:</span><span class="o">-</span><span class="n">pad_idx</span><span class="p">]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">:</span><span class="o">-</span><span class="n">pad_idx</span><span class="p">]</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="c1"># compute for each connectivity method</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">_parallel_con</span><span class="p">(</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="p">,</span>
+        <span class="n">foi_idx</span><span class="p">,</span>
+        <span class="n">source_idx</span><span class="p">,</span>
+        <span class="n">target_idx</span><span class="p">,</span>
+        <span class="n">signals_use</span><span class="p">,</span>
+        <span class="n">gc_n_lags</span><span class="p">,</span>
+        <span class="n">rank</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">,</span>
+        <span class="n">n_cons</span><span class="p">,</span>
+        <span class="n">faverage</span><span class="p">,</span>
+        <span class="n">weights</span><span class="p">,</span>
+        <span class="n">multivariate_con</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">conn</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">conn</span><span class="p">]</span>
+            <span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">scores</span><span class="p">,</span> <span class="n">patterns</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">#                               TIME-RESOLVED CORE FUNCTIONS</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+
+<span class="k">def</span> <span class="nf">_parallel_con</span><span class="p">(</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">,</span>
+    <span class="n">foi_idx</span><span class="p">,</span>
+    <span class="n">source_idx</span><span class="p">,</span>
+    <span class="n">target_idx</span><span class="p">,</span>
+    <span class="n">signals_use</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="p">,</span>
+    <span class="n">rank</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">,</span>
+    <span class="n">total</span><span class="p">,</span>
+    <span class="n">faverage</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">,</span>
+    <span class="n">multivariate_con</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral connectivity in parallel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)</span>
+<span class="sd">        Time-frequency data (complex signal).</span>
+<span class="sd">    method : list of str</span>
+<span class="sd">        List of connectivity metrics to compute.</span>
+<span class="sd">    kernel : array_like, shape (n_sm_fres, n_sm_times)</span>
+<span class="sd">        Smoothing kernel.</span>
+<span class="sd">    foi_idx : array_like, shape (n_foi, 2)</span>
+<span class="sd">        Upper and lower bound indices of frequency bands.</span>
+<span class="sd">    source_idx : array_like, shape (n_cons,) or (n_cons, n_channels)</span>
+<span class="sd">        Defines the signal pairs of interest together with ``target_idx``.</span>
+<span class="sd">    target_idx : array_like, shape (n_cons,) or (n_cons, n_channels)</span>
+<span class="sd">        Defines the signal pairs of interest together with ``source_idx``.</span>
+<span class="sd">    signals_use : list of int</span>
+<span class="sd">        The unique signals on which connectivity is to be computed.</span>
+<span class="sd">    gc_n_lags : int</span>
+<span class="sd">        Number of lags to use for the vector autoregressive model when</span>
+<span class="sd">        computing Granger causality.</span>
+<span class="sd">    rank : tuple of array of int</span>
+<span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    n_jobs : int</span>
+<span class="sd">        Number of parallel jobs.</span>
+<span class="sd">    total : int</span>
+<span class="sd">        Number of pairs of signals.</span>
+<span class="sd">    faverage : bool</span>
+<span class="sd">        Average over frequency bands.</span>
+<span class="sd">    weights : array_like, shape (n_tapers, n_freqs, n_times)</span>
+<span class="sd">        Multitaper weights.</span>
+<span class="sd">    multivariate_con : bool</span>
+<span class="sd">        Whether or not multivariate connectivity is being computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : tuple of list of array</span>
+<span class="sd">        Connectivity estimates for each signal pair, method, and frequency or</span>
+<span class="sd">        frequency band. If bivariate methods are called, the output is a tuple</span>
+<span class="sd">        of a list of arrays containing the connectivity scores. If multivariate</span>
+<span class="sd">        methods are called, the output is a tuple of lists containing arrays</span>
+<span class="sd">        for the connectivity scores and patterns, respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;coh&quot;</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="c1"># psd</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">w</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">psd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">psd</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">weights</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">w</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># smooth</span>
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">psd</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">multivariate_con</span><span class="p">:</span>
+        <span class="c1"># only show progress if verbosity level is DEBUG</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">!=</span> <span class="s2">&quot;DEBUG&quot;</span> <span class="ow">and</span> <span class="n">verbose</span> <span class="o">!=</span> <span class="s2">&quot;debug&quot;</span> <span class="ow">and</span> <span class="n">verbose</span> <span class="o">!=</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># define the function to compute in parallel</span>
+        <span class="n">parallel</span><span class="p">,</span> <span class="n">my_pairwise_con</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
+            <span class="n">_pairwise_con</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">parallel</span><span class="p">(</span>
+                <span class="n">my_pairwise_con</span><span class="p">(</span>
+                    <span class="n">w</span><span class="p">,</span> <span class="n">psd</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">faverage</span><span class="p">,</span> <span class="n">weights</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">source_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_multivariate_con</span><span class="p">(</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">source_idx</span><span class="p">,</span>
+        <span class="n">target_idx</span><span class="p">,</span>
+        <span class="n">signals_use</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="p">,</span>
+        <span class="n">foi_idx</span><span class="p">,</span>
+        <span class="n">faverage</span><span class="p">,</span>
+        <span class="n">weights</span><span class="p">,</span>
+        <span class="n">gc_n_lags</span><span class="p">,</span>
+        <span class="n">rank</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_pairwise_con</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">psd</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">,</span> <span class="n">faverage</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral connectivity metrics between two signals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)</span>
+<span class="sd">        Time-frequency data.</span>
+<span class="sd">    psd : array_like, shape (n_chans, n_freqs, n_times)</span>
+<span class="sd">        Power spectrum between signals ``x`` and ``y``.</span>
+<span class="sd">    x : int</span>
+<span class="sd">        Channel index.</span>
+<span class="sd">    y : int</span>
+<span class="sd">        Channel index.</span>
+<span class="sd">    method : str</span>
+<span class="sd">        Connectivity method.</span>
+<span class="sd">    kernel : array_like, shape (n_sm_fres, n_sm_times)</span>
+<span class="sd">        Smoothing kernel.</span>
+<span class="sd">    foi_idx : array_like, shape (n_foi, 2)</span>
+<span class="sd">        Upper and lower bound indices of frequency bands.</span>
+<span class="sd">    faverage : bool</span>
+<span class="sd">        Average over frequency bands.</span>
+<span class="sd">    weights : array_like, shape (n_tapers, n_freqs, n_times) | None</span>
+<span class="sd">        Multitaper weights.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : list</span>
+<span class="sd">        List of connectivity estimates between signals ``x`` and ``y``</span>
+<span class="sd">        corresponding to the methods in ``method``. Each element is an array</span>
+<span class="sd">        with shape (n_freqs,) or (n_fbands) depending on ``faverage``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">w_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">w_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w_y</span><span class="p">)</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">s_xy</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">conn_func</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;plv&quot;</span><span class="p">:</span> <span class="n">_plv</span><span class="p">,</span> <span class="s2">&quot;ciplv&quot;</span><span class="p">:</span> <span class="n">_ciplv</span><span class="p">,</span> <span class="s2">&quot;pli&quot;</span><span class="p">:</span> <span class="n">_pli</span><span class="p">,</span> <span class="s2">&quot;wpli&quot;</span><span class="p">:</span> <span class="n">_wpli</span><span class="p">,</span> <span class="s2">&quot;coh&quot;</span><span class="p">:</span> <span class="n">_coh</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s2">&quot;coh&quot;</span><span class="p">:</span>
+            <span class="n">s_xx</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            <span class="n">s_yy</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conn_func</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conn_func</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xy</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">out</span><span class="p">):</span>
+        <span class="c1"># mean inside frequency sliding window (if needed)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">faverage</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">foi_idx</span><span class="p">)</span>
+        <span class="c1"># squeeze time dimension</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span> <span class="nf">_multivariate_con</span><span class="p">(</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">seeds</span><span class="p">,</span>
+    <span class="n">targets</span><span class="p">,</span>
+    <span class="n">signals_use</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">,</span>
+    <span class="n">foi_idx</span><span class="p">,</span>
+    <span class="n">faverage</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="p">,</span>
+    <span class="n">rank</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral connectivity metrics between multiple signals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)</span>
+<span class="sd">        Time-frequency data.</span>
+<span class="sd">    seeds : array, shape of (n_cons, n_channels)</span>
+<span class="sd">        Seed channel indices. ``n_channels`` is the largest number of channels</span>
+<span class="sd">        across all connections, with missing entries padded with ``-1``.</span>
+<span class="sd">    targets : array, shape of (n_cons, n_channels)</span>
+<span class="sd">        Target channel indices. ``n_channels`` is the largest number of</span>
+<span class="sd">        channels across all connections, with missing entries padded with</span>
+<span class="sd">        ``-1``.</span>
+<span class="sd">    signals_use : list of int</span>
+<span class="sd">        The unique signals on which connectivity is to be computed.</span>
+<span class="sd">    method : str</span>
+<span class="sd">        Connectivity method.</span>
+<span class="sd">    kernel : array_like, shape (n_sm_fres, n_sm_times)</span>
+<span class="sd">        Smoothing kernel.</span>
+<span class="sd">    foi_idx : array_like, shape (n_foi, 2)</span>
+<span class="sd">        Upper and lower bound indices of frequency bands.</span>
+<span class="sd">    faverage : bool</span>
+<span class="sd">        Average over frequency bands.</span>
+<span class="sd">    weights : array_like, shape (n_tapers, n_freqs, n_times) | None</span>
+<span class="sd">        Multitaper weights.</span>
+<span class="sd">    gc_n_lags : int</span>
+<span class="sd">        Number of lags to use for the vector autoregressive model when</span>
+<span class="sd">        computing Granger causality.</span>
+<span class="sd">    rank : tuple of array, shape of (2, n_cons)</span>
+<span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    n_jobs : int</span>
+<span class="sd">        Number of jobs to run in parallel.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scores : list</span>
+<span class="sd">        List of connectivity scores between seed and target signals for each</span>
+<span class="sd">        connectivity method. Each element is an array with shape (n_freqs,) or</span>
+<span class="sd">        (n_fbands) depending on ``faverage``.</span>
+
+<span class="sd">    patterns : list</span>
+<span class="sd">        List of connectivity patterns between seed and target signals for each</span>
+<span class="sd">        connectivity method. Each element is an array of length 2 corresponding</span>
+<span class="sd">        to the seed and target patterns, respectively, each with shape</span>
+<span class="sd">        (n_channels, n_freqs) or (n_channels, n_fbands)</span>
+<span class="sd">        depending on ``faverage``. ``n_channels`` is the largest number of</span>
+<span class="sd">        channels across all connections, with missing entries padded with</span>
+<span class="sd">        ``np.nan``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">csd</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">signals_use</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">signals_use</span><span class="p">:</span>
+            <span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">w_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">w_y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s_xy</span> <span class="o">=</span> <span class="n">w_x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">w_y</span><span class="p">)</span>
+                <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">csd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">csd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd</span><span class="p">)</span>
+
+    <span class="c1"># initialise connectivity estimators and add CSD information</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+        <span class="n">call_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;n_signals&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">signals_use</span><span class="p">),</span>
+            <span class="s2">&quot;n_cons&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">seeds</span><span class="p">),</span>
+            <span class="s2">&quot;n_freqs&quot;</span><span class="p">:</span> <span class="n">csd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;n_times&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="n">n_jobs</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_gc_methods</span><span class="p">:</span>
+            <span class="n">call_params</span><span class="p">[</span><span class="s2">&quot;n_lags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gc_n_lags</span>
+        <span class="n">con_est</span> <span class="o">=</span> <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">con_i</span><span class="p">,</span> <span class="n">con_csd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">csd</span><span class="p">):</span>
+            <span class="n">con_est</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">con_i</span><span class="p">,</span> <span class="n">con_csd</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con_est</span><span class="p">)</span>
+
+    <span class="c1"># compute connectivity</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">con_est</span> <span class="ow">in</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">con_est</span><span class="o">.</span><span class="n">compute_con</span><span class="p">((</span><span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span><span class="p">),</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con_est</span><span class="o">.</span><span class="n">con_scores</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+        <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con_est</span><span class="o">.</span><span class="n">patterns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">patterns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">patterns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scores</span><span class="p">):</span>
+        <span class="c1"># mean inside frequency sliding window (if needed)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">faverage</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">foi_idx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_foi_average</span><span class="p">(</span><span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">foi_idx</span><span class="p">)</span>
+        <span class="c1"># squeeze time dimension</span>
+        <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scores</span><span class="p">,</span> <span class="n">patterns</span>
+
+
+<span class="k">def</span> <span class="nf">_plv</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute phase-locking value given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plv : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated PLV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
+    <span class="n">plv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">plv</span>
+
+
+<span class="k">def</span> <span class="nf">_ciplv</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute corrected imaginary phase-locking value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ciplv : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated ciPLV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)</span>
+    <span class="n">rplv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">s_xy</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">iplv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">ciplv</span> <span class="o">=</span> <span class="n">iplv</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rplv</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ciplv</span>
+
+
+<span class="k">def</span> <span class="nf">_pli</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute phase-lag index given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pli : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated PLI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pli</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pli</span>
+
+
+<span class="k">def</span> <span class="nf">_wpli</span><span class="p">(</span><span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute weighted phase-lag index given the cross power spectral density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wpli : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated wPLI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">imag</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">con_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">imag</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">wpli</span> <span class="o">=</span> <span class="n">con_num</span> <span class="o">/</span> <span class="n">con_den</span>
+    <span class="k">return</span> <span class="n">wpli</span>
+
+
+<span class="k">def</span> <span class="nf">_coh</span><span class="p">(</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute coherence given the cross spectral density and PSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xx : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;x&#39;.</span>
+<span class="sd">    s_yy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;y&#39;.</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coh : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated COH.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">con_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="n">s_xx</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="n">s_yy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">coh</span> <span class="o">=</span> <span class="n">con_num</span> <span class="o">/</span> <span class="n">con_den</span>
+    <span class="k">return</span> <span class="n">coh</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_csd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute cross spectral density between signals x and y.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">s_xy</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s_xy</span>
+
+
+<span class="k">def</span> <span class="nf">_foi_average</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">foi_idx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Average inside frequency bands.</span>
+
+<span class="sd">    The frequency dimension should be located at -2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conn : array_like, shape (..., n_freqs, n_times)</span>
+<span class="sd">        Connectivity estimate array.</span>
+<span class="sd">    foi_idx : array_like, shape (n_foi, 2)</span>
+<span class="sd">        Upper and lower frequency bounds of each frequency band.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    conn_f : np.ndarray, shape (..., n_fbands, n_times)</span>
+<span class="sd">        Connectivity estimate array, averaged within frequency bands.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get the number of foi</span>
+    <span class="n">n_foi</span> <span class="o">=</span> <span class="n">foi_idx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># get input shape and replace n_freqs with the number of foi</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_foi</span>
+
+    <span class="c1"># compute average</span>
+    <span class="n">conn_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">conn</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n_f</span><span class="p">,</span> <span class="p">(</span><span class="n">f_s</span><span class="p">,</span> <span class="n">f_e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">foi_idx</span><span class="p">):</span>
+        <span class="n">f_e</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">f_s</span> <span class="o">==</span> <span class="n">f_e</span> <span class="k">else</span> <span class="n">f_e</span>
+        <span class="n">conn_f</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n_f</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">f_s</span><span class="p">:</span><span class="n">f_e</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">conn_f</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
