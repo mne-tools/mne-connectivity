@@ -1,5 +1,6 @@
 """The documentation functions."""
 # Authors: Eric Larson <larson.eric.d@gmail.com>
+#          Thomas S. Binns <t.s.binns@outlook.com>
 #
 # License: BSD (3-clause)
 
