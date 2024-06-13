@@ -325,6 +325,13 @@ def test_spectral_decomposition_error_catch(method, mode):
             info=epochs.info, method=method, indices=indices, mode="notamode"
         )
 
+    base_kwargs = dict(
+        info=epochs.info,
+        method=method,
+        indices=indices,
+        mode=mode,
+    )
+
     # Test fmin & fmax
     if mode in ["multitaper", "fourier"]:
         with pytest.raises(
@@ -334,14 +341,7 @@ def test_spectral_decomposition_error_catch(method, mode):
                 "'fourier'"
             ),
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=None,
-                fmax=fmax,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=None, fmax=fmax)
         with pytest.raises(
             TypeError,
             match=(
@@ -349,55 +349,22 @@ def test_spectral_decomposition_error_catch(method, mode):
                 "'fourier'"
             ),
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax=None,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=fmin, fmax=None)
         with pytest.raises(
             TypeError, match="`fmin` must be an instance of int or float"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin="15",
-                fmax=fmax,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin="15", fmax=fmax)
         with pytest.raises(
             TypeError, match="`fmax` must be an instance of int or float"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax="20",
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=fmin, fmax="20")
         with pytest.raises(ValueError, match="`fmax` must be larger than `fmin`"):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmax,
-                fmax=fmin,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=fmax, fmax=fmin)
         with pytest.raises(
             ValueError, match="`fmax` cannot be larger than the Nyquist frequency"
         ):
             CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax=epochs.info["sfreq"] / 2 + 1,
+                **base_kwargs, fmin=fmin, fmax=epochs.info["sfreq"] / 2 + 1
             )
 
     # Test multitaper settings
@@ -406,61 +373,27 @@ def test_spectral_decomposition_error_catch(method, mode):
             TypeError, match="`mt_bandwidth` must be an instance of int, float, or None"
         ):
             CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax=fmax,
-                mt_bandwidth="5",
+                **base_kwargs, fmin=fmin, fmax=fmax, mt_bandwidth="5"
             )
         with pytest.raises(
             TypeError, match="`mt_adaptive` must be an instance of bool"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax=fmax,
-                mt_adaptive=1,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=fmin, fmax=fmax, mt_adaptive=1)
         with pytest.raises(
             TypeError, match="`mt_low_bias` must be an instance of bool"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                fmin=fmin,
-                fmax=fmax,
-                mt_low_bias=1,
-            )
+            CoherencyDecomposition(**base_kwargs, fmin=fmin, fmax=fmax, mt_low_bias=1)
 
     # Test wavelet settings
     if mode == "cwt_morlet":
         with pytest.raises(
             TypeError, match="`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                cwt_freqs=None,
-            )
+            CoherencyDecomposition(**base_kwargs, cwt_freqs=None)
         with pytest.raises(
             TypeError, match="`cwt_freqs` must be an instance of array-like"
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                cwt_freqs="1",
-            )
+            CoherencyDecomposition(**base_kwargs, cwt_freqs="1")
         with pytest.raises(
             ValueError,
             match=(
@@ -468,10 +401,7 @@ def test_spectral_decomposition_error_catch(method, mode):
             ),
         ):
             CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
+                **base_kwargs,
                 cwt_freqs=np.array([epochs.info["sfreq"] / 2 + 1]),
                 cwt_n_cycles=cwt_n_cycles,
             )
@@ -479,96 +409,40 @@ def test_spectral_decomposition_error_catch(method, mode):
             TypeError,
             match="`cwt_n_cycles` must be an instance of int, float, or array-like",
         ):
-            CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
-                cwt_freqs=cwt_freqs,
-                cwt_n_cycles="5",
-            )
+            CoherencyDecomposition(**base_kwargs, cwt_freqs=cwt_freqs, cwt_n_cycles="5")
         with pytest.raises(
             ValueError,
             match="`cwt_n_cycles` array-like must have the same length as `cwt_freqs`",
         ):
             CoherencyDecomposition(
-                info=epochs.info,
-                method=method,
-                indices=indices,
-                mode=mode,
+                **base_kwargs,
                 cwt_freqs=cwt_freqs,
                 cwt_n_cycles=np.full(cwt_freqs.shape[0] - 1, 5),
             )
+
+    base_kwargs.update(
+        fmin=fmin, fmax=fmax, cwt_freqs=cwt_freqs, cwt_n_cycles=cwt_n_cycles
+    )
 
     # Test n_components
     with pytest.raises(
         TypeError, match="`n_components` must be an instance of int or None"
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            n_components="2",
-        )
+        CoherencyDecomposition(**base_kwargs, n_components="2")
 
     # Test rank
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank="2",
-        )
+        CoherencyDecomposition(**base_kwargs, rank="2")
     with pytest.raises(
         TypeError, match="`rank` must be an instance of tuple of ints or None"
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank=("2", "2"),
-        )
+        CoherencyDecomposition(**base_kwargs, rank=("2", "2"))
     with pytest.raises(ValueError, match="`rank` must have length 2"):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank=(2,),
-        )
+        CoherencyDecomposition(**base_kwargs, rank=(2,))
     with pytest.raises(ValueError, match="entries of `rank` must be > 0"):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank=(0, 1),
-        )
+        CoherencyDecomposition(**base_kwargs, rank=(0, 1))
     with pytest.raises(
         ValueError,
         match=(
@@ -576,17 +450,7 @@ def test_spectral_decomposition_error_catch(method, mode):
             "channels in `indices`"
         ),
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank=(n_seeds + 1, n_targets),
-        )
+        CoherencyDecomposition(**base_kwargs, rank=(n_seeds + 1, n_targets))
     with pytest.raises(
         ValueError,
         match=(
@@ -594,58 +458,19 @@ def test_spectral_decomposition_error_catch(method, mode):
             "channels in `indices`"
         ),
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            rank=(n_seeds, n_targets + 1),
-        )
+        CoherencyDecomposition(**base_kwargs, rank=(n_seeds, n_targets + 1))
 
     # Test n_jobs
     with pytest.raises(TypeError, match="`n_jobs` must be an instance of int"):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            n_jobs="1",
-        )
+        CoherencyDecomposition(**base_kwargs, n_jobs="1")
 
     # Test verbose
     with pytest.raises(
         TypeError, match="`verbose` must be an instance of bool, str, int, or None"
     ):
-        CoherencyDecomposition(
-            info=epochs.info,
-            method=method,
-            indices=indices,
-            mode=mode,
-            fmin=fmin,
-            fmax=fmax,
-            cwt_freqs=cwt_freqs,
-            cwt_n_cycles=cwt_n_cycles,
-            verbose=[True],
-        )
+        CoherencyDecomposition(**base_kwargs, verbose=[True])
 
-    decomp_class = CoherencyDecomposition(
-        info=epochs.info,
-        method=method,
-        indices=indices,
-        mode=mode,
-        fmin=fmin,
-        fmax=fmax,
-        cwt_freqs=cwt_freqs,
-        cwt_n_cycles=cwt_n_cycles,
-    )
+    decomp_class = CoherencyDecomposition(**base_kwargs)
 
     # TEST BAD FITTING
     # Test input data format
