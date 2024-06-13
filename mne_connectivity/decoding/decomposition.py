@@ -1,4 +1,6 @@
 # Authors: Thomas S. Binns <t.s.binns@outlook.com>
+#          Marijn van Vliet <w.m.vanvliet@gmail.com>
+#          Eric Larson <larson.eric.d@gmail.com>
 #
 # License: BSD (3-clause)
 
