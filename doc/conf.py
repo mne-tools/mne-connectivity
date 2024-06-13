@@ -124,6 +124,8 @@ numpydoc_xref_ignore = {
     "n_estimated_nodes",
     "n_samples",
     "n_channels",
+    "n_patterns",
+    "n_filters",
     "Renderer",
     "n_ytimes",
     "n_ychannels",

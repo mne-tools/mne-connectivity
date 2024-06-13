@@ -474,123 +474,10 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         )
 
     @fill_doc
-    def plot_patterns(self, info, **kwargs):
-        """Plot topographic patterns of components.
-
-        The patterns explain how the measured data was generated from the
-        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
-
-        Seed and target patterns are plotted separately.
-
-        Parameters
-        ----------
-        %(info_not_none)s
-        components : float | array of float | None
-            The patterns to plot. If ``None``, all components will be shown.
-        %(average_plot_evoked_topomap)s
-        %(ch_type_topomap)s
-        scalings : dict | float | None
-            The scalings of the channel types to be applied for plotting.
-            If None, defaults to ``dict(eeg=1e6, grad=1e13, mag=1e15)``.
-        %(sensors_topomap)s
-        %(show_names_topomap)s
-        %(mask_patterns_topomap)s
-        %(mask_params_topomap)s
-        %(contours_topomap)s
-        %(outlines_topomap)s
-        %(sphere_topomap_auto)s
-        %(image_interp_topomap)s
-        %(extrapolate_topomap)s
-        %(border_topomap)s
-        %(res_topomap)s
-        %(size_topomap)s
-        %(cmap_topomap)s
-        %(vlim_plot_topomap)s
-        %(cnorm)s
-        %(colorbar_topomap)s
-        %(cbar_fmt_topomap)s
-        %(units_topomap)s
-        %(axes_evoked_plot_topomap)s
-        name_format : str | None
-            String format for topomap values. ``None`` defaults to f"{method}%%01d".
-        %(nrows_ncols_topomap)s
-        %(show)s
-
-        Returns
-        -------
-        figs : list of instance of matplotlib.figure.Figure
-           The seed and target figures, respectively.
-        """
-        if self.patterns_ is None:
-            raise RuntimeError(
-                "no patterns are available, please call the `fit` method first"
-            )
-
-        return self._plot_filters_patterns(
-            (self.patterns_[0].T, self.patterns_[1].T), info, **kwargs
-        )
-
-    @fill_doc
-    def plot_filters(self, info, **kwargs):
-        """Plot topographic filters of components.
-
-        The filters are used to extract discriminant neural sources from the measured
-        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.
-
-        Seed and target filters are plotted separately.
-
-        Parameters
-        ----------
-        %(info_not_none)s
-        components : float | array of float | None
-            The filters to plot. If ``None``, all components will be shown.
-        %(average_plot_evoked_topomap)s
-        %(ch_type_topomap)s
-        scalings : dict | float | None
-            The scalings of the channel types to be applied for plotting.
-            If None, defaults to ``dict(eeg=1e6, grad=1e13, mag=1e15)``.
-        %(sensors_topomap)s
-        %(show_names_topomap)s
-        %(mask_patterns_topomap)s
-        %(mask_params_topomap)s
-        %(contours_topomap)s
-        %(outlines_topomap)s
-        %(sphere_topomap_auto)s
-        %(image_interp_topomap)s
-        %(extrapolate_topomap)s
-        %(border_topomap)s
-        %(res_topomap)s
-        %(size_topomap)s
-        %(cmap_topomap)s
-        %(vlim_plot_topomap)s
-        %(cnorm)s
-        %(colorbar_topomap)s
-        %(cbar_fmt_topomap)s
-        %(units_topomap)s
-        %(axes_evoked_plot_topomap)s
-        name_format : str | None
-            String format for topomap values. ``None`` defaults to f"{method}%%01d".
-        %(nrows_ncols_topomap)s
-        %(show)s
-
-        Returns
-        -------
-        figs : list of instance of matplotlib.figure.Figure
-           The seed and target figures, respectively.
-        """
-        if self.filters_ is None:
-            raise RuntimeError(
-                "no filters are available, please call the `fit` method first"
-            )
-
-        return self._plot_filters_patterns(self.filters_, info, **kwargs)
-
-    def _plot_filters_patterns(
+    def plot_patterns(
         self,
-        plot_data,
         info,
         components=None,
-        average=None,
         ch_type=None,
         scalings=None,
         sensors=True,
@@ -610,18 +497,232 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         cnorm=None,
         colorbar=True,
         cbar_fmt="%.1E",
-        units=None,
+        units="AU",
         axes=None,
         name_format=None,
         nrows=1,
         ncols="auto",
         show=True,
     ):
+        """Plot topographic patterns of components.
+
+        The patterns explain how the measured data was generated from the
+        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
+
+        Seed and target patterns are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_patterns_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.patterns_ is None:
+            raise RuntimeError(
+                "no patterns are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            (self.patterns_[0].T, self.patterns_[1].T),
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    @fill_doc
+    def plot_filters(
+        self,
+        info,
+        components=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units="AU",
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot topographic filters of components.
+
+        The filters are used to extract discriminant neural sources from the measured
+        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.
+
+        Seed and target filters are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_filters_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.filters_ is None:
+            raise RuntimeError(
+                "no filters are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            self.filters_,
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    def _plot_filters_patterns(
+        self,
+        plot_data,
+        info,
+        components,
+        ch_type,
+        scalings,
+        sensors,
+        show_names,
+        mask,
+        mask_params,
+        contours,
+        outlines,
+        sphere,
+        image_interp,
+        extrapolate,
+        border,
+        res,
+        size,
+        cmap,
+        vlim,
+        cnorm,
+        colorbar,
+        cbar_fmt,
+        units,
+        axes,
+        name_format,
+        nrows,
+        ncols,
+        show,
+    ):
         """Plot filters/targets for components."""
         # Sort inputs
         _validate_type(info, Info, "`info`", "mne.Info")
-        if units is None:
-            units = "AU"
         if components is None:
             components = np.arange(self.n_components)
 
@@ -639,7 +740,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             figs.append(
                 evoked.plot_topomap(
                     times=components,
-                    average=average,
+                    average=None,  # do not average across independent components
                     ch_type=ch_type,
                     scalings=scalings,
                     sensors=sensors,
