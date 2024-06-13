@@ -4,11 +4,11 @@ from mne.channels import make_dig_montage, make_standard_montage
 from numpy.testing import assert_allclose
 
 from mne_connectivity import (
+    CoherencyDecomposition,
     make_signals_in_freq_bands,
     seed_target_indices,
     spectral_connectivity_epochs,
 )
-from mne_connectivity.decoding import CoherencyDecomposition
 from mne_connectivity.utils import _check_multivariate_indices
 
 

@@ -24,11 +24,11 @@ from mne import make_fixed_length_epochs
 from mne.datasets.fieldtrip_cmc import data_path
 
 from mne_connectivity import (
+    CoherencyDecomposition,
     make_signals_in_freq_bands,
     seed_target_indices,
     spectral_connectivity_epochs,
 )
-from mne_connectivity.decoding import CoherencyDecomposition
 
 ########################################################################################
 # Background
