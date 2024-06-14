@@ -102,13 +102,14 @@ class _AbstractConEstBase:
 class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     """Base class for mean epoch-wise multivar. con. estimation methods."""
 
+    name = None
     n_steps = None
     patterns = None
     filters = None
     con_scores_dtype = np.float64
 
     def __init__(
-        self, n_signals, n_cons, n_freqs, n_times, n_jobs=1, store_filters=False
+        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
     ):
         self.n_signals = n_signals
         self.n_cons = n_cons
@@ -181,11 +182,11 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     def reshape_results(self):
         """Remove time dimension from results, if necessary."""
         if self.n_times == 0:
-            self.con_scores = self.con_scores[..., 0]
+            self.con_scores = np.squeeze(self.con_scores, axis=-1)
             if self.patterns is not None:
-                self.patterns = self.patterns[..., 0]
+                self.patterns = np.squeeze(self.patterns, axis=-1)
             if self.filters is not None:
-                self.filters = self.filters[..., 0]
+                self.filters = np.squeeze(self.filters, axis=-1)
 
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
@@ -203,10 +204,15 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     accumulate_psd = False
 
     def __init__(
-        self, n_signals, n_cons, n_freqs, n_times, n_jobs=1, store_filters=False
+        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
     ):
         super(_MultivariateCohEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs, store_filters
+            n_signals,
+            n_cons,
+            n_freqs,
+            n_times,
+            store_filters=store_filters,
+            n_jobs=n_jobs,
         )
 
     def compute_con(self, indices, ranks, n_epochs=1):
@@ -222,13 +228,16 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         freqs = np.arange(self.n_freqs)
 
         if self.name in ["CaCoh", "MIC"]:
-            self.patterns = np.full(
-                (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
+            patterns_filters_shape = (
+                2,
+                self.n_cons,
+                indices[0].shape[1],
+                self.n_freqs,
+                n_times,
             )
+            self.patterns = np.full(patterns_filters_shape, np.nan)
             if self.store_filters:
-                self.filters = np.full(
-                    (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
-                )
+                self.filters = np.full(patterns_filters_shape, np.nan)
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
@@ -683,8 +692,10 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
     accumulate_psd = False
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
-        super(_GCEstBase, self).__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, *, n_jobs=1):
+        super(_GCEstBase, self).__init__(
+            n_signals, n_cons, n_freqs, n_times, n_jobs=n_jobs
+        )
 
         self.freq_res = (self.n_freqs - 1) * 2
         if n_lags >= self.freq_res:

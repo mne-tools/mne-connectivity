@@ -449,7 +449,7 @@ ax = plt.subplot(111)
 ax.plot(
     con_mic_class.freqs,
     np.abs(con_mic_class.get_data()[0]),
-    color=plt.rcParams["axes.prop_cycle"].by_key()["color"][2],
+    color="C2",
     label="MIC (decomposition\nclass)",
 )
 ax.axvspan(FMIN, FMAX, color="grey", alpha=0.2, label="Fitted freq. band")

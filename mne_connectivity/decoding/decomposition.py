@@ -49,7 +49,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     The multivariate methods maximise connectivity between a set of seed and target
     signals in a frequency-resolved manner. The maximisation of connectivity involves
     fitting spatial filters to the cross-spectral density of the seed and target data,
-    alongisde which spatial patterns of the contributions to connectivity can be
+    alongside which spatial patterns of the contributions to connectivity can be
     computed :footcite:`HaufeEtAl2014`.
 
     Once fit, the filters can be used to transform data into the underlying connectivity
@@ -144,10 +144,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             raise ValueError("`indices` must have length 2")
         for indices_group in indices:
             _validate_type(
-                indices_group,
-                (list, tuple, np.ndarray),
-                "`indices`",
-                "tuple of array-likes",
+                indices_group, "array-like", "`indices`", "tuple of array-likes"
             )
         _indices = self._check_indices(indices, info["nchan"])
 
@@ -158,8 +155,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                     "`fmin` and `fmax` must not be None if `mode` is 'multitaper' or "
                     "'fourier'"
                 )
-            _validate_type(fmin, (int, float), "`fmin`", "int or float")
-            _validate_type(fmax, (int, float), "`fmax`", "int or float")
+            _validate_type(fmin, "numeric", "`fmin`", "int or float")
+            _validate_type(fmax, "numeric", "`fmax`", "int or float")
             if fmin > fmax:
                 raise ValueError("`fmax` must be larger than `fmin`")
             if fmax > info["sfreq"] / 2:
@@ -167,7 +164,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             if mode == "multitaper":
                 _validate_type(
                     mt_bandwidth,
-                    (int, float, None),
+                    ("numeric", None),
                     "`mt_bandwidth`",
                     "int, float, or None",
                 )
@@ -178,9 +175,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 raise TypeError(
                     "`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"
                 )
-            _validate_type(
-                cwt_freqs, (tuple, list, np.ndarray), "`cwt_freqs`", "array-like"
-            )
+            _validate_type(cwt_freqs, "array-like", "`cwt_freqs`", "array-like")
             if cwt_freqs[-1] > info["sfreq"] / 2:
                 raise ValueError(
                     "last entry of `cwt_freqs` cannot be larger than the Nyquist "
@@ -188,7 +183,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 )
             _validate_type(
                 cwt_n_cycles,
-                (int, float, tuple, list, np.ndarray),
+                ("numeric", "array-like"),
                 "`cwt_n_cycles`",
                 "int, float, or array-like",
             )
@@ -199,21 +194,21 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                     "`cwt_n_cycles` array-like must have the same length as `cwt_freqs`"
                 )
 
-        _validate_type(n_components, (int, None), "`n_components`", "int or None")
+        _validate_type(
+            n_components, ("int-like", None), "`n_components`", "int or None"
+        )
 
         _validate_type(rank, (tuple, None), "`rank`", "tuple of ints or None")
         if rank is not None:
             if len(rank) != 2:
                 raise ValueError("`rank` must have length 2")
             for rank_group in rank:
-                _validate_type(rank_group, int, "`rank`", "tuple of ints or None")
+                _validate_type(
+                    rank_group, "int-like", "`rank`", "tuple of ints or None"
+                )
         _rank = self._check_rank(rank, indices)
 
-        _validate_type(n_jobs, int, "`n_jobs`", "int")
-
-        _validate_type(
-            verbose, (bool, str, int, None), "`verbose`", "bool, str, int, or None"
-        )
+        # n_jobs and verbose will be checked downstream
 
         # Store inputs
         self.info = info
@@ -295,8 +290,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             n_cons=1,
             n_freqs=1,
             n_times=0,
-            n_jobs=self.n_jobs,
             store_filters=True,
+            n_jobs=self.n_jobs,
         )
         self._conn_estimator.accumulate(con_idx=np.arange(csd.shape[0]), csd_xy=csd)
 
@@ -318,8 +313,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         n_chans = X.shape[-2]
         if n_chans != self.info["nchan"]:
             raise ValueError(
-                "`X` does not match Info\nExpected %i channels, got %i"
-                % (n_chans, self.info["nchan"])
+                f"`X` does not match Info\nExpected {n_chans} channels, got "
+                f"{self.info["nchan"]}"
             )
 
     def _get_rank_and_ncomps_from_X(self, X):
@@ -341,11 +336,11 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
     def _compute_csd(self, X):
         """Compute the cross-spectral density of the input data."""
-        # XXX: fix csd returning [fmin +1 bin to fmax -1 bin] frequencies
         csd_kwargs = {
             "X": X,
             "sfreq": self.info["sfreq"],
             "n_jobs": self.n_jobs,
+            "verbose": self.verbose,
         }
         if self.mode == "multitaper":
             csd_kwargs.update(
@@ -437,7 +432,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             The input data which the connectivity decomposition filters should be fit to
             and subsequently transformed.
         y : None
-            Used for scikit-learn compatibility.
+            Ignored; exists for compatibility with scikit-learn pipelines.
         **fit_params : dict
             Additional fitting parameters passed to the ``fit`` method. Not used for
             this class.

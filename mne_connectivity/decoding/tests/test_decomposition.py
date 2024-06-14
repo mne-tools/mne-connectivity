@@ -460,16 +460,6 @@ def test_spectral_decomposition_error_catch(method, mode):
     ):
         CoherencyDecomposition(**base_kwargs, rank=(n_seeds, n_targets + 1))
 
-    # Test n_jobs
-    with pytest.raises(TypeError, match="`n_jobs` must be an instance of int"):
-        CoherencyDecomposition(**base_kwargs, n_jobs="1")
-
-    # Test verbose
-    with pytest.raises(
-        TypeError, match="`verbose` must be an instance of bool, str, int, or None"
-    ):
-        CoherencyDecomposition(**base_kwargs, verbose=[True])
-
     decomp_class = CoherencyDecomposition(**base_kwargs)
 
     # TEST BAD FITTING
