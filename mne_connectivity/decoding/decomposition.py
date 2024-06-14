@@ -314,7 +314,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         if n_chans != self.info["nchan"]:
             raise ValueError(
                 f"`X` does not match Info\nExpected {n_chans} channels, got "
-                f"{self.info["nchan"]}"
+                f"{self.info['nchan']}"
             )
 
     def _get_rank_and_ncomps_from_X(self, X):
