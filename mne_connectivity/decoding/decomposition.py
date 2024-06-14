@@ -270,7 +270,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             The input data which the connectivity decomposition filters should be fit
             to.
         y : None
-            Used for scikit-learn compatibility.
+            Ignored; exists for compatibility with scikit-learn pipelines.
 
         Returns
         -------
