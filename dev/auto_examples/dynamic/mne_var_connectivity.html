@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev66+g382c7bae5 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev72+gc24702cb9 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=d794b80a"></script>
+    <script src="../../_static/documentation_options.js?v=07f4b703"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev66+g382c7bae5 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev72+gc24702cb9 documentation</p>
   
 </a></div>
     
@@ -519,23 +519,18 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▋                                   | 4.08M/88.2M [00:00&lt;00:02, 40.8MB/s]
-  9%|███▍                                 | 8.28M/88.2M [00:00&lt;00:01, 41.5MB/s]
- 15%|█████▌                               | 13.4M/88.2M [00:00&lt;00:01, 45.6MB/s]
- 20%|███████▌                             | 18.1M/88.2M [00:00&lt;00:01, 46.1MB/s]
- 26%|█████████▋                           | 23.0M/88.2M [00:00&lt;00:01, 47.2MB/s]
- 31%|███████████▋                         | 27.7M/88.2M [00:00&lt;00:01, 46.4MB/s]
- 38%|██████████████▏                      | 33.7M/88.2M [00:00&lt;00:01, 50.5MB/s]
- 45%|████████████████▍                    | 39.2M/88.2M [00:00&lt;00:00, 52.2MB/s]
- 51%|██████████████████▉                  | 45.0M/88.2M [00:00&lt;00:00, 53.8MB/s]
- 58%|█████████████████████▍               | 51.2M/88.2M [00:01&lt;00:00, 56.4MB/s]
- 64%|███████████████████████▊             | 56.8M/88.2M [00:01&lt;00:00, 50.6MB/s]
- 73%|██████████████████████████▊          | 64.0M/88.2M [00:01&lt;00:00, 56.4MB/s]
- 81%|██████████████████████████████       | 71.6M/88.2M [00:01&lt;00:00, 62.3MB/s]
- 89%|████████████████████████████████▊    | 78.3M/88.2M [00:01&lt;00:00, 63.4MB/s]
- 96%|███████████████████████████████████▌ | 84.7M/88.2M [00:01&lt;00:00, 56.6MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:03, 22.3MB/s]
+ 13%|████▋                                | 11.3M/88.2M [00:00&lt;00:01, 43.4MB/s]
+ 22%|████████▏                            | 19.7M/88.2M [00:00&lt;00:01, 58.7MB/s]
+ 32%|███████████▉                         | 28.5M/88.2M [00:00&lt;00:00, 69.1MB/s]
+ 43%|███████████████▊                     | 37.6M/88.2M [00:00&lt;00:00, 76.6MB/s]
+ 53%|███████████████████▌                 | 46.6M/88.2M [00:00&lt;00:00, 80.9MB/s]
+ 63%|███████████████████████▍             | 55.8M/88.2M [00:00&lt;00:00, 84.3MB/s]
+ 74%|███████████████████████████▎         | 65.0M/88.2M [00:00&lt;00:00, 86.7MB/s]
+ 84%|███████████████████████████████      | 74.1M/88.2M [00:00&lt;00:00, 87.9MB/s]
+ 94%|██████████████████████████████████▊  | 82.9M/88.2M [00:01&lt;00:00, 79.4MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 273GB/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 303GB/s]
 Download complete in 04s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
@@ -562,8 +557,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -724,8 +719,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-a8f9e926-cf2f-4044-a1fc-6033daab78ca"  title="Hide section"
-    onclick="toggleVisibility('general-a8f9e926-cf2f-4044-a1fc-6033daab78ca')">
+<tr class="repr-section-header general-8ca1f33f-5947-4766-a4e2-c432a7b23e79"  title="Hide section"
+    onclick="toggleVisibility('general-8ca1f33f-5947-4766-a4e2-c432a7b23e79')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -737,7 +732,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-a8f9e926-cf2f-4044-a1fc-6033daab78ca ">
+<tr class="repr-element general-8ca1f33f-5947-4766-a4e2-c432a7b23e79 ">
     <td class="repr-section-toggle-col"></td>
     <td>Filename(s)</td>
     <td>
@@ -748,19 +743,19 @@ span.collapse-uncollapse-caret {
     </td>
 </tr>
 
-<tr class="repr-element general-a8f9e926-cf2f-4044-a1fc-6033daab78ca ">
+<tr class="repr-element general-8ca1f33f-5947-4766-a4e2-c432a7b23e79 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-a8f9e926-cf2f-4044-a1fc-6033daab78ca ">
+<tr class="repr-element general-8ca1f33f-5947-4766-a4e2-c432a7b23e79 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-a8f9e926-cf2f-4044-a1fc-6033daab78ca ">
+<tr class="repr-element general-8ca1f33f-5947-4766-a4e2-c432a7b23e79 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
@@ -769,7 +764,7 @@ span.collapse-uncollapse-caret {
 
 
 </tr>
-<tr class="repr-element general-a8f9e926-cf2f-4044-a1fc-6033daab78ca ">
+<tr class="repr-element general-8ca1f33f-5947-4766-a4e2-c432a7b23e79 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -784,8 +779,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-0ae5567a-af1d-412e-a8c2-eea403225b71"  title="Hide section"
-    onclick="toggleVisibility('acquisition-0ae5567a-af1d-412e-a8c2-eea403225b71')">
+<tr class="repr-section-header acquisition-c55a2d43-2e90-4640-b904-fd080fb7ae28"  title="Hide section"
+    onclick="toggleVisibility('acquisition-c55a2d43-2e90-4640-b904-fd080fb7ae28')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -797,7 +792,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element acquisition-0ae5567a-af1d-412e-a8c2-eea403225b71 ">
+<tr class="repr-element acquisition-c55a2d43-2e90-4640-b904-fd080fb7ae28 ">
     <td class="repr-section-toggle-col"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -810,14 +805,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-0ae5567a-af1d-412e-a8c2-eea403225b71 ">
+<tr class="repr-element acquisition-c55a2d43-2e90-4640-b904-fd080fb7ae28 ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-0ae5567a-af1d-412e-a8c2-eea403225b71 ">
+<tr class="repr-element acquisition-c55a2d43-2e90-4640-b904-fd080fb7ae28 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -831,8 +826,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-5ced2f02-f265-46b5-9a78-2c131ae31495"  title="Hide section"
-    onclick="toggleVisibility('channels-5ced2f02-f265-46b5-9a78-2c131ae31495')">
+<tr class="repr-section-header channels-4f1ba6d0-940d-4b89-a5a0-adffca3ef64b"  title="Hide section"
+    onclick="toggleVisibility('channels-4f1ba6d0-940d-4b89-a5a0-adffca3ef64b')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -845,7 +840,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-5ced2f02-f265-46b5-9a78-2c131ae31495 ">
+<tr class="repr-element channels-4f1ba6d0-940d-4b89-a5a0-adffca3ef64b ">
     <td class="repr-section-toggle-col"></td>
     <td>ECoG</td>
     <td>
@@ -858,7 +853,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-5ced2f02-f265-46b5-9a78-2c131ae31495 ">
+<tr class="repr-element channels-4f1ba6d0-940d-4b89-a5a0-adffca3ef64b ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -873,8 +868,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-6a917c5a-aa01-474d-93fb-c573bff65855"  title="Hide section"
-    onclick="toggleVisibility('filters-6a917c5a-aa01-474d-93fb-c573bff65855')">
+<tr class="repr-section-header filters-e740a450-15bc-4a51-b32a-8d55f1068227"  title="Hide section"
+    onclick="toggleVisibility('filters-e740a450-15bc-4a51-b32a-8d55f1068227')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -886,14 +881,14 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-6a917c5a-aa01-474d-93fb-c573bff65855 ">
+<tr class="repr-element filters-e740a450-15bc-4a51-b32a-8d55f1068227 ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-6a917c5a-aa01-474d-93fb-c573bff65855 ">
+<tr class="repr-element filters-e740a450-15bc-4a51-b32a-8d55f1068227 ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -924,7 +919,7 @@ leave as an exercise for our readers!</p>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;AD1-4, ATT1,2&#39;, &#39;AST1,3&#39;, &#39;G16&#39;, &#39;PD&#39;, &#39;SLT1-3&#39;, &#39;offset&#39;, &#39;onset&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [np.str_(&#39;AD1-4, ATT1,2&#39;), np.str_(&#39;AST1,3&#39;), np.str_(&#39;G16&#39;), np.str_(&#39;PD&#39;), np.str_(&#39;SLT1-3&#39;), np.str_(&#39;offset&#39;), np.str_(&#39;onset&#39;)]
 </pre></div>
 </div>
 </section>
@@ -1315,20 +1310,25 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 21/302 [00:00&lt;00:01, 209.10it/s]
- 14%|█▍        | 43/302 [00:00&lt;00:01, 211.30it/s]
- 22%|██▏       | 65/302 [00:00&lt;00:01, 212.40it/s]
- 29%|██▉       | 87/302 [00:00&lt;00:01, 212.90it/s]
- 36%|███▌      | 109/302 [00:00&lt;00:00, 213.37it/s]
- 43%|████▎     | 131/302 [00:00&lt;00:00, 213.13it/s]
- 51%|█████     | 153/302 [00:00&lt;00:00, 213.54it/s]
- 58%|█████▊    | 175/302 [00:00&lt;00:00, 213.30it/s]
- 65%|██████▌   | 197/302 [00:00&lt;00:00, 213.32it/s]
- 73%|███████▎  | 219/302 [00:01&lt;00:00, 213.46it/s]
- 80%|███████▉  | 241/302 [00:01&lt;00:00, 213.54it/s]
- 87%|████████▋ | 263/302 [00:01&lt;00:00, 213.17it/s]
- 94%|█████████▍| 285/302 [00:01&lt;00:00, 213.23it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 213.12it/s]
+  5%|▌         | 16/302 [00:00&lt;00:01, 152.58it/s]
+ 11%|█         | 32/302 [00:00&lt;00:01, 142.54it/s]
+ 16%|█▌        | 48/302 [00:00&lt;00:01, 147.60it/s]
+ 21%|██        | 63/302 [00:00&lt;00:01, 139.74it/s]
+ 26%|██▌       | 78/302 [00:00&lt;00:01, 139.99it/s]
+ 31%|███       | 93/302 [00:00&lt;00:01, 137.40it/s]
+ 37%|███▋      | 111/302 [00:00&lt;00:01, 148.25it/s]
+ 42%|████▏     | 127/302 [00:00&lt;00:01, 151.18it/s]
+ 47%|████▋     | 143/302 [00:00&lt;00:01, 152.30it/s]
+ 53%|█████▎    | 159/302 [00:01&lt;00:00, 154.12it/s]
+ 58%|█████▊    | 175/302 [00:01&lt;00:00, 151.72it/s]
+ 63%|██████▎   | 191/302 [00:01&lt;00:00, 146.09it/s]
+ 69%|██████▉   | 209/302 [00:01&lt;00:00, 153.55it/s]
+ 75%|███████▍  | 226/302 [00:01&lt;00:00, 157.45it/s]
+ 80%|████████  | 243/302 [00:01&lt;00:00, 158.60it/s]
+ 86%|████████▌ | 259/302 [00:01&lt;00:00, 158.94it/s]
+ 92%|█████████▏| 277/302 [00:01&lt;00:00, 162.07it/s]
+ 97%|█████████▋| 294/302 [00:01&lt;00:00, 161.81it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 152.55it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1374,7 +1374,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f35c05ae380&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f33335d3f70&gt;
 </pre></div>
 </div>
 </section>
@@ -1437,10 +1437,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f3615a8d9c0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f333393a950&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.200 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 47.036 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1524,7 +1524,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-12.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-18.
       <br/>
     
   </p>
