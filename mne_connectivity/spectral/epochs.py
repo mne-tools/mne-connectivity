@@ -44,12 +44,12 @@ def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
     elif mode == "cwt_morlet":
         # cwt_morlet mode
         if cwt_freqs is None:
-            raise ValueError("define frequencies of interest using " "cwt_freqs")
+            raise ValueError("define frequencies of interest using cwt_freqs")
         else:
             cwt_freqs = cwt_freqs.astype(np.float64)
         if any(cwt_freqs > (sfreq / 2.0)):
             raise ValueError(
-                "entries in cwt_freqs cannot be " "larger than Nyquist (sfreq / 2)"
+                "entries in cwt_freqs cannot be larger than Nyquist (sfreq / 2)"
             )
         freqs_all = cwt_freqs
     else:
@@ -98,13 +98,13 @@ def _prepare_connectivity(
 
     if tmin is not None and tmin < times_in[0]:
         warn(
-            "start time tmin=%0.2f s outside of the time scope of the data "
-            "[%0.2f s, %0.2f s]" % (tmin, times_in[0], times_in[-1])
+            f"start time tmin={tmin:.2f} s outside of the time scope of the data "
+            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
         )
     if tmax is not None and tmax > times_in[-1]:
         warn(
-            "stop time tmax=%0.2f s outside of the time scope of the data "
-            "[%0.2f s, %0.2f s]" % (tmax, times_in[0], times_in[-1])
+            f"stop time tmax={tmax:.2f} s outside of the time scope of the data "
+            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
         )
 
     mask = _time_mask(times_in, tmin, tmax, sfreq=sfreq)
@@ -125,8 +125,8 @@ def _prepare_connectivity(
         if multivariate_con:
             if any(this_method in _gc_methods for this_method in method):
                 raise ValueError(
-                    "indices must be specified when computing Granger "
-                    "causality, as all-to-all connectivity is not supported"
+                    "indices must be specified when computing Granger causality, as "
+                    "all-to-all connectivity is not supported"
                 )
             else:
                 logger.info("using all indices for multivariate connectivity")
@@ -151,8 +151,8 @@ def _prepare_connectivity(
                     )
                     if intersection.size > 0:
                         raise ValueError(
-                            "seed and target indices must not intersect when "
-                            "computing Granger causality"
+                            "seed and target indices must not intersect when computing "
+                            "Granger causality"
                         )
         else:
             indices_use = check_indices(indices)
@@ -160,10 +160,10 @@ def _prepare_connectivity(
     # number of connectivities to compute
     n_cons = len(indices_use[0])
 
-    logger.info("    computing connectivity for %d connections" % n_cons)
+    logger.info(f"    computing connectivity for {n_cons} connections")
     logger.info(
-        "    using t=%0.3fs..%0.3fs for estimation (%d points)"
-        % (tmin_true, tmax_true, n_times)
+        f"    using t={tmin_true:.3f}s..{tmax_true:.3f}s for estimation ({n_times} "
+        "points)"
     )
 
     # check that fmin corresponds to at least 5 cycles
@@ -175,17 +175,10 @@ def _prepare_connectivity(
     else:
         if np.any(fmin < five_cycle_freq):
             warn(
-                "fmin=%0.3f Hz corresponds to %0.3f < 5 cycles "
-                "based on the epoch length %0.3f sec, need at least %0.3f "
-                "sec epochs or fmin=%0.3f. Spectrum estimate will be "
-                "unreliable."
-                % (
-                    np.min(fmin),
-                    dur * np.min(fmin),
-                    dur,
-                    5.0 / np.min(fmin),
-                    five_cycle_freq,
-                )
+                f"fmin={np.min(fmin):.3f} Hz corresponds to {dur * np.min(fmin):.3f} < "
+                f"5 cycles based on the epoch length {dur:.3f} sec, need at least "
+                f"{5.0 / np.min(fmin):.3f} sec epochs or fmin={five_cycle_freq:.3f}. "
+                "Spectrum estimate will be unreliable."
             )
 
     # compute frequencies to analyze based on number of samples,
@@ -209,25 +202,24 @@ def _prepare_connectivity(
     for i, n_f_band in enumerate([len(f) for f in freqs_bands]):
         if n_f_band == 0:
             raise ValueError(
-                "There are no frequency points between "
-                "%0.1fHz and %0.1fHz. Change the band "
-                "specification (fmin, fmax) or the "
-                "frequency resolution." % (fmin[i], fmax[i])
+                f"There are no frequency points between {fmin[i]:.1f}Hz and "
+                f"{fmax[i]:.1f}Hz. Change the band specification (fmin, fmax) or the "
+                "frequency resolution."
             )
     if n_bands == 1:
         logger.info(
-            "    frequencies: %0.1fHz..%0.1fHz (%d points)"
-            % (freqs_bands[0][0], freqs_bands[0][-1], n_freqs)
+            f"    frequencies: {freqs_bands[0][0]:.1f}Hz..{freqs_bands[0][-1]:.1f}Hz "
+            f"({n_freqs} points)"
         )
     else:
         logger.info("    computing connectivity for the bands:")
         for i, bfreqs in enumerate(freqs_bands):
             logger.info(
-                "     band %d: %0.1fHz..%0.1fHz "
-                "(%d points)" % (i + 1, bfreqs[0], bfreqs[-1], len(bfreqs))
+                f"     band {i + 1}: {bfreqs[0]:.1f}Hz..{bfreqs[-1]:.1f}Hz "
+                f"({len(bfreqs)} points)"
             )
     if faverage:
-        logger.info("    connectivity scores will be averaged for " "each band")
+        logger.info("    connectivity scores will be averaged for each band")
 
     return (
         n_cons,
@@ -270,10 +262,10 @@ def _assemble_spectral_params(
         )
         spectral_params.update(window_fun=window_fun, eigvals=eigvals)
     elif mode == "fourier":
-        logger.info("    using FFT with a Hanning window to estimate " "spectra")
+        logger.info("    using FFT with a Hanning window to estimate spectra")
         spectral_params.update(window_fun=np.hanning(n_times), eigvals=1.0)
     elif mode == "cwt_morlet":
-        logger.info("    using CWT with Morlet wavelets to estimate " "spectra")
+        logger.info("    using CWT with Morlet wavelets to estimate spectra")
 
         # reformat cwt_n_cycles if we have removed some frequencies
         # using fmin, fmax, fskip
@@ -281,8 +273,8 @@ def _assemble_spectral_params(
         if len(cwt_n_cycles) > 1:
             if len(cwt_n_cycles) != len(cwt_freqs):
                 raise ValueError(
-                    "cwt_n_cycles must be float or an "
-                    "array with the same size as cwt_freqs"
+                    "cwt_n_cycles must be float or an array with the same size as "
+                    "cwt_freqs"
                 )
             cwt_n_cycles = cwt_n_cycles[freq_mask]
 
@@ -537,7 +529,7 @@ def _get_and_verify_data_sizes(
         if n_times is not None:
             if this_n_times != n_times:
                 raise ValueError(
-                    "all input time series must have the same " "number of time points"
+                    "all input time series must have the same number of time points"
                 )
         else:
             n_times = this_n_times
@@ -563,7 +555,7 @@ def _get_and_verify_data_sizes(
     if n_signals is not None:
         if n_signals != n_signals_tot:
             raise ValueError(
-                "the number of time series has to be the same in " "each epoch"
+                "the number of time series has to be the same in each epoch"
             )
     n_signals = n_signals_tot
 
@@ -582,14 +574,13 @@ def _check_estimators(method):
         if this_method in _CON_METHOD_MAP:
             con_method_types.append(_CON_METHOD_MAP[this_method])
         elif isinstance(this_method, str):
-            raise ValueError("%s is not a valid connectivity method" % this_method)
+            raise ValueError(f"{this_method} is not a valid connectivity method")
         else:
             # support for custom class
             method_valid, msg = _check_method(this_method)
             if not method_valid:
                 raise ValueError(
-                    "The supplied connectivity method does "
-                    "not have the method %s" % msg
+                    f"The supplied connectivity method does not have the method {msg}"
                 )
             con_method_types.append(this_method)
 
@@ -954,15 +945,15 @@ def spectral_connectivity_epochs(
 
     if n_bands != 1 and any(this_method in _gc_methods for this_method in method):
         raise ValueError(
-            "computing Granger causality on multiple frequency "
-            "bands is not yet supported"
+            "computing Granger causality on multiple frequency bands is not yet "
+            "supported"
         )
 
     if any(this_method in _multivariate_methods for this_method in method):
         if not all(this_method in _multivariate_methods for this_method in method):
             raise ValueError(
-                "bivariate and multivariate connectivity methods cannot be "
-                "used in the same function call"
+                "bivariate and multivariate connectivity methods cannot be used in the "
+                "same function call"
             )
         multivariate_con = True
     else:
@@ -998,9 +989,7 @@ def spectral_connectivity_epochs(
         times_in = None
         metadata = None
         if sfreq is None:
-            raise ValueError(
-                "Sampling frequency (sfreq) is required with " "array input."
-            )
+            raise ValueError("Sampling frequency (sfreq) is required with array input.")
 
     # loop over data; it could be a generator that returns
     # (n_signals x n_times) arrays or SourceEstimates
@@ -1120,7 +1109,7 @@ def spectral_connectivity_epochs(
 
             sep = ", "
             metrics_str = sep.join([meth.name for meth in con_methods])
-            logger.info("    the following metrics will be computed: %s" % metrics_str)
+            logger.info(f"    the following metrics will be computed: {metrics_str}")
 
         # check dimensions and time scale
         for this_epoch in epoch_block:
@@ -1161,8 +1150,7 @@ def spectral_connectivity_epochs(
             # no parallel processing
             for this_epoch in epoch_block:
                 logger.info(
-                    "    computing cross-spectral density for epoch %d"
-                    % (epoch_idx + 1)
+                    f"    computing cross-spectral density for epoch {epoch_idx + 1}"
                 )
                 # con methods and psd are updated inplace
                 _epoch_spectral_connectivity(data=this_epoch, **call_params)
@@ -1170,8 +1158,8 @@ def spectral_connectivity_epochs(
         else:
             # process epochs in parallel
             logger.info(
-                "    computing cross-spectral density for epochs %d..%d"
-                % (epoch_idx + 1, epoch_idx + len(epoch_block))
+                f"    computing cross-spectral density for epochs {epoch_idx + 1}.."
+                f"{epoch_idx + len(epoch_block)}"
             )
 
             out = parallel(
@@ -1217,16 +1205,14 @@ def spectral_connectivity_epochs(
 
         if this_con.shape[0] != n_cons:
             raise RuntimeError(
-                "first dimension of connectivity scores does not match the "
-                "number of connections; please contact the mne-connectivity "
-                "developers"
+                "first dimension of connectivity scores does not match the number of "
+                "connections; please contact the mne-connectivity developers"
             )
         if faverage:
             if this_con.shape[1] != n_freqs:
                 raise RuntimeError(
-                    "second dimension of connectivity scores does not match "
-                    "the number of frequencies; please contact the "
-                    "mne-connectivity developers"
+                    "second dimension of connectivity scores does not match the number "
+                    "of frequencies; please contact the mne-connectivity developers"
                 )
             con_shape = (n_cons, n_bands) + this_con.shape[2:]
             this_con_bands = np.empty(con_shape, dtype=this_con.dtype)

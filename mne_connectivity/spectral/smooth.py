@@ -26,7 +26,7 @@ def _create_kernel(sm_times, sm_freqs, kernel="hanning"):
 
     if scale:
         # I know this piece of code is terrible ='D
-        logger.info("For frequency dependent kernel sm_freqs is not used" "")
+        logger.info("For frequency dependent kernel sm_freqs is not used")
         # Number of kernels
         n_kernel = len(sm_times)
         # Get the size of the biggest kernel
