@@ -190,9 +190,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
-        super(_MultivariateCohEstBase, self).__init__(
-            n_signals, n_cons, n_freqs, n_times, n_jobs
-        )
+        super().__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
 
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate coherency methods."""
@@ -658,7 +656,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
-        super(_GCEstBase, self).__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
+        super().__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
 
         self.freq_res = (self.n_freqs - 1) * 2
         if n_lags >= self.freq_res:
