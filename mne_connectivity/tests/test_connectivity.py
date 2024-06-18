@@ -128,7 +128,7 @@ def test_connectivity_containers(conn_cls):
 
     # test initialization error checks
     with pytest.raises(
-        TypeError, match="Connectivity data " "must be passed in as a " "numpy array"
+        TypeError, match="Connectivity data must be passed in as a numpy array"
     ):
         conn_cls(data=data, n_nodes=2, **extra_kwargs)
     with pytest.raises(RuntimeError, match="Data*."):
@@ -144,9 +144,7 @@ def test_connectivity_containers(conn_cls):
     conn = conn_cls(data=correct_numpy_input, n_nodes=3, **extra_kwargs)
 
     # test that get_data works as intended
-    with pytest.raises(
-        ValueError, match="Invalid value for the " "'output' parameter*."
-    ):
+    with pytest.raises(ValueError, match="Invalid value for the 'output' parameter*."):
         conn.get_data(output="blah")
 
     assert conn.shape == tuple(correct_numpy_shape)
