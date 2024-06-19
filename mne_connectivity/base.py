@@ -923,7 +923,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
         n_epochs_used=None,
         **kwargs,
     ):
-        super(SpectralConnectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             method=method,
@@ -980,7 +980,7 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin):
         n_epochs_used=None,
         **kwargs,
     ):
-        super(TemporalConnectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             method=method,
@@ -1031,7 +1031,7 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
         n_epochs_used=None,
         **kwargs,
     ):
-        super(SpectroTemporalConnectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             method=method,
@@ -1079,7 +1079,7 @@ class EpochSpectralConnectivity(SpectralConnectivity):
         spec_method=None,
         **kwargs,
     ):
-        super(EpochSpectralConnectivity, self).__init__(
+        super().__init__(
             data,
             freqs=freqs,
             names=names,
@@ -1116,7 +1116,7 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     def __init__(
         self, data, times, n_nodes, names=None, indices="all", method=None, **kwargs
     ):
-        super(EpochTemporalConnectivity, self).__init__(
+        super().__init__(
             data,
             times=times,
             names=names,
@@ -1163,7 +1163,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
         spec_method=None,
         **kwargs,
     ):
-        super(EpochSpectroTemporalConnectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             freqs=freqs,
@@ -1210,7 +1210,7 @@ class Connectivity(BaseConnectivity):
         n_epochs_used=None,
         **kwargs,
     ):
-        super(Connectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             method=method,
@@ -1258,7 +1258,7 @@ class EpochConnectivity(BaseConnectivity):
         n_epochs_used=None,
         **kwargs,
     ):
-        super(EpochConnectivity, self).__init__(
+        super().__init__(
             data,
             names=names,
             method=method,

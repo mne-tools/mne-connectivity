@@ -116,7 +116,7 @@ def matplotlib_config():
 
     class CallbackRegistryReraise(orig):
         def __init__(self, exception_handler=None, signals=None):
-            super(CallbackRegistryReraise, self).__init__(exception_handler)
+            super().__init__(exception_handler)
 
     cbook.CallbackRegistry = CallbackRegistryReraise
 
