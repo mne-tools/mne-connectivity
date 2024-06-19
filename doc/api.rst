@@ -49,8 +49,23 @@ on numpy array inputs.
    spectral_connectivity_epochs
    spectral_connectivity_time
 
+Decoding classes
+================
+
+These classes fit filters which decompose data into discrete sources of
+connectivity, amplifying the signal-to-noise ratio of these interactions.
+
+.. currentmodule:: mne_connectivity.decoding
+
+.. autosummary::
+   :toctree: generated/
+
+   CoherencyDecomposition
+
 Reading functions
 =================
+
+.. currentmodule:: mne_connectivity
 
 .. autosummary::
    :toctree: generated/

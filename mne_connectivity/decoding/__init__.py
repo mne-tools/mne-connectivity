@@ -1,0 +1,1 @@
+from .decomposition import CoherencyDecomposition

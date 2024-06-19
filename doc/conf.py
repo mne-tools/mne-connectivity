@@ -111,6 +111,7 @@ numpydoc_xref_ignore = {
     "n_node_names",
     "n_tapers",
     "n_signals",
+    "n_components",
     "n_step",
     "n_freqs",
     "epochs",
