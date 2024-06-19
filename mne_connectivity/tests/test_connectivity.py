@@ -131,20 +131,20 @@ def test_connectivity_containers(conn_cls):
         TypeError, match="Connectivity data must be passed in as a numpy array"
     ):
         conn_cls(data=data, n_nodes=2, **extra_kwargs)
-    with pytest.raises(RuntimeError, match="Data*."):
+    with pytest.raises(RuntimeError, match="Data"):
         conn_cls(data=bad_numpy_input, n_nodes=2, **extra_kwargs)
-    with pytest.raises(ValueError, match="If indices are passed*."):
+    with pytest.raises(ValueError, match="If indices are passed"):
         conn_cls(
             data=correct_numpy_input, indices=bad_indices, n_nodes=2, **extra_kwargs
         )
-    with pytest.raises(ValueError, match="Indices can only be*."):
+    with pytest.raises(ValueError, match="Indices can only be"):
         conn_cls(data=correct_numpy_input, indices="square", n_nodes=2, **extra_kwargs)
 
     indices = ([0, 1], [1, 0])
     conn = conn_cls(data=correct_numpy_input, n_nodes=3, **extra_kwargs)
 
     # test that get_data works as intended
-    with pytest.raises(ValueError, match="Invalid value for the 'output' parameter*."):
+    with pytest.raises(ValueError, match="Invalid value for the 'output' parameter"):
         conn.get_data(output="blah")
 
     assert conn.shape == tuple(correct_numpy_shape)
@@ -152,11 +152,11 @@ def test_connectivity_containers(conn_cls):
     assert conn.get_data(output="dense").ndim == len(correct_numpy_shape) + 1
 
     # test renaming nodes error checks
-    with pytest.raises(ValueError, match="Name*."):
+    with pytest.raises(ValueError, match="Name"):
         conn.rename_nodes({"100": "new_name"})
-    with pytest.raises(ValueError, match="mapping must be*"):
+    with pytest.raises(ValueError, match="mapping must be"):
         conn.rename_nodes(["0", "new_name"])
-    with pytest.raises(ValueError, match="New channel names*"):
+    with pytest.raises(ValueError, match="New channel names"):
         conn.rename_nodes({"0": "1"})
 
     # test renaming nodes
