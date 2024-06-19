@@ -58,7 +58,7 @@ class _CohEstBase(_EpochMeanConEstBase):
     accumulate_psd = True
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_CohEstBase, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # allocate space for accumulation of CSD
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
@@ -114,7 +114,7 @@ class _PLVEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_PLVEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # allocate accumulator
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
@@ -138,7 +138,7 @@ class _ciPLVEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_ciPLVEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # allocate accumulator
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
@@ -167,7 +167,7 @@ class _PLIEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_PLIEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # allocate accumulator
         self._acc = np.zeros(self.csd_shape)
@@ -209,7 +209,7 @@ class _DPLIEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_DPLIEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # allocate accumulator
         self._acc = np.zeros(self.csd_shape)
@@ -235,7 +235,7 @@ class _WPLIEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_WPLIEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # store  both imag(csd) and abs(imag(csd))
         acc_shape = (2,) + self.csd_shape
@@ -274,7 +274,7 @@ class _WPLIDebiasedEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_WPLIDebiasedEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
         # store imag(csd), abs(imag(csd)), imag(csd)^2
         acc_shape = (3,) + self.csd_shape
         self._acc = np.zeros(acc_shape)
@@ -318,7 +318,7 @@ class _PPCEst(_EpochMeanConEstBase):
     accumulate_psd = False
 
     def __init__(self, n_cons, n_freqs, n_times):
-        super(_PPCEst, self).__init__(n_cons, n_freqs, n_times)
+        super().__init__(n_cons, n_freqs, n_times)
 
         # store csd / abs(csd)
         self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
