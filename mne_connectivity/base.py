@@ -415,8 +415,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     ):
         if isinstance(indices, str) and indices not in ["all", "symmetric"]:
             raise ValueError(
-                'Indices can only be "all", otherwise '
-                f"should be a list of tuples. It cannot be {indices}."
+                'Indices can only be "all", "symmetric", or a list of tuples. '
+                f"It cannot be {indices}."
             )
 
         # prepare metadata pandas dataframe and ensure metadata is a Pandas
