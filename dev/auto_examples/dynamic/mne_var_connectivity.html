@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev73+g1792baef0 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=9d5d69a2"></script>
+    <script src="../../_static/documentation_options.js?v=3f4c20c4"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev73+g1792baef0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
   
 </a></div>
     
@@ -391,7 +391,11 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="../handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Dynamic Connectivity Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../decoding/index.html">Decoding &amp; Decomposition Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../decoding/cohy_decomposition.html">Multivariate decomposition for efficient connectivity analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Dynamic Connectivity Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Compute vector autoregressive model (linear system)</a></li>
 </ul>
 </li>
@@ -519,49 +523,24 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 561k/88.2M [00:00&lt;00:16, 5.29MB/s]
-  2%|▋                                    | 1.60M/88.2M [00:00&lt;00:11, 7.54MB/s]
-  3%|▉                                    | 2.38M/88.2M [00:00&lt;00:12, 7.14MB/s]
-  4%|█▎                                   | 3.16M/88.2M [00:00&lt;00:12, 6.98MB/s]
-  4%|█▋                                   | 3.95M/88.2M [00:00&lt;00:12, 6.93MB/s]
-  5%|█▉                                   | 4.73M/88.2M [00:00&lt;00:11, 7.13MB/s]
-  7%|██▍                                  | 5.78M/88.2M [00:00&lt;00:10, 7.72MB/s]
-  8%|██▉                                  | 6.91M/88.2M [00:00&lt;00:09, 8.79MB/s]
-  9%|███▎                                 | 7.89M/88.2M [00:00&lt;00:08, 9.09MB/s]
- 10%|███▊                                 | 9.18M/88.2M [00:01&lt;00:08, 9.35MB/s]
- 12%|████▎                                | 10.2M/88.2M [00:01&lt;00:08, 9.57MB/s]
- 13%|████▋                                | 11.2M/88.2M [00:01&lt;00:08, 9.06MB/s]
- 14%|█████                                | 12.1M/88.2M [00:01&lt;00:09, 8.21MB/s]
- 15%|█████▍                               | 13.1M/88.2M [00:01&lt;00:09, 8.16MB/s]
- 16%|█████▊                               | 14.0M/88.2M [00:01&lt;00:08, 8.38MB/s]
- 17%|██████▎                              | 14.9M/88.2M [00:01&lt;00:08, 8.56MB/s]
- 18%|██████▋                              | 16.0M/88.2M [00:01&lt;00:07, 9.24MB/s]
- 19%|███████▏                             | 17.1M/88.2M [00:02&lt;00:07, 9.68MB/s]
- 21%|███████▌                             | 18.1M/88.2M [00:02&lt;00:07, 9.17MB/s]
- 22%|████████                             | 19.1M/88.2M [00:02&lt;00:07, 9.30MB/s]
- 23%|████████▍                            | 20.1M/88.2M [00:02&lt;00:07, 8.79MB/s]
- 24%|████████▊                            | 20.9M/88.2M [00:02&lt;00:07, 8.58MB/s]
- 25%|█████████▏                           | 22.0M/88.2M [00:02&lt;00:07, 8.61MB/s]
- 26%|█████████▌                           | 22.9M/88.2M [00:02&lt;00:07, 8.23MB/s]
- 27%|█████████▉                           | 23.8M/88.2M [00:02&lt;00:07, 8.39MB/s]
- 28%|██████████▎                          | 24.7M/88.2M [00:02&lt;00:07, 8.10MB/s]
- 29%|██████████▋                          | 25.5M/88.2M [00:03&lt;00:08, 7.74MB/s]
- 30%|███████████                          | 26.2M/88.2M [00:03&lt;00:09, 6.84MB/s]
- 31%|███████████▍                         | 27.1M/88.2M [00:03&lt;00:08, 7.30MB/s]
- 34%|████████████▍                        | 29.6M/88.2M [00:03&lt;00:05, 11.7MB/s]
- 35%|█████████████                        | 31.0M/88.2M [00:03&lt;00:04, 12.5MB/s]
- 39%|██████████████▎                      | 34.0M/88.2M [00:03&lt;00:03, 17.3MB/s]
- 47%|█████████████████▎                   | 41.2M/88.2M [00:03&lt;00:01, 32.7MB/s]
- 56%|████████████████████▌                | 49.0M/88.2M [00:03&lt;00:00, 45.7MB/s]
- 63%|███████████████████████▎             | 55.6M/88.2M [00:03&lt;00:00, 51.5MB/s]
- 72%|██████████████████████████▊          | 63.9M/88.2M [00:04&lt;00:00, 60.6MB/s]
- 82%|██████████████████████████████▏      | 72.0M/88.2M [00:04&lt;00:00, 66.9MB/s]
- 89%|█████████████████████████████████    | 78.8M/88.2M [00:04&lt;00:00, 28.7MB/s]
- 95%|███████████████████████████████████▏ | 83.9M/88.2M [00:05&lt;00:00, 19.1MB/s]
-100%|████████████████████████████████████▊| 87.7M/88.2M [00:05&lt;00:00, 14.8MB/s]
+  4%|█▍                                   | 3.53M/88.2M [00:00&lt;00:02, 35.3MB/s]
+  8%|██▉                                  | 7.07M/88.2M [00:00&lt;00:02, 31.9MB/s]
+ 14%|█████▎                               | 12.8M/88.2M [00:00&lt;00:01, 42.3MB/s]
+ 23%|████████▍                            | 20.0M/88.2M [00:00&lt;00:01, 53.8MB/s]
+ 32%|███████████▊                         | 28.3M/88.2M [00:00&lt;00:00, 63.9MB/s]
+ 40%|██████████████▋                      | 35.0M/88.2M [00:00&lt;00:00, 65.0MB/s]
+ 47%|█████████████████▍                   | 41.6M/88.2M [00:00&lt;00:00, 49.0MB/s]
+ 53%|███████████████████▋                 | 47.0M/88.2M [00:00&lt;00:00, 49.0MB/s]
+ 61%|██████████████████████▌              | 53.6M/88.2M [00:01&lt;00:00, 53.4MB/s]
+ 67%|████████████████████████▉            | 59.3M/88.2M [00:01&lt;00:00, 40.2MB/s]
+ 74%|███████████████████████████▎         | 65.1M/88.2M [00:01&lt;00:00, 44.3MB/s]
+ 80%|█████████████████████████████▋       | 70.7M/88.2M [00:01&lt;00:00, 46.9MB/s]
+ 86%|███████████████████████████████▊     | 75.9M/88.2M [00:01&lt;00:00, 42.1MB/s]
+ 91%|█████████████████████████████████▊   | 80.5M/88.2M [00:01&lt;00:00, 36.9MB/s]
+ 96%|███████████████████████████████████▍ | 84.6M/88.2M [00:01&lt;00:00, 34.4MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 299GB/s]
-Download complete in 08s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 215GB/s]
+Download complete in 05s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
@@ -588,7 +567,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Filter length: 6601 samples (6.601 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -749,8 +728,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-97e92e28-57cd-4f30-8204-ad425ba4302d"  title="Hide section"
-    onclick="toggleVisibility('general-97e92e28-57cd-4f30-8204-ad425ba4302d')">
+<tr class="repr-section-header general-4c81de04-d7a9-4a2a-b66f-093df6492db6"  title="Hide section"
+    onclick="toggleVisibility('general-4c81de04-d7a9-4a2a-b66f-093df6492db6')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -762,7 +741,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-97e92e28-57cd-4f30-8204-ad425ba4302d ">
+<tr class="repr-element general-4c81de04-d7a9-4a2a-b66f-093df6492db6 ">
     <td class="repr-section-toggle-col"></td>
     <td>Filename(s)</td>
     <td>
@@ -773,19 +752,19 @@ span.collapse-uncollapse-caret {
     </td>
 </tr>
 
-<tr class="repr-element general-97e92e28-57cd-4f30-8204-ad425ba4302d ">
+<tr class="repr-element general-4c81de04-d7a9-4a2a-b66f-093df6492db6 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-97e92e28-57cd-4f30-8204-ad425ba4302d ">
+<tr class="repr-element general-4c81de04-d7a9-4a2a-b66f-093df6492db6 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-97e92e28-57cd-4f30-8204-ad425ba4302d ">
+<tr class="repr-element general-4c81de04-d7a9-4a2a-b66f-093df6492db6 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
@@ -794,7 +773,7 @@ span.collapse-uncollapse-caret {
 
 
 </tr>
-<tr class="repr-element general-97e92e28-57cd-4f30-8204-ad425ba4302d ">
+<tr class="repr-element general-4c81de04-d7a9-4a2a-b66f-093df6492db6 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -809,8 +788,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-1670b5d8-d28f-4295-96d1-9443d9d78d83"  title="Hide section"
-    onclick="toggleVisibility('acquisition-1670b5d8-d28f-4295-96d1-9443d9d78d83')">
+<tr class="repr-section-header acquisition-0cf68936-0bf9-48f2-a69b-b3b1fb60affd"  title="Hide section"
+    onclick="toggleVisibility('acquisition-0cf68936-0bf9-48f2-a69b-b3b1fb60affd')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -822,7 +801,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element acquisition-1670b5d8-d28f-4295-96d1-9443d9d78d83 ">
+<tr class="repr-element acquisition-0cf68936-0bf9-48f2-a69b-b3b1fb60affd ">
     <td class="repr-section-toggle-col"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -835,14 +814,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-1670b5d8-d28f-4295-96d1-9443d9d78d83 ">
+<tr class="repr-element acquisition-0cf68936-0bf9-48f2-a69b-b3b1fb60affd ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1670b5d8-d28f-4295-96d1-9443d9d78d83 ">
+<tr class="repr-element acquisition-0cf68936-0bf9-48f2-a69b-b3b1fb60affd ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -856,8 +835,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-6ff17f14-0844-49ec-a228-026a6d049948"  title="Hide section"
-    onclick="toggleVisibility('channels-6ff17f14-0844-49ec-a228-026a6d049948')">
+<tr class="repr-section-header channels-b05cb5c2-374b-4468-ac86-6a0e18769431"  title="Hide section"
+    onclick="toggleVisibility('channels-b05cb5c2-374b-4468-ac86-6a0e18769431')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -870,7 +849,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-6ff17f14-0844-49ec-a228-026a6d049948 ">
+<tr class="repr-element channels-b05cb5c2-374b-4468-ac86-6a0e18769431 ">
     <td class="repr-section-toggle-col"></td>
     <td>ECoG</td>
     <td>
@@ -883,7 +862,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-6ff17f14-0844-49ec-a228-026a6d049948 ">
+<tr class="repr-element channels-b05cb5c2-374b-4468-ac86-6a0e18769431 ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -898,8 +877,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-f0990147-4617-428c-b988-804479d7ad70"  title="Hide section"
-    onclick="toggleVisibility('filters-f0990147-4617-428c-b988-804479d7ad70')">
+<tr class="repr-section-header filters-6739b1bb-9603-434e-ad50-562249e7350a"  title="Hide section"
+    onclick="toggleVisibility('filters-6739b1bb-9603-434e-ad50-562249e7350a')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -911,14 +890,14 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-f0990147-4617-428c-b988-804479d7ad70 ">
+<tr class="repr-element filters-6739b1bb-9603-434e-ad50-562249e7350a ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-f0990147-4617-428c-b988-804479d7ad70 ">
+<tr class="repr-element filters-6739b1bb-9603-434e-ad50-562249e7350a ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1340,24 +1319,25 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|▌         | 17/302 [00:00&lt;00:01, 167.45it/s]
- 12%|█▏        | 35/302 [00:00&lt;00:01, 169.58it/s]
- 18%|█▊        | 53/302 [00:00&lt;00:01, 170.81it/s]
- 24%|██▎       | 71/302 [00:00&lt;00:01, 171.74it/s]
- 29%|██▉       | 89/302 [00:00&lt;00:01, 169.18it/s]
- 35%|███▌      | 106/302 [00:00&lt;00:01, 162.66it/s]
- 41%|████      | 123/302 [00:00&lt;00:01, 159.26it/s]
- 46%|████▌     | 139/302 [00:00&lt;00:01, 157.94it/s]
- 51%|█████▏    | 155/302 [00:00&lt;00:00, 153.38it/s]
- 57%|█████▋    | 171/302 [00:01&lt;00:00, 154.77it/s]
- 62%|██████▏   | 188/302 [00:01&lt;00:00, 157.88it/s]
- 68%|██████▊   | 206/302 [00:01&lt;00:00, 163.65it/s]
- 74%|███████▍  | 223/302 [00:01&lt;00:00, 163.29it/s]
- 79%|███████▉  | 240/302 [00:01&lt;00:00, 159.30it/s]
- 85%|████████▍ | 256/302 [00:01&lt;00:00, 159.47it/s]
- 90%|█████████ | 272/302 [00:01&lt;00:00, 157.82it/s]
- 95%|█████████▌| 288/302 [00:01&lt;00:00, 154.76it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 160.66it/s]
+  5%|▍         | 15/302 [00:00&lt;00:02, 140.19it/s]
+ 11%|█         | 32/302 [00:00&lt;00:01, 155.47it/s]
+ 16%|█▌        | 48/302 [00:00&lt;00:01, 153.74it/s]
+ 21%|██        | 64/302 [00:00&lt;00:01, 153.15it/s]
+ 26%|██▋       | 80/302 [00:00&lt;00:01, 155.28it/s]
+ 32%|███▏      | 98/302 [00:00&lt;00:01, 159.56it/s]
+ 38%|███▊      | 114/302 [00:00&lt;00:01, 154.46it/s]
+ 43%|████▎     | 130/302 [00:00&lt;00:01, 146.71it/s]
+ 48%|████▊     | 146/302 [00:00&lt;00:01, 150.38it/s]
+ 54%|█████▍    | 163/302 [00:01&lt;00:00, 154.22it/s]
+ 59%|█████▉    | 179/302 [00:01&lt;00:00, 150.44it/s]
+ 65%|██████▍   | 196/302 [00:01&lt;00:00, 154.24it/s]
+ 70%|███████   | 212/302 [00:01&lt;00:00, 154.92it/s]
+ 75%|███████▌  | 228/302 [00:01&lt;00:00, 148.01it/s]
+ 80%|████████  | 243/302 [00:01&lt;00:00, 139.80it/s]
+ 86%|████████▋ | 261/302 [00:01&lt;00:00, 149.48it/s]
+ 92%|█████████▏| 279/302 [00:01&lt;00:00, 155.78it/s]
+ 98%|█████████▊| 297/302 [00:01&lt;00:00, 160.80it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 153.57it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1403,7 +1383,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fc59f11e7a0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f91ac84c790&gt;
 </pre></div>
 </div>
 </section>
@@ -1466,10 +1446,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7fc59e5cc6a0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f91a7cf8400&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 50.507 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.118 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1553,7 +1533,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-18.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
       <br/>
     
   </p>

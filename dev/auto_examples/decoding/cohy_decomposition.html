@@ -1,0 +1,2138 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=71d00d13" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../_static/documentation_options.js?v=3f4c20c4"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/decoding/cohy_decomposition';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Dynamic Connectivity Examples" href="../dynamic/index.html" />
+    <link rel="prev" title="Decoding &amp; Decomposition Examples" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cacoh.html">Compute multivariate coherency/coherence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Decoding &amp; Decomposition Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Multivariate decomposition for efficient connectivity analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dynamic/mne_var_connectivity.html">Compute vector autoregressive model (linear system)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Decoding &amp; Decomposition Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Multivariate...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-decoding-cohy-decomposition-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="multivariate-decomposition-for-efficient-connectivity-analysis">
+<span id="sphx-glr-auto-examples-decoding-cohy-decomposition-py"></span><h1>Multivariate decomposition for efficient connectivity analysis<a class="headerlink" href="#multivariate-decomposition-for-efficient-connectivity-analysis" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how the tools in the decoding module can be used to
+decompose data into the most relevant components of connectivity and used for
+a computationally efficient multivariate analysis of connectivity, such as in
+brain-computer interface (BCI) applications.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">,</span>
+    <a href="../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span>
+    <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_connectivity.decoding</span> <span class="kn">import</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a>
+</pre></div>
+</div>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<p>Multivariate forms of signal analysis allow you to simultaneously consider
+the activity of multiple signals. In the case of connectivity, the
+interaction between multiple sensors can be analysed at once and the strongest
+components of this interaction captured in a lower-dimensional set of connectivity
+spectra. This approach brings not only practical benefits (e.g. easier
+interpretability of results from the dimensionality reduction), but can also offer
+methodological improvements (e.g. enhanced signal-to-noise ratio and reduced bias).</p>
+<p>Coherency-based methods are popular approaches for analysing connectivity, capturing
+correlations between signals in the frequency domain. Various coherency-based
+multivariate methods exist, including: canonical coherency (CaCoh; multivariate
+measure of coherency/coherence) <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>; and maximised imaginary
+coherency (MIC; multivariate measure of the imaginary part of coherency)
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+<dl class="simple">
+<dt>These methods are described in detail in the following examples:</dt><dd><ul class="simple">
+<li><p>comparison of coherency-based methods - <a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a></p></li>
+<li><p>CaCoh - <a class="reference internal" href="../cacoh.html"><span class="doc">Compute multivariate coherency/coherence</span></a></p></li>
+<li><p>MIC - <a class="reference internal" href="../mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a></p></li>
+</ul>
+</dd>
+</dl>
+<p>The CaCoh and MIC methods work by finding spatial filters that decompose the data into
+components of connectivity, and applying them to the data. With the implementations
+offered in <a class="reference internal" href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> and
+<a class="reference internal" href="../../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_time()</span></code></a>, the filters are fit for each
+frequency separately, and the filters are only applied to the same data they are fit
+on.</p>
+<p>Unfortunately, fitting filters for each frequency bin can be computationally
+expensive, which may prohibit the use of these techniques, e.g. in real-time BCI
+setups where the rapid analysis of data is paramount, or even in offline analyses
+with huge datasets.</p>
+<p>These issues are addressed by the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> class of the decoding
+module. Here, the filters are fit for a given frequency band collectively (not each
+frequency bin!) and are stored, allowing them to be applied to the same data they were
+fit on (e.g. for offline analyses of huge datasets) or to new data (e.g. for online
+analyses of streamed data).</p>
+<p>In this example, we show how the tools of the decoding module compare to the standard
+<code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions in terms of their run time, and their
+ability to decompose data into connectivity components.</p>
+</section>
+<section id="case-1-fitting-to-and-transforming-the-same-data">
+<h2>Case 1: Fitting to and transforming the same data<a class="headerlink" href="#case-1-fitting-to-and-transforming-the-same-data" title="Link to this heading">#</a></h2>
+<p>The first use of the decoding module class we will explore is fitting filters to one
+piece of data and transforming that same piece of data. This is a similar process to
+the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions, but with the increased efficiency of
+fitting filters to a single frequency band as opposed to each frequency bin.</p>
+<p>To demonstrate this approach, we simulate some connectivity between two groups of
+signals at 15-20 Hz as 60 two-second-long epochs. Here, we focus on fitting filters to
+and transforming the first 30 epochs.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define simulation settings</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_SEEDS</span></a> <span class="o">=</span> <span class="mi">10</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_TARGETS</span></a> <span class="o">=</span> <span class="mi">15</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a> <span class="o">=</span> <span class="mi">15</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a> <span class="o">=</span> <span class="mi">20</span>
+
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">=</span> <span class="mi">60</span>
+
+<span class="c1"># Simulate data</span>
+<a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">(</span>
+    <span class="n">n_seeds</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_SEEDS</span></a><span class="p">,</span>
+    <span class="n">n_targets</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_TARGETS</span></a><span class="p">,</span>
+    <span class="n">freq_band</span><span class="o">=</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a><span class="p">),</span>
+    <span class="n">n_epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a><span class="p">,</span>
+    <span class="n">n_times</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">snr</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">44</span><span class="p">,</span>
+<span class="p">)</span>
+
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_SEEDS</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_TARGETS</span></a><span class="p">)</span> <span class="o">+</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_SEEDS</span></a>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting up band-pass filter from 15 - 20 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed frequency-domain design (firwin2) method
+- Hamming window
+- Lower passband edge: 15.00
+- Lower transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 14.50 Hz)
+- Upper passband edge: 20.00 Hz
+- Upper transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 20.50 Hz)
+- Filter length: 661 samples (6.610 s)
+
+Not setting metadata
+60 matching events found
+No baseline correction applied
+0 projection items activated
+</pre></div>
+</div>
+<p>To fit the filters, we instantiate the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> class with:</p>
+<ul class="simple">
+<li><p>the information about the data being fit/transformed (using an <a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Info</span></code></a>
+object);</p></li>
+<li><p>the type of connectivity we want to decompose (here CaCoh);</p></li>
+<li><p>the frequency band of the components we want to decompose (here 15-20 Hz);</p></li>
+<li><p>and the channel indices of the seeds and targets.</p></li>
+</ul>
+<p>We use the CaCoh method since zero time-lag interactions are not present (See
+<a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> for more information).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition class</span>
+<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span>
+    <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>There are two equivalent options for fitting and transforming the same data: 1)
+passing the data to the <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit" title="mne_connectivity.decoding.CoherencyDecomposition.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>
+and <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code></a> methods
+sequentially; or 2) using the combined
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit_transform" title="mne_connectivity.decoding.CoherencyDecomposition.fit_transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_transform()</span></code></a> method. We use
+the latter approach below, passing in the first 30 epochs of data to fit to and
+transform.</p>
+<p>The transformed data has shape <code class="docutils literal notranslate"><span class="pre">(epochs</span> <span class="pre">x</span> <span class="pre">components*2</span> <span class="pre">x</span> <span class="pre">times)</span></code>, where the new
+‘channels’ are organised as the seed components, then target components. For
+convenience, the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_transformed_indices()</span></code></a>
+method can be used to get the <code class="docutils literal notranslate"><span class="pre">indices</span></code> of the transformed data for use in the
+<code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions.</p>
+<p>To compute connectivity of the transformed data, it is simply a case of passing to the
+<code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions: the transformed data; the indices returned
+from
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_transformed_indices()</span></code></a>; and
+the corresponding bivariate method (<code class="docutils literal notranslate"><span class="pre">&quot;coh&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cohy&quot;</span></code> for CaCoh; <code class="docutils literal notranslate"><span class="pre">&quot;imcoh&quot;</span></code>
+for MIC).</p>
+<p>For comparison, we will also compute connectivity using the standard CaCoh approach of
+the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions, as well as bivariate coherence, to show
+the signal-to-noise ratio benefits of the multivariate approach.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit &amp; transform data using decomposition class</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit_transform" title="mne_connectivity.decoding.CoherencyDecomposition.fit_transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">fit_transform</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+<span class="c1"># Compute connectivity using spec_conn function</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_0_29_class</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">class_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+
+<span class="c1"># Fit, transform, and compute connectivity using spec_conn function</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_0_29_func</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">([</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">],</span> <span class="p">[</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">]),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+<span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">func_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+
+<span class="c1"># Compute bivariate connectivity for comparison</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_coh_0_29</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Using multitaper spectrum estimation with 7 DPSS windows
+Computing cross-spectral density from epochs...
+
+  0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,  515.12it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,  526.60it/s]
+ 90%|█████████ | CSD epoch blocks : 27/30 [00:00&lt;00:00,  534.60it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  533.62it/s]
+[done]
+Computing CaCoh for connection 1 of 1
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 30 events (all good), 0 – 1.99 s (baseline off), ~1.2 MB, data loaded,
+ &#39;1&#39;: 30&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 30 events (all good), 0 – 1.99 s (baseline off), ~1.2 MB, data loaded,
+ &#39;1&#39;: 30&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>Plotting the connectivity, the CaCoh results derived from the decomposition class and
+the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions are very similar, showing a peak in
+connectivity at 15-20 Hz. The results are not identical however, due to the band- vs.
+bin-wise filter fitting approaches. In both cases, the connectivity extracted is of a
+much greater magnitude compared to bivariate coherence.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html#matplotlib.pyplot.subplot" title="matplotlib.pyplot.subplot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span></a><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_cacoh_0_29_func</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_cacoh_0_29_func</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CaCoh (spec_conn</span><span class="se">\n</span><span class="s2">function)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_coh_0_29</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_coh_0_29</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coh&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_cacoh_0_29_class</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_cacoh_0_29_class</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CaCoh (decomposition</span><span class="se">\n</span><span class="s2">class)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvspan.html#matplotlib.axes.Axes.axvspan" title="matplotlib.axes.Axes.axvspan" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitted freq. band&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;Epochs 1-30&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="matplotlib.pyplot.legend" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_cohy_decomposition_001.png" srcset="../../_images/sphx_glr_cohy_decomposition_001.png" alt="Epochs 1-30" class = "sphx-glr-single-img"/><p>In the above figure, notice also how the CaCoh results from the decomposition class
+show less connectivity outside of the 15-20 Hz range compared to the CaCoh results of
+the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions.</p>
+<p>This shows the risk of overfitting filters to noise in the data, even when no genuine
+connectivity is present. This problem can be mitigated by fitting filters to only
+those frequencies where you expect connectivity to be present, e.g. as is done with
+the decomposition class.</p>
+<p>In addition to assessing the validity of the approach, we can also look at the time
+taken to run the analysis. Doing so, we see that the decomposition class is much
+faster than the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions, thanks to the fact that the
+filters are fit to a single frequency band and not each frequency bin.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show compute times of analyses</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Time to fit, transform, and compute connectivity (decomposition class): &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">class_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Time to fit, transform, and compute connectivity (spec_conn function): &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">func_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 78 ms
+Time to fit, transform, and compute connectivity (spec_conn function): 247 ms
+</pre></div>
+</div>
+<p>Altogether, the decomposition class offers an efficient way to analyse connectivity
+in a specific frequency band when fitting filters to and transforming a single piece
+of data.</p>
+</section>
+<section id="case-2-fitting-to-and-transforming-different-data">
+<h2>Case 2: Fitting to and transforming different data<a class="headerlink" href="#case-2-fitting-to-and-transforming-different-data" title="Link to this heading">#</a></h2>
+<p>Another way we can use the decomposition class is by taking the filters trained on one
+piece of data and applying them to another piece of data. Continuing with our
+simulated data example, we can reuse the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> instance we made earlier,
+as it already contains filters fit on the first 30 epochs of data. We can then apply
+those filters to the last 30 epochs of data using the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code></a> method, extracting
+this same connectivity component.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use filters from first 30 epochs to transform data from last 30 epochs</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>We can now compute connectivity in the last 30 epochs of the transformed data, which
+for reference we will compare to connectivity computed using the
+<code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions, as well as bivariate coherence to again
+demonstrate the signal-to-noise ratio enhancements the multivariate approach offers.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit, transform, and compute connectivity for last 30 epochs using spec_conn function</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_30_60_func</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:],</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">([</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">],</span> <span class="p">[</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">]),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+<span class="p">)</span>
+
+<span class="c1"># Compute connectivity for last 30 epochs transformed with filters from first 30 epochs</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_30_60_class</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># Compute bivariate connectivity of last 30 epochs for comparison</span>
+<a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_coh_30_60</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:],</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 30 events (all good), 0 – 1.99 s (baseline off), ~1.2 MB, data loaded,
+ &#39;1&#39;: 30&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 30 events (all good), 0 – 1.99 s (baseline off), ~1.2 MB, data loaded,
+ &#39;1&#39;: 30&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>As you can see, the connectivity profile of the transformed data using filters fit on
+the first 30 epochs is very similar to the connectivity profile when using filters fit
+on the last 30 epochs itself. This shows that the filters are generalisable, able to
+extract the same components of connectivity which they were trained on from new data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html#matplotlib.pyplot.subplot" title="matplotlib.pyplot.subplot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span></a><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_cacoh_30_60_func</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_cacoh_30_60_func</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CaCoh (spec_conn</span><span class="se">\n</span><span class="s2">function)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_coh_30_60</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_coh_30_60</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coh&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">con_cacoh_30_60_class</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">con_cacoh_30_60_class</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CaCoh (decomposition</span><span class="se">\n</span><span class="s2">class)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvspan.html#matplotlib.axes.Axes.axvspan" title="matplotlib.axes.Axes.axvspan" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitted freq. band&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;Epochs 31-60&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html#matplotlib.pyplot.legend" title="matplotlib.pyplot.legend" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_cohy_decomposition_002.png" srcset="../../_images/sphx_glr_cohy_decomposition_002.png" alt="Epochs 31-60" class = "sphx-glr-single-img"/><p>Again, notice how the CaCoh results from the decomposition class show less
+connectivity outside of the 15-20 Hz range compared to the CaCoh results of the
+<code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions.</p>
+<p>We can also look at the time taken to run the analysis. Below we present a scenario
+resembling an online sliding window approach typical of a BCI system. We consider the
+first 30 epochs to be the training data that the filters should be fit to, and the
+last 30 epochs to be the windows of data that the filters should be applied to,
+transforming and computing the connectivity of each window (epoch) of data
+sequentially.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition class</span>
+<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span>
+    <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMIN</span></a><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">FMAX</span></a><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Time fitting of filters</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit" title="mne_connectivity.decoding.CoherencyDecomposition.fit" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+
+<span class="c1"># Time transforming data of each epoch iteratively</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_transform</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="k">for</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]:</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">)</span>
+    <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="numpy.expand_dims" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_transformed</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+        <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">transform_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_transform</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Using multitaper spectrum estimation with 7 DPSS windows
+Computing cross-spectral density from epochs...
+
+  0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
+ 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:00,  355.69it/s]
+ 43%|████▎     | CSD epoch blocks : 13/30 [00:00&lt;00:00,  370.06it/s]
+ 70%|███████   | CSD epoch blocks : 21/30 [00:00&lt;00:00,  407.19it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  438.79it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  432.90it/s]
+[done]
+Computing CaCoh for connection 1 of 1
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>Doing so, we see that once the filters have been fit, it takes only a few milliseconds
+to transform each window of data and compute its connectivity.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show compute times of decomposition class</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time to fit filters: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time to transform data and compute connectivity: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">transform_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_duration</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">transform_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Time to transform data and compute connectivity per epoch (window): &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">transform_duration</span></a><span class="o">/</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a><span class="o">//</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 79 ms
+Time to transform data and compute connectivity: 101 ms
+Total time: 180 ms
+
+Time to transform data and compute connectivity per epoch (window):  3 ms
+</pre></div>
+</div>
+<p>In contrast, here we follow the same sequential window approach, but fit filters to
+each window separately rather than using a pre-computed set.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time fitting and transforming data of each epoch iteratively</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit_transform</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="k">for</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]:</span>
+    <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="numpy.expand_dims" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="p">([</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">],</span> <span class="p">[</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">]),</span>
+        <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+        <span class="n">rank</span><span class="o">=</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+    <span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_transform_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit_transform</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>Naturally, the process of fitting and transforming the data for each window is
+considerably slower.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show compute times of spec_conn function</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Time to fit, transform, and compute connectivity: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_transform_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Time to fit, transform, and compute connectivity per epoch (window): &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_transform_duration</span></a><span class="o">/</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a><span class="o">//</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 853 ms
+
+Time to fit, transform, and compute connectivity per epoch (window):  28 ms
+</pre></div>
+</div>
+<p>Furthermore, given the noisy nature of single windows of data, there is a risk of
+overfitting the filters to this noise as opposed to the genuine interaction(s) of
+interest. This risk is mitigated by performing the initial filter fitting on a larger
+set of data.</p>
+<p>As a side note, it is important to consider that a multivariate approach may be as
+fast or even faster than a bivariate approach, depending on the number of connections
+and degree of rank subspace projection being performed.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time transforming data of each epoch iteratively</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="k">for</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]:</span>
+    <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="numpy.expand_dims" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
+        <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+Connectivity computation...
+    computing connectivity for 150 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 5.0Hz..35.0Hz (61 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>In this instance, the standard bivariate approach is slower than the decomposition
+class approach above.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show compute times of bivariate connectivity</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time to compute connectivity: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Time to compute connectivity per epoch (window): &quot;</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">duration</span></a><span class="o">/</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a><span class="o">//</span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 190 ms
+
+Time to compute connectivity per epoch (window):  6 ms
+</pre></div>
+</div>
+<p>Altogether, the decomposition class also offers an efficient way to analyse
+connectivity in a specific frequency band when fitting filters to one piece of data
+and transforming other pieces of data.</p>
+</section>
+<section id="component-specificity-of-filters">
+<h2>Component specificity of filters<a class="headerlink" href="#component-specificity-of-filters" title="Link to this heading">#</a></h2>
+<p>We have spoken much about how the filters extract particular components of
+connectivity, which we elaborate on here. The filters act as spatial weights,
+controlling how much each channel contributes to the given connectivity component.
+Although we fit these filters to a specific frequency band, they do not operate in a
+frequency-specific manner.</p>
+<p>For example, say you have two sets of data: <em>Data 1</em> with an interaction at 15-20 Hz;
+and <em>Data 2</em> with an interaction at 5-10 Hz. We fit the filters at 15-20 Hz to <em>Data
+1</em>, and apply the filters to <em>Data 2</em>.</p>
+<p>If the connectivity components in <em>Data 1</em> and <em>Data 2</em> have different spatial
+distributions (i.e. different channels contribute to connectivity in each set of
+data), the filters fit to 15-20 Hz on <em>Data 1</em> will not extract the 5-10 Hz
+connectivity from <em>Data 2</em>.</p>
+<p>On the other hand, if the connectivity components in <em>Data 1</em> and <em>Data 2</em> have the
+same spatial distribution (i.e. the same channels contribute to connectivity in both
+sets of data), the filters fit to 15-20 Hz on <em>Data 1</em> will extract the 5-10 Hz
+connectivity from <em>Data 2</em>. Because of this, it is generally recommended that you only
+consider the connectivity results for those frequencies where you originally fit the
+filters.</p>
+<p>Furthermore, if <em>Data 1</em> and <em>Data 2</em> both have interactions at the same frequency
+band (e.g. 15-20 Hz) but with different spatial distributions, the filters fit to
+15-20 Hz on <em>Data 1</em> will not extract the 15-20 Hz connectivity from <em>Data 2</em>. This is
+because the filters extract connectivity components according to particular spatial
+distributions, and if the spatial distributions differ, these interactions are by
+definition distinct components, even if they occur at the same frequencies.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
+<p>Finally, it is important to discuss a key limitation of the decoding module approach:
+the need to define a specific frequency band. Defining this band requires some
+existing knowledge about your data or the oscillatory activity you are studying. This
+insight may come from a pilot study where a frequency band of interest was identified,
+a canonical frequency band defined in the literature, etc… In contrast, by fitting
+filters to each frequency bin, the standard <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions
+are more data-driven.</p>
+<p>Additionally, by applying filters fit on one set of data to another, you are assuming
+that the connectivity components the filters are designed to extract are consistent
+across the two sets of data. However, this may not be the case if you are applying the
+filters to data from a distinct functional state where the spatial distribution of the
+components differs. Again, by fitting filters to each new set of data passed in, the
+standard <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions are more data-driven, extracting
+whatever connectivity components are present in that data.</p>
+<p>On these points, we note that the <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_...()</span></code> functions complement
+the decoding module classes well, offering a tool by which to explore your data to:
+identify possible frequency bands of interest; and identify the spatial distributions
+of connectivity components to determine if they are consistent across different
+portions of the data.</p>
+<p>Ultimately, there are distinct advantages and disadvantages to both approaches, and
+one may be more suitable than the other depending on your use case.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id3">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
+</aside>
+</aside>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.959 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/e219ae2adfdff83f86f08b53c680a14c/cohy_decomposition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/25bc0225b2b3af8a74d26b63bf84cd9e/cohy_decomposition.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cohy_decomposition.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5a7e4b04d139bf223ad6c4a43af76dcd/cohy_decomposition.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">cohy_decomposition.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Decoding &amp; Decomposition Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../dynamic/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dynamic Connectivity Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#case-1-fitting-to-and-transforming-the-same-data">Case 1: Fitting to and transforming the same data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#case-2-fitting-to-and-transforming-different-data">Case 2: Fitting to and transforming different data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-specificity-of-filters">Component specificity of filters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
