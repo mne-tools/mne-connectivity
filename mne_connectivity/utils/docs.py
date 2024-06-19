@@ -57,6 +57,43 @@ docdict["connectivity_kwargs"] = """
         as xarray ``attrs``.
 """
 
+docdict["mode"] = """
+mode : str (default "multitaper")
+    The cross-spectral density computation method. Can be ``"multitaper"``,
+    ``"fourier"``, or ``"cwt_morlet"``.
+"""
+
+docdict["mt_bandwidth"] = """
+mt_bandwidth : int | float | None (default None)
+    The bandwidth of the multitaper windowing function in Hz to use when computing the
+    cross-spectral density. Only used if ``mode="multitaper"``.
+"""
+
+docdict["mt_adaptive"] = """
+mt_adaptive : bool (default False)
+    Whether to use adaptive weights when combining the tapered spectra in the
+    cross-spectral density. Only used if ``mode="multitaper"``.
+"""
+
+docdict["mt_low_bias"] = """
+mt_low_bias : bool (default True)
+    Whether to use tapers with over 90 percent spectral concentration within the
+    bandwidth when computing the cross-spectral density. Only used if
+    ``mode="multitaper"``.
+"""
+
+docdict["cwt_freqs"] = """
+cwt_freqs : array of int or float | None (default None)
+    The frequencies of interest in Hz. Must not be ``None`` and only used if
+    ``mode="cwt_morlet"``.
+"""
+
+docdict["cwt_n_cycles"] = """
+cwt_n_cycles : int | float | array of int or float (default 7)
+    The number of cycles to use when constructing the Morlet wavelets. Fixed number or
+    one per frequency. Only used if ``mode=cwt_morlet``.
+"""
+
 docdict["coh"] = "'coh' : Coherence"
 docdict["cohy"] = "'cohy' : Coherency"
 docdict["imcoh"] = "'imcoh' : Imaginary part of Coherency"
@@ -145,6 +182,74 @@ random_state : None | int | instance of ~numpy.random.RandomState
     :class:`~numpy.random.RandomState` for details). Default is
     ``None``.
 """
+
+# Decoding
+docdict["info_decoding"] = """
+info : mne.Info
+    Information about the data which will be decomposed and transformed, such as that
+    coming from an :class:`mne.Epochs` object. The number of channels must match the
+    subsequent input data.
+"""
+
+docdict["method_decoding"] = """
+method : str
+    The multivariate method to use for the decomposition. Can be:
+
+    * ``"cacoh"`` - Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
+    * ``"mic"`` - Maximised Imaginary part of Coherency (MIC) :footcite:`EwaldEtAl2012`
+"""
+
+docdict["fmin_decoding"] = """
+fmin : int | float | None (default None)
+    The lowest frequency of interest in Hz. Must not be ``None`` and only used if
+    ``mode in ["multitaper", "fourier"]``.
+"""
+
+docdict["fmax_decoding"] = """
+fmax : int | float | None (default None)
+    The highest frequency of interest in Hz. Must not be ``None`` and only used if
+    ``mode in ["multitaper", "fourier"]``.
+"""
+
+docdict["indices_decoding"] = """
+indices : tuple of array
+    A tuple of two arrays, containing the indices of the seed and target channels in the
+    input data, respectively. The indices of only a single connection (i.e. between one
+    group of seeds and one group of targets) is supported.
+"""
+
+docdict["n_components"] = """
+n_components : int | None (default None)
+    The number of connectivity components (sources) to extract from the data. If `None`,
+    the number of components equal to the minimum rank of the seeds and targets is
+    extracted (see the ``rank`` parameter). If an `int`, the number of components must
+    be <= the minimum rank of the seeds and targets. E.g. if the seed channels had a
+    rank of 5 and the target channels had a rank of 3, ``n_components`` must be <= 3.
+"""
+
+docdict["rank"] = """
+rank : tuple of int | None (default None)
+    A tuple of two ints, containing the degree of rank subspace projection to apply to
+    the seed and target data, respectively, before filters are fit. If `None`, the rank
+    of the seed and target data is used. If a tuple of ints, the entries must be <= the
+    rank of the seed and target data. The minimum rank of the seeds and targets
+    determines the maximum number of connectivity components (sources) which can be
+    extracted from the data (see the ``n_components`` parameter). Specifying ranks below
+    that of the data may reduce the degree of overfitting when computing the filters.
+"""
+
+docdict["filters_"] = """
+filters_ : tuple of array, shape=(n_signals, n_components)
+    A tuple of two arrays containing the spatial filters for transforming the seed and
+    target data, respectively.
+"""
+
+docdict["patterns_"] = """
+patterns_ : tuple of array, shape=(n_components, n_signals)
+    A tuple of two arrays containing the spatial patterns corresponding to the spatial
+    filters for the seed and target data, respectively.
+"""
+
 
 docdict_indented = dict()  # type: ignore
 

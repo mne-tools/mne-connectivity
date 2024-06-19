@@ -97,16 +97,21 @@ class _AbstractConEstBase:
 class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     """Base class for mean epoch-wise multivar. con. estimation methods."""
 
+    name = None
     n_steps = None
     patterns = None
+    filters = None
     con_scores_dtype = np.float64
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
+    def __init__(
+        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
+    ):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
         self.n_jobs = n_jobs
+        self.store_filters = store_filters
 
         # include time dimension, even when unused for indexing flexibility
         if n_times == 0:
@@ -164,6 +169,15 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
             self._acc, (self.n_signals, self.n_signals, self.n_freqs, self.n_times)
         ).transpose(3, 2, 0, 1)
 
+    def reshape_results(self):
+        """Remove time dimension from results, if necessary."""
+        if self.n_times == 0:
+            self.con_scores = np.squeeze(self.con_scores, axis=-1)
+            if self.patterns is not None:
+                self.patterns = np.squeeze(self.patterns, axis=-1)
+            if self.filters is not None:
+                self.filters = np.squeeze(self.filters, axis=-1)
+
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     """Base estimator for multivariate coherency methods.
@@ -179,8 +193,17 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     name: Optional[str] = None
     accumulate_psd = False
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_jobs=1):
-        super().__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
+    def __init__(
+        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
+    ):
+        super().__init__(
+            n_signals,
+            n_cons,
+            n_freqs,
+            n_times,
+            store_filters=store_filters,
+            n_jobs=n_jobs,
+        )
 
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate coherency methods."""
@@ -195,9 +218,16 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         freqs = np.arange(self.n_freqs)
 
         if self.name in ["CaCoh", "MIC"]:
-            self.patterns = np.full(
-                (2, self.n_cons, indices[0].shape[1], self.n_freqs, n_times), np.nan
+            patterns_filters_shape = (
+                2,
+                self.n_cons,
+                indices[0].shape[1],
+                self.n_freqs,
+                n_times,
             )
+            self.patterns = np.full(patterns_filters_shape, np.nan)
+            if self.store_filters:
+                self.filters = np.full(patterns_filters_shape, np.nan)
 
         con_i = 0
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
@@ -348,13 +378,6 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         return T
 
-    def reshape_results(self):
-        """Remove time dimension from results, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[..., 0]
-            if self.patterns is not None:
-                self.patterns = self.patterns[..., 0]
-
 
 class _MultivariateImCohEstBase(_MultivariateCohEstBase):
     """Base estimator for multivariate imag. part of coherency methods.
@@ -434,16 +457,18 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         alpha = V_seeds[times[:, None], freqs, :, w_seeds.argmax(axis=2)]
         beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
 
+        # Part of Eqs. 46 & 47; i.e. transform filters to channel space
+        alpha_Ubar = U_bar_aa @ np.expand_dims(alpha, axis=3)
+        beta_Ubar = U_bar_bb @ np.expand_dims(beta, axis=3)
+
         # Eq. 46 (seed spatial patterns)
         self.patterns[0, con_i, :n_seeds] = (
-            np.real(C[..., :n_seeds, :n_seeds])
-            @ (U_bar_aa @ np.expand_dims(alpha, axis=3))
+            np.real(C[..., :n_seeds, :n_seeds]) @ alpha_Ubar
         )[..., 0].T
 
         # Eq. 47 (target spatial patterns)
         self.patterns[1, con_i, :n_targets] = (
-            np.real(C[..., n_seeds:, n_seeds:])
-            @ (U_bar_bb @ np.expand_dims(beta, axis=3))
+            np.real(C[..., n_seeds:, n_seeds:]) @ beta_Ubar
         )[..., 0].T
 
         # Eq. 7
@@ -452,6 +477,10 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
             / np.linalg.norm(alpha, axis=2)
             * np.linalg.norm(beta, axis=2)
         ).T
+
+        if self.store_filters:
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
+            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
@@ -629,15 +658,23 @@ class _CaCohEst(_MultivariateCohEstBase):
         alpha = T_aa @ np.expand_dims(a, axis=3)  # filter for seeds
         beta = T_bb @ np.expand_dims(b, axis=3)  # filter for targets
 
-        # Eq. 14; U_bar inclusion follows Eqs. 46 & 47 of Ewald et al. (2012)
+        # Eqs. 46 & 47 of Ewald et al. (2012); i.e. transform filters to channel space
+        alpha_Ubar = U_bar_aa @ alpha
+        beta_Ubar = U_bar_bb @ beta
+
+        # Eq. 14
         # seed spatial patterns
         self.patterns[0, con_i, :n_seeds] = (
-            np.real(C[..., :n_seeds, :n_seeds]) @ (U_bar_aa @ alpha)
+            np.real(C[..., :n_seeds, :n_seeds]) @ alpha_Ubar
         )[..., 0].T
         # target spatial patterns
         self.patterns[1, con_i, :n_targets] = (
-            np.real(C[..., n_seeds:, n_seeds:]) @ (U_bar_bb @ beta)
+            np.real(C[..., n_seeds:, n_seeds:]) @ beta_Ubar
         )[..., 0].T
+
+        if self.store_filters:
+            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
+            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
@@ -645,8 +682,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
 
     accumulate_psd = False
 
-    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, n_jobs=1):
-        super().__init__(n_signals, n_cons, n_freqs, n_times, n_jobs)
+    def __init__(self, n_signals, n_cons, n_freqs, n_times, n_lags, *, n_jobs=1):
+        super().__init__(n_signals, n_cons, n_freqs, n_times, n_jobs=n_jobs)
 
         self.freq_res = (self.n_freqs - 1) * 2
         if n_lags >= self.freq_res:
@@ -985,11 +1022,6 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         W = W.transpose(0, 2, 1) @ W
 
         return V[np.ix_(times, seeds, seeds)] - W
-
-    def reshape_results(self):
-        """Remove time dimension from con. scores, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = self.con_scores[:, :, 0]
 
 
 def _gc_compute_H(A, C, K, z_k, I_n, I_m):
