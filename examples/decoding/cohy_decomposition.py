@@ -164,9 +164,9 @@ cacoh = CoherencyDecomposition(
 # the corresponding bivariate method (``"coh"`` and ``"cohy"`` for CaCoh; ``"imcoh"``
 # for MIC).
 #
-# For reference, we will also compute connectivity using the standard CaCoh approach of
-# the ``spectral_connectivity_...()`` functions, as well as bivariate coherence to show
-# the signal-to-noise enhancements the multivariate approach offers.
+# For comparison, we will also compute connectivity using the standard CaCoh approach of
+# the ``spectral_connectivity_...()`` functions, as well as bivariate coherence, to show
+# the signal-to-noise ratio benefits of the multivariate approach.
 
 # %%
 
@@ -272,12 +272,13 @@ print(
 # Case 2: Fitting to and transforming different data
 # --------------------------------------------------
 # Another way we can use the decomposition class is by taking the filters trained on one
-# piece and applying them to another piece of data. Continuing with our simulated data
-# example, we will use the filters fit on the first 30 epochs of data.
-#
-# Using the :meth:`~mne_connectivity.decoding.CoherencyDecomposition.transform` method,
-# we apply the filters from the first 30 epochs to the last 30 epochs of data,
-# extracting this same connectivity component.
+# piece of data and applying them to another piece of data. Continuing with our
+# simulated data example, we can reuse the
+# :class:`~mne_connectivity.decoding.CoherencyDecomposition` instance we made earlier,
+# as it already contains filters fit on the first 30 epochs of data. We can then apply
+# those filters to the last 30 epochs of data using the
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.transform` method, extracting
+# this same connectivity component.
 
 # %%
 
@@ -353,8 +354,7 @@ plt.show()
 # Again, notice how the CaCoh results from the decomposition class show less
 # connectivity outside of the 15-20 Hz range compared to the CaCoh results of the
 # ``spectral_connectivity_...()`` functions.
-
-########################################################################################
+#
 # We can also look at the time taken to run the analysis. Below we present a scenario
 # resembling an online sliding window approach typical of a BCI system. We consider the
 # first 30 epochs to be the training data that the filters should be fit to, and the
