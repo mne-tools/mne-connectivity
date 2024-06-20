@@ -549,6 +549,20 @@ print(
 # one may be more suitable than the other depending on your use case.
 
 ########################################################################################
+# Visualising spatial contributions to connectivity
+# -------------------------------------------------
+# In addition to the lower-dimensional representation of connectivity, we can also
+# extract information about the spatial distributions of connectivity over channels.
+# This information is captured in the spatial patterns, derived from the spatial
+# filters :footcite:`HaufeEtAl2014`.
+#
+# The patterns (and filters) can be visualised as topomaps using the
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_patterns` and
+# :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_filters` methods of the
+# :class:`~mne_connectivity.decoding.CoherencyDecomposition` class, discussed in more
+# detail in :doc:`cohy_decomposition_plotting`.
+
+########################################################################################
 # References
 # ----------
 # .. footbibliography::
