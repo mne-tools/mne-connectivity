@@ -3,10 +3,10 @@
 Multivariate decomposition for efficient connectivity analysis
 ==============================================================
 
-This example demonstrates how the tools in the decoding module can be used to
-decompose data into the most relevant components of connectivity and used for
-a computationally efficient multivariate analysis of connectivity, such as in
-brain-computer interface (BCI) applications.
+This example demonstrates how the tools in the decoding module can be used to decompose
+data into the most relevant components of connectivity and used for a computationally
+efficient multivariate analysis of connectivity, such as in brain-computer interface
+(BCI) applications.
 """
 
 # Author: Thomas S. Binns <t.s.binns@outlook.com>
@@ -30,14 +30,13 @@ from mne_connectivity import (
 ########################################################################################
 # Background
 # ----------
-#
-# Multivariate forms of signal analysis allow you to simultaneously consider
-# the activity of multiple signals. In the case of connectivity, the
-# interaction between multiple sensors can be analysed at once and the strongest
-# components of this interaction captured in a lower-dimensional set of connectivity
-# spectra. This approach brings not only practical benefits (e.g. easier
-# interpretability of results from the dimensionality reduction), but can also offer
-# methodological improvements (e.g. enhanced signal-to-noise ratio and reduced bias).
+# Multivariate forms of signal analysis allow you to simultaneously consider the
+# activity of multiple signals. In the case of connectivity, the interaction between
+# multiple sensors can be analysed at once and the strongest components of this
+# interaction captured in a lower-dimensional set of connectivity spectra. This approach
+# brings not only practical benefits (e.g. easier interpretability of results from the
+# dimensionality reduction), but can also offer methodological improvements (e.g.
+# enhanced signal-to-noise ratio and reduced bias).
 #
 # Coherency-based methods are popular approaches for analysing connectivity, capturing
 # correlations between signals in the frequency domain. Various coherency-based
@@ -244,8 +243,7 @@ plt.show()
 # connectivity is present. This problem can be mitigated by fitting filters to only
 # those frequencies where you expect connectivity to be present, e.g. as is done with
 # the decomposition class.
-
-########################################################################################
+#
 # In addition to assessing the validity of the approach, we can also look at the time
 # taken to run the analysis. Doing so, we see that the decomposition class is much
 # faster than the ``spectral_connectivity_...()`` functions, thanks to the fact that the
