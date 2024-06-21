@@ -392,9 +392,7 @@ def spectral_connectivity_time(
         names = np.arange(0, n_signals)
         metadata = None
         if sfreq is None:
-            raise ValueError(
-                "Sampling frequency (sfreq) is required with " "array input."
-            )
+            raise ValueError("Sampling frequency (sfreq) is required with array input.")
 
     # check that method is a list
     if isinstance(method, str):
@@ -417,15 +415,15 @@ def spectral_connectivity_time(
 
     if len(fmin) != 1 and any(this_method in _gc_methods for this_method in method):
         raise ValueError(
-            "computing Granger causality on multiple frequency "
-            "bands is not yet supported"
+            "computing Granger causality on multiple frequency bands is not yet "
+            "supported"
         )
 
     if any(this_method in _multivariate_methods for this_method in method):
         if not all(this_method in _multivariate_methods for this_method in method):
             raise ValueError(
-                "bivariate and multivariate connectivity methods cannot be "
-                "used in the same function call"
+                "bivariate and multivariate connectivity methods cannot be used in the "
+                "same function call"
             )
         multivariate_con = True
     else:
@@ -452,8 +450,8 @@ def spectral_connectivity_time(
         if multivariate_con:
             if any(this_method in _gc_methods for this_method in method):
                 raise ValueError(
-                    "indices must be specified when computing Granger "
-                    "causality, as all-to-all connectivity is not supported"
+                    "indices must be specified when computing Granger causality, as "
+                    "all-to-all connectivity is not supported"
                 )
             logger.info("using all indices for multivariate connectivity")
             # indices expected to be a masked array, even if not ragged
@@ -476,8 +474,8 @@ def spectral_connectivity_time(
                     )
                     if intersection.size > 0:
                         raise ValueError(
-                            "seed and target indices must not intersect when "
-                            "computing Granger causality"
+                            "seed and target indices must not intersect when computing "
+                            "Granger causality"
                         )
             # make sure padded indices are stored in the connectivity object
             # create a copy so that `indices_use` can be modified
@@ -527,15 +525,14 @@ def spectral_connectivity_time(
     cycle_freq = n_cycles / dur
     if np.any(freqs < cycle_freq):
         raise ValueError(
-            "At least one value in n_cycles corresponds to a"
-            "wavelet longer than the signal. Use less cycles, "
-            "higher frequencies, or longer epochs."
+            "At least one value in n_cycles corresponds to a wavelet longer than the "
+            "signal. Use less cycles, higher frequencies, or longer epochs."
         )
     # check for Nyquist
     if np.any(freqs > sfreq / 2):
         raise ValueError(
-            f"Frequencies {freqs[freqs > sfreq / 2]} Hz are "
-            f"larger than Nyquist = {sfreq / 2:.2f} Hz"
+            f"Frequencies {freqs[freqs > sfreq / 2]} Hz are larger than Nyquist = "
+            f"{sfreq / 2:.2f} Hz"
         )
 
     # compute frequency mask based on specified min/max and decimation factor
@@ -803,7 +800,7 @@ def _spectral_connectivity(
             raise ValueError(f"Padding cannot be negative, got {padding}.")
         if padding >= data.shape[-1] / sfreq / 2:
             raise ValueError(
-                f"Padding cannot be larger than half of data " f"length, got {padding}."
+                f"Padding cannot be larger than half of data length, got {padding}."
             )
         pad_idx = int(np.floor(padding * sfreq / decim))
         out = out[..., pad_idx:-pad_idx]

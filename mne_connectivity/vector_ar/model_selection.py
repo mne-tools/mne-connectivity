@@ -49,9 +49,8 @@ def select_order(X, maxlags=None):
     else:
         if maxlags > max_estimable:
             raise ValueError(
-                "maxlags is too large for the number of observations and "
-                "the number of equations. The largest model cannot be "
-                "estimated."
+                "maxlags is too large for the number of observations and the number of "
+                "equations. The largest model cannot be estimated."
             )
 
     # define dictionary of information criterions

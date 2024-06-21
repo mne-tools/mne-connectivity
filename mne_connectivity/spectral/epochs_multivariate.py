@@ -44,12 +44,7 @@ def _check_rank_input(rank, data, indices):
         con_i = 1
         for seed_rank, target_rank in zip(rank[0], rank[1]):
             logger.info(
-                "    connection %i - seeds (%i); targets (%i)"
-                % (
-                    con_i,
-                    seed_rank,
-                    target_rank,
-                )
+                f"    connection {con_i} - seeds {seed_rank}; targets {target_rank}"
             )
             con_i += 1
         rank = tuple((np.array(rank[0]), np.array(rank[1])))
@@ -61,8 +56,8 @@ def _check_rank_input(rank, data, indices):
             or len(rank[1]) != len(indices[1])
         ):
             raise ValueError(
-                "rank argument must have shape (2, n_cons), "
-                "according to n_cons in the indices"
+                "rank argument must have shape (2, n_cons), according to n_cons in the "
+                "indices"
             )
         for seed_idcs, target_idcs, seed_rank, target_rank in zip(
             indices[0], indices[1], rank[0], rank[1]
@@ -71,9 +66,9 @@ def _check_rank_input(rank, data, indices):
                 0 < seed_rank <= len(seed_idcs) and 0 < target_rank <= len(target_idcs)
             ):
                 raise ValueError(
-                    "ranks for seeds and targets must be > 0 and <= the "
-                    "number of channels in the seeds and targets, "
-                    "respectively, for each connection"
+                    "ranks for seeds and targets must be > 0 and <= the number of "
+                    "channels in the seeds and targets, respectively, for each "
+                    "connection"
                 )
 
     return rank
@@ -154,12 +149,7 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
     def _log_connection_number(self, con_i):
         """Log the number of the connection being computed."""
         logger.info(
-            "Computing %s for connection %i of %i"
-            % (
-                self.name,
-                con_i + 1,
-                self.n_cons,
-            )
+            f"Computing {self.name} for connection {con_i + 1} of {self.n_cons}"
         )
 
     def _get_block_indices(self, block_i, limit):
@@ -218,8 +208,8 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate coherency methods."""
         assert self.name in ["CaCoh", "MIC", "MIM"], (
-            "the class name is not recognised, please contact the "
-            "mne-connectivity developers"
+            "the class name is not recognised, please contact the mne-connectivity "
+            "developers"
         )
 
         csd = self.reshape_csd() / n_epochs
@@ -322,10 +312,10 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             return self._invsqrtm(C_r, n_seeds)
         except np.linalg.LinAlgError as error:
             raise RuntimeError(
-                "the transformation matrix of the data could not be computed "
-                "from the cross-spectral density; check that you are using "
-                "full rank data or specify an appropriate rank for the seeds "
-                "and targets that is less than or equal to their ranks"
+                "the transformation matrix of the data could not be computed from the "
+                "cross-spectral density; check that you are using full rank data or "
+                "specify an appropriate rank for the seeds and targets that is less "
+                "than or equal to their ranks"
             ) from error
 
     def _invsqrtm(self, C_r, n_seeds):
@@ -367,8 +357,8 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         n_zero = (eigvals == 0).sum()
         if n_zero:  # sign of non-full rank data
             raise np.linalg.LinAlgError(
-                "Cannot compute inverse square root of rank-deficient matrix "
-                f"with {n_zero}/{len(eigvals)} zero eigenvalue(s)"
+                "Cannot compute inverse square root of rank-deficient matrix with "
+                f"{n_zero}/{len(eigvals)} zero eigenvalue(s)"
             )
         T[:, :, :n_seeds, :n_seeds] = (
             eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
@@ -379,8 +369,8 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         n_zero = (eigvals == 0).sum()
         if n_zero:  # sign of non-full rank data
             raise np.linalg.LinAlgError(
-                "Cannot compute inverse square root of rank-deficient matrix "
-                f"with {n_zero}/{len(eigvals)} zero eigenvalue(s)"
+                "Cannot compute inverse square root of rank-deficient matrix with "
+                f"{n_zero}/{len(eigvals)} zero eigenvalue(s)"
             )
         T[:, :, n_seeds:, n_seeds:] = (
             eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
@@ -401,8 +391,8 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
     ):
         """Compute multivariate imag. part of coherency for one connection."""
         assert self.name in ["MIC", "MIM"], (
-            "the class name is not recognised, please contact the "
-            "mne-connectivity developers"
+            "the class name is not recognised, please contact the mne-connectivity "
+            "developers"
         )
 
         # Eqs. 3 & 4
@@ -531,8 +521,8 @@ class _CaCohEst(_MultivariateCohEstBase):
     ):
         """Compute CaCoh & spatial patterns for one connection."""
         assert self.name == "CaCoh", (
-            "the class name is not recognised, please contact the "
-            "mne-connectivity developers"
+            "the class name is not recognised, please contact the mne-connectivity "
+            "developers"
         )
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
@@ -698,20 +688,16 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         self.freq_res = (self.n_freqs - 1) * 2
         if n_lags >= self.freq_res:
             raise ValueError(
-                "the number of lags (%i) must be less than double the "
-                "frequency resolution (%i)"
-                % (
-                    n_lags,
-                    self.freq_res,
-                )
+                f"the number of lags {n_lags} must be less than double the frequency "
+                f"resolution {self.freq_res}"
             )
         self.n_lags = n_lags
 
     def compute_con(self, indices, ranks, n_epochs=1):
         """Compute multivariate state-space Granger causality."""
         assert self.name in ["GC", "GC time-reversed"], (
-            "the class name is not recognised, please contact the "
-            "mne-connectivity developers"
+            "the class name is not recognised, please contact the mne-connectivity "
+            "developers"
         )
 
         csd = self.reshape_csd() / n_epochs
@@ -837,27 +823,26 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """Compute full VAR model using Whittle's LWR recursion."""
         if np.any(np.linalg.det(autocov) == 0):
             raise RuntimeError(
-                "the autocovariance matrix is singular; check if your data is "
-                "rank deficient and specify an appropriate rank argument <= "
-                "the rank of the seeds and targets"
+                "the autocovariance matrix is singular; check if your data is rank "
+                "deficient and specify an appropriate rank argument <= the rank of the "
+                "seeds and targets"
             )
 
         A_f, V = self._whittle_lwr_recursion(autocov)
 
         if not np.isfinite(A_f).all():
             raise RuntimeError(
-                "at least one VAR model coefficient is "
-                "infinite or NaN; check the data you are using"
+                "at least one VAR model coefficient is infinite or NaN; check the data "
+                "you are using"
             )
 
         try:
             np.linalg.cholesky(V)
         except np.linalg.LinAlgError as np_error:
             raise RuntimeError(
-                "the covariance matrix of the residuals is not "
-                "positive-definite; check the singular values of your data "
-                "and specify an appropriate rank argument <= the rank of the "
-                "seeds and targets"
+                "the covariance matrix of the residuals is not positive-definite; "
+                "check the singular values of your data and specify an appropriate "
+                "rank argument <= the rank of the seeds and targets"
             ) from np_error
 
         return A_f, V
@@ -926,9 +911,9 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
                 A_b[:, :, k_b] = np.dstack((AA_b, A_b_previous - (AA_b @ A_f_previous)))
         except np.linalg.LinAlgError as np_error:
             raise RuntimeError(
-                "the autocovariance matrix is singular; check if your data is "
-                "rank deficient and specify an appropriate rank argument <= "
-                "the rank of the seeds and targets"
+                "the autocovariance matrix is singular; check if your data is rank "
+                "deficient and specify an appropriate rank argument <= the rank of the "
+                "seeds and targets"
             ) from np_error
 
         V = cov - (A_f @ G_f)

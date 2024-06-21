@@ -174,8 +174,7 @@ def vector_auto_regression(
 
     if verbose:
         logger.info(
-            f"Running {model} vector autoregression with parameters: "
-            f"\n{model_params}"
+            f"Running {model} vector autoregression with parameters: \n{model_params}"
         )
 
     if model == "avg-epochs":
