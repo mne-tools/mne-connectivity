@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -40,8 +40,8 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
@@ -49,7 +49,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -427,7 +427,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.epochs</span> <span class="kn">import</span> <span class="n">BaseEpochs</span>
 <span class="kn">from</span> <span class="nn">mne.parallel</span> <span class="kn">import</span> <span class="n">parallel_func</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="n">dpss_windows</span><span class="p">,</span> <span class="n">tfr_array_morlet</span><span class="p">,</span> <span class="n">tfr_array_multitaper</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">EpochSpectralConnectivity</span><span class="p">,</span> <span class="n">SpectralConnectivity</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
@@ -437,6 +437,7 @@ document.write(`
     <span class="n">_check_rank_input</span><span class="p">,</span>
     <span class="n">_gc_methods</span><span class="p">,</span>
     <span class="n">_multivariate_methods</span><span class="p">,</span>
+    <span class="n">_patterns_methods</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.smooth</span> <span class="kn">import</span> <span class="n">_create_kernel</span><span class="p">,</span> <span class="n">_smooth_spectra</span>
 
@@ -487,20 +488,23 @@ document.write(`
 <span class="sd">        Only the frequencies within the range specified by ``fmin`` and</span>
 <span class="sd">        ``fmax`` are used.</span>
 <span class="sd">    method : str | list of str</span>
-<span class="sd">        Connectivity measure(s) to compute. These can be</span>
-<span class="sd">        ``[&#39;coh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;gc&#39;,</span>
-<span class="sd">        &#39;gc_tr&#39;]``. These are:</span>
-<span class="sd">        * &#39;coh&#39;   : Coherence</span>
-<span class="sd">        * &#39;mic&#39;   : Maximised Imaginary part of Coherency (MIC)</span>
-<span class="sd">        * &#39;mim&#39;   : Multivariate Interaction Measure (MIM)</span>
-<span class="sd">        * &#39;plv&#39;   : Phase-Locking Value (PLV)</span>
-<span class="sd">        * &#39;ciplv&#39; : Corrected imaginary Phase-Locking Value</span>
-<span class="sd">        * &#39;pli&#39;   : Phase-Lag Index</span>
-<span class="sd">        * &#39;wpli&#39;  : Weighted Phase-Lag Index</span>
-<span class="sd">        * &#39;gc&#39;    : State-space Granger Causality (GC)</span>
-<span class="sd">        * &#39;gc_tr&#39; : State-space GC on time-reversed signals</span>
-<span class="sd">        Multivariate methods (``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr]``) cannot be</span>
-<span class="sd">        called with the other methods.</span>
+<span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cacoh&#39;,</span>
+<span class="sd">        &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``. These</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        * %(coh)s</span>
+<span class="sd">        * %(cacoh)s</span>
+<span class="sd">        * %(mic)s</span>
+<span class="sd">        * %(mim)s</span>
+<span class="sd">        * %(plv)s</span>
+<span class="sd">        * %(ciplv)s</span>
+<span class="sd">        * %(pli)s</span>
+<span class="sd">        * %(wpli)s</span>
+<span class="sd">        * %(gc)s</span>
+<span class="sd">        * %(gc_tr)s</span>
+
+<span class="sd">        Multivariate methods (``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``)</span>
+<span class="sd">        cannot be called with the other methods.</span>
 <span class="sd">    average : bool</span>
 <span class="sd">        Average connectivity scores over epochs. If ``True``, output will be</span>
 <span class="sd">        an instance of :class:`SpectralConnectivity`, otherwise</span>
@@ -568,7 +572,7 @@ document.write(`
 <span class="sd">        Two arrays with the rank to project the seed and target data to,</span>
 <span class="sd">        respectively, using singular value decomposition. If `None`, the rank</span>
 <span class="sd">        of the data is computed and projected to. Only used if ``method``</span>
-<span class="sd">        contains any of ``[&#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">        contains any of ``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
 <span class="sd">    decim : int</span>
 <span class="sd">        To reduce memory usage, decimation factor after time-frequency</span>
 <span class="sd">        decomposition. Returns ``tfr[…, ::decim]``.</span>
@@ -669,24 +673,42 @@ document.write(`
 <span class="sd">            C = ---------------------</span>
 <span class="sd">                sqrt(E[Sxx] * E[Syy])</span>
 
+<span class="sd">        &#39;cacoh&#39; : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`</span>
+<span class="sd">        given by:</span>
+
+<span class="sd">            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}</span>
+<span class="sd">            (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}</span>
+<span class="sd">            \boldsymbol{b}^T\boldsymbol{b}}}}`</span>
+
+<span class="sd">            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density</span>
+<span class="sd">            between seeds and targets transformed for a given phase angle</span>
+<span class="sd">            :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`</span>
+<span class="sd">            are eigenvectors for the seeds and targets, such that</span>
+<span class="sd">            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`</span>
+<span class="sd">            maximises coherency between the seeds and targets. Taking the</span>
+<span class="sd">            absolute value of the results gives maximised coherence.</span>
+
 <span class="sd">        &#39;mic&#39; : Maximised Imaginary part of Coherency (MIC)</span>
 <span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
 
-<span class="sd">            :math:`MIC=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}</span>
-<span class="sd">            {\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}</span>
-<span class="sd">            \parallel}}`</span>
+<span class="sd">            :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T</span>
+<span class="sd">            \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel</span>
+<span class="sd">            \parallel\boldsymbol{\beta}\parallel}}`</span>
 
 <span class="sd">            where: :math:`\boldsymbol{E}` is the imaginary part of the</span>
 <span class="sd">            transformed cross-spectral density between seeds and targets; and</span>
 <span class="sd">            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are</span>
 <span class="sd">            eigenvectors for the seeds and targets, such that</span>
-<span class="sd">            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises</span>
-<span class="sd">            connectivity between the seeds and targets.</span>
+<span class="sd">            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises the</span>
+<span class="sd">            imaginary part of coherency between the seeds and targets.</span>
 
 <span class="sd">        &#39;mim&#39; : Multivariate Interaction Measure (MIM)</span>
 <span class="sd">        :footcite:`EwaldEtAl2012` given by:</span>
 
-<span class="sd">            :math:`MIM=tr(\boldsymbol{EE}^T)`</span>
+<span class="sd">            :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`</span>
+
+<span class="sd">            where :math:`\boldsymbol{E}` is the imaginary part of the</span>
+<span class="sd">            transformed cross-spectral density between seeds and targets.</span>
 
 <span class="sd">        &#39;plv&#39; : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given</span>
 <span class="sd">        by::</span>
@@ -716,7 +738,7 @@ document.write(`
 
 <span class="sd">            :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert</span>
 <span class="sd">            \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss</span>
-<span class="sd">            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`,</span>
+<span class="sd">            \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`</span>
 
 <span class="sd">            where: :math:`s` and :math:`t` represent the seeds and targets,</span>
 <span class="sd">            respectively; :math:`\boldsymbol{H}` is the spectral transfer</span>
@@ -728,7 +750,7 @@ document.write(`
 <span class="sd">        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation</span>
 <span class="sd">        as for &#39;gc&#39;, but where the autocovariance sequence from which the</span>
 <span class="sd">        autoregressive model is produced is transposed to mimic the reversal of</span>
-<span class="sd">        the original signal in time.</span>
+<span class="sd">        the original signal in time :footcite:`HaufeEtAl2012`.</span>
 
 <span class="sd">    Parallel computation can be activated by setting the ``n_jobs`` parameter.</span>
 <span class="sd">    Under the hood, this utilizes the ``joblib`` library. For effective</span>
@@ -757,6 +779,7 @@ document.write(`
     <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># extract data from Epochs object</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">),</span> <span class="s2">&quot;`data`&quot;</span><span class="p">,</span> <span class="s2">&quot;Epochs or a NumPy array&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
         <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
@@ -956,11 +979,20 @@ document.write(`
     <span class="n">conn</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">conn_patterns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
-        <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">))</span>
-        <span class="c1"># patterns shape of [epochs x seeds/targets x cons x channels x freqs]</span>
-        <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_channels</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="p">)</span>
+        <span class="c1"># CaCoh complex-valued, all other methods real-valued</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s2">&quot;cacoh&quot;</span><span class="p">:</span>
+            <span class="n">con_scores_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">con_scores_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">con_scores_dtype</span><span class="p">)</span>
+        <span class="c1"># prevent allocating memory for a huge array if not required</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_patterns_methods</span><span class="p">:</span>
+            <span class="c1"># patterns shape of [epochs x seeds/targets x cons x channels x freqs]</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_channels</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connectivity computation...&quot;</span><span class="p">)</span>
 
     <span class="c1"># parameters to pass to the connectivity function</span>
@@ -993,12 +1025,10 @@ document.write(`
         <span class="n">scores</span><span class="p">,</span> <span class="n">patterns</span> <span class="o">=</span> <span class="n">_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">epoch_idx</span><span class="p">],</span> <span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
             <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">epoch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">multivariate_con</span> <span class="ow">and</span> <span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">epoch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># transpose to [seeds/targets x epochs x cons x channels x freqs]</span>
             <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 
@@ -1144,6 +1174,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">kw_cwt</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;zero_mean&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># avoid FutureWarning</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">tfr_array_morlet</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span>
@@ -1707,7 +1738,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -1715,7 +1746,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

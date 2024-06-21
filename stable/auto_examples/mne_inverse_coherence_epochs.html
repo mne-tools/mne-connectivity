@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute coherence in source space using a MNE inverse solution &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Compute coherence in source space using a MNE inverse solution &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -454,7 +456,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-coherence-in-source-space-using-a-mne-inverse-solution">
 <span id="sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"></span><h1>Compute coherence in source space using a MNE inverse solution<a class="headerlink" href="#compute-coherence-in-source-space-using-a-mne-inverse-solution" title="Link to this heading">#</a></h1>
@@ -465,11 +467,11 @@ MNE-dSPM inverse solutions.</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
 <span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse.html#mne.minimum_norm.apply_inverse" title="mne.minimum_norm.apply_inverse" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a>
+
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
 
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
@@ -567,7 +569,7 @@ Not setting metadata
 Setting baseline interval to [-0.19979521315838786, 0.0] s
 Applying baseline correction (mode: mean)
 Created an SSP operator (subspace dimension = 3)
-4 projection items activated
+3 projection items activated
 </pre></div>
 </div>
 </section>
@@ -611,7 +613,6 @@ connectivity computation.</p>
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
     Rejecting  epoch based on EOG : [&#39;EOG 061&#39;]
-Removing projector &lt;Projection | Average EEG reference, active : True, n_channels : 60&gt;
 Preparing the inverse operator for use...
     Scaled noise and source covariance from nave = 1 to nave = 55
     Created the regularized inverter
@@ -859,13 +860,16 @@ one of the slices within <code class="docutils literal notranslate"><span class=
 <a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain.show_view" title="mne.viz.Brain.show_view" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-method"><span class="n">brain</span><span class="o">.</span><span class="n">show_view</span></a><span class="p">(</span><span class="s2">&quot;lateral&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" srcset="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" alt="mne inverse coherence epochs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.637 seconds)</p>
+<img src="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" srcset="../_images/sphx_glr_mne_inverse_coherence_epochs_001.png" alt="mne inverse coherence epochs" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.711 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-coherence-epochs-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9b1b8412e68e7009f51b3dee0c387ca3/mne_inverse_coherence_epochs.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_coherence_epochs.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1db1fbdecde163c90620911f38139f62/mne_inverse_coherence_epochs.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_coherence_epochs.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/71147ba97f82e69ff8b49d0342b9a589/mne_inverse_coherence_epochs.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mne_inverse_coherence_epochs.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -946,7 +950,7 @@ one of the slices within <code class="docutils literal notranslate"><span class=
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -954,7 +958,7 @@ one of the slices within <code class="docutils literal notranslate"><span class=
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

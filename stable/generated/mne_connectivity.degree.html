@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.degree &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>mne_connectivity.degree &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -406,6 +406,9 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_sensors_connectivity.html">mne_connectivity.viz.plot_sensors_connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_connectivity_circle.html">mne_connectivity.viz.plot_connectivity_circle</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_signals_in_freq_bands.html">mne_connectivity.make_signals_in_freq_bands</a></li>
+</ul>
 </div>
 </nav></div>
     </div>
@@ -471,7 +474,7 @@ document.write(`
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>connectivity</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, shape (n_nodes, n_nodes)</span></dt><dd><p>The connectivity matrix.</p>
+<dt><strong>connectivity</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, shape (n_nodes, n_nodes)</span></dt><dd><p>The connectivity matrix.</p>
 </dd>
 <dt><strong>threshold_prop</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The proportion of edges to keep in the graph before
 computing the degree. The value should be between 0
@@ -481,14 +484,14 @@ and 1.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>degree</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, shape (n_nodes,)</span></dt><dd><p>The computed degree.</p>
+<dt><strong>degree</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, shape (n_nodes,)</span></dt><dd><p>The computed degree.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>During thresholding, the symmetry of the connectivity matrix is
-auto-detected based on <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v2.0.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.allclose()</span></code></a> of it with its transpose.</p>
+auto-detected based on <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v2.1.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.allclose()</span></code></a> of it with its transpose.</p>
 </dd></dl>
 
 <section id="examples-using-mne-connectivity-degree">
@@ -574,7 +577,7 @@ auto-detected based on <a class="reference external" href="https://numpy.org/dev
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -582,7 +585,7 @@ auto-detected based on <a class="reference external" href="https://numpy.org/dev
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

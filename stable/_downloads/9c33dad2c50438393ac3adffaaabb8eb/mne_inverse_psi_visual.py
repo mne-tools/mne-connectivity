@@ -19,12 +19,12 @@ leading).
 #
 # License: BSD (3-clause)
 
-import numpy as np
-
 import mne
+import numpy as np
 from mne.datasets import sample
-from mne.minimum_norm import read_inverse_operator, apply_inverse_epochs
-from mne_connectivity import seed_target_indices, phase_slope_index
+from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
+
+from mne_connectivity import phase_slope_index, seed_target_indices
 
 print(__doc__)
 

@@ -40,14 +40,14 @@ pipeline.
 
 import os.path as op
 
-import numpy as np
 import matplotlib.pyplot as plt
-
 import mne
+import numpy as np
+from mne.minimum_norm import apply_inverse_epochs, make_inverse_operator
+from mne.preprocessing import compute_proj_ecg, compute_proj_eog
+
 import mne_connectivity
 from mne_connectivity import envelope_correlation
-from mne.minimum_norm import make_inverse_operator, apply_inverse_epochs
-from mne.preprocessing import compute_proj_ecg, compute_proj_eog
 
 data_path = mne.datasets.brainstorm.bst_resting.data_path()
 subjects_dir = op.join(data_path, "subjects")

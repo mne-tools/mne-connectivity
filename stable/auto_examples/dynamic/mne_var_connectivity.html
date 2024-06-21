@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -374,6 +374,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -382,6 +383,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -456,7 +458,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-vector-autoregressive-model-linear-system">
 <span id="ex-var"></span><span id="sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"></span><h1>Compute vector autoregressive model (linear system)<a class="headerlink" href="#compute-vector-autoregressive-model-linear-system" title="Link to this heading">#</a></h1>
@@ -468,13 +470,11 @@ a VAR model with different statistical assumptions.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">read_raw_bids</span>
-
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a>
 
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">vector_auto_regression</span></a>
 </pre></div>
@@ -488,7 +488,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.epilepsy_ecog.data_path.html#mne.datasets.epilepsy_ecog.data_path" title="mne.datasets.epilepsy_ecog.data_path" class="sphx-glr-backref-module-mne-datasets-epilepsy_ecog sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">epilepsy_ecog</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># first define the BIDS path</span>
-<span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+<a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
     <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;pt1&quot;</span><span class="p">,</span>
     <span class="n">session</span><span class="o">=</span><span class="s2">&quot;presurgery&quot;</span><span class="p">,</span>
@@ -500,7 +500,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="c1"># Then we&#39;ll use it to load in the sample dataset. Here we use a format (iEEG)</span>
 <span class="c1"># that is only available in MNE-BIDS 0.7+, so it will emit a warning on</span>
 <span class="c1"># versions &lt;= 0.6</span>
-<span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/mne-bids/dev/generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="https://mne.tools/mne-bids/dev/generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data has a power line frequency at </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line_freq</span></a><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -518,29 +518,119 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
-
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+  1%|▎                                     | 642k/88.2M [00:00&lt;00:13, 6.42MB/s]
+  2%|▋                                    | 1.51M/88.2M [00:00&lt;00:12, 7.03MB/s]
+  3%|▉                                    | 2.30M/88.2M [00:00&lt;00:12, 6.94MB/s]
+  4%|█▍                                   | 3.35M/88.2M [00:00&lt;00:10, 7.80MB/s]
+  5%|█▊                                   | 4.39M/88.2M [00:00&lt;00:10, 8.20MB/s]
+  6%|██▎                                  | 5.41M/88.2M [00:00&lt;00:09, 8.81MB/s]
+  7%|██▋                                  | 6.30M/88.2M [00:00&lt;00:10, 8.06MB/s]
+  8%|██▉                                  | 7.11M/88.2M [00:00&lt;00:10, 7.78MB/s]
+  9%|███▍                                 | 8.05M/88.2M [00:01&lt;00:10, 7.40MB/s]
+ 10%|███▋                                 | 8.84M/88.2M [00:01&lt;00:10, 7.25MB/s]
+ 11%|████                                 | 9.57M/88.2M [00:01&lt;00:11, 6.74MB/s]
+ 12%|████▎                                | 10.4M/88.2M [00:01&lt;00:11, 6.79MB/s]
+ 13%|████▊                                | 11.5M/88.2M [00:01&lt;00:09, 7.90MB/s]
+ 14%|█████▏                               | 12.5M/88.2M [00:01&lt;00:09, 7.95MB/s]
+ 15%|█████▌                               | 13.3M/88.2M [00:01&lt;00:09, 7.76MB/s]
+ 16%|█████▉                               | 14.1M/88.2M [00:01&lt;00:10, 7.01MB/s]
+ 17%|██████▏                              | 14.8M/88.2M [00:01&lt;00:10, 6.95MB/s]
+ 18%|██████▌                              | 15.5M/88.2M [00:02&lt;00:11, 6.53MB/s]
+ 18%|██████▊                              | 16.2M/88.2M [00:02&lt;00:11, 6.50MB/s]
+ 19%|███████                              | 16.8M/88.2M [00:02&lt;00:11, 6.36MB/s]
+ 20%|███████▎                             | 17.5M/88.2M [00:02&lt;00:11, 5.93MB/s]
+ 21%|███████▋                             | 18.3M/88.2M [00:02&lt;00:11, 6.19MB/s]
+ 22%|███████▉                             | 19.0M/88.2M [00:02&lt;00:10, 6.31MB/s]
+ 22%|████████▎                            | 19.8M/88.2M [00:02&lt;00:11, 6.17MB/s]
+ 23%|████████▋                            | 20.6M/88.2M [00:02&lt;00:10, 6.18MB/s]
+ 24%|████████▉                            | 21.4M/88.2M [00:03&lt;00:10, 6.54MB/s]
+ 25%|█████████▎                           | 22.2M/88.2M [00:03&lt;00:09, 6.71MB/s]
+ 26%|█████████▋                           | 23.2M/88.2M [00:03&lt;00:08, 7.22MB/s]
+ 27%|██████████                           | 24.1M/88.2M [00:03&lt;00:08, 7.57MB/s]
+ 28%|██████████▍                          | 24.8M/88.2M [00:03&lt;00:08, 7.51MB/s]
+ 29%|██████████▊                          | 25.8M/88.2M [00:03&lt;00:08, 7.70MB/s]
+ 30%|███████████▏                         | 26.6M/88.2M [00:03&lt;00:08, 7.60MB/s]
+ 31%|███████████▍                         | 27.4M/88.2M [00:03&lt;00:08, 7.59MB/s]
+ 32%|███████████▊                         | 28.2M/88.2M [00:03&lt;00:07, 7.54MB/s]
+ 33%|████████████▎                        | 29.2M/88.2M [00:04&lt;00:07, 7.64MB/s]
+ 34%|████████████▌                        | 30.0M/88.2M [00:04&lt;00:07, 7.53MB/s]
+ 35%|████████████▉                        | 30.9M/88.2M [00:04&lt;00:07, 7.87MB/s]
+ 36%|█████████████▎                       | 31.7M/88.2M [00:04&lt;00:07, 7.43MB/s]
+ 37%|█████████████▌                       | 32.4M/88.2M [00:04&lt;00:07, 7.29MB/s]
+ 38%|█████████████▉                       | 33.2M/88.2M [00:04&lt;00:08, 6.47MB/s]
+ 38%|██████████████▏                      | 33.8M/88.2M [00:04&lt;00:09, 5.72MB/s]
+ 39%|██████████████▍                      | 34.5M/88.2M [00:04&lt;00:09, 5.82MB/s]
+ 40%|██████████████▉                      | 35.5M/88.2M [00:05&lt;00:07, 6.68MB/s]
+ 41%|███████████████▏                     | 36.3M/88.2M [00:05&lt;00:07, 6.89MB/s]
+ 42%|███████████████▌                     | 37.1M/88.2M [00:05&lt;00:07, 6.88MB/s]
+ 43%|███████████████▉                     | 38.1M/88.2M [00:05&lt;00:06, 7.68MB/s]
+ 44%|████████████████▎                    | 38.9M/88.2M [00:05&lt;00:06, 7.61MB/s]
+ 45%|████████████████▋                    | 39.7M/88.2M [00:05&lt;00:06, 7.68MB/s]
+ 46%|████████████████▉                    | 40.5M/88.2M [00:05&lt;00:06, 7.59MB/s]
+ 47%|█████████████████▎                   | 41.3M/88.2M [00:05&lt;00:06, 7.45MB/s]
+ 48%|█████████████████▋                   | 42.1M/88.2M [00:05&lt;00:06, 7.66MB/s]
+ 49%|██████████████████                   | 43.1M/88.2M [00:05&lt;00:05, 8.34MB/s]
+ 50%|██████████████████▍                  | 43.9M/88.2M [00:06&lt;00:06, 7.27MB/s]
+ 51%|██████████████████▋                  | 44.7M/88.2M [00:06&lt;00:06, 7.17MB/s]
+ 52%|███████████████████                  | 45.4M/88.2M [00:06&lt;00:06, 6.83MB/s]
+ 52%|███████████████████▍                 | 46.2M/88.2M [00:06&lt;00:05, 7.11MB/s]
+ 53%|███████████████████▋                 | 47.0M/88.2M [00:06&lt;00:05, 7.16MB/s]
+ 55%|████████████████████▏                | 48.1M/88.2M [00:06&lt;00:05, 7.36MB/s]
+ 55%|████████████████████▍                | 48.8M/88.2M [00:06&lt;00:05, 7.22MB/s]
+ 56%|████████████████████▊                | 49.5M/88.2M [00:07&lt;00:06, 5.82MB/s]
+ 57%|█████████████████████                | 50.1M/88.2M [00:07&lt;00:06, 5.48MB/s]
+ 58%|█████████████████████▎               | 50.9M/88.2M [00:07&lt;00:06, 5.69MB/s]
+ 59%|█████████████████████▊               | 52.0M/88.2M [00:07&lt;00:05, 6.49MB/s]
+ 60%|██████████████████████▏              | 52.8M/88.2M [00:07&lt;00:05, 6.76MB/s]
+ 61%|██████████████████████▌              | 53.8M/88.2M [00:07&lt;00:04, 7.32MB/s]
+ 62%|███████████████████████              | 54.8M/88.2M [00:07&lt;00:04, 7.39MB/s]
+ 63%|███████████████████████▎             | 55.6M/88.2M [00:07&lt;00:04, 7.21MB/s]
+ 64%|███████████████████████▋             | 56.4M/88.2M [00:07&lt;00:04, 7.14MB/s]
+ 65%|████████████████████████             | 57.5M/88.2M [00:08&lt;00:03, 7.87MB/s]
+ 66%|████████████████████████▌            | 58.5M/88.2M [00:08&lt;00:03, 8.18MB/s]
+ 68%|████████████████████████▉            | 59.5M/88.2M [00:08&lt;00:03, 8.72MB/s]
+ 69%|█████████████████████████▎           | 60.4M/88.2M [00:08&lt;00:03, 8.22MB/s]
+ 69%|█████████████████████████▋           | 61.2M/88.2M [00:08&lt;00:03, 7.94MB/s]
+ 71%|██████████████████████████           | 62.2M/88.2M [00:08&lt;00:03, 7.54MB/s]
+ 71%|██████████████████████████▍          | 63.0M/88.2M [00:08&lt;00:03, 7.79MB/s]
+ 72%|██████████████████████████▊          | 63.8M/88.2M [00:08&lt;00:03, 7.33MB/s]
+ 73%|███████████████████████████          | 64.6M/88.2M [00:09&lt;00:03, 6.74MB/s]
+ 74%|███████████████████████████▍         | 65.3M/88.2M [00:09&lt;00:03, 6.80MB/s]
+ 75%|███████████████████████████▋         | 66.1M/88.2M [00:09&lt;00:03, 7.00MB/s]
+ 76%|████████████████████████████         | 66.9M/88.2M [00:09&lt;00:03, 6.84MB/s]
+ 77%|████████████████████████████▍        | 67.7M/88.2M [00:09&lt;00:03, 6.70MB/s]
+ 78%|████████████████████████████▊        | 68.5M/88.2M [00:09&lt;00:02, 7.17MB/s]
+ 79%|█████████████████████████████▏       | 69.5M/88.2M [00:09&lt;00:02, 7.53MB/s]
+ 80%|█████████████████████████████▌       | 70.5M/88.2M [00:09&lt;00:02, 7.88MB/s]
+ 81%|█████████████████████████████▉       | 71.3M/88.2M [00:09&lt;00:02, 7.62MB/s]
+ 82%|██████████████████████████████▎      | 72.1M/88.2M [00:10&lt;00:02, 7.58MB/s]
+ 83%|██████████████████████████████▌      | 72.9M/88.2M [00:10&lt;00:02, 7.23MB/s]
+ 84%|██████████████████████████████▉      | 73.7M/88.2M [00:10&lt;00:02, 7.08MB/s]
+ 84%|███████████████████████████████▏     | 74.5M/88.2M [00:10&lt;00:01, 6.93MB/s]
+ 85%|███████████████████████████████▌     | 75.2M/88.2M [00:10&lt;00:01, 6.62MB/s]
+ 86%|███████████████████████████████▉     | 76.0M/88.2M [00:10&lt;00:01, 6.75MB/s]
+ 87%|████████████████████████████████▎    | 77.1M/88.2M [00:10&lt;00:01, 7.53MB/s]
+ 89%|████████████████████████████████▊    | 78.1M/88.2M [00:10&lt;00:01, 8.05MB/s]
+ 90%|█████████████████████████████████    | 78.9M/88.2M [00:10&lt;00:01, 7.91MB/s]
+ 91%|█████████████████████████████████▌   | 79.9M/88.2M [00:11&lt;00:01, 8.12MB/s]
+ 92%|█████████████████████████████████▉   | 80.8M/88.2M [00:11&lt;00:00, 7.72MB/s]
+ 92%|██████████████████████████████████▏  | 81.5M/88.2M [00:11&lt;00:00, 7.68MB/s]
+ 93%|██████████████████████████████████▌  | 82.3M/88.2M [00:11&lt;00:00, 7.59MB/s]
+ 94%|██████████████████████████████████▊  | 83.1M/88.2M [00:11&lt;00:00, 7.36MB/s]
+ 95%|███████████████████████████████████▏ | 83.9M/88.2M [00:11&lt;00:00, 6.97MB/s]
+ 96%|███████████████████████████████████▍ | 84.6M/88.2M [00:11&lt;00:00, 6.85MB/s]
+ 97%|███████████████████████████████████▊ | 85.3M/88.2M [00:11&lt;00:00, 5.98MB/s]
+ 97%|████████████████████████████████████ | 85.9M/88.2M [00:12&lt;00:00, 5.95MB/s]
+ 98%|████████████████████████████████████▎| 86.5M/88.2M [00:12&lt;00:00, 5.77MB/s]
+ 99%|████████████████████████████████████▌| 87.1M/88.2M [00:12&lt;00:00, 5.79MB/s]
+100%|████████████████████████████████████▉| 88.1M/88.2M [00:12&lt;00:00, 6.64MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 34.8MB/s]
- 11%|███▉                                 | 9.52M/88.2M [00:00&lt;00:01, 44.8MB/s]
- 20%|███████▎                             | 17.4M/88.2M [00:00&lt;00:01, 59.8MB/s]
- 27%|█████████▊                           | 23.5M/88.2M [00:00&lt;00:01, 60.2MB/s]
- 34%|████████████▍                        | 29.6M/88.2M [00:00&lt;00:01, 55.9MB/s]
- 40%|██████████████▊                      | 35.3M/88.2M [00:00&lt;00:01, 52.8MB/s]
- 47%|█████████████████▎                   | 41.2M/88.2M [00:00&lt;00:00, 54.6MB/s]
- 56%|████████████████████▊                | 49.6M/88.2M [00:00&lt;00:00, 63.6MB/s]
- 66%|████████████████████████▍            | 58.2M/88.2M [00:00&lt;00:00, 69.9MB/s]
- 75%|███████████████████████████▌         | 65.8M/88.2M [00:01&lt;00:00, 71.8MB/s]
- 84%|███████████████████████████████▏     | 74.4M/88.2M [00:01&lt;00:00, 76.2MB/s]
- 95%|███████████████████████████████████  | 83.5M/88.2M [00:01&lt;00:00, 80.6MB/s]
-  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 311GB/s]
-Download complete in 04s (84.1 MB)
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:42: FutureWarning: extension should start with a period &quot;.&quot;, but got: &quot;vhdr&quot;. Prepending &quot;.&quot; to form: &quot;.vhdr&quot;. This will raise an exception starting with MNE-BIDS 0.12.
-  bids_path = BIDSPath(
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:54: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 421GB/s]
+Download complete in 15s (84.1 MB)
+/home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
-/home/circleci/project/examples/dynamic/mne_var_connectivity.py:54: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
+/home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
 
 [&#39;RQ1&#39;, &#39;RQ2&#39;, &#39;N/A&#39;].
 
@@ -568,94 +658,340 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<details open>
-    <summary><strong>General</strong></summary>
-    <table class="table table-hover table-striped table-sm table-responsive small">
-        <tr>
-            <th>Measurement date</th>
+<script type="text/javascript">
+    const toggleVisibility = (className) => {
 
-            <td>July 24, 1920  19:35:19 GMT</td>
+  const elements = document.querySelectorAll(`.${className}`)
 
-        </tr>
-        <tr>
-            <th>Experimenter</th>
+  elements.forEach(element => {
+    if (element.classList.contains('repr-section-header')) {
+      // Don't collapse the section header row.
+       return
+    }
+    if (element.classList.contains('repr-element-collapsed')) {
+      // Force a reflow to ensure the display change takes effect before removing the class
+      element.classList.remove('repr-element-collapsed')
+      element.offsetHeight // This forces the browser to recalculate layout
+      element.classList.remove('repr-element-faded')
+    } else {
+      // Start transition to hide the element
+      element.classList.add('repr-element-faded')
+      element.addEventListener('transitionend', handler = (e) => {
+        if (e.propertyName === 'opacity' && getComputedStyle(element).opacity === '0.2') {
+          element.classList.add('repr-element-collapsed')
+          element.removeEventListener('transitionend', handler)
+        }
+      });
+    }
+  });
 
-            <td>mne_anonymize</td>
+  // Take care of button (adjust caret)
+  const button = document.querySelectorAll(`.repr-section-header.${className} > th.repr-section-toggle-col > button`)[0]
+  button.classList.toggle('collapsed')
 
-        </tr>
-        <tr>
-            <th>Participant</th>
+  // Take care of the tooltip of the section header row
+  const sectionHeaderRow = document.querySelectorAll(`tr.repr-section-header.${className}`)[0]
+  sectionHeaderRow.classList.toggle('collapsed')
+  sectionHeaderRow.title = sectionHeaderRow.title === 'Hide section' ? 'Show section' : 'Hide section'
+}
+</script>
+
+<style type="text/css">
+    table.repr.table.table-hover.table-striped.table-sm.table-responsive.small {
+  /* Don't make rows wider than they need to be. */
+  display: inline;
+}
+
+table > tbody > tr.repr-element > td {
+  /* Apply a tighter layout to the table cells. */
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  padding-right: 1rem;
+}
+
+table > tbody > tr > td.repr-section-toggle-col {
+  /* Remove background and border of the first cell in every row
+     (this row is only used for the collapse / uncollapse caret)
+
+     TODO: Need to find a good solution for VS Code that works in both
+           light and dark mode. */
+  border-color: transparent;
+  --bs-table-accent-bg: transparent;
+}
+
+tr.repr-section-header {
+  /* Remove stripes from section header rows */
+  background-color: transparent;
+  border-color: transparent;
+  --bs-table-striped-bg: transparent;
+  cursor: pointer;
+}
+
+tr.repr-section-header > th {
+  text-align: left !important;
+  vertical-align: middle;
+}
+
+.repr-element, tr.repr-element > td {
+  opacity: 1;
+  text-align: left !important;
+}
+
+.repr-element-faded {
+  transition: 0.3s ease;
+  opacity: 0.2;
+}
+
+.repr-element-collapsed {
+  display: none;
+}
+
+/* Collapse / uncollapse button and the caret it contains. */
+.repr-section-toggle-col button {
+  cursor: pointer;
+  width: 1rem;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+span.collapse-uncollapse-caret {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: left;
+  background-size: contain;
+}
+
+/* The collapse / uncollapse carets were copied from the free Font Awesome collection and adjusted. */
+
+/* Default to black carets for light mode */
+.repr-section-toggle-col > button.collapsed > span.collapse-uncollapse-caret {
+  background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="black" d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>');
+}
+
+.repr-section-toggle-col
+  > button:not(.collapsed)
+  > span.collapse-uncollapse-caret {
+  background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="black" d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/></svg>');
+}
+
+/* Use white carets for dark mode */
+@media (prefers-color-scheme: dark) {
+  .repr-section-toggle-col > button.collapsed > span.collapse-uncollapse-caret {
+    background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="white" d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>');
+  }
+
+  .repr-section-toggle-col
+    > button:not(.collapsed)
+    > span.collapse-uncollapse-caret {
+    background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="white" d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/></svg>');
+  }
+}
+
+.channel-names-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  cursor: pointer;
+  color: #0d6efd;
+}
+
+.channel-names-btn:hover {
+  color: #0a58ca;
+}
+</style>
 
 
-            <td>sub-pt1</td>
 
-
-        </tr>
-    </table>
-    </details>
-    <details open>
-        <summary><strong>Channels</strong></summary>
-        <table class="table table-hover table-striped table-sm table-responsive small">
-            <tr>
-                <th>Digitized points</th>
-
-                <td>86 points</td>
-
-            </tr>
-            <tr>
-                <th>Good channels</th>
-                <td>84 ECoG</td>
-            </tr>
-            <tr>
-                <th>Bad channels</th>
-                <td>None</td>
-            </tr>
-            <tr>
-                <th>EOG channels</th>
-                <td>Not available</td>
-            </tr>
-            <tr>
-                <th>ECG channels</th>
-                <td>Not available</td>
-            </tr>
-        </table>
-        </details>
-        <details open>
-            <summary><strong>Data</strong></summary>
-            <table class="table table-hover table-striped table-sm table-responsive small">
-
-                <tr>
-                    <th>Sampling frequency</th>
-                    <td>1000.00 Hz</td>
-                </tr>
-
-
-                <tr>
-                    <th>Highpass</th>
-                    <td>0.00 Hz</td>
-                </tr>
-
-
-                <tr>
-                    <th>Lowpass</th>
-                    <td>500.00 Hz</td>
-                </tr>
+<table class="repr table table-hover table-striped table-sm table-responsive small">
 
 
 
-                <tr>
-                    <th>Filenames</th>
-                    <td>sub-pt1_ses-presurgery_task-ictal_ieeg.eeg</td>
-                </tr>
 
 
-                <tr>
-                    <th>Duration</th>
-                    <td>00:04:30 (HH:MM:SS)</td>
-                </tr>
 
-            </table>
-            </details>
+
+
+<tr class="repr-section-header general-63508cff-c283-4868-9688-5adb510889a7"  title="Hide section"
+    onclick="toggleVisibility('general-63508cff-c283-4868-9688-5adb510889a7')">
+    <th class="repr-section-toggle-col">
+        <button>
+
+            <span class="collapse-uncollapse-caret"></span>
+        </button>
+    </th>
+    <th colspan="2">
+        <strong>General</strong>
+    </th>
+</tr>
+
+<tr class="repr-element general-63508cff-c283-4868-9688-5adb510889a7 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Filename(s)</td>
+    <td>
+
+        sub-pt1_ses-presurgery_task-ictal_ieeg.eeg
+
+
+    </td>
+</tr>
+
+<tr class="repr-element general-63508cff-c283-4868-9688-5adb510889a7 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>MNE object type</td>
+    <td>RawBrainVision</td>
+</tr>
+<tr class="repr-element general-63508cff-c283-4868-9688-5adb510889a7 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Measurement date</td>
+
+    <td>1920-07-24 at 19:35:19 UTC</td>
+
+</tr>
+<tr class="repr-element general-63508cff-c283-4868-9688-5adb510889a7 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Participant</td>
+
+
+    <td>sub-pt1</td>
+
+
+</tr>
+<tr class="repr-element general-63508cff-c283-4868-9688-5adb510889a7 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Experimenter</td>
+
+    <td>mne_anonymize</td>
+
+</tr>
+
+
+
+
+
+
+
+
+<tr class="repr-section-header acquisition-65331c4e-91bf-4c8d-92d7-5765487edd71"  title="Hide section"
+    onclick="toggleVisibility('acquisition-65331c4e-91bf-4c8d-92d7-5765487edd71')">
+    <th class="repr-section-toggle-col">
+        <button>
+
+            <span class="collapse-uncollapse-caret"></span>
+        </button>
+    </th>
+    <th colspan="2">
+        <strong>Acquisition</strong>
+    </th>
+</tr>
+
+<tr class="repr-element acquisition-65331c4e-91bf-4c8d-92d7-5765487edd71 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Duration</td>
+    <td>00:04:30 (HH:MM:SS)</td>
+</tr>
+
+
+
+
+
+
+
+
+<tr class="repr-element acquisition-65331c4e-91bf-4c8d-92d7-5765487edd71 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Sampling frequency</td>
+    <td>1000.00 Hz</td>
+</tr>
+
+
+<tr class="repr-element acquisition-65331c4e-91bf-4c8d-92d7-5765487edd71 ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Time points</td>
+    <td>269,080</td>
+</tr>
+
+
+
+
+
+
+
+
+
+<tr class="repr-section-header channels-ff58fea0-11b0-45f9-a011-e59a45c5887f"  title="Hide section"
+    onclick="toggleVisibility('channels-ff58fea0-11b0-45f9-a011-e59a45c5887f')">
+    <th class="repr-section-toggle-col">
+        <button>
+
+            <span class="collapse-uncollapse-caret"></span>
+        </button>
+    </th>
+    <th colspan="2">
+        <strong>Channels</strong>
+    </th>
+</tr>
+
+
+<tr class="repr-element channels-ff58fea0-11b0-45f9-a011-e59a45c5887f ">
+    <td class="repr-section-toggle-col"></td>
+    <td>ECoG</td>
+    <td>
+        <button class="channel-names-btn" onclick="alert('Good ECoG:\n\nG1, G2, G3, G4, G7, G8, G9, G10, G13, G14, G15, G16, G17, G18, G19, G20, G21, G22, G23, G11, G12, G24, G25, G26, G27, G28, G29, G30, G31, G32, ATT1, ATT2, ATT3, ATT4, ATT5, ATT6, ATT7, ATT8, PLT1, PLT2, PLT3, PLT4, PLT5, PLT6, AST1, AST2, AST3, AST4, PST1, PST2, PST3, PST4, AD1, AD2, AD3, AD4, PD1, PD2, PD3, PD4, SF1, SF2, SF3, SF4, SF5, SF6, IF1, IF2, IF3, IF4, IF5, IF6, ILT1, ILT2, ILT3, ILT4, MLT1, MLT2, MLT3, MLT4, SLT1, SLT2, SLT3, SLT4')" title="(Click to open in popup)&#13;&#13;G1, G2, G3, G4, G7, G8, G9, G10, G13, G14, G15, G16, G17, G18, G19, G20, G21, G22, G23, G11, G12, G24, G25, G26, G27, G28, G29, G30, G31, G32, ATT1, ATT2, ATT3, ATT4, ATT5, ATT6, ATT7, ATT8, PLT1, PLT2, PLT3, PLT4, PLT5, PLT6, AST1, AST2, AST3, AST4, PST1, PST2, PST3, PST4, AD1, AD2, AD3, AD4, PD1, PD2, PD3, PD4, SF1, SF2, SF3, SF4, SF5, SF6, IF1, IF2, IF3, IF4, IF5, IF6, ILT1, ILT2, ILT3, ILT4, MLT1, MLT2, MLT3, MLT4, SLT1, SLT2, SLT3, SLT4">
+            84
+        </button>
+
+
+    </td>
+</tr>
+
+
+<tr class="repr-element channels-ff58fea0-11b0-45f9-a011-e59a45c5887f ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Head & sensor digitization</td>
+
+    <td>86 points</td>
+
+</tr>
+
+
+
+
+
+
+
+
+<tr class="repr-section-header filters-fa78859f-132c-411c-9e36-cab819c0723e"  title="Hide section"
+    onclick="toggleVisibility('filters-fa78859f-132c-411c-9e36-cab819c0723e')">
+    <th class="repr-section-toggle-col">
+        <button>
+
+            <span class="collapse-uncollapse-caret"></span>
+        </button>
+    </th>
+    <th colspan="2">
+        <strong>Filters</strong>
+    </th>
+</tr>
+
+<tr class="repr-element filters-fa78859f-132c-411c-9e36-cab819c0723e ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Highpass</td>
+    <td>0.00 Hz</td>
+</tr>
+
+
+<tr class="repr-element filters-fa78859f-132c-411c-9e36-cab819c0723e ">
+    <td class="repr-section-toggle-col"></td>
+    <td>Lowpass</td>
+    <td>500.00 Hz</td>
+</tr>
+
+
+</table>
 </div>
 <br />
 <br /></section>
@@ -679,7 +1015,7 @@ leave as an exercise for our readers!</p>
 <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">onset_sec</span></a><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;AD1-4, ATT1,2&#39;, &#39;AST1,3&#39;, &#39;G16&#39;, &#39;PD&#39;, &#39;SLT1-3&#39;, &#39;offset&#39;, &#39;onset&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [np.str_(&#39;AD1-4, ATT1,2&#39;), np.str_(&#39;AST1,3&#39;), np.str_(&#39;G16&#39;), np.str_(&#39;PD&#39;), np.str_(&#39;SLT1-3&#39;), np.str_(&#39;offset&#39;), np.str_(&#39;onset&#39;)]
 </pre></div>
 </div>
 </section>
@@ -688,7 +1024,7 @@ leave as an exercise for our readers!</p>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
-<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
+<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
 representing this sliding window.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a>
@@ -704,7 +1040,7 @@ representing this sliding window.</p>
 302 matching events found
 No baseline correction applied
 0 projection items activated
-&lt;Epochs |  302 events (good &amp; bad), 0 – 0.499 s, baseline off, ~124 kB, data not loaded,
+&lt;Epochs | 302 events (good &amp; bad), 0 – 0.499 s (baseline off), ~124 kB, data not loaded,
  &#39;1&#39;: 302&gt;
 [0.    0.001 0.002 0.003 0.004 0.005 0.006 0.007 0.008 0.009 0.01  0.011
  0.012 0.013 0.014 0.015 0.016 0.017 0.018 0.019 0.02  0.021 0.022 0.023
@@ -1070,21 +1406,23 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 20/302 [00:00&lt;00:01, 199.07it/s]
- 13%|█▎        | 40/302 [00:00&lt;00:01, 196.95it/s]
- 21%|██        | 62/302 [00:00&lt;00:01, 203.32it/s]
- 28%|██▊       | 84/302 [00:00&lt;00:01, 208.14it/s]
- 35%|███▌      | 106/302 [00:00&lt;00:00, 212.04it/s]
- 42%|████▏     | 128/302 [00:00&lt;00:00, 213.10it/s]
- 50%|████▉     | 150/302 [00:00&lt;00:00, 213.48it/s]
- 57%|█████▋    | 172/302 [00:00&lt;00:00, 208.81it/s]
- 64%|██████▍   | 193/302 [00:00&lt;00:00, 208.12it/s]
- 71%|███████   | 214/302 [00:01&lt;00:00, 207.34it/s]
- 78%|███████▊  | 235/302 [00:01&lt;00:00, 195.98it/s]
- 85%|████████▍ | 256/302 [00:01&lt;00:00, 198.77it/s]
- 92%|█████████▏| 277/302 [00:01&lt;00:00, 201.86it/s]
- 99%|█████████▊| 298/302 [00:01&lt;00:00, 193.52it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 201.82it/s]
+  6%|▋         | 19/302 [00:00&lt;00:01, 181.23it/s]
+ 13%|█▎        | 38/302 [00:00&lt;00:01, 185.98it/s]
+ 19%|█▉        | 57/302 [00:00&lt;00:01, 187.07it/s]
+ 25%|██▌       | 76/302 [00:00&lt;00:01, 183.03it/s]
+ 31%|███▏      | 95/302 [00:00&lt;00:01, 180.97it/s]
+ 38%|███▊      | 114/302 [00:00&lt;00:01, 178.87it/s]
+ 44%|████▎     | 132/302 [00:00&lt;00:00, 177.87it/s]
+ 50%|█████     | 151/302 [00:00&lt;00:00, 178.76it/s]
+ 56%|█████▌    | 169/302 [00:00&lt;00:00, 178.54it/s]
+ 62%|██████▏   | 187/302 [00:01&lt;00:00, 178.71it/s]
+ 68%|██████▊   | 206/302 [00:01&lt;00:00, 179.67it/s]
+ 74%|███████▍  | 224/302 [00:01&lt;00:00, 178.64it/s]
+ 80%|████████  | 242/302 [00:01&lt;00:00, 176.33it/s]
+ 86%|████████▋ | 261/302 [00:01&lt;00:00, 178.40it/s]
+ 92%|█████████▏| 279/302 [00:01&lt;00:00, 175.33it/s]
+ 99%|█████████▊| 298/302 [00:01&lt;00:00, 177.21it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 178.98it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1101,7 +1439,7 @@ of data.</p>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">residuals</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a>
 
 <span class="c1"># visualize the residuals</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">residuals</span></a><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html#matplotlib.axes.Axes.set" title="matplotlib.axes.Axes.set" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set</span></a><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Residuals of fitted VAR model&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Magnitude&quot;</span><span class="p">)</span>
 
@@ -1117,10 +1455,10 @@ of data.</p>
 <span class="c1"># Here we will see that because we use ordinary</span>
 <span class="c1"># least-squares as an estimation method, the residuals</span>
 <span class="c1"># should come with low covariances.</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.add_axes" title="matplotlib.figure.Figure.add_axes" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span></a><span class="p">([</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_axes.html#matplotlib.figure.Figure.add_axes" title="matplotlib.figure.Figure.add_axes" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span></a><span class="p">([</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
 <a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html#matplotlib.axes.Axes.imshow" title="matplotlib.axes.Axes.imshow" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rescov</span></a><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.colorbar" title="matplotlib.figure.Figure.colorbar" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.colorbar.html#matplotlib.figure.Figure.colorbar" title="matplotlib.figure.Figure.colorbar" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
@@ -1130,7 +1468,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f70cd88c100&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f5b729f3e20&gt;
 </pre></div>
 </div>
 </section>
@@ -1165,7 +1503,7 @@ model to all the epochs.</p>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">residuals</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">predicted_data</span></a>
 
 <span class="c1"># visualize the residuals</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">residuals</span></a><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html#matplotlib.axes.Axes.set" title="matplotlib.axes.Axes.set" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set</span></a><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Residuals of fitted VAR model&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Magnitude&quot;</span><span class="p">)</span>
 
@@ -1180,10 +1518,10 @@ model to all the epochs.</p>
 <span class="c1"># Next, we visualize the covariance of residuals as before.</span>
 <span class="c1"># Here we will see a similar trend with the covariances as</span>
 <span class="c1"># with the covariances for time-varying VAR model.</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.add_axes" title="matplotlib.figure.Figure.add_axes" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span></a><span class="p">([</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_axes.html#matplotlib.figure.Figure.add_axes" title="matplotlib.figure.Figure.add_axes" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span></a><span class="p">([</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
 <a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html#matplotlib.axes.Axes.imshow" title="matplotlib.axes.Axes.imshow" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rescov</span></a><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.colorbar" title="matplotlib.figure.Figure.colorbar" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.colorbar.html#matplotlib.figure.Figure.colorbar" title="matplotlib.figure.Figure.colorbar" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="matplotlib.image.AxesImage" class="sphx-glr-backref-module-matplotlib-image sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">im</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cax</span></a><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
@@ -1193,16 +1531,19 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f70cec4a620&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f5b71834940&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 47.056 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 57.345 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e1dd7f38af3dc165807160864af2fdf3/mne_var_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_var_connectivity.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8cb2e6ba3da421678a517077a9590a3c/mne_var_connectivity.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mne_var_connectivity.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1277,7 +1618,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -1285,7 +1626,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

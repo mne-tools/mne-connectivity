@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute envelope correlations in volume source space &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Compute envelope correlations in volume source space &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -454,7 +456,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-envelope-correlations-in-volume-source-space">
 <span id="sphx-glr-auto-examples-mne-inverse-envelope-correlation-volume-py"></span><h1>Compute envelope correlations in volume source space<a class="headerlink" href="#compute-envelope-correlations-in-volume-source-space" title="Link to this heading">#</a></h1>
@@ -470,9 +472,10 @@ CTF data in a volume source space.</p>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">mne_connectivity</span>
-<span class="kn">from</span> <span class="nn">mne.beamformer</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.beamformer.make_lcmv.html#mne.beamformer.make_lcmv" title="mne.beamformer.make_lcmv" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">make_lcmv</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.beamformer.apply_lcmv_epochs.html#mne.beamformer.apply_lcmv_epochs" title="mne.beamformer.apply_lcmv_epochs" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">apply_lcmv_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne.beamformer</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.beamformer.apply_lcmv_epochs.html#mne.beamformer.apply_lcmv_epochs" title="mne.beamformer.apply_lcmv_epochs" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">apply_lcmv_epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.beamformer.make_lcmv.html#mne.beamformer.make_lcmv" title="mne.beamformer.make_lcmv" class="sphx-glr-backref-module-mne-beamformer sphx-glr-backref-type-py-function"><span class="n">make_lcmv</span></a>
 <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_ecg.html#mne.preprocessing.compute_proj_ecg" title="mne.preprocessing.compute_proj_ecg" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_ecg</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.preprocessing.compute_proj_eog.html#mne.preprocessing.compute_proj_eog" title="mne.preprocessing.compute_proj_eog" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-function"><span class="n">compute_proj_eog</span></a>
+
+<span class="kn">import</span> <span class="nn">mne_connectivity</span>
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.envelope_correlation.html#mne_connectivity.envelope_correlation" title="mne_connectivity.envelope_correlation" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">envelope_correlation</span></a>
 
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.brainstorm.bst_resting.data_path.html#mne.datasets.brainstorm.bst_resting.data_path" title="mne.datasets.brainstorm.bst_resting.data_path" class="sphx-glr-backref-module-mne-datasets-brainstorm-bst_resting sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">brainstorm</span><span class="o">.</span><span class="n">bst_resting</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
@@ -533,9 +536,9 @@ Designing a two-pass forward and reverse, zero-phase, non-causal bandpass filter
 - Filter length: 800 samples (10.000 s)
 
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
 Not setting metadata
 88 matching events found
 No baseline correction applied
@@ -546,8 +549,8 @@ Using data from preloaded Raw for 88 events and 49 original time points ...
     Rejecting  epoch based on MAG : [&#39;MLT31-4407&#39;, &#39;MLT41-4407&#39;, &#39;MRT31-4407&#39;, &#39;MRT41-4407&#39;]
 4 bad epochs dropped
 No channels &#39;grad&#39; found. Skipping.
-Adding projection: axial--0.200-0.400-PCA-01
-Adding projection: axial--0.200-0.400-PCA-02
+Adding projection: axial--0.200-0.400-PCA-01 (exp var=37.7%)
+Adding projection: axial--0.200-0.400-PCA-02 (exp var=22.8%)
 No channels &#39;eeg&#39; found. Skipping.
 Done.
 Including 0 SSP projectors from raw file
@@ -599,8 +602,8 @@ Using data from preloaded Raw for 12 events and 33 original time points ...
     Rejecting  epoch based on MAG : [&#39;MRT41-4407&#39;]
 1 bad epochs dropped
 No channels &#39;grad&#39; found. Skipping.
-Adding projection: axial--0.200-0.200-PCA-01
-Adding projection: axial--0.200-0.200-PCA-02
+Adding projection: axial--0.200-0.200-PCA-01 (exp var=92.2%)
+Adding projection: axial--0.200-0.200-PCA-02 (exp var=2.4%)
 No channels &#39;eeg&#39; found. Skipping.
 Done.
 4 projection items deactivated
@@ -645,7 +648,7 @@ Designing a one-pass, zero-phase, non-causal bandpass filter:
 [Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done 287 tasks      | elapsed:    0.2s
 Not setting metadata
 12 matching events found
 No baseline correction applied
@@ -655,10 +658,6 @@ Using data from preloaded Raw for 12 events and 401 original time points ...
     Rejecting  epoch based on MAG : [&#39;MRC42-4407&#39;, &#39;MRC54-4407&#39;, &#39;MRP12-4407&#39;, &#39;MRP22-4407&#39;, &#39;MRP23-4407&#39;]
 2 bad epochs dropped
 Removing 5 compensators from info because not all compensation channels were picked.
-Computing rank from data with rank=None
-    Using tolerance 1e-09 (2.2e-16 eps * 272 dim * 1.7e+04  max singular value)
-    Estimated rank (mag): 268
-    MAG: rank 268 computed from 272 data channels with 4 projectors
     Created an SSP operator (subspace dimension = 4)
     Setting small MAG eigenvalues to zero (without PCA)
 Reducing data rank from 272 -&gt; 268
@@ -711,30 +710,30 @@ Checking surface interior status for 1364 points...
     Found  761/1214 points outside using surface Qhull
     Found   30/ 453 points outside using solid angles
     Total 573/1364 points inside the surface
-Interior check completed in 743.2 ms
+Interior check completed in 822.9 ms
     791 source space points omitted because they are outside the inner skull surface.
     94 source space points omitted because of the    5.0-mm distance limit.
 479 sources remaining after excluding the sources outside the surface and less than    5.0 mm inside.
 Adjusting the neighborhood info.
 Source space : MRI voxel -&gt; MRI (surface RAS)
-     0.015000  0.000000  0.000000     -75.00 mm
-     0.000000  0.015000  0.000000    -120.00 mm
-     0.000000  0.000000  0.015000     -60.00 mm
-     0.000000  0.000000  0.000000       1.00
+    0.015000 0.000000 0.000000     -75.00 mm
+    0.000000 0.015000 0.000000    -120.00 mm
+    0.000000 0.000000 0.015000     -60.00 mm
+    0.000000 0.000000 0.000000       1.00
 MRI volume : MRI voxel -&gt; MRI (surface RAS)
-    -0.001000  0.000000  0.000000     128.00 mm
-     0.000000  0.000000  0.001000    -128.00 mm
-     0.000000 -0.001000  0.000000     128.00 mm
-     0.000000  0.000000  0.000000       1.00
+    -0.001000 0.000000 0.000000     128.00 mm
+    0.000000 0.000000 0.001000    -128.00 mm
+    0.000000 -0.001000 0.000000     128.00 mm
+    0.000000 0.000000 0.000000       1.00
 MRI volume : MRI (surface RAS) -&gt; RAS (non-zero origin)
-     1.000000  0.000000  0.000000       0.00 mm
-     0.000000  1.000000  0.000000       0.00 mm
-     0.000000  0.000000  1.000000       0.00 mm
-     0.000000  0.000000  0.000000       1.00
+    1.000000 0.000000 0.000000       0.00 mm
+    0.000000 1.000000 0.000000       0.00 mm
+    0.000000 0.000000 1.000000       0.00 mm
+    0.000000 0.000000 0.000000       1.00
 Setting up volume interpolation ...
     18327567/16777216 nonzero values for the whole brain
 [done]
-Source space          : &lt;SourceSpaces: [&lt;volume, shape=(12, 15, 12), n_used=479&gt;] MRI (surface RAS) coords, subject &#39;bst_resting&#39;, ~64.5 MB&gt;
+Source space          : &lt;SourceSpaces: [&lt;volume, shape=(np.int64(12), np.int64(15), np.int64(12)), n_used=479&gt;] MRI (surface RAS) coords, subject &#39;bst_resting&#39;, ~128.5 MB&gt;
 MRI -&gt; head transform : /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/MEG/bst_resting/bst_resting-trans.fif
 Measurement data      : instance of Info
 Conductor model   : /home/circleci/mne_data/MNE-brainstorm-data/bst_resting/subjects/bst_resting/bem/bst_resting-5120-bem-sol.fif
@@ -745,10 +744,10 @@ Free source orientations
 Read 1 source spaces a total of 479 active source locations
 
 Coordinate transformation: MRI (surface RAS) -&gt; head
-     0.999797 -0.005775 -0.019288       2.71 mm
-     0.011390  0.952195  0.305279      16.66 mm
-     0.016602 -0.305437  0.952068      28.47 mm
-     0.000000  0.000000  0.000000       1.00
+    0.999797 -0.005775 -0.019288       2.71 mm
+    0.011390 0.952195 0.305279      16.66 mm
+    0.016602 -0.305437 0.952068      28.47 mm
+    0.000000 0.000000 0.000000       1.00
 
 Read 298 MEG channels from info
 Read 26 MEG compensation channels from info
@@ -761,10 +760,10 @@ Setting up compensation data...
     Postselector created.
 105 coil definitions read
 Coordinate transformation: MEG device -&gt; head
-     0.998490 -0.050225 -0.022235       1.90 mm
-     0.052235  0.993447  0.101656      13.13 mm
-     0.016984 -0.102664  0.994571      66.69 mm
-     0.000000  0.000000  0.000000       1.00
+    0.998490 -0.050225 -0.022235       1.90 mm
+    0.052235 0.993447 0.101656      13.13 mm
+    0.016984 -0.102664 0.994571      66.69 mm
+    0.000000 0.000000 0.000000       1.00
 MEG coil definitions created in head coordinates.
 Removing 5 compensators from info because not all compensation channels were picked.
 Source spaces are now in head coordinates.
@@ -788,7 +787,7 @@ Checking surface interior status for 479 points...
     Found   0/329 points outside using surface Qhull
     Found   0/329 points outside using solid angles
     Total 479/479 points inside the surface
-Interior check completed in 630.8 ms
+Interior check completed in 665.1 ms
 
 Checking surface interior status for 298 points...
     Found   0/298 points inside  an interior sphere of radius   49.6 mm
@@ -796,7 +795,7 @@ Checking surface interior status for 298 points...
     Found  15/ 15 points outside using surface Qhull
     Found   0/  0 points outside using solid angles
     Total 0/298 points inside the surface
-Interior check completed in 208.4 ms
+Interior check completed in 299.7 ms
 
 Composing the field computation matrix...
 Computing MEG at 479 source locations (free orientations)...
@@ -805,9 +804,9 @@ Finished.
 Removing 5 compensators from info because not all compensation channels were picked.
 Removing 5 compensators from info because not all compensation channels were picked.
 Computing rank from covariance with rank=&#39;info&#39;
-    MAG: rank 268 after 4 projectors applied to 272 channels
+    MAG: rank 268 after 4 projectors applied to {n_chan} channel{_pl(n_chan)}
 Computing rank from covariance with rank=&#39;info&#39;
-    MAG: rank 268 after 4 projectors applied to 272 channels
+    MAG: rank 268 after 4 projectors applied to {n_chan} channel{_pl(n_chan)}
 Making LCMV beamformer with rank {&#39;mag&#39;: 268}
 Computing inverse operator with 272 channels.
     272 out of 272 channels remain after picking
@@ -852,7 +851,7 @@ Processing epoch : 10
 <h2>Compute the degree and plot it<a class="headerlink" href="#compute-the-degree-and-plot-it" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.degree.html#mne_connectivity.degree" title="mne_connectivity.degree" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">mne_connectivity</span><span class="o">.</span><span class="n">degree</span></a><span class="p">(</span><a href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">corr</span></a><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
 <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="mne.VolSourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="mne.VolSourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">VolSourceEstimate</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">degree</span></a><span class="p">,</span> <span class="p">[</span><a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;vertno&quot;</span><span class="p">]],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bst_resting&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate.plot" title="mne.VolSourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate.plot" title="mne.VolSourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.SourceSpaces.html#mne.SourceSpaces" title="mne.SourceSpaces" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">src</span></a><span class="p">,</span>
     <span class="n">clim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;percent&quot;</span><span class="p">,</span> <span class="n">lims</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">95</span><span class="p">]),</span>
     <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;gnuplot&quot;</span><span class="p">,</span>
@@ -862,10 +861,10 @@ Processing epoch : 10
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_001.png" srcset="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_001.png" alt="mne inverse envelope correlation volume" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Transforming subject RAS (non-zero origin) -&gt; MNI Talairach
-     1.029906  0.008134 -0.048341      -1.23 mm
-     0.013579  0.955254  0.160974      -9.34 mm
-     0.075120 -0.143988  1.092494     -28.73 mm
-     0.000000  0.000000  0.000000       1.00
+    1.029906 0.008134 -0.048341      -1.23 mm
+    0.013579 0.955254 0.160974      -9.34 mm
+    0.075120 -0.143988 1.092494     -28.73 mm
+    0.000000 0.000000 0.000000       1.00
 
 Showing: t = 0.000 s, (43.2, -61.2, 16.1) mm, [8, 4, 6] vox, 1136 vertex
 Using control points [ 82.5  92.3 107. ]
@@ -886,13 +885,16 @@ Using control points [ 82.5  92.3 107. ]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.023 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.197 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-envelope-correlation-volume-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5e9e1bddc9260a1e0fcb115d04581984/mne_inverse_envelope_correlation_volume.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_envelope_correlation_volume.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e8d9a36f1de06d756efc8f0135d04ae2/mne_inverse_envelope_correlation_volume.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_envelope_correlation_volume.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c8df8b748262c4852e771fae4c665b59/mne_inverse_envelope_correlation_volume.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mne_inverse_envelope_correlation_volume.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -973,7 +975,7 @@ Using control points [ 82.5  92.3 107. ]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -981,7 +983,7 @@ Using control points [ 82.5  92.3 107. ]
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

@@ -12,10 +12,10 @@ between 7.5 Hz and 40 Hz.
 # License: BSD (3-clause)
 
 import matplotlib.pyplot as plt
-
 import mne
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
+
 from mne_connectivity import spectral_connectivity_epochs
 
 print(__doc__)

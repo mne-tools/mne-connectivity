@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -454,7 +456,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-handling-ragged-arrays-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="working-with-ragged-indices-for-multivariate-connectivity">
 <span id="sphx-glr-auto-examples-handling-ragged-arrays-py"></span><h1>Working with ragged indices for multivariate connectivity<a class="headerlink" href="#working-with-ragged-indices-for-multivariate-connectivity" title="Link to this heading">#</a></h1>
@@ -475,16 +477,15 @@ numbers of seeds and targets can be handled in MNE-Connectivity.</p>
 considered together, and the number of signals designated as seeds and
 targets does not have to be equal within or across connections. Issues can
 arise from this when storing information associated with connectivity in
-arrays, as the number of entries within each dimension can vary within and
-across connections depending on the number of seeds and targets. Such arrays
-are ‘ragged’, and support for ragged arrays is limited in NumPy to the
-<code class="docutils literal notranslate"><span class="pre">object</span></code> datatype. Not only is working with ragged arrays is cumbersome,
-but saving arrays with <code class="docutils literal notranslate"><span class="pre">dtype='object'</span></code> is not supported by the h5netcdf
-engine used to save connectivity objects. The workaround used in
-MNE-Connectivity is to pad ragged arrays with some known values according to
-the largest number of entries in each dimension, such that there is an equal
-amount of information across and within connections for each dimension of the
 arrays.</p>
+<p>Such arrays are ‘ragged’, and support for ragged arrays is limited in NumPy
+to the <code class="docutils literal notranslate"><span class="pre">object</span></code> datatype. Not only is working with ragged arrays
+cumbersome, but saving arrays with <code class="docutils literal notranslate"><span class="pre">dtype='object'</span></code> is not supported by the
+h5netcdf engine used to save connectivity objects.</p>
+<p>The workaround used in MNE-Connectivity is to pad ragged arrays with some
+known values according to the largest number of entries in each dimension,
+such that there is an equal amount of information across and within
+connections for each dimension of the arrays.</p>
 <p>As an example, consider we have 5 channels and want to compute 2 connections:
 the first between channels in indices 0 and 1 with those in indices 2, 3,
 and 4; and the second between channels 0, 1, 2, and 3 with channel 4. The
@@ -505,7 +506,7 @@ Examples of how <code class="docutils literal notranslate"><span class="pre">ind
 
 <span class="c1"># tuple of tuples</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ragged_indices</span></a> <span class="o">=</span> <span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>   <span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
-                  <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span>         <span class="p">)))</span>
+                  <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span>        <span class="p">)))</span>
 
 <span class="c1"># tuple of arrays</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ragged_indices</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>   <span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">),</span>
@@ -517,7 +518,8 @@ forming ragged arrays.</strong></p>
 <p>Just as for bivariate connectivity, the length of <code class="docutils literal notranslate"><span class="pre">indices[0]</span></code> and
 <code class="docutils literal notranslate"><span class="pre">indices[1]</span></code> is equal (i.e. the number of connections), however information
 about the multiple channel indices for each connection is stored in a nested
-array. Importantly, these indices are ragged, as the first connection will be
+array.</p>
+<p>Importantly, these indices are ragged, as the first connection will be
 computed between 2 seed and 3 target channels, and the second connection
 between 4 seed and 1 target channel(s). The connectivity functions will
 recognise the indices as being ragged, and pad them to a ‘full’ array by
@@ -533,16 +535,17 @@ returned connectivity objects.</p>
 <p>For the connectivity results themselves, the methods available in
 MNE-Connectivity combine information across the different channels into a
 single (time-)frequency-resolved connectivity spectrum, regardless of the
-number of seed and target channels, so ragged arrays are not a concern here.
-However, the maximised imaginary part of coherency (MIC) method also returns
+number of seed and target channels, so ragged arrays are not a concern here.</p>
+<p>However, the maximised imaginary part of coherency (MIC) method also returns
 spatial patterns of connectivity, which show the contribution of each channel
 to the dimensionality-reduced connectivity estimate (explained in more detail
 in <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a>). Because these patterns are returned for each channel,
 their shape can vary depending on the number of seeds and targets in each
-connection, making them ragged. To avoid this, the patterns are padded along
-the channel axis with the known and invalid entry <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>, in line with
-that applied to <code class="docutils literal notranslate"><span class="pre">indices</span></code>. Extracting only the valid spatial patterns from
-the connectivity object is trivial, as shown below:</p>
+connection, making them ragged.</p>
+<p>To avoid this, the patterns are padded along the channel axis with the known
+and invalid entry <code class="docutils literal notranslate"><span class="pre">np.nan</span></code>, in line with that applied to <code class="docutils literal notranslate"><span class="pre">indices</span></code>.
+Extracting only the valid spatial patterns from the connectivity object is
+trivial, as shown below:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create random data</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.randn.html#numpy.random.randn" title="numpy.random.randn" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>  <span class="c1"># epochs x channels x times</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">50</span>
@@ -599,13 +602,16 @@ the connectivity object is trivial, as shown below:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assertions completed successfully!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.339 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.018 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-handling-ragged-arrays-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/627c6a640d649eb934528032e8142ffb/handling_ragged_arrays.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">handling_ragged_arrays.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4617c98a39e0651dd9de0f9d6c485cb2/handling_ragged_arrays.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">handling_ragged_arrays.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/d7f2c5fcd3f646e25c5a522067368f75/handling_ragged_arrays.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">handling_ragged_arrays.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -683,7 +689,7 @@ the connectivity object is trivial, as shown below:</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -691,7 +697,7 @@ the connectivity object is trivial, as shown below:</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

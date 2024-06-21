@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute Phase Slope Index (PSI) in source space for a visual stimulus &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Compute Phase Slope Index (PSI) in source space for a visual stimulus &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,13 +50,13 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute all-to-all connectivity in sensor space" href="sensor_connectivity.html" />
-    <link rel="prev" title="Comparing spectral connectivity computed over time or over trials" href="compare_connectivity_over_time_over_trial.html" />
+    <link rel="prev" title="Comparison of coherency-based methods" href="compare_coherency_methods.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -375,6 +375,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -383,6 +384,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -454,7 +456,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-phase-slope-index-psi-in-source-space-for-a-visual-stimulus">
 <span id="sphx-glr-auto-examples-mne-inverse-psi-visual-py"></span><h1>Compute Phase Slope Index (PSI) in source space for a visual stimulus<a class="headerlink" href="#compute-phase-slope-index-psi-in-source-space-for-a-visual-stimulus" title="Link to this heading">#</a></h1>
@@ -472,12 +474,12 @@ leading).</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
-<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a>
-<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index" title="mne_connectivity.phase_slope_index" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">phase_slope_index</span></a>
+<span class="kn">from</span> <span class="nn">mne.minimum_norm</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.apply_inverse_epochs.html#mne.minimum_norm.apply_inverse_epochs" title="mne.minimum_norm.apply_inverse_epochs" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">apply_inverse_epochs</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.minimum_norm.read_inverse_operator.html#mne.minimum_norm.read_inverse_operator" title="mne.minimum_norm.read_inverse_operator" class="sphx-glr-backref-module-mne-minimum_norm sphx-glr-backref-type-py-function"><span class="n">read_inverse_operator</span></a>
+
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index" title="mne_connectivity.phase_slope_index" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">phase_slope_index</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a>
 
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 
@@ -635,7 +637,7 @@ Not setting metadata
 Setting baseline interval to [-0.19979521315838786, 0.0] s
 Applying baseline correction (mode: mean)
 Created an SSP operator (subspace dimension = 3)
-4 projection items activated
+3 projection items activated
 Preparing the inverse operator for use...
     Scaled noise and source covariance from nave = 1 to nave = 1
     Created the regularized inverter
@@ -795,13 +797,16 @@ Using control points [0.03622925 0.05660114 0.13862278]
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.654 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.998 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-psi-visual-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/f55fefeb5e4e60039c11634685c75ff2/mne_inverse_psi_visual.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_psi_visual.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9c33dad2c50438393ac3adffaaabb8eb/mne_inverse_psi_visual.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mne_inverse_psi_visual.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/8f8ea11e72191775746dd7cc0d761e6a/mne_inverse_psi_visual.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mne_inverse_psi_visual.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -819,12 +824,12 @@ Using control points [0.03622925 0.05660114 0.13862278]
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="compare_connectivity_over_time_over_trial.html"
+       href="compare_coherency_methods.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Comparing spectral connectivity computed over time or over trials</p>
+        <p class="prev-next-title">Comparison of coherency-based methods</p>
       </div>
     </a>
     <a class="right-next"
@@ -879,7 +884,7 @@ Using control points [0.03622925 0.05660114 0.13862278]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -887,7 +892,7 @@ Using control points [0.03622925 0.05660114 0.13862278]
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

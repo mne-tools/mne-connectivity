@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.seed_target_indices &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>mne_connectivity.seed_target_indices &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -50,7 +50,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -406,6 +406,9 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_sensors_connectivity.html">mne_connectivity.viz.plot_sensors_connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_connectivity_circle.html">mne_connectivity.viz.plot_connectivity_circle</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_signals_in_freq_bands.html">mne_connectivity.make_signals_in_freq_bands</a></li>
+</ul>
 </div>
 </nav></div>
     </div>
@@ -471,15 +474,15 @@ document.write(`
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>seeds</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_seeds)</span></dt><dd><p>Seed indices.</p>
+<dt><strong>seeds</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_seeds)</span></dt><dd><p>Seed indices.</p>
 </dd>
-<dt><strong>targets</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_targets)</span></dt><dd><p>Indices of signals for which to compute connectivity.</p>
+<dt><strong>targets</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (n_unique_targets)</span></dt><dd><p>Indices of signals for which to compute connectivity.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (2, n_cons)</span></dt><dd><p>The indices parameter used for connectivity computation.</p>
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, shape (2, n_cons)</span></dt><dd><p>The indices parameter used for connectivity computation.</p>
 </dd>
 </dl>
 </dd>
@@ -504,12 +507,18 @@ between each seed and each target. E.g. the seeds and targets:</p>
 
 <section id="examples-using-mne-connectivity-seed-target-indices">
 <span id="sphx-glr-backreferences-mne-connectivity-seed-target-indices"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.seed_target_indices</span></code><a class="headerlink" href="#examples-using-mne-connectivity-seed-target-indices" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in sour..."><img alt="" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the distinct forms of information captured by coherency-based connect..."><img alt="" src="../_images/sphx_glr_compare_coherency_methods_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Comparison of coherency-based methods</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in sour..."><img alt="" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute Phase Slope Index (PSI) in source space for a visual stimulus</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example computes the coherence between a seed in the left auditory cortex and the rest of ..."><img alt="" src="../_images/sphx_glr_mne_inverse_coherence_epochs_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute coherence in source space using a MNE inverse solution</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how canonical coherency (CaCoh) VidaurreEtAl2019 - a multivariate met..."><img alt="" src="../_images/sphx_glr_cacoh_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/cacoh.html#sphx-glr-auto-examples-cacoh-py"><span class="std std-ref">Compute multivariate coherency/coherence</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Compute multivariate coherency/coherence</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how multivariate methods based on the imaginary part of coherency Ewa..."><img alt="" src="../_images/sphx_glr_mic_mim_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute multivariate measures of the imaginary part of coherency</div>
@@ -591,7 +600,7 @@ between each seed and each target. E.g. the seeds and targets:</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -599,7 +608,7 @@ between each seed and each target. E.g. the seeds and targets:</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

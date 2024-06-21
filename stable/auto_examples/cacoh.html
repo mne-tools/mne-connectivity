@@ -1,0 +1,1095 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Compute multivariate coherency/coherence &#8212; MNE-Connectivity 0.7.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=71d00d13" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/cacoh';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compute multivariate measures of the imaginary part of coherency" href="mic_mim.html" />
+    <link rel="prev" title="Compute mixed source space connectivity and visualize it using a circular graph" href="mixed_source_space_connectivity.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute multivariate coherency/coherence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamic/mne_var_connectivity.html">Compute vector autoregressive model (linear system)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Compute...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-cacoh-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="compute-multivariate-coherency-coherence">
+<span id="sphx-glr-auto-examples-cacoh-py"></span><h1>Compute multivariate coherency/coherence<a class="headerlink" href="#compute-multivariate-coherency-coherence" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how canonical coherency (CaCoh)
+<a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> - a multivariate method based on coherency - can
+be used to compute connectivity between whole sets of sensors, alongside
+spatial patterns of the connectivity.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1">#          Mohammad Orabe &lt;orabe.mhd@gmail.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">,</span>
+    <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span>
+    <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<p>Multivariate forms of signal analysis allow you to simultaneously consider
+the activity of multiple signals. In the case of connectivity, the
+interaction between multiple sensors can be analysed at once, producing a
+single connectivity spectrum. This approach brings not only practical
+benefits (e.g. easier interpretability of results from the dimensionality
+reduction), but can also offer methodological improvements (e.g. enhanced
+signal-to-noise ratio).</p>
+<p>A popular bivariate measure of connectivity is coherency/coherence, which
+looks at the correlation between two signals in the frequency domain.
+However, in cases where interactions between multiple signals are of
+interest, computing connectivity between all possible combinations of signals
+leads to a very large number of results which is difficult to interpret. A
+common approach is to average results across these connections, however this
+risks reducing the signal-to-noise ratio of results and burying interactions
+that are present between only a small number of channels.</p>
+<p>Canonical coherency (CaCoh) is a multivariate form of coherency that uses
+eigendecomposition-derived spatial filters to extract the underlying
+components of connectivity in a frequency-resolved manner
+<a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. This approach goes beyond simply aggregating
+information across all possible combinations of signals.</p>
+<p>It is similar to multivariate methods based on the imaginary part of
+coherency (MIC &amp; MIM <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>; see <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a> and
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a>).</p>
+</section>
+<section id="data-simulation">
+<h2>Data Simulation<a class="headerlink" href="#data-simulation" title="Link to this heading">#</a></h2>
+<p>To demonstrate the CaCoh method, we will use some simulated data consisting
+of two sets of interactions between signals in a given frequency range:</p>
+<ul class="simple">
+<li><p>5 seeds and 3 targets interacting in the 10-12 Hz frequency range.</p></li>
+<li><p>5 seeds and 3 targets interacting in the 23-25 Hz frequency range.</p></li>
+</ul>
+<p>We can consider the seeds and targets to be signals of different modalities,
+e.g. cortical EEG signals and subcortical LFP signals, cortical EEG signals
+and muscular EMG signals, etc…. We use the
+<a class="reference internal" href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_signals_in_freq_bands()</span></code></a> function to simulate
+these signals.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate simulated data</span>
+<a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_10_12</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">(</span>
+    <span class="n">n_seeds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">n_targets</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">freq_band</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>  <span class="c1"># 10-12 Hz interaction</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_23_25</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">(</span>
+    <span class="n">n_seeds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">n_targets</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">freq_band</span><span class="o">=</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>  <span class="c1"># 23-25 Hz interaction</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">44</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Combine data into a single object</span>
+<a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray.add_channels" title="mne.EpochsArray.add_channels" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">data_10_12</span><span class="o">.</span><span class="n">add_channels</span></a><span class="p">([</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_23_25</span></a><span class="p">])</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting up band-pass filter from 10 - 12 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed frequency-domain design (firwin2) method
+- Hamming window
+- Lower passband edge: 10.00
+- Lower transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 9.50 Hz)
+- Upper passband edge: 12.00 Hz
+- Upper transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 12.50 Hz)
+- Filter length: 661 samples (6.610 s)
+
+Not setting metadata
+10 matching events found
+No baseline correction applied
+0 projection items activated
+Setting up band-pass filter from 23 - 25 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed frequency-domain design (firwin2) method
+- Hamming window
+- Lower passband edge: 23.00
+- Lower transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 22.50 Hz)
+- Upper passband edge: 25.00 Hz
+- Upper transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 25.50 Hz)
+- Filter length: 661 samples (6.610 s)
+
+Not setting metadata
+10 matching events found
+No baseline correction applied
+0 projection items activated
+</pre></div>
+</div>
+</section>
+<section id="computing-cacoh">
+<h2>Computing CaCoh<a class="headerlink" href="#computing-cacoh" title="Link to this heading">#</a></h2>
+<p>Having simulated the signals, we can create the indices for computing
+connectivity between all seeds and all targets in a single multivariate
+connection (see <a class="reference internal" href="handling_ragged_arrays.html"><span class="doc">Working with ragged indices for multivariate connectivity</span></a> for more information), after
+which we compute connectivity.</p>
+<p>For CaCoh, a set of spatial filters are found that will maximise the
+estimated connectivity between the seed and target signals. These maximising
+filters correspond to the eigenvectors with the largest eigenvalue, derived
+from an eigendecomposition of information from the cross-spectral density
+(Eq. 8 of <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><span class="math notranslate nohighlight">\(\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}(\Phi)
+\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}\boldsymbol{b}^T
+\boldsymbol{b}}}}\)</span></p>
+<p>where: <span class="math notranslate nohighlight">\(\boldsymbol{D}(\Phi)\)</span> is the cross-spectral density between
+seeds and targets transformed for a given phase angle <span class="math notranslate nohighlight">\(\Phi\)</span>; and
+<span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{b}\)</span> are eigenvectors for the
+seeds and targets, such that <span class="math notranslate nohighlight">\(\boldsymbol{a}^T\boldsymbol{D}(\Phi)
+\boldsymbol{b}\)</span> maximises coherency between the seeds and targets. All
+elements are frequency-dependent, however this is omitted for readability.</p>
+<p>CaCoh is complex-valued in the range <span class="math notranslate nohighlight">\([-1, 1]\)</span> where the sign reflects
+the phase angle of the interaction (like for coherency). Taking the absolute
+value is akin to taking the coherence, which is the magnitude of the
+interaction regardless of phase angle.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate connectivity indices</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multivar_indices</span></a> <span class="o">=</span> <span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">],</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">])</span>
+
+<span class="c1"># Compute CaCoh</span>
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multivar_indices</span></a><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Results shape: </span><span class="si">{</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> (connections x frequencies)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get absolute CaCoh</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh_abs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~270 kB, data loaded,
+ &#39;1&#39;: 10&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 3.0Hz..35.0Hz (65 points)
+Estimated data ranks:
+    connection 1 - seeds (10); targets (6)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+Results shape: (1, 65) (connections x frequencies)
+</pre></div>
+</div>
+<p>As you can see below, using CaCoh we have summarised the most relevant
+connectivity information from our 10 seed channels and 6 target channels as a
+single spectrum of connectivity values. This lower-dimensional representation
+of signal interactions is much more interpretable when analysing connectivity
+in complex systems such as the brain.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot CaCoh</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh_abs</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;CaCoh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_cacoh_001.png" srcset="../_images/sphx_glr_cacoh_001.png" alt="CaCoh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;CaCoh&#39;)
+</pre></div>
+</div>
+<p>Note that we plot the absolute values of the results (coherence) rather than
+the complex values (coherency). The absolute value of connectivity will
+generally be of most interest. However, information such as the phase of
+interaction can only be extracted from the complex-valued results, e.g. with
+the <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.angle.html#numpy.angle" title="(in NumPy v2.1.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.angle()</span></code></a> function.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot phase of connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.angle.html#numpy.angle" title="numpy.angle" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">angle</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Phase of connectivity (radians)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;CaCoh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_cacoh_002.png" srcset="../_images/sphx_glr_cacoh_002.png" alt="CaCoh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;CaCoh&#39;)
+</pre></div>
+</div>
+</section>
+<section id="cacoh-versus-coherence">
+<h2>CaCoh versus coherence<a class="headerlink" href="#cacoh-versus-coherence" title="Link to this heading">#</a></h2>
+<p>To further demonstrate the signal-to-noise ratio benefits of CaCoh, below we
+compute connectivity between each seed and target using bivariate coherence.
+With our 10 seeds and 6 targets, this gives us a total of 60 unique
+connections which is very difficult to interpret without aggregating some
+information. A common approach is to simply average across these connections,
+which we do below.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define bivariate connectivity indices</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bivar_indices</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">)</span>
+
+<span class="c1"># Compute bivariate coherence</span>
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bivar_indices</span></a><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original results shape: </span><span class="si">{</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">coh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> (connections x frequencies)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Average results across connections</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh_mean</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">coh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Averaged results shape: </span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh_mean</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2"> (connections x frequencies)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~270 kB, data loaded,
+ &#39;1&#39;: 10&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 60 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 3.0Hz..35.0Hz (65 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+[Connectivity computation done]
+Original results shape: (60, 65) (connections x frequencies)
+Averaged results shape: (65,) (connections x frequencies)
+</pre></div>
+</div>
+<p>Plotting the bivariate and multivariate results together, we can see that
+coherence still captures the interactions at 10-12 Hz and 23-25 Hz, however
+the scale of the connectivity is much smaller. This reflects the fact that
+CaCoh is able to capture the relevant components of interactions between
+multiple signals, regardless of whether they are present in all channels.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot CaCoh &amp; Coh</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh_abs</span></a> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.min.html#numpy.min" title="numpy.min" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">min</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh_abs</span></a><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CaCoh&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">coh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh_mean</span></a> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.min.html#numpy.min" title="numpy.min" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">min</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coh_mean</span></a><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coh&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Baseline-corrected connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;CaCoh vs. coherence&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_cacoh_003.png" srcset="../_images/sphx_glr_cacoh_003.png" alt="CaCoh vs. coherence" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;CaCoh vs. coherence&#39;)
+</pre></div>
+</div>
+<p>The ability of multivariate connectivity methods to capture the underlying
+components of connectivity is extremely useful when dealing with data from
+a large number of channels, with inter-channel interactions at distinct
+frequencies, a problem explored in more detail in the <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a> example.</p>
+</section>
+<section id="extracting-spatial-information-from-cacoh">
+<h2>Extracting spatial information from CaCoh<a class="headerlink" href="#extracting-spatial-information-from-cacoh" title="Link to this heading">#</a></h2>
+<p>Whilst a lower-dimensional representation of connectivity information is
+useful, we lose information about which channels are involved in the
+connectivity. Thankfully, this information can be recovered by constructing
+spatial patterns of connectivity from the spatial filters
+<a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>The spatial patterns are stored under <code class="docutils literal notranslate"><span class="pre">attrs['patterns']</span></code> of the
+connectivity class, with one value per frequency for each channel in the
+seeds and targets. The patterns can be positive- and negative-valued. Sign
+differences of the patterns can be used to visualise the orientation of
+underlying dipole sources, whereas their absolute value reflects the strength
+of a channel’s contribution to the connectivity component. The spatial
+patterns are <strong>not</strong> bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
+<p>Averaging across the patterns in the 10-12 Hz and 23-25 Hz ranges, we can see
+how it is possible to identify which channels are contributing to
+connectivity at different frequencies.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">freqs</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fbands</span></a> <span class="o">=</span> <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="p">((</span><span class="mi">23</span><span class="p">,</span> <span class="mi">25</span><span class="p">)))</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># patterns have shape [seeds/targets x cons x channels x freqs (x times)]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">]))</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed_pattern</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">)]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">)]</span>
+
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmin</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.nanmin.html#numpy.nanmin" title="numpy.nanmin" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmax</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.nanmax.html#numpy.nanmax" title="numpy.nanmax" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">)</span>
+
+<span class="k">for</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fbands</span></a><span class="p">):</span>
+    <span class="c1"># average across frequencies</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed_pattern_fband</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed_pattern</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern_fband</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">.</span><span class="n">index</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="c1"># combine into a single array</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pattern_fband</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">((</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seed_pattern_fband</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern_fband</span></a><span class="p">),</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># plot the pattern</span>
+    <a href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.QuadMesh" title="matplotlib.collections.QuadMesh" class="sphx-glr-backref-module-matplotlib-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mesh</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.pcolormesh.html#matplotlib.axes.Axes.pcolormesh" title="matplotlib.axes.Axes.pcolormesh" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">pcolormesh</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.flip.html#numpy.flip" title="numpy.flip" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">flip</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="numpy.expand_dims" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pattern_fband</span></a><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmin</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmin</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmax</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmax</span></a>
+    <span class="p">)</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticks.html#matplotlib.axes.Axes.set_yticks" title="matplotlib.axes.Axes.set_yticks" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_yticks</span></a><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">,</span> <span class="mf">13.5</span><span class="p">])</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xticks.html#matplotlib.axes.Axes.set_xticks" title="matplotlib.axes.Axes.set_xticks" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xticks</span></a><span class="p">([</span><span class="mf">0.5</span><span class="p">])</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xticklabels.html#matplotlib.axes.Axes.set_xticklabels" title="matplotlib.axes.Axes.set_xticklabels" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xticklabels</span></a><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+
+<span class="c1"># Label axes</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Spatial patterns&quot;</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;Targets</span><span class="se">\n</span><span class="s2">(23-25 Hz)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Targets</span><span class="se">\n</span><span class="s2">(10-12 Hz)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Seeds</span><span class="se">\n</span><span class="s2">(23-25 Hz)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Seeds</span><span class="se">\n</span><span class="s2">(10-12 Hz)&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Channels&quot;</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.text.html#matplotlib.figure.Figure.text" title="matplotlib.figure.Figure.text" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span><span class="mf">0.47</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s2">&quot;Frequency band (Hz)&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set colourbar</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.subplots_adjust.html#matplotlib.figure.Figure.subplots_adjust" title="matplotlib.figure.Figure.subplots_adjust" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span></a><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cbar_axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_axes.html#matplotlib.figure.Figure.add_axes" title="matplotlib.figure.Figure.add_axes" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span></a><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.colorbar.html#matplotlib.figure.Figure.colorbar" title="matplotlib.figure.Figure.colorbar" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><a href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.QuadMesh" title="matplotlib.collections.QuadMesh" class="sphx-glr-backref-module-matplotlib-collections sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mesh</span></a><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cbar_axis</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">cbar_axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Contribution to connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticks.html#matplotlib.axes.Axes.set_yticks" title="matplotlib.axes.Axes.set_yticks" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">cbar_axis</span><span class="o">.</span><span class="n">set_yticks</span></a><span class="p">([</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmin</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">vmax</span></a><span class="p">])</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html#matplotlib.axes.Axes.set_yticklabels" title="matplotlib.axes.Axes.set_yticklabels" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">cbar_axis</span><span class="o">.</span><span class="n">set_yticklabels</span></a><span class="p">([</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">])</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_cacoh_004.png" srcset="../_images/sphx_glr_cacoh_004.png" alt="Spatial patterns" class = "sphx-glr-single-img"/><p>For an example on interpreting spatial filters with real data, see the
+<a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a> example.</p>
+</section>
+<section id="handling-high-dimensional-data">
+<h2>Handling high-dimensional data<a class="headerlink" href="#handling-high-dimensional-data" title="Link to this heading">#</a></h2>
+<p>An important issue to consider when using these multivariate methods is
+overfitting, which risks biasing connectivity estimates to maximise noise in
+the data. This risk can be reduced by performing a preliminary dimensionality
+reduction prior to estimating the connectivity with a singular value
+decomposition (Eq. 15 of <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). The degree of this
+dimensionality reduction can be specified using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument, which
+by default will not perform any dimensionality reduction (assuming your data
+is full rank; see below if not). Choosing an expected rank of the data
+requires <em>a priori</em> knowledge about the number of components you expect to
+observe in the data.</p>
+<p>When comparing CaCoh scores across recordings, <strong>it is highly recommended
+to estimate connectivity from the same number of channels (or equally from
+the same degree of rank subspace projection)</strong> to avoid biases in
+connectivity estimates. Bias can be avoided by specifying a consistent rank
+subspace to project to using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument, standardising your
+connectivity estimates regardless of changes in e.g. the number of channels
+across recordings. Note that this does not refer to the number of seeds and
+targets <em>within</em> a connection being identical, rather to the number of seeds
+and targets <em>across</em> connections.</p>
+<p>Here, we project our seed and target data to only the first 2 components of
+our rank subspace. Results show that the general spectral pattern of
+connectivity is retained in the rank subspace-projected data, suggesting that
+a fair degree of redundant connectivity information is contained in the
+excluded components of the seed and target data.</p>
+<p>We also assert that the spatial patterns of MIC are returned in the original
+sensor space despite this rank subspace projection, being reconstructed using
+the products of the singular value decomposition (Eqs. 46 &amp; 47 of
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute CaCoh following rank subspace projection</span>
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh_red</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">multivar_indices</span></a><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+<span class="p">)</span>
+
+<span class="c1"># compare standard and rank subspace-projected CaCoh</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;standard CaCoh&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank subspace (2) CaCoh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;CaCoh&quot;</span><span class="p">)</span>
+
+<span class="c1"># no. channels equal with and without projecting to rank subspace for patterns</span>
+<span class="k">assert</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_cacoh_005.png" srcset="../_images/sphx_glr_cacoh_005.png" alt="CaCoh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:995: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~270 kB, data loaded,
+ &#39;1&#39;: 10&gt;, so metadata was not modified.
+  data.add_annotations_to_metadata(overwrite=True)
+Connectivity computation...
+    computing connectivity for 1 connections
+    using t=0.000s..1.990s for estimation (200 points)
+    frequencies: 3.0Hz..35.0Hz (65 points)
+    Using multitaper spectrum estimation with 7 DPSS windows
+    the following metrics will be computed: CaCoh
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+Computing CaCoh for connection 1 of 1
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a> for an example of applying the rank subspace
+projection to real data with a large number of channels.</p>
+<p>In the case that your data is not full rank and <code class="docutils literal notranslate"><span class="pre">rank</span></code> is left as <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+an automatic rank computation is performed and an appropriate degree of
+dimensionality reduction will be enforced. The rank of the data is determined
+by computing the singular values of the data and finding those within a
+factor of <span class="math notranslate nohighlight">\(1e^{-6}\)</span> relative to the largest singular value.</p>
+<p>Whilst unlikely, there may be scenarios in which this threshold is too
+lenient. In these cases, you should inspect the singular values of your data
+to identify an appropriate degree of dimensionality reduction to perform,
+which you can then specify manually using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument. The code
+below shows one possible approach for finding an appropriate rank of
+close-to-singular data with a more conservative threshold.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data across epochs</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># finds how many singular values are &#39;close&#39; to the largest singular value</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria, which is</span>
+<span class="c1"># a hyper-parameter</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
+<p>Multivariate methods offer many benefits in the form of dimensionality
+reduction and signal-to-noise ratio improvements. However, no method is
+perfect. When we simulated the data, we mentioned how we considered the seeds
+and targets to be signals of different modalities. This is an important
+factor in whether CaCoh should be used over methods based solely on the
+imaginary part of coherency such as MIC and MIM.</p>
+<p>In short, if you want to examine connectivity between signals from the same
+modality or from different modalities using a shared reference, you should
+consider using another method instead of CaCoh. Rather, methods based on the
+imaginary part of coherency such as MIC and MIM should be used to avoid
+spurious connectivity estimates stemming from e.g. volume conduction
+artefacts.</p>
+<p>On the other hand, if you want to examine connectivity between signals from
+different modalities using different references, CaCoh is a more appropriate
+method than MIC/MIM. This is because volume conduction artefacts are of less
+concern, and CaCoh does not risk biasing connectivity estimates towards
+interactions with particular phase lags like MIC/MIM.</p>
+<p>These scenarios are described in more detail in the
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> example.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id8">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id6">4</a>)</span>
+<p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-haufeetal2014" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
+<p>Stefan Haufe, Frank Meinecke, Kai Görgen, Sven Dähne, John-Dylan Haynes, Benjamin Blankertz, and Felix Bießmann. On the interpretation of weight vectors of linear models in multivariate neuroimaging. <em>NeuroImage</em>, 87:96–110, 2014. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2013.10.067">doi:10.1016/j.neuroimage.2013.10.067</a>.</p>
+</aside>
+</aside>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.305 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-cacoh-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4c001e012a0d3de05adb67e035906af3/cacoh.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cacoh.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/acb70a5faa90854e21aa19021b6a9950/cacoh.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cacoh.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0e2cac543ebccdb0eddca96bb909d43a/cacoh.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">cacoh.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mixed_source_space_connectivity.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Compute mixed source space connectivity and visualize it using a circular graph</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mic_mim.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Compute multivariate measures of the imaginary part of coherency</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-simulation">Data Simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-cacoh">Computing CaCoh</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cacoh-versus-coherence">CaCoh versus coherence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-spatial-information-from-cacoh">Extracting spatial information from CaCoh</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-high-dimensional-data">Handling high-dimensional data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

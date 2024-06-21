@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute multivariate measures of the imaginary part of coherency &#8212; MNE-Connectivity 0.6.0 documentation</title>
+    <title>Compute multivariate measures of the imaginary part of coherency &#8212; MNE-Connectivity 0.7.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=50f829f1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=423e15eb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -51,13 +51,13 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute seed-based time-frequency connectivity in sensor space" href="cwt_sensor_connectivity.html" />
-    <link rel="prev" title="Compute mixed source space connectivity and visualize it using a circular graph" href="mixed_source_space_connectivity.html" />
+    <link rel="prev" title="Compute multivariate coherency/coherence" href="cacoh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.6.0 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
   
 </a></div>
     
@@ -376,6 +376,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
@@ -384,6 +385,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
@@ -455,7 +457,7 @@ document.write(`
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-mic-mim-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="compute-multivariate-measures-of-the-imaginary-part-of-coherency">
 <span id="sphx-glr-auto-examples-mic-mim-py"></span><h1>Compute multivariate measures of the imaginary part of coherency<a class="headerlink" href="#compute-multivariate-measures-of-the-imaginary-part-of-coherency" title="Link to this heading">#</a></h1>
@@ -468,15 +470,16 @@ and the multivariate interaction measure (MIM; as well as its extension, the
 global interaction measure, GIM).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patheffects</span> <span class="k">as</span> <span class="n">pe</span>
-
-<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">EvokedArray</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
 <span class="kn">from</span> <span class="nn">mne.datasets.fieldtrip_cmc</span> <span class="kn">import</span> <span class="n">data_path</span>
+
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
 </pre></div>
 </div>
@@ -492,16 +495,29 @@ signal-to-noise ratio and reduced bias).</p>
 <p>A popular bivariate measure of connectivity is the imaginary part of
 coherency, which looks at the correlation between two signals in the
 frequency domain and is immune to spurious connectivity arising from volume
-conduction artefacts <a class="footnote-reference brackets" href="#footcite-nolteetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. However, depending on the
-degree of source mixing, this measure is susceptible to biased estimates of
+conduction artefacts <a class="footnote-reference brackets" href="#footcite-nolteetal2004" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. However, in cases where
+interactions between multiple signals are of interest, computing connectivity
+between all possible combinations of signals leads to a very large number of
+results which is difficult to interpret. A common approach is to average
+results across these connections, however this risks reducing the
+signal-to-noise ratio of results and burying interactions that are present
+between only a small number of channels.</p>
+<p>Additionally, this bivariate measure is susceptible to biased estimates of
 connectivity based on the spatial proximity of sensors
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
-<p>To overcome this limitation, spatial filters can be used to estimate
-connectivity free from this source mixing-dependent bias, which additionally
-increases the signal-to-noise ratio and allows signals to be analysed in a
-multivariate manner <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. This approach leads to the
-following methods: the maximised imaginary part of coherency (MIC); and the
-multivariate interaction measure (MIM).</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> depending on the degree of source mixing in the
+signals.</p>
+<p>To overcome these limitations, spatial filters derived from
+eigendecompositions allow connectivity to be analysed in a multivariate
+manner, removing the source mixing-dependent bias and increasing the
+signal-to-noise ratio of connectivity estimates <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+This approach goes beyond simply aggregating information across all possible
+combinations of signals, instead extracting the underlying components of
+connectivity in a frequency-resolved manner.</p>
+<p>This leads to the following methods: the maximised imaginary part of
+coherency (MIC); and the multivariate interaction measure (MIM). These
+methods are similar to the multivariate method based on coherency (CaCoh
+<a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>; see <a class="reference internal" href="cacoh.html"><span class="doc">Compute multivariate coherency/coherence</span></a> and
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a>).</p>
 <p>We start by loading some example MEG data and dividing it into
 two-second-long epochs.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><span class="n">data_path</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;SubjectCMC.ds&quot;</span><span class="p">)</span>
@@ -625,115 +641,7 @@ Estimated data ranks:
     computing cross-spectral density for epoch 29
     computing cross-spectral density for epoch 30
 Computing MIC for connection 1 of 1
-
-  0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   50.37it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   53.28it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:01,   39.04it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   42.57it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   44.99it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   33.51it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   35.87it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   37.95it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   32.69it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   34.50it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   36.16it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   31.77it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   33.24it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   34.63it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   31.26it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   32.53it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   33.75it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   34.89it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   32.24it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   33.36it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   34.42it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   31.66it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   32.67it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   33.66it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   31.58it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   32.54it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   33.47it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   31.28it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   32.16it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   33.06it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   31.03it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   31.89it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   32.75it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   33.61it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   31.60it/s]
- 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   32.43it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   33.24it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   31.27it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   32.08it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   32.84it/s]
- 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   30.99it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   31.78it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   32.55it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   30.78it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   31.56it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   29.56it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   30.31it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   31.09it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   31.85it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   30.44it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   31.18it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   31.98it/s]
 Computing MIM for connection 1 of 1
-
-  0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   54.75it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   54.89it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,   55.16it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   35.92it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   38.96it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   40.13it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   29.76it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   31.96it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   28.15it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   30.01it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   31.72it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   29.08it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:01,   30.58it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:01,   32.02it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:01,   29.25it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:01,   30.53it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:01,   31.77it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:01,   29.39it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:01,   30.53it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   31.66it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   32.78it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   30.72it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   31.79it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   32.81it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   30.59it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   31.58it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   32.55it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   30.71it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   30.99it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   28.74it/s]
- 61%|██████    | frequency blocks : 31/51 [00:01&lt;00:00,   29.34it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:01&lt;00:00,   30.21it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:01&lt;00:00,   28.87it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:01&lt;00:00,   29.75it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:01&lt;00:00,   30.59it/s]
- 71%|███████   | frequency blocks : 36/51 [00:01&lt;00:00,   28.99it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:01&lt;00:00,   29.84it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:01&lt;00:00,   30.69it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:01&lt;00:00,   31.53it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   30.08it/s]
- 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   30.90it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   31.71it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   30.07it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   30.88it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   31.68it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   30.29it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   31.08it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   31.85it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   30.23it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   31.00it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   31.74it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   31.20it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -779,11 +687,11 @@ Connectivity computation...
 that the bivariate measure of the imaginary part of coherency estimates a
 strong peak in connectivity between seeds and targets around 13-18 Hz, with a
 weaker peak around 27 Hz.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">imcoh</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">imcoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()),</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Absolute connectivity (A.U.)&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Imaginary part of coherency&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Imaginary part of coherency&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_mic_mim_001.png" srcset="../_images/sphx_glr_mic_mim_001.png" alt="Imaginary part of coherency" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;Imaginary part of coherency&#39;)
@@ -796,9 +704,10 @@ weaker peak around 27 Hz.</p>
 connectivity between the seed and target signals. These maximising filters
 correspond to the eigenvectors with the largest eigenvalue, derived from an
 eigendecomposition of information from the cross-spectral density (Eq. 7 of
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
-<p><span class="math notranslate nohighlight">\(MIC=\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}{\parallel
-\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}\parallel}\)</span>,</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><span class="math notranslate nohighlight">\(\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T \boldsymbol{E \beta}}
+{\parallel\boldsymbol{\alpha}\parallel \parallel\boldsymbol{\beta}
+\parallel}}\)</span>,</p>
 <p>where <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\beta}\)</span> are the
 spatial filters for the seeds and targets, respectively, and
 <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span> is the imaginary part of the transformed
@@ -816,24 +725,24 @@ Furthermore, the previous peak around 27 Hz is much less pronounced. This may
 indicate that the connectivity was the result of some distal interaction
 exacerbated by strong source mixing, which biased the bivariate connectivity
 estimate.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mic</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">mic</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Absolute connectivity (A.U.)&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Maximised imaginary part of coherency&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Maximised imaginary part of coherency&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_mic_mim_002.png" srcset="../_images/sphx_glr_mic_mim_002.png" alt="Maximised imaginary part of coherency" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0.98, &#39;Maximised imaginary part of coherency&#39;)
 </pre></div>
 </div>
 <p>Furthermore, spatial patterns of connectivity can be constructed from the
-spatial filters to give a picture of the location of the sources involved in
-the connectivity. This information is stored under <code class="docutils literal notranslate"><span class="pre">attrs['patterns']</span></code> of
-the connectivity class, with one value per frequency for each channel in the
-seeds and targets. As with MIC, the absolute value of the patterns reflect
-the strength, however the sign differences can be used to visualise the
-orientation of the underlying dipole sources. The spatial patterns are
-<strong>not</strong> bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
+spatial filters to give a picture of the location of the channels involved in
+the connectivity <a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>. This information is stored under
+<code class="docutils literal notranslate"><span class="pre">attrs['patterns']</span></code> of the connectivity class, with one value per frequency
+for each channel in the seeds and targets. As with MIC, the absolute value of
+the patterns reflect the strength, however the sign differences can be used
+to visualise the orientation of the underlying dipole sources. The spatial
+patterns are <strong>not</strong> bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
 <p>Here, we average across the patterns in the 13-18 Hz range. Plotting the
 patterns shows that the greatest connectivity between the left and right
 hemispheres occurs at the left and right posterior and left central regions,
@@ -841,6 +750,10 @@ based on the areas with the largest absolute values. Using the signs of the
 values, we can infer the existence of a dipole source between the central and
 posterior regions of the left hemisphere accounting for the connectivity
 contributions (represented on the plot as a green line).</p>
+<p><strong>Note:</strong> The spatial patterns are not a substitute for source
+reconstruction. If you need the spatial patterns in source space, you should
+perform source reconstruction before computing connectivity (see e.g.
+<a class="reference internal" href="mne_inverse_coherence_epochs.html"><span class="doc">Compute coherence in source space using a MNE inverse solution</span></a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute average of patterns in desired frequency range</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">18</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband_idx</span></a> <span class="o">=</span> <span class="p">[</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mic</span><span class="o">.</span><span class="n">freqs</span><span class="o">.</span><span class="n">index</span></a><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="k">for</span> <span class="n">freq</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fband</span></a><span class="p">]</span>
@@ -860,7 +773,7 @@ contributions (represented on the plot as a green line).</p>
 <a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">EvokedArray</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray" title="mne.EvokedArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_pattern</span></a><span class="p">[:,</span> <a href="https://numpy.org/devdocs/reference/constants.html#numpy.newaxis" title="numpy.newaxis" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span></a><span class="p">],</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_info</span></a><span class="p">)</span>
 
 <span class="c1"># plot the patterns</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <a href="https://mne.tools/dev/generated/mne.EvokedArray.html#mne.EvokedArray.plot_topomap" title="mne.EvokedArray.plot_topomap" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">seed_pattern</span><span class="o">.</span><span class="n">plot_topomap</span></a><span class="p">(</span>
     <span class="n">times</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">sensors</span><span class="o">=</span><span class="s2">&quot;m.&quot;</span><span class="p">,</span>
@@ -907,18 +820,18 @@ MIM. MIM can be thought of as an average of all connectivity components
 between the seeds and targets, and can be useful for an exploration of all
 available components. It is unnecessary to use the spatial filters of each
 component explicitly, and instead the desired result can be achieved from
-<span class="math notranslate nohighlight">\(E\)</span> alone (Eq. 14 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
-<p><span class="math notranslate nohighlight">\(MIM=tr(\boldsymbol{EE}^T)\)</span>,</p>
-<p>where again the frequency dependence is omitted. Unlike MIC, MIM is
-positive-valued and can be &gt; 1. Without normalisation, MIM can be
-thought of as reflecting the total interaction between the seeds and targets.
-MIM can be normalised to lie in the range <span class="math notranslate nohighlight">\([0, 1]\)</span> by dividing the
-scores by the number of unique channels in the seeds and targets. Normalised
-MIM represents the interaction <em>per channel</em>, which can be biased by factors
-such as the presence of channels with little to no interaction. In line with
-the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, since
-normalisation alters the interpretability of the results, <strong>normalisation is
-not performed by default</strong>.</p>
+<span class="math notranslate nohighlight">\(E\)</span> alone (Eq. 14 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><span class="math notranslate nohighlight">\(\textrm{MIM}=tr(\boldsymbol{EE}^T)\)</span>,</p>
+<p>where again the frequency dependence is omitted.</p>
+<p>Unlike MIC, MIM is positive-valued and can be &gt; 1. Without normalisation, MIM
+can be thought of as reflecting the total interaction between the seeds and
+targets. MIM can be normalised to lie in the range <span class="math notranslate nohighlight">\([0, 1]\)</span> by dividing
+the scores by the number of unique channels in the seeds and targets.
+Normalised MIM represents the interaction <em>per channel</em>, which can be biased
+by factors such as the presence of channels with little to no interaction. In
+line with the preferences of the method’s authors <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>,
+since normalisation alters the interpretability of the results,
+<strong>normalisation is not performed by default</strong>.</p>
 <p>Here we see MIM reveal the strongest connectivity component to be around 10
 Hz, with the higher frequency 13-18 Hz connectivity no longer being so
 prominent. This suggests that, across all components in the data, there may
@@ -929,11 +842,11 @@ largest connectivity component of MIC.</p>
 <p>Looking at the values for normalised MIM, we see it has a maximum of ~0.1.
 The relatively small connectivity values thus indicate that many of the
 channels show little to no interaction.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">mim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Absolute connectivity (A.U.)&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Multivariate interaction measure&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Multivariate interaction measure&quot;</span><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">normalised_mim</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">mim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a>
@@ -945,7 +858,7 @@ channels show little to no interaction.</p>
 </div>
 <p>Additionally, the instance where the seeds and targets are identical can be
 considered as a special case of MIM: the global interaction measure (GIM; Eq.
-15 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). Again, this allows connectivity within a
+15 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). Again, this allows connectivity within a
 single set of signals to be estimated. Computing GIM follows from Eq. 14,
 however since each interaction is considered twice, correcting the
 connectivity by a factor of <span class="math notranslate nohighlight">\(\frac{1}{2}\)</span> is necessary (<strong>the
@@ -966,11 +879,11 @@ channels within each hemisphere.</p>
     <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mim&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">gim</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Global interaction measure&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Global interaction measure&quot;</span><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">normalised_gim</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a>
@@ -987,7 +900,7 @@ channels within each hemisphere.</p>
 overfitting, which risks biasing connectivity estimates to maximise noise in
 the data. This risk can be reduced by performing a preliminary dimensionality
 reduction prior to estimating the connectivity with a singular value
-decomposition (Eqs. 32 &amp; 33 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). The degree of this
+decomposition (Eqs. 32 &amp; 33 of <a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>). The degree of this
 dimensionality reduction can be specified using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument, which
 by default will not perform any dimensionality reduction (assuming your data
 is full rank; see below if not). Choosing an expected rank of the data
@@ -1010,7 +923,7 @@ contained in the remaining 50 components of the seed and target data. We also
 assert that the spatial patterns of MIC are returned in the original sensor
 space despite this rank subspace projection, being reconstructed using the
 products of the singular value decomposition (Eqs. 46 &amp; 47 of
-<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mic_red</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red</span></a><span class="p">)</span> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="s2">&quot;mim&quot;</span><span class="p">],</span>
@@ -1025,13 +938,13 @@ products of the singular value decomposition (Eqs. 46 &amp; 47 of
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_meansub</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">mim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">mim</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
 <span class="c1"># compare standard and rank subspace-projected MIM</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim_red</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank subspace (25) MIM&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;standard MIM&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mim_red</span><span class="o">.</span><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mim_red_meansub</span></a><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank subspace (25) MIM&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Mean-corrected connectivity (A.U.)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Multivariate interaction measure (non-normalised)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Multivariate interaction measure (non-normalised)&quot;</span><span class="p">)</span>
 
 <span class="c1"># no. channels equal with and without projecting to rank subspace for patterns</span>
 <span class="k">assert</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">mic_red</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;patterns&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1076,52 +989,7 @@ Connectivity computation...
     computing cross-spectral density for epoch 29
     computing cross-spectral density for epoch 30
 Computing MIC for connection 1 of 1
-
-  0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  146.29it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,  146.53it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,   88.56it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   98.06it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  104.82it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   82.91it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   89.61it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   95.13it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   80.98it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   85.53it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   90.07it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   79.69it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   84.02it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   88.02it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,   79.57it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,   83.24it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   86.72it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   79.18it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   83.09it/s]
 Computing MIM for connection 1 of 1
-
-  0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  146.83it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,  147.31it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:00,   85.27it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   98.42it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,  107.66it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   81.31it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   88.90it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   94.92it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   79.90it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   82.57it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   85.06it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   87.44it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   74.86it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   79.13it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   83.12it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,   73.69it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,   77.84it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,   81.51it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   74.09it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,   77.84it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   81.42it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   81.75it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1130,7 +998,7 @@ an automatic rank computation is performed and an appropriate degree of
 dimensionality reduction will be enforced. The rank of the data is determined
 by computing the singular values of the data and finding those within a
 factor of <span class="math notranslate nohighlight">\(1e^{-6}\)</span> relative to the largest singular value.</p>
-<p>Whilst unlikely, there may be scenarios in which this threshold may be too
+<p>Whilst unlikely, there may be scenarios in which this threshold is too
 lenient. In these cases, you should inspect the singular values of your data
 to identify an appropriate degree of dimensionality reduction to perform,
 which you can then specify manually using the <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument. The code
@@ -1139,7 +1007,8 @@ close-to-singular data with a more conservative threshold.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># finds how many singular values are &#39;close&#39; to the largest singular value</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria, which is</span>
+<span class="c1"># a hyper-parameter</span>
 </pre></div>
 </div>
 </section>
@@ -1147,33 +1016,29 @@ close-to-singular data with a more conservative threshold.</p>
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
 <p>These multivariate methods offer many benefits in the form of dimensionality
 reduction, signal-to-noise ratio improvements, and invariance to
-estimate-biasing source mixing; however, no method is perfect. The immunity
-of the imaginary part of coherency to volume conduction comes from the fact
-that these artefacts have zero phase lag, and hence a zero-valued imaginary
-component. By projecting the complex-valued coherency to the imaginary axis,
-signals of a given magnitude with phase lag differences close to 90° or 270°
-see their contributions to the connectivity estimate increased relative to
-comparable signals with phase lag differences close to 0° or 180°. Therefore,
-the imaginary part of coherency is biased towards connectivity involving 90°
-and 270° phase lag difference components.</p>
-<p>Whilst this is not a limitation specific to the multivariate extension of
-this measure, these multivariate methods can introduce further bias: when
-maximising the imaginary part of coherency, components with phase lag
-differences close to 90° and 270° will likely give higher connectivity
-estimates, and so may be prioritised by the spatial filters.</p>
-<p>Such a limitation should be kept in mind when estimating connectivity using
-these methods. Possible sanity checks can involve comparing the spectral
-profiles of MIC/MIM to coherence and the imaginary part of coherency
-computed on the same data, as well as comparing to other multivariate
-measures, such as canonical coherence <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+estimate-biasing source mixing; however, no method is perfect. Important
+considerations must be taken into account when choosing methods based on the
+imaginary part of coherency such as MIC or MIM versus those based on
+coherency/coherence, such as CaCoh.</p>
+<p>In short, if you want to examine connectivity between signals from the same
+modality or from different modalities using a shared reference, you should
+consider using MIC and MIM to avoid spurious connectivity estimates stemming
+from e.g. volume conduction artefacts.</p>
+<p>On the other hand, if you want to examine connectivity between signals from
+different modalities using different references, CaCoh is a more appropriate
+method than MIC/MIM. This is because volume conduction artefacts are of less
+concern, and CaCoh does not risk biasing connectivity estimates towards
+interactions with particular phase lags like MIC/MIM.</p>
+<p>These scenarios are described in more detail in the
+<a class="reference internal" href="compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> example.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<div class="docutils container" id="id12">
+<div class="docutils container" id="id13">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id5">4</a>,<a role="doc-backlink" href="#id6">5</a>,<a role="doc-backlink" href="#id7">6</a>,<a role="doc-backlink" href="#id8">7</a>,<a role="doc-backlink" href="#id9">8</a>,<a role="doc-backlink" href="#id10">9</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>,<a role="doc-backlink" href="#id6">4</a>,<a role="doc-backlink" href="#id8">5</a>,<a role="doc-backlink" href="#id9">6</a>,<a role="doc-backlink" href="#id10">7</a>,<a role="doc-backlink" href="#id11">8</a>,<a role="doc-backlink" href="#id12">9</a>)</span>
 <p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-nolteetal2004" role="doc-footnote">
@@ -1181,18 +1046,25 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
 <p>Guido Nolte, Ou Bai, Lewis Wheaton, Zoltan Mari, Sherry Vorbach, and Mark Hallett. Identifying true brain interaction from EEG data using the imaginary part of coherency. <em>Clinical Neurophysiology</em>, 115(10):2292–2307, 2004. <a class="reference external" href="https://doi.org/10.1016/j.clinph.2004.04.029">doi:10.1016/j.clinph.2004.04.029</a>.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
 <p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-haufeetal2014" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">4</a><span class="fn-bracket">]</span></span>
+<p>Stefan Haufe, Frank Meinecke, Kai Görgen, Sven Dähne, John-Dylan Haynes, Benjamin Blankertz, and Felix Bießmann. On the interpretation of weight vectors of linear models in multivariate neuroimaging. <em>NeuroImage</em>, 87:96–110, 2014. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2013.10.067">doi:10.1016/j.neuroimage.2013.10.067</a>.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 33.700 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.625 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mic-mim-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/799bb176de53e03eae2c7f13f6e52594/mic_mim.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mic_mim.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4883237c21de028ffd92e1fbf5756fc5/mic_mim.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mic_mim.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/a2f678085d65b181d85eef728e9f4aa7/mic_mim.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mic_mim.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1210,12 +1082,12 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mixed_source_space_connectivity.html"
+       href="cacoh.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Compute mixed source space connectivity and visualize it using a circular graph</p>
+        <p class="prev-next-title">Compute multivariate coherency/coherence</p>
       </div>
     </a>
     <a class="right-next"
@@ -1275,7 +1147,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-01-09.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
@@ -1283,7 +1155,7 @@ measures, such as canonical coherence <a class="footnote-reference brackets" hre
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>
