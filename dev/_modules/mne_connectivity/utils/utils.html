@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
+    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=3f4c20c4"></script>
+    <script src="../../../_static/documentation_options.js?v=a1f3df09"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</p>
   
 </a></div>
     
@@ -491,7 +491,7 @@ document.write(`
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Index arrays indices[0] and indices[1] must &quot;</span> <span class="s2">&quot;have the same length&quot;</span>
+            <span class="s2">&quot;Index arrays indices[0] and indices[1] must have the same length&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
@@ -568,7 +568,7 @@ document.write(`
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;index arrays indices[0] and indices[1] must &quot;</span> <span class="s2">&quot;have the same length&quot;</span>
+            <span class="s2">&quot;index arrays indices[0] and indices[1] must have the same length&quot;</span>
         <span class="p">)</span>
 
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -579,14 +579,14 @@ document.write(`
         <span class="k">for</span> <span class="n">con_idx</span><span class="p">,</span> <span class="n">con</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;multivariate indices must contain array-likes of channel &quot;</span>
-                    <span class="s2">&quot;indices for each seed and target&quot;</span>
+                    <span class="s2">&quot;multivariate indices must contain array-likes of channel indices &quot;</span>
+                    <span class="s2">&quot;for each seed and target&quot;</span>
                 <span class="p">)</span>
             <span class="n">con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">con</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;multivariate indices cannot contain repeated channels &quot;</span>
-                    <span class="s2">&quot;within a seed or target&quot;</span>
+                    <span class="s2">&quot;multivariate indices cannot contain repeated channels within a &quot;</span>
+                    <span class="s2">&quot;seed or target&quot;</span>
                 <span class="p">)</span>
             <span class="n">max_n_chans</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_n_chans</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">))</span>
             <span class="c1"># convert negative to positive indices</span>
@@ -594,7 +594,7 @@ document.write(`
                 <span class="k">if</span> <span class="n">chan</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">chan</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">n_chans</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;a negative channel index is not present in the &quot;</span> <span class="s2">&quot;data&quot;</span>
+                            <span class="s2">&quot;a negative channel index is not present in the data&quot;</span>
                         <span class="p">)</span>
                     <span class="n">indices</span><span class="p">[</span><span class="n">group_idx</span><span class="p">][</span><span class="n">con_idx</span><span class="p">][</span><span class="n">chan_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span> <span class="o">%</span> <span class="n">n_chans</span>
 
@@ -761,8 +761,8 @@ document.write(`
     <span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">connectivity</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;connectivity must be have shape (n_nodes, n_nodes), &quot;</span>
-            <span class="s2">&quot;got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">,)</span>
+            <span class="s2">&quot;connectivity must be have shape (n_nodes, n_nodes), got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
@@ -772,9 +772,7 @@ document.write(`
         <span class="n">split</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">threshold_prop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold_prop</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">threshold_prop</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;threshold must be 0 &lt;= threshold &lt; 1, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">threshold_prop</span><span class="p">,)</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;threshold must be 0 &lt;= threshold &lt; 1, got </span><span class="si">{</span><span class="n">threshold_prop</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># no need to copy because np.array does</span>
     <span class="n">degree</span><span class="p">[::</span> <span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">n_keep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">degree</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">))</span> <span class="o">*</span> <span class="n">threshold_prop</span> <span class="o">/</span> <span class="n">split</span><span class="p">))</span>
@@ -843,7 +841,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>

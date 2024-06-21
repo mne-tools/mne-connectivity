@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=3f4c20c4"></script>
+    <script src="../../../_static/documentation_options.js?v=a1f3df09"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</p>
   
 </a></div>
     
@@ -460,12 +460,12 @@ document.write(`
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
         <span class="c1"># cwt_morlet mode</span>
         <span class="k">if</span> <span class="n">cwt_freqs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;define frequencies of interest using &quot;</span> <span class="s2">&quot;cwt_freqs&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;define frequencies of interest using cwt_freqs&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cwt_freqs</span> <span class="o">=</span> <span class="n">cwt_freqs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cwt_freqs</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;entries in cwt_freqs cannot be &quot;</span> <span class="s2">&quot;larger than Nyquist (sfreq / 2)&quot;</span>
+                <span class="s2">&quot;entries in cwt_freqs cannot be larger than Nyquist (sfreq / 2)&quot;</span>
             <span class="p">)</span>
         <span class="n">freqs_all</span> <span class="o">=</span> <span class="n">cwt_freqs</span>
     <span class="k">else</span><span class="p">:</span>
@@ -514,13 +514,13 @@ document.write(`
 
     <span class="k">if</span> <span class="n">tmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmin</span> <span class="o">&lt;</span> <span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;start time tmin=</span><span class="si">%0.2f</span><span class="s2"> s outside of the time scope of the data &quot;</span>
-            <span class="s2">&quot;[</span><span class="si">%0.2f</span><span class="s2"> s, </span><span class="si">%0.2f</span><span class="s2"> s]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">&quot;start time tmin=</span><span class="si">{</span><span class="n">tmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">tmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmax</span> <span class="o">&gt;</span> <span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;stop time tmax=</span><span class="si">%0.2f</span><span class="s2"> s outside of the time scope of the data &quot;</span>
-            <span class="s2">&quot;[</span><span class="si">%0.2f</span><span class="s2"> s, </span><span class="si">%0.2f</span><span class="s2"> s]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tmax</span><span class="p">,</span> <span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="sa">f</span><span class="s2">&quot;stop time tmax=</span><span class="si">{</span><span class="n">tmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
         <span class="p">)</span>
 
     <span class="n">mask</span> <span class="o">=</span> <span class="n">_time_mask</span><span class="p">(</span><span class="n">times_in</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">)</span>
@@ -541,8 +541,8 @@ document.write(`
         <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;indices must be specified when computing Granger &quot;</span>
-                    <span class="s2">&quot;causality, as all-to-all connectivity is not supported&quot;</span>
+                    <span class="s2">&quot;indices must be specified when computing Granger causality, as &quot;</span>
+                    <span class="s2">&quot;all-to-all connectivity is not supported&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all indices for multivariate connectivity&quot;</span><span class="p">)</span>
@@ -567,8 +567,8 @@ document.write(`
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;seed and target indices must not intersect when &quot;</span>
-                            <span class="s2">&quot;computing Granger causality&quot;</span>
+                            <span class="s2">&quot;seed and target indices must not intersect when computing &quot;</span>
+                            <span class="s2">&quot;Granger causality&quot;</span>
                         <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
@@ -576,10 +576,10 @@ document.write(`
     <span class="c1"># number of connectivities to compute</span>
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    computing connectivity for </span><span class="si">%d</span><span class="s2"> connections&quot;</span> <span class="o">%</span> <span class="n">n_cons</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    computing connectivity for </span><span class="si">{</span><span class="n">n_cons</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">&quot;    using t=</span><span class="si">%0.3f</span><span class="s2">s..</span><span class="si">%0.3f</span><span class="s2">s for estimation (</span><span class="si">%d</span><span class="s2"> points)&quot;</span>
-        <span class="o">%</span> <span class="p">(</span><span class="n">tmin_true</span><span class="p">,</span> <span class="n">tmax_true</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">&quot;    using t=</span><span class="si">{</span><span class="n">tmin_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s..</span><span class="si">{</span><span class="n">tmax_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s for estimation (</span><span class="si">{</span><span class="n">n_times</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;points)&quot;</span>
     <span class="p">)</span>
 
     <span class="c1"># check that fmin corresponds to at least 5 cycles</span>
@@ -591,17 +591,10 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fmin</span> <span class="o">&lt;</span> <span class="n">five_cycle_freq</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;fmin=</span><span class="si">%0.3f</span><span class="s2"> Hz corresponds to </span><span class="si">%0.3f</span><span class="s2"> &lt; 5 cycles &quot;</span>
-                <span class="s2">&quot;based on the epoch length </span><span class="si">%0.3f</span><span class="s2"> sec, need at least </span><span class="si">%0.3f</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;sec epochs or fmin=</span><span class="si">%0.3f</span><span class="s2">. Spectrum estimate will be &quot;</span>
-                <span class="s2">&quot;unreliable.&quot;</span>
-                <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span>
-                    <span class="n">dur</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span>
-                    <span class="n">dur</span><span class="p">,</span>
-                    <span class="mf">5.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">),</span>
-                    <span class="n">five_cycle_freq</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;fmin=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Hz corresponds to </span><span class="si">{</span><span class="n">dur</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &lt; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;5 cycles based on the epoch length </span><span class="si">{</span><span class="n">dur</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec, need at least &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="mf">5.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec epochs or fmin=</span><span class="si">{</span><span class="n">five_cycle_freq</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Spectrum estimate will be unreliable.&quot;</span>
             <span class="p">)</span>
 
     <span class="c1"># compute frequencies to analyze based on number of samples,</span>
@@ -625,25 +618,24 @@ document.write(`
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_f_band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">freqs_bands</span><span class="p">]):</span>
         <span class="k">if</span> <span class="n">n_f_band</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;There are no frequency points between &quot;</span>
-                <span class="s2">&quot;</span><span class="si">%0.1f</span><span class="s2">Hz and </span><span class="si">%0.1f</span><span class="s2">Hz. Change the band &quot;</span>
-                <span class="s2">&quot;specification (fmin, fmax) or the &quot;</span>
-                <span class="s2">&quot;frequency resolution.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fmin</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fmax</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="sa">f</span><span class="s2">&quot;There are no frequency points between </span><span class="si">{</span><span class="n">fmin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fmax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz. Change the band specification (fmin, fmax) or the &quot;</span>
+                <span class="s2">&quot;frequency resolution.&quot;</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">n_bands</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;    frequencies: </span><span class="si">%0.1f</span><span class="s2">Hz..</span><span class="si">%0.1f</span><span class="s2">Hz (</span><span class="si">%d</span><span class="s2"> points)&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="n">freqs_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">freqs_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_freqs</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;    frequencies: </span><span class="si">{</span><span class="n">freqs_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz..</span><span class="si">{</span><span class="n">freqs_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">n_freqs</span><span class="si">}</span><span class="s2"> points)&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    computing connectivity for the bands:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bfreqs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freqs_bands</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;     band </span><span class="si">%d</span><span class="s2">: </span><span class="si">%0.1f</span><span class="s2">Hz..</span><span class="si">%0.1f</span><span class="s2">Hz &quot;</span>
-                <span class="s2">&quot;(</span><span class="si">%d</span><span class="s2"> points)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bfreqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bfreqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">bfreqs</span><span class="p">))</span>
+                <span class="sa">f</span><span class="s2">&quot;     band </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">bfreqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz..</span><span class="si">{</span><span class="n">bfreqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">Hz &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bfreqs</span><span class="p">)</span><span class="si">}</span><span class="s2"> points)&quot;</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    connectivity scores will be averaged for &quot;</span> <span class="s2">&quot;each band&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    connectivity scores will be averaged for each band&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">n_cons</span><span class="p">,</span>
@@ -686,10 +678,10 @@ document.write(`
         <span class="p">)</span>
         <span class="n">spectral_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">window_fun</span><span class="o">=</span><span class="n">window_fun</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="n">eigvals</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;fourier&quot;</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    using FFT with a Hanning window to estimate &quot;</span> <span class="s2">&quot;spectra&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    using FFT with a Hanning window to estimate spectra&quot;</span><span class="p">)</span>
         <span class="n">spectral_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">window_fun</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">n_times</span><span class="p">),</span> <span class="n">eigvals</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    using CWT with Morlet wavelets to estimate &quot;</span> <span class="s2">&quot;spectra&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    using CWT with Morlet wavelets to estimate spectra&quot;</span><span class="p">)</span>
 
         <span class="c1"># reformat cwt_n_cycles if we have removed some frequencies</span>
         <span class="c1"># using fmin, fmax, fskip</span>
@@ -697,8 +689,8 @@ document.write(`
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_n_cycles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_n_cycles</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_freqs</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;cwt_n_cycles must be float or an &quot;</span>
-                    <span class="s2">&quot;array with the same size as cwt_freqs&quot;</span>
+                    <span class="s2">&quot;cwt_n_cycles must be float or an array with the same size as &quot;</span>
+                    <span class="s2">&quot;cwt_freqs&quot;</span>
                 <span class="p">)</span>
             <span class="n">cwt_n_cycles</span> <span class="o">=</span> <span class="n">cwt_n_cycles</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">]</span>
 
@@ -953,7 +945,7 @@ document.write(`
         <span class="k">if</span> <span class="n">n_times</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">this_n_times</span> <span class="o">!=</span> <span class="n">n_times</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;all input time series must have the same &quot;</span> <span class="s2">&quot;number of time points&quot;</span>
+                    <span class="s2">&quot;all input time series must have the same number of time points&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">n_times</span> <span class="o">=</span> <span class="n">this_n_times</span>
@@ -979,7 +971,7 @@ document.write(`
     <span class="k">if</span> <span class="n">n_signals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n_signals</span> <span class="o">!=</span> <span class="n">n_signals_tot</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;the number of time series has to be the same in &quot;</span> <span class="s2">&quot;each epoch&quot;</span>
+                <span class="s2">&quot;the number of time series has to be the same in each epoch&quot;</span>
             <span class="p">)</span>
     <span class="n">n_signals</span> <span class="o">=</span> <span class="n">n_signals_tot</span>
 
@@ -998,14 +990,13 @@ document.write(`
         <span class="k">if</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">_CON_METHOD_MAP</span><span class="p">:</span>
             <span class="n">con_method_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_CON_METHOD_MAP</span><span class="p">[</span><span class="n">this_method</span><span class="p">])</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">this_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid connectivity method&quot;</span> <span class="o">%</span> <span class="n">this_method</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">this_method</span><span class="si">}</span><span class="s2"> is not a valid connectivity method&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># support for custom class</span>
             <span class="n">method_valid</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">_check_method</span><span class="p">(</span><span class="n">this_method</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">method_valid</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;The supplied connectivity method does &quot;</span>
-                    <span class="s2">&quot;not have the method </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">msg</span>
+                    <span class="sa">f</span><span class="s2">&quot;The supplied connectivity method does not have the method </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="n">con_method_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_method</span><span class="p">)</span>
 
@@ -1372,15 +1363,15 @@ document.write(`
 
     <span class="k">if</span> <span class="n">n_bands</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;computing Granger causality on multiple frequency &quot;</span>
-            <span class="s2">&quot;bands is not yet supported&quot;</span>
+            <span class="s2">&quot;computing Granger causality on multiple frequency bands is not yet &quot;</span>
+            <span class="s2">&quot;supported&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;bivariate and multivariate connectivity methods cannot be &quot;</span>
-                <span class="s2">&quot;used in the same function call&quot;</span>
+                <span class="s2">&quot;bivariate and multivariate connectivity methods cannot be used in the &quot;</span>
+                <span class="s2">&quot;same function call&quot;</span>
             <span class="p">)</span>
         <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1416,9 +1407,7 @@ document.write(`
         <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Sampling frequency (sfreq) is required with &quot;</span> <span class="s2">&quot;array input.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency (sfreq) is required with array input.&quot;</span><span class="p">)</span>
 
     <span class="c1"># loop over data; it could be a generator that returns</span>
     <span class="c1"># (n_signals x n_times) arrays or SourceEstimates</span>
@@ -1538,7 +1527,7 @@ document.write(`
 
             <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span>
             <span class="n">metrics_str</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">meth</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">con_methods</span><span class="p">])</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    the following metrics will be computed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">metrics_str</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    the following metrics will be computed: </span><span class="si">{</span><span class="n">metrics_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># check dimensions and time scale</span>
         <span class="k">for</span> <span class="n">this_epoch</span> <span class="ow">in</span> <span class="n">epoch_block</span><span class="p">:</span>
@@ -1579,8 +1568,7 @@ document.write(`
             <span class="c1"># no parallel processing</span>
             <span class="k">for</span> <span class="n">this_epoch</span> <span class="ow">in</span> <span class="n">epoch_block</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;    computing cross-spectral density for epoch </span><span class="si">%d</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;    computing cross-spectral density for epoch </span><span class="si">{</span><span class="n">epoch_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="c1"># con methods and psd are updated inplace</span>
                 <span class="n">_epoch_spectral_connectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">this_epoch</span><span class="p">,</span> <span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
@@ -1588,8 +1576,8 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># process epochs in parallel</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;    computing cross-spectral density for epochs </span><span class="si">%d</span><span class="s2">..</span><span class="si">%d</span><span class="s2">&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">epoch_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">epoch_idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch_block</span><span class="p">))</span>
+                <span class="sa">f</span><span class="s2">&quot;    computing cross-spectral density for epochs </span><span class="si">{</span><span class="n">epoch_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">..&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">epoch_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">epoch_block</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
             <span class="n">out</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span>
@@ -1635,16 +1623,14 @@ document.write(`
 
         <span class="k">if</span> <span class="n">this_con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_cons</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;first dimension of connectivity scores does not match the &quot;</span>
-                <span class="s2">&quot;number of connections; please contact the mne-connectivity &quot;</span>
-                <span class="s2">&quot;developers&quot;</span>
+                <span class="s2">&quot;first dimension of connectivity scores does not match the number of &quot;</span>
+                <span class="s2">&quot;connections; please contact the mne-connectivity developers&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">this_con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_freqs</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;second dimension of connectivity scores does not match &quot;</span>
-                    <span class="s2">&quot;the number of frequencies; please contact the &quot;</span>
-                    <span class="s2">&quot;mne-connectivity developers&quot;</span>
+                    <span class="s2">&quot;second dimension of connectivity scores does not match the number &quot;</span>
+                    <span class="s2">&quot;of frequencies; please contact the mne-connectivity developers&quot;</span>
                 <span class="p">)</span>
             <span class="n">con_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_bands</span><span class="p">)</span> <span class="o">+</span> <span class="n">this_con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
             <span class="n">this_con_bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">con_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">this_con</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -1780,7 +1766,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=3f4c20c4"></script>
+    <script src="../../_static/documentation_options.js?v=a1f3df09"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</p>
   
 </a></div>
     
@@ -480,10 +480,7 @@ document.write(`
         <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No matching events found for </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="s2">&quot;(event id </span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                        <span class="n">key</span><span class="p">,</span>
-                        <span class="n">val</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No matching events found for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (event id </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="n">_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># ensure metadata matches original events size</span>
@@ -511,9 +508,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">epoch_conn</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The type of the epoch connectivity to append &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">epoch_conn</span><span class="p">)</span><span class="si">}</span><span class="s2">, which does not match &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;The type of the epoch connectivity to append is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">epoch_conn</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;which does not match </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;times&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">epoch_conn</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
@@ -573,8 +569,8 @@ document.write(`
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Combine only works over Epoched connectivity. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;It does not work with </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Combine only works over Epoched connectivity. It does not work with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="n">fun</span> <span class="o">=</span> <span class="n">_check_combine</span><span class="p">(</span><span class="n">combine</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">))</span>
@@ -663,16 +659,16 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Data passed in must be either 2D or 3D. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;The data you passed in has </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dims.&quot;</span>
+                <span class="s2">&quot;Data passed in must be either 2D or 3D. The data you passed in has &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dims.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;If there is a VAR model over epochs, &quot;</span> <span class="s2">&quot;one must pass in a 3D array.&quot;</span>
+                <span class="s2">&quot;If there is a VAR model over epochs, one must pass in a 3D array.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;If there is a single VAR model, &quot;</span> <span class="s2">&quot;one must pass in a 2D array.&quot;</span>
+                <span class="s2">&quot;If there is a single VAR model, one must pass in a 2D array.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># make the data 3D</span>
@@ -835,9 +831,7 @@ document.write(`
     <span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;symmetric&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Indices can only be &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;all&quot;, otherwise &#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;should be a list of tuples. &quot;</span>
+                <span class="s1">&#39;Indices can only be &quot;all&quot;, &quot;symmetric&quot;, or a list of tuples. &#39;</span>
                 <span class="sa">f</span><span class="s2">&quot;It cannot be </span><span class="si">{</span><span class="n">indices</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
@@ -866,12 +860,12 @@ document.write(`
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;n_epochs : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2">, &quot;</span>
         <span class="k">if</span> <span class="s2">&quot;freqs&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;freq : [</span><span class="si">%f</span><span class="s2">, </span><span class="si">%f</span><span class="s2">], &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;freq : [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">], &quot;</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="s2">&quot;times&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;time : [</span><span class="si">%f</span><span class="s2">, </span><span class="si">%f</span><span class="s2">], &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;time : [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">], &quot;</span>  <span class="c1"># type: ignore</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, nave : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs_used</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, nodes, n_estimated : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;, ~</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sizeof_fmt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">),)</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, ~</span><span class="si">{</span><span class="n">sizeof_fmt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;&gt;&quot;</span>
         <span class="k">return</span> <span class="n">r</span>
 
@@ -950,25 +944,21 @@ document.write(`
     <span class="k">def</span> <span class="nf">_check_data_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform data input checks.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Connectivity data must be passed in as a &quot;</span> <span class="s2">&quot;numpy array.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Connectivity data must be passed in as a numpy array.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Data using an epoched data &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;structure should have at least &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;2 dimensions and at most 4 &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;dimensions. Your data was &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> shape.&quot;</span>
+                    <span class="s2">&quot;Data using an epoched data structure should have at least 2 &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 4 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;shape.&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Data not using an epoched data &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;structure should have at least &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;1 dimensions and at most 3 &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;dimensions. Your data was &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> shape.&quot;</span>
+                    <span class="s2">&quot;Data not using an epoched data structure should have at least 1 &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 3 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;shape.&quot;</span>
                 <span class="p">)</span>
 
         <span class="c1"># get the number of estimated nodes</span>
@@ -982,30 +972,24 @@ document.write(`
             <span class="c1"># check that the indices passed in are of the same length</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;If indices are passed in &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;then they must be the same &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;length. They are right now &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="s2">&quot;If indices are passed in then they must be the same length. They &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;are right now </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
             <span class="c1"># indices length should match the data length</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">data_len</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The number of indices, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;should match the raveled data length passed &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;in of </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The number of indices, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> should match the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;raveled data length passed in of </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">&quot;symmetric&quot;</span><span class="p">:</span>
             <span class="n">expected_len</span> <span class="o">=</span> <span class="p">((</span><span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
             <span class="k">if</span> <span class="n">data_len</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;If &quot;indices&quot; is &quot;symmetric&quot;, then &#39;</span>
-                    <span class="sa">f</span><span class="s2">&quot;connectivity data should be the &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;upper-triangular part of the matrix. There &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;are </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2"> estimated connections. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;But there should be </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;estimated connections.&quot;</span>
+                    <span class="s1">&#39;If &quot;indices&quot; is &quot;symmetric&quot;, then &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;connectivity data should be the upper-triangular part of the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;matrix. There are </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2"> estimated connections. But there &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;should be </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> estimated connections.&quot;</span>
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1147,7 +1131,7 @@ document.write(`
                 <span class="c1"># the matrix, and there could also be cases where multiple</span>
                 <span class="c1"># results correspond to the same entries in the matrix.</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;cannot return multivariate connectivity &quot;</span> <span class="s2">&quot;data in a dense form&quot;</span>
+                    <span class="s2">&quot;cannot return multivariate connectivity data in a dense form&quot;</span>
                 <span class="p">)</span>
 
             <span class="c1"># get the new shape of the data array</span>
@@ -1210,7 +1194,7 @@ document.write(`
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">missing</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Name(s) in mapping missing from info: &quot;</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orig_names</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">missing</span><span class="p">)]</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orig_names</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">missing</span><span class="p">)]</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="n">new_names</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">new_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -1218,9 +1202,7 @@ document.write(`
         <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">mapping</span><span class="p">):</span>
             <span class="n">new_names</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ci</span><span class="p">,</span> <span class="n">mapping</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">ci</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;mapping must be callable or dict, not </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mapping</span><span class="p">),)</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mapping must be callable or dict, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># check we got all strings out of the mapping</span>
         <span class="k">for</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="n">new_names</span><span class="p">:</span>
@@ -1747,7 +1729,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>

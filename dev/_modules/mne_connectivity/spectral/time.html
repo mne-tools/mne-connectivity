@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</title>
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=3f4c20c4"></script>
+    <script src="../../../_static/documentation_options.js?v=a1f3df09"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev75+g3c1579838 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</p>
   
 </a></div>
     
@@ -810,9 +810,7 @@ document.write(`
         <span class="n">names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Sampling frequency (sfreq) is required with &quot;</span> <span class="s2">&quot;array input.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency (sfreq) is required with array input.&quot;</span><span class="p">)</span>
 
     <span class="c1"># check that method is a list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -835,15 +833,15 @@ document.write(`
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;computing Granger causality on multiple frequency &quot;</span>
-            <span class="s2">&quot;bands is not yet supported&quot;</span>
+            <span class="s2">&quot;computing Granger causality on multiple frequency bands is not yet &quot;</span>
+            <span class="s2">&quot;supported&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;bivariate and multivariate connectivity methods cannot be &quot;</span>
-                <span class="s2">&quot;used in the same function call&quot;</span>
+                <span class="s2">&quot;bivariate and multivariate connectivity methods cannot be used in the &quot;</span>
+                <span class="s2">&quot;same function call&quot;</span>
             <span class="p">)</span>
         <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
@@ -870,8 +868,8 @@ document.write(`
         <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;indices must be specified when computing Granger &quot;</span>
-                    <span class="s2">&quot;causality, as all-to-all connectivity is not supported&quot;</span>
+                    <span class="s2">&quot;indices must be specified when computing Granger causality, as &quot;</span>
+                    <span class="s2">&quot;all-to-all connectivity is not supported&quot;</span>
                 <span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all indices for multivariate connectivity&quot;</span><span class="p">)</span>
             <span class="c1"># indices expected to be a masked array, even if not ragged</span>
@@ -894,8 +892,8 @@ document.write(`
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;seed and target indices must not intersect when &quot;</span>
-                            <span class="s2">&quot;computing Granger causality&quot;</span>
+                            <span class="s2">&quot;seed and target indices must not intersect when computing &quot;</span>
+                            <span class="s2">&quot;Granger causality&quot;</span>
                         <span class="p">)</span>
             <span class="c1"># make sure padded indices are stored in the connectivity object</span>
             <span class="c1"># create a copy so that `indices_use` can be modified</span>
@@ -945,15 +943,14 @@ document.write(`
     <span class="n">cycle_freq</span> <span class="o">=</span> <span class="n">n_cycles</span> <span class="o">/</span> <span class="n">dur</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;</span> <span class="n">cycle_freq</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;At least one value in n_cycles corresponds to a&quot;</span>
-            <span class="s2">&quot;wavelet longer than the signal. Use less cycles, &quot;</span>
-            <span class="s2">&quot;higher frequencies, or longer epochs.&quot;</span>
+            <span class="s2">&quot;At least one value in n_cycles corresponds to a wavelet longer than the &quot;</span>
+            <span class="s2">&quot;signal. Use less cycles, higher frequencies, or longer epochs.&quot;</span>
         <span class="p">)</span>
     <span class="c1"># check for Nyquist</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Frequencies </span><span class="si">{</span><span class="n">freqs</span><span class="p">[</span><span class="n">freqs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz are &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;larger than Nyquist = </span><span class="si">{</span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Frequencies </span><span class="si">{</span><span class="n">freqs</span><span class="p">[</span><span class="n">freqs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz are larger than Nyquist = &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sfreq</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># compute frequency mask based on specified min/max and decimation factor</span>
@@ -1222,7 +1219,7 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Padding cannot be negative, got </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Padding cannot be larger than half of data &quot;</span> <span class="sa">f</span><span class="s2">&quot;length, got </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Padding cannot be larger than half of data length, got </span><span class="si">{</span><span class="n">padding</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="n">pad_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">padding</span> <span class="o">*</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="n">decim</span><span class="p">))</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">:</span><span class="o">-</span><span class="n">pad_idx</span><span class="p">]</span>
@@ -1738,7 +1735,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-19.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
       <br/>
     
   </p>
