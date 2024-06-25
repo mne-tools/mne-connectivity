@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.8.0.dev81+g96679b70c documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=a1f3df09"></script>
+    <script src="../_static/documentation_options.js?v=f82125f3"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev77+g2c696d5ca documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev81+g96679b70c documentation</p>
   
 </a></div>
     
@@ -544,7 +544,7 @@ connectivity structure is the same over each event.</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># number of channels</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">=</span> <span class="mi">2000</span>  <span class="c1"># number of sample points</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">250</span>  <span class="c1"># Set sampling freq</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.Generator.random.html#numpy.random.Generator.random" title="numpy.random.Generator.random" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-method"><span class="n">rng</span><span class="o">.</span><span class="n">random</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">))</span>  <span class="c1"># generate random data</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rng</span></a><span class="o">.</span><span class="n">random</span><span class="p">((</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">))</span>  <span class="c1"># generate random data</span>
 
 <span class="c1"># In case 1, we overwrite all epochs with the data from the first epoch</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">):</span>
@@ -563,7 +563,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f31f6840040&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f516a2052d0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -756,7 +756,7 @@ over trials.</p>
     <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">):</span>  <span class="c1"># and each channel are also different</span>
         <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">wave_freq</span></a> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># freq of the sinus wave</span>
         <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_len</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a>
-        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.Generator.random.html#numpy.random.Generator.random" title="numpy.random.Generator.random" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-method"><span class="n">rng</span><span class="o">.</span><span class="n">random</span></a><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># Introduce random phase for each channel</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rng</span></a><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># Introduce random phase for each channel</span>
         <span class="c1"># Generate sinus wave</span>
         <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span>
             <span class="o">-</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">wave_freq</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_len</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">+</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a><span class="p">,</span>
@@ -776,7 +776,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f320d69ff40&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f51bc699d80&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -1093,8 +1093,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-37d0f823-117c-4690-9f27-dd6ebc3a3271"  title="Hide section"
-    onclick="toggleVisibility('general-37d0f823-117c-4690-9f27-dd6ebc3a3271')">
+<tr class="repr-section-header general-259022e2-cefc-4a43-9d91-bc52ea429669"  title="Hide section"
+    onclick="toggleVisibility('general-259022e2-cefc-4a43-9d91-bc52ea429669')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1106,26 +1106,26 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-37d0f823-117c-4690-9f27-dd6ebc3a3271 ">
+<tr class="repr-element general-259022e2-cefc-4a43-9d91-bc52ea429669 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-37d0f823-117c-4690-9f27-dd6ebc3a3271 ">
+<tr class="repr-element general-259022e2-cefc-4a43-9d91-bc52ea429669 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-37d0f823-117c-4690-9f27-dd6ebc3a3271 ">
+<tr class="repr-element general-259022e2-cefc-4a43-9d91-bc52ea429669 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-37d0f823-117c-4690-9f27-dd6ebc3a3271 ">
+<tr class="repr-element general-259022e2-cefc-4a43-9d91-bc52ea429669 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -1140,8 +1140,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d"  title="Hide section"
-    onclick="toggleVisibility('acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d')">
+<tr class="repr-section-header acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda"  title="Hide section"
+    onclick="toggleVisibility('acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1156,14 +1156,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Events counts</td>
 
@@ -1177,28 +1177,28 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1d1a3b02-fdfa-4fd8-88a4-d985c78a566d ">
+<tr class="repr-element acquisition-eadc0e8c-572c-4ff1-8556-254ff759ceda ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>286</td>
@@ -1212,8 +1212,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-4207e242-1bf7-402a-9b7a-14422b90b958"  title="Hide section"
-    onclick="toggleVisibility('channels-4207e242-1bf7-402a-9b7a-14422b90b958')">
+<tr class="repr-section-header channels-2a349a2d-7fcf-40d9-a942-10206716c6a7"  title="Hide section"
+    onclick="toggleVisibility('channels-2a349a2d-7fcf-40d9-a942-10206716c6a7')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1226,7 +1226,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-4207e242-1bf7-402a-9b7a-14422b90b958 ">
+<tr class="repr-element channels-2a349a2d-7fcf-40d9-a942-10206716c6a7 ">
     <td class="repr-section-toggle-col"></td>
     <td>EEG</td>
     <td>
@@ -1239,7 +1239,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-4207e242-1bf7-402a-9b7a-14422b90b958 ">
+<tr class="repr-element channels-2a349a2d-7fcf-40d9-a942-10206716c6a7 ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -1254,8 +1254,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-c8f86e3f-ac5f-4d30-b4db-c465061072df"  title="Hide section"
-    onclick="toggleVisibility('filters-c8f86e3f-ac5f-4d30-b4db-c465061072df')">
+<tr class="repr-section-header filters-6642b2e6-3a44-42f1-a4e9-9e429a83c463"  title="Hide section"
+    onclick="toggleVisibility('filters-6642b2e6-3a44-42f1-a4e9-9e429a83c463')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1267,21 +1267,21 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-c8f86e3f-ac5f-4d30-b4db-c465061072df ">
+<tr class="repr-element filters-6642b2e6-3a44-42f1-a4e9-9e429a83c463 ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-c8f86e3f-ac5f-4d30-b4db-c465061072df ">
+<tr class="repr-element filters-6642b2e6-3a44-42f1-a4e9-9e429a83c463 ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-c8f86e3f-ac5f-4d30-b4db-c465061072df ">
+<tr class="repr-element filters-6642b2e6-3a44-42f1-a4e9-9e429a83c463 ">
     <td class="repr-section-toggle-col"></td>
     <td>Projections</td>
     <td>
@@ -1471,7 +1471,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f31b8240c40&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f5167b0feb0&gt;
 </pre></div>
 </div>
 </section>
@@ -1502,7 +1502,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.103 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.599 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1593,7 +1593,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-25.
       <br/>
     
   </p>
