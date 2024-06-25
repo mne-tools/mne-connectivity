@@ -151,10 +151,9 @@ def plot_connectivity_circle(
 
     if fig is not None or subplot is not None:
         warn(
-            "Passing a `fig` and `subplot` is deprecated and not be "
-            "supported after mne-connectivity version 0.4. Please "
-            "use the `ax` argument and pass a matplotlib axes object "
-            "with polar coordinates instead",
+            "Passing a `fig` and `subplot` is deprecated and not supported after "
+            "mne-connectivity version 0.4. Please use the `ax` argument and pass a "
+            "matplotlib axes object with polar coordinates instead",
             DeprecationWarning,
         )
         if ax is None:  # don't overwrite ax if passed
