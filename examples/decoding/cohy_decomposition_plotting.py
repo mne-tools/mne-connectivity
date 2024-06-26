@@ -67,8 +67,9 @@ from mne_connectivity import CoherencyDecomposition
 ########################################################################################
 # Generating the filters and patterns
 # -----------------------------------
-# We will first load some example MEG data which we will generate the spatial filters
-# and patterns for, and divide it into epochs.
+# We will first load some example MEG data collected during a hand movement task, which
+# we will generate the spatial filters and patterns for. We divide the data into
+# continuous epochs.
 
 # %%
 
