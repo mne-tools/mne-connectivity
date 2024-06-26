@@ -4,7 +4,6 @@
 #
 # License: BSD (3-clause)
 
-from copy import deepcopy
 from typing import Optional
 
 import numpy as np
@@ -16,6 +15,7 @@ from mne.evoked import EvokedArray
 from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
+from mne.viz.utils import plt_show
 
 from ..spectral.epochs_multivariate import _CaCohEst, _check_rank_input, _MICEst
 from ..utils import _check_multivariate_indices, fill_doc
@@ -727,8 +727,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         figs = []
         for group_idx, group_name in zip([0, 1], ["Seeds", "Targets"]):
             # create info for seeds/targets
-            group_info = deepcopy(info)
-            group_info = pick_info(group_info, self.indices[group_idx], copy=False)
+            group_info = pick_info(info, self.indices[group_idx])
             with group_info._unlock():
                 group_info["sfreq"] = 1.0  # 1 component per time point
             # create Evoked object
@@ -768,7 +767,6 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 )
             )
             figs[-1].suptitle(group_name)  # differentiate seeds from targets
-            if show:
-                figs[-1].show()
+            plt_show(show=show, fig=figs[-1])
 
         return figs
