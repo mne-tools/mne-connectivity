@@ -904,7 +904,7 @@ def _parallel_con(
         methods are called, the output is a tuple of lists containing arrays
         for the connectivity scores and patterns, respectively.
     """
-    if "coh" in method:
+    if ("coh" in method) or ("cohy" in method):
         # psd
         if weights is not None:
             psd = weights * w
@@ -995,9 +995,9 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         s_xy = np.squeeze(s_xy, axis=0)
     s_xy = _smooth_spectra(s_xy, kernel)
     out = []
-    conn_func = {"plv": _plv, "ciplv": _ciplv, "pli": _pli, "wpli": _wpli, "coh": _coh}
+    conn_func = {"plv": _plv, "ciplv": _ciplv, "pli": _pli, "wpli": _wpli, "coh": _coh, "cohy": _cohy}
     for m in method:
-        if m == "coh":
+        if m in ["coh", "cohy"]:
             s_xx = psd[x]
             s_yy = psd[y]
             out.append(conn_func[m](s_xx, s_yy, s_xy))
