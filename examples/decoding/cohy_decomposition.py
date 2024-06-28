@@ -137,7 +137,8 @@ cacoh = CoherencyDecomposition(
     mode="multitaper",
     fmin=FMIN,
     fmax=FMAX,
-    rank=(3, 3),
+    rank=(3, 3),  # project to rank subspace to avoid overfitting to noise
+    n_components=1,  # the data contains only one simulated component of connectivity
 )
 
 ########################################################################################
@@ -371,6 +372,7 @@ cacoh = CoherencyDecomposition(
     fmin=FMIN,
     fmax=FMAX,
     rank=(3, 3),
+    n_components=1,
 )
 
 # Time fitting of filters

@@ -5,7 +5,7 @@
 # License: BSD (3-clause)
 
 from copy import deepcopy
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from mne import Info
@@ -79,6 +79,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     filters_: Optional[tuple] = None
     patterns_: Optional[tuple] = None
 
+    _conn_estimator: Optional[Union[_CaCohEst, _MICEst]] = None
     _indices: Optional[tuple] = None
     _rank: Optional[tuple] = None
 
@@ -139,9 +140,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         _check_option("method", method, ("cacoh", "mic"))
         if method == "cacoh":
-            _conn_estimator = _CaCohEst
+            _conn_estimator_class = _CaCohEst
         else:
-            _conn_estimator = _MICEst
+            _conn_estimator_class = _MICEst
 
         _validate_type(indices, tuple, "`indices`", "tuple of array-likes")
         if len(indices) != 2:
@@ -163,6 +164,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             _validate_type(fmax, "numeric", "`fmax`", "int or float")
             if fmin > fmax:
                 raise ValueError("`fmax` must be larger than `fmin`")
+            if fmin < 0:
+                raise ValueError("`fmin` cannot be less than 0")
             if fmax > info["sfreq"] / 2:
                 raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
             if mode == "multitaper":
@@ -216,7 +219,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         # Store inputs
         self.info = info
-        self._conn_estimator = _conn_estimator
+        self._conn_estimator_class = _conn_estimator_class
         self._indices = _indices  # uses getter/setter for public parameter
         self.mode = mode
         self.fmin = fmin
@@ -226,7 +229,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         self.mt_low_bias = mt_low_bias
         self.cwt_freqs = cwt_freqs
         self.cwt_n_cycles = cwt_n_cycles
-        self.n_components = 1  # XXX: fixed until n_comps > 1 supported
+        self.n_components = n_components
         self._rank = _rank  # uses getter/setter for public parameter
         self.n_jobs = n_jobs
         self.verbose = verbose
@@ -289,11 +292,13 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         csd = self._compute_csd(X)
 
         # instantiate connectivity estimator and add CSD information
-        self._conn_estimator = self._conn_estimator(
+        self._conn_estimator = self._conn_estimator_class(
             n_signals=X.shape[1],
             n_cons=1,
             n_freqs=1,
             n_times=0,
+            n_components=self.n_components,
+            store_con=False,
             store_filters=True,
             n_jobs=self.n_jobs,
         )
@@ -379,26 +384,17 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
     def _extract_filters_and_patterns(self):
         """Extract filters and patterns from the connectivity estimator."""
-        # XXX: need to sort indices and transpose patterns when multiple comps supported
+        # shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs),
+        # i.e. (2, 1, n_components, n_signals, 1)
         self.filters_ = (
-            self._conn_estimator.filters[0, 0, : len(self.indices[0]), 0],
-            self._conn_estimator.filters[1, 0, : len(self.indices[1]), 0],
-        )
+            self._conn_estimator.filters[0, 0, :, : len(self.indices[0]), 0].T,
+            self._conn_estimator.filters[1, 0, :, : len(self.indices[1]), 0].T,
+        )  # shape=(seeds/targets, n_signals, n_components)
 
         self.patterns_ = (
-            self._conn_estimator.patterns[0, 0, : len(self.indices[0]), 0],
-            self._conn_estimator.patterns[1, 0, : len(self.indices[1]), 0],
-        )
-
-        # XXX: remove once support for multiple comps implemented
-        self.filters_ = (
-            np.expand_dims(self.filters_[0], 1),
-            np.expand_dims(self.filters_[1], 1),
-        )
-        self.patterns_ = (
-            np.expand_dims(self.patterns_[0], 0),
-            np.expand_dims(self.patterns_[1], 0),
-        )
+            self._conn_estimator.patterns[0, 0, :, : len(self.indices[0]), 0],
+            self._conn_estimator.patterns[1, 0, :, : len(self.indices[1]), 0],
+        )  # shape=(seeds/targets, n_components, n_signals)
 
     def transform(self, X):
         """Decompose data into connectivity sources using the fitted filters.
@@ -421,9 +417,13 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 "no filters are available, please call the `fit` method first"
             )
 
-        # transform seed and target data
-        X_seeds = self.filters_[0].T @ X[..., self.indices[0], :]
-        X_targets = self.filters_[1].T @ X[..., self.indices[1], :]
+        # transform seed and target data (i=channels; j=components; k=epochs; l=times)
+        if X.ndim == 2:
+            dim_subs = "ij,il->jl"
+        else:
+            dim_subs = "ij,kil->kjl"
+        X_seeds = np.einsum(dim_subs, self.filters_[0], X[..., self.indices[0], :])
+        X_targets = np.einsum(dim_subs, self.filters_[1], X[..., self.indices[1], :])
 
         return np.concatenate((X_seeds, X_targets), axis=-2)
 

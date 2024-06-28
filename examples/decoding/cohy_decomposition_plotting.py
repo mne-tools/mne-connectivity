@@ -136,10 +136,12 @@ mic.fit(epochs.get_data())
 # bound between :math:`[-1, 1]`.
 #
 # Plotting the patterns for 20-30 Hz connectivity below, we find the strongest
-# connectivity between the left and right hemispheres comes from centromedial left and
-# frontolateral right sensors, based on the areas with the largest absolute values. As
-# these patterns come from decomposition on sensor-space data, we make no assumptions
-# about the underlying brain regions involved in this connectivity.
+# connectivity ('MIC0', i.e. 1st component) between the left and right hemispheres comes
+# from centromedial left and frontolateral right sensors, based on the areas with the
+# largest absolute values. Patterns for the weaker connectivity components ('MIC1' &
+# 'MIC2' are also shown). As these patterns come from decomposition on sensor-space
+# data, we make no assumptions about the underlying brain regions involved in this
+# connectivity.
 
 # %%
 
