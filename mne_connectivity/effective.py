@@ -277,6 +277,9 @@ def phase_slope_index_time(data,
     The PSI is computed from the coherency (see spectral_connectivity_epochs),
     details can be found in :footcite:`NolteEtAl2008`.
 
+    This function computes PSI over time from epoched data.
+    The data may consist of a single epoch.
+
     Parameters
     ----------
     data : array-like, shape=(n_epochs, n_signals, n_times)
@@ -333,19 +336,16 @@ def phase_slope_index_time(data,
     -------
     conn : instance of Connectivity
         Computed connectivity measure(s). Either a
-        ``SpectralConnnectivity``, or ``SpectroTemporalConnectivity``
-        container. The shape of each array is either
-        (n_signals ** 2, n_bands) mode: 'multitaper' or 'fourier'
-        (n_signals ** 2, n_bands, n_times) mode: 'cwt_morlet'
+        ``SpectralConnnectivity``, or ``EpochSpectralConnectivity``
+        container. The shape of each array is
+        (n_signals ** 2, n_bands, n_epochs)
         when "indices" is None, or
-        (n_con, n_bands) mode: 'multitaper' or 'fourier'
-        (n_con, n_bands, n_times) mode: 'cwt_morlet'
+        (n_con, n_bands, n_epochs) 
         when "indices" is specified and "n_con = len(indices[0])".
 
     See Also
     --------
-    mne_connectivity.SpectralConnectivity
-    mne_connectivity.SpectroTemporalConnectivity
+    mne_connectivity.EpochSpectralConnectivity
 
     References
     ----------
@@ -359,7 +359,7 @@ def phase_slope_index_time(data,
         data,
         freqs=freqs,
         method="cohy",
-        average=average,
+        average=False,
         indices=indices,
         sfreq=sfreq,
         fmin=fmin,
@@ -378,10 +378,6 @@ def phase_slope_index_time(data,
         verbose=None,
     )
 
-    # # extract class properties from the spectral connectivity structure
-    # if isinstance(cohy, SpectralConnectivity):
-    #     n_epochs_used = cohy.n_epochs
-
     freqs_ = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
@@ -398,7 +394,7 @@ def phase_slope_index_time(data,
     bands = list(zip(np.asarray((fmin,)).ravel(), np.asarray((fmax,)).ravel()))
     n_bands = len(bands)
 
-    freq_dim = -2 if mode == "cwt_morlet" else -1
+    freq_dim = -2
 
     # allocate space for output
     out_shape = list(cohy.shape)
@@ -434,37 +430,19 @@ def phase_slope_index_time(data,
     logger.info("[PSI Estimation Done]")
 
     # create a connectivity container
-    if average:
-        conn = SpectralConnectivity(
-            data=psi,
-            names=names,
-            freqs=freq_bands,
-            n_nodes=n_nodes,
-            method="phase-slope-index",
-            spec_method=mode,
-            indices=indices,
-            freqs_computed=freqs,
-            n_epochs_used=n_epochs_used,
-            n_tapers=n_tapers,
-            metadata=metadata,
-            events=events,
-            event_id=event_id,
-        )
-    else:
-        conn = EpochSpectralConnectivity(
-            data=psi,
-            names=names,
-            freqs=freq_bands,
-            times=times,
-            n_nodes=n_nodes,
-            method="phase-slope-index",
-            spec_method=mode,
-            indices=indices,
-            freqs_computed=freqs,
-            n_tapers=n_tapers,
-            metadata=metadata,
-            events=events,
-            event_id=event_id,
-        )
+    conn = EpochSpectralConnectivity(
+        data=psi,
+        names=names,
+        freqs=freq_bands,
+        n_nodes=n_nodes,
+        method="phase-slope-index",
+        spec_method=mode,
+        indices=indices,
+        freqs_computed=freqs,
+        n_tapers=n_tapers,
+        metadata=metadata,
+        events=events,
+        event_id=event_id,
+    )
 
     return conn
