@@ -7,7 +7,11 @@ import copy
 import numpy as np
 from mne.utils import logger, verbose
 
-from .base import SpectralConnectivity, SpectroTemporalConnectivity, EpochSpectralConnectivity
+from .base import (
+    EpochSpectralConnectivity,
+    SpectralConnectivity,
+    SpectroTemporalConnectivity,
+)
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import fill_doc
 
@@ -256,7 +260,7 @@ def phase_slope_index_time(data,
                            fmax=np.inf,
                            mt_bandwidth=None,
                            freqs=None,
-                           n_cycles=7, 
+                           n_cycles=7,
                            padding=0,
                            n_jobs=1,
                            ):
