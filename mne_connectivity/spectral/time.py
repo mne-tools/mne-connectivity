@@ -1234,6 +1234,31 @@ def _coh(s_xx, s_yy, s_xy):
     coh = con_num / con_den
     return coh
 
+def _cohy(s_xx, s_yy, s_xy):
+    """Compute coherencey given the cross spectral density and PSD.
+
+    Parameters
+    ----------
+    s_xx : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'x'.
+    s_yy : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'y'.
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    cohy : array-like, shape (n_freqs, n_times)
+        The estimated COHY.
+    """
+    con_num = s_xy.mean(axis=-1, keepdims=True)
+    con_den = np.sqrt(
+        s_xx.mean(axis=-1, keepdims=True) * s_yy.mean(axis=-1, keepdims=True)
+    )
+    cohy = con_num / con_den
+    return cohy
+
 
 def _compute_csd(x, y, weights):
     """Compute cross spectral density between signals x and y."""
