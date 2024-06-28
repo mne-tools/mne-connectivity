@@ -119,13 +119,13 @@ def envelope_correlation(
             epoch_data = epoch_data.data
         if epoch_data.ndim != 2:
             raise ValueError(
-                "Each entry in data must be 2D, got shape %s" % (epoch_data.shape,)
+                f"Each entry in data must be 2D, got shape {epoch_data.shape}"
             )
         n_nodes, n_times = epoch_data.shape
         if ei > 0 and n_nodes != corrs[0].shape[0]:
             raise ValueError(
-                "n_nodes mismatch between data[0] and data[%d], "
-                "got %s and %s" % (ei, n_nodes, corrs[0].shape[0])
+                f"n_nodes mismatch between data[0] and data[{ei}], got {n_nodes} and "
+                f"{corrs[0].shape[0]}"
             )
 
         # Get the complex envelope (allowing complex inputs allows people
@@ -136,7 +136,7 @@ def envelope_correlation(
 
         if not np.iscomplexobj(epoch_data):
             raise ValueError(
-                "data.dtype must be float or complex, got %s" % (epoch_data.dtype,)
+                f"data.dtype must be float or complex, got {epoch_data.dtype}"
             )
         data_mag = np.abs(epoch_data)
         data_conj_scaled = epoch_data.conj()
@@ -280,8 +280,8 @@ def _gen_sym_orth(data, n_iter, tol):
         n, m = Z.shape
         if m < n:
             raise RuntimeError(
-                f"Symmetric orth requires at least as many time points ({m}) "
-                f"as the number of time series ({n})"
+                f"Symmetric orth requires at least as many time points ({m}) as the "
+                f"number of time series ({n})"
             )
         logger.debug("Symmetric orth")
         # "starting with D(1) = I_n"

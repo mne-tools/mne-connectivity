@@ -73,7 +73,7 @@ def check_indices(indices):
 
     if len(indices[0]) != len(indices[1]):
         raise ValueError(
-            "Index arrays indices[0] and indices[1] must " "have the same length"
+            "Index arrays indices[0] and indices[1] must have the same length"
         )
 
     if any(
@@ -149,7 +149,7 @@ def _check_multivariate_indices(indices, n_chans):
 
     if len(indices[0]) != len(indices[1]):
         raise ValueError(
-            "index arrays indices[0] and indices[1] must " "have the same length"
+            "index arrays indices[0] and indices[1] must have the same length"
         )
 
     n_cons = len(indices[0])
@@ -160,14 +160,14 @@ def _check_multivariate_indices(indices, n_chans):
         for con_idx, con in enumerate(group):
             if not isinstance(con, (np.ndarray, list, tuple)):
                 raise TypeError(
-                    "multivariate indices must contain array-likes of channel "
-                    "indices for each seed and target"
+                    "multivariate indices must contain array-likes of channel indices "
+                    "for each seed and target"
                 )
             con = np.array(con)
             if len(con) != len(np.unique(con)):
                 raise ValueError(
-                    "multivariate indices cannot contain repeated channels "
-                    "within a seed or target"
+                    "multivariate indices cannot contain repeated channels within a "
+                    "seed or target"
                 )
             max_n_chans = max(max_n_chans, len(con))
             # convert negative to positive indices
@@ -175,7 +175,7 @@ def _check_multivariate_indices(indices, n_chans):
                 if chan < 0:
                     if chan * -1 >= n_chans:
                         raise ValueError(
-                            "a negative channel index is not present in the " "data"
+                            "a negative channel index is not present in the data"
                         )
                     indices[group_idx][con_idx][chan_idx] = chan % n_chans
 
@@ -334,8 +334,8 @@ def degree(connectivity, threshold_prop=0.2):
     connectivity = np.array(connectivity)
     if connectivity.ndim != 2 or connectivity.shape[0] != connectivity.shape[1]:
         raise ValueError(
-            "connectivity must be have shape (n_nodes, n_nodes), "
-            "got %s" % (connectivity.shape,)
+            "connectivity must be have shape (n_nodes, n_nodes), got "
+            f"{connectivity.shape}"
         )
     n_nodes = len(connectivity)
     if np.allclose(connectivity, connectivity.T):
@@ -345,9 +345,7 @@ def degree(connectivity, threshold_prop=0.2):
         split = 1.0
     threshold_prop = float(threshold_prop)
     if not 0 < threshold_prop <= 1:
-        raise ValueError(
-            "threshold must be 0 <= threshold < 1, got %s" % (threshold_prop,)
-        )
+        raise ValueError(f"threshold must be 0 <= threshold < 1, got {threshold_prop}")
     degree = connectivity.ravel()  # no need to copy because np.array does
     degree[:: n_nodes + 1] = 0.0
     n_keep = int(round((degree.size - len(connectivity)) * threshold_prop / split))

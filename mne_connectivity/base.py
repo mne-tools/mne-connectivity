@@ -64,10 +64,7 @@ class EpochMixin:
         if events is not None:
             for key, val in self.event_id.items():
                 if val not in events[:, 2]:
-                    msg = "No matching events found for %s " "(event id %i)" % (
-                        key,
-                        val,
-                    )
+                    msg = f"No matching events found for {key} (event id {val})"
                     _on_missing(on_missing, msg)
 
             # ensure metadata matches original events size
@@ -95,9 +92,8 @@ class EpochMixin:
         """
         if not isinstance(self, type(epoch_conn)):
             raise ValueError(
-                f"The type of the epoch connectivity to append "
-                f"is {type(epoch_conn)}, which does not match "
-                f"{type(self)}."
+                f"The type of the epoch connectivity to append is {type(epoch_conn)}, "
+                f"which does not match {type(self)}."
             )
         if hasattr(self, "times"):
             if not np.allclose(self.times, epoch_conn.times):
@@ -157,8 +153,8 @@ class EpochMixin:
 
         if not self.is_epoched:
             raise RuntimeError(
-                "Combine only works over Epoched connectivity. "
-                f"It does not work with {self}"
+                "Combine only works over Epoched connectivity. It does not work with "
+                f"{self}"
             )
 
         fun = _check_combine(combine, valid=("mean", "median"))
@@ -247,16 +243,16 @@ class DynamicMixin:
         """
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(
-                f"Data passed in must be either 2D or 3D. "
-                f"The data you passed in has {data.ndim} dims."
+                "Data passed in must be either 2D or 3D. The data you passed in has "
+                f"{data.ndim} dims."
             )
         if data.ndim == 2 and self.is_epoched:
             raise RuntimeError(
-                "If there is a VAR model over epochs, " "one must pass in a 3D array."
+                "If there is a VAR model over epochs, one must pass in a 3D array."
             )
         if data.ndim == 3 and not self.is_epoched:
             raise RuntimeError(
-                "If there is a single VAR model, " "one must pass in a 2D array."
+                "If there is a single VAR model, one must pass in a 2D array."
             )
 
         # make the data 3D
@@ -419,9 +415,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     ):
         if isinstance(indices, str) and indices not in ["all", "symmetric"]:
             raise ValueError(
-                f"Indices can only be "
-                f'"all", otherwise '
-                f"should be a list of tuples. "
+                'Indices can only be "all", "symmetric", or a list of tuples. '
                 f"It cannot be {indices}."
             )
 
@@ -450,12 +444,12 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if self.n_epochs is not None:
             r += f"n_epochs : {self.n_epochs}, "
         if "freqs" in self.dims:
-            r += "freq : [%f, %f], " % (self.freqs[0], self.freqs[-1])  # type: ignore
+            r += f"freq : [{self.freqs[0]}, {self.freqs[-1]}], "  # type: ignore
         if "times" in self.dims:
-            r += "time : [%f, %f], " % (self.times[0], self.times[-1])  # type: ignore
+            r += f"time : [{self.times[0]}, {self.times[-1]}], "  # type: ignore
         r += f", nave : {self.n_epochs_used}"
         r += f", nodes, n_estimated : {self.n_nodes}, " f"{self.n_estimated_nodes}"
-        r += ", ~%s" % (sizeof_fmt(self._size),)
+        r += f", ~{sizeof_fmt(self._size)}"
         r += ">"
         return r
 
@@ -534,25 +528,21 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     def _check_data_consistency(self, data, indices, n_nodes):
         """Perform data input checks."""
         if not isinstance(data, np.ndarray):
-            raise TypeError("Connectivity data must be passed in as a " "numpy array.")
+            raise TypeError("Connectivity data must be passed in as a numpy array.")
 
         if self.is_epoched:
             if data.ndim < 2 or data.ndim > 4:
                 raise RuntimeError(
-                    f"Data using an epoched data "
-                    f"structure should have at least "
-                    f"2 dimensions and at most 4 "
-                    f"dimensions. Your data was "
-                    f"{data.shape} shape."
+                    "Data using an epoched data structure should have at least 2 "
+                    f"dimensions and at most 4 dimensions. Your data was {data.shape} "
+                    "shape."
                 )
         else:
             if data.ndim > 3:
                 raise RuntimeError(
-                    f"Data not using an epoched data "
-                    f"structure should have at least "
-                    f"1 dimensions and at most 3 "
-                    f"dimensions. Your data was "
-                    f"{data.shape} shape."
+                    "Data not using an epoched data structure should have at least 1 "
+                    f"dimensions and at most 3 dimensions. Your data was {data.shape} "
+                    "shape."
                 )
 
         # get the number of estimated nodes
@@ -566,30 +556,24 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             # check that the indices passed in are of the same length
             if len(indices[0]) != len(indices[1]):
                 raise ValueError(
-                    f"If indices are passed in "
-                    f"then they must be the same "
-                    f"length. They are right now "
-                    f"{len(indices[0])} and "
-                    f"{len(indices[1])}."
+                    "If indices are passed in then they must be the same length. They "
+                    f"are right now {len(indices[0])} and {len(indices[1])}."
                 )
             # indices length should match the data length
             if len(indices[0]) != data_len:
                 raise ValueError(
-                    f"The number of indices, {len(indices[0])} "
-                    f"should match the raveled data length passed "
-                    f"in of {data_len}."
+                    f"The number of indices, {len(indices[0])} should match the "
+                    f"raveled data length passed in of {data_len}."
                 )
 
         elif indices == "symmetric":
             expected_len = ((n_nodes + 1) * n_nodes) // 2
             if data_len != expected_len:
                 raise ValueError(
-                    f'If "indices" is "symmetric", then '
-                    f"connectivity data should be the "
-                    f"upper-triangular part of the matrix. There "
-                    f"are {data_len} estimated connections. "
-                    f"But there should be {expected_len} "
-                    f"estimated connections."
+                    'If "indices" is "symmetric", then '
+                    f"connectivity data should be the upper-triangular part of the "
+                    f"matrix. There are {data_len} estimated connections. But there "
+                    f"should be {expected_len} estimated connections."
                 )
 
     def copy(self):
@@ -731,7 +715,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
                 # the matrix, and there could also be cases where multiple
                 # results correspond to the same entries in the matrix.
                 raise ValueError(
-                    "cannot return multivariate connectivity " "data in a dense form"
+                    "cannot return multivariate connectivity data in a dense form"
                 )
 
             # get the new shape of the data array
@@ -794,7 +778,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             if any(missing):
                 raise ValueError(
                     "Name(s) in mapping missing from info: "
-                    "%s" % np.array(orig_names)[np.array(missing)]
+                    f"{np.array(orig_names)[np.array(missing)]}"
                 )
             new_names = [
                 (names.index(name), new_name) for name, new_name in mapping.items()
@@ -802,9 +786,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         elif callable(mapping):
             new_names = [(ci, mapping(name)) for ci, name in enumerate(names)]
         else:
-            raise ValueError(
-                "mapping must be callable or dict, not %s" % (type(mapping),)
-            )
+            raise ValueError(f"mapping must be callable or dict, not {type(mapping)}")
 
         # check we got all strings out of the mapping
         for new_name in new_names:
