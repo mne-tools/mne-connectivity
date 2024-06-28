@@ -257,11 +257,10 @@ def phase_slope_index_time(data,
                            mt_bandwidth=None,
                            freqs=None,
                            n_cycles=7, 
-                           average=True,
                            padding=0,
                            n_jobs=1,
                            ):
-    """Compute the Phase Slope Index (PSI) connectivity measure.
+    """Compute the Phase Slope Index (PSI) connectivity measure across time rather than epochs.
 
     The PSI is an effective connectivity measure, i.e., a measure which can
     give an indication of the direction of the information flow (causality).
@@ -307,27 +306,14 @@ def phase_slope_index_time(data,
     fmax : float | tuple of float
         The upper frequency of interest. Multiple bands are dedined using
         a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
-    tmin : float | None
-        Time to start connectivity estimation.
-    tmax : float | None
-        Time to end connectivity estimation.
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz.
         Only used in 'multitaper' mode.
-    mt_adaptive : bool
-        Use adaptive weights to combine the tapered spectra into PSD.
-        Only used in 'multitaper' mode.
-    mt_low_bias : bool
-        Only use tapers with more than 90 percent spectral concentration within
-        bandwidth. Only used in 'multitaper' mode.
-    cwt_freqs : array
+    freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode.
-    cwt_n_cycles : float | array of float
+    n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in
         'cwt_morlet' mode.
-    block_size : int
-        How many connections to compute at once (higher numbers are faster
-        but require more memory).
     n_jobs : int
         How many epochs to process in parallel.
     %(verbose)s
@@ -335,8 +321,7 @@ def phase_slope_index_time(data,
     Returns
     -------
     conn : instance of Connectivity
-        Computed connectivity measure(s). Either a
-        ``SpectralConnnectivity``, or ``EpochSpectralConnectivity``
+        Computed connectivity measure(s). ``EpochSpectralConnectivity``
         container. The shape of each array is
         (n_signals ** 2, n_bands, n_epochs)
         when "indices" is None, or
@@ -351,7 +336,7 @@ def phase_slope_index_time(data,
     ----------
     .. footbibliography::
     """
-    logger.info("Estimating phase slope index (PSI)")
+    logger.info("Estimating phase slope index (PSI) across time")
 
     # estimate the coherency
 
