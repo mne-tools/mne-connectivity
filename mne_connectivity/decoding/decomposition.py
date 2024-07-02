@@ -8,10 +8,14 @@ from typing import Optional
 
 import numpy as np
 from mne import Info
+from mne._fiff.pick import pick_info
 from mne.decoding.mixin import TransformerMixin
+from mne.defaults import _BORDER_DEFAULT, _EXTRAPOLATE_DEFAULT, _INTERPOLATION_DEFAULT
+from mne.evoked import EvokedArray
 from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
+from mne.viz.utils import plt_show
 
 from ..spectral.epochs_multivariate import _CaCohEst, _check_rank_input, _MICEst
 from ..utils import _check_multivariate_indices, fill_doc
@@ -465,3 +469,304 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             np.arange(self.n_components),
             np.arange(self.n_components) + self.n_components,
         )
+
+    @fill_doc
+    def plot_patterns(
+        self,
+        info,
+        components=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units="AU",
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot topographic patterns of components.
+
+        The patterns explain how the measured data was generated from the
+        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
+
+        Seed and target patterns are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_patterns_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.patterns_ is None:
+            raise RuntimeError(
+                "no patterns are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            (self.patterns_[0].T, self.patterns_[1].T),
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    @fill_doc
+    def plot_filters(
+        self,
+        info,
+        components=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units="AU",
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot topographic filters of components.
+
+        The filters are used to extract discriminant neural sources from the measured
+        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.
+
+        Seed and target filters are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_filters_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.filters_ is None:
+            raise RuntimeError(
+                "no filters are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            self.filters_,
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    def _plot_filters_patterns(
+        self,
+        plot_data,
+        info,
+        components,
+        ch_type,
+        scalings,
+        sensors,
+        show_names,
+        mask,
+        mask_params,
+        contours,
+        outlines,
+        sphere,
+        image_interp,
+        extrapolate,
+        border,
+        res,
+        size,
+        cmap,
+        vlim,
+        cnorm,
+        colorbar,
+        cbar_fmt,
+        units,
+        axes,
+        name_format,
+        nrows,
+        ncols,
+        show,
+    ):
+        """Plot filters/targets for components."""
+        # Sort inputs
+        _validate_type(info, Info, "`info`", "mne.Info")
+        if components is None:
+            components = np.arange(self.n_components)
+
+        # plot seeds and targets
+        figs = []
+        for group_idx, group_name in zip([0, 1], ["Seeds", "Targets"]):
+            # create info for seeds/targets
+            group_info = pick_info(info, self.indices[group_idx])
+            with group_info._unlock():
+                group_info["sfreq"] = 1.0  # 1 component per time point
+            # create Evoked object
+            evoked = EvokedArray(plot_data[group_idx], group_info, tmin=0)
+            # then call plot_topomap
+            figs.append(
+                evoked.plot_topomap(
+                    times=components,
+                    average=None,  # do not average across independent components
+                    ch_type=ch_type,
+                    scalings=scalings,
+                    sensors=sensors,
+                    show_names=show_names,
+                    mask=mask,
+                    mask_params=mask_params,
+                    contours=contours,
+                    outlines=outlines,
+                    sphere=sphere,
+                    image_interp=image_interp,
+                    extrapolate=extrapolate,
+                    border=border,
+                    res=res,
+                    size=size,
+                    cmap=cmap,
+                    vlim=vlim,
+                    cnorm=cnorm,
+                    colorbar=colorbar,
+                    cbar_fmt=cbar_fmt,
+                    units=units,
+                    axes=axes,
+                    time_format=f"{self._conn_estimator.name}%01d"
+                    if name_format is None
+                    else name_format,
+                    nrows=nrows,
+                    ncols=ncols,
+                    show=False,  # set Seeds/Targets suptitle first
+                )
+            )
+            figs[-1].suptitle(group_name)  # differentiate seeds from targets
+            plt_show(show=show, fig=figs[-1])
+
+        return figs
