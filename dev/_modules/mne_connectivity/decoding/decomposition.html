@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 1.8.0.dev87+g31ef32efb documentation</title>
+    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=504fa406"></script>
+    <script src="../../../_static/documentation_options.js?v=09f17303"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev87+g31ef32efb documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
   
 </a></div>
     
@@ -424,10 +424,14 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Info</span>
+<span class="kn">from</span> <span class="nn">mne._fiff.pick</span> <span class="kn">import</span> <span class="n">pick_info</span>
 <span class="kn">from</span> <span class="nn">mne.decoding.mixin</span> <span class="kn">import</span> <span class="n">TransformerMixin</span>
+<span class="kn">from</span> <span class="nn">mne.defaults</span> <span class="kn">import</span> <span class="n">_BORDER_DEFAULT</span><span class="p">,</span> <span class="n">_EXTRAPOLATE_DEFAULT</span><span class="p">,</span> <span class="n">_INTERPOLATION_DEFAULT</span>
+<span class="kn">from</span> <span class="nn">mne.evoked</span> <span class="kn">import</span> <span class="n">EvokedArray</span>
 <span class="kn">from</span> <span class="nn">mne.fixes</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="n">csd_array_fourier</span><span class="p">,</span> <span class="n">csd_array_morlet</span><span class="p">,</span> <span class="n">csd_array_multitaper</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span>
+<span class="kn">from</span> <span class="nn">mne.viz.utils</span> <span class="kn">import</span> <span class="n">plt_show</span>
 
 <span class="kn">from</span> <span class="nn">..spectral.epochs_multivariate</span> <span class="kn">import</span> <span class="n">_CaCohEst</span><span class="p">,</span> <span class="n">_check_rank_input</span><span class="p">,</span> <span class="n">_MICEst</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
@@ -894,7 +898,314 @@ document.write(`
             <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
         <span class="p">)</span></div>
-</div>
+
+
+<div class="viewcode-block" id="CoherencyDecomposition.plot_patterns">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_patterns">[docs]</a>
+    <span class="nd">@fill_doc</span>
+    <span class="k">def</span> <span class="nf">plot_patterns</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ch_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scalings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mask_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">contours</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">outlines</span><span class="o">=</span><span class="s2">&quot;head&quot;</span><span class="p">,</span>
+        <span class="n">sphere</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">image_interp</span><span class="o">=</span><span class="n">_INTERPOLATION_DEFAULT</span><span class="p">,</span>
+        <span class="n">extrapolate</span><span class="o">=</span><span class="n">_EXTRAPOLATE_DEFAULT</span><span class="p">,</span>
+        <span class="n">border</span><span class="o">=</span><span class="n">_BORDER_DEFAULT</span><span class="p">,</span>
+        <span class="n">res</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">cnorm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1E</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot topographic patterns of components.</span>
+
+<span class="sd">        The patterns explain how the measured data was generated from the</span>
+<span class="sd">        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.</span>
+
+<span class="sd">        Seed and target patterns are plotted separately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        %(info_decoding_plotting)s</span>
+<span class="sd">        %(components_topomap)s</span>
+<span class="sd">        %(ch_type_topomap)s</span>
+<span class="sd">        %(scalings_topomap)s</span>
+<span class="sd">        %(sensors_topomap)s</span>
+<span class="sd">        %(show_names_topomap)s</span>
+<span class="sd">        %(mask_patterns_topomap)s</span>
+<span class="sd">        %(mask_params_topomap)s</span>
+<span class="sd">        %(contours_topomap)s</span>
+<span class="sd">        %(outlines_topomap)s</span>
+<span class="sd">        %(sphere_topomap)s</span>
+<span class="sd">        %(image_interp_topomap)s</span>
+<span class="sd">        %(extrapolate_topomap)s</span>
+<span class="sd">        %(border_topomap)s</span>
+<span class="sd">        %(res_topomap)s</span>
+<span class="sd">        %(size_topomap)s</span>
+<span class="sd">        %(cmap_topomap)s</span>
+<span class="sd">        %(vlim_topomap)s</span>
+<span class="sd">        %(cnorm_topomap)s</span>
+<span class="sd">        %(colorbar_topomap)s</span>
+<span class="sd">        %(colorbar_format_topomap)s</span>
+<span class="sd">        %(units_topomap)s</span>
+<span class="sd">        %(axes_topomap)s</span>
+<span class="sd">        %(name_format_topomap)s</span>
+<span class="sd">        %(nrows_topomap)s</span>
+<span class="sd">        %(ncols_topomap)s</span>
+<span class="sd">        %(show)s</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        %(figs_topomap)s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;no patterns are available, please call the `fit` method first&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_filters_patterns</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>
+            <span class="n">info</span><span class="p">,</span>
+            <span class="n">components</span><span class="p">,</span>
+            <span class="n">ch_type</span><span class="p">,</span>
+            <span class="n">scalings</span><span class="p">,</span>
+            <span class="n">sensors</span><span class="p">,</span>
+            <span class="n">show_names</span><span class="p">,</span>
+            <span class="n">mask</span><span class="p">,</span>
+            <span class="n">mask_params</span><span class="p">,</span>
+            <span class="n">contours</span><span class="p">,</span>
+            <span class="n">outlines</span><span class="p">,</span>
+            <span class="n">sphere</span><span class="p">,</span>
+            <span class="n">image_interp</span><span class="p">,</span>
+            <span class="n">extrapolate</span><span class="p">,</span>
+            <span class="n">border</span><span class="p">,</span>
+            <span class="n">res</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="p">,</span>
+            <span class="n">vlim</span><span class="p">,</span>
+            <span class="n">cnorm</span><span class="p">,</span>
+            <span class="n">colorbar</span><span class="p">,</span>
+            <span class="n">cbar_fmt</span><span class="p">,</span>
+            <span class="n">units</span><span class="p">,</span>
+            <span class="n">axes</span><span class="p">,</span>
+            <span class="n">name_format</span><span class="p">,</span>
+            <span class="n">nrows</span><span class="p">,</span>
+            <span class="n">ncols</span><span class="p">,</span>
+            <span class="n">show</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CoherencyDecomposition.plot_filters">
+<a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_filters">[docs]</a>
+    <span class="nd">@fill_doc</span>
+    <span class="k">def</span> <span class="nf">plot_filters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ch_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scalings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mask_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">contours</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">outlines</span><span class="o">=</span><span class="s2">&quot;head&quot;</span><span class="p">,</span>
+        <span class="n">sphere</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">image_interp</span><span class="o">=</span><span class="n">_INTERPOLATION_DEFAULT</span><span class="p">,</span>
+        <span class="n">extrapolate</span><span class="o">=</span><span class="n">_EXTRAPOLATE_DEFAULT</span><span class="p">,</span>
+        <span class="n">border</span><span class="o">=</span><span class="n">_BORDER_DEFAULT</span><span class="p">,</span>
+        <span class="n">res</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">cnorm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1E</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot topographic filters of components.</span>
+
+<span class="sd">        The filters are used to extract discriminant neural sources from the measured</span>
+<span class="sd">        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.</span>
+
+<span class="sd">        Seed and target filters are plotted separately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        %(info_decoding_plotting)s</span>
+<span class="sd">        %(components_topomap)s</span>
+<span class="sd">        %(ch_type_topomap)s</span>
+<span class="sd">        %(scalings_topomap)s</span>
+<span class="sd">        %(sensors_topomap)s</span>
+<span class="sd">        %(show_names_topomap)s</span>
+<span class="sd">        %(mask_filters_topomap)s</span>
+<span class="sd">        %(mask_params_topomap)s</span>
+<span class="sd">        %(contours_topomap)s</span>
+<span class="sd">        %(outlines_topomap)s</span>
+<span class="sd">        %(sphere_topomap)s</span>
+<span class="sd">        %(image_interp_topomap)s</span>
+<span class="sd">        %(extrapolate_topomap)s</span>
+<span class="sd">        %(border_topomap)s</span>
+<span class="sd">        %(res_topomap)s</span>
+<span class="sd">        %(size_topomap)s</span>
+<span class="sd">        %(cmap_topomap)s</span>
+<span class="sd">        %(vlim_topomap)s</span>
+<span class="sd">        %(cnorm_topomap)s</span>
+<span class="sd">        %(colorbar_topomap)s</span>
+<span class="sd">        %(colorbar_format_topomap)s</span>
+<span class="sd">        %(units_topomap)s</span>
+<span class="sd">        %(axes_topomap)s</span>
+<span class="sd">        %(name_format_topomap)s</span>
+<span class="sd">        %(nrows_topomap)s</span>
+<span class="sd">        %(ncols_topomap)s</span>
+<span class="sd">        %(show)s</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        %(figs_topomap)s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;no filters are available, please call the `fit` method first&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_filters_patterns</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span><span class="p">,</span>
+            <span class="n">info</span><span class="p">,</span>
+            <span class="n">components</span><span class="p">,</span>
+            <span class="n">ch_type</span><span class="p">,</span>
+            <span class="n">scalings</span><span class="p">,</span>
+            <span class="n">sensors</span><span class="p">,</span>
+            <span class="n">show_names</span><span class="p">,</span>
+            <span class="n">mask</span><span class="p">,</span>
+            <span class="n">mask_params</span><span class="p">,</span>
+            <span class="n">contours</span><span class="p">,</span>
+            <span class="n">outlines</span><span class="p">,</span>
+            <span class="n">sphere</span><span class="p">,</span>
+            <span class="n">image_interp</span><span class="p">,</span>
+            <span class="n">extrapolate</span><span class="p">,</span>
+            <span class="n">border</span><span class="p">,</span>
+            <span class="n">res</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="p">,</span>
+            <span class="n">vlim</span><span class="p">,</span>
+            <span class="n">cnorm</span><span class="p">,</span>
+            <span class="n">colorbar</span><span class="p">,</span>
+            <span class="n">cbar_fmt</span><span class="p">,</span>
+            <span class="n">units</span><span class="p">,</span>
+            <span class="n">axes</span><span class="p">,</span>
+            <span class="n">name_format</span><span class="p">,</span>
+            <span class="n">nrows</span><span class="p">,</span>
+            <span class="n">ncols</span><span class="p">,</span>
+            <span class="n">show</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_plot_filters_patterns</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">plot_data</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">components</span><span class="p">,</span>
+        <span class="n">ch_type</span><span class="p">,</span>
+        <span class="n">scalings</span><span class="p">,</span>
+        <span class="n">sensors</span><span class="p">,</span>
+        <span class="n">show_names</span><span class="p">,</span>
+        <span class="n">mask</span><span class="p">,</span>
+        <span class="n">mask_params</span><span class="p">,</span>
+        <span class="n">contours</span><span class="p">,</span>
+        <span class="n">outlines</span><span class="p">,</span>
+        <span class="n">sphere</span><span class="p">,</span>
+        <span class="n">image_interp</span><span class="p">,</span>
+        <span class="n">extrapolate</span><span class="p">,</span>
+        <span class="n">border</span><span class="p">,</span>
+        <span class="n">res</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="p">,</span>
+        <span class="n">vlim</span><span class="p">,</span>
+        <span class="n">cnorm</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="p">,</span>
+        <span class="n">cbar_fmt</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">,</span>
+        <span class="n">name_format</span><span class="p">,</span>
+        <span class="n">nrows</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot filters/targets for components.&quot;&quot;&quot;</span>
+        <span class="c1"># Sort inputs</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="s2">&quot;`info`&quot;</span><span class="p">,</span> <span class="s2">&quot;mne.Info&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span>
+
+        <span class="c1"># plot seeds and targets</span>
+        <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">group_idx</span><span class="p">,</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Seeds&quot;</span><span class="p">,</span> <span class="s2">&quot;Targets&quot;</span><span class="p">]):</span>
+            <span class="c1"># create info for seeds/targets</span>
+            <span class="n">group_info</span> <span class="o">=</span> <span class="n">pick_info</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">group_idx</span><span class="p">])</span>
+            <span class="k">with</span> <span class="n">group_info</span><span class="o">.</span><span class="n">_unlock</span><span class="p">():</span>
+                <span class="n">group_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># 1 component per time point</span>
+            <span class="c1"># create Evoked object</span>
+            <span class="n">evoked</span> <span class="o">=</span> <span class="n">EvokedArray</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="n">group_idx</span><span class="p">],</span> <span class="n">group_info</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># then call plot_topomap</span>
+            <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">evoked</span><span class="o">.</span><span class="n">plot_topomap</span><span class="p">(</span>
+                    <span class="n">times</span><span class="o">=</span><span class="n">components</span><span class="p">,</span>
+                    <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># do not average across independent components</span>
+                    <span class="n">ch_type</span><span class="o">=</span><span class="n">ch_type</span><span class="p">,</span>
+                    <span class="n">scalings</span><span class="o">=</span><span class="n">scalings</span><span class="p">,</span>
+                    <span class="n">sensors</span><span class="o">=</span><span class="n">sensors</span><span class="p">,</span>
+                    <span class="n">show_names</span><span class="o">=</span><span class="n">show_names</span><span class="p">,</span>
+                    <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                    <span class="n">mask_params</span><span class="o">=</span><span class="n">mask_params</span><span class="p">,</span>
+                    <span class="n">contours</span><span class="o">=</span><span class="n">contours</span><span class="p">,</span>
+                    <span class="n">outlines</span><span class="o">=</span><span class="n">outlines</span><span class="p">,</span>
+                    <span class="n">sphere</span><span class="o">=</span><span class="n">sphere</span><span class="p">,</span>
+                    <span class="n">image_interp</span><span class="o">=</span><span class="n">image_interp</span><span class="p">,</span>
+                    <span class="n">extrapolate</span><span class="o">=</span><span class="n">extrapolate</span><span class="p">,</span>
+                    <span class="n">border</span><span class="o">=</span><span class="n">border</span><span class="p">,</span>
+                    <span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                    <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                    <span class="n">vlim</span><span class="o">=</span><span class="n">vlim</span><span class="p">,</span>
+                    <span class="n">cnorm</span><span class="o">=</span><span class="n">cnorm</span><span class="p">,</span>
+                    <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
+                    <span class="n">cbar_fmt</span><span class="o">=</span><span class="n">cbar_fmt</span><span class="p">,</span>
+                    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+                    <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+                    <span class="n">time_format</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">%01d&quot;</span>
+                    <span class="k">if</span> <span class="n">name_format</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">name_format</span><span class="p">,</span>
+                    <span class="n">nrows</span><span class="o">=</span><span class="n">nrows</span><span class="p">,</span>
+                    <span class="n">ncols</span><span class="o">=</span><span class="n">ncols</span><span class="p">,</span>
+                    <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># set Seeds/Targets suptitle first</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">figs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>  <span class="c1"># differentiate seeds from targets</span>
+            <span class="n">plt_show</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">figs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">figs</span></div>
 
 </pre></div>
 
@@ -936,7 +1247,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-02.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-03.
       <br/>
     
   </p>

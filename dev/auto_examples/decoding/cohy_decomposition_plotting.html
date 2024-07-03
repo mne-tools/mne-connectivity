@@ -1,0 +1,897 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=71d00d13" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script src="../../_static/documentation_options.js?v=09f17303"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/decoding/cohy_decomposition_plotting';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Dynamic Connectivity Examples" href="../dynamic/index.html" />
+    <link rel="prev" title="Multivariate decomposition for efficient connectivity analysis" href="cohy_decomposition.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../whats_new.html">
+                        What’s new?
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cacoh.html">Compute multivariate coherency/coherence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Decoding &amp; Decomposition Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cohy_decomposition.html">Multivariate decomposition for efficient connectivity analysis</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Visualising spatial contributions to multivariate connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dynamic/mne_var_connectivity.html">Compute vector autoregressive model (linear system)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Decoding &amp; Decomposition Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Visualising...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-decoding-cohy-decomposition-plotting-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="visualising-spatial-contributions-to-multivariate-connectivity">
+<span id="sphx-glr-auto-examples-decoding-cohy-decomposition-plotting-py"></span><h1>Visualising spatial contributions to multivariate connectivity<a class="headerlink" href="#visualising-spatial-contributions-to-multivariate-connectivity" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how the spatial filters and patterns of connectivity obtained
+from the decomposition tools in the decoding module can be visualised and interpreted.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
+<span class="kn">from</span> <span class="nn">mne.datasets.fieldtrip_cmc</span> <span class="kn">import</span> <span class="n">data_path</span>
+
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <span class="n">CoherencyDecomposition</span>
+</pre></div>
+</div>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<p>Multivariate forms of signal analysis allow you to simultaneously consider the
+activity of multiple signals. In the case of connectivity, the interaction between
+multiple sensors can be analysed at once and the strongest components of this
+interaction captured in a lower-dimensional set of connectivity spectra. This approach
+brings not only practical benefits (e.g. easier interpretability of results from the
+dimensionality reduction), but can also offer methodological improvements (e.g.
+enhanced signal-to-noise ratio and reduced bias).</p>
+<p>Coherency-based methods are popular approaches for analysing connectivity, capturing
+correlations between signals in the frequency domain. Various coherency-based
+multivariate methods exist, including: canonical coherency (CaCoh; multivariate
+measure of coherency/coherence) <a class="footnote-reference brackets" href="#footcite-vidaurreetal2019" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>; and maximised imaginary
+coherency (MIC; multivariate measure of the imaginary part of coherency)
+<a class="footnote-reference brackets" href="#footcite-ewaldetal2012" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+<dl class="simple">
+<dt>These methods are described in detail in the following examples:</dt><dd><ul class="simple">
+<li><p>comparison of coherency-based methods - <a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a></p></li>
+<li><p>CaCoh - <a class="reference internal" href="../cacoh.html"><span class="doc">Compute multivariate coherency/coherence</span></a></p></li>
+<li><p>MIC - <a class="reference internal" href="../mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a></p></li>
+</ul>
+</dd>
+</dl>
+<p>The CaCoh and MIC methods work by finding spatial filters that decompose the data into
+components of connectivity, and applying them to the data. Connectivity can then be
+computed on this transformed data (see <a class="reference internal" href="cohy_decomposition.html"><span class="doc">Multivariate decomposition for efficient connectivity analysis</span></a> for more
+information).</p>
+<p>However, in addition to the connectivity scores, useful insights about the data can be
+gained by visualising the topographies of the spatial filters and their corresponding
+spatial patterns. These provide important information about the spatial distributions
+of connectivity information, and represent two complementary aspects:</p>
+<ul class="simple">
+<li><p>The filters represent how the connectivity sources are extracted from the channel
+data, akin to an inverse model.</p></li>
+<li><p>The patterns represent how the channel data is formed by the connectivity sources,
+akin to a forward model.</p></li>
+</ul>
+<p>This distinction is discussed further in Haufe <em>et al.</em> (2014)
+<a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, but in short: <strong>the patterns should be used to interpret
+the contribution of distinct brain regions/sensors to a given component of
+connectivity</strong>. Accordingly, keep in mind that the filters and patterns are not a
+replacement for source reconstruction, as without this the patterns will still only
+tell you about the spatial contributions of sensors, not underlying brain regions,
+to connectivity.</p>
+</section>
+<section id="generating-the-filters-and-patterns">
+<h2>Generating the filters and patterns<a class="headerlink" href="#generating-the-filters-and-patterns" title="Link to this heading">#</a></h2>
+<p>We will first load some example MEG data collected during a hand movement task, which
+we will generate the spatial filters and patterns for (see
+<a class="reference external" href="https://www.fieldtriptoolbox.org/tutorial/coherence/">here</a> for more information on
+the data). We divide the data into continuous epochs.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load example MEG data</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_ctf.html#mne.io.read_raw_ctf" title="mne.io.read_raw_ctf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span></a><span class="p">(</span><span class="n">data_path</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;SubjectCMC.ds&quot;</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">pick</span><span class="p">(</span><span class="s2">&quot;mag&quot;</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Create epochs</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>ds directory : /home/circleci/mne_data/MNE-fieldtrip_cmc-data/SubjectCMC.ds
+    res4 data read.
+    hc data read.
+    Separate EEG position data file not present.
+    Quaternion matching (desired vs. transformed):
+       0.33   78.32    0.00 mm &lt;-&gt;    0.33   78.32    0.00 mm (orig :  -71.62   40.46 -256.48 mm) diff =    0.000 mm
+      -0.33  -78.32   -0.00 mm &lt;-&gt;   -0.33  -78.32   -0.00 mm (orig :   39.27  -70.16 -258.60 mm) diff =    0.000 mm
+     114.65    0.00   -0.00 mm &lt;-&gt;  114.65    0.00   -0.00 mm (orig :   64.35   66.64 -262.01 mm) diff =    0.000 mm
+    Coordinate transformations established.
+    Polhemus data for 3 HPI coils added
+    Device coordinate locations for 3 HPI coils added
+Picked positions of 4 EEG channels from channel info
+    4 EEG locations added to Polhemus data.
+    Measurement info composed.
+Finding samples for /home/circleci/mne_data/MNE-fieldtrip_cmc-data/SubjectCMC.ds/SubjectCMC.meg4:
+    System clock channel is available, checking which samples are valid.
+    75 x 12000 = 911610 samples from 191 chs
+    390 samples omitted at the end
+Current compensation grade : 0
+Removing 5 compensators from info because not all compensation channels were picked.
+Reading 0 ... 72000  =      0.000 ...    60.000 secs...
+Filtering raw data in 1 contiguous segment
+Setting up band-stop filter from 49 - 51 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandstop filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 49.38
+- Lower transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 49.12 Hz)
+- Upper passband edge: 50.62 Hz
+- Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
+- Filter length: 7921 samples (6.601 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.2s
+Not setting metadata
+30 matching events found
+No baseline correction applied
+0 projection items activated
+Using data from preloaded Raw for 30 events and 200 original time points ...
+0 bad epochs dropped
+</pre></div>
+</div>
+<p>We designate the left hemisphere sensors as the seeds and the right hemisphere sensors
+as the targets. Since this is sensor-space data, we will use the MIC method to analyse
+connectivity, given its resilience to zero time-lag interactions (see
+<a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> for more information).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Left hemisphere sensors</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Right hemisphere sensors</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="p">]</span>
+
+<span class="c1"># Define indices</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>To fit the filters (and in turn compute the corresponding patterns), we instantiate
+the <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> object and call the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit" title="mne_connectivity.decoding.CoherencyDecomposition.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> method. We also define
+our connectivity frequency band of interest to be 20-30 Hz. See
+<a class="reference internal" href="cohy_decomposition.html"><span class="doc">Multivariate decomposition for efficient connectivity analysis</span></a> for more information.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition object</span>
+<span class="n">mic</span> <span class="o">=</span> <span class="n">CoherencyDecomposition</span><span class="p">(</span>
+    <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Fit filters &amp; generate patterns</span>
+<span class="n">mic</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Using multitaper spectrum estimation with 7 DPSS windows
+Computing cross-spectral density from epochs...
+
+  0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
+  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:02,   11.00it/s]
+  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:03,    9.25it/s]
+ 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:02,    9.52it/s]
+ 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:02,    9.57it/s]
+ 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:02,    9.67it/s]
+ 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:02,    9.21it/s]
+ 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:02,    9.24it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:02,    9.25it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:02,    9.01it/s]
+ 33%|███▎      | CSD epoch blocks : 10/30 [00:01&lt;00:02,    9.02it/s]
+ 37%|███▋      | CSD epoch blocks : 11/30 [00:01&lt;00:02,    9.22it/s]
+ 40%|████      | CSD epoch blocks : 12/30 [00:01&lt;00:01,    9.03it/s]
+ 43%|████▎     | CSD epoch blocks : 13/30 [00:01&lt;00:01,    9.10it/s]
+ 47%|████▋     | CSD epoch blocks : 14/30 [00:01&lt;00:01,    9.15it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:01&lt;00:01,    9.27it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:01&lt;00:01,    9.32it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:01&lt;00:01,    9.31it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:01&lt;00:01,    9.10it/s]
+ 63%|██████▎   | CSD epoch blocks : 19/30 [00:02&lt;00:01,    9.14it/s]
+ 67%|██████▋   | CSD epoch blocks : 20/30 [00:02&lt;00:01,    9.22it/s]
+ 70%|███████   | CSD epoch blocks : 21/30 [00:02&lt;00:00,    9.29it/s]
+ 73%|███████▎  | CSD epoch blocks : 22/30 [00:02&lt;00:00,    9.33it/s]
+ 77%|███████▋  | CSD epoch blocks : 23/30 [00:02&lt;00:00,    9.25it/s]
+ 80%|████████  | CSD epoch blocks : 24/30 [00:02&lt;00:00,    9.33it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:02&lt;00:00,    9.08it/s]
+ 87%|████████▋ | CSD epoch blocks : 26/30 [00:02&lt;00:00,    9.11it/s]
+ 90%|█████████ | CSD epoch blocks : 27/30 [00:02&lt;00:00,    9.13it/s]
+ 93%|█████████▎| CSD epoch blocks : 28/30 [00:03&lt;00:00,    9.11it/s]
+ 97%|█████████▋| CSD epoch blocks : 29/30 [00:03&lt;00:00,    9.11it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:03&lt;00:00,    9.13it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:03&lt;00:00,    9.16it/s]
+[done]
+Computing MIC for connection 1 of 1
+
+CoherencyDecomposition({&#39;cwt_freqs&#39;: None,
+ &#39;cwt_n_cycles&#39;: 7,
+ &#39;fmax&#39;: 30,
+ &#39;fmin&#39;: 20,
+ &#39;indices&#39;: (array([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
+        13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,
+        26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,
+        39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,
+        52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,
+        65,  66,  67,  68,  69,  70, 147, 148, 149, 150], dtype=int32),
+             array([ 71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,
+        84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,
+        97,  98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+       110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
+       123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
+       136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146], dtype=int32)),
+ &#39;info&#39;: &lt;Info | 14 non-empty values
+ bads: []
+ ch_names: MLC11-1706, MLC12-1706, MLC13-1706, MLC14-1706, MLC15-1706, ...
+ chs: 151 Magnetometers
+ ctf_head_t: CTF/4D/KIT head -&gt; head transform
+ custom_ref_applied: False
+ dev_ctf_t: MEG device -&gt; CTF/4D/KIT head transform
+ dev_head_t: MEG device -&gt; head transform
+ dig: 7 items (3 Cardinal, 4 EEG)
+ highpass: 0.0 Hz
+ hpi_results: 1 item (list)
+ lowpass: 50.0 Hz
+ meas_date: 2005-01-31 14:43:00 UTC
+ meas_id: 4 items (dict)
+ nchan: 151
+ projs: []
+ sfreq: 100.0 Hz
+ subject_info: 1 item (dict)
+&gt;,
+ &#39;method&#39;: None,
+ &#39;mode&#39;: &#39;multitaper&#39;,
+ &#39;mt_adaptive&#39;: False,
+ &#39;mt_bandwidth&#39;: None,
+ &#39;mt_low_bias&#39;: True,
+ &#39;n_components&#39;: 1,
+ &#39;n_jobs&#39;: 1,
+ &#39;rank&#39;: (3, 3),
+ &#39;verbose&#39;: None})
+</pre></div>
+</div>
+</section>
+<section id="visualising-the-patterns">
+<h2>Visualising the patterns<a class="headerlink" href="#visualising-the-patterns" title="Link to this heading">#</a></h2>
+<p>Visualising the patterns as topomaps can be done using the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_patterns" title="mne_connectivity.decoding.CoherencyDecomposition.plot_patterns"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_patterns()</span></code></a> method.</p>
+<p>When interpreting patterns, note that the absolute value reflects the strength of the
+contribution to connectivity, and that the sign differences can be used to visualise
+the orientation of the underlying dipole sources. The spatial patterns are <strong>not</strong>
+bound between <span class="math notranslate nohighlight">\([-1, 1]\)</span>.</p>
+<p>Plotting the patterns for 20-30 Hz connectivity below, we find the strongest
+connectivity between the left and right hemispheres comes from centromedial left and
+frontolateral right sensors, based on the areas with the largest absolute values. As
+these patterns come from decomposition on sensor-space data, we make no assumptions
+about the underlying brain regions involved in this connectivity.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot patterns</span>
+<span class="n">mic</span><span class="o">.</span><span class="n">plot_patterns</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">sensors</span><span class="o">=</span><span class="s2">&quot;m.&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_cohy_decomposition_plotting_001.png" srcset="../../_images/sphx_glr_cohy_decomposition_plotting_001.png" alt="Seeds, MIC0, AU" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_cohy_decomposition_plotting_002.png" srcset="../../_images/sphx_glr_cohy_decomposition_plotting_002.png" alt="Targets, MIC0, AU" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;MNEFigure size 300x355 with 2 Axes&gt;, &lt;MNEFigure size 300x355 with 2 Axes&gt;]
+</pre></div>
+</div>
+</section>
+<section id="visualising-the-filters">
+<h2>Visualising the filters<a class="headerlink" href="#visualising-the-filters" title="Link to this heading">#</a></h2>
+<p>We can also visualise the filters as topomaps using the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_filters" title="mne_connectivity.decoding.CoherencyDecomposition.plot_filters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_filters()</span></code></a> method.</p>
+<p>Here we see that the filters show a similar topography to the patterns. However, this
+is not always the case, and you should never confuse the information represented by
+the filters (i.e. an inverse model) and patterns (i.e. a forward model), which can
+lead to very incorrect interpretations of the data <a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot filters</span>
+<span class="n">mic</span><span class="o">.</span><span class="n">plot_filters</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">sensors</span><span class="o">=</span><span class="s2">&quot;m.&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_cohy_decomposition_plotting_003.png" srcset="../../_images/sphx_glr_cohy_decomposition_plotting_003.png" alt="Seeds, MIC0, AU" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_cohy_decomposition_plotting_004.png" srcset="../../_images/sphx_glr_cohy_decomposition_plotting_004.png" alt="Targets, MIC0, AU" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;MNEFigure size 300x355 with 2 Axes&gt;, &lt;MNEFigure size 300x355 with 2 Axes&gt;]
+</pre></div>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id5">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Carmen Vidaurre, Guido Nolte, Ingmar E.J. de Vries, M. Gómez, Tjeerd W. Boonstra, K.-R. Müller, Arno Villringer, and Vadim V. Nikulin. Canonical maximization of coherence: a novel tool for investigation of neuronal interactions between two datasets. <em>NeuroImage</em>, 201:116009, 2019. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2019.116009">doi:10.1016/j.neuroimage.2019.116009</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-ewaldetal2012" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-haufeetal2014" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>Stefan Haufe, Frank Meinecke, Kai Görgen, Sven Dähne, John-Dylan Haynes, Benjamin Blankertz, and Felix Bießmann. On the interpretation of weight vectors of linear models in multivariate neuroimaging. <em>NeuroImage</em>, 87:96–110, 2014. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2013.10.067">doi:10.1016/j.neuroimage.2013.10.067</a>.</p>
+</aside>
+</aside>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.304 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-plotting-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/819c147b4978939946b15bdfb484fb24/cohy_decomposition_plotting.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition_plotting.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/7d3be7f01f45f4afa8cade668eabd1b3/cohy_decomposition_plotting.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cohy_decomposition_plotting.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/348ea9dd9d83b9841ec181fcf6820999/cohy_decomposition_plotting.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">cohy_decomposition_plotting.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="cohy_decomposition.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Multivariate decomposition for efficient connectivity analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../dynamic/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dynamic Connectivity Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-the-filters-and-patterns">Generating the filters and patterns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualising-the-patterns">Visualising the patterns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualising-the-filters">Visualising the filters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-03.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

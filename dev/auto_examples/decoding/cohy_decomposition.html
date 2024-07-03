@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 1.8.0.dev87+g31ef32efb documentation</title>
+    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=504fa406"></script>
+    <script src="../../_static/documentation_options.js?v=09f17303"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,7 +55,7 @@
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Dynamic Connectivity Examples" href="../dynamic/index.html" />
+    <link rel="next" title="Visualising spatial contributions to multivariate connectivity" href="cohy_decomposition_plotting.html" />
     <link rel="prev" title="Decoding &amp; Decomposition Examples" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev87+g31ef32efb documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
   
 </a></div>
     
@@ -394,6 +394,7 @@ document.write(`
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Decoding &amp; Decomposition Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Multivariate decomposition for efficient connectivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cohy_decomposition_plotting.html">Visualising spatial contributions to multivariate connectivity</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -467,10 +468,10 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="multivariate-decomposition-for-efficient-connectivity-analysis">
 <span id="sphx-glr-auto-examples-decoding-cohy-decomposition-py"></span><h1>Multivariate decomposition for efficient connectivity analysis<a class="headerlink" href="#multivariate-decomposition-for-efficient-connectivity-analysis" title="Link to this heading">#</a></h1>
-<p>This example demonstrates how the tools in the decoding module can be used to
-decompose data into the most relevant components of connectivity and used for
-a computationally efficient multivariate analysis of connectivity, such as in
-brain-computer interface (BCI) applications.</p>
+<p>This example demonstrates how the tools in the decoding module can be used to decompose
+data into the most relevant components of connectivity and used for a computationally
+efficient multivariate analysis of connectivity, such as in brain-computer interface
+(BCI) applications.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
@@ -482,22 +483,22 @@ brain-computer interface (BCI) applications.</p>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
 <span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CoherencyDecomposition</span><span class="p">,</span>
     <a href="../../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_signals_in_freq_bands</span></a><span class="p">,</span>
     <a href="../../generated/mne_connectivity.seed_target_indices.html#mne_connectivity.seed_target_indices" title="mne_connectivity.seed_target_indices" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">seed_target_indices</span></a><span class="p">,</span>
     <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_connectivity.decoding</span> <span class="kn">import</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a>
 </pre></div>
 </div>
 <section id="background">
 <h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
-<p>Multivariate forms of signal analysis allow you to simultaneously consider
-the activity of multiple signals. In the case of connectivity, the
-interaction between multiple sensors can be analysed at once and the strongest
-components of this interaction captured in a lower-dimensional set of connectivity
-spectra. This approach brings not only practical benefits (e.g. easier
-interpretability of results from the dimensionality reduction), but can also offer
-methodological improvements (e.g. enhanced signal-to-noise ratio and reduced bias).</p>
+<p>Multivariate forms of signal analysis allow you to simultaneously consider the
+activity of multiple signals. In the case of connectivity, the interaction between
+multiple sensors can be analysed at once and the strongest components of this
+interaction captured in a lower-dimensional set of connectivity spectra. This approach
+brings not only practical benefits (e.g. easier interpretability of results from the
+dimensionality reduction), but can also offer methodological improvements (e.g.
+enhanced signal-to-noise ratio and reduced bias).</p>
 <p>Coherency-based methods are popular approaches for analysing connectivity, capturing
 correlations between signals in the frequency domain. Various coherency-based
 multivariate methods exist, including: canonical coherency (CaCoh; multivariate
@@ -597,7 +598,7 @@ object);</p></li>
 <p>We use the CaCoh method since zero time-lag interactions are not present (See
 <a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> for more information).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition class</span>
-<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span>
+<span class="n">cacoh</span> <span class="o">=</span> <span class="n">CoherencyDecomposition</span><span class="p">(</span>
     <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
     <span class="n">indices</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
@@ -632,12 +633,12 @@ the <code class="docutils literal notranslate"><span class="pre">spectral_connec
 the signal-to-noise ratio benefits of the multivariate approach.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit &amp; transform data using decomposition class</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit_transform" title="mne_connectivity.decoding.CoherencyDecomposition.fit_transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">fit_transform</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <span class="n">cacoh</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 <span class="c1"># Compute connectivity using spec_conn function</span>
 <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_0_29_class</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
-    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span><span class="p">(),</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
@@ -671,10 +672,10 @@ the signal-to-noise ratio benefits of the multivariate approach.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,  519.49it/s]
- 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,  529.29it/s]
- 90%|█████████ | CSD epoch blocks : 27/30 [00:00&lt;00:00,  532.07it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  529.75it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,  488.50it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,  502.28it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:00&lt;00:00,  498.69it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  496.09it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -845,8 +846,8 @@ filters are fit to a single frequency band and not each frequency bin.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 78 ms
-Time to fit, transform, and compute connectivity (spec_conn function): 230 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 83 ms
+Time to fit, transform, and compute connectivity (spec_conn function): 257 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class offers an efficient way to analyse connectivity
@@ -864,7 +865,7 @@ those filters to the last 30 epochs of data using the
 <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code></a> method, extracting
 this same connectivity component.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use filters from first 30 epochs to transform data from last 30 epochs</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a> <span class="o">=</span> <span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>We can now compute connectivity in the last 30 epochs of the transformed data, which
@@ -885,7 +886,7 @@ demonstrate the signal-to-noise ratio enhancements the multivariate approach off
 <a href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_cacoh_30_60_class</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs_transformed</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
-    <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span><span class="p">(),</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
@@ -1056,7 +1057,7 @@ last 30 epochs to be the windows of data that the filters should be applied to,
 transforming and computing the connectivity of each window (epoch) of data
 sequentially.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition class</span>
-<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cacoh</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span>
+<span class="n">cacoh</span> <span class="o">=</span> <span class="n">CoherencyDecomposition</span><span class="p">(</span>
     <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span>
     <span class="n">indices</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">seeds</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">targets</span></a><span class="p">),</span>
@@ -1068,17 +1069,17 @@ sequentially.</p>
 
 <span class="c1"># Time fitting of filters</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
-<a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit" title="mne_connectivity.decoding.CoherencyDecomposition.fit" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+<span class="n">cacoh</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fit_duration</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_fit</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
 
 <span class="c1"># Time transforming data of each epoch iteratively</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">start_transform</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <span class="k">for</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a> <span class="ow">in</span> <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">N_EPOCHS</span></a> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]:</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_transformed</span></a> <span class="o">=</span> <a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform" title="mne_connectivity.decoding.CoherencyDecomposition.transform" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">)</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_transformed</span></a> <span class="o">=</span> <span class="n">cacoh</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch</span></a><span class="p">)</span>
     <a href="../../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
         <a href="https://numpy.org/devdocs/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="numpy.expand_dims" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_transformed</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
         <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
-        <span class="n">indices</span><span class="o">=</span><a href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" title="mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices" class="sphx-glr-backref-module-mne_connectivity-decoding sphx-glr-backref-type-py-method"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span></a><span class="p">(),</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">cacoh</span><span class="o">.</span><span class="n">get_transformed_indices</span><span class="p">(),</span>
         <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
         <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
         <span class="n">sfreq</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
@@ -1090,10 +1091,10 @@ sequentially.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,  490.99it/s]
- 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,  490.84it/s]
- 83%|████████▎ | CSD epoch blocks : 25/30 [00:00&lt;00:00,  495.36it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  497.92it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,  463.87it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,  472.47it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:00&lt;00:00,  483.45it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  482.91it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -1351,11 +1352,11 @@ to transform each window of data and compute its connectivity.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 69 ms
-Time to transform data and compute connectivity: 105 ms
-Total time: 174 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 71 ms
+Time to transform data and compute connectivity: 125 ms
+Total time: 196 ms
 
-Time to transform data and compute connectivity per epoch (window):  3 ms
+Time to transform data and compute connectivity per epoch (window):  4 ms
 </pre></div>
 </div>
 <p>In contrast, here we follow the same sequential window approach, but fit filters to
@@ -1660,9 +1661,9 @@ considerably slower.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 823 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 1002 ms
 
-Time to fit, transform, and compute connectivity per epoch (window):  27 ms
+Time to fit, transform, and compute connectivity per epoch (window):  33 ms
 </pre></div>
 </div>
 <p>Furthermore, given the noisy nature of single windows of data, there is a risk of
@@ -1939,9 +1940,9 @@ class approach above.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 182 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 245 ms
 
-Time to compute connectivity per epoch (window):  6 ms
+Time to compute connectivity per epoch (window):  8 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class also offers an efficient way to analyse
@@ -1999,9 +2000,21 @@ portions of the data.</p>
 <p>Ultimately, there are distinct advantages and disadvantages to both approaches, and
 one may be more suitable than the other depending on your use case.</p>
 </section>
+<section id="visualising-spatial-contributions-to-connectivity">
+<h2>Visualising spatial contributions to connectivity<a class="headerlink" href="#visualising-spatial-contributions-to-connectivity" title="Link to this heading">#</a></h2>
+<p>In addition to the lower-dimensional representation of connectivity, we can also
+extract information about the spatial distributions of connectivity over channels.
+This information is captured in the spatial patterns, derived from the spatial
+filters <a class="footnote-reference brackets" href="#footcite-haufeetal2014" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>The patterns (and filters) can be visualised as topomaps using the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_patterns" title="mne_connectivity.decoding.CoherencyDecomposition.plot_patterns"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_patterns()</span></code></a> and
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.plot_filters" title="mne_connectivity.decoding.CoherencyDecomposition.plot_filters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_filters()</span></code></a> methods of the
+<a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> class, discussed in more
+detail in <a class="reference internal" href="cohy_decomposition_plotting.html"><span class="doc">Visualising spatial contributions to multivariate connectivity</span></a>.</p>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id4">
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-vidaurreetal2019" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
@@ -2011,9 +2024,13 @@ one may be more suitable than the other depending on your use case.</p>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Arne Ewald, Laura Marzetti, Filippo Zappasodi, Frank C. Meinecke, and Guido Nolte. Estimating true brain connectivity from EEG/MEG data invariant to linear and static transformations in sensor space. <em>NeuroImage</em>, 60(1):476–488, 2012. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2011.11.084">doi:10.1016/j.neuroimage.2011.11.084</a>.</p>
 </aside>
+<aside class="footnote brackets" id="footcite-haufeetal2014" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Stefan Haufe, Frank Meinecke, Kai Görgen, Sven Dähne, John-Dylan Haynes, Benjamin Blankertz, and Felix Bießmann. On the interpretation of weight vectors of linear models in multivariate neuroimaging. <em>NeuroImage</em>, 87:96–110, 2014. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2013.10.067">doi:10.1016/j.neuroimage.2013.10.067</a>.</p>
+</aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.829 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.287 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e219ae2adfdff83f86f08b53c680a14c/cohy_decomposition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition.ipynb</span></code></a></p>
@@ -2049,11 +2066,11 @@ one may be more suitable than the other depending on your use case.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../dynamic/index.html"
+       href="cohy_decomposition_plotting.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Dynamic Connectivity Examples</p>
+        <p class="prev-next-title">Visualising spatial contributions to multivariate connectivity</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -2077,6 +2094,7 @@ one may be more suitable than the other depending on your use case.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#case-2-fitting-to-and-transforming-different-data">Case 2: Fitting to and transforming different data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-specificity-of-filters">Component specificity of filters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualising-spatial-contributions-to-connectivity">Visualising spatial contributions to connectivity</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
@@ -2105,7 +2123,7 @@ one may be more suitable than the other depending on your use case.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-02.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-03.
       <br/>
     
   </p>
