@@ -110,8 +110,8 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
-        self.n_jobs = n_jobs
         self.store_filters = store_filters
+        self.n_jobs = n_jobs
 
         # include time dimension, even when unused for indexing flexibility
         if n_times == 0:
@@ -183,7 +183,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     """Base estimator for multivariate coherency methods.
 
     See:
-    - Imaginary part of coherency, i.e. multivariate imaginary part of
+    - Imaginary part of coherency, i.e. maximised imaginary part of
     coherency (MIC) and multivariate interaction measure (MIM): Ewald et al.
     (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
     - Coherency/coherence, i.e. canonical coherency (CaCoh): Vidaurre et al.
