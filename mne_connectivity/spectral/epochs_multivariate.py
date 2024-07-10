@@ -126,6 +126,18 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         self.store_filters = store_filters
         self.n_jobs = n_jobs
 
+        # include time dimension, even when unused for indexing flexibility
+        if n_times == 0:
+            self.csd_shape = (n_signals**2, n_freqs)
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, 1), dtype=self.con_scores_dtype
+            )
+        else:
+            self.csd_shape = (n_signals**2, n_freqs, n_times)
+            self.con_scores = np.zeros(
+                (n_cons, n_freqs, n_times), dtype=self.con_scores_dtype
+            )
+
         # allocate space for accumulation of CSD
         csd_shape = (n_signals**2, n_freqs, 1 if n_times == 0 else n_times)
         self._acc = np.zeros(csd_shape, dtype=np.complex128)
