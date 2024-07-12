@@ -40,7 +40,7 @@ def envelope_correlation(
         the correlation matrix will not be returned with
         absolute values.
     log : bool
-        If True (default False), square and take the log before orthonalizing
+        If True (default False), square and take the log before orthogonalizing
         envelopes or computing correlations.
     absolute : bool
         If True (default), then take the absolute value of correlation
@@ -51,7 +51,7 @@ def envelope_correlation(
 
     Returns
     -------
-    corr : instance of EpochConnectivity
+    corr : instance of EpochTemporalConnectivity
         The pairwise orthogonal envelope correlations.
         This matrix is symmetric. The array
         will have three dimensions, the first of which is ``n_epochs``.
@@ -59,21 +59,21 @@ def envelope_correlation(
 
     See Also
     --------
-    mne_connectivity.EpochConnectivity
+    mne_connectivity.EpochTemporalConnectivity
 
     Notes
     -----
     This function computes the power envelope correlation between
     orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
 
-    If you would like to combine Epochs after the fact using some
-    function over the Epochs axis, see the ``combine`` function from
-    `EpochConnectivity` classes.
+    If you would like to combine Epochs after the fact using some function over the
+    Epochs axis, see the :meth:`~EpochTemporalConnectivity.combine` method of the
+    :class:`EpochTemporalConnectivity` class.
 
     References
     ----------
     .. footbibliography::
-    """  # noqa
+    """
     _check_option("orthogonalize", orthogonalize, (False, "pairwise"))
     from scipy.signal import hilbert
 

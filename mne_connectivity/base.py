@@ -888,7 +888,9 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
     See Also
     --------
+    mne_connectivity.phase_slope_index
     mne_connectivity.spectral_connectivity_epochs
+    mne_connectivity.spectral_connectivity_time
     """
 
     expected_n_dim = 2
@@ -998,6 +1000,11 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
     %(spec_method)s
     %(n_epochs_used)s
     %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.phase_slope_index
+    mne_connectivity.spectral_connectivity_epochs
     """
 
     def __init__(
@@ -1045,6 +1052,10 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     %(method)s
     %(spec_method)s
     %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.spectral_connectivity_time
     """
 
     # whether or not the connectivity occurs over epochs
@@ -1090,6 +1101,11 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     %(indices)s
     %(method)s
     %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.envelope_correlation
+    mne_connectivity.vector_auto_regression
     """
 
     # whether or not the connectivity occurs over epochs
@@ -1179,7 +1195,6 @@ class Connectivity(BaseConnectivity):
     See Also
     --------
     mne_connectivity.vector_auto_regression
-    mne_connectivity.envelope_correlation
     """
 
     def __init__(
@@ -1224,7 +1239,6 @@ class EpochConnectivity(BaseConnectivity):
     See Also
     --------
     mne_connectivity.vector_auto_regression
-    mne_connectivity.envelope_correlation
     """
 
     # whether or not the connectivity occurs over epochs
