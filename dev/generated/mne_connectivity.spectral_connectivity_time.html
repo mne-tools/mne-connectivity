@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
+    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=09f17303"></script>
+    <script src="../_static/documentation_options.js?v=0f1ab173"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</p>
   
 </a></div>
     
@@ -589,15 +589,14 @@ keyword-argument only.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>con</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Computed connectivity measure(s). An instance of
-<a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>, <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>
-or a list of instances corresponding to connectivity measures if
-several connectivity measures are specified.
-The shape of each connectivity dataset is (n_epochs, n_cons, n_freqs).
-When “indices” is None and a bivariate method is called,
-“n_cons = n_signals ** 2”, or if a multivariate method is called
-“n_cons = 1”. When “indices” is specified, “n_con = len(indices[0])”
-for bivariate and multivariate methods.</p>
+<dt><strong>con</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a> or <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Computed connectivity measure(s). An instance of
+<a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>, <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>, or a list of
+instances corresponding to connectivity measures if several connectivity
+measures are specified. The shape of each connectivity dataset is ([n_epochs,]
+n_cons, n_freqs). When “indices” is None and a bivariate method is called,
+“n_cons = n_signals ** 2”, or if a multivariate method is called “n_cons = 1”.
+When “indices” is specified, “n_con = len(indices[0])” for bivariate and
+multivariate methods.</p>
 </dd>
 </dl>
 </dd>
@@ -815,10 +814,10 @@ Frites.</p>
 
 <section id="examples-using-mne-connectivity-spectral-connectivity-time">
 <span id="sphx-glr-backreferences-mne-connectivity-spectral-connectivity-time"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time</span></code><a class="headerlink" href="#examples-using-mne-connectivity-spectral-connectivity-time" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the difference between spectral connectivity computed over time or ov..."><img alt="" src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the difference between spectral connectivity computed over time or over trials."><img alt="" src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a></p>
   <div class="sphx-glr-thumbnail-title">Comparing spectral connectivity computed over time or over trials</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the tools in the decoding module can be used to decompose data in..."><img alt="" src="../_images/sphx_glr_cohy_decomposition_thumb.png" />
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the tools in the decoding module can be used to decompose data into the most relevant components of connectivity and used for a computationally efficient multivariate analysis of connectivity, such as in brain-computer interface (BCI) applications."><img alt="" src="../_images/sphx_glr_cohy_decomposition_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/decoding/cohy_decomposition.html#sphx-glr-auto-examples-decoding-cohy-decomposition-py"><span class="std std-ref">Multivariate decomposition for efficient connectivity analysis</span></a></p>
   <div class="sphx-glr-thumbnail-title">Multivariate decomposition for efficient connectivity analysis</div>
 </div></div></section>
@@ -896,7 +895,7 @@ Frites.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-08.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-12.
       <br/>
     
   </p>

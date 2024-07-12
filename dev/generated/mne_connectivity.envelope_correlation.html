@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.envelope_correlation &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
+    <title>mne_connectivity.envelope_correlation &#8212; MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=09f17303"></script>
+    <script src="../_static/documentation_options.js?v=0f1ab173"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</p>
   
 </a></div>
     
@@ -492,7 +492,7 @@ Defaults to ‘pairwise’. Note that when False,
 the correlation matrix will not be returned with
 absolute values.</p>
 </dd>
-<dt><strong>log</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If True (default False), square and take the log before orthonalizing
+<dt><strong>log</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If True (default False), square and take the log before orthogonalizing
 envelopes or computing correlations.</p>
 </dd>
 <dt><strong>absolute</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If True (default), then take the absolute value of correlation
@@ -509,7 +509,7 @@ argument.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>corr</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a></span></dt><dd><p>The pairwise orthogonal envelope correlations.
+<dt><strong>corr</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochTemporalConnectivity</span></code></a></span></dt><dd><p>The pairwise orthogonal envelope correlations.
 This matrix is symmetric. The array
 will have three dimensions, the first of which is <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code>.
 The data shape would be <code class="docutils literal notranslate"><span class="pre">(n_epochs,</span> <span class="pre">(n_nodes</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">n_nodes</span> <span class="pre">/</span> <span class="pre">2)</span></code>.</p>
@@ -520,15 +520,15 @@ The data shape would be <code class="docutils literal notranslate"><span class="
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.EpochConnectivity</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.EpochTemporalConnectivity</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
 <p>This function computes the power envelope correlation between
 orthogonalized signals <a class="footnote-reference brackets" href="#footcite-hippetal2012" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-khanetal2018" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
-<p>If you would like to combine Epochs after the fact using some
-function over the Epochs axis, see the <code class="docutils literal notranslate"><span class="pre">combine</span></code> function from
-<a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a> classes.</p>
+<p>If you would like to combine Epochs after the fact using some function over the
+Epochs axis, see the <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity.combine" title="mne_connectivity.EpochTemporalConnectivity.combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">combine()</span></code></a> method of the
+<a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochTemporalConnectivity</span></code></a> class.</p>
 <p class="rubric">References</p>
 <div class="docutils container" id="id3">
 <aside class="footnote-list brackets">
@@ -546,10 +546,10 @@ function over the Epochs axis, see the <code class="docutils literal notranslate
 
 <section id="examples-using-mne-connectivity-envelope-correlation">
 <span id="sphx-glr-backreferences-mne-connectivity-envelope-correlation"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.envelope_correlation</span></code><a class="headerlink" href="#examples-using-mne-connectivity-envelope-correlation" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 using pairwi..."><img alt="" src="../_images/sphx_glr_mne_inverse_envelope_correlation_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 using pairwise and symmetric orthogonalization ColcloughEtAl2015 in source space using resting state CTF data."><img alt="" src="../_images/sphx_glr_mne_inverse_envelope_correlation_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_envelope_correlation.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">Compute envelope correlations in source space</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute envelope correlations in source space</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 in source sp..."><img alt="" src="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_thumb.png" />
+</div><div class="sphx-glr-thumbcontainer" tooltip="Compute envelope correlations of orthogonalized activity HippEtAl2012,KhanEtAl2018 in source space using resting state CTF data in a volume source space."><img alt="" src="../_images/sphx_glr_mne_inverse_envelope_correlation_volume_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/mne_inverse_envelope_correlation_volume.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-volume-py"><span class="std std-ref">Compute envelope correlations in volume source space</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute envelope correlations in volume source space</div>
 </div></div></section>
@@ -627,7 +627,7 @@ function over the Epochs axis, see the <code class="docutils literal notranslate
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-08.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-12.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.effective &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
+    <title>mne_connectivity.effective &#8212; MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</title>
   
   
   
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=09f17303"></script>
+    <script src="../../_static/documentation_options.js?v=0f1ab173"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</p>
   
 </a></div>
     
@@ -464,7 +464,7 @@ document.write(`
 <span class="sd">    A positive value means that time series 0 is ahead of time series 1 and</span>
 <span class="sd">    a negative value means the opposite.</span>
 
-<span class="sd">    The PSI is computed from the coherency (see spectral_connectivity_epochs),</span>
+<span class="sd">    The PSI is computed from the coherency (see :func:`spectral_connectivity_epochs`),</span>
 <span class="sd">    details can be found in :footcite:`NolteEtAl2008`.</span>
 
 <span class="sd">    Parameters</span>
@@ -521,16 +521,13 @@ document.write(`
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    conn : instance of Connectivity</span>
-<span class="sd">        Computed connectivity measure(s). Either a</span>
-<span class="sd">        ``SpectralConnnectivity``, or ``SpectroTemporalConnectivity``</span>
-<span class="sd">        container. The shape of each array is either</span>
-<span class="sd">        (n_signals ** 2, n_bands) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
-<span class="sd">        (n_signals ** 2, n_bands, n_times) mode: &#39;cwt_morlet&#39;</span>
-<span class="sd">        when &quot;indices&quot; is None, or</span>
-<span class="sd">        (n_con, n_bands) mode: &#39;multitaper&#39; or &#39;fourier&#39;</span>
-<span class="sd">        (n_con, n_bands, n_times) mode: &#39;cwt_morlet&#39;</span>
-<span class="sd">        when &quot;indices&quot; is specified and &quot;n_con = len(indices[0])&quot;.</span>
+<span class="sd">    conn : instance of SpectralConnectivity or SpectroTemporalConnectivity</span>
+<span class="sd">        Computed connectivity measure(s). Either a :class:`SpectralConnectivity`, or</span>
+<span class="sd">        :class:`SpectroTemporalConnectivity` container. The shape of each array is</span>
+<span class="sd">        either (n_signals ** 2, n_bands) mode: &#39;multitaper&#39; or &#39;fourier&#39; (n_signals **</span>
+<span class="sd">        2, n_bands, n_times) mode: &#39;cwt_morlet&#39; when &quot;indices&quot; is None, or (n_con,</span>
+<span class="sd">        n_bands) mode: &#39;multitaper&#39; or &#39;fourier&#39; (n_con, n_bands, n_times) mode:</span>
+<span class="sd">        &#39;cwt_morlet&#39; when &quot;indices&quot; is specified and &quot;n_con = len(indices[0])&quot;.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -702,7 +699,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-08.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-12.
       <br/>
     
   </p>

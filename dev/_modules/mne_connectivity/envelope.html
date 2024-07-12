@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.envelope &#8212; MNE-Connectivity 1.8.0.dev89+g4954672af documentation</title>
+    <title>mne_connectivity.envelope &#8212; MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</title>
   
   
   
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=09f17303"></script>
+    <script src="../../_static/documentation_options.js?v=0f1ab173"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev89+g4954672af documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</p>
   
 </a></div>
     
@@ -458,7 +458,7 @@ document.write(`
 <span class="sd">        the correlation matrix will not be returned with</span>
 <span class="sd">        absolute values.</span>
 <span class="sd">    log : bool</span>
-<span class="sd">        If True (default False), square and take the log before orthonalizing</span>
+<span class="sd">        If True (default False), square and take the log before orthogonalizing</span>
 <span class="sd">        envelopes or computing correlations.</span>
 <span class="sd">    absolute : bool</span>
 <span class="sd">        If True (default), then take the absolute value of correlation</span>
@@ -469,7 +469,7 @@ document.write(`
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    corr : instance of EpochConnectivity</span>
+<span class="sd">    corr : instance of EpochTemporalConnectivity</span>
 <span class="sd">        The pairwise orthogonal envelope correlations.</span>
 <span class="sd">        This matrix is symmetric. The array</span>
 <span class="sd">        will have three dimensions, the first of which is ``n_epochs``.</span>
@@ -477,21 +477,21 @@ document.write(`
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    mne_connectivity.EpochConnectivity</span>
+<span class="sd">    mne_connectivity.EpochTemporalConnectivity</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function computes the power envelope correlation between</span>
 <span class="sd">    orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.</span>
 
-<span class="sd">    If you would like to combine Epochs after the fact using some</span>
-<span class="sd">    function over the Epochs axis, see the ``combine`` function from</span>
-<span class="sd">    `EpochConnectivity` classes.</span>
+<span class="sd">    If you would like to combine Epochs after the fact using some function over the</span>
+<span class="sd">    Epochs axis, see the :meth:`~EpochTemporalConnectivity.combine` method of the</span>
+<span class="sd">    :class:`EpochTemporalConnectivity` class.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;orthogonalize&quot;</span><span class="p">,</span> <span class="n">orthogonalize</span><span class="p">,</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;pairwise&quot;</span><span class="p">))</span>
     <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">hilbert</span>
 
@@ -788,7 +788,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-08.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-12.
       <br/>
     
   </p>
