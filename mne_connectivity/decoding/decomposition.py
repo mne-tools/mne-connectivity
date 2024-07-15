@@ -17,7 +17,12 @@ from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_mu
 from mne.utils import _check_option, _validate_type
 from mne.viz.utils import plt_show
 
-from ..spectral.epochs_multivariate import _CaCohEst, _check_rank_input, _MICEst
+from ..spectral.epochs_multivariate import (
+    _CaCohEst,
+    _check_n_components_input,
+    _check_rank_input,
+    _MICEst,
+)
 from ..utils import _check_multivariate_indices, fill_doc
 
 
@@ -329,19 +334,10 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     def _get_rank_and_ncomps_from_X(self, X):
         """Get/validate rank and n_components parameters using the data."""
         # compute rank from data if necessary / check it is valid for the indices
-        rank = _check_rank_input(self._rank, X, self._indices)
+        self._rank = _check_rank_input(self._rank, X, self._indices)
 
-        # set n_components if necessary / check it is valid for the rank
-        if self.n_components is None:
-            self.n_components = np.min(rank)
-        elif self.n_components > np.min(rank):
-            raise ValueError(
-                "`n_components` is greater than the minimum rank of the data"
-            )
-
-        # set rank if necessary
-        if self._rank is None:
-            self._rank = rank
+        # check n_components is valid for the rank
+        self.n_components = _check_n_components_input(self.n_components, self._rank)
 
     def _compute_csd(self, X):
         """Compute the cross-spectral density of the input data."""
