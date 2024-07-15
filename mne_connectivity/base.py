@@ -20,6 +20,9 @@ from mne.utils import (
 from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
 
+# cannot import from spectral/epochs_multivariate due to circular imports
+_multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
+
 
 class SpectralMixin:
     """Mixin class for spectral connectivities.
@@ -448,7 +451,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if "times" in self.dims:
             r += f"time : [{self.times[0]}, {self.times[-1]}], "  # type: ignore
         r += f", nave : {self.n_epochs_used}"
-        r += f", nodes, n_estimated : {self.n_nodes}, " f"{self.n_estimated_nodes}"
+        r += f", nodes, n_estimated : {self.n_nodes}, {self.n_estimated_nodes}"
+        if "components" in self.dims:
+            r += f"n_components : {len(self.coords['components'])}, "
         r += f", ~{sizeof_fmt(self._size)}"
         r += ">"
         return r
@@ -488,6 +493,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if self.is_epoched:
             coords["epochs"] = list(map(str, range(data.shape[0])))
         coords["node_in -> node_out"] = n_estimated_list
+        if "components" in kwargs:
+            coords["components"] = kwargs.pop("components")
+            dims.append("components")
         if "freqs" in kwargs:
             coords["freqs"] = kwargs.pop("freqs")
             dims.append("freqs")
@@ -531,17 +539,17 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             raise TypeError("Connectivity data must be passed in as a numpy array.")
 
         if self.is_epoched:
-            if data.ndim < 2 or data.ndim > 4:
+            if data.ndim < 2 or data.ndim > 5:
                 raise RuntimeError(
                     "Data using an epoched data structure should have at least 2 "
-                    f"dimensions and at most 4 dimensions. Your data was {data.shape} "
+                    f"dimensions and at most 5 dimensions. Your data was {data.shape} "
                     "shape."
                 )
         else:
-            if data.ndim > 3:
+            if data.ndim > 4:
                 raise RuntimeError(
                     "Data not using an epoched data structure should have at least 1 "
-                    f"dimensions and at most 3 dimensions. Your data was {data.shape} "
+                    f"dimensions and at most 4 dimensions. Your data was {data.shape} "
                     "shape."
                 )
 
@@ -709,7 +717,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if self.method in ["cacoh", "mic", "mim", "gc", "gc_tr"]:
+            if self.method in _multivariate_methods:
                 # multivariate results cannot be returned in a dense form as a
                 # single set of results would correspond to multiple entries in
                 # the matrix, and there could also be cases where multiple
@@ -870,9 +878,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 class SpectralConnectivity(BaseConnectivity, SpectralMixin):
     """Spectral connectivity class.
 
-    This class stores connectivity data that varies over
-    frequencies. The underlying data is an array of shape
-    (n_connections, n_freqs), or (n_nodes, n_nodes, n_freqs).
+    This class stores connectivity data that varies over frequencies. The underlying
+    data is an array of shape (n_connections, [n_components], n_freqs), or (n_nodes,
+    n_nodes, [n_components], n_freqs). ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
 
     Parameters
     ----------
@@ -922,11 +931,12 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 class TemporalConnectivity(BaseConnectivity, TimeMixin):
     """Temporal connectivity class.
 
-    This is an array of shape (n_connections, n_times),
-    or (n_nodes, n_nodes, n_times). This describes how connectivity
-    varies over time. It describes sample-by-sample time-varying
-    connectivity (usually on the order of milliseconds). Here
-    time (t=0) is the same for all connectivity measures.
+    This is an array of shape (n_connections, [n_components], n_times), or (n_nodes,
+    n_nodes, [n_components], n_times). This describes how connectivity varies over
+    time. It describes sample-by-sample time-varying connectivity (usually on the order
+    of milliseconds). Here time (t=0) is the same for all connectivity measures.
+    ``n_components`` is an optional dimension for multivariate methods where each
+    connection has multiple components of connectivity.
 
     Parameters
     ----------
@@ -941,12 +951,11 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin):
 
     Notes
     -----
-    `mne_connectivity.EpochConnectivity` is a similar connectivity
-    class to this one. However, that describes one connectivity snapshot
-    for each epoch. These epochs might be chunks of time that have
-    different meaning for time ``t=0``. Epochs can mean separate trials,
-    where the beginning of the trial implies t=0. These Epochs may
-    also be discontiguous.
+    `mne_connectivity.EpochConnectivity` is a similar connectivity class to this one.
+    However, that describes one connectivity snapshot for each epoch. These epochs might
+    be chunks of time that have different meaning for time ``t=0``. Epochs can mean
+    separate trials, where the beginning of the trial implies t=0. These Epochs may also
+    be discontiguous.
     """
 
     expected_n_dim = 2
@@ -978,13 +987,14 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin):
 class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
     """Spectrotemporal connectivity class.
 
-    This class stores connectivity data that varies over both frequency
-    and time. The temporal part describes sample-by-sample time-varying
-    connectivity (usually on the order of milliseconds). Note the
-    difference relative to Epochs.
+    This class stores connectivity data that varies over both frequency and time. The
+    temporal part describes sample-by-sample time-varying connectivity (usually on the
+    order of milliseconds). Note the difference relative to Epochs.
 
-    The underlying data is an array of shape (n_connections, n_freqs,
-    n_times), or (n_nodes, n_nodes, n_freqs, n_times).
+    The underlying data is an array of shape (n_connections, [n_components], n_freqs,
+    n_times), or (n_nodes, n_nodes, [n_components], n_freqs, n_times). ``n_components``
+    is an optional dimension for multivariate methods where each connection has multiple
+    components of connectivity.
 
     Parameters
     ----------
@@ -1031,9 +1041,11 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
 class EpochSpectralConnectivity(SpectralConnectivity):
     """Spectral connectivity class over Epochs.
 
-    This is an array of shape (n_epochs, n_connections, n_freqs),
-    or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how
-    connectivity varies over frequencies for different epochs.
+    This is an array of shape (n_epochs, n_connections, [n_components], n_freqs), or
+    (n_epochs, n_nodes, n_nodes, [n_components], n_freqs). This describes how
+    connectivity varies over frequencies for different epochs. ``n_components`` is an
+    optional dimension for multivariate methods where each connection has multiple
+    components of connectivity.
 
     Parameters
     ----------
@@ -1077,9 +1089,11 @@ class EpochSpectralConnectivity(SpectralConnectivity):
 class EpochTemporalConnectivity(TemporalConnectivity):
     """Temporal connectivity class over Epochs.
 
-    This is an array of shape (n_epochs, n_connections, n_times),
-    or (n_epochs, n_nodes, n_nodes, n_times). This describes how
-    connectivity varies over time for different epochs.
+    This is an array of shape (n_epochs, n_connections, [n_components], n_times), or
+    (n_epochs, n_nodes, n_nodes, [n_components], n_times). This describes how
+    connectivity varies over time for different epochs. ``n_components`` is an optional
+    dimension for multivariate methods where each connection has multiple components of
+    connectivity.
 
     Parameters
     ----------
@@ -1113,9 +1127,11 @@ class EpochTemporalConnectivity(TemporalConnectivity):
 class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     """Spectrotemporal connectivity class over Epochs.
 
-    This is an array of shape (n_epochs, n_connections, n_freqs, n_times),
-    or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how
-    connectivity varies over frequencies and time for different epochs.
+    This is an array of shape (n_epochs, n_connections, [n_components], n_freqs,
+    n_times), or (n_epochs, n_nodes, n_nodes, [n_components], n_freqs, n_times). This
+    describes how connectivity varies over frequencies and time for different epochs.
+    ``n_components`` is an optional dimension for multivariate methods where each
+    connection has multiple components of connectivity.
 
     Parameters
     ----------
@@ -1162,9 +1178,10 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
 class Connectivity(BaseConnectivity):
     """Connectivity class without frequency or time component.
 
-    This is an array of shape (n_connections,),
-    or (n_nodes, n_nodes). This describes a connectivity matrix/graph
-    that does not vary over time, frequency, or epochs.
+    This is an array of shape (n_connections, [n_components]), or (n_nodes, n_nodes,
+    [n_components]). This describes a connectivity matrix/graph that does not vary
+    over time, frequency, or epochs. ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
 
     Parameters
     ----------
@@ -1207,9 +1224,10 @@ class Connectivity(BaseConnectivity):
 class EpochConnectivity(BaseConnectivity):
     """Epoch connectivity class.
 
-    This is an array of shape (n_epochs, n_connections),
-    or (n_epochs, n_nodes, n_nodes). This describes how
-    connectivity varies for different epochs.
+    This is an array of shape (n_epochs, n_connections, [n_components]), or (n_epochs,
+    n_nodes, n_nodes, [n_components]). This describes how connectivity varies for
+    different epochs. ``n_components`` is an optional dimension for multivariate methods
+    where each connection has multiple components of connectivity.
 
     Parameters
     ----------

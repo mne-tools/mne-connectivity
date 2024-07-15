@@ -16,7 +16,7 @@ from typing import Optional
 import numpy as np
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.utils import ProgressBar, logger
+from mne.utils import ProgressBar, _validate_type, logger
 
 
 def _check_rank_input(rank, data, indices):
@@ -73,6 +73,20 @@ def _check_rank_input(rank, data, indices):
                 )
 
     return rank
+
+
+def _check_n_components_input(n_components, rank):
+    """Check the n_components argument is appropriate based on the rank of the data."""
+    if n_components is None:
+        return np.min(rank)
+
+    _validate_type(n_components, "int-like", "`n_components`", "int")
+    if n_components > np.min(rank):
+        raise ValueError("`n_components` is greater than the minimum rank of the data")
+    if n_components < 1:
+        raise ValueError("`n_components` must be >= 1")
+
+    return n_components
 
 
 ########################################################################
@@ -1169,3 +1183,4 @@ _CON_METHOD_MAP_MULTIVARIATE = {
 _multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
 _gc_methods = ["gc", "gc_tr"]
 _patterns_methods = ["cacoh", "mic"]  # methods with spatial patterns
+_multicomp_methods = ["cacoh", "mic"]  # methods that support multiple components

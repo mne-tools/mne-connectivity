@@ -27,8 +27,10 @@ from ..utils import _check_multivariate_indices, check_indices, fill_doc
 from .epochs_bivariate import _CON_METHOD_MAP_BIVARIATE
 from .epochs_multivariate import (
     _CON_METHOD_MAP_MULTIVARIATE,
+    _check_n_components_input,
     _check_rank_input,
     _gc_methods,
+    _multicomp_methods,
     _multivariate_methods,
 )
 
@@ -335,6 +337,7 @@ def _epoch_spectral_connectivity(
     n_signals_use,
     n_times,
     gc_n_lags,
+    n_components,
     accumulate_inplace=True,
 ):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
@@ -367,7 +370,13 @@ def _epoch_spectral_connectivity(
                 else:
                     # if it's a coherence method
                     con_methods.append(
-                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum)
+                        mtype(
+                            n_signals_use,
+                            n_cons,
+                            n_freqs,
+                            n_times_spectrum,
+                            n_components=n_components,
+                        )
                     )
             else:
                 con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
@@ -612,6 +621,7 @@ def spectral_connectivity_epochs(
     cwt_n_cycles=7,
     gc_n_lags=40,
     rank=None,
+    n_components=1,
     block_size=1000,
     n_jobs=1,
     verbose=None,
@@ -719,6 +729,13 @@ def spectral_connectivity_epochs(
         respectively, using singular value decomposition. If None, the rank of
         the data is computed and projected to. Only used if ``method`` contains
         any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
+    n_components : int
+        Number of connectivity components to extract from the data. If an `int`, the
+        number of components must be <= the minimum rank of the seeds and targets. E.g.
+        if the seed channels had a rank of 5 and the target channels had a rank of 3,
+        ``n_components`` must be <= 3. If `None`, the number of components equal to the
+        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
+        Only used if ``method`` contains any of ``['cacoh', 'mic']``.
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
@@ -735,11 +752,12 @@ def spectral_connectivity_epochs(
 
         - ``(n_cons, n_freqs)`` for multitaper or fourier modes
         - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode
-        - ``n_cons = n_signals ** 2`` for bivariate methods with
-          ``indices=None``
+        - ``(n_cons, n_comps, n_freqs (, n_times))`` for valid multivariate methods if
+          ``n_components > 1``
+        - ``n_cons = n_signals ** 2`` for bivariate methods with ``indices=None``
         - ``n_cons = 1`` for multivariate methods with ``indices=None``
-        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods
-          when indices is supplied.
+        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods when
+          indices is supplied
 
     See Also
     --------
@@ -1035,8 +1053,15 @@ def spectral_connectivity_epochs(
             # check rank input and compute data ranks if necessary
             if multivariate_con:
                 rank = _check_rank_input(rank, data, indices_use)
+                n_components = _check_n_components_input(n_components, rank)
+                if n_components == 1:
+                    # n_components=0 means space for a components dimension is not
+                    # allocated in the results, similar to how n_times_spectrum=0 is
+                    # used to indicate that time is not a dimension in the results
+                    n_components = 0
             else:
                 rank = None
+                n_components = 0
                 gc_n_lags = None
 
             # make sure padded indices are stored in the connectivity object
@@ -1103,6 +1128,8 @@ def spectral_connectivity_epochs(
                 )
                 if method[mtype_i] in _multivariate_methods:
                     method_params.update(dict(n_signals=n_signals_use, n_jobs=n_jobs))
+                    if method[mtype_i] in _multicomp_methods:
+                        method_params.update(dict(n_components=n_components))
                     if method[mtype_i] in _gc_methods:
                         method_params.update(dict(n_lags=gc_n_lags))
                 con_methods.append(mtype(**method_params))
@@ -1142,6 +1169,7 @@ def spectral_connectivity_epochs(
             n_signals_use=n_signals_use,
             n_times=n_times,
             gc_n_lags=gc_n_lags,
+            n_components=n_components,
             accumulate_inplace=True if n_jobs == 1 else False,
         )
         call_params.update(**spectral_params)
@@ -1209,6 +1237,8 @@ def spectral_connectivity_epochs(
                 "connections; please contact the mne-connectivity developers"
             )
         if faverage:
+            if n_components != 0 and method[method_i] in _multicomp_methods:
+                this_con = np.moveaxis(this_con, 2, 1)  # make freqs the 2nd dimension
             if this_con.shape[1] != n_freqs:
                 raise RuntimeError(
                     "second dimension of connectivity scores does not match the number "
@@ -1221,8 +1251,13 @@ def spectral_connectivity_epochs(
                     this_con[:, freq_idx_bands[band_idx]], axis=1
                 )
             this_con = this_con_bands
+            if n_components != 0 and method[method_i] in _multicomp_methods:
+                this_con = np.moveaxis(this_con, 1, 2)  # return comps to 2nd dimension
 
             if this_patterns is not None:
+                if n_components != 0:
+                    # make freqs the 4th dimension
+                    this_patterns = np.moveaxis(this_patterns, 4, 3)
                 patterns_shape = list(this_patterns.shape)
                 patterns_shape[3] = n_bands
                 this_patterns_bands = np.empty(
@@ -1233,6 +1268,9 @@ def spectral_connectivity_epochs(
                         this_patterns[:, :, :, freq_idx_bands[band_idx]], axis=3
                     )
                 this_patterns = this_patterns_bands
+                if n_components != 0:
+                    # return comps to 4th dimension
+                    this_patterns = np.moveaxis(this_patterns, 3, 4)
 
         con.append(this_con)
         patterns.append(this_patterns)
@@ -1291,6 +1329,8 @@ def spectral_connectivity_epochs(
             rank=rank,
             n_lags=gc_n_lags if _method in _gc_methods else None,
         )
+        if n_components != 0 and _method in _multicomp_methods:
+            kwargs.update(components=np.arange(n_components) + 1)
         # create the connectivity container
         if mode in ["multitaper", "fourier"]:
             klass = SpectralConnectivity
