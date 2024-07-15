@@ -453,7 +453,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         r += f", nave : {self.n_epochs_used}"
         r += f", nodes, n_estimated : {self.n_nodes}, {self.n_estimated_nodes}"
         if "components" in self.dims:
-            r += f"n_components : {len(self.coords['components'])}, "
+            r += f", n_components : {len(self.coords['components'])}, "
         r += f", ~{sizeof_fmt(self._size)}"
         r += ">"
         return r
