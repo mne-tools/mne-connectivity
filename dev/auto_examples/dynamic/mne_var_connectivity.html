@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 1.8.0.dev99+gc9f9bd5e9 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=0f1ab173"></script>
+    <script src="../../_static/documentation_options.js?v=392b69dd"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev96+g1a341b1ba documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev99+gc9f9bd5e9 documentation</p>
   
 </a></div>
     
@@ -524,21 +524,19 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 33.8MB/s]
- 10%|███▊                                 | 9.17M/88.2M [00:00&lt;00:01, 41.4MB/s]
- 16%|█████▊                               | 13.8M/88.2M [00:00&lt;00:01, 43.3MB/s]
- 22%|████████▏                            | 19.6M/88.2M [00:00&lt;00:01, 48.7MB/s]
- 31%|███████████▍                         | 27.1M/88.2M [00:00&lt;00:01, 58.0MB/s]
- 39%|██████████████▎                      | 34.0M/88.2M [00:00&lt;00:00, 61.5MB/s]
- 48%|█████████████████▋                   | 42.1M/88.2M [00:00&lt;00:00, 67.6MB/s]
- 58%|█████████████████████▎               | 50.8M/88.2M [00:00&lt;00:00, 73.8MB/s]
- 68%|█████████████████████████▏           | 59.9M/88.2M [00:00&lt;00:00, 79.2MB/s]
- 78%|████████████████████████████▉        | 69.0M/88.2M [00:01&lt;00:00, 82.7MB/s]
- 89%|████████████████████████████████▊    | 78.2M/88.2M [00:01&lt;00:00, 85.7MB/s]
- 99%|████████████████████████████████████▋| 87.5M/88.2M [00:01&lt;00:00, 87.7MB/s]
+  5%|█▊                                   | 4.21M/88.2M [00:00&lt;00:01, 42.1MB/s]
+ 12%|████▎                                | 10.2M/88.2M [00:00&lt;00:01, 51.3MB/s]
+ 22%|███████▉                             | 19.0M/88.2M [00:00&lt;00:01, 67.7MB/s]
+ 32%|███████████▋                         | 27.9M/88.2M [00:00&lt;00:00, 76.3MB/s]
+ 42%|███████████████▌                     | 37.0M/88.2M [00:00&lt;00:00, 81.3MB/s]
+ 52%|███████████████████▎                 | 46.1M/88.2M [00:00&lt;00:00, 84.9MB/s]
+ 63%|███████████████████████▏             | 55.3M/88.2M [00:00&lt;00:00, 87.2MB/s]
+ 73%|███████████████████████████          | 64.5M/88.2M [00:00&lt;00:00, 88.6MB/s]
+ 84%|██████████████████████████████▉      | 73.7M/88.2M [00:00&lt;00:00, 89.7MB/s]
+ 94%|██████████████████████████████████▊  | 83.0M/88.2M [00:01&lt;00:00, 90.5MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 299GB/s]
-Download complete in 03s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 313GB/s]
+Download complete in 04s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: The unit for channel(s) $G11, $G12, DC01, DC09, DC10, DC11, DC12, EKG1, EKG2 has changed from V to NA.
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
@@ -564,8 +562,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 60.90 Hz)
 - Filter length: 6601 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.2s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.7s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -726,8 +724,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-f7acfdb8-f911-4d17-b02e-24994f4785e8"  title="Hide section"
-    onclick="toggleVisibility('general-f7acfdb8-f911-4d17-b02e-24994f4785e8')">
+<tr class="repr-section-header general-06b32cb9-6163-4f88-a564-6087067c8055"  title="Hide section"
+    onclick="toggleVisibility('general-06b32cb9-6163-4f88-a564-6087067c8055')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -739,7 +737,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-f7acfdb8-f911-4d17-b02e-24994f4785e8 ">
+<tr class="repr-element general-06b32cb9-6163-4f88-a564-6087067c8055 ">
     <td class="repr-section-toggle-col"></td>
     <td>Filename(s)</td>
     <td>
@@ -750,19 +748,19 @@ span.collapse-uncollapse-caret {
     </td>
 </tr>
 
-<tr class="repr-element general-f7acfdb8-f911-4d17-b02e-24994f4785e8 ">
+<tr class="repr-element general-06b32cb9-6163-4f88-a564-6087067c8055 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-f7acfdb8-f911-4d17-b02e-24994f4785e8 ">
+<tr class="repr-element general-06b32cb9-6163-4f88-a564-6087067c8055 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-f7acfdb8-f911-4d17-b02e-24994f4785e8 ">
+<tr class="repr-element general-06b32cb9-6163-4f88-a564-6087067c8055 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
@@ -771,7 +769,7 @@ span.collapse-uncollapse-caret {
 
 
 </tr>
-<tr class="repr-element general-f7acfdb8-f911-4d17-b02e-24994f4785e8 ">
+<tr class="repr-element general-06b32cb9-6163-4f88-a564-6087067c8055 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -786,8 +784,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-f5c1278e-dbe0-450c-9f4b-e012cb03219a"
-    title="Hide section"  onclick="toggleVisibility('acquisition-f5c1278e-dbe0-450c-9f4b-e012cb03219a')">
+<tr class="repr-section-header acquisition-c4c094e3-c322-4fd1-a141-dbd733303a17"
+    title="Hide section"  onclick="toggleVisibility('acquisition-c4c094e3-c322-4fd1-a141-dbd733303a17')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -799,7 +797,7 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element acquisition-f5c1278e-dbe0-450c-9f4b-e012cb03219a ">
+<tr class="repr-element acquisition-c4c094e3-c322-4fd1-a141-dbd733303a17 ">
     <td class="repr-section-toggle-col"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -812,14 +810,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-f5c1278e-dbe0-450c-9f4b-e012cb03219a ">
+<tr class="repr-element acquisition-c4c094e3-c322-4fd1-a141-dbd733303a17 ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f5c1278e-dbe0-450c-9f4b-e012cb03219a ">
+<tr class="repr-element acquisition-c4c094e3-c322-4fd1-a141-dbd733303a17 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -834,8 +832,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-e7f485ea-ca4a-4662-ac39-51cfcb078a1b"  title="Hide section"
-    onclick="toggleVisibility('channels-e7f485ea-ca4a-4662-ac39-51cfcb078a1b')">
+<tr class="repr-section-header channels-7463c177-adf5-47f6-829e-094abcc6ee4d"  title="Hide section"
+    onclick="toggleVisibility('channels-7463c177-adf5-47f6-829e-094abcc6ee4d')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -848,7 +846,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-e7f485ea-ca4a-4662-ac39-51cfcb078a1b ">
+<tr class="repr-element channels-7463c177-adf5-47f6-829e-094abcc6ee4d ">
     <td class="repr-section-toggle-col"></td>
     <td>ECoG</td>
     <td>
@@ -861,7 +859,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-e7f485ea-ca4a-4662-ac39-51cfcb078a1b ">
+<tr class="repr-element channels-7463c177-adf5-47f6-829e-094abcc6ee4d ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -876,8 +874,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-5ae902cc-2633-44f9-ba19-cffba65f5d19"  title="Hide section"
-    onclick="toggleVisibility('filters-5ae902cc-2633-44f9-ba19-cffba65f5d19')">
+<tr class="repr-section-header filters-658e7e2f-94b9-46e9-94f7-c0dbcb90245a"  title="Hide section"
+    onclick="toggleVisibility('filters-658e7e2f-94b9-46e9-94f7-c0dbcb90245a')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -889,14 +887,14 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-5ae902cc-2633-44f9-ba19-cffba65f5d19 ">
+<tr class="repr-element filters-658e7e2f-94b9-46e9-94f7-c0dbcb90245a ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-5ae902cc-2633-44f9-ba19-cffba65f5d19 ">
+<tr class="repr-element filters-658e7e2f-94b9-46e9-94f7-c0dbcb90245a ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1318,21 +1316,20 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 21/302 [00:00&lt;00:01, 200.96it/s]
- 14%|█▍        | 42/302 [00:00&lt;00:01, 198.68it/s]
- 21%|██        | 62/302 [00:00&lt;00:01, 197.74it/s]
- 27%|██▋       | 82/302 [00:00&lt;00:01, 196.87it/s]
- 34%|███▍      | 103/302 [00:00&lt;00:01, 198.68it/s]
- 41%|████      | 124/302 [00:00&lt;00:00, 199.45it/s]
- 48%|████▊     | 144/302 [00:00&lt;00:00, 197.89it/s]
- 54%|█████▍    | 164/302 [00:00&lt;00:00, 197.40it/s]
- 61%|██████    | 184/302 [00:00&lt;00:00, 197.93it/s]
- 68%|██████▊   | 204/302 [00:01&lt;00:00, 195.48it/s]
- 74%|███████▍  | 224/302 [00:01&lt;00:00, 193.81it/s]
- 81%|████████  | 244/302 [00:01&lt;00:00, 195.59it/s]
- 87%|████████▋ | 264/302 [00:01&lt;00:00, 196.15it/s]
- 94%|█████████▍| 285/302 [00:01&lt;00:00, 198.10it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 197.66it/s]
+  7%|▋         | 22/302 [00:00&lt;00:01, 216.47it/s]
+ 15%|█▍        | 44/302 [00:00&lt;00:01, 217.26it/s]
+ 22%|██▏       | 66/302 [00:00&lt;00:01, 217.74it/s]
+ 29%|██▉       | 88/302 [00:00&lt;00:00, 217.95it/s]
+ 36%|███▋      | 110/302 [00:00&lt;00:00, 217.74it/s]
+ 44%|████▎     | 132/302 [00:00&lt;00:00, 216.87it/s]
+ 51%|█████     | 154/302 [00:00&lt;00:00, 217.13it/s]
+ 58%|█████▊    | 176/302 [00:00&lt;00:00, 217.10it/s]
+ 66%|██████▌   | 198/302 [00:00&lt;00:00, 217.36it/s]
+ 73%|███████▎  | 220/302 [00:01&lt;00:00, 216.87it/s]
+ 80%|████████  | 242/302 [00:01&lt;00:00, 217.41it/s]
+ 87%|████████▋ | 264/302 [00:01&lt;00:00, 217.29it/s]
+ 95%|█████████▍| 286/302 [00:01&lt;00:00, 217.07it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 217.25it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MB&gt;
 </pre></div>
 </div>
@@ -1378,7 +1375,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f0bd22d25c0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f64c772b850&gt;
 </pre></div>
 </div>
 </section>
@@ -1441,10 +1438,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f0bd226d270&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f645d255ea0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.632 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 44.770 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1528,7 +1525,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-12.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-15.
       <br/>
     
   </p>
@@ -1536,7 +1533,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.4.
     <br/>
   </p>
 </div>
