@@ -745,10 +745,11 @@ def spectral_connectivity_epochs(
 
     Returns
     -------
-    con : array | list of array
-        Computed connectivity measure(s). Either an instance of
-        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
-        The shape of the connectivity result will be:
+    con : instance of SpectralConnectivity or SpectroTemporalConnectivity | list
+        Computed connectivity measure(s). An instance of :class:`SpectralConnectivity`,
+        :class:`SpectroTemporalConnectivity`, or a list of instances corresponding to
+        connectivity measures if several connectivity measures are specified. The shape
+        of the connectivity result will be:
 
         - ``(n_cons, n_freqs)`` for multitaper or fourier modes
         - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode
@@ -777,8 +778,8 @@ def spectral_connectivity_epochs(
     measure is stationary. The spectral measures implemented in this function
     are computed across Epochs. **Thus, spectral measures computed with only
     one Epoch will result in errorful values and spectral measures computed
-    with few Epochs will be unreliable.** Please see
-    ``spectral_connectivity_time`` for time-resolved connectivity estimation.
+    with few Epochs will be unreliable.** Please see :func:`spectral_connectivity_time`
+    for time-resolved connectivity estimation.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier

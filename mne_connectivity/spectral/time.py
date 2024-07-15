@@ -175,17 +175,16 @@ def spectral_connectivity_time(
 
     Returns
     -------
-    con : instance of Connectivity | list
+    con : instance of EpochSpectralConnectivity or SpectralConnectivity | list
         Computed connectivity measure(s). An instance of
-        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`
-        or a list of instances corresponding to connectivity measures if
-        several connectivity measures are specified.
-        The shape of each connectivity dataset is (n_epochs, n_cons, [n_comps],
-        n_freqs). ``n_comps`` is present for valid multivariate methods if
-        ``n_components > 1``. When "indices" is None and a bivariate method is called,
-        "n_cons = n_signals ** 2", or if a multivariate method is called
-        "n_cons = 1". When "indices" is specified, "n_con = len(indices[0])"
-        for bivariate and multivariate methods.
+        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`, or a list of
+        instances corresponding to connectivity measures if several connectivity
+        measures are specified. The shape of each connectivity dataset is ([n_epochs,]
+        n_cons, [n_comps,] n_freqs). ``n_comps`` is present for valid multivariate
+        methods if ``n_components > 1``.When "indices" is None and a bivariate method is
+        called, "n_cons = n_signals ** 2", or if a multivariate method is called "n_cons
+        = 1". When "indices" is specified, "n_con = len(indices[0])" for bivariate and
+        multivariate methods.
 
     See Also
     --------
