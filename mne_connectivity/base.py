@@ -20,9 +20,6 @@ from mne.utils import (
 from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
 from mne_connectivity.viz import plot_connectivity_circle
 
-# cannot import from spectral/epochs_multivariate due to circular imports
-_multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
-
 
 class SpectralMixin:
     """Mixin class for spectral connectivities.
@@ -717,11 +714,15 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if self.method in _multivariate_methods:
-                # multivariate results cannot be returned in a dense form as a
-                # single set of results would correspond to multiple entries in
-                # the matrix, and there could also be cases where multiple
-                # results correspond to the same entries in the matrix.
+            if (
+                isinstance(self.indices, tuple)
+                and not np.all(isinstance(self.indices[0], int))
+                and not np.all(isinstance(self.indices[1], int))
+            ):  # i.e. check if multivariate results based on nested indices
+                # multivariate results cannot be returned in a dense form as a single
+                # set of results would correspond to multiple entries in the matrix, and
+                # there could also be cases where multiple results correspond to the
+                # same entries in the matrix.
                 raise ValueError(
                     "cannot return multivariate connectivity data in a dense form"
                 )
@@ -736,6 +737,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             # and thus appends the connectivity matrices side by side, so the
             # shape is N x N * lags
             new_shape.extend([self.n_nodes, self.n_nodes])
+            if "components" in self.dims:
+                new_shape.append(len(self.coords["components"]))
             if "freqs" in self.dims:
                 new_shape.append(len(self.coords["freqs"]))
             if "times" in self.dims:
