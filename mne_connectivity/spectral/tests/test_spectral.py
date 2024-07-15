@@ -1471,12 +1471,18 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
 @pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
 @pytest.mark.parametrize("average", [True, False])
 @pytest.mark.parametrize("faverage", [True, False])
-def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
+@pytest.mark.parametrize("n_components", [1, 2, 3, None])
+def test_multivar_spectral_connectivity_time_shapes(
+    method, average, faverage, n_components
+):
     """Test result shapes of time-resolved multivar. connectivity methods."""
+    if method in ["mim", "gc", "gc_tr"] and n_components != 1:
+        return  # don't bother testing on methods that don't support multiple comps
+
     n_epochs = 8
     data = make_signals_in_freq_bands(
-        n_seeds=2,  # do not change!
-        n_targets=2,  # do not change!
+        n_seeds=3,  # do not change!
+        n_targets=3,  # do not change!
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=n_epochs,
         n_times=256,
@@ -1484,19 +1490,31 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
         rng_seed=0,
     )
 
-    indices = ([[0, 1]], [[2, 3]])
+    # test with full indices
+    indices = ([[0, 1, 2]], [[3, 4, 5]])
     n_cons = len(indices[0])
+    max_n_chans = np.shape(indices)[2]
+    n_actual_components = max_n_chans if n_components is None else n_components
     freqs = np.arange(10, 25 + 1)
 
-    con_shape = [1]
-    if faverage:
-        con_shape.append(1)
-    else:
-        con_shape.append(len(freqs))
+    con_shape = []
     if not average:
-        con_shape = [n_epochs, *con_shape]
+        con_shape.append(n_epochs)  # epochs
+    con_shape.append(n_cons)  # n_cons
+    if n_actual_components != 1:
+        con_shape.append(n_actual_components)  # n_comps
+    con_shape.append(len(freqs) if not faverage else 1)  # n_freqs
 
-    # check shape of results when averaging across epochs
+    patterns_shape = [2]  # seeds/targets
+    if not average:
+        patterns_shape.append(n_epochs)  # epochs
+    patterns_shape.append(n_cons)  # n_cons
+    if n_actual_components != 1:
+        patterns_shape.append(n_actual_components)  # n_comps
+    patterns_shape.append(max_n_chans)  # n_chans
+    patterns_shape.append(len(freqs) if not faverage else 1)  # n_freqs
+
+    # check shape of con scores
     con = spectral_connectivity_time(
         data,
         freqs,
@@ -1505,44 +1523,48 @@ def test_multivar_spectral_connectivity_time_shapes(method, average, faverage):
         faverage=faverage,
         average=average,
         gc_n_lags=10,
+        n_components=n_components,
     )
     assert con.shape == tuple(con_shape)
 
-    # check shape of CaCoh/MIC patterns are correct
+    # check shape of patterns
     if method in ["cacoh", "mic"]:
-        for indices_type in ["full", "ragged"]:
-            if indices_type == "full":
-                indices = ([[0, 1]], [[2, 3]])
-            else:
-                indices = ([[0, 1]], [[2]])
-            max_n_chans = 2
-            patterns_shape = [n_cons, max_n_chans]
-            if faverage:
-                patterns_shape.append(1)
-            else:
-                patterns_shape.append(len(freqs))
-            if not average:
-                patterns_shape = [n_epochs, *patterns_shape]
-            patterns_shape = [2, *patterns_shape]
+        patterns = np.array(con.attrs["patterns"])
+        assert patterns.shape == tuple(patterns_shape)
+        assert not np.any(np.isnan(patterns))  # no padded entries
 
-            con = spectral_connectivity_time(
-                data,
-                freqs,
-                indices=indices,
-                method=method,
-                faverage=faverage,
-                average=average,
-                gc_n_lags=10,
-            )
+        # test with ragged indices
+        if n_components is not None and n_components > 2:
+            return  # cannot test when n_comps > rank of data
+        indices = ([[0, 1, 2]], [[3, 4]])
+        n_actual_components = 2 if n_components is None else n_components
 
-            patterns = np.array(con.attrs["patterns"])
-            # 2 (x epochs) x cons x channels x freqs|fbands
-            assert patterns.shape == tuple(patterns_shape)
-            if indices_type == "ragged":
-                assert not np.any(np.isnan(patterns[0, ..., :, :]))
-                assert not np.any(np.isnan(patterns[0, ..., 0, :]))
-                assert np.all(np.isnan(patterns[1, ..., 1, :]))  # padded entry
-                assert np.all(np.array(con.indices) == np.array(([[0, 1]], [[2, -1]])))
+        patterns_shape = [2]  # seeds/targets
+        if not average:
+            patterns_shape.append(n_epochs)  # epochs
+        patterns_shape.append(n_cons)  # n_cons
+        if n_actual_components != 1:
+            patterns_shape.append(n_actual_components)  # n_comps
+        patterns_shape.append(max_n_chans)  # n_chans
+        patterns_shape.append(len(freqs) if not faverage else 1)  # n_freqs
+
+        con = spectral_connectivity_time(
+            data,
+            freqs,
+            indices=indices,
+            method=method,
+            faverage=faverage,
+            average=average,
+            n_components=n_components,
+        )
+        patterns = np.array(con.attrs["patterns"])
+
+        # 2 x [epochs] x cons x [comps] x channels x freqs|fbands
+        assert patterns.shape == tuple(patterns_shape)
+        assert not np.any(np.isnan(patterns[0, ..., :, :]))  # seeds 0-3 present
+        assert not np.any(np.isnan(patterns[1, ..., :2, :]))  # targets 1-2 present
+        assert np.all(np.isnan(patterns[1, ..., 2:, :]))  # targets 3 padded
+        assert np.all(np.array(con.indices) == np.array(([[0, 1, 2]], [[3, 4, -1]])))
 
 
 @pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
@@ -1614,6 +1636,34 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     with pytest.raises(ValueError, match="rank argument must have shape"):
         spectral_connectivity_time(
             data, freqs, method=method, indices=indices, mode=mode, rank=too_much_rank
+        )
+
+    # check bad n_components caught
+    with pytest.raises(TypeError, match="`n_components` must be an instance of int"):
+        spectral_connectivity_time(
+            data, freqs, method=method, indices=indices, mode=mode, n_components=[1]
+        )
+    with pytest.raises(ValueError, match="`n_components` must be >= 1"):
+        spectral_connectivity_time(
+            data, freqs, method=method, indices=indices, mode=mode, n_components=0
+        )
+    with pytest.raises(
+        ValueError, match="`n_components` is greater than the minimum rank of the data"
+    ):
+        spectral_connectivity_time(
+            data, freqs, method=method, indices=indices, mode=mode, n_components=3
+        )
+    with pytest.raises(
+        ValueError, match="`n_components` is greater than the minimum rank of the data"
+    ):
+        spectral_connectivity_time(
+            data,
+            freqs,
+            method=method,
+            indices=indices,
+            mode=mode,
+            rank=([1], [1]),
+            n_components=2,
         )
 
     # check all-to-all conn. computed for CaCoh/MIC/MIM when no indices given
