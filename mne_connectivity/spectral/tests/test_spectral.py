@@ -662,12 +662,13 @@ def test_spectral_connectivity_epochs_multivariate(method, n_components):
                 patterns = np.array(con.attrs["patterns"])
                 assert patterns.shape == patterns_shape
                 if n_components == 1:
-                    dims = (0,)  # (cons)
+                    assert not np.any(np.isnan(patterns[0, :, :2]))  # seeds 1-2 present
+                    assert np.all(np.isnan(patterns[0, :, 2:]))  # seeds 3-4 padded
+                    assert not np.any(np.isnan(patterns[1, :, :]))  # targs 1-4 present
                 else:
-                    dims = (0, np.arange(actual_n_components))  # (cons, components)
-                assert not np.any(np.isnan(patterns[0, *dims, :2]))  # seeds 1-2 present
-                assert np.all(np.isnan(patterns[0, *dims, 2:]))  # seeds 3-4 padded
-                assert not np.any(np.isnan(patterns[1, *dims, :]))  # targs 1-4 present
+                    assert not np.any(np.isnan(patterns[0, :, :, :2]))  # s 1-2 present
+                    assert np.all(np.isnan(patterns[0, :, :, 2:]))  # s 3-4 padded
+                    assert not np.any(np.isnan(patterns[1, :, :, :]))  # t 1-4 present
 
         # check results averaged over freqs
         if method == "gc":  # multiple freq bands not supported for GC
