@@ -246,9 +246,6 @@ def test_connectivity_containers(conn_cls, n_components):
     )
 
 
-test_connectivity_containers(Connectivity, 0)
-
-
 @pytest.mark.parametrize(
     "conn_cls",
     [
