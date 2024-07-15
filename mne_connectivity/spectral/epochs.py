@@ -1329,7 +1329,7 @@ def spectral_connectivity_epochs(
             rank=rank,
             n_lags=gc_n_lags if _method in _gc_methods else None,
         )
-        if n_components != 0 and _method in _multicomp_methods:
+        if n_components and _method in _multicomp_methods:
             kwargs.update(components=np.arange(n_components) + 1)
         # create the connectivity container
         if mode in ["multitaper", "fourier"]:
