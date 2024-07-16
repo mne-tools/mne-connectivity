@@ -414,12 +414,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             )
 
         # transform seed and target data (i=channels; j=components; k=epochs; l=times)
-        if X.ndim == 2:
-            dim_subs = "ij,il->jl"
-        else:
-            dim_subs = "ij,kil->kjl"
-        X_seeds = np.einsum(dim_subs, self.filters_[0], X[..., self.indices[0], :])
-        X_targets = np.einsum(dim_subs, self.filters_[1], X[..., self.indices[1], :])
+        X_seeds = self.filters_[0].T @ X[..., self.indices[0], :]
+        X_targets = self.filters_[1].T @ X[..., self.indices[1], :]
 
         return np.concatenate((X_seeds, X_targets), axis=-2)
 
