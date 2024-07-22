@@ -380,8 +380,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
     def _extract_filters_and_patterns(self):
         """Extract filters and patterns from the connectivity estimator."""
-        # shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs),
+        # shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs)
         # i.e. (2, 1, n_components, n_signals, 1)
+
         self.filters_ = (
             self._conn_estimator.filters[0, 0, :, : len(self.indices[0]), 0].T,
             self._conn_estimator.filters[1, 0, :, : len(self.indices[1]), 0].T,
@@ -413,7 +414,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 "no filters are available, please call the `fit` method first"
             )
 
-        # transform seed and target data (i=channels; j=components; k=epochs; l=times)
+        # transform seed and target data
         X_seeds = self.filters_[0].T @ X[..., self.indices[0], :]
         X_targets = self.filters_[1].T @ X[..., self.indices[1], :]
 
