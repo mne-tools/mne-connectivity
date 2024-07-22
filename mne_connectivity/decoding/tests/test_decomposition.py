@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from mne.channels import make_dig_montage, make_standard_montage
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 
 from mne_connectivity import (
     CoherencyDecomposition,
@@ -203,24 +203,24 @@ def test_spectral_decomposition(method, mode):
 
     # TEST GETTERS & SETTERS
     # Test indices internal storage and returned format
-    assert np.all(np.array(decomp_class.indices) == np.array((seeds, targets)))
-    assert np.all(
-        decomp_class._indices
-        == _check_multivariate_indices(([seeds], [targets]), n_signals)
+    assert_array_equal(np.array(decomp_class.indices), np.array((seeds, targets)))
+    assert_array_equal(
+        decomp_class._indices,
+        _check_multivariate_indices(([seeds], [targets]), n_signals),
     )
     decomp_class.set_params(indices=(targets, seeds))
-    assert np.all(np.array(decomp_class.indices) == np.array((targets, seeds)))
-    assert np.all(
-        decomp_class._indices
-        == _check_multivariate_indices(([targets], [seeds]), n_signals)
+    assert_array_equal(np.array(decomp_class.indices), np.array((targets, seeds)))
+    assert_array_equal(
+        decomp_class._indices,
+        _check_multivariate_indices(([targets], [seeds]), n_signals),
     )
 
     # Test rank internal storage and returned format
-    assert np.all(decomp_class.rank == (n_signals, n_signals))
-    assert np.all(decomp_class._rank == ([n_signals], [n_signals]))
+    assert_array_equal(decomp_class.rank, (n_signals, n_signals))
+    assert_array_equal(decomp_class._rank, ([n_signals], [n_signals]))
     decomp_class.set_params(rank=(1, 2))
-    assert np.all(decomp_class.rank == (1, 2))
-    assert np.all(decomp_class._rank == ([1], [2]))
+    assert_array_equal(decomp_class.rank, (1, 2))
+    assert_array_equal(decomp_class._rank, ([1], [2]))
 
     # Test rank can be reset to default
     decomp_class.set_params(rank=None)
@@ -391,13 +391,15 @@ def test_spectral_decomposition(method, mode):
             # Check patterns reflect spatial distribution of activity
             nondom_channs = np.ones(decomp_class.patterns_[0].shape[1], dtype=bool)
             nondom_channs[dominant_chan] = False
-            assert np.all(
-                np.abs(decomp_class.patterns_[0][comp_i, dominant_chan])
-                > np.abs(decomp_class.patterns_[0][comp_i, nondom_channs])
+            assert_array_less(
+                np.abs(decomp_class.patterns_[0][comp_i, nondom_channs]),
+                np.abs(decomp_class.patterns_[0][comp_i, dominant_chan]),
+                err_msg="seeds",
             )  # check for seeds
-            assert np.all(
-                np.abs(decomp_class.patterns_[1][comp_i, dominant_chan])
-                > np.abs(decomp_class.patterns_[1][comp_i, nondom_channs])
+            assert_array_less(
+                np.abs(decomp_class.patterns_[1][comp_i, nondom_channs]),
+                np.abs(decomp_class.patterns_[1][comp_i, dominant_chan]),
+                err_msg="targets",
             )  # check for targets
 
         # keep record of connectivity scores for this component
@@ -406,7 +408,7 @@ def test_spectral_decomposition(method, mode):
     conn_scores[comp_i] = np.abs(con.get_data()[-1, :]).mean()  # noise connectivity
 
     # Check components are ordered by strength of interaction
-    assert np.all(conn_scores == np.flip(np.sort(conn_scores)))
+    assert_array_equal(conn_scores, np.flip(np.sort(conn_scores)))
 
 
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
