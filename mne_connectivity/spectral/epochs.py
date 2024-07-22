@@ -736,6 +736,8 @@ def spectral_connectivity_epochs(
         ``n_components`` must be <= 3. If `None`, the number of components equal to the
         minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
         Only used if ``method`` contains any of ``['cacoh', 'mic']``.
+
+        .. versionadded:: 0.8.0
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
