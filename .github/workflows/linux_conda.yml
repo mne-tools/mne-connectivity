@@ -20,8 +20,6 @@ jobs:
       run:
         shell: bash -el {0}
     env:
-      CONDA_ENV: 'environment.yml'
-      DISPLAY: ':99.0'
       MNE_LOGGING_LEVEL: 'warning'
       MKL_NUM_THREADS: '1'
       PYTHONUNBUFFERED: '1'
@@ -34,7 +32,7 @@ jobs:
           pyvista: false
       - uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: ${{ env.CONDA_ENV }}
+          environment-file: environment.yml
           create-args: >- # beware the >- instead of |, we don't split on newlines but on spaces
             python=${{ env.PYTHON_VERSION }}
       - run: |
