@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=309fc75d"></script>
+    <script src="../../_static/documentation_options.js?v=ac4811dc"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</p>
   
 </a></div>
     
@@ -864,7 +864,9 @@ document.write(`
         <span class="k">if</span> <span class="s2">&quot;times&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;time : [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">], &quot;</span>  <span class="c1"># type: ignore</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, nave : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs_used</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, nodes, n_estimated : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, nodes, n_estimated : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;components&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, n_components : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">, &quot;</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, ~</span><span class="si">{</span><span class="n">sizeof_fmt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;&gt;&quot;</span>
         <span class="k">return</span> <span class="n">r</span>
@@ -904,6 +906,9 @@ document.write(`
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;epochs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;node_in -&gt; node_out&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_estimated_list</span>
+        <span class="k">if</span> <span class="s2">&quot;components&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;components&quot;</span><span class="p">)</span>
+            <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;components&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;freqs&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;freqs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;freqs&quot;</span><span class="p">)</span>
             <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;freqs&quot;</span><span class="p">)</span>
@@ -947,17 +952,17 @@ document.write(`
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Connectivity data must be passed in as a numpy array.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;Data using an epoched data structure should have at least 2 &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 4 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 5 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
                     <span class="s2">&quot;shape.&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;Data not using an epoched data structure should have at least 1 &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 3 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;dimensions and at most 4 dimensions. Your data was </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
                     <span class="s2">&quot;shape.&quot;</span>
                 <span class="p">)</span>
 
@@ -1125,11 +1130,15 @@ document.write(`
         <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;raveled&quot;</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span> <span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="s2">&quot;mim&quot;</span><span class="p">,</span> <span class="s2">&quot;gc&quot;</span><span class="p">,</span> <span class="s2">&quot;gc_tr&quot;</span><span class="p">]:</span>
-                <span class="c1"># multivariate results cannot be returned in a dense form as a</span>
-                <span class="c1"># single set of results would correspond to multiple entries in</span>
-                <span class="c1"># the matrix, and there could also be cases where multiple</span>
-                <span class="c1"># results correspond to the same entries in the matrix.</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="p">):</span>  <span class="c1"># i.e. check if multivariate results based on nested indices</span>
+                <span class="c1"># multivariate results cannot be returned in a dense form as a single</span>
+                <span class="c1"># set of results would correspond to multiple entries in the matrix, and</span>
+                <span class="c1"># there could also be cases where multiple results correspond to the</span>
+                <span class="c1"># same entries in the matrix.</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;cannot return multivariate connectivity data in a dense form&quot;</span>
                 <span class="p">)</span>
@@ -1144,6 +1153,8 @@ document.write(`
             <span class="c1"># and thus appends the connectivity matrices side by side, so the</span>
             <span class="c1"># shape is N x N * lags</span>
             <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;components&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+                <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="s2">&quot;freqs&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;freqs&quot;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="s2">&quot;times&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
@@ -1288,9 +1299,10 @@ document.write(`
 <span class="k">class</span> <span class="nc">SpectralConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectral connectivity class.</span>
 
-<span class="sd">    This class stores connectivity data that varies over</span>
-<span class="sd">    frequencies. The underlying data is an array of shape</span>
-<span class="sd">    (n_connections, n_freqs), or (n_nodes, n_nodes, n_freqs).</span>
+<span class="sd">    This class stores connectivity data that varies over frequencies. The underlying</span>
+<span class="sd">    data is an array of shape (n_connections, [n_components], n_freqs), or (n_nodes,</span>
+<span class="sd">    n_nodes, [n_components], n_freqs). ``n_components`` is an optional dimension for</span>
+<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1345,11 +1357,12 @@ document.write(`
 <span class="k">class</span> <span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporal connectivity class.</span>
 
-<span class="sd">    This is an array of shape (n_connections, n_times),</span>
-<span class="sd">    or (n_nodes, n_nodes, n_times). This describes how connectivity</span>
-<span class="sd">    varies over time. It describes sample-by-sample time-varying</span>
-<span class="sd">    connectivity (usually on the order of milliseconds). Here</span>
-<span class="sd">    time (t=0) is the same for all connectivity measures.</span>
+<span class="sd">    This is an array of shape (n_connections, [n_components], n_times), or (n_nodes,</span>
+<span class="sd">    n_nodes, [n_components], n_times). This describes how connectivity varies over</span>
+<span class="sd">    time. It describes sample-by-sample time-varying connectivity (usually on the order</span>
+<span class="sd">    of milliseconds). Here time (t=0) is the same for all connectivity measures.</span>
+<span class="sd">    ``n_components`` is an optional dimension for multivariate methods where each</span>
+<span class="sd">    connection has multiple components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1364,12 +1377,11 @@ document.write(`
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    `mne_connectivity.EpochConnectivity` is a similar connectivity</span>
-<span class="sd">    class to this one. However, that describes one connectivity snapshot</span>
-<span class="sd">    for each epoch. These epochs might be chunks of time that have</span>
-<span class="sd">    different meaning for time ``t=0``. Epochs can mean separate trials,</span>
-<span class="sd">    where the beginning of the trial implies t=0. These Epochs may</span>
-<span class="sd">    also be discontiguous.</span>
+<span class="sd">    `mne_connectivity.EpochConnectivity` is a similar connectivity class to this one.</span>
+<span class="sd">    However, that describes one connectivity snapshot for each epoch. These epochs might</span>
+<span class="sd">    be chunks of time that have different meaning for time ``t=0``. Epochs can mean</span>
+<span class="sd">    separate trials, where the beginning of the trial implies t=0. These Epochs may also</span>
+<span class="sd">    be discontiguous.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">expected_n_dim</span> <span class="o">=</span> <span class="mi">2</span>
@@ -1404,13 +1416,14 @@ document.write(`
 <span class="k">class</span> <span class="nc">SpectroTemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class.</span>
 
-<span class="sd">    This class stores connectivity data that varies over both frequency</span>
-<span class="sd">    and time. The temporal part describes sample-by-sample time-varying</span>
-<span class="sd">    connectivity (usually on the order of milliseconds). Note the</span>
-<span class="sd">    difference relative to Epochs.</span>
+<span class="sd">    This class stores connectivity data that varies over both frequency and time. The</span>
+<span class="sd">    temporal part describes sample-by-sample time-varying connectivity (usually on the</span>
+<span class="sd">    order of milliseconds). Note the difference relative to Epochs.</span>
 
-<span class="sd">    The underlying data is an array of shape (n_connections, n_freqs,</span>
-<span class="sd">    n_times), or (n_nodes, n_nodes, n_freqs, n_times).</span>
+<span class="sd">    The underlying data is an array of shape (n_connections, [n_components], n_freqs,</span>
+<span class="sd">    n_times), or (n_nodes, n_nodes, [n_components], n_freqs, n_times). ``n_components``</span>
+<span class="sd">    is an optional dimension for multivariate methods where each connection has multiple</span>
+<span class="sd">    components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1465,9 +1478,11 @@ document.write(`
 <span class="k">class</span> <span class="nc">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectral connectivity class over Epochs.</span>
 
-<span class="sd">    This is an array of shape (n_epochs, n_connections, n_freqs),</span>
-<span class="sd">    or (n_epochs, n_nodes, n_nodes, n_freqs). This describes how</span>
-<span class="sd">    connectivity varies over frequencies for different epochs.</span>
+<span class="sd">    This is an array of shape (n_epochs, n_connections, [n_components], n_freqs), or</span>
+<span class="sd">    (n_epochs, n_nodes, n_nodes, [n_components], n_freqs). This describes how</span>
+<span class="sd">    connectivity varies over frequencies for different epochs. ``n_components`` is an</span>
+<span class="sd">    optional dimension for multivariate methods where each connection has multiple</span>
+<span class="sd">    components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1518,9 +1533,11 @@ document.write(`
 <span class="k">class</span> <span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">TemporalConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporal connectivity class over Epochs.</span>
 
-<span class="sd">    This is an array of shape (n_epochs, n_connections, n_times),</span>
-<span class="sd">    or (n_epochs, n_nodes, n_nodes, n_times). This describes how</span>
-<span class="sd">    connectivity varies over time for different epochs.</span>
+<span class="sd">    This is an array of shape (n_epochs, n_connections, [n_components], n_times), or</span>
+<span class="sd">    (n_epochs, n_nodes, n_nodes, [n_components], n_times). This describes how</span>
+<span class="sd">    connectivity varies over time for different epochs. ``n_components`` is an optional</span>
+<span class="sd">    dimension for multivariate methods where each connection has multiple components of</span>
+<span class="sd">    connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1562,9 +1579,11 @@ document.write(`
 <span class="k">class</span> <span class="nc">EpochSpectroTemporalConnectivity</span><span class="p">(</span><span class="n">SpectroTemporalConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Spectrotemporal connectivity class over Epochs.</span>
 
-<span class="sd">    This is an array of shape (n_epochs, n_connections, n_freqs, n_times),</span>
-<span class="sd">    or (n_epochs, n_nodes, n_nodes, n_freqs, n_times). This describes how</span>
-<span class="sd">    connectivity varies over frequencies and time for different epochs.</span>
+<span class="sd">    This is an array of shape (n_epochs, n_connections, [n_components], n_freqs,</span>
+<span class="sd">    n_times), or (n_epochs, n_nodes, n_nodes, [n_components], n_freqs, n_times). This</span>
+<span class="sd">    describes how connectivity varies over frequencies and time for different epochs.</span>
+<span class="sd">    ``n_components`` is an optional dimension for multivariate methods where each</span>
+<span class="sd">    connection has multiple components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1614,9 +1633,10 @@ document.write(`
 <span class="k">class</span> <span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Connectivity class without frequency or time component.</span>
 
-<span class="sd">    This is an array of shape (n_connections,),</span>
-<span class="sd">    or (n_nodes, n_nodes). This describes a connectivity matrix/graph</span>
-<span class="sd">    that does not vary over time, frequency, or epochs.</span>
+<span class="sd">    This is an array of shape (n_connections, [n_components]), or (n_nodes, n_nodes,</span>
+<span class="sd">    [n_components]). This describes a connectivity matrix/graph that does not vary</span>
+<span class="sd">    over time, frequency, or epochs. ``n_components`` is an optional dimension for</span>
+<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1661,9 +1681,10 @@ document.write(`
 <span class="k">class</span> <span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Epoch connectivity class.</span>
 
-<span class="sd">    This is an array of shape (n_epochs, n_connections),</span>
-<span class="sd">    or (n_epochs, n_nodes, n_nodes). This describes how</span>
-<span class="sd">    connectivity varies for different epochs.</span>
+<span class="sd">    This is an array of shape (n_epochs, n_connections, [n_components]), or (n_epochs,</span>
+<span class="sd">    n_nodes, n_nodes, [n_components]). This describes how connectivity varies for</span>
+<span class="sd">    different epochs. ``n_components`` is an optional dimension for multivariate methods</span>
+<span class="sd">    where each connection has multiple components of connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1743,7 +1764,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-22.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-24.
       <br/>
     
   </p>

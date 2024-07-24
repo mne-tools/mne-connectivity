@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</title>
+    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=309fc75d"></script>
+    <script src="../../../_static/documentation_options.js?v=ac4811dc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</p>
   
 </a></div>
     
@@ -420,7 +420,7 @@ document.write(`
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Info</span>
@@ -433,7 +433,12 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span>
 <span class="kn">from</span> <span class="nn">mne.viz.utils</span> <span class="kn">import</span> <span class="n">plt_show</span>
 
-<span class="kn">from</span> <span class="nn">..spectral.epochs_multivariate</span> <span class="kn">import</span> <span class="n">_CaCohEst</span><span class="p">,</span> <span class="n">_check_rank_input</span><span class="p">,</span> <span class="n">_MICEst</span>
+<span class="kn">from</span> <span class="nn">..spectral.epochs_multivariate</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_CaCohEst</span><span class="p">,</span>
+    <span class="n">_check_n_components_input</span><span class="p">,</span>
+    <span class="n">_check_rank_input</span><span class="p">,</span>
+    <span class="n">_MICEst</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
 
 
@@ -497,6 +502,7 @@ document.write(`
     <span class="n">filters_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">patterns_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">_conn_estimator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">_CaCohEst</span><span class="p">,</span> <span class="n">_MICEst</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_rank</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -557,9 +563,9 @@ document.write(`
 
         <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span> <span class="s2">&quot;mic&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;cacoh&quot;</span><span class="p">:</span>
-            <span class="n">_conn_estimator</span> <span class="o">=</span> <span class="n">_CaCohEst</span>
+            <span class="n">_conn_estimator_class</span> <span class="o">=</span> <span class="n">_CaCohEst</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_conn_estimator</span> <span class="o">=</span> <span class="n">_MICEst</span>
+            <span class="n">_conn_estimator_class</span> <span class="o">=</span> <span class="n">_MICEst</span>
 
         <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="s2">&quot;`indices`&quot;</span><span class="p">,</span> <span class="s2">&quot;tuple of array-likes&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
@@ -581,6 +587,8 @@ document.write(`
             <span class="n">_validate_type</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="s2">&quot;`fmax`&quot;</span><span class="p">,</span> <span class="s2">&quot;int or float&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;</span> <span class="n">fmax</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmax` must be larger than `fmin`&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fmin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmin` cannot be less than 0&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fmax</span> <span class="o">&gt;</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmax` cannot be larger than the Nyquist frequency&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
@@ -634,7 +642,7 @@ document.write(`
 
         <span class="c1"># Store inputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span> <span class="o">=</span> <span class="n">_conn_estimator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator_class</span> <span class="o">=</span> <span class="n">_conn_estimator_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="n">_indices</span>  <span class="c1"># uses getter/setter for public parameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span> <span class="o">=</span> <span class="n">fmin</span>
@@ -644,7 +652,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">mt_low_bias</span> <span class="o">=</span> <span class="n">mt_low_bias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cwt_freqs</span> <span class="o">=</span> <span class="n">cwt_freqs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cwt_n_cycles</span> <span class="o">=</span> <span class="n">cwt_n_cycles</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># XXX: fixed until n_comps &gt; 1 supported</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">n_components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">_rank</span>  <span class="c1"># uses getter/setter for public parameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -709,11 +717,13 @@ document.write(`
         <span class="n">csd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_csd</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="c1"># instantiate connectivity estimator and add CSD information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator_class</span><span class="p">(</span>
             <span class="n">n_signals</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="n">n_cons</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">n_freqs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">store_con</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">store_filters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
         <span class="p">)</span>
@@ -745,19 +755,10 @@ document.write(`
     <span class="k">def</span> <span class="nf">_get_rank_and_ncomps_from_X</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get/validate rank and n_components parameters using the data.&quot;&quot;&quot;</span>
         <span class="c1"># compute rank from data if necessary / check it is valid for the indices</span>
-        <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">)</span>
 
-        <span class="c1"># set n_components if necessary / check it is valid for the rank</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">rank</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;`n_components` is greater than the minimum rank of the data&quot;</span>
-            <span class="p">)</span>
-
-        <span class="c1"># set rank if necessary</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">rank</span>
+        <span class="c1"># check n_components is valid for the rank</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">_check_n_components_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compute_csd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the cross-spectral density of the input data.&quot;&quot;&quot;</span>
@@ -800,26 +801,18 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">_extract_filters_and_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract filters and patterns from the connectivity estimator.&quot;&quot;&quot;</span>
-        <span class="c1"># XXX: need to sort indices and transpose patterns when multiple comps supported</span>
+        <span class="c1"># shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs)</span>
+        <span class="c1"># i.e. (2, 1, n_components, n_signals, 1)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
-        <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="p">)</span>  <span class="c1"># shape=(seeds/targets, n_signals, n_components)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
-        <span class="p">)</span>
-
-        <span class="c1"># XXX: remove once support for multiple comps implemented</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
-        <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span>  <span class="c1"># shape=(seeds/targets, n_components, n_signals)</span>
 
 <div class="viewcode-block" id="CoherencyDecomposition.transform">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform">[docs]</a>
@@ -1247,7 +1240,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-22.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-24.
       <br/>
     
   </p>

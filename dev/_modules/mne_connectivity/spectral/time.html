@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</title>
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=309fc75d"></script>
+    <script src="../../../_static/documentation_options.js?v=ac4811dc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</p>
   
 </a></div>
     
@@ -434,8 +434,10 @@ document.write(`
 <span class="kn">from</span> <span class="nn">.epochs</span> <span class="kn">import</span> <span class="n">_compute_freq_mask</span>
 <span class="kn">from</span> <span class="nn">.epochs_multivariate</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">,</span>
+    <span class="n">_check_n_components_input</span><span class="p">,</span>
     <span class="n">_check_rank_input</span><span class="p">,</span>
     <span class="n">_gc_methods</span><span class="p">,</span>
+    <span class="n">_multicomp_methods</span><span class="p">,</span>
     <span class="n">_multivariate_methods</span><span class="p">,</span>
     <span class="n">_patterns_methods</span><span class="p">,</span>
 <span class="p">)</span>
@@ -466,6 +468,7 @@ document.write(`
     <span class="n">n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
     <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">decim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -573,6 +576,13 @@ document.write(`
 <span class="sd">        respectively, using singular value decomposition. If `None`, the rank</span>
 <span class="sd">        of the data is computed and projected to. Only used if ``method``</span>
 <span class="sd">        contains any of ``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Number of connectivity components to extract from the data. If an `int`, the</span>
+<span class="sd">        number of components must be &lt;= the minimum rank of the seeds and targets. E.g.</span>
+<span class="sd">        if the seed channels had a rank of 5 and the target channels had a rank of 3,</span>
+<span class="sd">        ``n_components`` must be &lt;= 3. If `None`, the number of components equal to the</span>
+<span class="sd">        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).</span>
+<span class="sd">        Only used if ``method`` contains any of ``[&#39;cacoh&#39;, &#39;mic&#39;]``.</span>
 <span class="sd">    decim : int</span>
 <span class="sd">        To reduce memory usage, decimation factor after time-frequency</span>
 <span class="sd">        decomposition. Returns ``tfr[…, ::decim]``.</span>
@@ -588,9 +598,10 @@ document.write(`
 <span class="sd">        :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`, or a list of</span>
 <span class="sd">        instances corresponding to connectivity measures if several connectivity</span>
 <span class="sd">        measures are specified. The shape of each connectivity dataset is ([n_epochs,]</span>
-<span class="sd">        n_cons, n_freqs). When &quot;indices&quot; is None and a bivariate method is called,</span>
-<span class="sd">        &quot;n_cons = n_signals ** 2&quot;, or if a multivariate method is called &quot;n_cons = 1&quot;.</span>
-<span class="sd">        When &quot;indices&quot; is specified, &quot;n_con = len(indices[0])&quot; for bivariate and</span>
+<span class="sd">        n_cons, [n_comps,] n_freqs). ``n_comps`` is present for valid multivariate</span>
+<span class="sd">        methods if ``n_components &gt; 1``.When &quot;indices&quot; is None and a bivariate method is</span>
+<span class="sd">        called, &quot;n_cons = n_signals ** 2&quot;, or if a multivariate method is called &quot;n_cons</span>
+<span class="sd">        = 1&quot;. When &quot;indices&quot; is specified, &quot;n_con = len(indices[0])&quot; for bivariate and</span>
 <span class="sd">        multivariate methods.</span>
 
 <span class="sd">    See Also</span>
@@ -922,8 +933,15 @@ document.write(`
     <span class="c1"># check rank input and compute data ranks if necessary</span>
     <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
         <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">)</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">_check_n_components_input</span><span class="p">(</span><span class="n">n_components</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_components</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># n_components=0 means space for a components dimension is not allocated in</span>
+            <span class="c1"># the results, similar to how n_times_spectrum=0 is used to indicate that</span>
+            <span class="c1"># time is not a dimension in the results</span>
+            <span class="n">n_components</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rank</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">gc_n_lags</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># check freqs</span>
@@ -980,13 +998,19 @@ document.write(`
             <span class="n">con_scores_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">con_scores_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-        <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">con_scores_dtype</span><span class="p">)</span>
+
+        <span class="n">conn_shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">conn_shape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_components</span><span class="p">)</span>
+        <span class="n">conn</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">conn_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">con_scores_dtype</span><span class="p">)</span>
+
         <span class="c1"># prevent allocating memory for a huge array if not required</span>
         <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_patterns_methods</span><span class="p">:</span>
-            <span class="c1"># patterns shape of [epochs x seeds/targets x cons x channels x freqs]</span>
-            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">n_epochs</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_channels</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="p">)</span>
+            <span class="c1"># patterns shape [epochs x seeds/targs x cons x [comps] x channels x freqs]</span>
+            <span class="n">patterns_shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_epochs</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">max_n_channels</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">patterns_shape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_components</span><span class="p">)</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">patterns_shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connectivity computation...&quot;</span><span class="p">)</span>
@@ -1007,6 +1031,7 @@ document.write(`
         <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
         <span class="n">gc_n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">,</span>
         <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
         <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
         <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
         <span class="n">kw_cwt</span><span class="o">=</span><span class="p">{},</span>
@@ -1025,8 +1050,8 @@ document.write(`
                 <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">epoch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">patterns</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># transpose to [seeds/targets x epochs x cons x channels x freqs]</span>
-            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="c1"># convert to [seeds/targets x epochs x cons x [comps] x channels x freqs]</span>
+            <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">multivariate_con</span><span class="p">:</span>
         <span class="n">conn_flat</span> <span class="o">=</span> <span class="n">conn</span>
@@ -1056,7 +1081,7 @@ document.write(`
             <span class="s2">&quot;n_nodes&quot;</span><span class="p">:</span> <span class="n">n_signals</span><span class="p">,</span>
             <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span>
             <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
-            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span>
             <span class="s2">&quot;spec_method&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
             <span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="n">events</span><span class="p">,</span>
             <span class="s2">&quot;event_id&quot;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
@@ -1064,6 +1089,8 @@ document.write(`
             <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="n">rank</span><span class="p">,</span>
             <span class="s2">&quot;n_lags&quot;</span><span class="p">:</span> <span class="n">gc_n_lags</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">n_components</span> <span class="ow">and</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+            <span class="n">store_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_components</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
             <span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">store_params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">conn_patterns</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1098,6 +1125,7 @@ document.write(`
     <span class="n">mt_bandwidth</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="p">,</span>
     <span class="n">rank</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="p">,</span>
     <span class="n">decim</span><span class="p">,</span>
     <span class="n">padding</span><span class="p">,</span>
     <span class="n">kw_cwt</span><span class="p">,</span>
@@ -1144,6 +1172,9 @@ document.write(`
 <span class="sd">        computing Granger causality.</span>
 <span class="sd">    rank : tuple of array</span>
 <span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Number of connectivity components to extract from the data. If 0, only the first</span>
+<span class="sd">        component is extracted.</span>
 <span class="sd">    decim : int</span>
 <span class="sd">        Decimation factor after time-frequency</span>
 <span class="sd">        decomposition.</span>
@@ -1156,17 +1187,19 @@ document.write(`
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    scores : dict</span>
-<span class="sd">        Dictionary containing the connectivity estimates corresponding to the</span>
-<span class="sd">        metrics in ``method``. Each element is an array of shape (n_cons,</span>
-<span class="sd">        n_freqs) or (n_cons, n_fbands) if ``faverage`` is `True`.</span>
+<span class="sd">        Dictionary containing the connectivity estimates corresponding to the metrics in</span>
+<span class="sd">        ``method``. Each element is an array of shape (n_cons, [n_comps], n_freqs) or</span>
+<span class="sd">        (n_cons, [n_comps], n_fbands) if ``faverage`` is `True`. ``n_comps`` is present</span>
+<span class="sd">        for valid multivariate methods if ``n_components &gt; 0``.</span>
 
 <span class="sd">    patterns : dict</span>
 <span class="sd">        Dictionary containing the connectivity patterns (for reconstructing the</span>
-<span class="sd">        connectivity components in source-space) corresponding to the metrics</span>
-<span class="sd">        in ``method``, if multivariate methods are called, else an empty</span>
-<span class="sd">        dictionary. Each element is an array of shape (2, n_channels, n_freqs)</span>
-<span class="sd">        or (2, n_channels, 1) if ``faverage`` is `True`, where 2 corresponds to</span>
-<span class="sd">        the seed and target signals (respectively).</span>
+<span class="sd">        connectivity components in channel-space) corresponding to the metrics in</span>
+<span class="sd">        ``method``, if multivariate methods are called, else an empty dictionary. Each</span>
+<span class="sd">        element is an array of shape (2, [n_comps], n_channels, n_freqs) or (2,</span>
+<span class="sd">        n_channels, n_fbands) if ``faverage`` is `True`, where 2 corresponds to the seed</span>
+<span class="sd">        and target signals (respectively). ``n_comps`` is present for valid multivariate</span>
+<span class="sd">        methods if ``n_components &gt; 0``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_idx</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1237,6 +1270,7 @@ document.write(`
         <span class="n">signals_use</span><span class="p">,</span>
         <span class="n">gc_n_lags</span><span class="p">,</span>
         <span class="n">rank</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">,</span>
         <span class="n">n_cons</span><span class="p">,</span>
@@ -1272,6 +1306,7 @@ document.write(`
     <span class="n">signals_use</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="p">,</span>
     <span class="n">rank</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">,</span>
     <span class="n">total</span><span class="p">,</span>
@@ -1302,6 +1337,9 @@ document.write(`
 <span class="sd">        computing Granger causality.</span>
 <span class="sd">    rank : tuple of array of int</span>
 <span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Number of connectivity components to extract from the data. If 0, only the first</span>
+<span class="sd">        component is extracted.</span>
 <span class="sd">    n_jobs : int</span>
 <span class="sd">        Number of parallel jobs.</span>
 <span class="sd">    total : int</span>
@@ -1369,6 +1407,7 @@ document.write(`
         <span class="n">weights</span><span class="p">,</span>
         <span class="n">gc_n_lags</span><span class="p">,</span>
         <span class="n">rank</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1444,6 +1483,7 @@ document.write(`
     <span class="n">weights</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="p">,</span>
     <span class="n">rank</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral connectivity metrics between multiple signals.</span>
@@ -1476,6 +1516,9 @@ document.write(`
 <span class="sd">        computing Granger causality.</span>
 <span class="sd">    rank : tuple of array, shape of (2, n_cons)</span>
 <span class="sd">        Ranks to project the seed and target data to.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Number of connectivity components to extract from the data. If 0, only the first</span>
+<span class="sd">        component is extracted.</span>
 <span class="sd">    n_jobs : int</span>
 <span class="sd">        Number of jobs to run in parallel.</span>
 
@@ -1483,17 +1526,18 @@ document.write(`
 <span class="sd">    -------</span>
 <span class="sd">    scores : list</span>
 <span class="sd">        List of connectivity scores between seed and target signals for each</span>
-<span class="sd">        connectivity method. Each element is an array with shape (n_freqs,) or</span>
-<span class="sd">        (n_fbands) depending on ``faverage``.</span>
+<span class="sd">        connectivity method. Each element is an array with shape ([n_comps], n_freqs) or</span>
+<span class="sd">        ([n_comps], n_fbands) depending on ``faverage``. ``n_comps`` is present for</span>
+<span class="sd">        valid multivariate methods if ``n_components &gt; 0``.</span>
 
 <span class="sd">    patterns : list</span>
 <span class="sd">        List of connectivity patterns between seed and target signals for each</span>
-<span class="sd">        connectivity method. Each element is an array of length 2 corresponding</span>
-<span class="sd">        to the seed and target patterns, respectively, each with shape</span>
-<span class="sd">        (n_channels, n_freqs) or (n_channels, n_fbands)</span>
-<span class="sd">        depending on ``faverage``. ``n_channels`` is the largest number of</span>
-<span class="sd">        channels across all connections, with missing entries padded with</span>
-<span class="sd">        ``np.nan``.</span>
+<span class="sd">        connectivity method. Each element is an array of length 2 corresponding to the</span>
+<span class="sd">        seed and target patterns, respectively, each with shape ([n_comps], n_channels,</span>
+<span class="sd">        n_freqs) or ([n_comps], n_channels, n_fbands) depending on ``faverage``.</span>
+<span class="sd">        ``n_comps`` is present for valid multivariate methods if ``n_components &gt; 0``.</span>
+<span class="sd">        ``n_channels`` is the largest number of channels across all connections, with</span>
+<span class="sd">        missing entries padded with ``np.nan``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">csd</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">signals_use</span><span class="p">:</span>
@@ -1518,6 +1562,8 @@ document.write(`
             <span class="s2">&quot;n_times&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="n">n_jobs</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+            <span class="n">call_params</span><span class="p">[</span><span class="s2">&quot;n_components&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_components</span>
         <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_gc_methods</span><span class="p">:</span>
             <span class="n">call_params</span><span class="p">[</span><span class="s2">&quot;n_lags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gc_n_lags</span>
         <span class="n">con_est</span> <span class="o">=</span> <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="o">**</span><span class="n">call_params</span><span class="p">)</span>
@@ -1734,7 +1780,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-22.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-24.
       <br/>
     
   </p>

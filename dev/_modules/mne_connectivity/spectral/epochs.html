@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=309fc75d"></script>
+    <script src="../../../_static/documentation_options.js?v=ac4811dc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</p>
   
 </a></div>
     
@@ -443,8 +443,10 @@ document.write(`
 <span class="kn">from</span> <span class="nn">.epochs_bivariate</span> <span class="kn">import</span> <span class="n">_CON_METHOD_MAP_BIVARIATE</span>
 <span class="kn">from</span> <span class="nn">.epochs_multivariate</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">,</span>
+    <span class="n">_check_n_components_input</span><span class="p">,</span>
     <span class="n">_check_rank_input</span><span class="p">,</span>
     <span class="n">_gc_methods</span><span class="p">,</span>
+    <span class="n">_multicomp_methods</span><span class="p">,</span>
     <span class="n">_multivariate_methods</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -751,6 +753,7 @@ document.write(`
     <span class="n">n_signals_use</span><span class="p">,</span>
     <span class="n">n_times</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="p">,</span>
     <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
@@ -783,7 +786,13 @@ document.write(`
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># if it&#39;s a coherence method</span>
                     <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">mtype</span><span class="p">(</span><span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">)</span>
+                        <span class="n">mtype</span><span class="p">(</span>
+                            <span class="n">n_signals_use</span><span class="p">,</span>
+                            <span class="n">n_cons</span><span class="p">,</span>
+                            <span class="n">n_freqs</span><span class="p">,</span>
+                            <span class="n">n_times_spectrum</span><span class="p">,</span>
+                            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtype</span><span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">))</span>
@@ -1030,6 +1039,7 @@ document.write(`
     <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
     <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">block_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1137,6 +1147,15 @@ document.write(`
 <span class="sd">        respectively, using singular value decomposition. If None, the rank of</span>
 <span class="sd">        the data is computed and projected to. Only used if ``method`` contains</span>
 <span class="sd">        any of ``[&#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Number of connectivity components to extract from the data. If an `int`, the</span>
+<span class="sd">        number of components must be &lt;= the minimum rank of the seeds and targets. E.g.</span>
+<span class="sd">        if the seed channels had a rank of 5 and the target channels had a rank of 3,</span>
+<span class="sd">        ``n_components`` must be &lt;= 3. If `None`, the number of components equal to the</span>
+<span class="sd">        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).</span>
+<span class="sd">        Only used if ``method`` contains any of ``[&#39;cacoh&#39;, &#39;mic&#39;]``.</span>
+
+<span class="sd">        .. versionadded:: 0.8.0</span>
 <span class="sd">    block_size : int</span>
 <span class="sd">        How many connections to compute at once (higher numbers are faster</span>
 <span class="sd">        but require more memory).</span>
@@ -1154,11 +1173,12 @@ document.write(`
 
 <span class="sd">        - ``(n_cons, n_freqs)`` for multitaper or fourier modes</span>
 <span class="sd">        - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode</span>
-<span class="sd">        - ``n_cons = n_signals ** 2`` for bivariate methods with</span>
-<span class="sd">          ``indices=None``</span>
+<span class="sd">        - ``(n_cons, n_comps, n_freqs (, n_times))`` for valid multivariate methods if</span>
+<span class="sd">          ``n_components &gt; 1``</span>
+<span class="sd">        - ``n_cons = n_signals ** 2`` for bivariate methods with ``indices=None``</span>
 <span class="sd">        - ``n_cons = 1`` for multivariate methods with ``indices=None``</span>
-<span class="sd">        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods</span>
-<span class="sd">          when indices is supplied.</span>
+<span class="sd">        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods when</span>
+<span class="sd">          indices is supplied</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1454,8 +1474,15 @@ document.write(`
             <span class="c1"># check rank input and compute data ranks if necessary</span>
             <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
                 <span class="n">rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indices_use</span><span class="p">)</span>
+                <span class="n">n_components</span> <span class="o">=</span> <span class="n">_check_n_components_input</span><span class="p">(</span><span class="n">n_components</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_components</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># n_components=0 means space for a components dimension is not</span>
+                    <span class="c1"># allocated in the results, similar to how n_times_spectrum=0 is</span>
+                    <span class="c1"># used to indicate that time is not a dimension in the results</span>
+                    <span class="n">n_components</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rank</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">n_components</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">gc_n_lags</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="c1"># make sure padded indices are stored in the connectivity object</span>
@@ -1522,6 +1549,8 @@ document.write(`
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">method</span><span class="p">[</span><span class="n">mtype_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span><span class="p">:</span>
                     <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_signals</span><span class="o">=</span><span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">method</span><span class="p">[</span><span class="n">mtype_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+                        <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">method</span><span class="p">[</span><span class="n">mtype_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_gc_methods</span><span class="p">:</span>
                         <span class="n">method_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">))</span>
                 <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtype</span><span class="p">(</span><span class="o">**</span><span class="n">method_params</span><span class="p">))</span>
@@ -1561,6 +1590,7 @@ document.write(`
             <span class="n">n_signals_use</span><span class="o">=</span><span class="n">n_signals_use</span><span class="p">,</span>
             <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span><span class="p">,</span>
             <span class="n">gc_n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">,</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
             <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">call_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">spectral_params</span><span class="p">)</span>
@@ -1628,6 +1658,8 @@ document.write(`
                 <span class="s2">&quot;connections; please contact the mne-connectivity developers&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">method</span><span class="p">[</span><span class="n">method_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+                <span class="n">this_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">this_con</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># make freqs the 2nd dimension</span>
             <span class="k">if</span> <span class="n">this_con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_freqs</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;second dimension of connectivity scores does not match the number &quot;</span>
@@ -1640,8 +1672,13 @@ document.write(`
                     <span class="n">this_con</span><span class="p">[:,</span> <span class="n">freq_idx_bands</span><span class="p">[</span><span class="n">band_idx</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
                 <span class="p">)</span>
             <span class="n">this_con</span> <span class="o">=</span> <span class="n">this_con_bands</span>
+            <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">method</span><span class="p">[</span><span class="n">method_i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+                <span class="n">this_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">this_con</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># return comps to 2nd dimension</span>
 
             <span class="k">if</span> <span class="n">this_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># make freqs the 4th dimension</span>
+                    <span class="n">this_patterns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">this_patterns</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
                 <span class="n">patterns_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">this_patterns</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
                 <span class="n">patterns_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_bands</span>
                 <span class="n">this_patterns_bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
@@ -1652,6 +1689,9 @@ document.write(`
                         <span class="n">this_patterns</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">freq_idx_bands</span><span class="p">[</span><span class="n">band_idx</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span>
                     <span class="p">)</span>
                 <span class="n">this_patterns</span> <span class="o">=</span> <span class="n">this_patterns_bands</span>
+                <span class="k">if</span> <span class="n">n_components</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># return comps to 4th dimension</span>
+                    <span class="n">this_patterns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">this_patterns</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
         <span class="n">con</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_con</span><span class="p">)</span>
         <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_patterns</span><span class="p">)</span>
@@ -1710,6 +1750,8 @@ document.write(`
             <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span>
             <span class="n">n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span> <span class="k">if</span> <span class="n">_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_components</span> <span class="ow">and</span> <span class="n">_method</span> <span class="ow">in</span> <span class="n">_multicomp_methods</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_components</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># create the connectivity container</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
             <span class="n">klass</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span>
@@ -1767,7 +1809,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-22.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-24.
       <br/>
     
   </p>

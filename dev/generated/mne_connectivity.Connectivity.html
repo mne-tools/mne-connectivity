@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.Connectivity &#8212; MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</title>
+    <title>mne_connectivity.Connectivity &#8212; MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=309fc75d"></script>
+    <script src="../_static/documentation_options.js?v=ac4811dc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev121+g4e2eaf119 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev123+g790be2d0f documentation</p>
   
 </a></div>
     
@@ -474,18 +474,17 @@ document.write(`
 <dt class="sig sig-object py" id="mne_connectivity.Connectivity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">Connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs_used</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/base.html#Connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.Connectivity" title="Link to this definition">#</a></dt>
 <dd><p>Connectivity class without frequency or time component.</p>
-<p>This is an array of shape (n_connections,),
-or (n_nodes, n_nodes). This describes a connectivity matrix/graph
-that does not vary over time, frequency, or epochs.</p>
+<p>This is an array of shape (n_connections, [n_components]), or (n_nodes, n_nodes,
+[n_components]). This describes a connectivity matrix/graph that does not vary
+over time, frequency, or epochs. <code class="docutils literal notranslate"><span class="pre">n_components</span></code> is an optional dimension for
+multivariate methods where each connection has multiple components of connectivity.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> ([epochs], n_estimated_nodes, [freqs], [times])</span></dt><dd><p>The connectivity data that is a raveled array of
-<code class="docutils literal notranslate"><span class="pre">(n_estimated_nodes,</span> <span class="pre">...)</span></code> shape. The
-<code class="docutils literal notranslate"><span class="pre">n_estimated_nodes</span></code> is equal to
-<code class="docutils literal notranslate"><span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out</span></code> if one is computing
-the full connectivity, or a subset of nodes
-equal to the length of <code class="docutils literal notranslate"><span class="pre">indices</span></code> passed in.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> ([epochs], n_estimated_nodes, [components], [freqs], [times])</span></dt><dd><p>The connectivity data that is a raveled array of <code class="docutils literal notranslate"><span class="pre">(n_estimated_nodes,</span> <span class="pre">...)</span></code> shape.
+The <code class="docutils literal notranslate"><span class="pre">n_estimated_nodes</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out</span></code> if one is
+computing the full connectivity, or a subset of nodes equal to the length of
+<code class="docutils literal notranslate"><span class="pre">indices</span></code> passed in.</p>
 </dd>
 <dt><strong>n_nodes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The number of nodes in the dataset used to compute connectivity.
 This should be equal to the number of signals in the original
@@ -507,11 +506,10 @@ represents the “out nodes”. See “Notes” for more information.</p>
 <dt><strong>n_epochs_used</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, optional</span></dt><dd><p>The number of epochs used in the computation of connectivity,
 by default None.</p>
 </dd>
-<dt><strong>**kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra connectivity parameters. These may include
-<code class="docutils literal notranslate"><span class="pre">freqs</span></code> for spectral connectivity, and/or
-<code class="docutils literal notranslate"><span class="pre">times</span></code> for connectivity over time. In addition,
-these may include extra parameters that are stored
-as xarray <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
+<dt><strong>**kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra connectivity parameters. These may include <code class="docutils literal notranslate"><span class="pre">freqs</span></code> for spectral
+connectivity, <code class="docutils literal notranslate"><span class="pre">times</span></code> for connectivity over time, or <code class="docutils literal notranslate"><span class="pre">components</span></code> for
+multivariate connectivity with multiple components per connection. In addition,
+these may include extra parameters that are stored as xarray <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -1060,7 +1058,7 @@ obtained from the operating system (see
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-22.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-07-24.
       <br/>
     
   </p>
