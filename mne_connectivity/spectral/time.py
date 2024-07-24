@@ -18,8 +18,10 @@ from ..utils import _check_multivariate_indices, check_indices, fill_doc
 from .epochs import _compute_freq_mask
 from .epochs_multivariate import (
     _CON_METHOD_MAP_MULTIVARIATE,
+    _check_n_components_input,
     _check_rank_input,
     _gc_methods,
+    _multicomp_methods,
     _multivariate_methods,
     _patterns_methods,
 )
@@ -48,6 +50,7 @@ def spectral_connectivity_time(
     n_cycles=7,
     gc_n_lags=40,
     rank=None,
+    n_components=1,
     decim=1,
     n_jobs=1,
     verbose=None,
@@ -155,6 +158,13 @@ def spectral_connectivity_time(
         respectively, using singular value decomposition. If `None`, the rank
         of the data is computed and projected to. Only used if ``method``
         contains any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
+    n_components : int
+        Number of connectivity components to extract from the data. If an `int`, the
+        number of components must be <= the minimum rank of the seeds and targets. E.g.
+        if the seed channels had a rank of 5 and the target channels had a rank of 3,
+        ``n_components`` must be <= 3. If `None`, the number of components equal to the
+        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
+        Only used if ``method`` contains any of ``['cacoh', 'mic']``.
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
@@ -170,9 +180,10 @@ def spectral_connectivity_time(
         :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`, or a list of
         instances corresponding to connectivity measures if several connectivity
         measures are specified. The shape of each connectivity dataset is ([n_epochs,]
-        n_cons, n_freqs). When "indices" is None and a bivariate method is called,
-        "n_cons = n_signals ** 2", or if a multivariate method is called "n_cons = 1".
-        When "indices" is specified, "n_con = len(indices[0])" for bivariate and
+        n_cons, [n_comps,] n_freqs). ``n_comps`` is present for valid multivariate
+        methods if ``n_components > 1``.When "indices" is None and a bivariate method is
+        called, "n_cons = n_signals ** 2", or if a multivariate method is called "n_cons
+        = 1". When "indices" is specified, "n_con = len(indices[0])" for bivariate and
         multivariate methods.
 
     See Also
@@ -504,8 +515,15 @@ def spectral_connectivity_time(
     # check rank input and compute data ranks if necessary
     if multivariate_con:
         rank = _check_rank_input(rank, data, indices_use)
+        n_components = _check_n_components_input(n_components, rank)
+        if n_components == 1:
+            # n_components=0 means space for a components dimension is not allocated in
+            # the results, similar to how n_times_spectrum=0 is used to indicate that
+            # time is not a dimension in the results
+            n_components = 0
     else:
         rank = None
+        n_components = 0
         gc_n_lags = None
 
     # check freqs
@@ -562,13 +580,19 @@ def spectral_connectivity_time(
             con_scores_dtype = np.complex128
         else:
             con_scores_dtype = np.float64
-        conn[m] = np.zeros((n_epochs, n_cons, n_freqs), dtype=con_scores_dtype)
+
+        conn_shape = [n_epochs, n_cons, n_freqs]
+        if n_components != 0:
+            conn_shape.insert(2, n_components)
+        conn[m] = np.zeros(conn_shape, dtype=con_scores_dtype)
+
         # prevent allocating memory for a huge array if not required
         if m in _patterns_methods:
-            # patterns shape of [epochs x seeds/targets x cons x channels x freqs]
-            conn_patterns[m] = np.full(
-                (n_epochs, 2, n_cons, max_n_channels, n_freqs), np.nan
-            )
+            # patterns shape [epochs x seeds/targs x cons x [comps] x channels x freqs]
+            patterns_shape = [n_epochs, 2, n_cons, max_n_channels, n_freqs]
+            if n_components != 0:
+                patterns_shape.insert(3, n_components)
+            conn_patterns[m] = np.full(patterns_shape, np.nan)
         else:
             conn_patterns[m] = None
     logger.info("Connectivity computation...")
@@ -589,6 +613,7 @@ def spectral_connectivity_time(
         mt_bandwidth=mt_bandwidth,
         gc_n_lags=gc_n_lags,
         rank=rank,
+        n_components=n_components,
         decim=decim,
         padding=padding,
         kw_cwt={},
@@ -607,8 +632,8 @@ def spectral_connectivity_time(
                 conn_patterns[m][epoch_idx] = np.stack(patterns[m], axis=0)
     for m in method:
         if conn_patterns[m] is not None:
-            # transpose to [seeds/targets x epochs x cons x channels x freqs]
-            conn_patterns[m] = conn_patterns[m].transpose((1, 0, 2, 3, 4))
+            # convert to [seeds/targets x epochs x cons x [comps] x channels x freqs]
+            conn_patterns[m] = np.moveaxis(conn_patterns[m], 1, 0)
 
     if indices is None and not multivariate_con:
         conn_flat = conn
@@ -638,7 +663,7 @@ def spectral_connectivity_time(
             "n_nodes": n_signals,
             "names": names,
             "indices": indices,
-            "method": method,
+            "method": m,
             "spec_method": mode,
             "events": events,
             "event_id": event_id,
@@ -646,6 +671,8 @@ def spectral_connectivity_time(
             "rank": rank,
             "n_lags": gc_n_lags if m in _gc_methods else None,
         }
+        if n_components and m in _multicomp_methods:
+            store_params.update(components=np.arange(n_components) + 1)
         if average:
             store_params["data"] = np.mean(store_params["data"], axis=0)
             if conn_patterns[m] is not None:
@@ -679,6 +706,7 @@ def _spectral_connectivity(
     mt_bandwidth,
     gc_n_lags,
     rank,
+    n_components,
     decim,
     padding,
     kw_cwt,
@@ -725,6 +753,9 @@ def _spectral_connectivity(
         computing Granger causality.
     rank : tuple of array
         Ranks to project the seed and target data to.
+    n_components : int
+        Number of connectivity components to extract from the data. If 0, only the first
+        component is extracted.
     decim : int
         Decimation factor after time-frequency
         decomposition.
@@ -737,17 +768,19 @@ def _spectral_connectivity(
     Returns
     -------
     scores : dict
-        Dictionary containing the connectivity estimates corresponding to the
-        metrics in ``method``. Each element is an array of shape (n_cons,
-        n_freqs) or (n_cons, n_fbands) if ``faverage`` is `True`.
+        Dictionary containing the connectivity estimates corresponding to the metrics in
+        ``method``. Each element is an array of shape (n_cons, [n_comps], n_freqs) or
+        (n_cons, [n_comps], n_fbands) if ``faverage`` is `True`. ``n_comps`` is present
+        for valid multivariate methods if ``n_components > 0``.
 
     patterns : dict
         Dictionary containing the connectivity patterns (for reconstructing the
-        connectivity components in source-space) corresponding to the metrics
-        in ``method``, if multivariate methods are called, else an empty
-        dictionary. Each element is an array of shape (2, n_channels, n_freqs)
-        or (2, n_channels, 1) if ``faverage`` is `True`, where 2 corresponds to
-        the seed and target signals (respectively).
+        connectivity components in channel-space) corresponding to the metrics in
+        ``method``, if multivariate methods are called, else an empty dictionary. Each
+        element is an array of shape (2, [n_comps], n_channels, n_freqs) or (2,
+        n_channels, n_fbands) if ``faverage`` is `True`, where 2 corresponds to the seed
+        and target signals (respectively). ``n_comps`` is present for valid multivariate
+        methods if ``n_components > 0``.
     """
     n_cons = len(source_idx)
     data = np.expand_dims(data, axis=0)
@@ -818,6 +851,7 @@ def _spectral_connectivity(
         signals_use,
         gc_n_lags,
         rank,
+        n_components,
         n_jobs,
         verbose,
         n_cons,
@@ -853,6 +887,7 @@ def _parallel_con(
     signals_use,
     gc_n_lags,
     rank,
+    n_components,
     n_jobs,
     verbose,
     total,
@@ -883,6 +918,9 @@ def _parallel_con(
         computing Granger causality.
     rank : tuple of array of int
         Ranks to project the seed and target data to.
+    n_components : int
+        Number of connectivity components to extract from the data. If 0, only the first
+        component is extracted.
     n_jobs : int
         Number of parallel jobs.
     total : int
@@ -950,6 +988,7 @@ def _parallel_con(
         weights,
         gc_n_lags,
         rank,
+        n_components,
         n_jobs,
     )
 
@@ -1025,6 +1064,7 @@ def _multivariate_con(
     weights,
     gc_n_lags,
     rank,
+    n_components,
     n_jobs,
 ):
     """Compute spectral connectivity metrics between multiple signals.
@@ -1057,6 +1097,9 @@ def _multivariate_con(
         computing Granger causality.
     rank : tuple of array, shape of (2, n_cons)
         Ranks to project the seed and target data to.
+    n_components : int
+        Number of connectivity components to extract from the data. If 0, only the first
+        component is extracted.
     n_jobs : int
         Number of jobs to run in parallel.
 
@@ -1064,17 +1107,18 @@ def _multivariate_con(
     -------
     scores : list
         List of connectivity scores between seed and target signals for each
-        connectivity method. Each element is an array with shape (n_freqs,) or
-        (n_fbands) depending on ``faverage``.
+        connectivity method. Each element is an array with shape ([n_comps], n_freqs) or
+        ([n_comps], n_fbands) depending on ``faverage``. ``n_comps`` is present for
+        valid multivariate methods if ``n_components > 0``.
 
     patterns : list
         List of connectivity patterns between seed and target signals for each
-        connectivity method. Each element is an array of length 2 corresponding
-        to the seed and target patterns, respectively, each with shape
-        (n_channels, n_freqs) or (n_channels, n_fbands)
-        depending on ``faverage``. ``n_channels`` is the largest number of
-        channels across all connections, with missing entries padded with
-        ``np.nan``.
+        connectivity method. Each element is an array of length 2 corresponding to the
+        seed and target patterns, respectively, each with shape ([n_comps], n_channels,
+        n_freqs) or ([n_comps], n_channels, n_fbands) depending on ``faverage``.
+        ``n_comps`` is present for valid multivariate methods if ``n_components > 0``.
+        ``n_channels`` is the largest number of channels across all connections, with
+        missing entries padded with ``np.nan``.
     """
     csd = []
     for x in signals_use:
@@ -1099,6 +1143,8 @@ def _multivariate_con(
             "n_times": 0,
             "n_jobs": n_jobs,
         }
+        if m in _multicomp_methods:
+            call_params["n_components"] = n_components
         if m in _gc_methods:
             call_params["n_lags"] = gc_n_lags
         con_est = _CON_METHOD_MAP_MULTIVARIATE[m](**call_params)

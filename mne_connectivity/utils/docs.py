@@ -17,13 +17,11 @@ docdict = dict()
 
 # Connectivity
 docdict["data"] = """
-data : np.ndarray ([epochs], n_estimated_nodes, [freqs], [times])
-    The connectivity data that is a raveled array of
-    ``(n_estimated_nodes, ...)`` shape. The
-    ``n_estimated_nodes`` is equal to
-    ``n_nodes_in * n_nodes_out`` if one is computing
-    the full connectivity, or a subset of nodes
-    equal to the length of ``indices`` passed in.
+data : np.ndarray ([epochs], n_estimated_nodes, [components], [freqs], [times])
+    The connectivity data that is a raveled array of ``(n_estimated_nodes, ...)`` shape.
+    The ``n_estimated_nodes`` is equal to ``n_nodes_in * n_nodes_out`` if one is
+    computing the full connectivity, or a subset of nodes equal to the length of
+    ``indices`` passed in.
 """
 
 docdict["names"] = """
@@ -52,11 +50,10 @@ n_nodes : int
 
 docdict["connectivity_kwargs"] = """
 **kwargs : dict
-        Extra connectivity parameters. These may include
-        ``freqs`` for spectral connectivity, and/or
-        ``times`` for connectivity over time. In addition,
-        these may include extra parameters that are stored
-        as xarray ``attrs``.
+    Extra connectivity parameters. These may include ``freqs`` for spectral
+    connectivity, ``times`` for connectivity over time, or ``components`` for
+    multivariate connectivity with multiple components per connection. In addition,
+    these may include extra parameters that are stored as xarray ``attrs``.
 """
 
 docdict["mode"] = """

@@ -117,6 +117,7 @@ numpydoc_xref_ignore = {
     "epochs",
     "freqs",
     "times",
+    "components",
     "arrays",
     "lists",
     "func",
