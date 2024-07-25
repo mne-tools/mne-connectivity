@@ -83,7 +83,7 @@ mt_low_bias : bool (default True)
 
 docdict["cwt_freqs"] = """
 cwt_freqs : array of int or float | None (default None)
-    The frequencies of interest in Hz. Must not be ``None`` and only used if
+    The frequencies of interest in Hz. Must not be `None` and only used if
     ``mode='cwt_morlet'``.
 """
 

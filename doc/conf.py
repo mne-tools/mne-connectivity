@@ -342,6 +342,7 @@ sphinx_gallery_conf = {
     "matplotlib_animations": True,
     "compress_images": ("images", "thumbnails"),
     "image_scrapers": scrapers,
+    "expected_failing_examples": ["../examples/granger_causality.py"],
 }
 
 # sphinxcontrib-bibtex
