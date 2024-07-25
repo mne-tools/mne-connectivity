@@ -59,7 +59,8 @@ def plot_sensors_connectivity(
 
     if con.ndim != 2 or con.shape[0] != con.shape[1]:
         raise ValueError(
-            "Connectivity data must be a 2D array of shape (channels, channels)"
+            "Connectivity data must be a 2D array of shape (n_channels, n_channels), "
+            f"got shape {con.shape}"
         )
 
     picks = _picks_to_idx(info, picks)
