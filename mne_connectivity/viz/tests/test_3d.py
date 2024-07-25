@@ -29,7 +29,7 @@ def test_plot_sensors_connectivity(renderer):
         plot_sensors_connectivity(info="foo", con=con, picks=picks)
     with pytest.raises(ValueError, match="Connectivity data must be a 2D array"):
         plot_sensors_connectivity(info=info, con=np.expand_dims(con, 3), picks=picks)
-    with pytest.raises(ValueError, match="2D array of shape (channels, channels)"):
+    with pytest.raises(ValueError, match="2D array of shape (n_channels, n_channels)"):
         plot_sensors_connectivity(info=info, con=con[:, :-1], picks=picks)
     with pytest.raises(ValueError, match="does not correspond to the size"):
         plot_sensors_connectivity(info=info, con=con[::2, ::2], picks=picks)
