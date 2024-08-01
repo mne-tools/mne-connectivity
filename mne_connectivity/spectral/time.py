@@ -165,6 +165,8 @@ def spectral_connectivity_time(
         ``n_components`` must be <= 3. If `None`, the number of components equal to the
         minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
         Only used if ``method`` contains any of ``['cacoh', 'mic']``.
+
+        .. versionadded:: 0.8
     decim : int
         To reduce memory usage, decimation factor after time-frequency
         decomposition. Returns ``tfr[…, ::decim]``.
