@@ -729,11 +729,12 @@ def spectral_connectivity_epochs(
     ----------
     data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | ~mne.time_frequency.EpochsSpectrum
         The data from which to compute connectivity. Can be epoched timeseries data as
-        an `array` or `~mne.Epochs` object, or Fourier coefficients for each epoch as an
-        `~mne.time_frequency.EpochsSpectrum` object. If timeseries data, the spectral
-        information will be computed according to the spectral estimation mode (see the
-        ``mode`` parameter). If an `~mne.time_frequency.EpochsSpectrum` object, this
-        spectral information will be used and the ``mode`` parameter will be ignored.
+        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients
+        for each epoch as an :class:`~mne.time_frequency.EpochsSpectrum` object. If
+        timeseries data, the spectral information will be computed according to the
+        spectral estimation mode (see the ``mode`` parameter). If an
+        :class:`~mne.time_frequency.EpochsSpectrum` object, this spectral information
+        will be used and the ``mode`` parameter will be ignored.
 
         Note that it is also possible to combine multiple timeseries signals by
         providing a list of tuples, e.g.: ::
@@ -741,14 +742,14 @@ def spectral_connectivity_epochs(
             data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)]
 
         which corresponds to 3 epochs where ``arr_*`` is an array with the same number
-        of time points as ``stc_*``. Data can also be a `list`/:term:`generator` of
-        arrays, ``shape (n_signals, n_times)``, or a `list`/:term:`generator` of
-        `~mne.SourceEstimate` or `~mne.VolSourceEstimate` objects.
+        of time points as ``stc_*``. Data can also be a :class:`list`/:term:`generator`
+        of arrays, ``shape (n_signals, n_times)``, or a :class:`list`/:term:`generator`
+        of :class:`~mne.SourceEstimate` or :class:`~mne.VolSourceEstimate` objects.
 
         .. versionchanged:: 0.8
-           Fourier coefficients stored in an `~mne.time_frequency.EpochsSpectrum` or
-           `~mne.time_frequency.EpochsSpectrumArray` object can also be passed in as
-           data. Storing Fourier coefficients requires ``mne >= 1.8``.
+           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsSpectrum`
+           or :class:`~mne.time_frequency.EpochsSpectrumArray` object can also be passed
+           in as data. Storing Fourier coefficients requires ``mne >= 1.8``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
@@ -787,8 +788,8 @@ def spectral_connectivity_epochs(
         The sampling frequency. Required if data is an :term:`array-like`.
     mode : str
         Spectrum estimation mode can be either: 'multitaper', 'fourier', or
-        'cwt_morlet'. Ignored if ``data`` is an `~mne.time_frequency.EpochsSpectrum`
-        object.
+        'cwt_morlet'. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     fmin : float | tuple of float
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
@@ -803,33 +804,36 @@ def spectral_connectivity_epochs(
         the output freqs will be a list with arrays of the frequencies
         that were averaged.
     tmin : float | None
-        Time to start connectivity estimation. Note: when ``data`` is an `array`, the
-        first sample is assumed to be at time 0. For `~mne.Epochs`, the time information
-        contained in the object is used to compute the time indices. Ignored if ``data``
-        is an `~mne.time_frequency.EpochsSpectrum` object.
+        Time to start connectivity estimation. Note: when ``data`` is an
+        :term:`array-like`, the first sample is assumed to be at time 0. For
+        :class:`~mne.Epochs`, the time information contained in the object is used to
+        compute the time indices. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     tmax : float | None
-        Time to end connectivity estimation. Note: when ``data`` is an `array`, the
-        first sample is assumed to be at time 0. For `~mne.Epochs`, the time information
-        contained in the object is used to compute the time indices. Ignored if ``data``
-        is an `~mne.time_frequency.EpochsSpectrum` object.
+        Time to end connectivity estimation. Note: when ``data`` is an
+        :term:`array-like`, the first sample is assumed to be at time 0. For
+        :class:`~mne.Epochs`, the time information contained in the object is used to
+        compute the time indices. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz. Only used in
         'multitaper' mode. Ignored if ``data`` is an
-        `~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_adaptive : bool
         Use adaptive weights to combine the tapered spectra into PSD. Only used in
         'multitaper' mode. Ignored if ``data`` is an
-        `~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_low_bias : bool
         Only use tapers with more than 90 percent spectral concentration within
         bandwidth. Only used in 'multitaper' mode. Ignored if ``data`` is an
-        `~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode. Ignored if
-        ``data`` is an `~mne.time_frequency.EpochsSpectrum` object.
+        ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in 'cwt_morlet'
-        mode. Ignored if ``data`` is an `~mne.time_frequency.EpochsSpectrum` object.
+        mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum`
+        object.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
