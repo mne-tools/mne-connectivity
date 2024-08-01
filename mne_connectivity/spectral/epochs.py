@@ -406,8 +406,8 @@ def _compute_spectra(
                 if mode == "multitaper":
                     weights = np.sqrt(eigvals)[np.newaxis, :, np.newaxis]
                 else:
-                    # hack to so we can sum over axis=-2
-                    weights = np.array([1.0])[:, None, None]
+                    # hack to so we can sum over axis=-2 (tapers dim)
+                    weights = np.ones((1, 1, 1))
 
                 if accumulate_psd:
                     _this_psd = _psd_from_mt(this_x_t, weights)
@@ -516,7 +516,7 @@ def _epoch_spectral_connectivity(
         x_t = np.array(data)[:, sig_idx, ..., freq_mask]
         if weights is None:  # also assumes no tapers dim
             x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects a tapers dim
-            weights = np.array([1.0])[:, None, None]
+            weights = np.ones((1, 1, 1))
         if accumulate_psd:
             this_psd = _psd_from_mt(x_t, weights)
     else:  # compute spectral info from scratch
