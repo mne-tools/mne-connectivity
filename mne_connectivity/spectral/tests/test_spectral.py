@@ -471,6 +471,7 @@ def test_spectral_connectivity(method, mode):
 
 
 # Fourier coeffs in Spectrum objects added in MNE v1.8.0
+# FIXME: Update to reference MNE 1.8 instead of 1.7.1 when 1.8 released
 @pytest.mark.skipif(
     Version(mne.__version__) <= Version("1.7.1"), reason="Requires MNE v1.8.0 or higher"
 )
@@ -536,6 +537,7 @@ def test_spectral_connectivity_epochs_spectrum_input(mode):
 
 # TODO: Add general test for error catching for spec_conn_epochs
 # Fourier coeffs in Spectrum objects added in MNE v1.8.0
+# FIXME: Update to reference MNE 1.8 instead of 1.7.1 when 1.8 released
 @pytest.mark.skipif(
     Version(mne.__version__) <= Version("1.7.1"), reason="Requires MNE v1.8.0 or higher"
 )
