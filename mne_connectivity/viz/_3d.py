@@ -50,6 +50,7 @@ def plot_sensors_connectivity(
     min_distance : float
         The minimum distance required between two sensors to plot a connection between
         them, in meters. Default is 0.05 (i.e. 5 cm).
+
         .. versionadded:: 0.8
 
     Returns
