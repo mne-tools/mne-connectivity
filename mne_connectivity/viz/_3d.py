@@ -23,6 +23,7 @@ def plot_sensors_connectivity(
     info,
     con,
     picks=None,
+    *,
     cbar_label="Connectivity",
     n_con=20,
     cmap="RdBu",
