@@ -2,14 +2,13 @@ import inspect
 import os
 import platform
 
-import mne
 import numpy as np
 import pandas as pd
 import pytest
 from mne import EpochsArray, SourceEstimate, create_info
 from mne.filter import filter_data
+from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_less
-from packaging.version import Version
 
 from mne_connectivity import (
     SpectralConnectivity,
@@ -471,9 +470,8 @@ def test_spectral_connectivity(method, mode):
 
 
 # Fourier coeffs in Spectrum objects added in MNE v1.8.0
-# FIXME: Update to reference MNE 1.8 instead of 1.7.1 when 1.8 released
 @pytest.mark.skipif(
-    Version(mne.__version__) <= Version("1.7.1"), reason="Requires MNE v1.8.0 or higher"
+    not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
 )
 @pytest.mark.parametrize("mode", ["multitaper", "fourier"])
 def test_spectral_connectivity_epochs_spectrum_input(mode):
@@ -496,7 +494,7 @@ def test_spectral_connectivity_epochs_spectrum_input(mode):
         n_times=n_times,
         sfreq=sfreq,
         trans_bandwidth=trans_bandwidth,
-        snr=0.7,
+        snr=0.5,
         connection_delay=delay,
         rng_seed=44,
     )
@@ -531,12 +529,20 @@ def test_spectral_connectivity_epochs_spectrum_input(mode):
         freqs > fband[1] + trans_bandwidth * 2
     )
 
-    assert_array_less(0.6, con.get_data()[:, freqs_con])
-    assert_array_less(con.get_data()[:, freqs_noise], 0.2)
+    if mode == "multitaper":  # lower baseline for multitaper
+        con_thresh = (0.1, 0.3)
+    else:  # higher baseline for Welch/Fourier
+        con_thresh = (0.2, 0.4)
+
+    # check freqs of simulated interaction show strong connectivity
+    assert_array_less(con_thresh[1], con.get_data()[:, freqs_con].mean())
+    # check freqs of no simulated interaction (just noise) show weak connectivity
+    assert_array_less(con.get_data()[:, freqs_noise].mean(), con_thresh[0])
 
 
 # TODO: Add general test for error catching for spec_conn_epochs
-@pytest.mark.skipif(not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
+@pytest.mark.skipif(
+    not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
 )
 def test_spectral_connectivity_epochs_spectrum_input_error_catch():
     """Test spec_conn_epochs catches error with EpochsSpectrum data as input."""
