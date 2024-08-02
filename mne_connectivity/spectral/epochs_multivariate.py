@@ -16,6 +16,8 @@ from typing import Optional
 import numpy as np
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
+from mne.time_frequency import EpochsSpectrum, EpochsSpectrumArray
+from mne.time_frequency.multitaper import _psd_from_mt
 from mne.utils import ProgressBar, _validate_type, logger
 
 
@@ -31,6 +33,14 @@ def _check_rank_input(rank, data, indices):
             if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
                 kwargs["copy"] = False
             data_arr = data.get_data(**kwargs)
+        elif isinstance(data, (EpochsSpectrum, EpochsSpectrumArray)):
+            # Spectrum objs will drop bad channels, so specify picking all channels
+            data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
+            # Convert to power (and aggregate over tapers) before computing rank
+            if "taper" in data._dims:
+                data_arr = _psd_from_mt(data_arr, data.weights)
+            else:
+                data_arr = (data_arr * data_arr.conj()).real
         else:
             data_arr = data
 
