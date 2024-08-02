@@ -513,7 +513,7 @@ def _epoch_spectral_connectivity(
     if spectrum_computed:  # use existing spectral info
         # XXX: Will need to distinguish time-resolved spectra here if support added
         # Select signals & freqs of interest (flexible indexing for optional tapers dim)
-        x_t = np.array(data)[:, sig_idx, ..., freq_mask]
+        x_t = np.array(data)[:, sig_idx][..., freq_mask]  # split dims to avoid np.ix_
         if weights is None:  # also assumes no tapers dim
             x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects a tapers dim
             weights = np.ones((1, 1, 1))
