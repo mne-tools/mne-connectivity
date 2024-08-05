@@ -473,9 +473,14 @@ def test_spectral_connectivity(method, mode):
 @pytest.mark.skipif(
     not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
 )
+@pytest.mark.parametrize("method", ["coh", "cacoh"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier"])
-def test_spectral_connectivity_epochs_spectrum_input(mode):
-    """Test spec_conn_epochs works with EpochsSpectrum data as input."""
+def test_spectral_connectivity_epochs_spectrum_input(method, mode):
+    """Test spec_conn_epochs works with EpochsSpectrum data as input.
+
+    Important to test both bivariate and multivariate methods, as the latter involves
+    additional steps (e.g., rank computation).
+    """
     # Simulation parameters & data generation
     sfreq = 100.0  # Hz
     n_seeds = 2
@@ -499,28 +504,41 @@ def test_spectral_connectivity_epochs_spectrum_input(mode):
         rng_seed=44,
     )
 
-    indices = seed_target_indices(
-        seeds=np.arange(n_seeds), targets=np.arange(n_targets) + n_seeds
-    )
+    if method == "coh":
+        indices = seed_target_indices(
+            seeds=np.arange(n_seeds), targets=np.arange(n_targets) + n_seeds
+        )
+    else:
+        indices = ([np.arange(n_seeds)], [np.arange(n_targets) + n_seeds])
 
     # Compute Fourier coefficients
+    kwargs = dict()
+    if mode == "fourier":
+        kwargs.update(window="hann")  # default is Hamming, but we need Hanning
     coeffs = data.compute_psd(
-        method="welch" if mode == "fourier" else mode, output="complex"
+        method="welch" if mode == "fourier" else mode, output="complex", **kwargs
     )
 
-    # Compute connectivity (just coherence)
-    con = spectral_connectivity_epochs(data=coeffs, method="coh", indices=indices)
+    # Compute connectivity
+    con = spectral_connectivity_epochs(data=coeffs, method=method, indices=indices)
 
     # Check connectivity from Epochs and Spectrum are equivalent;
     # Works for multitaper, but Welch of Spectrum and Fourier of spec_conn are slightly
     # off (max. abs. diff. ~0.006) even when what should be identical settings are used
+    con_from_epochs = spectral_connectivity_epochs(
+        data=data, method=method, indices=indices, mode=mode
+    )
     if mode == "multitaper":
-        con_from_epochs = spectral_connectivity_epochs(
-            data=data, method="coh", indices=indices
-        )
-        # spec_conn_epochs excludes freqs without at least 5 cycles, but not Spectrum
-        fstart = con.freqs.index(con_from_epochs.freqs[0])
-        assert_allclose(con.get_data()[:, fstart:], con_from_epochs.get_data())
+        atol = 0
+    else:
+        atol = 7e-3
+    # spec_conn_epochs excludes freqs without at least 5 cycles, but not Spectrum
+    fstart = con.freqs.index(con_from_epochs.freqs[0])
+    assert_allclose(
+        np.abs(con.get_data()[:, fstart:]),
+        np.abs(con_from_epochs.get_data()),
+        atol=atol,
+    )
 
     # Check connectivity values are as expected
     freqs = np.array(con.freqs)
@@ -529,15 +547,16 @@ def test_spectral_connectivity_epochs_spectrum_input(mode):
         freqs > fband[1] + trans_bandwidth * 2
     )
 
+    # nothing for CaCoh to optimise, so use same thresholds for CaCoh and Coh
     if mode == "multitaper":  # lower baseline for multitaper
         con_thresh = (0.1, 0.3)
     else:  # higher baseline for Welch/Fourier
         con_thresh = (0.2, 0.4)
 
     # check freqs of simulated interaction show strong connectivity
-    assert_array_less(con_thresh[1], con.get_data()[:, freqs_con].mean())
+    assert_array_less(con_thresh[1], np.abs(con.get_data()[:, freqs_con].mean()))
     # check freqs of no simulated interaction (just noise) show weak connectivity
-    assert_array_less(con.get_data()[:, freqs_noise].mean(), con_thresh[0])
+    assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), con_thresh[0])
 
 
 # TODO: Add general test for error catching for spec_conn_epochs
