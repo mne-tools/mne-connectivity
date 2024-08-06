@@ -22,7 +22,7 @@ from mne.datasets import somato
 
 from mne_connectivity import make_surrogate_data, spectral_connectivity_epochs
 
-n_jobs = cpu_count() // 3
+n_jobs = cpu_count() // 4
 
 ########################################################################################
 # Background
