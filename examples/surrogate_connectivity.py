@@ -13,12 +13,16 @@ connectivity estimates are significantly greater than baseline.
 
 # %%
 
+from multiprocessing import cpu_count
+
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
 from mne.datasets import somato
 
 from mne_connectivity import make_surrogate_data, spectral_connectivity_epochs
+
+n_jobs = cpu_count() // 2
 
 ########################################################################################
 # Background
@@ -122,7 +126,7 @@ for shuffle_i, surrogate in enumerate(pretrial_surrogates):
     print(f"Computing connectivity for shuffle {shuffle_i+1} of {n_shuffles}")
     surrogate_con.append(
         spectral_connectivity_epochs(
-            surrogate, method="imcoh", indices=indices, n_jobs=-1, verbose=False
+            surrogate, method="imcoh", indices=indices, n_jobs=n_jobs, verbose=False
         )
     )
 
@@ -282,7 +286,7 @@ for shuffle_i, surrogate in enumerate(poststim_surrogates):
     print(f"Computing connectivity for shuffle {shuffle_i+1} of {n_shuffles}")
     bad_surrogate_con.append(
         spectral_connectivity_epochs(
-            surrogate, method="imcoh", indices=indices, n_jobs=-1, verbose=False
+            surrogate, method="imcoh", indices=indices, n_jobs=n_jobs, verbose=False
         )
     )
 
