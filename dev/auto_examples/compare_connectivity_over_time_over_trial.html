@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.8.0.dev134+gc339bccf7 documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.8.0.dev141+g6da505591 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=250bafce"></script>
+    <script src="../_static/documentation_options.js?v=5ae7414b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev134+gc339bccf7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev141+g6da505591 documentation</p>
   
 </a></div>
     
@@ -545,7 +545,7 @@ connectivity structure is the same over each event.</p>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># number of channels</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">=</span> <span class="mi">2000</span>  <span class="c1"># number of sample points</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">250</span>  <span class="c1"># Set sampling freq</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rng</span></a><span class="o">.</span><span class="n">random</span><span class="p">((</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">))</span>  <span class="c1"># generate random data</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.Generator.random.html#numpy.random.Generator.random" title="numpy.random.Generator.random" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-method"><span class="n">rng</span><span class="o">.</span><span class="n">random</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a><span class="p">))</span>  <span class="c1"># generate random data</span>
 
 <span class="c1"># In case 1, we overwrite all epochs with the data from the first epoch</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="p">):</span>
@@ -564,7 +564,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fe22eea7e20&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fd7575fe5f0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -608,18 +608,18 @@ Using qt as 2D backend.
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1007: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1126: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
-only using indices for lower-triangular matrix
-    computing connectivity for 3 connections
     using t=0.000s..7.996s for estimation (2000 points)
     computing connectivity for the bands:
      band 1: 4.0Hz..8.0Hz (17 points)
      band 2: 8.0Hz..13.0Hz (21 points)
      band 3: 13.0Hz..30.0Hz (69 points)
     connectivity scores will be averaged for each band
+only using indices for lower-triangular matrix
+    computing connectivity for 3 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
     computing cross-spectral density for epoch 1
@@ -710,7 +710,7 @@ between the three electrodes over trials are exactly 1.</p>
     <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:391: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:393: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 only using indices for lower-triangular matrix
@@ -757,7 +757,7 @@ over trials.</p>
     <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_channels</span></a><span class="p">):</span>  <span class="c1"># and each channel are also different</span>
         <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">wave_freq</span></a> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># freq of the sinus wave</span>
         <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_len</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_times</span></a> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sfreq</span></a>
-        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rng</span></a><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># Introduce random phase for each channel</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.Generator.random.html#numpy.random.Generator.random" title="numpy.random.Generator.random" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-method"><span class="n">rng</span><span class="o">.</span><span class="n">random</span></a><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># Introduce random phase for each channel</span>
         <span class="c1"># Generate sinus wave</span>
         <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span>
             <span class="o">-</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">wave_freq</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epoch_len</span></a> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">+</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">phase</span></a><span class="p">,</span>
@@ -777,7 +777,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fe24258a950&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7fd7ab6064d0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -810,18 +810,18 @@ No baseline correction applied
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1007: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1126: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
-only using indices for lower-triangular matrix
-    computing connectivity for 3 connections
     using t=0.000s..7.996s for estimation (2000 points)
     computing connectivity for the bands:
      band 1: 4.0Hz..8.0Hz (17 points)
      band 2: 8.0Hz..13.0Hz (21 points)
      band 3: 13.0Hz..30.0Hz (69 points)
     connectivity scores will be averaged for each band
+only using indices for lower-triangular matrix
+    computing connectivity for 3 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
     computing cross-spectral density for epoch 1
@@ -872,7 +872,7 @@ between two channels are not the same over trials.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:391: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:393: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~243 kB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 only using indices for lower-triangular matrix
@@ -1094,8 +1094,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b"  title="Hide section"
-    onclick="toggleVisibility('general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b')">
+<tr class="repr-section-header general-a02fe3e8-8835-4294-ad84-32ce227231c9"  title="Hide section"
+    onclick="toggleVisibility('general-a02fe3e8-8835-4294-ad84-32ce227231c9')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1107,26 +1107,26 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b ">
+<tr class="repr-element general-a02fe3e8-8835-4294-ad84-32ce227231c9 ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b ">
+<tr class="repr-element general-a02fe3e8-8835-4294-ad84-32ce227231c9 ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b ">
+<tr class="repr-element general-a02fe3e8-8835-4294-ad84-32ce227231c9 ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-f6b60aa9-61ae-4022-9fb6-1b83183f3f4b ">
+<tr class="repr-element general-a02fe3e8-8835-4294-ad84-32ce227231c9 ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -1141,8 +1141,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd"
-    title="Hide section"  onclick="toggleVisibility('acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd')">
+<tr class="repr-section-header acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5"
+    title="Hide section"  onclick="toggleVisibility('acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1157,14 +1157,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Events counts</td>
 
@@ -1178,35 +1178,35 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-e3846977-9176-4f48-a87e-adb311d8d0fd ">
+<tr class="repr-element acquisition-c5b2b84a-77d4-42d8-b13a-476c8960e8a5 ">
     <td class="repr-section-toggle-col"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1220,8 +1220,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-588b221b-a170-464c-9f33-ce9e3f39923f"  title="Hide section"
-    onclick="toggleVisibility('channels-588b221b-a170-464c-9f33-ce9e3f39923f')">
+<tr class="repr-section-header channels-2851317d-d276-44fa-b4cb-3f847268c79e"  title="Hide section"
+    onclick="toggleVisibility('channels-2851317d-d276-44fa-b4cb-3f847268c79e')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1234,7 +1234,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-588b221b-a170-464c-9f33-ce9e3f39923f ">
+<tr class="repr-element channels-2851317d-d276-44fa-b4cb-3f847268c79e ">
     <td class="repr-section-toggle-col"></td>
     <td>EEG</td>
     <td>
@@ -1247,7 +1247,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-588b221b-a170-464c-9f33-ce9e3f39923f ">
+<tr class="repr-element channels-2851317d-d276-44fa-b4cb-3f847268c79e ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -1262,8 +1262,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-f84bb692-42f6-4f76-8a70-7c11c948e982"  title="Hide section"
-    onclick="toggleVisibility('filters-f84bb692-42f6-4f76-8a70-7c11c948e982')">
+<tr class="repr-section-header filters-e4758f02-4d4c-4324-8e35-176120758a38"  title="Hide section"
+    onclick="toggleVisibility('filters-e4758f02-4d4c-4324-8e35-176120758a38')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1275,21 +1275,21 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-f84bb692-42f6-4f76-8a70-7c11c948e982 ">
+<tr class="repr-element filters-e4758f02-4d4c-4324-8e35-176120758a38 ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-f84bb692-42f6-4f76-8a70-7c11c948e982 ">
+<tr class="repr-element filters-e4758f02-4d4c-4324-8e35-176120758a38 ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-f84bb692-42f6-4f76-8a70-7c11c948e982 ">
+<tr class="repr-element filters-e4758f02-4d4c-4324-8e35-176120758a38 ">
     <td class="repr-section-toggle-col"></td>
     <td>Projections</td>
     <td>
@@ -1346,11 +1346,11 @@ connectivity in the theta band around P1</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Adding metadata with 3 columns
 Connectivity computation...
-only using indices for lower-triangular matrix
-    computing connectivity for 1711 connections
     using t=0.000s..1.598s for estimation (241 points)
     frequencies: 4.0Hz..8.0Hz (17 points)
     connectivity scores will be averaged for each band
+only using indices for lower-triangular matrix
+    computing connectivity for 1711 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: WPLI
     computing cross-spectral density for epoch 1
@@ -1479,7 +1479,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7fe1ebbc0ca0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7fd773b94df0&gt;
 </pre></div>
 </div>
 </section>
@@ -1510,7 +1510,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 32.344 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.423 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1601,7 +1601,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-01.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-07.
       <br/>
     
   </p>
@@ -1609,7 +1609,7 @@ at this timepoint were between occipital and frontal areas.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
     <br/>
   </p>
 </div>

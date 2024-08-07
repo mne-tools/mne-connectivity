@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev134+gc339bccf7 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev141+g6da505591 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=250bafce"></script>
+    <script src="../../../_static/documentation_options.js?v=5ae7414b"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev134+gc339bccf7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.8.0.dev141+g6da505591 documentation</p>
   
 </a></div>
     
@@ -435,6 +435,11 @@ document.write(`
     <span class="n">_psd_from_mt</span><span class="p">,</span>
     <span class="n">_psd_from_mt_adaptive</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.time_frequency.spectrum</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseSpectrum</span><span class="p">,</span>
+    <span class="n">EpochsSpectrum</span><span class="p">,</span>
+    <span class="n">EpochsSpectrumArray</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.time_frequency.tfr</span> <span class="kn">import</span> <span class="n">cwt</span><span class="p">,</span> <span class="n">morlet</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
 
@@ -449,6 +454,69 @@ document.write(`
     <span class="n">_multicomp_methods</span><span class="p">,</span>
     <span class="n">_multivariate_methods</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_times</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">):</span>
+    <span class="c1"># get the data size and time scale</span>
+    <span class="n">n_signals</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">times_in</span><span class="p">,</span> <span class="n">warn_times</span> <span class="o">=</span> <span class="n">_get_and_verify_data_sizes</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span>
+    <span class="p">)</span>
+    <span class="n">n_times_in</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times_in</span><span class="p">)</span>  <span class="c1"># XXX: Why not use times returned from above func?</span>
+
+    <span class="k">if</span> <span class="n">tmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmin</span> <span class="o">&lt;</span> <span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;start time tmin=</span><span class="si">{</span><span class="n">tmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">tmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmax</span> <span class="o">&gt;</span> <span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;stop time tmax=</span><span class="si">{</span><span class="n">tmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">_time_mask</span><span class="p">(</span><span class="n">times_in</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">)</span>
+    <span class="n">tmin_idx</span><span class="p">,</span> <span class="n">tmax_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">tmax_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">tmin_true</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmin_idx</span><span class="p">]</span>
+    <span class="n">tmax_true</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmax_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># time of last point used</span>
+
+    <span class="n">times</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmin_idx</span><span class="p">:</span><span class="n">tmax_idx</span><span class="p">]</span>
+    <span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;    using t=</span><span class="si">{</span><span class="n">tmin_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s..</span><span class="si">{</span><span class="n">tmax_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s for estimation (</span><span class="si">{</span><span class="n">n_times</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;points)&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">n_signals</span><span class="p">,</span>
+        <span class="n">times</span><span class="p">,</span>
+        <span class="n">n_times</span><span class="p">,</span>
+        <span class="n">times_in</span><span class="p">,</span>
+        <span class="n">n_times_in</span><span class="p">,</span>
+        <span class="n">tmin_idx</span><span class="p">,</span>
+        <span class="n">tmax_idx</span><span class="p">,</span>
+        <span class="n">warn_times</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_freqs</span><span class="p">(</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">n_times</span><span class="p">):</span>
+    <span class="c1"># check that fmin corresponds to at least 5 cycles</span>
+    <span class="n">dur</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span> <span class="o">/</span> <span class="n">sfreq</span>
+    <span class="n">five_cycle_freq</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="o">/</span> <span class="n">dur</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">fmin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+        <span class="c1"># we use the 5 cycle freq. as default</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">five_cycle_freq</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fmin</span> <span class="o">&lt;</span> <span class="n">five_cycle_freq</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;fmin=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Hz corresponds to </span><span class="si">{</span><span class="n">dur</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &lt; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;5 cycles based on the epoch length </span><span class="si">{</span><span class="n">dur</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec, need at least &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="mf">5.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec epochs or fmin=</span><span class="si">{</span><span class="n">five_cycle_freq</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Spectrum estimate will be unreliable.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fmin</span>
 
 
 <span class="k">def</span> <span class="nf">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
@@ -496,6 +564,7 @@ document.write(`
     <span class="n">fmin</span><span class="p">,</span>
     <span class="n">fmax</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">,</span>
     <span class="n">indices</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">,</span>
@@ -503,105 +572,39 @@ document.write(`
     <span class="n">n_bands</span><span class="p">,</span>
     <span class="n">cwt_freqs</span><span class="p">,</span>
     <span class="n">faverage</span><span class="p">,</span>
+    <span class="n">spectrum_computed</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check and precompute dimensions of results data.&quot;&quot;&quot;</span>
     <span class="n">first_epoch</span> <span class="o">=</span> <span class="n">epoch_block</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="c1"># get the data size and time scale</span>
-    <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times_in</span><span class="p">,</span> <span class="n">times_in</span><span class="p">,</span> <span class="n">warn_times</span> <span class="o">=</span> <span class="n">_get_and_verify_data_sizes</span><span class="p">(</span>
-        <span class="n">first_epoch</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times_in</span>
-    <span class="p">)</span>
-
-    <span class="n">n_times_in</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times_in</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">tmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmin</span> <span class="o">&lt;</span> <span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;start time tmin=</span><span class="si">{</span><span class="n">tmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
+    <span class="c1"># Sort times and freqs</span>
+    <span class="k">if</span> <span class="n">spectrum_computed</span><span class="p">:</span>
+        <span class="n">n_signals</span> <span class="o">=</span> <span class="n">first_epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_times</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_times_in</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tmin_idx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tmax_idx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">warn_times</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="p">(</span>
+            <span class="n">n_signals</span><span class="p">,</span>
+            <span class="n">times</span><span class="p">,</span>
+            <span class="n">n_times</span><span class="p">,</span>
+            <span class="n">times_in</span><span class="p">,</span>
+            <span class="n">n_times_in</span><span class="p">,</span>
+            <span class="n">tmin_idx</span><span class="p">,</span>
+            <span class="n">tmax_idx</span><span class="p">,</span>
+            <span class="n">warn_times</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">_check_times</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">first_epoch</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times_in</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">tmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tmax</span> <span class="o">&gt;</span> <span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;stop time tmax=</span><span class="si">{</span><span class="n">tmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s outside of the time scope of the data &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s, </span><span class="si">{</span><span class="n">times_in</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s]&quot;</span>
-        <span class="p">)</span>
-
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">_time_mask</span><span class="p">(</span><span class="n">times_in</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">)</span>
-    <span class="n">tmin_idx</span><span class="p">,</span> <span class="n">tmax_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">tmax_idx</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">tmin_true</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmin_idx</span><span class="p">]</span>
-    <span class="n">tmax_true</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmax_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># time of last point used</span>
-
-    <span class="n">times</span> <span class="o">=</span> <span class="n">times_in</span><span class="p">[</span><span class="n">tmin_idx</span><span class="p">:</span><span class="n">tmax_idx</span><span class="p">]</span>
-    <span class="n">n_times</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;indices must be specified when computing Granger causality, as &quot;</span>
-                    <span class="s2">&quot;all-to-all connectivity is not supported&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all indices for multivariate connectivity&quot;</span><span class="p">)</span>
-                <span class="c1"># indices expected to be a masked array, even if not ragged</span>
-                <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
-                <span class="p">)</span>
-                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;only using indices for lower-triangular matrix&quot;</span><span class="p">)</span>
-            <span class="c1"># only compute r for lower-triangular region</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-            <span class="c1"># pad ragged indices and mask the invalid entries</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">seed</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                    <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span>
-                        <span class="n">seed</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;seed and target indices must not intersect when computing &quot;</span>
-                            <span class="s2">&quot;Granger causality&quot;</span>
-                        <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-
-    <span class="c1"># number of connectivities to compute</span>
-    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    computing connectivity for </span><span class="si">{</span><span class="n">n_cons</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;    using t=</span><span class="si">{</span><span class="n">tmin_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s..</span><span class="si">{</span><span class="n">tmax_true</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s for estimation (</span><span class="si">{</span><span class="n">n_times</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="s2">&quot;points)&quot;</span>
-    <span class="p">)</span>
-
-    <span class="c1"># check that fmin corresponds to at least 5 cycles</span>
-    <span class="n">dur</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span> <span class="o">/</span> <span class="n">sfreq</span>
-    <span class="n">five_cycle_freq</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="o">/</span> <span class="n">dur</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">fmin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
-        <span class="c1"># we use the 5 cycle freq. as default</span>
-        <span class="n">fmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">five_cycle_freq</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fmin</span> <span class="o">&lt;</span> <span class="n">five_cycle_freq</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;fmin=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Hz corresponds to </span><span class="si">{</span><span class="n">dur</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &lt; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;5 cycles based on the epoch length </span><span class="si">{</span><span class="n">dur</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec, need at least &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="mf">5.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> sec epochs or fmin=</span><span class="si">{</span><span class="n">five_cycle_freq</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Spectrum estimate will be unreliable.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="c1"># compute frequencies to analyze based on number of samples,</span>
-    <span class="c1"># sampling rate, specified wavelet frequencies and mode</span>
-    <span class="n">freqs</span> <span class="o">=</span> <span class="n">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="c1"># check that fmin corresponds to at least 5 cycles</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="n">_check_freqs</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span><span class="p">)</span>
+        <span class="c1"># compute frequencies to analyze based on number of samples, sampling rate,</span>
+        <span class="c1"># specified wavelet frequencies, and mode</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
     <span class="c1"># compute the mask based on specified min/max and decimation factor</span>
     <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">)</span>
@@ -639,6 +642,51 @@ document.write(`
     <span class="k">if</span> <span class="n">faverage</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    connectivity scores will be averaged for each band&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Sort indices</span>
+    <span class="n">multivariate_con</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;indices must be specified when computing Granger causality, as &quot;</span>
+                    <span class="s2">&quot;all-to-all connectivity is not supported&quot;</span>
+                <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all indices for multivariate connectivity&quot;</span><span class="p">)</span>
+            <span class="c1"># indices expected to be a masked array, even if not ragged</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="p">)</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;only using indices for lower-triangular matrix&quot;</span><span class="p">)</span>
+            <span class="c1"># only compute r for lower-triangular region</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+            <span class="c1"># pad ragged indices and mask the invalid entries</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">seed</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span>
+                        <span class="n">seed</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;seed and target indices must not intersect when computing &quot;</span>
+                            <span class="s2">&quot;Granger causality&quot;</span>
+                        <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+    <span class="c1"># number of connections to compute</span>
+    <span class="n">n_cons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    computing connectivity for </span><span class="si">{</span><span class="n">n_cons</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">n_cons</span><span class="p">,</span>
         <span class="n">times</span><span class="p">,</span>
@@ -671,7 +719,7 @@ document.write(`
     <span class="n">freq_mask</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare time-frequency decomposition.&quot;&quot;&quot;</span>
-    <span class="n">spectral_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eigvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelets</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">spectral_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eigvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">n_tapers</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
@@ -729,80 +777,20 @@ document.write(`
 <span class="c1">########################################################################</span>
 
 
-<span class="k">def</span> <span class="nf">_epoch_spectral_connectivity</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_compute_spectra</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">,</span>
     <span class="n">sig_idx</span><span class="p">,</span>
     <span class="n">tmin_idx</span><span class="p">,</span>
     <span class="n">tmax_idx</span><span class="p">,</span>
-    <span class="n">sfreq</span><span class="p">,</span>
-    <span class="n">method</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">,</span>
-    <span class="n">window_fun</span><span class="p">,</span>
+    <span class="n">mt_adaptive</span><span class="p">,</span>
     <span class="n">eigvals</span><span class="p">,</span>
     <span class="n">wavelets</span><span class="p">,</span>
+    <span class="n">window_fun</span><span class="p">,</span>
     <span class="n">freq_mask</span><span class="p">,</span>
-    <span class="n">mt_adaptive</span><span class="p">,</span>
-    <span class="n">idx_map</span><span class="p">,</span>
-    <span class="n">n_cons</span><span class="p">,</span>
-    <span class="n">block_size</span><span class="p">,</span>
-    <span class="n">psd</span><span class="p">,</span>
     <span class="n">accumulate_psd</span><span class="p">,</span>
-    <span class="n">con_method_types</span><span class="p">,</span>
-    <span class="n">con_methods</span><span class="p">,</span>
-    <span class="n">n_signals</span><span class="p">,</span>
-    <span class="n">n_signals_use</span><span class="p">,</span>
-    <span class="n">n_times</span><span class="p">,</span>
-    <span class="n">gc_n_lags</span><span class="p">,</span>
-    <span class="n">n_components</span><span class="p">,</span>
-    <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-        <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_signals_use</span><span class="o">**</span><span class="mi">2</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_cons</span>
-
-    <span class="k">if</span> <span class="n">wavelets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="n">n_times</span>
-        <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wavelets</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">n_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">freq_mask</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">accumulate_inplace</span><span class="p">:</span>
-        <span class="c1"># instantiate methods only for this epoch (used in parallel mode)</span>
-        <span class="n">con_methods</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">mtype</span> <span class="ow">in</span> <span class="n">con_method_types</span><span class="p">:</span>
-            <span class="n">method_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">mtype</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;n_signals&quot;</span> <span class="ow">in</span> <span class="n">method_params</span><span class="p">:</span>
-                <span class="c1"># if it&#39;s a multivariate connectivity method</span>
-                <span class="k">if</span> <span class="s2">&quot;n_lags&quot;</span> <span class="ow">in</span> <span class="n">method_params</span><span class="p">:</span>
-                    <span class="c1"># if it&#39;s a Granger causality method</span>
-                    <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">mtype</span><span class="p">(</span>
-                            <span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">,</span> <span class="n">gc_n_lags</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># if it&#39;s a coherence method</span>
-                    <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">mtype</span><span class="p">(</span>
-                            <span class="n">n_signals_use</span><span class="p">,</span>
-                            <span class="n">n_cons</span><span class="p">,</span>
-                            <span class="n">n_freqs</span><span class="p">,</span>
-                            <span class="n">n_times_spectrum</span><span class="p">,</span>
-                            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtype</span><span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">))</span>
-
-    <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;cwt_morlet&quot;</span><span class="p">,</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_signals</span><span class="p">:</span>
-        <span class="c1"># we use all signals: use a slice for faster indexing</span>
-        <span class="n">sig_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="c1"># compute tapered spectra</span>
     <span class="n">x_t</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">this_psd</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">this_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -834,12 +822,13 @@ document.write(`
                 <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
                     <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eigvals</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># hack to so we can sum over axis=-2</span>
-                    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">])[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+                    <span class="c1"># hack to so we can sum over axis=-2 (tapers dim)</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
                 <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
                     <span class="n">_this_psd</span> <span class="o">=</span> <span class="n">_psd_from_mt</span><span class="p">(</span><span class="n">this_x_t</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># mode == &#39;cwt_morlet&#39;</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">this_data</span><span class="p">,</span> <span class="n">_BaseSourceEstimate</span><span class="p">):</span>
                 <span class="n">cwt_partial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">cwt</span><span class="p">,</span> <span class="n">Ws</span><span class="o">=</span><span class="n">wavelets</span><span class="p">,</span> <span class="n">use_fft</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
                 <span class="n">this_x_t</span> <span class="o">=</span> <span class="n">this_data</span><span class="o">.</span><span class="n">transform_data</span><span class="p">(</span>
@@ -857,6 +846,110 @@ document.write(`
         <span class="n">x_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_x_t</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
             <span class="n">this_psd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_this_psd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x_t</span><span class="p">,</span> <span class="n">this_psd</span><span class="p">,</span> <span class="n">weights</span>
+
+
+<span class="k">def</span> <span class="nf">_epoch_spectral_connectivity</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">sig_idx</span><span class="p">,</span>
+    <span class="n">tmin_idx</span><span class="p">,</span>
+    <span class="n">tmax_idx</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">,</span>
+    <span class="n">window_fun</span><span class="p">,</span>
+    <span class="n">eigvals</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">,</span>
+    <span class="n">wavelets</span><span class="p">,</span>
+    <span class="n">freq_mask</span><span class="p">,</span>
+    <span class="n">mt_adaptive</span><span class="p">,</span>
+    <span class="n">idx_map</span><span class="p">,</span>
+    <span class="n">n_cons</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="p">,</span>
+    <span class="n">psd</span><span class="p">,</span>
+    <span class="n">accumulate_psd</span><span class="p">,</span>
+    <span class="n">con_method_types</span><span class="p">,</span>
+    <span class="n">con_methods</span><span class="p">,</span>
+    <span class="n">n_signals</span><span class="p">,</span>
+    <span class="n">n_signals_use</span><span class="p">,</span>
+    <span class="n">n_times</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="p">,</span>
+    <span class="n">spectrum_computed</span><span class="p">,</span>
+    <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate connectivity for one epoch (see spectral_connectivity).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+        <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_signals_use</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_con_signals</span> <span class="o">=</span> <span class="n">n_cons</span>
+
+    <span class="k">if</span> <span class="n">wavelets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="n">n_times</span>
+        <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wavelets</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">freq_mask</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">accumulate_inplace</span><span class="p">:</span>
+        <span class="c1"># instantiate methods only for this epoch (used in parallel mode)</span>
+        <span class="n">con_methods</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mtype</span> <span class="ow">in</span> <span class="n">con_method_types</span><span class="p">:</span>
+            <span class="n">method_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">mtype</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;n_signals&quot;</span> <span class="ow">in</span> <span class="n">method_params</span><span class="p">:</span>
+                <span class="c1"># if it&#39;s a multivariate connectivity method</span>
+                <span class="k">if</span> <span class="s2">&quot;n_lags&quot;</span> <span class="ow">in</span> <span class="n">method_params</span><span class="p">:</span>
+                    <span class="c1"># if it&#39;s a Granger causality method</span>
+                    <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">mtype</span><span class="p">(</span>
+                            <span class="n">n_signals_use</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">,</span> <span class="n">gc_n_lags</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># if it&#39;s a coherency-based method</span>
+                    <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">mtype</span><span class="p">(</span>
+                            <span class="n">n_signals_use</span><span class="p">,</span>
+                            <span class="n">n_cons</span><span class="p">,</span>
+                            <span class="n">n_freqs</span><span class="p">,</span>
+                            <span class="n">n_times_spectrum</span><span class="p">,</span>
+                            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">con_methods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtype</span><span class="p">(</span><span class="n">n_cons</span><span class="p">,</span> <span class="n">n_freqs</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">))</span>
+
+    <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;cwt_morlet&quot;</span><span class="p">,</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_signals</span><span class="p">:</span>
+        <span class="c1"># we use all signals: use a slice for faster indexing</span>
+        <span class="n">sig_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># compute tapered spectra</span>
+    <span class="k">if</span> <span class="n">spectrum_computed</span><span class="p">:</span>  <span class="c1"># use existing spectral info</span>
+        <span class="c1"># XXX: Will need to distinguish time-resolved spectra here if support added</span>
+        <span class="c1"># Select signals &amp; freqs of interest (flexible indexing for optional tapers dim)</span>
+        <span class="n">x_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)[:,</span> <span class="n">sig_idx</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">freq_mask</span><span class="p">]</span>  <span class="c1"># split dims to avoid np.ix_</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># also assumes no tapers dim</span>
+            <span class="n">x_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_t</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># CSD construction expects a tapers dim</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
+            <span class="n">this_psd</span> <span class="o">=</span> <span class="n">_psd_from_mt</span><span class="p">(</span><span class="n">x_t</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># compute spectral info from scratch</span>
+        <span class="n">x_t</span><span class="p">,</span> <span class="n">this_psd</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">_compute_spectra</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">sig_idx</span><span class="o">=</span><span class="n">sig_idx</span><span class="p">,</span>
+            <span class="n">tmin_idx</span><span class="o">=</span><span class="n">tmin_idx</span><span class="p">,</span>
+            <span class="n">tmax_idx</span><span class="o">=</span><span class="n">tmax_idx</span><span class="p">,</span>
+            <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
+            <span class="n">eigvals</span><span class="o">=</span><span class="n">eigvals</span><span class="p">,</span>
+            <span class="n">wavelets</span><span class="o">=</span><span class="n">wavelets</span><span class="p">,</span>
+            <span class="n">window_fun</span><span class="o">=</span><span class="n">window_fun</span><span class="p">,</span>
+            <span class="n">freq_mask</span><span class="o">=</span><span class="n">freq_mask</span><span class="p">,</span>
+            <span class="n">accumulate_psd</span><span class="o">=</span><span class="n">accumulate_psd</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">x_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x_t</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">accumulate_psd</span><span class="p">:</span>
@@ -1052,14 +1145,29 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs</span>
-<span class="sd">        The data from which to compute connectivity. Note that it is also</span>
-<span class="sd">        possible to combine multiple signals by providing a list of tuples,</span>
-<span class="sd">        e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],</span>
-<span class="sd">        corresponds to 3 epochs, and arr_* could be an array with the same</span>
-<span class="sd">        number of time points as stc_*. The array-like object can also</span>
-<span class="sd">        be a list/generator of array, shape =(n_signals, n_times),</span>
-<span class="sd">        or a list/generator of SourceEstimate or VolSourceEstimate objects.</span>
+<span class="sd">    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | ~mne.time_frequency.EpochsSpectrum</span>
+<span class="sd">        The data from which to compute connectivity. Can be epoched timeseries data as</span>
+<span class="sd">        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients</span>
+<span class="sd">        for each epoch as an :class:`~mne.time_frequency.EpochsSpectrum` object. If</span>
+<span class="sd">        timeseries data, the spectral information will be computed according to the</span>
+<span class="sd">        spectral estimation mode (see the ``mode`` parameter). If an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object, this spectral information</span>
+<span class="sd">        will be used and the ``mode`` parameter will be ignored.</span>
+
+<span class="sd">        Note that it is also possible to combine multiple timeseries signals by</span>
+<span class="sd">        providing a list of tuples, e.g.: ::</span>
+
+<span class="sd">            data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)]</span>
+
+<span class="sd">        which corresponds to 3 epochs where ``arr_*`` is an array with the same number</span>
+<span class="sd">        of time points as ``stc_*``. Data can also be a :class:`list`/:term:`generator`</span>
+<span class="sd">        of arrays, ``shape (n_signals, n_times)``, or a :class:`list`/:term:`generator`</span>
+<span class="sd">        of :class:`~mne.SourceEstimate` or :class:`~mne.VolSourceEstimate` objects.</span>
+
+<span class="sd">        .. versionchanged:: 0.8</span>
+<span class="sd">           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsSpectrum`</span>
+<span class="sd">           or :class:`~mne.time_frequency.EpochsSpectrumArray` object can also be passed</span>
+<span class="sd">           in as data. Storing Fourier coefficients requires ``mne &gt;= 1.8``.</span>
 <span class="sd">    %(names)s</span>
 <span class="sd">    method : str | list of str</span>
 <span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cohy&#39;,</span>
@@ -1095,11 +1203,11 @@ document.write(`
 <span class="sd">        connections between all channels are computed, unless a Granger</span>
 <span class="sd">        causality method is called, in which case an error is raised.</span>
 <span class="sd">    sfreq : float</span>
-<span class="sd">        The sampling frequency. Required if data is not</span>
-<span class="sd">        :class:`Epochs &lt;mne.Epochs&gt;`.</span>
+<span class="sd">        The sampling frequency. Required if data is an :term:`array-like`.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        Spectrum estimation mode can be either: &#39;multitaper&#39;, &#39;fourier&#39;, or</span>
-<span class="sd">        &#39;cwt_morlet&#39;.</span>
+<span class="sd">        &#39;cwt_morlet&#39;. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    fmin : float | tuple of float</span>
 <span class="sd">        The lower frequency of interest. Multiple bands are defined using</span>
 <span class="sd">        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.</span>
@@ -1114,29 +1222,36 @@ document.write(`
 <span class="sd">        the output freqs will be a list with arrays of the frequencies</span>
 <span class="sd">        that were averaged.</span>
 <span class="sd">    tmin : float | None</span>
-<span class="sd">        Time to start connectivity estimation. Note: when &quot;data&quot; is an array,</span>
-<span class="sd">        the first sample is assumed to be at time 0. For other types</span>
-<span class="sd">        (Epochs, etc.), the time information contained in the object is used</span>
-<span class="sd">        to compute the time indices.</span>
+<span class="sd">        Time to start connectivity estimation. Note: when ``data`` is an</span>
+<span class="sd">        :term:`array-like`, the first sample is assumed to be at time 0. For</span>
+<span class="sd">        :class:`~mne.Epochs`, the time information contained in the object is used to</span>
+<span class="sd">        compute the time indices. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    tmax : float | None</span>
-<span class="sd">        Time to end connectivity estimation. Note: when &quot;data&quot; is an array,</span>
-<span class="sd">        the first sample is assumed to be at time 0. For other types</span>
-<span class="sd">        (Epochs, etc.), the time information contained in the object is used</span>
-<span class="sd">        to compute the time indices.</span>
+<span class="sd">        Time to end connectivity estimation. Note: when ``data`` is an</span>
+<span class="sd">        :term:`array-like`, the first sample is assumed to be at time 0. For</span>
+<span class="sd">        :class:`~mne.Epochs`, the time information contained in the object is used to</span>
+<span class="sd">        compute the time indices. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    mt_bandwidth : float | None</span>
-<span class="sd">        The bandwidth of the multitaper windowing function in Hz.</span>
-<span class="sd">        Only used in &#39;multitaper&#39; mode.</span>
+<span class="sd">        The bandwidth of the multitaper windowing function in Hz. Only used in</span>
+<span class="sd">        &#39;multitaper&#39; mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    mt_adaptive : bool</span>
-<span class="sd">        Use adaptive weights to combine the tapered spectra into PSD.</span>
-<span class="sd">        Only used in &#39;multitaper&#39; mode.</span>
+<span class="sd">        Use adaptive weights to combine the tapered spectra into PSD. Only used in</span>
+<span class="sd">        &#39;multitaper&#39; mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    mt_low_bias : bool</span>
-<span class="sd">        Only use tapers with more than 90 percent spectral concentration</span>
-<span class="sd">        within bandwidth. Only used in &#39;multitaper&#39; mode.</span>
+<span class="sd">        Only use tapers with more than 90 percent spectral concentration within</span>
+<span class="sd">        bandwidth. Only used in &#39;multitaper&#39; mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    cwt_freqs : array</span>
-<span class="sd">        Array of frequencies of interest. Only used in &#39;cwt_morlet&#39; mode.</span>
+<span class="sd">        Array of frequencies of interest. Only used in &#39;cwt_morlet&#39; mode. Ignored if</span>
+<span class="sd">        ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    cwt_n_cycles : float | array of float</span>
-<span class="sd">        Number of cycles. Fixed number or one per frequency. Only used in</span>
-<span class="sd">        &#39;cwt_morlet&#39; mode.</span>
+<span class="sd">        Number of cycles. Fixed number or one per frequency. Only used in &#39;cwt_morlet&#39;</span>
+<span class="sd">        mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum`</span>
+<span class="sd">        object.</span>
 <span class="sd">    gc_n_lags : int</span>
 <span class="sd">        Number of lags to use for the vector autoregressive model when</span>
 <span class="sd">        computing Granger causality. Higher values increase computational cost,</span>
@@ -1155,7 +1270,7 @@ document.write(`
 <span class="sd">        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).</span>
 <span class="sd">        Only used if ``method`` contains any of ``[&#39;cacoh&#39;, &#39;mic&#39;]``.</span>
 
-<span class="sd">        .. versionadded:: 0.8.0</span>
+<span class="sd">        .. versionadded:: 0.8</span>
 <span class="sd">    block_size : int</span>
 <span class="sd">        How many connections to compute at once (higher numbers are faster</span>
 <span class="sd">        but require more memory).</span>
@@ -1359,7 +1474,7 @@ document.write(`
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
     <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">parallel</span><span class="p">,</span> <span class="n">my_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
             <span class="n">_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
@@ -1401,11 +1516,15 @@ document.write(`
     <span class="c1"># handle connectivity estimators</span>
     <span class="p">(</span><span class="n">con_method_types</span><span class="p">,</span> <span class="n">n_methods</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">)</span> <span class="o">=</span> <span class="n">_check_estimators</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 
+    <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">spectrum_computed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseEpochs</span><span class="p">,</span> <span class="n">EpochsSpectrum</span><span class="p">,</span> <span class="n">EpochsSpectrumArray</span><span class="p">)):</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
-        <span class="n">times_in</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span>  <span class="c1"># input times for Epochs input type</span>
         <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
 
         <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
@@ -1424,11 +1543,33 @@ document.write(`
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
             <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">times_in</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency (sfreq) is required with array input.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">EpochsSpectrum</span><span class="p">,</span> <span class="n">EpochsSpectrumArray</span><span class="p">)):</span>
+            <span class="c1"># XXX: Will need to be updated if new Spectrum methods are added</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;if `data` is an EpochsSpectrum object, it must contain &quot;</span>
+                    <span class="s2">&quot;complex-valued Fourier coefficients, such as that returned from &quot;</span>
+                    <span class="s2">&quot;Epochs.compute_psd(output=&#39;complex&#39;)&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;segment&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">_dims</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`data` cannot contain Fourier coefficients for individual segments&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">EpochsSpectrum</span><span class="p">):</span>  <span class="c1"># mode can be read mode from Spectrum</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">method</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;fourier&quot;</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;welch&quot;</span> <span class="k">else</span> <span class="n">mode</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># spectral method is &quot;unknown&quot;, so take mode from data dimensions</span>
+                <span class="c1"># Currently, actual mode doesn&#39;t matter as long as we handle tapers and</span>
+                <span class="c1"># their weights in the same way as for multitaper spectra</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;multitaper&quot;</span> <span class="k">if</span> <span class="s2">&quot;taper&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">_dims</span> <span class="k">else</span> <span class="s2">&quot;fourier&quot;</span>
+            <span class="n">spectrum_computed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">freqs</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">weights</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">times_in</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span>  <span class="c1"># input times for Epochs input type</span>
+    <span class="k">elif</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency (sfreq) is required with array input.&quot;</span><span class="p">)</span>
 
     <span class="c1"># loop over data; it could be a generator that returns</span>
     <span class="c1"># (n_signals x n_times) arrays or SourceEstimates</span>
@@ -1462,6 +1603,7 @@ document.write(`
                 <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
                 <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
                 <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+                <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
                 <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
@@ -1469,6 +1611,7 @@ document.write(`
                 <span class="n">n_bands</span><span class="o">=</span><span class="n">n_bands</span><span class="p">,</span>
                 <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
                 <span class="n">faverage</span><span class="o">=</span><span class="n">faverage</span><span class="p">,</span>
+                <span class="n">spectrum_computed</span><span class="o">=</span><span class="n">spectrum_computed</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="c1"># check rank input and compute data ranks if necessary</span>
@@ -1491,23 +1634,27 @@ document.write(`
                 <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
 
             <span class="c1"># get the window function, wavelets, etc for different modes</span>
-            <span class="p">(</span>
-                <span class="n">spectral_params</span><span class="p">,</span>
-                <span class="n">mt_adaptive</span><span class="p">,</span>
-                <span class="n">n_times_spectrum</span><span class="p">,</span>
-                <span class="n">n_tapers</span><span class="p">,</span>
-            <span class="p">)</span> <span class="o">=</span> <span class="n">_assemble_spectral_params</span><span class="p">(</span>
-                <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span><span class="p">,</span>
-                <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
-                <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
-                <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
-                <span class="n">mt_low_bias</span><span class="o">=</span><span class="n">mt_low_bias</span><span class="p">,</span>
-                <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="n">cwt_n_cycles</span><span class="p">,</span>
-                <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
-                <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
-                <span class="n">freq_mask</span><span class="o">=</span><span class="n">freq_mask</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">spectrum_computed</span><span class="p">:</span>
+                <span class="n">spectral_params</span><span class="p">,</span> <span class="n">mt_adaptive</span><span class="p">,</span> <span class="n">n_times_spectrum</span><span class="p">,</span> <span class="n">n_tapers</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">_assemble_spectral_params</span><span class="p">(</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                        <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span><span class="p">,</span>
+                        <span class="n">mt_adaptive</span><span class="o">=</span><span class="n">mt_adaptive</span><span class="p">,</span>
+                        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+                        <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+                        <span class="n">mt_low_bias</span><span class="o">=</span><span class="n">mt_low_bias</span><span class="p">,</span>
+                        <span class="n">cwt_n_cycles</span><span class="o">=</span><span class="n">cwt_n_cycles</span><span class="p">,</span>
+                        <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
+                        <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+                        <span class="n">freq_mask</span><span class="o">=</span><span class="n">freq_mask</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spectral_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">eigvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_fun</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span>
+                <span class="p">)</span>
+                <span class="n">n_times_spectrum</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">n_tapers</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">weights</span><span class="o">.</span><span class="n">size</span>
 
             <span class="c1"># unique signals for which we actually need to compute PSD etc.</span>
             <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
@@ -1560,15 +1707,16 @@ document.write(`
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    the following metrics will be computed: </span><span class="si">{</span><span class="n">metrics_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># check dimensions and time scale</span>
-        <span class="k">for</span> <span class="n">this_epoch</span> <span class="ow">in</span> <span class="n">epoch_block</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">warn_times</span> <span class="o">=</span> <span class="n">_get_and_verify_data_sizes</span><span class="p">(</span>
-                <span class="n">this_epoch</span><span class="p">,</span>
-                <span class="n">sfreq</span><span class="p">,</span>
-                <span class="n">n_signals</span><span class="p">,</span>
-                <span class="n">n_times_in</span><span class="p">,</span>
-                <span class="n">times_in</span><span class="p">,</span>
-                <span class="n">warn_times</span><span class="o">=</span><span class="n">warn_times</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spectrum_computed</span><span class="p">:</span>  <span class="c1"># XXX: Can we assume upstream checks sufficient?</span>
+            <span class="k">for</span> <span class="n">this_epoch</span> <span class="ow">in</span> <span class="n">epoch_block</span><span class="p">:</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">warn_times</span> <span class="o">=</span> <span class="n">_get_and_verify_data_sizes</span><span class="p">(</span>
+                    <span class="n">this_epoch</span><span class="p">,</span>
+                    <span class="n">sfreq</span><span class="p">,</span>
+                    <span class="n">n_signals</span><span class="p">,</span>
+                    <span class="n">n_times_in</span><span class="p">,</span>
+                    <span class="n">times_in</span><span class="p">,</span>
+                    <span class="n">warn_times</span><span class="o">=</span><span class="n">warn_times</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="n">call_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">sig_idx</span><span class="o">=</span><span class="n">sig_idx</span><span class="p">,</span>
@@ -1591,6 +1739,7 @@ document.write(`
             <span class="n">n_times</span><span class="o">=</span><span class="n">n_times</span><span class="p">,</span>
             <span class="n">gc_n_lags</span><span class="o">=</span><span class="n">gc_n_lags</span><span class="p">,</span>
             <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">spectrum_computed</span><span class="o">=</span><span class="n">spectrum_computed</span><span class="p">,</span>
             <span class="n">accumulate_inplace</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">call_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">spectral_params</span><span class="p">)</span>
@@ -1738,7 +1887,7 @@ document.write(`
             <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">_method</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseSpectrum</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
             <span class="n">freqs_used</span><span class="o">=</span><span class="n">freqs_used</span><span class="p">,</span>
@@ -1809,7 +1958,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-01.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-07.
       <br/>
     
   </p>
@@ -1817,7 +1966,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
     <br/>
   </p>
 </div>
