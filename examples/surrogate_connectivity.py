@@ -118,8 +118,8 @@ pretrial_surrogates = make_surrogate_data(
 
 # Compute connectivity for surrogate data
 surrogate_con = []
-for shuffle_i, surrogate in enumerate(pretrial_surrogates):
-    print(f"Computing connectivity for shuffle {shuffle_i+1} of {n_shuffles}")
+for shuffle_i, surrogate in enumerate(pretrial_surrogates, 1):
+    print(f"Computing connectivity for shuffle {shuffle_i} of {n_shuffles}")
     surrogate_con.append(
         spectral_connectivity_epochs(
             surrogate, method="imcoh", indices=indices, verbose=False
@@ -208,8 +208,8 @@ print(f"P < {alpha}") if p_val < alpha else print(f"P > {alpha}")
 #
 # Any connectivity estimates will therefore overestimate the baseline connectivity in
 # your data, increasing the likelihood of type II errors (see the Notes section of
-# :func:`~mne_connectivity.make_surrogate_data` for more information, and see the final
-# section of this example for a demonstration).
+# :func:`~mne_connectivity.make_surrogate_data` for more information, and see the
+# section :ref:`inappropriate-surrogate-data` for a demonstration).
 #
 # **In cases where you want to assess connectivity in evoked data, you can use
 # surrogates generated from non-evoked data (of the same subject).** Here we do just
@@ -262,9 +262,10 @@ p_val = np.sum(beta_con_poststim <= beta_con_surrogate) / n_shuffles
 print(f"P < {alpha}") if p_val < alpha else print(f"P > {alpha}")
 
 ########################################################################################
+# .. _inappropriate-surrogate-data:
+#
 # Generating surrogate connectivity from inappropriate data
 # ---------------------------------------------------------
-#
 # We discussed above how surrogates generated from evoked data risk overestimating the
 # degree of baseline connectivity. We demonstrate this below by generating surrogates
 # from the post-stimulus data.
@@ -278,8 +279,8 @@ poststim_surrogates = make_surrogate_data(
 
 # Compute connectivity for evoked surrogate data
 bad_surrogate_con = []
-for shuffle_i, surrogate in enumerate(poststim_surrogates):
-    print(f"Computing connectivity for shuffle {shuffle_i+1} of {n_shuffles}")
+for shuffle_i, surrogate in enumerate(poststim_surrogates, 1):
+    print(f"Computing connectivity for shuffle {shuffle_i} of {n_shuffles}")
     bad_surrogate_con.append(
         spectral_connectivity_epochs(
             surrogate, method="imcoh", indices=indices, verbose=False
