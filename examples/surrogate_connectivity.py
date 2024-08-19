@@ -343,7 +343,7 @@ ax.legend()
 # modules have many such tools for testing this, e.g., :func:`scipy.stats.ttest_1samp`,
 # :func:`mne.stats.permutation_t_test`, etc...
 #
-# Therefore, surrogate connectivity estimates are a powerful tool for assessing the
+# Altogether, surrogate connectivity estimates are a powerful tool for assessing the
 # significance of connectivity estimates, both on a single recording- and group-level.
 
 ########################################################################################
