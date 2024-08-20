@@ -77,7 +77,7 @@ def check_indices(indices):
         )
 
     if any(
-        isinstance(inds, (np.ndarray, list, tuple))
+        isinstance(inds, np.ndarray | list | tuple)
         for inds in [*indices[0], *indices[1]]
     ):
         raise TypeError("Channel indices must be integers, not array-likes")
@@ -158,7 +158,7 @@ def _check_multivariate_indices(indices, n_chans):
     max_n_chans = 0
     for group_idx, group in enumerate(indices):
         for con_idx, con in enumerate(group):
-            if not isinstance(con, (np.ndarray, list, tuple)):
+            if not isinstance(con, np.ndarray | list | tuple):
                 raise TypeError(
                     "multivariate indices must contain array-likes of channel indices "
                     "for each seed and target"
