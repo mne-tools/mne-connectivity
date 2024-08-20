@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=770cf683"></script>
+    <script src="../_static/documentation_options.js?v=0c79fd03"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</p>
   
 </a></div>
     
@@ -479,7 +479,7 @@ imaginary part of coherence, phase locking value, and envelope correlations.
 Additionally, there are also multiple methods to estimate the frequency
 content, e.g. Fourier transforms, Morlet wavelets and multitapers.</p>
 <p>In this example, we focus on the two functions, which both computes
-connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
+connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a> and
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>.</p>
 <p>Both functions contain the options to choose the connectivity measurements
@@ -509,7 +509,7 @@ result in errorful values when computed on one epoch.</p>
 time for single-trials or from experiments that do not involve exactly
 repeated trials, then <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>
 should be employed. This function also takes data in the form of
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
 If there are multiple epochs, the connectivity over time is computed for
 epoch separately, with the option to average over epochs.</p>
 <p>To better illustrate the differences and usages for the two functions,
@@ -536,7 +536,7 @@ visual task dataset.</p>
 <section id="simulated-examples">
 <h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Link to this heading">#</a></h2>
 <p><strong>Case 1: Repetitions of the same trial.</strong></p>
-<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
+<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
 In this case, we will use random data for 3 channels over 5 epochs, but
 all the epochs are just exact replicates of the first epoch. This simulates
 when data is collected over an event of interest where we <strong>assume</strong> the
@@ -564,7 +564,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7ff14877f370&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f930c89b1c0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -777,7 +777,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7ff18c8e3250&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7f9350a17880&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -1094,8 +1094,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008"  title="Hide section"
-    onclick="toggleVisibility('general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008')">
+<tr class="repr-section-header general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c"  title="Hide section"
+    onclick="toggleVisibility('general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1107,26 +1107,26 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008 ">
+<tr class="repr-element general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c ">
     <td class="repr-section-toggle-col"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008 ">
+<tr class="repr-element general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c ">
     <td class="repr-section-toggle-col"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008 ">
+<tr class="repr-element general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c ">
     <td class="repr-section-toggle-col"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-69c36d76-abed-4a8e-ba5e-f2e9e4a14008 ">
+<tr class="repr-element general-7f6a628a-3b18-4dc1-9d08-8b12980c6d7c ">
     <td class="repr-section-toggle-col"></td>
     <td>Experimenter</td>
 
@@ -1141,8 +1141,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011"
-    title="Hide section"  onclick="toggleVisibility('acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011')">
+<tr class="repr-section-header acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95"
+    title="Hide section"  onclick="toggleVisibility('acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1157,14 +1157,14 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Events counts</td>
 
@@ -1178,35 +1178,35 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-7f340c6e-f2f4-426b-a037-bebbfd78b011 ">
+<tr class="repr-element acquisition-f8bcdfad-a962-4199-b548-0773a9f63b95 ">
     <td class="repr-section-toggle-col"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1220,8 +1220,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header channels-681a85fa-558d-4168-b7f5-d5d02c4c4429"  title="Hide section"
-    onclick="toggleVisibility('channels-681a85fa-558d-4168-b7f5-d5d02c4c4429')">
+<tr class="repr-section-header channels-67320a63-a470-45af-a86a-eb227e821a2f"  title="Hide section"
+    onclick="toggleVisibility('channels-67320a63-a470-45af-a86a-eb227e821a2f')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1234,7 +1234,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-681a85fa-558d-4168-b7f5-d5d02c4c4429 ">
+<tr class="repr-element channels-67320a63-a470-45af-a86a-eb227e821a2f ">
     <td class="repr-section-toggle-col"></td>
     <td>EEG</td>
     <td>
@@ -1247,7 +1247,7 @@ span.collapse-uncollapse-caret {
 </tr>
 
 
-<tr class="repr-element channels-681a85fa-558d-4168-b7f5-d5d02c4c4429 ">
+<tr class="repr-element channels-67320a63-a470-45af-a86a-eb227e821a2f ">
     <td class="repr-section-toggle-col"></td>
     <td>Head & sensor digitization</td>
 
@@ -1262,8 +1262,8 @@ span.collapse-uncollapse-caret {
 
 
 
-<tr class="repr-section-header filters-61c814ff-d278-4b2f-9796-2bf8c88ba0dd"  title="Hide section"
-    onclick="toggleVisibility('filters-61c814ff-d278-4b2f-9796-2bf8c88ba0dd')">
+<tr class="repr-section-header filters-b0057e1b-8de8-4334-b9bb-0eea7fee2a8f"  title="Hide section"
+    onclick="toggleVisibility('filters-b0057e1b-8de8-4334-b9bb-0eea7fee2a8f')">
     <th class="repr-section-toggle-col">
         <button>
 
@@ -1275,21 +1275,21 @@ span.collapse-uncollapse-caret {
     </th>
 </tr>
 
-<tr class="repr-element filters-61c814ff-d278-4b2f-9796-2bf8c88ba0dd ">
+<tr class="repr-element filters-b0057e1b-8de8-4334-b9bb-0eea7fee2a8f ">
     <td class="repr-section-toggle-col"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-61c814ff-d278-4b2f-9796-2bf8c88ba0dd ">
+<tr class="repr-element filters-b0057e1b-8de8-4334-b9bb-0eea7fee2a8f ">
     <td class="repr-section-toggle-col"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-61c814ff-d278-4b2f-9796-2bf8c88ba0dd ">
+<tr class="repr-element filters-b0057e1b-8de8-4334-b9bb-0eea7fee2a8f ">
     <td class="repr-section-toggle-col"></td>
     <td>Projections</td>
     <td>
@@ -1479,7 +1479,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7ff16ab6c9a0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7f932db390c0&gt;
 </pre></div>
 </div>
 </section>
@@ -1510,7 +1510,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.923 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.682 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1601,7 +1601,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-13.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-20.
       <br/>
     
   </p>

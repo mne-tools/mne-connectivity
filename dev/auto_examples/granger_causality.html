@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</title>
+    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=770cf683"></script>
+    <script src="../_static/documentation_options.js?v=0c79fd03"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</p>
   
 </a></div>
     
@@ -589,51 +589,47 @@ by loading some example MEG data and dividing it into two-second-long epochs.</p
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-  2%|▌                                     | 5.03M/329M [00:00&lt;00:06, 50.3MB/s]
-  4%|█▍                                    | 12.8M/329M [00:00&lt;00:04, 66.2MB/s]
-  6%|██▏                                   | 19.4M/329M [00:00&lt;00:04, 64.4MB/s]
-  8%|███▏                                  | 27.4M/329M [00:00&lt;00:04, 70.4MB/s]
- 11%|████                                  | 35.6M/329M [00:00&lt;00:03, 74.6MB/s]
- 13%|█████                                 | 43.8M/329M [00:00&lt;00:03, 77.2MB/s]
- 16%|█████▉                                | 51.6M/329M [00:00&lt;00:03, 77.0MB/s]
- 18%|██████▊                               | 59.3M/329M [00:00&lt;00:03, 75.9MB/s]
- 20%|███████▋                              | 66.9M/329M [00:00&lt;00:03, 74.8MB/s]
- 23%|████████▌                             | 74.4M/329M [00:01&lt;00:03, 74.2MB/s]
- 25%|█████████▍                            | 81.8M/329M [00:01&lt;00:03, 72.5MB/s]
- 27%|██████████▎                           | 89.1M/329M [00:01&lt;00:03, 70.2MB/s]
- 29%|███████████                           | 96.1M/329M [00:01&lt;00:03, 70.1MB/s]
- 31%|████████████▎                          | 104M/329M [00:01&lt;00:03, 71.6MB/s]
- 34%|█████████████▏                         | 111M/329M [00:01&lt;00:02, 72.9MB/s]
- 36%|██████████████                         | 119M/329M [00:01&lt;00:02, 72.1MB/s]
- 38%|██████████████▉                        | 126M/329M [00:01&lt;00:02, 72.7MB/s]
- 41%|███████████████▉                       | 134M/329M [00:01&lt;00:02, 75.2MB/s]
- 43%|████████████████▉                      | 143M/329M [00:01&lt;00:02, 78.1MB/s]
- 46%|█████████████████▊                     | 150M/329M [00:02&lt;00:02, 71.5MB/s]
- 48%|██████████████████▋                    | 158M/329M [00:02&lt;00:02, 70.0MB/s]
- 50%|███████████████████▌                   | 165M/329M [00:02&lt;00:02, 72.3MB/s]
- 52%|████████████████████▍                  | 173M/329M [00:02&lt;00:02, 72.6MB/s]
- 55%|█████████████████████▎                 | 180M/329M [00:02&lt;00:02, 73.3MB/s]
- 57%|██████████████████████▏                | 188M/329M [00:02&lt;00:01, 72.7MB/s]
- 59%|███████████████████████▏               | 196M/329M [00:02&lt;00:01, 75.0MB/s]
- 62%|████████████████████████               | 203M/329M [00:02&lt;00:01, 73.7MB/s]
- 64%|█████████████████████████              | 212M/329M [00:02&lt;00:01, 76.6MB/s]
- 67%|██████████████████████████             | 220M/329M [00:02&lt;00:01, 78.9MB/s]
- 69%|██████████████████████████▉            | 228M/329M [00:03&lt;00:01, 77.2MB/s]
- 72%|████████████████████████████           | 236M/329M [00:03&lt;00:01, 79.7MB/s]
- 74%|█████████████████████████████          | 245M/329M [00:03&lt;00:01, 81.3MB/s]
- 77%|██████████████████████████████         | 253M/329M [00:03&lt;00:00, 81.8MB/s]
- 79%|██████████████████████████████▉        | 261M/329M [00:03&lt;00:00, 78.3MB/s]
- 82%|███████████████████████████████▉       | 269M/329M [00:03&lt;00:00, 71.3MB/s]
- 84%|████████████████████████████████▉      | 278M/329M [00:03&lt;00:00, 74.5MB/s]
- 87%|█████████████████████████████████▊     | 286M/329M [00:03&lt;00:00, 76.6MB/s]
- 89%|██████████████████████████████████▊    | 294M/329M [00:03&lt;00:00, 70.5MB/s]
- 91%|███████████████████████████████████▋   | 301M/329M [00:04&lt;00:00, 71.8MB/s]
- 94%|████████████████████████████████████▌  | 308M/329M [00:04&lt;00:00, 70.5MB/s]
- 96%|█████████████████████████████████████▍ | 316M/329M [00:04&lt;00:00, 66.6MB/s]
- 98%|██████████████████████████████████████▎| 323M/329M [00:04&lt;00:00, 69.6MB/s]
+  2%|▋                                     | 5.51M/329M [00:00&lt;00:05, 54.8MB/s]
+  4%|█▋                                    | 14.1M/329M [00:00&lt;00:04, 73.3MB/s]
+  7%|██▋                                   | 23.1M/329M [00:00&lt;00:03, 80.9MB/s]
+ 10%|███▋                                  | 32.3M/329M [00:00&lt;00:03, 85.0MB/s]
+ 12%|████▋                                 | 41.1M/329M [00:00&lt;00:03, 86.0MB/s]
+ 15%|█████▊                                | 50.2M/329M [00:00&lt;00:03, 87.7MB/s]
+ 18%|██████▊                               | 59.3M/329M [00:00&lt;00:03, 88.9MB/s]
+ 21%|███████▉                              | 68.2M/329M [00:00&lt;00:02, 89.1MB/s]
+ 23%|████████▉                             | 77.2M/329M [00:00&lt;00:02, 89.2MB/s]
+ 26%|█████████▉                            | 86.1M/329M [00:01&lt;00:02, 88.6MB/s]
+ 29%|██████████▉                           | 95.0M/329M [00:01&lt;00:02, 88.6MB/s]
+ 32%|████████████▎                          | 104M/329M [00:01&lt;00:02, 78.2MB/s]
+ 34%|█████████████▎                         | 112M/329M [00:01&lt;00:03, 71.0MB/s]
+ 36%|██████████████▏                        | 119M/329M [00:01&lt;00:03, 66.4MB/s]
+ 38%|██████████████▉                        | 126M/329M [00:01&lt;00:03, 64.0MB/s]
+ 41%|███████████████▉                       | 135M/329M [00:01&lt;00:02, 69.9MB/s]
+ 44%|█████████████████                      | 144M/329M [00:01&lt;00:02, 75.2MB/s]
+ 46%|██████████████████                     | 153M/329M [00:01&lt;00:02, 79.2MB/s]
+ 49%|███████████████████                    | 161M/329M [00:02&lt;00:02, 79.1MB/s]
+ 51%|███████████████████▉                   | 169M/329M [00:02&lt;00:02, 69.6MB/s]
+ 53%|████████████████████▊                  | 176M/329M [00:02&lt;00:02, 65.3MB/s]
+ 56%|█████████████████████▉                 | 185M/329M [00:02&lt;00:02, 71.2MB/s]
+ 59%|██████████████████████▉                | 193M/329M [00:02&lt;00:01, 75.5MB/s]
+ 61%|███████████████████████▉               | 202M/329M [00:02&lt;00:01, 77.7MB/s]
+ 64%|████████████████████████▉              | 211M/329M [00:02&lt;00:01, 80.6MB/s]
+ 67%|█████████████████████████▉             | 219M/329M [00:02&lt;00:01, 82.7MB/s]
+ 69%|███████████████████████████            | 228M/329M [00:02&lt;00:01, 83.6MB/s]
+ 72%|████████████████████████████           | 237M/329M [00:03&lt;00:01, 84.2MB/s]
+ 74%|█████████████████████████████          | 245M/329M [00:03&lt;00:00, 84.2MB/s]
+ 77%|██████████████████████████████         | 254M/329M [00:03&lt;00:00, 84.4MB/s]
+ 80%|███████████████████████████████        | 262M/329M [00:03&lt;00:00, 84.6MB/s]
+ 82%|████████████████████████████████       | 271M/329M [00:03&lt;00:00, 85.5MB/s]
+ 85%|█████████████████████████████████      | 280M/329M [00:03&lt;00:00, 86.2MB/s]
+ 88%|██████████████████████████████████▏    | 288M/329M [00:03&lt;00:00, 86.8MB/s]
+ 90%|███████████████████████████████████▏   | 297M/329M [00:03&lt;00:00, 87.3MB/s]
+ 93%|████████████████████████████████████▎  | 306M/329M [00:03&lt;00:00, 87.6MB/s]
+ 96%|█████████████████████████████████████▎ | 315M/329M [00:03&lt;00:00, 87.6MB/s]
+ 98%|██████████████████████████████████████▎| 324M/329M [00:04&lt;00:00, 87.9MB/s]
   0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-100%|███████████████████████████████████████| 329M/329M [00:00&lt;00:00, 1.15TB/s]
-Download complete in 10s (314.0 MB)
+100%|███████████████████████████████████████| 329M/329M [00:00&lt;00:00, 1.12TB/s]
+Download complete in 09s (314.0 MB)
 ds directory : /home/circleci/mne_data/MNE-fieldtrip_cmc-data/SubjectCMC.ds
     res4 data read.
     hc data read.
@@ -669,7 +665,7 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
 - Filter length: 7921 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
 [Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.2s
 Not setting metadata
 30 matching events found
@@ -760,10 +756,10 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,  737.23it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  855.01it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,  911.48it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  903.36it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,  789.01it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,  893.57it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  937.88it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  935.62it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -805,11 +801,11 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  639.09it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,  649.30it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,  655.48it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,  662.30it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  663.47it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  660.96it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,  671.07it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,  681.45it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  687.95it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  685.48it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -958,10 +954,10 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,  768.99it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,  859.19it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,  860.61it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  840.30it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  928.27it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,  936.23it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,  952.74it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  943.24it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -1003,10 +999,10 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,  870.01it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  846.99it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,  775.87it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  775.83it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  894.51it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,  908.89it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  926.49it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  921.17it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1104,32 +1100,32 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,   90.86it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,   89.41it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,   90.31it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,   90.84it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   91.43it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   91.79it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   92.36it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   92.48it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   92.49it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   91.96it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   92.00it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   91.61it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   91.64it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   92.45it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   93.52it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   93.33it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   93.19it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   92.05it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   90.74it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,   89.63it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   89.25it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,   89.09it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,   89.73it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,   90.60it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,   89.67it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   90.34it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,  111.44it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,  114.31it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,  110.91it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  110.84it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  111.99it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,  112.42it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,  111.88it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  112.02it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,  112.47it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,  112.66it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,  113.03it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  113.15it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,  113.36it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  113.97it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,  111.53it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  111.90it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,  112.51it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,  112.70it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,  112.84it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  110.94it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,  111.23it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,  111.78it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  112.21it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  112.56it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,  112.89it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  111.57it/s]
 [Connectivity computation done]
 
 Text(0.5, 0.98, &#39;GC: [A =&gt; B]&#39;)
@@ -1187,9 +1183,9 @@ sequence is singular, as the example below shows.</p>
   File <span class="nb">&quot;&lt;decorator-gen-312&gt;&quot;</span>, line <span class="m">10</span>, in <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
   File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs.py&quot;</span>, line <span class="m">1378</span>, in <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
 <span class="w">    </span><span class="n">conn_method</span><span class="o">.</span><span class="n">compute_con</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="p">,</span> <span class="n">n_epochs</span><span class="p">)</span>
-  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">860</span>, in <span class="n">compute_con</span>
+  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">859</span>, in <span class="n">compute_con</span>
 <span class="w">    </span><span class="n">A_f</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocov_to_full_var</span><span class="p">(</span><span class="n">autocov</span><span class="p">)</span>
-  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">955</span>, in <span class="n">_autocov_to_full_var</span>
+  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">954</span>, in <span class="n">_autocov_to_full_var</span>
 <span class="w">    </span><span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
 <span class="gr">RuntimeError</span>: <span class="n">the autocovariance matrix is singular; check if your data is rank deficient and specify an appropriate rank argument &lt;= the rank of the seeds and targets</span>
 </pre></div>
@@ -1240,7 +1236,7 @@ and targets <em>across</em> connections.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.000 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.169 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-granger-causality-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bc4fcabe78bb61cbb3c5dd027303b4da/granger_causality.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">granger_causality.ipynb</span></code></a></p>
@@ -1332,7 +1328,7 @@ and targets <em>across</em> connections.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-13.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-20.
       <br/>
     
   </p>

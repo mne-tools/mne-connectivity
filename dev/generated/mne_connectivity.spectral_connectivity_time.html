@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</title>
+    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../_static/documentation_options.js?v=770cf683"></script>
+    <script src="../_static/documentation_options.js?v=0c79fd03"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</p>
   
 </a></div>
     
@@ -483,7 +483,7 @@ power spectral densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.2.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.2.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity.</p>
 </dd>
 <dt><strong>freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.2.dev0)"><span>array_like</span></a></span></dt><dd><p>Array of frequencies of interest for time-frequency decomposition.
 Only the frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and
@@ -521,7 +521,7 @@ connections between all channels are computed, unless a Granger
 causality method is called, in which case an error is raised.</p>
 </dd>
 <dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The sampling frequency. Required if data is not
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>.</p>
 </dd>
 <dt><strong>fmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The lower frequency of interest. Multiple bands are defined using
 a tuple, e.g., <code class="docutils literal notranslate"><span class="pre">(8.,</span> <span class="pre">20.)</span></code> for two bands with 8 Hz and 20 Hz lower
@@ -550,20 +550,20 @@ is equivalent to no smoothing.</p>
 epoch in seconds. See Notes for more information.</p>
 </dd>
 <dt><strong>mode</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Time-frequency decomposition method. Can be either: ‘multitaper’, or
-‘cwt_morlet’. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for reference.</p>
+‘cwt_morlet’. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for reference.</p>
 </dd>
 <dt><strong>mt_bandwidth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Product between the temporal window length (in seconds) and the full
 frequency bandwidth (in Hz). This product can be seen as the surface
 of the window on the time/frequency plane and controls the frequency
 bandwidth (thus the frequency resolution) and the number of good
-tapers. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a>
+tapers. See <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a>
 documentation.</p>
 </dd>
 <dt><strong>n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.2.dev0)"><span>array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Number of cycles in the wavelet, either a fixed number or one per
 frequency. The number of cycles <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code> and the frequencies of
 interest <code class="docutils literal notranslate"><span class="pre">cwt_freqs</span></code> define the temporal window length. For details,
-see <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> documentation.</p>
+see <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> documentation.</p>
 </dd>
 <dt><strong>gc_n_lags</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of lags to use for the vector autoregressive model when
 computing Granger causality. Higher values increase computational cost,
@@ -591,7 +591,7 @@ decomposition. Returns <code class="docutils literal notranslate"><span class="p
 <dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of connections to compute in parallel. Memory mapping must be
 activated. Please see the Notes section for details.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 for more info). If used, it should be passed as a
 keyword-argument only.</p>
 </dd>
@@ -640,8 +640,8 @@ ratios between the DPSS windows.</p>
 effects that depend on the length of the wavelet. To remove edge effects,
 the parameter <code class="docutils literal notranslate"><span class="pre">padding</span></code> can be used to prune the edges of the signal.
 Please see the documentation of
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for details on wavelet length
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_morlet.html#mne.time_frequency.tfr_array_morlet" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_morlet()</span></code></a> for details on wavelet length
 (i.e., time window length).</p>
 <p>By default, the connectivity between all signals is computed (only
 connections corresponding to the lower-triangular part of the connectivity
@@ -906,7 +906,7 @@ Frites.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-13.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-20.
       <br/>
     
   </p>

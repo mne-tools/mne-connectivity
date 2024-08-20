@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../../_static/documentation_options.js?v=770cf683"></script>
+    <script src="../../../_static/documentation_options.js?v=0c79fd03"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,7 +125,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.8.0.dev145+gc9f8ee299 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.9.0.dev5+g966121be5 documentation</p>
   
 </a></div>
     
@@ -1005,7 +1005,7 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate lists with at most n epochs.&quot;&quot;&quot;</span>
     <span class="n">epochs_out</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">epochs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">epoch</span> <span class="o">=</span> <span class="p">(</span><span class="n">epoch</span><span class="p">,)</span>
         <span class="n">epochs_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epochs_out</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
@@ -1036,7 +1036,7 @@ document.write(`
     <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">n_signals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">warn_times</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get and/or verify the data sizes and time scales.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data has to be a list or tuple&quot;</span><span class="p">)</span>
     <span class="n">n_signals_tot</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># Sometimes data can be (ndarray, SourceEstimate) groups so in the case</span>
@@ -1494,7 +1494,7 @@ document.write(`
     <span class="n">n_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span>
 
     <span class="c1"># assign names to connectivity methods</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">method</span> <span class="o">=</span> <span class="p">[</span><span class="n">method</span><span class="p">]</span>  <span class="c1"># make it a list so we can iterate over it</span>
 
     <span class="k">if</span> <span class="n">n_bands</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
@@ -1523,7 +1523,7 @@ document.write(`
     <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">spectrum_computed</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseEpochs</span><span class="p">,</span> <span class="n">EpochsSpectrum</span><span class="p">,</span> <span class="n">EpochsSpectrumArray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span> <span class="o">|</span> <span class="n">EpochsSpectrum</span> <span class="o">|</span> <span class="n">EpochsSpectrumArray</span><span class="p">):</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
         <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
 
@@ -1544,7 +1544,7 @@ document.write(`
             <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">EpochsSpectrum</span><span class="p">,</span> <span class="n">EpochsSpectrumArray</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">EpochsSpectrum</span> <span class="o">|</span> <span class="n">EpochsSpectrumArray</span><span class="p">):</span>
             <span class="c1"># XXX: Will need to be updated if new Spectrum methods are added</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1958,7 +1958,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-13.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-08-20.
       <br/>
     
   </p>
