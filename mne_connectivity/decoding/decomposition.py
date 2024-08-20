@@ -198,7 +198,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 "`cwt_n_cycles`",
                 "int, float, or array-like",
             )
-            if isinstance(cwt_n_cycles, (tuple, list, np.ndarray)) and len(
+            if isinstance(cwt_n_cycles, tuple | list | np.ndarray) and len(
                 cwt_n_cycles
             ) != len(cwt_freqs):
                 raise ValueError(
