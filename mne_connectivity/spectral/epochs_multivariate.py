@@ -11,7 +11,6 @@
 
 import copy
 import inspect
-from typing import Optional
 
 import numpy as np
 from mne.epochs import BaseEpochs
@@ -241,7 +240,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     accumulate_psd = False
 
     def __init__(
