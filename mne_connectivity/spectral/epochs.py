@@ -589,7 +589,7 @@ def _get_n_epochs(epochs, n):
     """Generate lists with at most n epochs."""
     epochs_out = list()
     for epoch in epochs:
-        if not isinstance(epoch, (list, tuple)):
+        if not isinstance(epoch, list | tuple):
             epoch = (epoch,)
         epochs_out.append(epoch)
         if len(epochs_out) >= n:
@@ -620,7 +620,7 @@ def _get_and_verify_data_sizes(
     data, sfreq, n_signals=None, n_times=None, times=None, warn_times=True
 ):
     """Get and/or verify the data sizes and time scales."""
-    if not isinstance(data, (list, tuple)):
+    if not isinstance(data, list | tuple):
         raise ValueError("data has to be a list or tuple")
     n_signals_tot = 0
     # Sometimes data can be (ndarray, SourceEstimate) groups so in the case
@@ -1076,7 +1076,7 @@ def spectral_connectivity_epochs(
     n_bands = len(fmin)
 
     # assign names to connectivity methods
-    if not isinstance(method, (list, tuple)):
+    if not isinstance(method, list | tuple):
         method = [method]  # make it a list so we can iterate over it
 
     if n_bands != 1 and any(this_method in _gc_methods for this_method in method):
@@ -1105,7 +1105,7 @@ def spectral_connectivity_epochs(
     weights = None
     metadata = None
     spectrum_computed = False
-    if isinstance(data, (BaseEpochs, EpochsSpectrum, EpochsSpectrumArray)):
+    if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsSpectrumArray):
         names = data.ch_names
         sfreq = data.info["sfreq"]
 
@@ -1126,7 +1126,7 @@ def spectral_connectivity_epochs(
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
 
-        if isinstance(data, (EpochsSpectrum, EpochsSpectrumArray)):
+        if isinstance(data, EpochsSpectrum | EpochsSpectrumArray):
             # XXX: Will need to be updated if new Spectrum methods are added
             if not np.iscomplexobj(data.get_data()):
                 raise TypeError(

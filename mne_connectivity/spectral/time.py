@@ -442,11 +442,11 @@ def spectral_connectivity_time(
         multivariate_con = False
 
     # convert kernel width in time to samples
-    if isinstance(sm_times, (int, float)):
+    if isinstance(sm_times, int | float):
         sm_times = int(np.round(sm_times * sfreq))
 
     # convert frequency smoothing from hz to samples
-    if isinstance(sm_freqs, (int, float)):
+    if isinstance(sm_freqs, int | float):
         sm_freqs = int(np.round(max(sm_freqs, 1)))
 
     # temporal decimation
@@ -529,7 +529,7 @@ def spectral_connectivity_time(
         gc_n_lags = None
 
     # check freqs
-    if isinstance(freqs, (int, float)):
+    if isinstance(freqs, int | float):
         freqs = [freqs]
     # array conversion
     freqs = np.asarray(freqs)
@@ -812,7 +812,7 @@ def _spectral_connectivity(
             n_jobs=n_jobs,
             **kw_mt,
         )
-        if isinstance(n_cycles, (int, float)):
+        if isinstance(n_cycles, int | float):
             n_cycles = [n_cycles] * len(freqs)
         mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
         n_tapers = int(np.floor(mt_bandwidth - 1))

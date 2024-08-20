@@ -4,7 +4,6 @@
 #
 # License: BSD (3-clause)
 
-from typing import Optional, Union
 
 import numpy as np
 from mne import Info
@@ -81,12 +80,12 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     .. footbibliography::
     """
 
-    filters_: Optional[tuple] = None
-    patterns_: Optional[tuple] = None
+    filters_: tuple | None = None
+    patterns_: tuple | None = None
 
-    _conn_estimator: Optional[Union[_CaCohEst, _MICEst]] = None
-    _indices: Optional[tuple] = None
-    _rank: Optional[tuple] = None
+    _conn_estimator: _CaCohEst | _MICEst | None = None
+    _indices: tuple | None = None
+    _rank: tuple | None = None
 
     @property
     def indices(self):
@@ -199,7 +198,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 "`cwt_n_cycles`",
                 "int, float, or array-like",
             )
-            if isinstance(cwt_n_cycles, (tuple, list, np.ndarray)) and len(
+            if isinstance(cwt_n_cycles, tuple | list | np.ndarray) and len(
                 cwt_n_cycles
             ) != len(cwt_freqs):
                 raise ValueError(

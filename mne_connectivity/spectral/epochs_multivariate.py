@@ -11,7 +11,6 @@
 
 import copy
 import inspect
-from typing import Optional
 
 import numpy as np
 from mne.epochs import BaseEpochs
@@ -33,7 +32,7 @@ def _check_rank_input(rank, data, indices):
             if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
                 kwargs["copy"] = False
             data_arr = data.get_data(**kwargs)
-        elif isinstance(data, (EpochsSpectrum, EpochsSpectrumArray)):
+        elif isinstance(data, EpochsSpectrum | EpochsSpectrumArray):
             # Spectrum objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
             # Convert to power (and aggregate over tapers) before computing rank
@@ -241,7 +240,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     accumulate_psd = False
 
     def __init__(

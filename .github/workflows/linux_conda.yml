@@ -14,7 +14,7 @@ jobs:
   # Linux
   job:
     timeout-minutes: 90
-    name: 'py3.9'
+    name: 'py3.10'
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -23,7 +23,7 @@ jobs:
       MNE_LOGGING_LEVEL: 'warning'
       MKL_NUM_THREADS: '1'
       PYTHONUNBUFFERED: '1'
-      PYTHON_VERSION: '3.9'
+      PYTHON_VERSION: '3.10'
     steps:
       - uses: actions/checkout@v4
       - uses: pyvista/setup-headless-display-action@main
