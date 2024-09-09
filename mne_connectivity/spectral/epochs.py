@@ -803,7 +803,8 @@ def spectral_connectivity_epochs(
     mode : str
         Spectrum estimation mode can be either: 'multitaper', 'fourier', or
         'cwt_morlet'. Ignored if ``data`` is an
-        :class:`~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     fmin : float | tuple of float
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
