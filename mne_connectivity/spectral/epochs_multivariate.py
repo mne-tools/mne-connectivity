@@ -46,9 +46,10 @@ def _check_rank_input(rank, data, indices):
             else:
                 data_arr = (data_arr * data_arr.conj()).real
         elif isinstance(data, EpochsTFR | EpochsTFRArray):
-            # XXX: need to change when other types of TFR are supported
+            # TFR objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
             # Convert to power and aggregate over time before computing rank
+            # XXX: need to change when other types of TFR are supported
             data_arr = np.sum((data_arr * data_arr.conj()).real, axis=-1)
         else:
             data_arr = data
