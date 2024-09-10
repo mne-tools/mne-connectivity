@@ -1745,9 +1745,12 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
     )
     con = spectral_connectivity_time(data=coeffs, **con_kwargs)
 
-    # Check connectivity from Epochs and EpochsTFR are equivalent
+    # Check connectivity from Epochs and EpochsTFR are equivalent (small but non-zero
+    # tolerance given due to some platform-dependent variation)
     con_from_epochs = spectral_connectivity_time(data=data, **con_kwargs)
-    assert_allclose(np.abs(con.get_data()), np.abs(con_from_epochs.get_data()), atol=0)
+    assert_allclose(
+        np.abs(con.get_data()), np.abs(con_from_epochs.get_data()), atol=1e-7
+    )
 
     # Check connectivity values are as expected
     freqs_con = (freqs >= fband[0]) & (freqs <= fband[1])
@@ -1758,6 +1761,9 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
     assert_array_less(0.6, np.abs(con.get_data()[:, freqs_con].mean()))
     # check freqs of no simulated interaction (just noise) show weak connectivity
     assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), 0.3)
+
+
+test_spectral_connectivity_time_tfr_input("cacoh", "cwt_morlet")
 
 
 # TODO: Add general test for error catching for spec_conn_time
