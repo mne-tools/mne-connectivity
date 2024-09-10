@@ -60,7 +60,7 @@ jobs:
         run: pip install --upgrade mne
       - name: Install MNE (main)
         if: matrix.mne-version == 'mne-main'
-        run: pip install git+https://github.com/mne-tools/mne-python@main
+        run: pip install git+https://github.com/tsbinns/mne-python@fix_tfr_multitaper
       - run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       - name: Display versions and environment information
