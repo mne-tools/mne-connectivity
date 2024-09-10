@@ -1684,6 +1684,83 @@ def test_multivar_spectral_connectivity_time_shapes(
         assert np.all(np.array(con.indices) == np.array(([[0, 1, 2]], [[3, 4, -1]])))
 
 
+@pytest.mark.parametrize("method", ["coh", "cacoh"])
+@pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
+def test_spectral_connectivity_time_tfr_input(method, mode):
+    """Test spec_conn_time works with EpochsTFR data as input.
+
+    Important to test both bivariate and multivariate methods, as the latter involves
+    additional steps (e.g., rank computation).
+    """
+    # Simulation parameters & data generation
+    n_seeds = 2
+    n_targets = 2
+    fband = (15, 20)  # Hz
+    trans_bandwidth = 1.0  # Hz
+
+    data = make_signals_in_freq_bands(
+        n_seeds=n_seeds,
+        n_targets=n_targets,
+        freq_band=fband,
+        n_epochs=30,
+        n_times=200,
+        sfreq=100,
+        trans_bandwidth=trans_bandwidth,
+        snr=0.7,
+        connection_delay=5,
+        rng_seed=44,
+    )
+
+    if method == "coh":
+        indices = seed_target_indices(
+            seeds=np.arange(n_seeds), targets=np.arange(n_targets) + n_seeds
+        )
+    else:
+        indices = ([np.arange(n_seeds)], [np.arange(n_targets) + n_seeds])
+
+    # Compute TFR
+    freqs = np.arange(10, 50)
+    n_cycles = 5.0  # non-default value to avoid warning in spec_conn_time
+    mt_bandwidth = 4.0
+    kwargs = dict()
+    if mode == "cwt_morlet":
+        kwargs.update(zero_mean=False)  # default in spec_conn_time
+        spec_mode = "morlet"
+    else:
+        kwargs.update(time_bandwidth=mt_bandwidth)
+        spec_mode = mode
+    coeffs = data.compute_tfr(
+        method=spec_mode, freqs=freqs, n_cycles=n_cycles, output="complex", **kwargs
+    )
+
+    # Compute connectivity
+    con_kwargs = dict(
+        method=method,
+        indices=indices,
+        mode=mode,
+        freqs=freqs,
+        n_cycles=n_cycles,
+        mt_bandwidth=mt_bandwidth,
+        average=True,
+    )
+    con = spectral_connectivity_time(data=coeffs, **con_kwargs)
+
+    # Check connectivity from Epochs and EpochsTFR are equivalent
+    con_from_epochs = spectral_connectivity_time(data=data, **con_kwargs)
+    assert_allclose(np.abs(con.get_data()), np.abs(con_from_epochs.get_data()), atol=0)
+
+    # Check connectivity values are as expected
+    freqs_con = (freqs >= fband[0]) & (freqs <= fband[1])
+    freqs_noise = (freqs < fband[0] - trans_bandwidth * 2) | (
+        freqs > fband[1] + trans_bandwidth * 2
+    )
+    # check freqs of simulated interaction show strong connectivity
+    assert_array_less(0.6, np.abs(con.get_data()[:, freqs_con].mean()))
+    # check freqs of no simulated interaction (just noise) show weak connectivity
+    assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), 0.3)
+
+
+# TODO: Add general test for error catching for spec_conn_time
 @pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
 def test_multivar_spectral_connectivity_time_error_catch(method, mode):
@@ -1705,7 +1782,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
     freqs = np.arange(10, 25 + 1)
 
     # test type-checking of data
-    with pytest.raises(TypeError, match="must be an instance of Epochs or a NumPy arr"):
+    with pytest.raises(TypeError, match="Epochs, EpochsTFR, or a NumPy arr"):
         spectral_connectivity_time(data="foo", freqs=freqs)
 
     # check bad indices without nested array caught
@@ -1820,6 +1897,30 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
                 fmin=(5.0, 15.0),
                 fmax=(15.0, 30.0),
             )
+
+
+def test_spectral_connectivity_time_tfr_input_error_catch():
+    """Test spec_conn_time catches errors with EpochsTFR data as input."""
+    # Generate data
+    rng = np.random.default_rng(44)
+    n_epochs, n_chans, n_times = (5, 2, 100)
+    sfreq = 50
+    data = rng.random((n_epochs, n_chans, n_times))
+    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
+    data = EpochsArray(data=data, info=info)
+    freqs = np.arange(10, 20)
+
+    # Test not Fourier coefficients caught
+    with pytest.raises(TypeError, match="must contain complex-valued Fourier coeff"):
+        tfr = data.compute_tfr(method="morlet", freqs=freqs, output="power")
+        spectral_connectivity_time(data=tfr, freqs=freqs)
+
+    # Catch default value warning (multitaper only)
+    tfr = data.compute_tfr(method="multitaper", freqs=freqs, output="complex")
+    with pytest.warns(RuntimeWarning, match="`mt_bandwidth` is not specified"):
+        spectral_connectivity_time(data=tfr, freqs=freqs)
+    with pytest.warns(RuntimeWarning, match="`n_cycles` is the default value"):
+        spectral_connectivity_time(data=tfr, freqs=freqs, mt_bandwidth=4.0)
 
 
 def test_save(tmp_path):

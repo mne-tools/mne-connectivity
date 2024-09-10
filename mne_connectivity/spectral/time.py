@@ -10,8 +10,14 @@ import numpy as np
 import xarray as xr
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.time_frequency import dpss_windows, tfr_array_morlet, tfr_array_multitaper
-from mne.utils import _validate_type, logger, verbose
+from mne.time_frequency import (
+    EpochsTFR,
+    EpochsTFRArray,
+    dpss_windows,
+    tfr_array_morlet,
+    tfr_array_multitaper,
+)
+from mne.utils import _check_option, _validate_type, logger, verbose, warn
 
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -66,12 +72,23 @@ def spectral_connectivity_time(
 
     Parameters
     ----------
-    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
-        The data from which to compute connectivity.
+    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | ~mne.time_frequency.EpochsTFR
+        The data from which to compute connectivity. Can be epoched timeseries data as
+        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients
+        for each epoch as an :class:`~mne.time_frequency.EpochsTFR` object. If
+        timeseries data, the spectral information will be computed according to the
+        spectral estimation mode (see the ``mode`` parameter). If an
+        :class:`~mne.time_frequency.EpochsTFR` object, this spectral information will be
+        used and the ``mode`` parameter will be ignored.
+
+        .. versionchanged:: 0.8
+           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsTFR`
+           object can also be passed in as data.
     freqs : array_like
-        Array of frequencies of interest for time-frequency decomposition.
-        Only the frequencies within the range specified by ``fmin`` and
-        ``fmax`` are used.
+        Array of frequencies of interest for time-frequency decomposition. Only the
+        frequencies within the range specified by ``fmin`` and ``fmax`` are used. If
+        ``data`` is an :class:`~mne.time_frequency.EpochsTFR` object, ``data.freqs`` is
+        used and this parameter is ignored.
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cacoh',
         'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
@@ -133,21 +150,26 @@ def spectral_connectivity_time(
         Amount of time to consider as padding at the beginning and end of each
         epoch in seconds. See Notes for more information.
     mode : str
-        Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
-        :func:`mne.time_frequency.tfr_array_morlet` for reference.
+        Time-frequency decomposition method. Can be either: ``'multitaper'``, or
+        ``'cwt_morlet'``. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` for reference. Ignored if ``data``
+        is an :class:`~mne.time_frequency.EpochsTFR` object.
     mt_bandwidth : float | None
-        Product between the temporal window length (in seconds) and the full
-        frequency bandwidth (in Hz). This product can be seen as the surface
-        of the window on the time/frequency plane and controls the frequency
-        bandwidth (thus the frequency resolution) and the number of good
-        tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
-        documentation.
+        Product between the temporal window length (in seconds) and the full frequency
+        bandwidth (in Hz). This product can be seen as the surface of the window on the
+        time/frequency plane and controls the frequency bandwidth (thus the frequency
+        resolution) and the number of good tapers. See
+        :func:`mne.time_frequency.tfr_array_multitaper` documentation. If ``data`` is an
+        :class:`~mne.time_frequency.EpochsTFR` object computed with the ``multitaper``
+        method, this should match the value used to compute the TFR.
     n_cycles : float | array_like of float
-        Number of cycles in the wavelet, either a fixed number or one per
-        frequency. The number of cycles ``n_cycles`` and the frequencies of
-        interest ``cwt_freqs`` define the temporal window length. For details,
-        see :func:`mne.time_frequency.tfr_array_morlet` documentation.
+        Number of cycles in the wavelet, either a fixed number or one per frequency. The
+        number of cycles ``n_cycles`` and the frequencies of interest ``freqs`` define
+        the temporal window length. For details, see
+        :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` documentation. If ``data`` is an
+        :class:`~mne.time_frequency.EpochsTFR` object computed with the ``multitaper``
+        method, this should match the value used to compute the TFR.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
@@ -369,12 +391,18 @@ def spectral_connectivity_time(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     events = None
     event_id = None
     # extract data from Epochs object
-    _validate_type(data, (np.ndarray, BaseEpochs), "`data`", "Epochs or a NumPy array")
-    if isinstance(data, BaseEpochs):
+    _validate_type(
+        data,
+        (np.ndarray, BaseEpochs, EpochsTFR, EpochsTFRArray),
+        "`data`",
+        "Epochs, EpochsTFR, or a NumPy array",
+    )
+    spectrum_computed = False
+    if isinstance(data, BaseEpochs | EpochsTFR | EpochsTFRArray):
         names = data.ch_names
         sfreq = data.info["sfreq"]
         events = data.events
@@ -392,12 +420,40 @@ def spectral_connectivity_time(
         if hasattr(data, "annotations") and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
-        # XXX: remove logic once support for mne<1.6 is dropped
-        kwargs = dict()
-        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-            kwargs["copy"] = False
-        data = data.get_data(**kwargs)
-        n_epochs, n_signals, n_times = data.shape
+        if isinstance(data, BaseEpochs):
+            # XXX: remove logic once support for mne<1.6 is dropped
+            kwargs = dict()
+            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+                kwargs["copy"] = False
+            data = data.get_data(**kwargs)
+            n_epochs, n_signals, n_times = data.shape
+        else:
+            freqs = data.freqs  # use freqs from EpochsTFR object
+            # Read mode from the EpochsTFR object
+            mode = "cwt_morlet" if data.method == "morlet" else data.method
+            # TFR objs will drop bad channels, so specify picking all channels
+            data = data.get_data(picks=np.arange(data.info["nchan"]))
+            if not np.iscomplexobj(data):
+                raise TypeError(
+                    "if `data` is an EpochsTFR object, it must contain complex-valued "
+                    "Fourier coefficients, such as that returned from "
+                    "Epochs.compute_tfr() with `output='complex'`"
+                )
+            n_epochs, n_signals = data.shape[:2]
+            n_times = data.shape[-1]
+            # Warn if mt_bandwidth & n_cycles default-valued (can't be read from TFR)
+            if mode == "multitaper":  # doesn't matter for cwt_morlet
+                if mt_bandwidth is None:
+                    warn(
+                        "`mt_bandwidth` is not specified; assuming 4.0 Hz was used to "
+                        "compute the TFR"
+                    )
+                if n_cycles == 7.0:
+                    warn(
+                        "`n_cycles` is the default value; assuming 7.0 was used to "
+                        "compute the TFR"
+                    )
+            spectrum_computed = True
     else:
         data = np.asarray(data)
         n_epochs, n_signals, n_times = data.shape
@@ -520,8 +576,7 @@ def spectral_connectivity_time(
         n_components = _check_n_components_input(n_components, rank)
         if n_components == 1:
             # n_components=0 means space for a components dimension is not allocated in
-            # the results, similar to how n_times_spectrum=0 is used to indicate that
-            # time is not a dimension in the results
+            # the results
             n_components = 0
     else:
         rank = None
@@ -620,9 +675,10 @@ def spectral_connectivity_time(
         padding=padding,
         kw_cwt={},
         kw_mt={},
+        multivariate_con=multivariate_con,
+        spectrum_computed=spectrum_computed,
         n_jobs=n_jobs,
         verbose=verbose,
-        multivariate_con=multivariate_con,
     )
 
     for epoch_idx in np.arange(n_epochs):
@@ -713,16 +769,17 @@ def _spectral_connectivity(
     padding,
     kw_cwt,
     kw_mt,
+    multivariate_con,
+    spectrum_computed,
     n_jobs,
     verbose,
-    multivariate_con,
 ):
     """Estimate time-resolved connectivity for one epoch.
 
     Parameters
     ----------
-    data : array_like, shape (n_channels, n_times)
-        Time-series data.
+    data : array_like, shape (channels, [freqs,] [tapers,] times)
+        Time-series data or time-frequency data.
     method : list of str
         List of connectivity metrics to compute.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
@@ -766,6 +823,8 @@ def _spectral_connectivity(
         epoch in seconds.
     multivariate_con : bool
         Whether or not multivariate connectivity is to be computed.
+    spectrum_computed : bool
+        Whether or not the time-frequency decomposition has already been computed.
 
     Returns
     -------
@@ -784,51 +843,62 @@ def _spectral_connectivity(
         and target signals (respectively). ``n_comps`` is present for valid multivariate
         methods if ``n_components > 0``.
     """
-    n_cons = len(source_idx)
-    data = np.expand_dims(data, axis=0)
-    kw_cwt.setdefault("zero_mean", False)  # avoid FutureWarning
+    # check that spectral mode is recognised
+    _check_option("mode", mode, ("cwt_morlet", "multitaper"))
+
+    # compute time-frequency decomposition
+    mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
+    if not spectrum_computed:
+        data = np.expand_dims(data, axis=0)
+        kw_cwt.setdefault("zero_mean", False)  # avoid FutureWarning
+        if mode == "cwt_morlet":
+            out = tfr_array_morlet(
+                data,
+                sfreq,
+                freqs,
+                n_cycles=n_cycles,
+                output="complex",
+                decim=decim,
+                n_jobs=n_jobs,
+                **kw_cwt,
+            )
+        else:
+            out = tfr_array_multitaper(
+                data,
+                sfreq,
+                freqs,
+                n_cycles=n_cycles,
+                time_bandwidth=mt_bandwidth,
+                output="complex",
+                decim=decim,
+                n_jobs=n_jobs,
+                **kw_mt,
+            )
+        out = np.squeeze(out, axis=0)
+    else:
+        out = data
+
+    # give tapers dim to cwt_morlet output
     if mode == "cwt_morlet":
-        out = tfr_array_morlet(
-            data,
-            sfreq,
-            freqs,
-            n_cycles=n_cycles,
-            output="complex",
-            decim=decim,
-            n_jobs=n_jobs,
-            **kw_cwt,
-        )
-        out = np.expand_dims(out, axis=2)  # same dims with multitaper
-        weights = None
-    elif mode == "multitaper":
-        out = tfr_array_multitaper(
-            data,
-            sfreq,
-            freqs,
-            n_cycles=n_cycles,
-            time_bandwidth=mt_bandwidth,
-            output="complex",
-            decim=decim,
-            n_jobs=n_jobs,
-            **kw_mt,
-        )
+        out = np.expand_dims(out, axis=1)
+
+    # compute taper weights
+    if mode == "multitaper":
         if isinstance(n_cycles, int | float):
             n_cycles = [n_cycles] * len(freqs)
-        mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
-        n_tapers = int(np.floor(mt_bandwidth - 1))
-        weights = np.zeros((n_tapers, len(freqs), out.shape[-1]))
+        n_tapers = out.shape[-3]
+        n_times = out.shape[-1]
+        half_nbw = mt_bandwidth / 2.0
+        weights = np.zeros((n_tapers, len(freqs), n_times))
         for i, (f, n_c) in enumerate(zip(freqs, n_cycles)):
             window_length = np.arange(0.0, n_c / float(f), 1.0 / sfreq).shape[0]
-            half_nbw = mt_bandwidth / 2.0
-            n_tapers = int(np.floor(mt_bandwidth - 1))
             _, eigvals = dpss_windows(window_length, half_nbw, n_tapers, sym=False)
             weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
             # weights have shape (n_tapers, n_freqs, n_times)
     else:
-        raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
+        weights = None
 
-    out = np.squeeze(out, axis=0)
-
+    # pad spectrum and weights
     if padding:
         if padding < 0:
             raise ValueError(f"Padding cannot be negative, got {padding}.")
@@ -843,6 +913,7 @@ def _spectral_connectivity(
     # compute for each connectivity method
     scores = {}
     patterns = {}
+    n_cons = len(source_idx)
     conn = _parallel_con(
         out,
         method,
