@@ -1918,7 +1918,7 @@ def test_spectral_connectivity_time_tfr_input_error_catch():
     # Catch default value warning (multitaper only)
     tfr = data.compute_tfr(method="multitaper", freqs=freqs, output="complex")
     with pytest.warns(RuntimeWarning, match="`mt_bandwidth` is not specified"):
-        spectral_connectivity_time(data=tfr, freqs=freqs)
+        spectral_connectivity_time(data=tfr, freqs=freqs, n_cycles=5.0)
     with pytest.warns(RuntimeWarning, match="`n_cycles` is the default value"):
         spectral_connectivity_time(data=tfr, freqs=freqs, mt_bandwidth=4.0)
 
