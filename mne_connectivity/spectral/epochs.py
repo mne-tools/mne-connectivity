@@ -1172,7 +1172,7 @@ def spectral_connectivity_epochs(
                     if mode != "morlet":  # FIXME: Add support for other TFR methods
                         raise ValueError(
                             "if `data` is an EpochsTFR object, the spectral method "
-                            "must be 'cwt_morlet'"
+                            "must be 'morlet'"
                         )
                 else:
                     if "taper" in data._dims:  # FIXME: Add support for multitaper TFR
