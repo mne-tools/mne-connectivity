@@ -121,8 +121,8 @@ def spectral_connectivity_time(
         connections between all channels are computed, unless a Granger
         causality method is called, in which case an error is raised.
     sfreq : float
-        The sampling frequency. Required if data is not
-        :class:`Epochs <mne.Epochs>`.
+        The sampling frequency. Required if ``data`` is not an :class:`~mne.Epochs` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower
