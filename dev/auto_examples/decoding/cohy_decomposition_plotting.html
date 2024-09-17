@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 1.9.0.dev18+ge221c6cb7 documentation</title>
+    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 1.9.0.dev34+gefbd97292 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
-    <script src="../../_static/documentation_options.js?v=9fe1bc51"></script>
+    <script src="../../_static/documentation_options.js?v=824834a8"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 1.9.0.dev18+ge221c6cb7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 1.9.0.dev34+gefbd97292 documentation</p>
   
 </a></div>
     
@@ -479,7 +479,7 @@ from the decomposition tools in the decoding module can be visualised and interp
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">make_fixed_length_epochs</span></a>
 <span class="kn">from</span> <span class="nn">mne.datasets.fieldtrip_cmc</span> <span class="kn">import</span> <span class="n">data_path</span>
 
-<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <span class="n">CoherencyDecomposition</span>
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a>
 </pre></div>
 </div>
 <section id="background">
@@ -579,8 +579,8 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
 - Filter length: 7921 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.3s
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.0s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.2s
 Not setting metadata
 30 matching events found
 No baseline correction applied
@@ -611,7 +611,7 @@ the <a class="reference internal" href="../../generated/mne_connectivity.decodin
 our connectivity frequency band of interest to be 20-30 Hz. See
 <a class="reference internal" href="cohy_decomposition.html"><span class="doc">Multivariate decomposition for efficient connectivity analysis</span></a> for more information.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate decomposition object</span>
-<span class="n">mic</span> <span class="o">=</span> <span class="n">CoherencyDecomposition</span><span class="p">(</span>
+<span class="n">mic</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span>
     <span class="n">info</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span>
@@ -629,60 +629,455 @@ our connectivity frequency band of interest to be 20-30 Hz. See
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
-  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:02,   10.15it/s]
-  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:02,   10.12it/s]
- 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:02,   10.14it/s]
- 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:02,   10.26it/s]
- 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:02,   10.20it/s]
- 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:02,   10.20it/s]
- 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:02,   10.32it/s]
- 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:02,   10.36it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:02,   10.41it/s]
- 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:01,   10.50it/s]
- 37%|███▋      | CSD epoch blocks : 11/30 [00:01&lt;00:01,   10.47it/s]
- 40%|████      | CSD epoch blocks : 12/30 [00:01&lt;00:01,   10.51it/s]
- 43%|████▎     | CSD epoch blocks : 13/30 [00:01&lt;00:01,   10.54it/s]
- 47%|████▋     | CSD epoch blocks : 14/30 [00:01&lt;00:01,   10.56it/s]
- 50%|█████     | CSD epoch blocks : 15/30 [00:01&lt;00:01,   10.60it/s]
- 53%|█████▎    | CSD epoch blocks : 16/30 [00:01&lt;00:01,   10.61it/s]
- 57%|█████▋    | CSD epoch blocks : 17/30 [00:01&lt;00:01,   10.66it/s]
- 60%|██████    | CSD epoch blocks : 18/30 [00:01&lt;00:01,   10.61it/s]
- 63%|██████▎   | CSD epoch blocks : 19/30 [00:01&lt;00:01,   10.65it/s]
- 67%|██████▋   | CSD epoch blocks : 20/30 [00:01&lt;00:00,   10.69it/s]
- 70%|███████   | CSD epoch blocks : 21/30 [00:01&lt;00:00,   10.72it/s]
- 73%|███████▎  | CSD epoch blocks : 22/30 [00:02&lt;00:00,   10.75it/s]
- 77%|███████▋  | CSD epoch blocks : 23/30 [00:02&lt;00:00,   10.73it/s]
- 80%|████████  | CSD epoch blocks : 24/30 [00:02&lt;00:00,   10.75it/s]
- 83%|████████▎ | CSD epoch blocks : 25/30 [00:02&lt;00:00,   10.77it/s]
- 87%|████████▋ | CSD epoch blocks : 26/30 [00:02&lt;00:00,   10.81it/s]
- 90%|█████████ | CSD epoch blocks : 27/30 [00:02&lt;00:00,   10.84it/s]
- 93%|█████████▎| CSD epoch blocks : 28/30 [00:02&lt;00:00,   10.85it/s]
- 97%|█████████▋| CSD epoch blocks : 29/30 [00:02&lt;00:00,   10.84it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:02&lt;00:00,   10.85it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:02&lt;00:00,   10.74it/s]
+  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:02,   11.99it/s]
+  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:02,   11.92it/s]
+ 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:02,   11.88it/s]
+ 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:02,   11.83it/s]
+ 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:02,   11.81it/s]
+ 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:02,   11.79it/s]
+ 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:01,   11.77it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:01,   11.76it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:01,   11.77it/s]
+ 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:01,   11.78it/s]
+ 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:01,   11.76it/s]
+ 40%|████      | CSD epoch blocks : 12/30 [00:01&lt;00:01,   11.77it/s]
+ 43%|████▎     | CSD epoch blocks : 13/30 [00:01&lt;00:01,   11.75it/s]
+ 47%|████▋     | CSD epoch blocks : 14/30 [00:01&lt;00:01,   11.75it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:01&lt;00:01,   11.75it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:01&lt;00:01,   11.74it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:01&lt;00:01,   11.61it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:01&lt;00:01,   11.54it/s]
+ 63%|██████▎   | CSD epoch blocks : 19/30 [00:01&lt;00:00,   11.45it/s]
+ 67%|██████▋   | CSD epoch blocks : 20/30 [00:01&lt;00:00,   11.44it/s]
+ 70%|███████   | CSD epoch blocks : 21/30 [00:01&lt;00:00,   11.45it/s]
+ 73%|███████▎  | CSD epoch blocks : 22/30 [00:01&lt;00:00,   11.44it/s]
+ 77%|███████▋  | CSD epoch blocks : 23/30 [00:02&lt;00:00,   11.40it/s]
+ 80%|████████  | CSD epoch blocks : 24/30 [00:02&lt;00:00,   11.39it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:02&lt;00:00,   11.35it/s]
+ 87%|████████▋ | CSD epoch blocks : 26/30 [00:02&lt;00:00,   11.38it/s]
+ 90%|█████████ | CSD epoch blocks : 27/30 [00:02&lt;00:00,   11.41it/s]
+ 93%|█████████▎| CSD epoch blocks : 28/30 [00:02&lt;00:00,   11.43it/s]
+ 97%|█████████▋| CSD epoch blocks : 29/30 [00:02&lt;00:00,   11.44it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:02&lt;00:00,   11.44it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:02&lt;00:00,   11.50it/s]
 [done]
 Computing MIC for connection 1 of 1
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
 
-CoherencyDecomposition({&#39;cwt_freqs&#39;: None,
- &#39;cwt_n_cycles&#39;: 7,
- &#39;fmax&#39;: 30,
- &#39;fmin&#39;: 20,
- &#39;indices&#39;: (array([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>CoherencyDecomposition(fmax=30, fmin=20,
+                       indices=(array([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
         13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,
         26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,
         39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,
         52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,
         65,  66,  67,  68,  69,  70, 147, 148, 149, 150], dtype=int32),
-             array([ 71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,
-        84,  85,  86,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,
-        97,  98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-       110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
-       123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
-       136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146], dtype=int32)),
- &#39;info&#39;: &lt;Info | 14 non-empty values
- bads: []
- ch_names: MLC11-1706, MLC12-1706, MLC13-1706, MLC14-1706, MLC15-1706, ...
- chs: 151 Magnetometers
+                                array([ 71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,
+        84,  85,  86,  87,  88,  8...
  ctf_head_t: CTF/4D/KIT head -&gt; head transform
  custom_ref_applied: False
  dev_ctf_t: MEG device -&gt; CTF/4D/KIT head transform
@@ -698,18 +1093,34 @@ CoherencyDecomposition({&#39;cwt_freqs&#39;: None,
  sfreq: 100.0 Hz
  subject_info: 1 item (dict)
 &gt;,
- &#39;method&#39;: None,
- &#39;mode&#39;: &#39;multitaper&#39;,
- &#39;mt_adaptive&#39;: False,
- &#39;mt_bandwidth&#39;: None,
- &#39;mt_low_bias&#39;: True,
- &#39;n_components&#39;: np.int64(3),
- &#39;n_jobs&#39;: 1,
- &#39;rank&#39;: (3, 3),
- &#39;verbose&#39;: None})
-</pre></div>
+                       method=&#x27;mic&#x27;, n_components=np.int64(3), rank=(3, 3))</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;CoherencyDecomposition<span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>CoherencyDecomposition(fmax=30, fmin=20,
+                       indices=(array([  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
+        13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,
+        26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,
+        39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51,
+        52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,
+        65,  66,  67,  68,  69,  70, 147, 148, 149, 150], dtype=int32),
+                                array([ 71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,
+        84,  85,  86,  87,  88,  8...
+ ctf_head_t: CTF/4D/KIT head -&gt; head transform
+ custom_ref_applied: False
+ dev_ctf_t: MEG device -&gt; CTF/4D/KIT head transform
+ dev_head_t: MEG device -&gt; head transform
+ dig: 7 items (3 Cardinal, 4 EEG)
+ highpass: 0.0 Hz
+ hpi_results: 1 item (list)
+ lowpass: 50.0 Hz
+ meas_date: 2005-01-31 14:43:00 UTC
+ meas_id: 4 items (dict)
+ nchan: 151
+ projs: []
+ sfreq: 100.0 Hz
+ subject_info: 1 item (dict)
+&gt;,
+                       method=&#x27;mic&#x27;, n_components=np.int64(3), rank=(3, 3))</pre></div> </div></div></div></div>
 </div>
-</section>
+<br />
+<br /></section>
 <section id="visualising-the-patterns">
 <h2>Visualising the patterns<a class="headerlink" href="#visualising-the-patterns" title="Link to this heading">#</a></h2>
 <p>Visualising the patterns as topomaps can be done using the
@@ -776,7 +1187,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.299 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.646 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-plotting-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/819c147b4978939946b15bdfb484fb24/cohy_decomposition_plotting.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition_plotting.ipynb</span></code></a></p>
@@ -867,7 +1278,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-09-02.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-09-17.
       <br/>
     
   </p>
