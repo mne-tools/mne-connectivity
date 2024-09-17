@@ -221,6 +221,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         # n_jobs and verbose will be checked downstream
 
         # Store inputs
+        self.method = method
         self.info = info
         self._conn_estimator_class = _conn_estimator_class
         self._indices = _indices  # uses getter/setter for public parameter
