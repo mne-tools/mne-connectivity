@@ -149,6 +149,9 @@ numpydoc_xref_aliases = {
     "Axes3D": "mpl_toolkits.mplot3d.axes3d.Axes3D",
     "PolarAxes": "matplotlib.projections.polar.PolarAxes",
     "ColorbarBase": "matplotlib.colorbar.ColorbarBase",
+    # sklearn
+    "MetadataRequest": "sklearn.utils.metadata_routing.MetadataRequest",
+    "estimator": "sklearn.base.BaseEstimator",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
     # nibabel
