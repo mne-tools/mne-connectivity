@@ -360,3 +360,30 @@ nitpick_ignore = []
 suppress_warnings = [
     "config.cache",  # our rebuild is okay
 ]
+
+
+def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
+    """Fix sklearn docstrings because they use autolink and we do not."""
+    if (
+        name.startswith("mne.decoding.") or name.startswith("mne.preprocessing.Xdawn")
+    ) and name.endswith(
+        (
+            ".get_metadata_routing",
+            ".fit",
+            ".fit_transform",
+            ".set_output",
+            ".transform",
+        )
+    ):
+        if ":Parameters:" in lines:
+            loc = lines.index(":Parameters:")
+        else:
+            loc = lines.index(":Returns:")
+        lines.insert(loc, "")
+        lines.insert(loc, ".. default-role:: autolink")
+        lines.insert(loc, "")
+
+
+def setup(app):
+    """Set up the Sphinx app."""
+    app.connect("autodoc-process-docstring", fix_sklearn_inherited_docstrings)
