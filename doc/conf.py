@@ -365,7 +365,7 @@ suppress_warnings = [
 def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
     """Fix sklearn docstrings because they use autolink and we do not."""
     if (
-        name.startswith("mne.decoding.") or name.startswith("mne.preprocessing.Xdawn")
+        name.startswith("mne_connectivity.decoding.")
     ) and name.endswith(
         (
             ".get_metadata_routing",
