@@ -8,13 +8,12 @@
 import numpy as np
 from mne import Info
 from mne._fiff.pick import pick_info
-from mne.decoding.mixin import TransformerMixin
 from mne.defaults import _BORDER_DEFAULT, _EXTRAPOLATE_DEFAULT, _INTERPOLATION_DEFAULT
 from mne.evoked import EvokedArray
-from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
 from mne.viz.utils import plt_show
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from ..spectral.epochs_multivariate import (
     _CaCohEst,
@@ -222,6 +221,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         # n_jobs and verbose will be checked downstream
 
         # Store inputs
+        self.method = method
         self.info = info
         self._conn_estimator_class = _conn_estimator_class
         self._indices = _indices  # uses getter/setter for public parameter

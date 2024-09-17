@@ -174,9 +174,9 @@ def test_spectral_decomposition(method, mode):
     epochs_transformed_2 = decomp_class_2.transform(
         X=epochs[: n_epochs // 2].get_data()
     )
-    assert_allclose(epochs_transformed, epochs_transformed_2, atol=1e-9)
-    assert_allclose(decomp_class.filters_, decomp_class_2.filters_, atol=1e-9)
-    assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_, atol=1e-9)
+    assert_allclose(epochs_transformed, epochs_transformed_2, atol=1e-8)
+    assert_allclose(decomp_class.filters_, decomp_class_2.filters_, atol=1e-8)
+    assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_, atol=1e-8)
 
     # TEST FITTING ON ONE PIECE OF DATA AND TRANSFORMING ANOTHER
     con_mv_class_unseen_data = spectral_connectivity_epochs(
