@@ -5,10 +5,11 @@
 # License: BSD (3-clause)
 
 
+from sklearn.base import TransformerMixin
+
 import numpy as np
 from mne import Info
 from mne._fiff.pick import pick_info
-from mne.decoding.mixin import TransformerMixin
 from mne.defaults import _BORDER_DEFAULT, _EXTRAPOLATE_DEFAULT, _INTERPOLATION_DEFAULT
 from mne.evoked import EvokedArray
 from mne.fixes import BaseEstimator
