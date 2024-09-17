@@ -5,8 +5,6 @@
 # License: BSD (3-clause)
 
 
-from sklearn.base import TransformerMixin
-
 import numpy as np
 from mne import Info
 from mne._fiff.pick import pick_info
@@ -16,6 +14,7 @@ from mne.fixes import BaseEstimator
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
 from mne.viz.utils import plt_show
+from sklearn.base import TransformerMixin
 
 from ..spectral.epochs_multivariate import (
     _CaCohEst,
