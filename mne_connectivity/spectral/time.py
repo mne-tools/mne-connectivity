@@ -12,7 +12,6 @@ from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import (
     EpochsTFR,
-    EpochsTFRArray,
     dpss_windows,
     tfr_array_morlet,
     tfr_array_multitaper,

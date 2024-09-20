@@ -19,7 +19,6 @@ from mne.time_frequency import (
     EpochsSpectrum,
     EpochsSpectrumArray,
     EpochsTFR,
-    EpochsTFRArray,
 )
 from mne.time_frequency.multitaper import _psd_from_mt
 from mne.utils import ProgressBar, _validate_type, logger

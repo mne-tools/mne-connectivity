@@ -16,7 +16,6 @@ from mne.time_frequency import (
     EpochsSpectrum,
     EpochsSpectrumArray,
     EpochsTFR,
-    EpochsTFRArray,
 )
 from mne.time_frequency.multitaper import (
     _compute_mt_params,
