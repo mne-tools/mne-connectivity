@@ -164,17 +164,16 @@ def _prepare_connectivity(
     first_epoch = epoch_block[0]
 
     # Sort times
-    if spectrum_computed and times_in is None:  # if Spectrum object passed in as data
+    if spectrum_computed and times_in is None:  # is a Spectrum object
         n_signals = first_epoch[0].shape[0]
         times = None
         n_times = 0
-        times_in = None
         n_times_in = 0
         tmin_idx = None
         tmax_idx = None
         warn_times = False
-    else:  # if data has a time dimension (timeseries or TFR object)
-        if spectrum_computed:  # if TFR object passed in as data
+    else:  # data has a time dimension (timeseries or TFR object)
+        if spectrum_computed:  # is a TFR object
             first_epoch = (first_epoch[0][:, 0],)  # just take first freq
         (
             n_signals,
@@ -190,7 +189,7 @@ def _prepare_connectivity(
         )
 
     # Sort freqs
-    if not spectrum_computed:  # if timeseries passed in as data
+    if not spectrum_computed:  # is an (ordinary) timeseries
         # check that fmin corresponds to at least 5 cycles
         fmin = _check_freqs(sfreq=sfreq, fmin=fmin, n_times=n_times)
         # compute frequencies to analyze based on number of samples, sampling rate,
@@ -746,8 +745,8 @@ def spectral_connectivity_epochs(
         :class:`~mne.time_frequency.EpochsTFR` object. If timeseries data, the spectral
         information will be computed according to the spectral estimation mode (see the
         ``mode`` parameter). If an :class:`~mne.time_frequency.EpochsSpectrum` or
-        :class:`~mne.time_frequency.EpochsTFR` object, this spectral information will be
-        used and the ``mode`` parameter will be ignored.
+        :class:`~mne.time_frequency.EpochsTFR` object, existing spectral information
+        will be used and the ``mode`` parameter will be ignored.
 
         Note that it is also possible to combine multiple timeseries signals by
         providing a list of tuples, e.g.: ::
@@ -1120,10 +1119,7 @@ def spectral_connectivity_epochs(
     weights = None
     metadata = None
     spectrum_computed = False
-    if isinstance(
-        data,
-        BaseEpochs | EpochsSpectrum | EpochsSpectrumArray | EpochsTFR | EpochsTFRArray,
-    ):
+    if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsTFR):
         names = data.ch_names
         sfreq = data.info["sfreq"]
 
@@ -1144,9 +1140,7 @@ def spectral_connectivity_epochs(
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
 
-        if isinstance(
-            data, EpochsSpectrum | EpochsSpectrumArray | EpochsTFR | EpochsTFRArray
-        ):
+        if isinstance(data, EpochsSpectrum | EpochsTFR):
             # XXX: Will need to be updated if new Spectrum methods are added
             if not np.iscomplexobj(data.get_data()):
                 raise TypeError(

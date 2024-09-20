@@ -45,7 +45,7 @@ def _check_rank_input(rank, data, indices):
                 data_arr = _psd_from_mt(data_arr, data.weights)
             else:
                 data_arr = (data_arr * data_arr.conj()).real
-        elif isinstance(data, EpochsTFR | EpochsTFRArray):
+        elif isinstance(data, EpochsTFR):
             # TFR objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
             # Convert to power and aggregate over time before computing rank

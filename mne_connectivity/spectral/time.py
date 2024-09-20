@@ -78,8 +78,8 @@ def spectral_connectivity_time(
         for each epoch as an :class:`~mne.time_frequency.EpochsTFR` object. If
         timeseries data, the spectral information will be computed according to the
         spectral estimation mode (see the ``mode`` parameter). If an
-        :class:`~mne.time_frequency.EpochsTFR` object, this spectral information will be
-        used and the ``mode`` parameter will be ignored.
+        :class:`~mne.time_frequency.EpochsTFR` object, existing spectral information
+        will be used and the ``mode`` parameter will be ignored.
 
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsTFR`
@@ -397,12 +397,12 @@ def spectral_connectivity_time(
     # extract data from Epochs object
     _validate_type(
         data,
-        (np.ndarray, BaseEpochs, EpochsTFR, EpochsTFRArray),
+        (np.ndarray, BaseEpochs, EpochsTFR),
         "`data`",
         "Epochs, EpochsTFR, or a NumPy array",
     )
     spectrum_computed = False
-    if isinstance(data, BaseEpochs | EpochsTFR | EpochsTFRArray):
+    if isinstance(data, BaseEpochs | EpochsTFR):
         names = data.ch_names
         sfreq = data.info["sfreq"]
         events = data.events
