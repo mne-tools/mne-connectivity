@@ -553,10 +553,12 @@ def test_spectral_connectivity_epochs_spectrum_input(method, mode):
     freqs_noise = (freqs < fband[0] - trans_bandwidth * 2) | (
         freqs > fband[1] + trans_bandwidth * 2
     )
+    WEAK_CONN_OR_NOISE = 0.3  # conn values outside of simulated fband should be < this
+    STRONG_CONN = 0.6  # conn values inside simulated fband should be > this
     # check freqs of simulated interaction show strong connectivity
-    assert_array_less(0.6, np.abs(con.get_data()[:, freqs_con].mean()))
+    assert_array_less(STRONG_CONN, np.abs(con.get_data()[:, freqs_con].mean()))
     # check freqs of no simulated interaction (just noise) show weak connectivity
-    assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), 0.3)
+    assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), WEAK_CONN_OR_NOISE)
 
 
 # TODO: Add general test for error catching for spec_conn_epochs
