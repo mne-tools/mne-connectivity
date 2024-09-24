@@ -533,8 +533,10 @@ def test_spectral_connectivity_epochs_spectrum_input(method, mode):
         data=data, method=method, indices=indices, mode=mode, cwt_freqs=cwt_freqs
     )
     # Works for multitaper & Morlet, but Welch of Spectrum and Fourier of spec_conn are
-    # slightly off (max. abs. diff. ~0.006) even when what should be identical settings
-    # are used
+    # slightly off (max. abs. diff. ~0.006). This is due to the Spectrum object using
+    # scipy.signal.spectrogram to compute the coefficients, while spec_conn uses
+    # scipy.signal.rfft, which give slightly different outputs even with identical
+    # settings.
     if mode == "fourier":
         atol = 7e-3
     else:
