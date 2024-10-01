@@ -32,7 +32,8 @@ jobs:
           pyvista: false
       - uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: '2.0.0-1'
+          # https://github.com/mamba-org/setup-micromamba/issues/225
+          micromamba-version: 1.5.10-0
           environment-file: environment.yml
           create-args: >- # beware the >- instead of |, we don't split on newlines but on spaces
             python=${{ env.PYTHON_VERSION }}
