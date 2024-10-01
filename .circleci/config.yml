@@ -76,12 +76,13 @@ jobs:
 
       - run:
           name: Get Python running and install dependencies
+          # Install mne-bids dev version: https://github.com/mne-tools/mne-connectivity/pull/237
           command: |
             pip install git+https://github.com/mne-tools/mne-python@main
             curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
             chmod +x circleci_dependencies.sh
             ./circleci_dependencies.sh
-            pip install .[doc]
+            pip install .[doc] git+https://github.com/mne-tools/mne-bids@main
 
       - save_cache:
           key: pip-cache
