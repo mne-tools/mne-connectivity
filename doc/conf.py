@@ -149,6 +149,9 @@ numpydoc_xref_aliases = {
     "Axes3D": "mpl_toolkits.mplot3d.axes3d.Axes3D",
     "PolarAxes": "matplotlib.projections.polar.PolarAxes",
     "ColorbarBase": "matplotlib.colorbar.ColorbarBase",
+    # sklearn
+    "MetadataRequest": "sklearn.utils.metadata_routing.MetadataRequest",
+    "estimator": "sklearn.base.BaseEstimator",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
     # nibabel
@@ -360,3 +363,30 @@ nitpick_ignore = []
 suppress_warnings = [
     "config.cache",  # our rebuild is okay
 ]
+
+
+def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
+    """Fix sklearn docstrings because they use autolink and we do not."""
+    if (
+        name.startswith("mne_connectivity.decoding.")
+    ) and name.endswith(
+        (
+            ".get_metadata_routing",
+            ".fit",
+            ".fit_transform",
+            ".set_output",
+            ".transform",
+        )
+    ):
+        if ":Parameters:" in lines:
+            loc = lines.index(":Parameters:")
+        else:
+            loc = lines.index(":Returns:")
+        lines.insert(loc, "")
+        lines.insert(loc, ".. default-role:: autolink")
+        lines.insert(loc, "")
+
+
+def setup(app):
+    """Set up the Sphinx app."""
+    app.connect("autodoc-process-docstring", fix_sklearn_inherited_docstrings)
