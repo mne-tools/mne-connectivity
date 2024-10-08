@@ -15,7 +15,11 @@ import inspect
 import numpy as np
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.time_frequency import EpochsSpectrum, EpochsSpectrumArray
+from mne.time_frequency import (
+    EpochsSpectrum,
+    EpochsSpectrumArray,
+    EpochsTFR,
+)
 from mne.time_frequency.multitaper import _psd_from_mt
 from mne.utils import ProgressBar, _validate_type, logger
 
@@ -40,6 +44,12 @@ def _check_rank_input(rank, data, indices):
                 data_arr = _psd_from_mt(data_arr, data.weights)
             else:
                 data_arr = (data_arr * data_arr.conj()).real
+        elif isinstance(data, EpochsTFR):
+            # TFR objs will drop bad channels, so specify picking all channels
+            data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
+            # Convert to power and aggregate over time before computing rank
+            # XXX: need to change when other types of TFR are supported
+            data_arr = np.sum((data_arr * data_arr.conj()).real, axis=-1)
         else:
             data_arr = data
 
