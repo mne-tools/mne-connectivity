@@ -793,7 +793,7 @@ def spectral_connectivity_epochs(
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., (8., 20.) for two bands with 8 Hz and 20 Hz lower freq.
-        If `None`, the frequency corresponding to 5 cycles based on the epoch
+        If ``None``, the frequency corresponding to 5 cycles based on the epoch
         length is used. For example, with an epoch length of 1 sec, the lower
         frequency would be 5 / 1 sec = 5 Hz.
     fmax : float | tuple of float
