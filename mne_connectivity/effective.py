@@ -7,7 +7,9 @@ import copy
 import numpy as np
 from mne.utils import logger, verbose
 
-from .base import SpectralConnectivity, SpectroTemporalConnectivity, EpochSpectralConnectivity
+from .base import (
+    EpochSpectralConnectivity, SpectralConnectivity, SpectroTemporalConnectivity
+)
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import fill_doc
 
@@ -246,7 +248,6 @@ def phase_slope_index(
 
 
 @verbose
-@fill_doc
 def phase_slope_index_time(data,
                            names=None,
                            indices=None,
@@ -259,9 +260,13 @@ def phase_slope_index_time(data,
                            n_cycles=7, 
                            padding=0,
                            n_jobs=1,
+                           verbose=None,
                            ):
-    """Compute the Phase Slope Index (PSI) connectivity measure across time rather than epochs.
+    """Compute the Phase Slope Index (PSI) connectivity measure across time.
 
+    This function computes PSI over time from epoched data.
+    The data may consist of a single epoch.
+    
     The PSI is an effective connectivity measure, i.e., a measure which can
     give an indication of the direction of the information flow (causality).
     For two time series, and one computes the PSI between the first and the
@@ -276,12 +281,10 @@ def phase_slope_index_time(data,
     The PSI is computed from the coherency (see spectral_connectivity_epochs),
     details can be found in :footcite:`NolteEtAl2008`.
 
-    This function computes PSI over time from epoched data.
-    The data may consist of a single epoch.
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times)
+    data : Epochs, array-like, shape=(n_epochs, n_signals, n_times)
         Can also be a list/generator of array, shape =(n_signals, n_times);
         list/generator of SourceEstimate; or Epochs.
         The data from which to compute connectivity. Note that it is also
@@ -320,7 +323,7 @@ def phase_slope_index_time(data,
 
     Returns
     -------
-    conn : instance of Connectivity
+    conn : instance of EpochSpectralConnectivity
         Computed connectivity measure(s). ``EpochSpectralConnectivity``
         container. The shape of each array is
         (n_signals ** 2, n_bands, n_epochs)
@@ -331,6 +334,7 @@ def phase_slope_index_time(data,
     See Also
     --------
     mne_connectivity.EpochSpectralConnectivity
+    mne_connectivity.spectral.time.spectral_connectivity_time
 
     References
     ----------
@@ -360,7 +364,7 @@ def phase_slope_index_time(data,
         n_cycles=n_cycles,
         decim=1,
         n_jobs=n_jobs,
-        verbose=None,
+        verbose=verbose,
     )
 
     freqs_ = np.array(cohy.freqs)

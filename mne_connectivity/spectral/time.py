@@ -558,7 +558,7 @@ def spectral_connectivity_time(
     conn = dict()
     conn_patterns = dict()
     for m in method:
-        # CaCoh complex-valued, all other methods real-valued
+        # Cohy and CaCoh complex-valued, all other methods real-valued
         if m in ["cacoh", "cohy"]:
             con_scores_dtype = np.complex128
         else:
