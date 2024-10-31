@@ -8,7 +8,9 @@ import numpy as np
 from mne.utils import logger, verbose
 
 from .base import (
-    EpochSpectralConnectivity, SpectralConnectivity, SpectroTemporalConnectivity
+    EpochSpectralConnectivity,
+    SpectralConnectivity,
+    SpectroTemporalConnectivity,
 )
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import fill_doc
