@@ -50,7 +50,7 @@ def phase_slope_index(
     A positive value means that time series 0 is ahead of time series 1 and
     a negative value means the opposite.
 
-    The PSI is computed from the coherency (see spectral_connectivity_epochs),
+    The PSI is computed from the coherency (see :func:`spectral_connectivity_epochs`),
     details can be found in :footcite:`NolteEtAl2008`.
 
     Parameters
@@ -107,16 +107,13 @@ def phase_slope_index(
 
     Returns
     -------
-    conn : instance of Connectivity
-        Computed connectivity measure(s). Either a
-        ``SpectralConnnectivity``, or ``SpectroTemporalConnectivity``
-        container. The shape of each array is either
-        (n_signals ** 2, n_bands) mode: 'multitaper' or 'fourier'
-        (n_signals ** 2, n_bands, n_times) mode: 'cwt_morlet'
-        when "indices" is None, or
-        (n_con, n_bands) mode: 'multitaper' or 'fourier'
-        (n_con, n_bands, n_times) mode: 'cwt_morlet'
-        when "indices" is specified and "n_con = len(indices[0])".
+    conn : instance of SpectralConnectivity or SpectroTemporalConnectivity
+        Computed connectivity measure(s). Either a :class:`SpectralConnectivity`, or
+        :class:`SpectroTemporalConnectivity` container. The shape of each array is
+        either (n_signals ** 2, n_bands) mode: 'multitaper' or 'fourier' (n_signals **
+        2, n_bands, n_times) mode: 'cwt_morlet' when "indices" is None, or (n_con,
+        n_bands) mode: 'multitaper' or 'fourier' (n_con, n_bands, n_times) mode:
+        'cwt_morlet' when "indices" is specified and "n_con = len(indices[0])".
 
     See Also
     --------

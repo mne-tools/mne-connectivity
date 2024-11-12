@@ -19,6 +19,11 @@ from mne.time_frequency.multitaper import (
     _psd_from_mt,
     _psd_from_mt_adaptive,
 )
+from mne.time_frequency.spectrum import (
+    BaseSpectrum,
+    EpochsSpectrum,
+    EpochsSpectrumArray,
+)
 from mne.time_frequency.tfr import cwt, morlet
 from mne.utils import _arange_div, _check_option, _time_mask, logger, verbose, warn
 
@@ -27,10 +32,75 @@ from ..utils import _check_multivariate_indices, check_indices, fill_doc
 from .epochs_bivariate import _CON_METHOD_MAP_BIVARIATE
 from .epochs_multivariate import (
     _CON_METHOD_MAP_MULTIVARIATE,
+    _check_n_components_input,
     _check_rank_input,
     _gc_methods,
+    _multicomp_methods,
     _multivariate_methods,
 )
+
+
+def _check_times(data, sfreq, times, tmin, tmax):
+    # get the data size and time scale
+    n_signals, _, times_in, warn_times = _get_and_verify_data_sizes(
+        data=data, sfreq=sfreq, times=times
+    )
+    n_times_in = len(times_in)  # XXX: Why not use times returned from above func?
+
+    if tmin is not None and tmin < times_in[0]:
+        warn(
+            f"start time tmin={tmin:.2f} s outside of the time scope of the data "
+            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
+        )
+    if tmax is not None and tmax > times_in[-1]:
+        warn(
+            f"stop time tmax={tmax:.2f} s outside of the time scope of the data "
+            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
+        )
+
+    mask = _time_mask(times_in, tmin, tmax, sfreq=sfreq)
+    tmin_idx, tmax_idx = np.where(mask)[0][[0, -1]]
+    tmax_idx += 1
+    tmin_true = times_in[tmin_idx]
+    tmax_true = times_in[tmax_idx - 1]  # time of last point used
+
+    times = times_in[tmin_idx:tmax_idx]
+    n_times = len(times)
+
+    logger.info(
+        f"    using t={tmin_true:.3f}s..{tmax_true:.3f}s for estimation ({n_times} "
+        "points)"
+    )
+
+    return (
+        n_signals,
+        times,
+        n_times,
+        times_in,
+        n_times_in,
+        tmin_idx,
+        tmax_idx,
+        warn_times,
+    )
+
+
+def _check_freqs(sfreq, fmin, n_times):
+    # check that fmin corresponds to at least 5 cycles
+    dur = float(n_times) / sfreq
+    five_cycle_freq = 5.0 / dur
+    if len(fmin) == 1 and fmin[0] == -np.inf:
+        # we use the 5 cycle freq. as default
+        fmin = np.array([five_cycle_freq])
+    else:
+        if np.any(fmin < five_cycle_freq):
+            warn(
+                f"fmin={np.min(fmin):.3f} Hz corresponds to {dur * np.min(fmin):.3f} < "
+                f"5 cycles based on the epoch length {dur:.3f} sec, need at least "
+                f"{5.0 / np.min(fmin):.3f} sec epochs or fmin={five_cycle_freq:.3f}. "
+                "Spectrum estimate will be unreliable."
+            )
+
+    return fmin
 
 
 def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
@@ -78,6 +148,7 @@ def _prepare_connectivity(
     fmin,
     fmax,
     sfreq,
+    freqs,
     indices,
     method,
     mode,
@@ -85,105 +156,39 @@ def _prepare_connectivity(
     n_bands,
     cwt_freqs,
     faverage,
+    spectrum_computed,
 ):
     """Check and precompute dimensions of results data."""
     first_epoch = epoch_block[0]
 
-    # get the data size and time scale
-    n_signals, n_times_in, times_in, warn_times = _get_and_verify_data_sizes(
-        first_epoch, sfreq, times=times_in
-    )
-
-    n_times_in = len(times_in)
-
-    if tmin is not None and tmin < times_in[0]:
-        warn(
-            f"start time tmin={tmin:.2f} s outside of the time scope of the data "
-            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
+    # Sort times and freqs
+    if spectrum_computed:
+        n_signals = first_epoch[0].shape[0]
+        times = None
+        n_times = None
+        times_in = None
+        n_times_in = None
+        tmin_idx = None
+        tmax_idx = None
+        warn_times = False
+    else:
+        (
+            n_signals,
+            times,
+            n_times,
+            times_in,
+            n_times_in,
+            tmin_idx,
+            tmax_idx,
+            warn_times,
+        ) = _check_times(
+            data=first_epoch, sfreq=sfreq, times=times_in, tmin=tmin, tmax=tmax
         )
-    if tmax is not None and tmax > times_in[-1]:
-        warn(
-            f"stop time tmax={tmax:.2f} s outside of the time scope of the data "
-            f"[{times_in[0]:.2f} s, {times_in[-1]:.2f} s]"
-        )
-
-    mask = _time_mask(times_in, tmin, tmax, sfreq=sfreq)
-    tmin_idx, tmax_idx = np.where(mask)[0][[0, -1]]
-    tmax_idx += 1
-    tmin_true = times_in[tmin_idx]
-    tmax_true = times_in[tmax_idx - 1]  # time of last point used
-
-    times = times_in[tmin_idx:tmax_idx]
-    n_times = len(times)
-
-    if any(this_method in _multivariate_methods for this_method in method):
-        multivariate_con = True
-    else:
-        multivariate_con = False
-
-    if indices is None:
-        if multivariate_con:
-            if any(this_method in _gc_methods for this_method in method):
-                raise ValueError(
-                    "indices must be specified when computing Granger causality, as "
-                    "all-to-all connectivity is not supported"
-                )
-            else:
-                logger.info("using all indices for multivariate connectivity")
-                # indices expected to be a masked array, even if not ragged
-                indices_use = (
-                    np.arange(n_signals, dtype=int)[np.newaxis, :],
-                    np.arange(n_signals, dtype=int)[np.newaxis, :],
-                )
-                indices_use = np.ma.masked_array(indices_use, mask=False, fill_value=-1)
-        else:
-            logger.info("only using indices for lower-triangular matrix")
-            # only compute r for lower-triangular region
-            indices_use = np.tril_indices(n_signals, -1)
-    else:
-        if multivariate_con:
-            # pad ragged indices and mask the invalid entries
-            indices_use = _check_multivariate_indices(indices, n_signals)
-            if any(this_method in _gc_methods for this_method in method):
-                for seed, target in zip(indices_use[0], indices_use[1]):
-                    intersection = np.intersect1d(
-                        seed.compressed(), target.compressed()
-                    )
-                    if intersection.size > 0:
-                        raise ValueError(
-                            "seed and target indices must not intersect when computing "
-                            "Granger causality"
-                        )
-        else:
-            indices_use = check_indices(indices)
-
-    # number of connectivities to compute
-    n_cons = len(indices_use[0])
-
-    logger.info(f"    computing connectivity for {n_cons} connections")
-    logger.info(
-        f"    using t={tmin_true:.3f}s..{tmax_true:.3f}s for estimation ({n_times} "
-        "points)"
-    )
-
-    # check that fmin corresponds to at least 5 cycles
-    dur = float(n_times) / sfreq
-    five_cycle_freq = 5.0 / dur
-    if len(fmin) == 1 and fmin[0] == -np.inf:
-        # we use the 5 cycle freq. as default
-        fmin = np.array([five_cycle_freq])
-    else:
-        if np.any(fmin < five_cycle_freq):
-            warn(
-                f"fmin={np.min(fmin):.3f} Hz corresponds to {dur * np.min(fmin):.3f} < "
-                f"5 cycles based on the epoch length {dur:.3f} sec, need at least "
-                f"{5.0 / np.min(fmin):.3f} sec epochs or fmin={five_cycle_freq:.3f}. "
-                "Spectrum estimate will be unreliable."
-            )
-
-    # compute frequencies to analyze based on number of samples,
-    # sampling rate, specified wavelet frequencies and mode
-    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+        # check that fmin corresponds to at least 5 cycles
+        fmin = _check_freqs(sfreq=sfreq, fmin=fmin, n_times=n_times)
+        # compute frequencies to analyze based on number of samples, sampling rate,
+        # specified wavelet frequencies, and mode
+        freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
     # compute the mask based on specified min/max and decimation factor
     freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
@@ -221,6 +226,51 @@ def _prepare_connectivity(
     if faverage:
         logger.info("    connectivity scores will be averaged for each band")
 
+    # Sort indices
+    multivariate_con = any(
+        this_method in _multivariate_methods for this_method in method
+    )
+
+    if indices is None:
+        if multivariate_con:
+            if any(this_method in _gc_methods for this_method in method):
+                raise ValueError(
+                    "indices must be specified when computing Granger causality, as "
+                    "all-to-all connectivity is not supported"
+                )
+            logger.info("using all indices for multivariate connectivity")
+            # indices expected to be a masked array, even if not ragged
+            indices_use = (
+                np.arange(n_signals, dtype=int)[np.newaxis, :],
+                np.arange(n_signals, dtype=int)[np.newaxis, :],
+            )
+            indices_use = np.ma.masked_array(indices_use, mask=False, fill_value=-1)
+        else:
+            logger.info("only using indices for lower-triangular matrix")
+            # only compute r for lower-triangular region
+            indices_use = np.tril_indices(n_signals, -1)
+    else:
+        if multivariate_con:
+            # pad ragged indices and mask the invalid entries
+            indices_use = _check_multivariate_indices(indices, n_signals)
+            if any(this_method in _gc_methods for this_method in method):
+                for seed, target in zip(indices_use[0], indices_use[1]):
+                    intersection = np.intersect1d(
+                        seed.compressed(), target.compressed()
+                    )
+                    if intersection.size > 0:
+                        raise ValueError(
+                            "seed and target indices must not intersect when computing "
+                            "Granger causality"
+                        )
+        else:
+            indices_use = check_indices(indices)
+
+    # number of connections to compute
+    n_cons = len(indices_use[0])
+
+    logger.info(f"    computing connectivity for {n_cons} connections")
+
     return (
         n_cons,
         times,
@@ -253,7 +303,7 @@ def _assemble_spectral_params(
     freq_mask,
 ):
     """Prepare time-frequency decomposition."""
-    spectral_params = dict(eigvals=None, window_fun=None, wavelets=None)
+    spectral_params = dict(eigvals=None, window_fun=None, wavelets=None, weights=None)
     n_tapers = None
     n_times_spectrum = 0
     if mode == "multitaper":
@@ -311,73 +361,20 @@ class _AbstractConEstBase:
 ########################################################################
 
 
-def _epoch_spectral_connectivity(
+def _compute_spectra(
     data,
+    sfreq,
+    mode,
     sig_idx,
     tmin_idx,
     tmax_idx,
-    sfreq,
-    method,
-    mode,
-    window_fun,
+    mt_adaptive,
     eigvals,
     wavelets,
+    window_fun,
     freq_mask,
-    mt_adaptive,
-    idx_map,
-    n_cons,
-    block_size,
-    psd,
     accumulate_psd,
-    con_method_types,
-    con_methods,
-    n_signals,
-    n_signals_use,
-    n_times,
-    gc_n_lags,
-    accumulate_inplace=True,
 ):
-    """Estimate connectivity for one epoch (see spectral_connectivity)."""
-    if any(this_method in _multivariate_methods for this_method in method):
-        n_con_signals = n_signals_use**2
-    else:
-        n_con_signals = n_cons
-
-    if wavelets is not None:
-        n_times_spectrum = n_times
-        n_freqs = len(wavelets)
-    else:
-        n_times_spectrum = 0
-        n_freqs = np.sum(freq_mask)
-
-    if not accumulate_inplace:
-        # instantiate methods only for this epoch (used in parallel mode)
-        con_methods = []
-        for mtype in con_method_types:
-            method_params = list(inspect.signature(mtype).parameters)
-            if "n_signals" in method_params:
-                # if it's a multivariate connectivity method
-                if "n_lags" in method_params:
-                    # if it's a Granger causality method
-                    con_methods.append(
-                        mtype(
-                            n_signals_use, n_cons, n_freqs, n_times_spectrum, gc_n_lags
-                        )
-                    )
-                else:
-                    # if it's a coherence method
-                    con_methods.append(
-                        mtype(n_signals_use, n_cons, n_freqs, n_times_spectrum)
-                    )
-            else:
-                con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
-
-    _check_option("mode", mode, ("cwt_morlet", "multitaper", "fourier"))
-    if len(sig_idx) == n_signals:
-        # we use all signals: use a slice for faster indexing
-        sig_idx = slice(None, None)
-
-    # compute tapered spectra
     x_t = list()
     this_psd = list()
     for this_data in data:
@@ -409,12 +406,13 @@ def _epoch_spectral_connectivity(
                 if mode == "multitaper":
                     weights = np.sqrt(eigvals)[np.newaxis, :, np.newaxis]
                 else:
-                    # hack to so we can sum over axis=-2
-                    weights = np.array([1.0])[:, None, None]
+                    # hack to so we can sum over axis=-2 (tapers dim)
+                    weights = np.ones((1, 1, 1))
 
                 if accumulate_psd:
                     _this_psd = _psd_from_mt(this_x_t, weights)
         else:  # mode == 'cwt_morlet'
+            weights = None
             if isinstance(this_data, _BaseSourceEstimate):
                 cwt_partial = partial(cwt, Ws=wavelets, use_fft=True, mode="same")
                 this_x_t = this_data.transform_data(
@@ -432,6 +430,110 @@ def _epoch_spectral_connectivity(
         x_t.append(this_x_t)
         if accumulate_psd:
             this_psd.append(_this_psd)
+
+    return x_t, this_psd, weights
+
+
+def _epoch_spectral_connectivity(
+    data,
+    sig_idx,
+    tmin_idx,
+    tmax_idx,
+    sfreq,
+    method,
+    mode,
+    window_fun,
+    eigvals,
+    weights,
+    wavelets,
+    freq_mask,
+    mt_adaptive,
+    idx_map,
+    n_cons,
+    block_size,
+    psd,
+    accumulate_psd,
+    con_method_types,
+    con_methods,
+    n_signals,
+    n_signals_use,
+    n_times,
+    gc_n_lags,
+    n_components,
+    spectrum_computed,
+    accumulate_inplace=True,
+):
+    """Estimate connectivity for one epoch (see spectral_connectivity)."""
+    if any(this_method in _multivariate_methods for this_method in method):
+        n_con_signals = n_signals_use**2
+    else:
+        n_con_signals = n_cons
+
+    if wavelets is not None:
+        n_times_spectrum = n_times
+        n_freqs = len(wavelets)
+    else:
+        n_times_spectrum = 0
+        n_freqs = np.sum(freq_mask)
+
+    if not accumulate_inplace:
+        # instantiate methods only for this epoch (used in parallel mode)
+        con_methods = []
+        for mtype in con_method_types:
+            method_params = list(inspect.signature(mtype).parameters)
+            if "n_signals" in method_params:
+                # if it's a multivariate connectivity method
+                if "n_lags" in method_params:
+                    # if it's a Granger causality method
+                    con_methods.append(
+                        mtype(
+                            n_signals_use, n_cons, n_freqs, n_times_spectrum, gc_n_lags
+                        )
+                    )
+                else:
+                    # if it's a coherency-based method
+                    con_methods.append(
+                        mtype(
+                            n_signals_use,
+                            n_cons,
+                            n_freqs,
+                            n_times_spectrum,
+                            n_components=n_components,
+                        )
+                    )
+            else:
+                con_methods.append(mtype(n_cons, n_freqs, n_times_spectrum))
+
+    _check_option("mode", mode, ("cwt_morlet", "multitaper", "fourier"))
+    if len(sig_idx) == n_signals:
+        # we use all signals: use a slice for faster indexing
+        sig_idx = slice(None, None)
+
+    # compute tapered spectra
+    if spectrum_computed:  # use existing spectral info
+        # XXX: Will need to distinguish time-resolved spectra here if support added
+        # Select signals & freqs of interest (flexible indexing for optional tapers dim)
+        x_t = np.array(data)[:, sig_idx][..., freq_mask]  # split dims to avoid np.ix_
+        if weights is None:  # also assumes no tapers dim
+            x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects a tapers dim
+            weights = np.ones((1, 1, 1))
+        if accumulate_psd:
+            this_psd = _psd_from_mt(x_t, weights)
+    else:  # compute spectral info from scratch
+        x_t, this_psd, weights = _compute_spectra(
+            data=data,
+            sfreq=sfreq,
+            mode=mode,
+            sig_idx=sig_idx,
+            tmin_idx=tmin_idx,
+            tmax_idx=tmax_idx,
+            mt_adaptive=mt_adaptive,
+            eigvals=eigvals,
+            wavelets=wavelets,
+            window_fun=window_fun,
+            freq_mask=freq_mask,
+            accumulate_psd=accumulate_psd,
+        )
 
     x_t = np.concatenate(x_t, axis=0)
     if accumulate_psd:
@@ -487,7 +589,7 @@ def _get_n_epochs(epochs, n):
     """Generate lists with at most n epochs."""
     epochs_out = list()
     for epoch in epochs:
-        if not isinstance(epoch, (list, tuple)):
+        if not isinstance(epoch, list | tuple):
             epoch = (epoch,)
         epochs_out.append(epoch)
         if len(epochs_out) >= n:
@@ -518,7 +620,7 @@ def _get_and_verify_data_sizes(
     data, sfreq, n_signals=None, n_times=None, times=None, warn_times=True
 ):
     """Get and/or verify the data sizes and time scales."""
-    if not isinstance(data, (list, tuple)):
+    if not isinstance(data, list | tuple):
         raise ValueError("data has to be a list or tuple")
     n_signals_tot = 0
     # Sometimes data can be (ndarray, SourceEstimate) groups so in the case
@@ -612,6 +714,7 @@ def spectral_connectivity_epochs(
     cwt_n_cycles=7,
     gc_n_lags=40,
     rank=None,
+    n_components=1,
     block_size=1000,
     n_jobs=1,
     verbose=None,
@@ -624,14 +727,29 @@ def spectral_connectivity_epochs(
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs
-        The data from which to compute connectivity. Note that it is also
-        possible to combine multiple signals by providing a list of tuples,
-        e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
-        corresponds to 3 epochs, and arr_* could be an array with the same
-        number of time points as stc_*. The array-like object can also
-        be a list/generator of array, shape =(n_signals, n_times),
-        or a list/generator of SourceEstimate or VolSourceEstimate objects.
+    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | ~mne.time_frequency.EpochsSpectrum
+        The data from which to compute connectivity. Can be epoched timeseries data as
+        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients
+        for each epoch as an :class:`~mne.time_frequency.EpochsSpectrum` object. If
+        timeseries data, the spectral information will be computed according to the
+        spectral estimation mode (see the ``mode`` parameter). If an
+        :class:`~mne.time_frequency.EpochsSpectrum` object, this spectral information
+        will be used and the ``mode`` parameter will be ignored.
+
+        Note that it is also possible to combine multiple timeseries signals by
+        providing a list of tuples, e.g.: ::
+
+            data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)]
+
+        which corresponds to 3 epochs where ``arr_*`` is an array with the same number
+        of time points as ``stc_*``. Data can also be a :class:`list`/:term:`generator`
+        of arrays, ``shape (n_signals, n_times)``, or a :class:`list`/:term:`generator`
+        of :class:`~mne.SourceEstimate` or :class:`~mne.VolSourceEstimate` objects.
+
+        .. versionchanged:: 0.8
+           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsSpectrum`
+           or :class:`~mne.time_frequency.EpochsSpectrumArray` object can also be passed
+           in as data. Storing Fourier coefficients requires ``mne >= 1.8``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
@@ -667,17 +785,20 @@ def spectral_connectivity_epochs(
         connections between all channels are computed, unless a Granger
         causality method is called, in which case an error is raised.
     sfreq : float
-        The sampling frequency. Required if data is not
-        :class:`Epochs <mne.Epochs>`.
+        The sampling frequency. Required if data is an :term:`array-like`.
     mode : str
         Spectrum estimation mode can be either: 'multitaper', 'fourier', or
-        'cwt_morlet'.
-    fmin : float | tuple of float
+        'cwt_morlet'. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
+    fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
+        a tuple, e.g., (8., 20.) for two bands with 8 Hz and 20 Hz lower freq.
+        If ``None``, the frequency corresponding to 5 cycles based on the epoch
+        length is used. For example, with an epoch length of 1 sec, the lower
+        frequency would be 5 / 1 sec = 5 Hz.
     fmax : float | tuple of float
         The upper frequency of interest. Multiple bands are dedined using
-        a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
+        a tuple, e.g. (13., 30.) for two band with 13 Hz and 30 Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
         domain.
@@ -686,29 +807,38 @@ def spectral_connectivity_epochs(
         the output freqs will be a list with arrays of the frequencies
         that were averaged.
     tmin : float | None
-        Time to start connectivity estimation. Note: when "data" is an array,
-        the first sample is assumed to be at time 0. For other types
-        (Epochs, etc.), the time information contained in the object is used
-        to compute the time indices.
+        Time to start connectivity estimation. Note: when ``data`` is an
+        :term:`array-like`, the first sample is assumed to be at time 0. For
+        :class:`~mne.Epochs`, the time information contained in the object is used to
+        compute the time indices. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     tmax : float | None
-        Time to end connectivity estimation. Note: when "data" is an array,
-        the first sample is assumed to be at time 0. For other types
-        (Epochs, etc.), the time information contained in the object is used
-        to compute the time indices.
+        Time to end connectivity estimation. Note: when ``data`` is an
+        :term:`array-like`, the first sample is assumed to be at time 0. For
+        :class:`~mne.Epochs`, the time information contained in the object is used to
+        compute the time indices. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_bandwidth : float | None
-        The bandwidth of the multitaper windowing function in Hz.
-        Only used in 'multitaper' mode.
+        The bandwidth of the multitaper windowing function in Hz. Only used in
+        'multitaper' mode. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_adaptive : bool
-        Use adaptive weights to combine the tapered spectra into PSD.
-        Only used in 'multitaper' mode.
+        Use adaptive weights to combine the tapered spectra into PSD. Only used in
+        'multitaper' mode. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     mt_low_bias : bool
-        Only use tapers with more than 90 percent spectral concentration
-        within bandwidth. Only used in 'multitaper' mode.
+        Only use tapers with more than 90 percent spectral concentration within
+        bandwidth. Only used in 'multitaper' mode. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_freqs : array
-        Array of frequencies of interest. Only used in 'cwt_morlet' mode.
+        Array of frequencies of interest. Only used in 'cwt_morlet' mode. Only
+        the frequencies within the range specified by ``fmin`` and ``fmax`` are
+        used. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_n_cycles : float | array of float
-        Number of cycles. Fixed number or one per frequency. Only used in
-        'cwt_morlet' mode.
+        Number of cycles. Fixed number or one per frequency. Only used in 'cwt_morlet'
+        mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum`
+        object.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
@@ -719,6 +849,15 @@ def spectral_connectivity_epochs(
         respectively, using singular value decomposition. If None, the rank of
         the data is computed and projected to. Only used if ``method`` contains
         any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
+    n_components : int
+        Number of connectivity components to extract from the data. If an `int`, the
+        number of components must be <= the minimum rank of the seeds and targets. E.g.
+        if the seed channels had a rank of 5 and the target channels had a rank of 3,
+        ``n_components`` must be <= 3. If `None`, the number of components equal to the
+        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
+        Only used if ``method`` contains any of ``['cacoh', 'mic']``.
+
+        .. versionadded:: 0.8
     block_size : int
         How many connections to compute at once (higher numbers are faster
         but require more memory).
@@ -728,18 +867,20 @@ def spectral_connectivity_epochs(
 
     Returns
     -------
-    con : array | list of array
-        Computed connectivity measure(s). Either an instance of
-        ``SpectralConnectivity`` or ``SpectroTemporalConnectivity``.
-        The shape of the connectivity result will be:
+    con : instance of SpectralConnectivity or SpectroTemporalConnectivity | list
+        Computed connectivity measure(s). An instance of :class:`SpectralConnectivity`,
+        :class:`SpectroTemporalConnectivity`, or a list of instances corresponding to
+        connectivity measures if several connectivity measures are specified. The shape
+        of the connectivity result will be:
 
         - ``(n_cons, n_freqs)`` for multitaper or fourier modes
         - ``(n_cons, n_freqs, n_times)`` for cwt_morlet mode
-        - ``n_cons = n_signals ** 2`` for bivariate methods with
-          ``indices=None``
+        - ``(n_cons, n_comps, n_freqs (, n_times))`` for valid multivariate methods if
+          ``n_components > 1``
+        - ``n_cons = n_signals ** 2`` for bivariate methods with ``indices=None``
         - ``n_cons = 1`` for multivariate methods with ``indices=None``
-        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods
-          when indices is supplied.
+        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods when
+          indices is supplied
 
     See Also
     --------
@@ -759,8 +900,8 @@ def spectral_connectivity_epochs(
     measure is stationary. The spectral measures implemented in this function
     are computed across Epochs. **Thus, spectral measures computed with only
     one Epoch will result in errorful values and spectral measures computed
-    with few Epochs will be unreliable.** Please see
-    ``spectral_connectivity_time`` for time-resolved connectivity estimation.
+    with few Epochs will be unreliable.** Please see :func:`spectral_connectivity_time`
+    for time-resolved connectivity estimation.
 
     The spectral densities can be estimated using a multitaper method with
     digital prolate spheroidal sequence (DPSS) windows, a discrete Fourier
@@ -920,7 +1061,7 @@ def spectral_connectivity_epochs(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     if n_jobs != 1:
         parallel, my_epoch_spectral_connectivity, n_jobs = parallel_func(
             _epoch_spectral_connectivity, n_jobs, verbose=verbose
@@ -940,7 +1081,7 @@ def spectral_connectivity_epochs(
     n_bands = len(fmin)
 
     # assign names to connectivity methods
-    if not isinstance(method, (list, tuple)):
+    if not isinstance(method, list | tuple):
         method = [method]  # make it a list so we can iterate over it
 
     if n_bands != 1 and any(this_method in _gc_methods for this_method in method):
@@ -962,11 +1103,15 @@ def spectral_connectivity_epochs(
     # handle connectivity estimators
     (con_method_types, n_methods, accumulate_psd) = _check_estimators(method)
 
+    times_in = None
     events = None
     event_id = None
-    if isinstance(data, BaseEpochs):
+    freqs = None
+    weights = None
+    metadata = None
+    spectrum_computed = False
+    if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsSpectrumArray):
         names = data.ch_names
-        times_in = data.times  # input times for Epochs input type
         sfreq = data.info["sfreq"]
 
         events = data.events
@@ -985,11 +1130,33 @@ def spectral_connectivity_epochs(
         if hasattr(data, "annotations") and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
-    else:
-        times_in = None
-        metadata = None
-        if sfreq is None:
-            raise ValueError("Sampling frequency (sfreq) is required with array input.")
+
+        if isinstance(data, EpochsSpectrum | EpochsSpectrumArray):
+            # XXX: Will need to be updated if new Spectrum methods are added
+            if not np.iscomplexobj(data.get_data()):
+                raise TypeError(
+                    "if `data` is an EpochsSpectrum object, it must contain "
+                    "complex-valued Fourier coefficients, such as that returned from "
+                    "Epochs.compute_psd(output='complex')"
+                )
+            if "segment" in data._dims:
+                raise ValueError(
+                    "`data` cannot contain Fourier coefficients for individual segments"
+                )
+            if isinstance(data, EpochsSpectrum):  # mode can be read mode from Spectrum
+                mode = data.method
+                mode = "fourier" if mode == "welch" else mode
+            else:  # spectral method is "unknown", so take mode from data dimensions
+                # Currently, actual mode doesn't matter as long as we handle tapers and
+                # their weights in the same way as for multitaper spectra
+                mode = "multitaper" if "taper" in data._dims else "fourier"
+            spectrum_computed = True
+            freqs = data.freqs
+            weights = data.weights
+        else:
+            times_in = data.times  # input times for Epochs input type
+    elif sfreq is None:
+        raise ValueError("Sampling frequency (sfreq) is required with array input.")
 
     # loop over data; it could be a generator that returns
     # (n_signals x n_times) arrays or SourceEstimates
@@ -1023,6 +1190,7 @@ def spectral_connectivity_epochs(
                 fmin=fmin,
                 fmax=fmax,
                 sfreq=sfreq,
+                freqs=freqs,
                 indices=indices,
                 method=method,
                 mode=mode,
@@ -1030,13 +1198,21 @@ def spectral_connectivity_epochs(
                 n_bands=n_bands,
                 cwt_freqs=cwt_freqs,
                 faverage=faverage,
+                spectrum_computed=spectrum_computed,
             )
 
             # check rank input and compute data ranks if necessary
             if multivariate_con:
                 rank = _check_rank_input(rank, data, indices_use)
+                n_components = _check_n_components_input(n_components, rank)
+                if n_components == 1:
+                    # n_components=0 means space for a components dimension is not
+                    # allocated in the results, similar to how n_times_spectrum=0 is
+                    # used to indicate that time is not a dimension in the results
+                    n_components = 0
             else:
                 rank = None
+                n_components = 0
                 gc_n_lags = None
 
             # make sure padded indices are stored in the connectivity object
@@ -1045,23 +1221,27 @@ def spectral_connectivity_epochs(
                 indices = (indices_use[0].copy(), indices_use[1].copy())
 
             # get the window function, wavelets, etc for different modes
-            (
-                spectral_params,
-                mt_adaptive,
-                n_times_spectrum,
-                n_tapers,
-            ) = _assemble_spectral_params(
-                mode=mode,
-                n_times=n_times,
-                mt_adaptive=mt_adaptive,
-                mt_bandwidth=mt_bandwidth,
-                sfreq=sfreq,
-                mt_low_bias=mt_low_bias,
-                cwt_n_cycles=cwt_n_cycles,
-                cwt_freqs=cwt_freqs,
-                freqs=freqs,
-                freq_mask=freq_mask,
-            )
+            if not spectrum_computed:
+                spectral_params, mt_adaptive, n_times_spectrum, n_tapers = (
+                    _assemble_spectral_params(
+                        mode=mode,
+                        n_times=n_times,
+                        mt_adaptive=mt_adaptive,
+                        mt_bandwidth=mt_bandwidth,
+                        sfreq=sfreq,
+                        mt_low_bias=mt_low_bias,
+                        cwt_n_cycles=cwt_n_cycles,
+                        cwt_freqs=cwt_freqs,
+                        freqs=freqs,
+                        freq_mask=freq_mask,
+                    )
+                )
+            else:
+                spectral_params = dict(
+                    eigvals=None, window_fun=None, wavelets=None, weights=weights
+                )
+                n_times_spectrum = 0
+                n_tapers = None if weights is None else weights.size
 
             # unique signals for which we actually need to compute PSD etc.
             if multivariate_con:
@@ -1103,6 +1283,8 @@ def spectral_connectivity_epochs(
                 )
                 if method[mtype_i] in _multivariate_methods:
                     method_params.update(dict(n_signals=n_signals_use, n_jobs=n_jobs))
+                    if method[mtype_i] in _multicomp_methods:
+                        method_params.update(dict(n_components=n_components))
                     if method[mtype_i] in _gc_methods:
                         method_params.update(dict(n_lags=gc_n_lags))
                 con_methods.append(mtype(**method_params))
@@ -1112,15 +1294,16 @@ def spectral_connectivity_epochs(
             logger.info(f"    the following metrics will be computed: {metrics_str}")
 
         # check dimensions and time scale
-        for this_epoch in epoch_block:
-            _, _, _, warn_times = _get_and_verify_data_sizes(
-                this_epoch,
-                sfreq,
-                n_signals,
-                n_times_in,
-                times_in,
-                warn_times=warn_times,
-            )
+        if not spectrum_computed:  # XXX: Can we assume upstream checks sufficient?
+            for this_epoch in epoch_block:
+                _, _, _, warn_times = _get_and_verify_data_sizes(
+                    this_epoch,
+                    sfreq,
+                    n_signals,
+                    n_times_in,
+                    times_in,
+                    warn_times=warn_times,
+                )
 
         call_params = dict(
             sig_idx=sig_idx,
@@ -1142,6 +1325,8 @@ def spectral_connectivity_epochs(
             n_signals_use=n_signals_use,
             n_times=n_times,
             gc_n_lags=gc_n_lags,
+            n_components=n_components,
+            spectrum_computed=spectrum_computed,
             accumulate_inplace=True if n_jobs == 1 else False,
         )
         call_params.update(**spectral_params)
@@ -1209,6 +1394,8 @@ def spectral_connectivity_epochs(
                 "connections; please contact the mne-connectivity developers"
             )
         if faverage:
+            if n_components != 0 and method[method_i] in _multicomp_methods:
+                this_con = np.moveaxis(this_con, 2, 1)  # make freqs the 2nd dimension
             if this_con.shape[1] != n_freqs:
                 raise RuntimeError(
                     "second dimension of connectivity scores does not match the number "
@@ -1221,8 +1408,13 @@ def spectral_connectivity_epochs(
                     this_con[:, freq_idx_bands[band_idx]], axis=1
                 )
             this_con = this_con_bands
+            if n_components != 0 and method[method_i] in _multicomp_methods:
+                this_con = np.moveaxis(this_con, 1, 2)  # return comps to 2nd dimension
 
             if this_patterns is not None:
+                if n_components != 0:
+                    # make freqs the 4th dimension
+                    this_patterns = np.moveaxis(this_patterns, 4, 3)
                 patterns_shape = list(this_patterns.shape)
                 patterns_shape[3] = n_bands
                 this_patterns_bands = np.empty(
@@ -1233,6 +1425,9 @@ def spectral_connectivity_epochs(
                         this_patterns[:, :, :, freq_idx_bands[band_idx]], axis=3
                     )
                 this_patterns = this_patterns_bands
+                if n_components != 0:
+                    # return comps to 4th dimension
+                    this_patterns = np.moveaxis(this_patterns, 3, 4)
 
         con.append(this_con)
         patterns.append(this_patterns)
@@ -1279,7 +1474,7 @@ def spectral_connectivity_epochs(
             freqs=freqs,
             method=_method,
             n_nodes=n_nodes,
-            spec_method=mode,
+            spec_method=mode if not isinstance(data, BaseSpectrum) else data.method,
             indices=indices,
             n_epochs_used=n_epochs,
             freqs_used=freqs_used,
@@ -1291,6 +1486,8 @@ def spectral_connectivity_epochs(
             rank=rank,
             n_lags=gc_n_lags if _method in _gc_methods else None,
         )
+        if n_components and _method in _multicomp_methods:
+            kwargs.update(components=np.arange(n_components) + 1)
         # create the connectivity container
         if mode in ["multitaper", "fourier"]:
             klass = SpectralConnectivity

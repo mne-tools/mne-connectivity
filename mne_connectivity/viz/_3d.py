@@ -20,7 +20,14 @@ FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POIN
 
 @fill_doc
 def plot_sensors_connectivity(
-    info, con, picks=None, cbar_label="Connectivity", n_con=20, cmap="RdBu"
+    info,
+    con,
+    picks=None,
+    *,
+    cbar_label="Connectivity",
+    n_con=20,
+    cmap="RdBu",
+    min_distance=0.05,
 ):
     """Visualize the sensor connectivity in 3D.
 
@@ -37,9 +44,14 @@ def plot_sensors_connectivity(
     n_con : int
         Number of strongest connections shown. By default 20.
     cmap : str | instance of matplotlib.colors.Colormap
-        Colormap for coloring connections by strength. If :class:`str`, must
-        be a valid Matplotlib colormap (i.e. a valid key of
-        ``matplotlib.colormaps``). Default is ``"RdBu"``.
+        Colormap for coloring connections by strength. If :class:`str`, must be a valid
+        Matplotlib colormap (i.e. a valid key of `matplotlib.colormaps`). Default is
+        ``"RdBu"``.
+    min_distance : float
+        The minimum distance required between two sensors to plot a connection between
+        them, in meters. Default is 0.05 (i.e. 5 cm).
+
+        .. versionadded:: 0.8
 
     Returns
     -------
@@ -57,11 +69,23 @@ def plot_sensors_connectivity(
 
     renderer = _get_renderer(size=(600, 600), bgcolor=(0.5, 0.5, 0.5))
 
+    if con.ndim != 2 or con.shape[0] != con.shape[1]:
+        raise ValueError(
+            "Connectivity data must be a 2D array of shape (n_channels, n_channels), "
+            f"got shape {con.shape}"
+        )
+
     picks = _picks_to_idx(info, picks)
     if len(picks) != len(con):
         raise ValueError(
             f"The number of channels picked ({len(picks)}) does not correspond to the "
             f"size of the connectivity data ({len(con)})"
+        )
+
+    if min_distance <= 0:
+        raise ValueError(
+            "The minimum distance between sensors must be greater than 0 m, got "
+            f"{min_distance} m"
         )
 
     # Plot the sensor locations
@@ -80,15 +104,20 @@ def plot_sensors_connectivity(
     ii, jj = np.where(con >= threshold)
 
     # Remove close connections
-    min_dist = 0.05  # exclude sensors that are less than 5cm apart
     con_nodes = list()
     con_val = list()
     for i, j in zip(ii, jj):
-        if np.linalg.norm(sens_loc[i] - sens_loc[j]) > min_dist:
+        if np.linalg.norm(sens_loc[i] - sens_loc[j]) > min_distance:
             con_nodes.append((i, j))
             con_val.append(con[i, j])
-
     con_val = np.array(con_val)
+
+    if con_val.size == 0:
+        raise ValueError(
+            f"None of the {n_con} strongest connections were at least {min_distance} m "
+            "apart. Try decreasing `min_distance` or increasing `n_con`, and check "
+            "that the coordinates of your channels in `info` are not NaNs"
+        )
 
     # Show the connections as tubes between sensors
     vmax = np.max(con_val)

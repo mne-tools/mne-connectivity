@@ -54,13 +54,14 @@ def vector_auto_regression(
 
     Returns
     -------
-    conn : Connectivity | TemporalConnectivity | EpochConnectivity
+    conn : Connectivity | EpochConnectivity | EpochTemporalConnectivity
         The connectivity data estimated.
 
     See Also
     --------
     mne_connectivity.Connectivity
     mne_connectivity.EpochConnectivity
+    mne_connectivity.EpochTemporalConnectivity
 
     Notes
     -----
@@ -126,7 +127,7 @@ def vector_auto_regression(
     References
     ----------
     .. footbibliography::
-    """  # noqa
+    """
     if model not in ["avg-epochs", "dynamic"]:
         raise ValueError(
             f'"model" parameter must be one of ' f"(avg-epochs, dynamic), not {model}."

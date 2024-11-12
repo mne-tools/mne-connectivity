@@ -17,18 +17,15 @@ def test_plot_sensors_connectivity(renderer):
     """Test plotting of sensors connectivity."""
     data_path = data_dir
     raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-
     raw = mne.io.read_raw_fif(raw_fname)
+    info = raw.info
     picks = mne.pick_types(
         raw.info, meg="grad", eeg=False, stim=False, eog=True, exclude="bads"
     )
     n_channels = len(picks)
-    con = np.random.RandomState(42).randn(n_channels, n_channels)
-    info = raw.info
-    with pytest.raises(TypeError, match="must be an instance of Info"):
-        plot_sensors_connectivity(info="foo", con=con, picks=picks)
-    with pytest.raises(ValueError, match="does not correspond to the size"):
-        plot_sensors_connectivity(info=info, con=con[::2, ::2], picks=picks)
+    rng = np.random.default_rng(42)
+    con = rng.standard_normal((n_channels, n_channels))
+
     cmap = "viridis"
     fig = plot_sensors_connectivity(info=info, con=con, picks=picks, cmap=cmap)
     # check colormap
@@ -41,3 +38,40 @@ def test_plot_sensors_connectivity(renderer):
     # check title
     title = list(fig.plotter.scalar_bars.values())[0].GetTitle()
     assert title == "Connectivity"
+
+
+@testing.requires_testing_data
+def test_plot_sensors_connectivity_error_catch(renderer):
+    """Test `plot_sensors_connectivity` catches errors."""
+    # Get data to plot
+    data_path = data_dir
+    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw = mne.io.read_raw_fif(raw_fname)
+    info = raw.info
+    picks = mne.pick_types(
+        raw.info, meg="grad", eeg=False, stim=False, eog=True, exclude="bads"
+    )
+    n_channels = len(picks)
+    rng = np.random.default_rng(42)
+    con = rng.standard_normal((n_channels, n_channels))
+
+    # Check errors caught
+    # bad Info type
+    with pytest.raises(TypeError, match="must be an instance of Info"):
+        plot_sensors_connectivity(info="foo", con=con, picks=picks)
+    # bad connectivity array shape
+    with pytest.raises(ValueError, match="Connectivity data must be a 2D array"):
+        plot_sensors_connectivity(info=info, con=np.expand_dims(con, 2), picks=picks)
+    with pytest.raises(ValueError, match=r"array of shape \(n_channels, n_channels\)"):
+        plot_sensors_connectivity(info=info, con=con[:, :-1], picks=picks)
+    # mismatched channels and picks
+    with pytest.raises(ValueError, match="does not correspond to the size"):
+        plot_sensors_connectivity(info=info, con=con[::2, ::2], picks=picks)
+    # bad minimum distance
+    with pytest.raises(ValueError, match="distance between sensors must be greater"):
+        plot_sensors_connectivity(info=info, con=con, picks=picks, min_distance=0)
+    with pytest.raises(ValueError, match="distance between sensors must be greater"):
+        plot_sensors_connectivity(info=info, con=con, picks=picks, min_distance=-1)
+    # no surviving connections for minimum distance
+    with pytest.raises(ValueError, match=r"No.*connections were at least.*apart"):
+        plot_sensors_connectivity(info=info, con=con, picks=picks, min_distance=1e6)

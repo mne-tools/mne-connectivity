@@ -204,4 +204,5 @@ def test_symmetric_orth(ndim, generator):
     Z_bad = Z.copy()
     Z_bad[0] = Z[1] + Z[2]
     with pytest.warns(RuntimeWarning, match="rank deficient"):
-        symmetric_orth(Z_bad)
+        with pytest.warns(RuntimeWarning, match="did not converge"):
+            symmetric_orth(Z_bad)
