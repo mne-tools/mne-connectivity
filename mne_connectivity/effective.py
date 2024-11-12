@@ -251,7 +251,6 @@ def phase_slope_index(
 
 @verbose
 def phase_slope_index_time(data,
-                           names=None,
                            indices=None,
                            sfreq=2 * np.pi,
                            mode="multitaper",
@@ -294,7 +293,6 @@ def phase_slope_index_time(data,
         e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
         corresponds to 3 epochs, and arr_* could be an array with the same
         number of time points as stc_*.
-    %(names)s
     indices : tuple of array | None
         Two arrays with indices of connections for which to compute
         connectivity. If None, all connections are computed.
