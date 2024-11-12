@@ -419,7 +419,7 @@ def phase_slope_index_time(data,
     bands = list(zip(np.asarray((fmin,)).ravel(), np.asarray((fmax,)).ravel()))
     n_bands = len(bands)
 
-    freq_dim = -1 
+    freq_dim = -1
 
     # allocate space for output
     out_shape = list(cohy.shape)
