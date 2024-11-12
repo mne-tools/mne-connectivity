@@ -169,12 +169,6 @@ def test_plot_connectivity_circle():
         title="test",
     )
 
-    fig = plt.figure()
-    with pytest.warns(
-        DeprecationWarning, match="Passing a `fig` and `subplot` is deprecated"
-    ):
-        plot_connectivity_circle(con, label_names, fig=fig, subplot=111)
-
     pytest.raises(
         ValueError, circular_layout, label_names, node_order, group_boundaries=[-1]
     )
