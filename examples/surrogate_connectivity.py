@@ -170,13 +170,15 @@ ax.legend()
 # scores centred around non-zero values (e.g., 0.5 for directed phase lag index).
 #
 # Below, we determine the statistical significance of connectivity in the lower beta
-# band using an alpha of 0.05. Naturally, any tests involving multiple connections,
-# frequencies, and/or times should be corrected for multiple comparisons. Here however,
-# we average over all connections and frequencies.
+# band. We simplify this by averaging over all connections and corresponding frequency
+# bins. We could of course also test the significance of each connection, each frequency
+# bin, or other frequency bands such as the alpha band. Naturally, any tests involving
+# multiple connections, frequencies, and/or times should be corrected for multiple
+# comparisons.
 #
 # The test confirms our visual inspection, showing that connectivity in the lower beta
-# band is significantly above the baseline level of connectivity, which we can take as
-# evidence of genuine interactions in this frequency band.
+# band is significantly above the baseline level of connectivity at an alpha of 0.05,
+# which we can take as evidence of genuine interactions in this frequency band.
 
 # %%
 
@@ -192,9 +194,8 @@ beta_con_surrogate = np.abs(
 ).mean(axis=(1, 2))
 
 # Compute p-value for pre-trial lower beta coupling
-alpha = 0.05
 p_val = np.sum(beta_con_pretrial <= beta_con_surrogate) / n_shuffles
-print(f"P < {alpha}") if p_val < alpha else print(f"P > {alpha}")
+print(f"P = {p_val:.2f}")
 
 ########################################################################################
 # Assessing connectivity in evoked data
@@ -259,7 +260,7 @@ beta_con_poststim = np.abs(poststim_con.get_data()[:, beta_freqs]).mean(axis=(0,
 
 # Compute p-value for post-stimulus lower beta coupling
 p_val = np.sum(beta_con_poststim <= beta_con_surrogate) / n_shuffles
-print(f"P < {alpha}") if p_val < alpha else print(f"P > {alpha}")
+print(f"P = {p_val:.2f}")
 
 ########################################################################################
 # .. _inappropriate-surrogate-data:
