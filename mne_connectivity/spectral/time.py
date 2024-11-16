@@ -1035,7 +1035,14 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         s_xy = np.squeeze(s_xy, axis=0)
     s_xy = _smooth_spectra(s_xy, kernel)
     out = []
-    conn_func = {"plv": _plv, "ciplv": _ciplv, "pli": _pli, "wpli": _wpli, "coh": _coh, "cohy": _cohy}
+    conn_func = {
+        "plv": _plv,
+        "ciplv": _ciplv,
+        "pli": _pli,
+        "wpli": _wpli,
+        "coh": _coh,
+        "cohy": _cohy,
+    }
     for m in method:
         if m in ["coh", "cohy"]:
             s_xx = psd[x]
@@ -1280,6 +1287,7 @@ def _coh(s_xx, s_yy, s_xy):
     )
     coh = con_num / con_den
     return coh
+
 
 def _cohy(s_xx, s_yy, s_xy):
     """Compute coherencey given the cross spectral density and PSD.
