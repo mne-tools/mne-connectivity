@@ -19,17 +19,17 @@ Version 0.8 (in dev)
 
 Enhancements
 ~~~~~~~~~~~~
-
+*(none yet)*
 
 
 Bug
 ~~~
-
+*(none yet)*
 
 
 Authors
 ~~~~~~~
-
+*(none yet)*
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
