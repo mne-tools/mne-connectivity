@@ -4,9 +4,10 @@
     --pst-font-family-monospace: 'Source Code Pro', var(--pst-font-family-monospace-system);
 }
 
-a[class^="sphx-glr-backref-module-mne_hfo"] {
-  /* make all MNE-BIDS backrefs bold */
+a[class^="sphx-glr-backref-module-mne_connectivity"] {
+  /* make all MNE-Connectivity backrefs bold */
   font-weight: 800;
+  color: var(--pst-color-link);
 }
 
 span.option {
@@ -19,7 +20,7 @@ html[data-theme="light"] {
     --sg-download-a-background-color: var(--pst-color-primary);
     --sg-download-a-background-image: unset;
     --sg-download-a-border-color: var(--pst-color-border);
-    --sg-download-a-color: #fff;
+    --sg-download-a-color: var(--sd-color-primary-text);
     --sg-download-a-hover-background-color: var(--pst-color-primary-highlight);
     --sg-download-a-hover-box-shadow-1: none;
     --sg-download-a-hover-box-shadow-2: none;
@@ -29,21 +30,24 @@ html[data-theme="dark"] {
     --sg-download-a-background-color: var(--pst-color-primary);
     --sg-download-a-background-image: unset;
     --sg-download-a-border-color: var(--pst-color-border);
-    --sg-download-a-color: #000;
+    --sg-download-a-color: var(--sd-color-primary-text);
     --sg-download-a-hover-background-color: var(--pst-color-primary-highlight);
     --sg-download-a-hover-box-shadow-1: none;
     --sg-download-a-hover-box-shadow-2: none;
 }
 
 /* script/notebook download buttons */
-div.sphx-glr-download a {
+.sphx-glr-download a.download {
     border-radius: 0.5rem;
     /* ↓↓↓↓↓↓↓ these two rules copied from sphinx-design */
     box-shadow: 0 .125rem .25rem var(--sd-color-shadow) !important;
+    text-decoration: none;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
-
-div.sphx-glr-download a code {
+.sphx-glr-download a.download::before {
+    color: var(--sg-download-a-color);
+}
+.sphx-glr-download a.download code {
     color: var(--sg-download-a-color);
 }
 /* ************************************************* truncate version string */
