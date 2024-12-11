@@ -19,13 +19,13 @@ Here we list a changelog of MNE-connectivity.
 Version 0.8 (in dev)
 --------------------
 
-Functionality now requires ``Python >= 3.10``.
+Minimum supported Python version is now 3.10.
 
 Enhancements
 ~~~~~~~~~~~~
 
 - Add a new :class:`~mne_connectivity.decoding.CoherencyDecomposition` class for decomposing connectivity sources using multivariate coherency-based methods, by `Thomas Binns`_ (:pr:`193`).
-- Add new plotting methods :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_filters` and :meth:`~mne_connectivity.decoding.CoherencyDecomposition.plot_patterns` to the :class:`~mne_connectivity.decoding.CoherencyDecomposition` class for visualising the decomposed connectivity sources, by `Thomas Binns`_ (:pr:`208`).
+- Add new plotting methods :meth:`CoherencyDecomposition.plot_filters() <mne_connectivity.decoding.CoherencyDecomposition.plot_filters>` and :meth:`CoherencyDecomposition.plot_patterns() <mne_connectivity.decoding.CoherencyDecomposition.plot_patterns>` for visualising the decomposed connectivity sources, by `Thomas Binns`_ (:pr:`208`).
 - Add support for computing multiple components of multivariate connectivity in the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions and :class:`~mne_connectivity.decoding.CoherencyDecomposition` class, and add support for storing data with a components dimension in all :class:`~mne_connectivity.Connectivity` classes, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`213`).
 - Add support for :class:`mne.time_frequency.EpochsSpectrum` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`220`).
 - Update the cross-references for relevant function and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
