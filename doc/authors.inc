@@ -16,3 +16,4 @@
 .. _Richard Köhler: https://github.com/richardkoehler
 .. _Mohammad Orabe: https://github.com/orabe
 .. _Mina Jamshidi: https://github.com/minajamshidi
+.. _Marijn van Vliet: https://github.com/wmvanvliet
