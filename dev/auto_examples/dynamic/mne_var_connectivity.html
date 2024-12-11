@@ -2,31 +2,33 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.8.0.dev44+g15ada4c0 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.8.0.dev45+g85f7f59d documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-
-  
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -34,21 +36,22 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=89f2ba23" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=02ec7c47" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=c240b4cc"></script>
+    <script src="../../_static/documentation_options.js?v=f4466a6f"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/dynamic/mne_var_connectivity';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
@@ -58,6 +61,7 @@
     <link rel="prev" title="Dynamic Connectivity Examples" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
   </head>
   
   
@@ -65,32 +69,13 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
 
   
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
-
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -98,7 +83,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -106,19 +90,27 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
+  
+    
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -127,7 +119,8 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev44+g15ada4c0 documentation</p>
+  
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev45+g85f7f59d documentation</p>
   
 </a></div>
     
@@ -137,42 +130,37 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -183,45 +171,44 @@
       
         <div class="navbar-item navbar-persistent--container">
           
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -232,7 +219,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -243,31 +230,32 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -276,44 +264,42 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -322,32 +308,34 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -358,7 +346,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -368,7 +356,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
@@ -391,15 +380,15 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="../handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../decoding/index.html">Decoding &amp; Decomposition Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../decoding/index.html">Decoding &amp; Decomposition Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../decoding/cohy_decomposition.html">Multivariate decomposition for efficient connectivity analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../decoding/cohy_decomposition_plotting.html">Visualising spatial contributions to multivariate connectivity</a></li>
 </ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Dynamic Connectivity Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Dynamic Connectivity Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Compute vector autoregressive model (linear system)</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -414,22 +403,20 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -443,7 +430,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Dynamic Connectivity Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Compute...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Compute vector autoregressive model (linear system)</span></li>
   </ul>
 </nav>
 </div>
@@ -458,7 +445,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -524,121 +511,23 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 509k/88.2M [00:00&lt;00:17, 5.01MB/s]
-  2%|▋                                    | 1.55M/88.2M [00:00&lt;00:11, 7.26MB/s]
-  3%|█                                    | 2.59M/88.2M [00:00&lt;00:10, 7.99MB/s]
-  4%|█▍                                   | 3.38M/88.2M [00:00&lt;00:11, 7.17MB/s]
-  5%|█▋                                   | 4.09M/88.2M [00:00&lt;00:11, 7.02MB/s]
-  5%|██                                   | 4.80M/88.2M [00:00&lt;00:13, 6.24MB/s]
-  6%|██▎                                  | 5.46M/88.2M [00:00&lt;00:14, 5.75MB/s]
-  7%|██▌                                  | 6.25M/88.2M [00:00&lt;00:13, 5.98MB/s]
-  8%|██▉                                  | 7.04M/88.2M [00:01&lt;00:13, 5.96MB/s]
-  9%|███▎                                 | 7.82M/88.2M [00:01&lt;00:13, 5.91MB/s]
- 10%|███▌                                 | 8.60M/88.2M [00:01&lt;00:13, 5.75MB/s]
- 10%|███▊                                 | 9.18M/88.2M [00:01&lt;00:14, 5.58MB/s]
- 11%|████                                 | 9.74M/88.2M [00:01&lt;00:14, 5.51MB/s]
- 12%|████▎                                | 10.3M/88.2M [00:01&lt;00:14, 5.44MB/s]
- 12%|████▌                                | 10.8M/88.2M [00:01&lt;00:14, 5.40MB/s]
- 13%|████▊                                | 11.5M/88.2M [00:01&lt;00:14, 5.23MB/s]
- 14%|█████                                | 12.0M/88.2M [00:02&lt;00:15, 4.85MB/s]
- 15%|█████▎                               | 12.8M/88.2M [00:02&lt;00:14, 5.33MB/s]
- 15%|█████▋                               | 13.6M/88.2M [00:02&lt;00:12, 5.79MB/s]
- 16%|██████                               | 14.4M/88.2M [00:02&lt;00:12, 6.11MB/s]
- 17%|██████▎                              | 15.1M/88.2M [00:02&lt;00:11, 6.35MB/s]
- 18%|██████▋                              | 15.9M/88.2M [00:02&lt;00:10, 6.76MB/s]
- 19%|██████▉                              | 16.6M/88.2M [00:02&lt;00:11, 6.24MB/s]
- 20%|███████▏                             | 17.2M/88.2M [00:02&lt;00:11, 6.18MB/s]
- 20%|███████▌                             | 18.0M/88.2M [00:02&lt;00:10, 6.44MB/s]
- 21%|███████▉                             | 18.8M/88.2M [00:03&lt;00:10, 6.76MB/s]
- 22%|████████▏                            | 19.6M/88.2M [00:03&lt;00:10, 6.67MB/s]
- 23%|████████▌                            | 20.4M/88.2M [00:03&lt;00:10, 6.46MB/s]
- 24%|████████▊                            | 21.0M/88.2M [00:03&lt;00:12, 5.59MB/s]
- 25%|█████████                            | 21.7M/88.2M [00:03&lt;00:11, 5.59MB/s]
- 25%|█████████▍                           | 22.5M/88.2M [00:03&lt;00:11, 5.57MB/s]
- 26%|█████████▊                           | 23.2M/88.2M [00:03&lt;00:11, 5.55MB/s]
- 27%|██████████                           | 24.0M/88.2M [00:04&lt;00:11, 5.72MB/s]
- 28%|██████████▍                          | 24.8M/88.2M [00:04&lt;00:10, 6.03MB/s]
- 29%|██████████▋                          | 25.6M/88.2M [00:04&lt;00:10, 5.90MB/s]
- 30%|██████████▉                          | 26.2M/88.2M [00:04&lt;00:10, 5.78MB/s]
- 31%|███████████▎                         | 26.9M/88.2M [00:04&lt;00:10, 5.94MB/s]
- 31%|███████████▌                         | 27.7M/88.2M [00:04&lt;00:09, 6.19MB/s]
- 32%|███████████▉                         | 28.5M/88.2M [00:04&lt;00:09, 6.17MB/s]
- 33%|████████████▎                        | 29.3M/88.2M [00:04&lt;00:09, 6.23MB/s]
- 34%|████████████▌                        | 29.9M/88.2M [00:04&lt;00:09, 6.20MB/s]
- 35%|████████████▊                        | 30.6M/88.2M [00:05&lt;00:09, 6.02MB/s]
- 36%|█████████████▏                       | 31.3M/88.2M [00:05&lt;00:08, 6.35MB/s]
- 36%|█████████████▍                       | 32.1M/88.2M [00:05&lt;00:08, 6.66MB/s]
- 38%|█████████████▉                       | 33.2M/88.2M [00:05&lt;00:07, 7.71MB/s]
- 39%|██████████████▎                      | 34.0M/88.2M [00:05&lt;00:07, 6.97MB/s]
- 39%|██████████████▌                      | 34.7M/88.2M [00:05&lt;00:07, 7.15MB/s]
- 40%|██████████████▉                      | 35.5M/88.2M [00:05&lt;00:07, 6.69MB/s]
- 41%|███████████████▏                     | 36.2M/88.2M [00:05&lt;00:07, 6.72MB/s]
- 42%|███████████████▍                     | 36.9M/88.2M [00:06&lt;00:07, 6.42MB/s]
- 43%|███████████████▊                     | 37.6M/88.2M [00:06&lt;00:07, 6.44MB/s]
- 44%|████████████████▏                    | 38.5M/88.2M [00:06&lt;00:07, 7.06MB/s]
- 44%|████████████████▍                    | 39.2M/88.2M [00:06&lt;00:06, 7.08MB/s]
- 45%|████████████████▊                    | 40.0M/88.2M [00:06&lt;00:06, 7.14MB/s]
- 46%|█████████████████                    | 40.8M/88.2M [00:06&lt;00:06, 6.78MB/s]
- 47%|█████████████████▍                   | 41.5M/88.2M [00:06&lt;00:06, 6.81MB/s]
- 48%|█████████████████▊                   | 42.3M/88.2M [00:06&lt;00:06, 7.05MB/s]
- 49%|██████████████████                   | 43.1M/88.2M [00:06&lt;00:06, 6.87MB/s]
- 50%|██████████████████▍                  | 43.9M/88.2M [00:06&lt;00:06, 7.07MB/s]
- 51%|██████████████████▊                  | 44.7M/88.2M [00:07&lt;00:06, 7.25MB/s]
- 52%|███████████████████                  | 45.5M/88.2M [00:07&lt;00:05, 7.34MB/s]
- 52%|███████████████████▍                 | 46.2M/88.2M [00:07&lt;00:05, 7.30MB/s]
- 53%|███████████████████▋                 | 46.9M/88.2M [00:07&lt;00:06, 6.79MB/s]
- 54%|███████████████████▉                 | 47.6M/88.2M [00:07&lt;00:06, 6.65MB/s]
- 55%|████████████████████▎                | 48.3M/88.2M [00:07&lt;00:06, 6.57MB/s]
- 56%|████████████████████▌                | 49.1M/88.2M [00:07&lt;00:05, 6.65MB/s]
- 57%|████████████████████▉                | 49.9M/88.2M [00:07&lt;00:05, 6.59MB/s]
- 58%|█████████████████████▎               | 50.7M/88.2M [00:08&lt;00:05, 6.41MB/s]
- 58%|█████████████████████▌               | 51.5M/88.2M [00:08&lt;00:05, 6.32MB/s]
- 59%|█████████████████████▉               | 52.3M/88.2M [00:08&lt;00:05, 6.50MB/s]
- 60%|██████████████████████▎              | 53.0M/88.2M [00:08&lt;00:05, 5.99MB/s]
- 61%|██████████████████████▌              | 53.8M/88.2M [00:08&lt;00:05, 6.08MB/s]
- 62%|██████████████████████▉              | 54.6M/88.2M [00:08&lt;00:05, 6.35MB/s]
- 63%|███████████████████████▏             | 55.3M/88.2M [00:08&lt;00:05, 6.22MB/s]
- 63%|███████████████████████▍             | 55.9M/88.2M [00:08&lt;00:05, 6.00MB/s]
- 64%|███████████████████████▊             | 56.7M/88.2M [00:08&lt;00:05, 6.24MB/s]
- 65%|████████████████████████▏            | 57.5M/88.2M [00:09&lt;00:04, 6.34MB/s]
- 66%|████████████████████████▍            | 58.3M/88.2M [00:09&lt;00:04, 6.46MB/s]
- 67%|████████████████████████▊            | 59.1M/88.2M [00:09&lt;00:04, 6.40MB/s]
- 68%|█████████████████████████            | 59.8M/88.2M [00:09&lt;00:04, 6.63MB/s]
- 69%|█████████████████████████▍           | 60.7M/88.2M [00:09&lt;00:03, 7.20MB/s]
- 70%|█████████████████████████▉           | 61.7M/88.2M [00:09&lt;00:03, 7.57MB/s]
- 71%|██████████████████████████▎          | 62.7M/88.2M [00:09&lt;00:03, 8.19MB/s]
- 72%|██████████████████████████▊          | 63.8M/88.2M [00:09&lt;00:02, 8.40MB/s]
- 74%|███████████████████████████▏         | 64.8M/88.2M [00:10&lt;00:02, 8.63MB/s]
- 75%|███████████████████████████▋         | 65.9M/88.2M [00:10&lt;00:02, 8.55MB/s]
- 76%|████████████████████████████         | 66.9M/88.2M [00:10&lt;00:02, 8.82MB/s]
- 77%|████████████████████████████▌        | 67.9M/88.2M [00:10&lt;00:02, 8.89MB/s]
- 78%|████████████████████████████▉        | 68.8M/88.2M [00:10&lt;00:02, 8.40MB/s]
- 79%|█████████████████████████████▏       | 69.7M/88.2M [00:10&lt;00:02, 7.49MB/s]
- 80%|█████████████████████████████▌       | 70.4M/88.2M [00:10&lt;00:02, 6.64MB/s]
- 81%|█████████████████████████████▉       | 71.2M/88.2M [00:10&lt;00:02, 6.88MB/s]
- 82%|██████████████████████████████▏      | 72.0M/88.2M [00:10&lt;00:02, 7.13MB/s]
- 82%|██████████████████████████████▌      | 72.7M/88.2M [00:11&lt;00:02, 6.52MB/s]
- 83%|██████████████████████████████▊      | 73.6M/88.2M [00:11&lt;00:02, 6.99MB/s]
- 84%|███████████████████████████████▏     | 74.3M/88.2M [00:11&lt;00:02, 6.85MB/s]
- 85%|███████████████████████████████▍     | 75.0M/88.2M [00:11&lt;00:02, 6.34MB/s]
- 86%|███████████████████████████████▋     | 75.6M/88.2M [00:11&lt;00:01, 6.32MB/s]
- 87%|████████████████████████████████     | 76.3M/88.2M [00:11&lt;00:02, 5.83MB/s]
- 87%|████████████████████████████████▎    | 77.1M/88.2M [00:11&lt;00:01, 6.28MB/s]
- 89%|████████████████████████████████▊    | 78.1M/88.2M [00:11&lt;00:01, 7.22MB/s]
- 89%|█████████████████████████████████    | 78.8M/88.2M [00:12&lt;00:01, 7.12MB/s]
- 90%|█████████████████████████████████▍   | 79.5M/88.2M [00:12&lt;00:01, 6.60MB/s]
- 91%|█████████████████████████████████▊   | 80.5M/88.2M [00:12&lt;00:01, 6.89MB/s]
- 92%|██████████████████████████████████▏  | 81.5M/88.2M [00:12&lt;00:00, 7.39MB/s]
- 94%|██████████████████████████████████▋  | 82.6M/88.2M [00:12&lt;00:00, 7.71MB/s]
- 95%|██████████████████████████████████▉  | 83.4M/88.2M [00:12&lt;00:00, 7.17MB/s]
- 95%|███████████████████████████████████▎ | 84.1M/88.2M [00:12&lt;00:00, 6.82MB/s]
- 96%|███████████████████████████████████▌ | 84.8M/88.2M [00:12&lt;00:00, 6.76MB/s]
- 97%|███████████████████████████████████▉ | 85.6M/88.2M [00:12&lt;00:00, 7.16MB/s]
- 98%|████████████████████████████████████▏| 86.3M/88.2M [00:13&lt;00:00, 6.48MB/s]
- 99%|████████████████████████████████████▋| 87.3M/88.2M [00:13&lt;00:00, 6.87MB/s]
+  5%|█▊                                   | 4.20M/88.2M [00:00&lt;00:02, 33.9MB/s]
+ 11%|███▉                                 | 9.35M/88.2M [00:00&lt;00:01, 43.3MB/s]
+ 18%|██████▋                              | 16.1M/88.2M [00:00&lt;00:01, 53.6MB/s]
+ 27%|█████████▊                           | 23.4M/88.2M [00:00&lt;00:01, 61.2MB/s]
+ 34%|████████████▍                        | 29.6M/88.2M [00:00&lt;00:01, 56.4MB/s]
+ 40%|██████████████▊                      | 35.4M/88.2M [00:00&lt;00:01, 42.9MB/s]
+ 46%|████████████████▊                    | 40.2M/88.2M [00:00&lt;00:01, 44.2MB/s]
+ 52%|███████████████████▍                 | 46.2M/88.2M [00:00&lt;00:00, 48.6MB/s]
+ 59%|█████████████████████▋               | 51.6M/88.2M [00:01&lt;00:00, 50.0MB/s]
+ 65%|███████████████████████▊             | 56.9M/88.2M [00:01&lt;00:00, 49.7MB/s]
+ 72%|██████████████████████████▌          | 63.2M/88.2M [00:01&lt;00:00, 53.6MB/s]
+ 79%|█████████████████████████████▎       | 69.7M/88.2M [00:01&lt;00:00, 57.0MB/s]
+ 89%|████████████████████████████████▋    | 78.0M/88.2M [00:01&lt;00:00, 64.5MB/s]
+ 96%|███████████████████████████████████▌ | 84.7M/88.2M [00:01&lt;00:00, 65.1MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 229GB/s]
-Download complete in 17s (84.1 MB)
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 306GB/s]
+Download complete in 05s (84.1 MB)
 /home/circleci/project/examples/dynamic/mne_var_connectivity.py:52: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
 
 [&#39;RQ1&#39;, &#39;RQ2&#39;, &#39;N/A&#39;].
@@ -824,9 +713,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-c0dc4cf7-01bf-40cc-9112-70bd701cc852"
+<tr class="mne-repr-section-header general-5b56b3b2-7733-4915-94df-f9e9ed7e0680"
      title="Hide section"
-    onclick="toggleVisibility('general-c0dc4cf7-01bf-40cc-9112-70bd701cc852')">
+    onclick="toggleVisibility('general-5b56b3b2-7733-4915-94df-f9e9ed7e0680')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -838,7 +727,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-c0dc4cf7-01bf-40cc-9112-70bd701cc852 ">
+<tr class="repr-element general-5b56b3b2-7733-4915-94df-f9e9ed7e0680 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -849,19 +738,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-c0dc4cf7-01bf-40cc-9112-70bd701cc852 ">
+<tr class="repr-element general-5b56b3b2-7733-4915-94df-f9e9ed7e0680 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-c0dc4cf7-01bf-40cc-9112-70bd701cc852 ">
+<tr class="repr-element general-5b56b3b2-7733-4915-94df-f9e9ed7e0680 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-c0dc4cf7-01bf-40cc-9112-70bd701cc852 ">
+<tr class="repr-element general-5b56b3b2-7733-4915-94df-f9e9ed7e0680 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -870,7 +759,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-c0dc4cf7-01bf-40cc-9112-70bd701cc852 ">
+<tr class="repr-element general-5b56b3b2-7733-4915-94df-f9e9ed7e0680 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -885,9 +774,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-cdeb7822-ba8a-4235-af12-32d9050636e1"
+<tr class="mne-repr-section-header acquisition-209f9d3a-b965-4cd5-8896-788e052ee18a"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-cdeb7822-ba8a-4235-af12-32d9050636e1')">
+    onclick="toggleVisibility('acquisition-209f9d3a-b965-4cd5-8896-788e052ee18a')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -899,7 +788,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-cdeb7822-ba8a-4235-af12-32d9050636e1 ">
+<tr class="repr-element acquisition-209f9d3a-b965-4cd5-8896-788e052ee18a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -912,14 +801,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-cdeb7822-ba8a-4235-af12-32d9050636e1 ">
+<tr class="repr-element acquisition-209f9d3a-b965-4cd5-8896-788e052ee18a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-cdeb7822-ba8a-4235-af12-32d9050636e1 ">
+<tr class="repr-element acquisition-209f9d3a-b965-4cd5-8896-788e052ee18a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -934,9 +823,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-1d9861f7-d76e-4533-85ea-fd47d26cdf15"
+<tr class="mne-repr-section-header channels-e0b41e1e-276a-4640-b880-0575a2d5abc6"
      title="Hide section"
-    onclick="toggleVisibility('channels-1d9861f7-d76e-4533-85ea-fd47d26cdf15')">
+    onclick="toggleVisibility('channels-e0b41e1e-276a-4640-b880-0575a2d5abc6')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -949,7 +838,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-1d9861f7-d76e-4533-85ea-fd47d26cdf15 ">
+<tr class="repr-element channels-e0b41e1e-276a-4640-b880-0575a2d5abc6 ">
     <td class="mne-repr-section-toggle"></td>
     <td>ECoG</td>
     <td>
@@ -962,7 +851,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-1d9861f7-d76e-4533-85ea-fd47d26cdf15 ">
+<tr class="repr-element channels-e0b41e1e-276a-4640-b880-0575a2d5abc6 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -977,9 +866,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-47e179a6-9171-4c9a-8872-0b394daa4101"
+<tr class="mne-repr-section-header filters-5aea942a-4712-441e-9c04-e8123229567a"
      title="Hide section"
-    onclick="toggleVisibility('filters-47e179a6-9171-4c9a-8872-0b394daa4101')">
+    onclick="toggleVisibility('filters-5aea942a-4712-441e-9c04-e8123229567a')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -991,14 +880,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-47e179a6-9171-4c9a-8872-0b394daa4101 ">
+<tr class="repr-element filters-5aea942a-4712-441e-9c04-e8123229567a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-47e179a6-9171-4c9a-8872-0b394daa4101 ">
+<tr class="repr-element filters-5aea942a-4712-441e-9c04-e8123229567a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1420,24 +1309,23 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  5%|▌         | 16/302 [00:00&lt;00:01, 158.26it/s]
- 11%|█         | 32/302 [00:00&lt;00:01, 152.78it/s]
- 16%|█▌        | 48/302 [00:00&lt;00:01, 149.34it/s]
- 21%|██        | 63/302 [00:00&lt;00:01, 146.23it/s]
- 27%|██▋       | 81/302 [00:00&lt;00:01, 155.33it/s]
- 33%|███▎      | 99/302 [00:00&lt;00:01, 162.00it/s]
- 39%|███▊      | 117/302 [00:00&lt;00:01, 166.12it/s]
- 45%|████▍     | 135/302 [00:00&lt;00:00, 168.92it/s]
- 51%|█████     | 153/302 [00:00&lt;00:00, 169.59it/s]
- 56%|█████▋    | 170/302 [00:01&lt;00:00, 158.88it/s]
- 62%|██████▏   | 187/302 [00:01&lt;00:00, 160.91it/s]
- 68%|██████▊   | 205/302 [00:01&lt;00:00, 165.39it/s]
- 74%|███████▍  | 223/302 [00:01&lt;00:00, 168.43it/s]
- 79%|███████▉  | 240/302 [00:01&lt;00:00, 167.23it/s]
- 85%|████████▌ | 258/302 [00:01&lt;00:00, 169.78it/s]
- 91%|█████████▏| 276/302 [00:01&lt;00:00, 171.00it/s]
- 97%|█████████▋| 294/302 [00:01&lt;00:00, 170.68it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 164.67it/s]
+  6%|▋         | 19/302 [00:00&lt;00:01, 182.28it/s]
+ 13%|█▎        | 38/302 [00:00&lt;00:01, 182.81it/s]
+ 19%|█▉        | 57/302 [00:00&lt;00:01, 179.07it/s]
+ 25%|██▍       | 75/302 [00:00&lt;00:01, 179.05it/s]
+ 31%|███       | 94/302 [00:00&lt;00:01, 179.68it/s]
+ 37%|███▋      | 113/302 [00:00&lt;00:01, 180.37it/s]
+ 44%|████▎     | 132/302 [00:00&lt;00:00, 180.18it/s]
+ 50%|█████     | 151/302 [00:00&lt;00:00, 180.52it/s]
+ 56%|█████▋    | 170/302 [00:00&lt;00:00, 176.38it/s]
+ 62%|██████▏   | 188/302 [00:01&lt;00:00, 167.12it/s]
+ 68%|██████▊   | 205/302 [00:01&lt;00:00, 155.26it/s]
+ 74%|███████▎  | 222/302 [00:01&lt;00:00, 158.66it/s]
+ 79%|███████▉  | 240/302 [00:01&lt;00:00, 164.30it/s]
+ 85%|████████▌ | 258/302 [00:01&lt;00:00, 168.41it/s]
+ 91%|█████████▏| 276/302 [00:01&lt;00:00, 171.54it/s]
+ 97%|█████████▋| 294/302 [00:01&lt;00:00, 166.77it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 171.17it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MiB&gt;
 </pre></div>
 </div>
@@ -1483,7 +1371,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f859e6f7430&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4a23a65000&gt;
 </pre></div>
 </div>
 </section>
@@ -1546,10 +1434,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7f861d08b970&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7f4a67a5f280&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 59.779 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 52.080 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1561,7 +1449,6 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
 <p><a class="reference download internal" download="" href="../../_downloads/8cb2e6ba3da421678a517077a9590a3c/mne_var_connectivity.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mne_var_connectivity.zip</span></code></a></p>
 </div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </section>
 </section>
 
@@ -1572,8 +1459,8 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
               
               
               
-                <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                <footer class="prev-next-footer d-print-none">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -1591,13 +1478,17 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-the-data">Load the data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#crop-the-data-for-this-example">Crop the data for this example</a></li>
@@ -1622,8 +1513,8 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1631,15 +1522,17 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-10.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-11.
       <br/>
     
   </p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
@@ -1652,8 +1545,9 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

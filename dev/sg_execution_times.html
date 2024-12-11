@@ -2,31 +2,33 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Computation times &#8212; MNE-Connectivity 0.8.0.dev44+g15ada4c0 documentation</title>
+    <title>Computation times &#8212; MNE-Connectivity 0.8.0.dev45+g85f7f59d documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -34,21 +36,22 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css?v=89f2ba23" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=02ec7c47" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="_static/documentation_options.js?v=c240b4cc"></script>
+    <script src="_static/documentation_options.js?v=f4466a6f"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sg_execution_times';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
@@ -57,6 +60,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
   </head>
   
   
@@ -64,32 +68,13 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
 
   
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
-
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -97,7 +82,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -105,19 +89,27 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
+  
+    
   
 
 <a class="navbar-brand logo" href="index.html">
@@ -126,7 +118,8 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev44+g15ada4c0 documentation</p>
+  
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev45+g85f7f59d documentation</p>
   
 </a></div>
     
@@ -136,42 +129,37 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -182,45 +170,44 @@
       
         <div class="navbar-item navbar-persistent--container">
           
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -231,7 +218,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -242,27 +229,30 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -271,44 +261,42 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -317,32 +305,34 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -353,7 +343,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -371,22 +361,20 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -394,7 +382,7 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Computation times</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Computation times</span></li>
   </ul>
 </nav>
 </div>
@@ -409,11 +397,11 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="computation-times">
 <span id="sphx-glr-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>06:10.523</strong> total execution time for 20 files <strong>from all galleries</strong>:</p>
+<p><strong>06:11.116</strong> total execution time for 20 files <strong>from all galleries</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -426,7 +414,7 @@ document.write(`
 $(document).ready( function () {
     $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
 } );
-</script><table class="table table-striped sg-datatable">
+</script><div class="pst-scrollable-table-container"><table class="table table-striped sg-datatable">
 <thead>
 <tr class="row-odd"><th class="head"><p>Example</p></th>
 <th class="head"><p>Time</p></th>
@@ -435,79 +423,79 @@ $(document).ready( function () {
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/mne_inverse_envelope_correlation.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">Compute envelope correlations in source space</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_envelope_correlation.py</span></code>)</p></td>
-<td><p>01:05.467</p></td>
+<td><p>01:29.628</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/dynamic/mne_var_connectivity.html#sphx-glr-auto-examples-dynamic-mne-var-connectivity-py"><span class="std std-ref">Compute vector autoregressive model (linear system)</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/dynamic/mne_var_connectivity.py</span></code>)</p></td>
-<td><p>00:59.779</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/granger_causality.html#sphx-glr-auto-examples-granger-causality-py"><span class="std std-ref">Compute directionality of connectivity with multivariate Granger causality</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/granger_causality.py</span></code>)</p></td>
-<td><p>00:52.575</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/compare_connectivity_over_time_over_trial.py</span></code>)</p></td>
-<td><p>00:32.915</p></td>
+<td><p>00:52.080</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/mne_inverse_envelope_correlation_volume.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-volume-py"><span class="std std-ref">Compute envelope correlations in volume source space</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_envelope_correlation_volume.py</span></code>)</p></td>
-<td><p>00:25.384</p></td>
+<td><p>00:32.732</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/compare_connectivity_over_time_over_trial.py</span></code>)</p></td>
+<td><p>00:27.482</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/granger_causality.html#sphx-glr-auto-examples-granger-causality-py"><span class="std std-ref">Compute directionality of connectivity with multivariate Granger causality</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/granger_causality.py</span></code>)</p></td>
+<td><p>00:26.245</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mic_mim.py</span></code>)</p></td>
-<td><p>00:24.796</p></td>
+<td><p>00:25.596</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_psi_visual.py</span></code>)</p></td>
-<td><p>00:19.183</p></td>
+<td><p>00:21.221</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/connectivity_classes.html#sphx-glr-auto-examples-connectivity-classes-py"><span class="std std-ref">Using the connectivity classes</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/connectivity_classes.py</span></code>)</p></td>
-<td><p>00:18.224</p></td>
+<td><p>00:19.785</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/dpli_wpli_pli.html#sphx-glr-auto-examples-dpli-wpli-pli-py"><span class="std std-ref">Comparing PLI, wPLI, and dPLI</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/dpli_wpli_pli.py</span></code>)</p></td>
-<td><p>00:15.086</p></td>
+<td><p>00:15.582</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_coherence_epochs.py</span></code>)</p></td>
-<td><p>00:13.842</p></td>
+<td><p>00:14.959</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mixed_source_space_connectivity.py</span></code>)</p></td>
-<td><p>00:11.890</p></td>
+<td><p>00:12.233</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/decoding/cohy_decomposition_plotting.html#sphx-glr-auto-examples-decoding-cohy-decomposition-plotting-py"><span class="std std-ref">Visualising spatial contributions to multivariate connectivity</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/decoding/cohy_decomposition_plotting.py</span></code>)</p></td>
-<td><p>00:06.795</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_label_connectivity.py</span></code>)</p></td>
+<td><p>00:07.031</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_label_connectivity.py</span></code>)</p></td>
-<td><p>00:05.662</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/decoding/cohy_decomposition_plotting.html#sphx-glr-auto-examples-decoding-cohy-decomposition-plotting-py"><span class="std std-ref">Visualising spatial contributions to multivariate connectivity</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/decoding/cohy_decomposition_plotting.py</span></code>)</p></td>
+<td><p>00:06.685</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/cwt_sensor_connectivity.html#sphx-glr-auto-examples-cwt-sensor-connectivity-py"><span class="std std-ref">Compute seed-based time-frequency connectivity in sensor space</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/cwt_sensor_connectivity.py</span></code>)</p></td>
-<td><p>00:04.213</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/compare_coherency_methods.py</span></code>)</p></td>
-<td><p>00:03.243</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/decoding/cohy_decomposition.html#sphx-glr-auto-examples-decoding-cohy-decomposition-py"><span class="std std-ref">Multivariate decomposition for efficient connectivity analysis</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/decoding/cohy_decomposition.py</span></code>)</p></td>
-<td><p>00:03.105</p></td>
+<td><p>00:04.594</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/sensor_connectivity.py</span></code>)</p></td>
-<td><p>00:03.098</p></td>
+<td><p>00:03.765</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/compare_coherency_methods.py</span></code>)</p></td>
+<td><p>00:03.489</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto_examples/decoding/cohy_decomposition.html#sphx-glr-auto-examples-decoding-cohy-decomposition-py"><span class="std std-ref">Multivariate decomposition for efficient connectivity analysis</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/decoding/cohy_decomposition.py</span></code>)</p></td>
+<td><p>00:02.863</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mne_inverse_connectivity_spectrum.py</span></code>)</p></td>
-<td><p>00:02.902</p></td>
+<td><p>00:02.800</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/cacoh.html#sphx-glr-auto-examples-cacoh-py"><span class="std std-ref">Compute multivariate coherency/coherence</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/cacoh.py</span></code>)</p></td>
-<td><p>00:02.350</p></td>
+<td><p>00:02.333</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/handling_ragged_arrays.html#sphx-glr-auto-examples-handling-ragged-arrays-py"><span class="std std-ref">Working with ragged indices for multivariate connectivity</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/handling_ragged_arrays.py</span></code>)</p></td>
@@ -516,6 +504,7 @@ $(document).ready( function () {
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </section>
 
@@ -526,8 +515,8 @@ $(document).ready( function () {
               
               
               
-                <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                <footer class="prev-next-footer d-print-none">
+                  
 <div class="prev-next-area">
 </div>
                 </footer>
@@ -547,8 +536,8 @@ $(document).ready( function () {
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -556,15 +545,17 @@ $(document).ready( function () {
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-10.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-11.
       <br/>
     
   </p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
@@ -577,8 +568,9 @@ $(document).ready( function () {
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>
