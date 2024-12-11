@@ -1,5 +1,3 @@
-:orphan:
-
 .. _whats_new:
 
 

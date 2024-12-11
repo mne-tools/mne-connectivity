@@ -259,6 +259,10 @@ html_theme = "pydata_sphinx_theme"
 templates_path = ["_templates"]
 html_static_path = ["_static"]
 html_css_files = ["style.css"]
+html_sidebars = {
+    "whats_new": [],
+    "install": [],
+}
 
 switcher_version_match = "dev" if "dev" in release else version
 
@@ -281,6 +285,7 @@ html_theme_options = {
         "json_url": "https://mne.tools/mne-connectivity/dev/_static/versions.json",
         "version_match": switcher_version_match,
     },
+    "back_to_top_button": False,
 }
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
@@ -346,6 +351,7 @@ sphinx_gallery_conf = {
     "compress_images": ("images", "thumbnails"),
     "image_scrapers": scrapers,
     "expected_failing_examples": ["../examples/granger_causality.py"],
+    "show_signature": False,
 }
 
 # sphinxcontrib-bibtex
