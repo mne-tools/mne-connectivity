@@ -28,13 +28,12 @@ Enhancements
 - Add new plotting methods :meth:`CoherencyDecomposition.plot_filters() <mne_connectivity.decoding.CoherencyDecomposition.plot_filters>` and :meth:`CoherencyDecomposition.plot_patterns() <mne_connectivity.decoding.CoherencyDecomposition.plot_patterns>` for visualising the decomposed connectivity sources, by `Thomas Binns`_ (:pr:`208`).
 - Add support for computing multiple components of multivariate connectivity in the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions and :class:`~mne_connectivity.decoding.CoherencyDecomposition` class, and add support for storing data with a components dimension in all :class:`~mne_connectivity.Connectivity` classes, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`213`).
 - Add support for :class:`mne.time_frequency.EpochsSpectrum` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`220`).
-- Update the cross-references for relevant function and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
-- Improve the documentation of the ``fmin`` and ``cwt_freqs`` parameters in the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Richard Köhler`_ and `Daniel McCloy`_ (:pr:`242`).
+- Update the cross-references for relevant functions and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
 
 Bug
 ~~~
 
-
+- Improve the documentation of the ``fmin`` and ``cwt_freqs`` parameters in the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Richard Köhler`_ and `Daniel McCloy`_ (:pr:`242`).
 
 API
 ~~~
