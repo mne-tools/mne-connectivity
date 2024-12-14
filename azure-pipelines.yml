@@ -31,7 +31,6 @@ jobs:
           versionSpec: $(PYTHON_VERSION)
           architecture: $(PYTHON_ARCH)
           addToPath: true
-        condition: eq(variables['TEST_MODE'], 'pip')
       - bash: |
           set -e
           pip install --upgrade --pre numpy scipy matplotlib "h5py<3.7"
