@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Determine the significance of connectivity estimates against baseline connectivity &#8212; MNE-Connectivity 0.8.0.dev49+g04207214 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=fadb2c7d"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/surrogate_connectivity';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using the connectivity classes" href="connectivity_classes.html" />
+    <link rel="prev" title="Compute source space connectivity and visualize it using a circular graph" href="mne_inverse_label_connectivity.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev49+g04207214 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="dpli_wpli_pli.html">Comparing PLI, wPLI, and dPLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_connectivity_over_time_over_trial.html">Comparing spectral connectivity computed over time or over trials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compare_coherency_methods.html">Comparison of coherency-based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_connectivity_spectrum.html">Compute full spectrum source space connectivity between labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mixed_source_space_connectivity.html">Compute mixed source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cacoh.html">Compute multivariate coherency/coherence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Determine the significance of connectivity estimates against baseline connectivity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="decoding/index.html">Decoding &amp; Decomposition Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="decoding/cohy_decomposition.html">Multivariate decomposition for efficient connectivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decoding/cohy_decomposition_plotting.html">Visualising spatial contributions to multivariate connectivity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dynamic/index.html">Dynamic Connectivity Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamic/mne_var_connectivity.html">Compute vector autoregressive model (linear system)</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Determine the significance of connectivity estimates against baseline connectivity</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-surrogate-connectivity-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="determine-the-significance-of-connectivity-estimates-against-baseline-connectivity">
+<span id="sphx-glr-auto-examples-surrogate-connectivity-py"></span><h1>Determine the significance of connectivity estimates against baseline connectivity<a class="headerlink" href="#determine-the-significance-of-connectivity-estimates-against-baseline-connectivity" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how surrogate data can be generated to assess whether
+connectivity estimates are significantly greater than baseline.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">somato</span>
+
+<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_surrogate_data</span></a><span class="p">,</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
+</pre></div>
+</div>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<p>When performing connectivity analyses, we often want to know whether the results we
+observe reflect genuine interactions between signals. We can assess this by performing
+statistical tests between our connectivity estimates and a ‘baseline’ level of
+connectivity. However, due to factors such as background noise and sample
+size-dependent biases (see e.g. <a class="footnote-reference brackets" href="#footcite-vincketal2010" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>), it is often not
+appropriate to treat 0 as this baseline. Therefore, we need a way to estimate the
+baseline level of connectivity.</p>
+<p>One approach is to manipulate the original data in such a way that the covariance
+structure is destroyed, creating surrogate data. Connectivity estimates from the
+original and surrogate data can then be compared to determine whether the original
+data contains significant interactions.</p>
+<p>Such surrogate data can be easily generated in MNE using the
+<a class="reference internal" href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_data()</span></code></a> function, which shuffles epoched data
+independently across channels <a class="footnote-reference brackets" href="#footcite-pellegrinietal2023" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> (see the Notes section of
+the function for more information). In this example, we will demonstrate how surrogate
+data can be created, and how you can use this to assess the statistical significance
+of your connectivity estimates.</p>
+</section>
+<section id="loading-the-data">
+<h2>Loading the data<a class="headerlink" href="#loading-the-data" title="Link to this heading">#</a></h2>
+<p>We start by loading from the <a class="reference external" href="https://mne.tools/dev/documentation/datasets.html#somato-dataset" title="(in MNE v1.9)"><span>Somatosensory</span></a> dataset, MEG data showing
+event-related activity in response to somatosensory stimuli. We construct epochs
+around these events in the time window [-1.5, 1.0] seconds.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html#mne.datasets.somato.data_path" title="mne.datasets.somato.data_path" class="sphx-glr-backref-module-mne-datasets-somato sphx-glr-backref-type-py-function"><span class="n">somato</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;sub-01&quot;</span> <span class="o">/</span> <span class="s2">&quot;meg&quot;</span> <span class="o">/</span> <span class="s2">&quot;sub-01_task-somato_meg.fif&quot;</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="mne.find_events" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">find_events</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="s2">&quot;STI 014&quot;</span><span class="p">)</span>
+
+<span class="c1"># Pre-processing</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.pick" title="mne.io.Raw.pick" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">pick</span></a><span class="p">(</span><span class="s2">&quot;grad&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>  <span class="c1"># focus on gradiometers</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.filter" title="mne.io.Raw.filter" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">filter</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.resample" title="mne.io.Raw.resample" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">resample</span></a><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">)</span>  <span class="c1"># reduce compute time</span>
+
+<span class="c1"># Construct epochs around events</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">[:</span><span class="mi">30</span><span class="p">]</span>  <span class="c1"># select a subset of epochs to speed up computation</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+  1%|▍                                     | 7.74M/611M [00:00&lt;00:07, 77.4MB/s]
+  3%|█                                     | 16.6M/611M [00:00&lt;00:07, 84.2MB/s]
+  4%|█▌                                    | 25.7M/611M [00:00&lt;00:06, 87.3MB/s]
+  6%|██▏                                   | 35.0M/611M [00:00&lt;00:06, 89.4MB/s]
+  7%|██▊                                   | 44.2M/611M [00:00&lt;00:06, 90.3MB/s]
+  9%|███▎                                  | 53.3M/611M [00:00&lt;00:06, 90.7MB/s]
+ 10%|███▉                                  | 62.4M/611M [00:00&lt;00:06, 90.8MB/s]
+ 12%|████▍                                 | 71.6M/611M [00:00&lt;00:05, 91.1MB/s]
+ 13%|█████                                 | 80.8M/611M [00:00&lt;00:05, 91.4MB/s]
+ 15%|█████▌                                | 90.0M/611M [00:01&lt;00:05, 91.5MB/s]
+ 16%|██████▏                               | 99.1M/611M [00:01&lt;00:05, 91.5MB/s]
+ 18%|██████▉                                | 108M/611M [00:01&lt;00:05, 91.8MB/s]
+ 19%|███████▌                               | 118M/611M [00:01&lt;00:05, 91.7MB/s]
+ 21%|████████                               | 127M/611M [00:01&lt;00:05, 91.9MB/s]
+ 22%|████████▋                              | 136M/611M [00:01&lt;00:05, 91.8MB/s]
+ 24%|█████████▎                             | 145M/611M [00:01&lt;00:05, 91.9MB/s]
+ 25%|█████████▊                             | 154M/611M [00:01&lt;00:04, 91.8MB/s]
+ 27%|██████████▍                            | 164M/611M [00:01&lt;00:04, 91.5MB/s]
+ 28%|███████████                            | 173M/611M [00:01&lt;00:04, 91.6MB/s]
+ 30%|███████████▌                           | 182M/611M [00:02&lt;00:04, 91.6MB/s]
+ 31%|████████████▏                          | 191M/611M [00:02&lt;00:04, 91.4MB/s]
+ 33%|████████████▊                          | 200M/611M [00:02&lt;00:04, 91.3MB/s]
+ 34%|█████████████▍                         | 209M/611M [00:02&lt;00:04, 91.2MB/s]
+ 36%|█████████████▉                         | 219M/611M [00:02&lt;00:04, 90.9MB/s]
+ 37%|██████████████▌                        | 228M/611M [00:02&lt;00:04, 90.9MB/s]
+ 39%|███████████████▏                       | 237M/611M [00:02&lt;00:04, 91.3MB/s]
+ 40%|███████████████▋                       | 246M/611M [00:02&lt;00:03, 91.3MB/s]
+ 42%|████████████████▎                      | 255M/611M [00:02&lt;00:03, 91.4MB/s]
+ 43%|████████████████▉                      | 264M/611M [00:02&lt;00:03, 90.5MB/s]
+ 45%|█████████████████▍                     | 273M/611M [00:03&lt;00:03, 87.2MB/s]
+ 46%|██████████████████                     | 282M/611M [00:03&lt;00:03, 87.7MB/s]
+ 48%|██████████████████▌                    | 291M/611M [00:03&lt;00:03, 88.4MB/s]
+ 49%|███████████████████▏                   | 300M/611M [00:03&lt;00:03, 84.5MB/s]
+ 51%|███████████████████▋                   | 309M/611M [00:03&lt;00:03, 82.6MB/s]
+ 52%|████████████████████▏                  | 317M/611M [00:03&lt;00:03, 81.7MB/s]
+ 53%|████████████████████▊                  | 326M/611M [00:03&lt;00:03, 83.7MB/s]
+ 55%|█████████████████████▍                 | 335M/611M [00:03&lt;00:03, 85.7MB/s]
+ 56%|█████████████████████▉                 | 344M/611M [00:03&lt;00:03, 87.3MB/s]
+ 58%|██████████████████████▌                | 353M/611M [00:03&lt;00:02, 88.6MB/s]
+ 59%|███████████████████████▏               | 362M/611M [00:04&lt;00:02, 89.2MB/s]
+ 61%|███████████████████████▋               | 371M/611M [00:04&lt;00:02, 89.7MB/s]
+ 62%|████████████████████████▎              | 380M/611M [00:04&lt;00:02, 88.9MB/s]
+ 64%|████████████████████████▊              | 389M/611M [00:04&lt;00:02, 89.3MB/s]
+ 65%|█████████████████████████▍             | 398M/611M [00:04&lt;00:02, 90.2MB/s]
+ 67%|██████████████████████████             | 408M/611M [00:04&lt;00:02, 90.6MB/s]
+ 68%|██████████████████████████▌            | 417M/611M [00:04&lt;00:02, 90.6MB/s]
+ 70%|███████████████████████████▏           | 426M/611M [00:04&lt;00:02, 90.7MB/s]
+ 71%|███████████████████████████▊           | 435M/611M [00:04&lt;00:01, 91.1MB/s]
+ 73%|████████████████████████████▎          | 444M/611M [00:04&lt;00:01, 91.1MB/s]
+ 74%|████████████████████████████▉          | 453M/611M [00:05&lt;00:01, 91.1MB/s]
+ 76%|█████████████████████████████▌         | 462M/611M [00:05&lt;00:01, 87.8MB/s]
+ 77%|██████████████████████████████         | 471M/611M [00:05&lt;00:01, 84.4MB/s]
+ 79%|██████████████████████████████▋        | 480M/611M [00:05&lt;00:01, 83.7MB/s]
+ 80%|███████████████████████████████▏       | 489M/611M [00:05&lt;00:01, 85.7MB/s]
+ 81%|███████████████████████████████▊       | 497M/611M [00:05&lt;00:01, 86.3MB/s]
+ 83%|████████████████████████████████▎      | 506M/611M [00:05&lt;00:01, 86.3MB/s]
+ 84%|████████████████████████████████▉      | 515M/611M [00:05&lt;00:01, 87.2MB/s]
+ 86%|█████████████████████████████████▍     | 524M/611M [00:05&lt;00:00, 87.4MB/s]
+ 87%|██████████████████████████████████     | 533M/611M [00:05&lt;00:00, 86.1MB/s]
+ 89%|██████████████████████████████████▌    | 541M/611M [00:06&lt;00:00, 80.5MB/s]
+ 90%|███████████████████████████████████▏   | 550M/611M [00:06&lt;00:00, 83.1MB/s]
+ 91%|███████████████████████████████████▋   | 559M/611M [00:06&lt;00:00, 79.0MB/s]
+ 93%|████████████████████████████████████▏  | 567M/611M [00:06&lt;00:00, 80.4MB/s]
+ 94%|████████████████████████████████████▊  | 575M/611M [00:06&lt;00:00, 81.3MB/s]
+ 96%|█████████████████████████████████████▎ | 583M/611M [00:06&lt;00:00, 75.5MB/s]
+ 97%|█████████████████████████████████████▊ | 591M/611M [00:06&lt;00:00, 74.5MB/s]
+ 98%|██████████████████████████████████████▎| 600M/611M [00:06&lt;00:00, 78.8MB/s]
+100%|██████████████████████████████████████▊| 608M/611M [00:06&lt;00:00, 80.0MB/s]
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+100%|███████████████████████████████████████| 611M/611M [00:00&lt;00:00, 1.69TB/s]
+Download complete in 18s (582.2 MB)
+Opening raw data file /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif...
+    Range : 237600 ... 506999 =    791.189 ...  1688.266 secs
+Ready.
+111 events found on stim channel STI 014
+Event IDs: [1]
+Reading 0 ... 269399  =      0.000 ...   897.077 secs...
+Filtering raw data in 1 contiguous segment
+Setting up band-pass filter from 1 - 35 Hz
+
+FIR filter parameters
+---------------------
+Designing a one-pass, zero-phase, non-causal bandpass filter:
+- Windowed time-domain design (firwin) method
+- Hamming window with 0.0194 passband ripple and 53 dB stopband attenuation
+- Lower passband edge: 1.00
+- Lower transition bandwidth: 1.00 Hz (-6 dB cutoff frequency: 0.50 Hz)
+- Upper passband edge: 35.00 Hz
+- Upper transition bandwidth: 8.75 Hz (-6 dB cutoff frequency: 39.38 Hz)
+- Filter length: 993 samples (3.307 s)
+
+[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
+[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.6s
+[Parallel(n_jobs=1)]: Done 161 tasks      | elapsed:    1.3s
+Not setting metadata
+111 matching events found
+Applying baseline correction (mode: mean)
+0 projection items activated
+Using data from preloaded Raw for 111 events and 251 original time points ...
+0 bad epochs dropped
+</pre></div>
+</div>
+</section>
+<section id="assessing-connectivity-in-non-evoked-data">
+<h2>Assessing connectivity in non-evoked data<a class="headerlink" href="#assessing-connectivity-in-non-evoked-data" title="Link to this heading">#</a></h2>
+<p>We will first demonstrate how connectivity can be assessed from non-evoked data. In
+this example, we use data from the pre-trial period of [-1.5, -0.5] seconds. We
+compute Fourier coefficients of the data using the <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="(in MNE v1.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_psd()</span></code></a>
+method with <code class="docutils literal notranslate"><span class="pre">output=&quot;complex&quot;</span></code> (note that this requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>).</p>
+<p>Next, we pass these coefficients to
+<a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> to compute connectivity using
+the imaginary part of coherency (<code class="docutils literal notranslate"><span class="pre">imcoh</span></code>). Our indices specify that connectivity
+should be computed between all pairs of channels.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute Fourier coefficients for pre-trial data</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">23</span>
+<a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pretrial_coeffs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="mne.Epochs.compute_psd" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">compute_psd</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span>
+<span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pretrial_coeffs</span></a><span class="o">.</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a>
+
+<span class="c1"># Compute connectivity for pre-trial data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.tril_indices.html#numpy.tril_indices" title="numpy.tril_indices" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">],</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># all-to-all connectivity</span>
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pretrial_con</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pretrial_coeffs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;imcoh&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Using multitaper spectrum estimation with 7 DPSS windows
+Connectivity computation...
+    frequencies: 4.0Hz..22.8Hz (20 points)
+    computing connectivity for 20706 connections
+    the following metrics will be computed: Imaginary Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+</pre></div>
+</div>
+<p>Next, we generate the surrogate data by passing the Fourier coefficients into the
+<a class="reference internal" href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_data()</span></code></a> function. To get a reliable estimate of
+the baseline connectivity, we perform this shuffling procedure
+<span class="math notranslate nohighlight">\(\text{n}_{\text{shuffle}}\)</span> times, producing <span class="math notranslate nohighlight">\(\text{n}_{\text{shuffle}}\)</span>
+surrogate datasets. We can then iterate over these shuffles and compute the
+connectivity for each one.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate surrogate data</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># recommended is &gt;= 1,000; limited here to reduce compute time</span>
+<span class="n">pretrial_surrogates</span> <span class="o">=</span> <a href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_surrogate_data</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pretrial_coeffs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">44</span>
+<span class="p">)</span>
+
+<span class="c1"># Compute connectivity for surrogate data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle_i</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pretrial_surrogates</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing connectivity for shuffle </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle_i</span></a><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+            <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;imcoh&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 100
+Computing connectivity for shuffle 2 of 100
+Computing connectivity for shuffle 3 of 100
+Computing connectivity for shuffle 4 of 100
+Computing connectivity for shuffle 5 of 100
+Computing connectivity for shuffle 6 of 100
+Computing connectivity for shuffle 7 of 100
+Computing connectivity for shuffle 8 of 100
+Computing connectivity for shuffle 9 of 100
+Computing connectivity for shuffle 10 of 100
+Computing connectivity for shuffle 11 of 100
+Computing connectivity for shuffle 12 of 100
+Computing connectivity for shuffle 13 of 100
+Computing connectivity for shuffle 14 of 100
+Computing connectivity for shuffle 15 of 100
+Computing connectivity for shuffle 16 of 100
+Computing connectivity for shuffle 17 of 100
+Computing connectivity for shuffle 18 of 100
+Computing connectivity for shuffle 19 of 100
+Computing connectivity for shuffle 20 of 100
+Computing connectivity for shuffle 21 of 100
+Computing connectivity for shuffle 22 of 100
+Computing connectivity for shuffle 23 of 100
+Computing connectivity for shuffle 24 of 100
+Computing connectivity for shuffle 25 of 100
+Computing connectivity for shuffle 26 of 100
+Computing connectivity for shuffle 27 of 100
+Computing connectivity for shuffle 28 of 100
+Computing connectivity for shuffle 29 of 100
+Computing connectivity for shuffle 30 of 100
+Computing connectivity for shuffle 31 of 100
+Computing connectivity for shuffle 32 of 100
+Computing connectivity for shuffle 33 of 100
+Computing connectivity for shuffle 34 of 100
+Computing connectivity for shuffle 35 of 100
+Computing connectivity for shuffle 36 of 100
+Computing connectivity for shuffle 37 of 100
+Computing connectivity for shuffle 38 of 100
+Computing connectivity for shuffle 39 of 100
+Computing connectivity for shuffle 40 of 100
+Computing connectivity for shuffle 41 of 100
+Computing connectivity for shuffle 42 of 100
+Computing connectivity for shuffle 43 of 100
+Computing connectivity for shuffle 44 of 100
+Computing connectivity for shuffle 45 of 100
+Computing connectivity for shuffle 46 of 100
+Computing connectivity for shuffle 47 of 100
+Computing connectivity for shuffle 48 of 100
+Computing connectivity for shuffle 49 of 100
+Computing connectivity for shuffle 50 of 100
+Computing connectivity for shuffle 51 of 100
+Computing connectivity for shuffle 52 of 100
+Computing connectivity for shuffle 53 of 100
+Computing connectivity for shuffle 54 of 100
+Computing connectivity for shuffle 55 of 100
+Computing connectivity for shuffle 56 of 100
+Computing connectivity for shuffle 57 of 100
+Computing connectivity for shuffle 58 of 100
+Computing connectivity for shuffle 59 of 100
+Computing connectivity for shuffle 60 of 100
+Computing connectivity for shuffle 61 of 100
+Computing connectivity for shuffle 62 of 100
+Computing connectivity for shuffle 63 of 100
+Computing connectivity for shuffle 64 of 100
+Computing connectivity for shuffle 65 of 100
+Computing connectivity for shuffle 66 of 100
+Computing connectivity for shuffle 67 of 100
+Computing connectivity for shuffle 68 of 100
+Computing connectivity for shuffle 69 of 100
+Computing connectivity for shuffle 70 of 100
+Computing connectivity for shuffle 71 of 100
+Computing connectivity for shuffle 72 of 100
+Computing connectivity for shuffle 73 of 100
+Computing connectivity for shuffle 74 of 100
+Computing connectivity for shuffle 75 of 100
+Computing connectivity for shuffle 76 of 100
+Computing connectivity for shuffle 77 of 100
+Computing connectivity for shuffle 78 of 100
+Computing connectivity for shuffle 79 of 100
+Computing connectivity for shuffle 80 of 100
+Computing connectivity for shuffle 81 of 100
+Computing connectivity for shuffle 82 of 100
+Computing connectivity for shuffle 83 of 100
+Computing connectivity for shuffle 84 of 100
+Computing connectivity for shuffle 85 of 100
+Computing connectivity for shuffle 86 of 100
+Computing connectivity for shuffle 87 of 100
+Computing connectivity for shuffle 88 of 100
+Computing connectivity for shuffle 89 of 100
+Computing connectivity for shuffle 90 of 100
+Computing connectivity for shuffle 91 of 100
+Computing connectivity for shuffle 92 of 100
+Computing connectivity for shuffle 93 of 100
+Computing connectivity for shuffle 94 of 100
+Computing connectivity for shuffle 95 of 100
+Computing connectivity for shuffle 96 of 100
+Computing connectivity for shuffle 97 of 100
+Computing connectivity for shuffle 98 of 100
+Computing connectivity for shuffle 99 of 100
+Computing connectivity for shuffle 100 of 100
+</pre></div>
+</div>
+<p>We can plot the all-to-all connectivity of the pre-trial data against the surrogate
+data, averaged over all shuffles. This shows a strong degree of coupling in the alpha
+band (~8-12 Hz), with weaker coupling in the lower range of the beta band (~13-20 Hz).
+A simple visual inspection shows that connectivity in the alpha and beta bands are
+above the baseline level of connectivity estimated from the surrogate data. However,
+we need to confirm this statistically.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot pre-trial vs. surrogate connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">([</span><a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum.get_data" title="mne.time_frequency.EpochsSpectrum.get_data" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-method"><span class="n">surrogate</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Surrogate&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">pretrial_con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;All-to-all connectivity | Pre-trial &quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_surrogate_connectivity_001.png" srcset="../_images/sphx_glr_surrogate_connectivity_001.png" alt="All-to-all connectivity | Pre-trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fca0678da50&gt;
+</pre></div>
+</div>
+<p>Assessing the statistical significance of our connectivity estimates can be done with
+the following simple procedure <a class="footnote-reference brackets" href="#footcite-pellegrinietal2023" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
+<p><span class="math notranslate nohighlight">\(p=\LARGE{\frac{\Sigma_{s=1}^Sc_s}{S}}\)</span> ,</p>
+<p><span class="math notranslate nohighlight">\(c_s=\{1\text{ if }\text{Con}\leq\text{Con}_{\text{s}}\text{ },\text{ }0
+\text{ if otherwise }\)</span> ,</p>
+<p>where: <span class="math notranslate nohighlight">\(p\)</span> is our p-value; <span class="math notranslate nohighlight">\(s\)</span> is a given shuffle iteration of <span class="math notranslate nohighlight">\(S\)</span>
+total shuffles; and <span class="math notranslate nohighlight">\(c\)</span> is a binary indicator of whether the true connectivity,
+<span class="math notranslate nohighlight">\(\text{Con}\)</span>, is greater than the surrogate connectivity,
+<span class="math notranslate nohighlight">\(\text{Con}_{\text{s}}\)</span>, for a given shuffle.</p>
+<p>Note that for connectivity methods which produce negative scores (e.g., imaginary part
+of coherency, time-reversed Granger causality, etc…), you should take the absolute
+values before testing. Similar adjustments should be made for methods that produce
+scores centred around non-zero values (e.g., 0.5 for directed phase lag index).</p>
+<p>Below, we determine the statistical significance of connectivity in the lower beta
+band. We simplify this by averaging over all connections and corresponding frequency
+bins. We could of course also test the significance of each connection, each frequency
+bin, or other frequency bands such as the alpha band. Naturally, any tests involving
+multiple connections, frequencies, and/or times should be corrected for multiple
+comparisons.</p>
+<p>The test confirms our visual inspection, showing that connectivity in the lower beta
+band is significantly above the baseline level of connectivity at an alpha of 0.05,
+which we can take as evidence of genuine interactions in this frequency band.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find indices of lower beta frequencies</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_freqs</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.where.html#numpy.where" title="numpy.where" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">((</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">&gt;=</span> <span class="mi">13</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Compute lower beta connectivity for pre-trial data (average connections and freqs)</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">beta_con_pretrial</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">pretrial_con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[:,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_freqs</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># Compute lower beta connectivity for surrogate data (average connections and freqs)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_con_surrogate</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span>
+    <span class="p">[</span><a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum.get_data" title="mne.time_frequency.EpochsSpectrum.get_data" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-method"><span class="n">surrogate</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[:,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_freqs</span></a><span class="p">]</span> <span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># Compute p-value for pre-trial lower beta coupling</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">p_val</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.sum.html#numpy.sum" title="numpy.sum" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">sum</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">beta_con_pretrial</span></a> <span class="o">&lt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_con_surrogate</span></a><span class="p">)</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;P = </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">p_val</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>P = 0.00
+</pre></div>
+</div>
+</section>
+<section id="assessing-connectivity-in-evoked-data">
+<h2>Assessing connectivity in evoked data<a class="headerlink" href="#assessing-connectivity-in-evoked-data" title="Link to this heading">#</a></h2>
+<p>When generating surrogate data, it is important to distinguish non-evoked data (e.g.,
+resting-state, pre/inter-trial data) from evoked data (where a stimulus is presented
+or an action performed at a set time during each epoch). Critically, evoked data
+contains a temporal structure that is consistent across epochs, and thus shuffling
+epochs across channels will fail to adequately disrupt the covariance structure.</p>
+<p>Any connectivity estimates will therefore overestimate the baseline connectivity in
+your data, increasing the likelihood of type II errors (see the Notes section of
+<a class="reference internal" href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_data()</span></code></a> for more information, and see the
+section <a class="reference internal" href="#inappropriate-surrogate-data"><span class="std std-ref">Generating surrogate connectivity from inappropriate data</span></a> for a demonstration).</p>
+<p><strong>In cases where you want to assess connectivity in evoked data, you can use
+surrogates generated from non-evoked data (of the same subject).</strong> Here we do just
+that, comparing connectivity estimates from the pre-trial surrogates to the evoked,
+post-stimulus response ([0, 1] second).</p>
+<p>Again, there is pronounced alpha coupling (stronger than in the pre-trial data) and
+weaker beta coupling, both of which appear to be above the baseline level of
+connectivity.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute Fourier coefficients for post-stimulus data</span>
+<a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">poststim_coeffs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="mne.Epochs.compute_psd" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">epochs</span><span class="o">.</span><span class="n">compute_psd</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Compute connectivity for post-stimulus data</span>
+<a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">poststim_con</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">poststim_coeffs</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;imcoh&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a>
+<span class="p">)</span>
+
+<span class="c1"># Plot post-stimulus vs. (pre-trial) surrogate connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">([</span><a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum.get_data" title="mne.time_frequency.EpochsSpectrum.get_data" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-method"><span class="n">surrogate</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Surrogate&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">poststim_con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;All-to-all connectivity | Post-stimulus&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_surrogate_connectivity_002.png" srcset="../_images/sphx_glr_surrogate_connectivity_002.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>    Using multitaper spectrum estimation with 7 DPSS windows
+Connectivity computation...
+    frequencies: 4.0Hz..22.8Hz (20 points)
+    computing connectivity for 20706 connections
+    the following metrics will be computed: Imaginary Coherence
+    computing cross-spectral density for epoch 1
+    computing cross-spectral density for epoch 2
+    computing cross-spectral density for epoch 3
+    computing cross-spectral density for epoch 4
+    computing cross-spectral density for epoch 5
+    computing cross-spectral density for epoch 6
+    computing cross-spectral density for epoch 7
+    computing cross-spectral density for epoch 8
+    computing cross-spectral density for epoch 9
+    computing cross-spectral density for epoch 10
+    computing cross-spectral density for epoch 11
+    computing cross-spectral density for epoch 12
+    computing cross-spectral density for epoch 13
+    computing cross-spectral density for epoch 14
+    computing cross-spectral density for epoch 15
+    computing cross-spectral density for epoch 16
+    computing cross-spectral density for epoch 17
+    computing cross-spectral density for epoch 18
+    computing cross-spectral density for epoch 19
+    computing cross-spectral density for epoch 20
+    computing cross-spectral density for epoch 21
+    computing cross-spectral density for epoch 22
+    computing cross-spectral density for epoch 23
+    computing cross-spectral density for epoch 24
+    computing cross-spectral density for epoch 25
+    computing cross-spectral density for epoch 26
+    computing cross-spectral density for epoch 27
+    computing cross-spectral density for epoch 28
+    computing cross-spectral density for epoch 29
+    computing cross-spectral density for epoch 30
+[Connectivity computation done]
+
+&lt;matplotlib.legend.Legend object at 0x7fc989161c00&gt;
+</pre></div>
+</div>
+<p>This is also confirmed by statistical testing, with connectivity in the lower beta
+band being significantly above the baseline level of connectivity. Thus, using
+surrogate connectivity estimates from non-evoked data provides a reliable baseline for
+assessing connectivity in evoked data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute lower beta connectivity for post-stimulus data (average connections and freqs)</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">beta_con_poststim</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">poststim_con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()[:,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_freqs</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># Compute p-value for post-stimulus lower beta coupling</span>
+<a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">p_val</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.sum.html#numpy.sum" title="numpy.sum" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">sum</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">beta_con_poststim</span></a> <span class="o">&lt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">beta_con_surrogate</span></a><span class="p">)</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;P = </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">p_val</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>P = 0.00
+</pre></div>
+</div>
+</section>
+<section id="generating-surrogate-connectivity-from-inappropriate-data">
+<span id="inappropriate-surrogate-data"></span><h2>Generating surrogate connectivity from inappropriate data<a class="headerlink" href="#generating-surrogate-connectivity-from-inappropriate-data" title="Link to this heading">#</a></h2>
+<p>We discussed above how surrogates generated from evoked data risk overestimating the
+degree of baseline connectivity. We demonstrate this below by generating surrogates
+from the post-stimulus data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate surrogates from evoked data</span>
+<span class="n">poststim_surrogates</span> <span class="o">=</span> <a href="../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data" title="mne_connectivity.make_surrogate_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">make_surrogate_data</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">poststim_coeffs</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">44</span>
+<span class="p">)</span>
+
+<span class="c1"># Compute connectivity for evoked surrogate data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bad_surrogate_con</span></a> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle_i</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">poststim_surrogates</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing connectivity for shuffle </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle_i</span></a><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_shuffles</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bad_surrogate_con</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+            <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;imcoh&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 100
+Computing connectivity for shuffle 2 of 100
+Computing connectivity for shuffle 3 of 100
+Computing connectivity for shuffle 4 of 100
+Computing connectivity for shuffle 5 of 100
+Computing connectivity for shuffle 6 of 100
+Computing connectivity for shuffle 7 of 100
+Computing connectivity for shuffle 8 of 100
+Computing connectivity for shuffle 9 of 100
+Computing connectivity for shuffle 10 of 100
+Computing connectivity for shuffle 11 of 100
+Computing connectivity for shuffle 12 of 100
+Computing connectivity for shuffle 13 of 100
+Computing connectivity for shuffle 14 of 100
+Computing connectivity for shuffle 15 of 100
+Computing connectivity for shuffle 16 of 100
+Computing connectivity for shuffle 17 of 100
+Computing connectivity for shuffle 18 of 100
+Computing connectivity for shuffle 19 of 100
+Computing connectivity for shuffle 20 of 100
+Computing connectivity for shuffle 21 of 100
+Computing connectivity for shuffle 22 of 100
+Computing connectivity for shuffle 23 of 100
+Computing connectivity for shuffle 24 of 100
+Computing connectivity for shuffle 25 of 100
+Computing connectivity for shuffle 26 of 100
+Computing connectivity for shuffle 27 of 100
+Computing connectivity for shuffle 28 of 100
+Computing connectivity for shuffle 29 of 100
+Computing connectivity for shuffle 30 of 100
+Computing connectivity for shuffle 31 of 100
+Computing connectivity for shuffle 32 of 100
+Computing connectivity for shuffle 33 of 100
+Computing connectivity for shuffle 34 of 100
+Computing connectivity for shuffle 35 of 100
+Computing connectivity for shuffle 36 of 100
+Computing connectivity for shuffle 37 of 100
+Computing connectivity for shuffle 38 of 100
+Computing connectivity for shuffle 39 of 100
+Computing connectivity for shuffle 40 of 100
+Computing connectivity for shuffle 41 of 100
+Computing connectivity for shuffle 42 of 100
+Computing connectivity for shuffle 43 of 100
+Computing connectivity for shuffle 44 of 100
+Computing connectivity for shuffle 45 of 100
+Computing connectivity for shuffle 46 of 100
+Computing connectivity for shuffle 47 of 100
+Computing connectivity for shuffle 48 of 100
+Computing connectivity for shuffle 49 of 100
+Computing connectivity for shuffle 50 of 100
+Computing connectivity for shuffle 51 of 100
+Computing connectivity for shuffle 52 of 100
+Computing connectivity for shuffle 53 of 100
+Computing connectivity for shuffle 54 of 100
+Computing connectivity for shuffle 55 of 100
+Computing connectivity for shuffle 56 of 100
+Computing connectivity for shuffle 57 of 100
+Computing connectivity for shuffle 58 of 100
+Computing connectivity for shuffle 59 of 100
+Computing connectivity for shuffle 60 of 100
+Computing connectivity for shuffle 61 of 100
+Computing connectivity for shuffle 62 of 100
+Computing connectivity for shuffle 63 of 100
+Computing connectivity for shuffle 64 of 100
+Computing connectivity for shuffle 65 of 100
+Computing connectivity for shuffle 66 of 100
+Computing connectivity for shuffle 67 of 100
+Computing connectivity for shuffle 68 of 100
+Computing connectivity for shuffle 69 of 100
+Computing connectivity for shuffle 70 of 100
+Computing connectivity for shuffle 71 of 100
+Computing connectivity for shuffle 72 of 100
+Computing connectivity for shuffle 73 of 100
+Computing connectivity for shuffle 74 of 100
+Computing connectivity for shuffle 75 of 100
+Computing connectivity for shuffle 76 of 100
+Computing connectivity for shuffle 77 of 100
+Computing connectivity for shuffle 78 of 100
+Computing connectivity for shuffle 79 of 100
+Computing connectivity for shuffle 80 of 100
+Computing connectivity for shuffle 81 of 100
+Computing connectivity for shuffle 82 of 100
+Computing connectivity for shuffle 83 of 100
+Computing connectivity for shuffle 84 of 100
+Computing connectivity for shuffle 85 of 100
+Computing connectivity for shuffle 86 of 100
+Computing connectivity for shuffle 87 of 100
+Computing connectivity for shuffle 88 of 100
+Computing connectivity for shuffle 89 of 100
+Computing connectivity for shuffle 90 of 100
+Computing connectivity for shuffle 91 of 100
+Computing connectivity for shuffle 92 of 100
+Computing connectivity for shuffle 93 of 100
+Computing connectivity for shuffle 94 of 100
+Computing connectivity for shuffle 95 of 100
+Computing connectivity for shuffle 96 of 100
+Computing connectivity for shuffle 97 of 100
+Computing connectivity for shuffle 98 of 100
+Computing connectivity for shuffle 99 of 100
+Computing connectivity for shuffle 100 of 100
+</pre></div>
+</div>
+<p>Plotting the post-stimulus connectivity against the estimates from the non-evoked and
+evoked surrogate data, we see that the evoked surrogate data greatly overestimates the
+baseline connectivity in the alpha band.</p>
+<p>Although in this case the alpha connectivity was still far above the baseline from the
+evoked surrogates, this will not always be the case, and you can see how this risks
+false negative assessments that connectivity is not significantly different from
+baseline.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot post-stimulus vs. evoked and non-evoked surrogate connectivity</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">([</span><a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum.get_data" title="mne.time_frequency.EpochsSpectrum.get_data" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-method"><span class="n">surrogate</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate_con</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Surrogate (pre-stimulus)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">([</span><a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum.get_data" title="mne.time_frequency.EpochsSpectrum.get_data" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-method"><span class="n">surrogate</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="mne.time_frequency.EpochsSpectrum" class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surrogate</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bad_surrogate_con</span></a><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Surrogate (post-stimulus)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">poststim_con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;All-to-all connectivity | Post-stimulus&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_surrogate_connectivity_003.png" srcset="../_images/sphx_glr_surrogate_connectivity_003.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fca062eab90&gt;
+</pre></div>
+</div>
+</section>
+<section id="assessing-connectivity-on-a-group-level">
+<h2>Assessing connectivity on a group-level<a class="headerlink" href="#assessing-connectivity-on-a-group-level" title="Link to this heading">#</a></h2>
+<p>While our focus here has been on assessing the significance of connectivity on a
+single recording-level, we may also want to determine whether group-level connectivity
+estimates are significantly different from baseline. For this, we can generate
+surrogates and estimate connectivity alongside the original signals for each piece of
+data.</p>
+<p>There are multiple ways to assess the statistical significance. For example, we can
+compute p-values for each piece of data using the approach above and combine them for
+the nested data (e.g., across recordings, subjects, etc…) using Stouffer’s method
+<a class="footnote-reference brackets" href="#footcite-dowdinghaufe2018" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>Alternatively, we could take the average of the surrogate connectivity estimates
+across all shuffles for each piece of data and compare them to the original
+connectivity estimates in a paired test. The <a class="reference external" href="https://scipy.github.io/devdocs/reference/stats.html#module-scipy.stats" title="(in SciPy v1.16.0.dev)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a> and <a class="reference external" href="https://mne.tools/dev/api/statistics.html#module-mne.stats" title="(in MNE v1.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.stats</span></code></a>
+modules have many such tools for testing this, e.g., <a class="reference external" href="https://scipy.github.io/devdocs/reference/generated/scipy.stats.ttest_1samp.html#scipy.stats.ttest_1samp" title="(in SciPy v1.16.0.dev)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.ttest_1samp()</span></code></a>,
+<a class="reference external" href="https://mne.tools/dev/generated/mne.stats.permutation_t_test.html#mne.stats.permutation_t_test" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.stats.permutation_t_test()</span></code></a>, etc…</p>
+<p>Altogether, surrogate connectivity estimates are a powerful tool for assessing the
+significance of connectivity estimates, both on a single recording- and group-level.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id5">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-vincketal2010" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Martin Vinck, Marijn van Wingerden, Thilo Womelsdorf, Pascal Fries, and Cyriel M.A. Pennartz. The pairwise phase consistency: a bias-free measure of rhythmic neuronal synchronization. <em>NeuroImage</em>, 51(1):112–122, 2010. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2010.01.073">doi:10.1016/j.neuroimage.2010.01.073</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-pellegrinietal2023" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Franziska Pellegrini, Arnaud Delorme, Vadim Nikulin, and Stefan Haufe. Identifying good practices for detecting inter-regional linear functional connectivity from EEG. <em>NeuroImage</em>, 277:120218, 2023. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2023.120218">doi:10.1016/j.neuroimage.2023.120218</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-dowdinghaufe2018" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>Irene Dowding and Stefan Haufe. Powerful statistical inference for nested data using sufficient summary statistics. <em>Frontiers in Human Neuroscience</em>, 12:103, 2018. <a class="reference external" href="https://doi.org/10.3389/fnhum.2018.00103">doi:10.3389/fnhum.2018.00103</a>.</p>
+</aside>
+</aside>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 1.852 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-surrogate-connectivity-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/7ec8e983400b5cb9d1a8f9b7626d69bd/surrogate_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">surrogate_connectivity.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/7aaf43fbca061892b34c3f993ab53035/surrogate_connectivity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">surrogate_connectivity.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/2882976f3028bf4138b6d13f900a6714/surrogate_connectivity.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">surrogate_connectivity.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_inverse_label_connectivity.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Compute source space connectivity and visualize it using a circular graph</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="connectivity_classes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Using the connectivity classes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-data">Loading the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assessing-connectivity-in-non-evoked-data">Assessing connectivity in non-evoked data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assessing-connectivity-in-evoked-data">Assessing connectivity in evoked data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-surrogate-connectivity-from-inappropriate-data">Generating surrogate connectivity from inappropriate data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assessing-connectivity-on-a-group-level">Assessing connectivity on a group-level</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-16.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
