@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What was new in previous releases? &#8212; MNE-Connectivity 0.8.0.dev49+g04207214 documentation</title>
+    <title>What was new in previous releases? &#8212; MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</title>
   
   
   
@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -39,22 +39,23 @@
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=fadb2c7d"></script>
+    <script src="_static/documentation_options.js?v=9e169de0"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'whats_new_previous_releases';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -119,7 +120,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev49+g04207214 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</p>
   
 </a></div>
     
@@ -358,9 +359,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -537,7 +543,7 @@ Importantly, we also provide a conda installation now.</p>
 <li><p>Adding symmetric orthogonalization via <a class="reference internal" href="generated/mne_connectivity.symmetric_orth.html#mne_connectivity.symmetric_orth" title="mne_connectivity.symmetric_orth"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.symmetric_orth()</span></code></a>, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/36">#36</a>)</p></li>
 <li><p>Improved RAM usage for <a class="reference internal" href="generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.vector_auto_regression()</span></code></a> by leveraging code from <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/46">#46</a>)</p></li>
 <li><p>Added <a class="reference internal" href="generated/mne_connectivity.select_order.html#mne_connectivity.select_order" title="mne_connectivity.select_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.select_order()</span></code></a> for helping to select VAR order using information criterion, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/46">#46</a>)</p></li>
-<li><p>All connectivity functions retain <code class="docutils literal notranslate"><span class="pre">events</span></code>, <code class="docutils literal notranslate"><span class="pre">event_id</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> from <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> objects as input and is stored as part of the connectivity object, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/58">#58</a>)</p></li>
+<li><p>All connectivity functions retain <code class="docutils literal notranslate"><span class="pre">events</span></code>, <code class="docutils literal notranslate"><span class="pre">event_id</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> from <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> objects as input and is stored as part of the connectivity object, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/58">#58</a>)</p></li>
 <li><p>Add spectral connectivity over time function <a class="reference internal" href="generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/67">#67</a>)</p></li>
 <li><p>Add conda installation, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/81">#81</a>)</p></li>
 </ul>
@@ -710,8 +716,8 @@ will be deprecated and development will move over into this repository. Starting
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -722,7 +728,7 @@ will be deprecated and development will move over into this repository. Starting
 
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-16.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-20.
       <br/>
     
   </p>
@@ -744,7 +750,8 @@ will be deprecated and development will move over into this repository. Starting
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

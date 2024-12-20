@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.viz.plot_sensors_connectivity &#8212; MNE-Connectivity 0.8.0.dev49+g04207214 documentation</title>
+    <title>mne_connectivity.viz.plot_sensors_connectivity &#8212; MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</title>
   
   
   
@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -39,22 +39,23 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=fadb2c7d"></script>
+    <script src="../_static/documentation_options.js?v=9e169de0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.viz.plot_sensors_connectivity';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -121,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev49+g04207214 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</p>
   
 </a></div>
     
@@ -408,9 +409,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -474,7 +480,7 @@ channel indices. In lists, channel <em>type</em> strings (e.g., <code class="doc
 <span class="pre">'eeg']</span></code>) will pick channels of those types, channel <em>name</em> strings (e.g., 
 <code class="docutils literal notranslate"><span class="pre">['MEG0111',</span> <span class="pre">'MEG2623']</span></code> will pick the given channels. Can also be the 
 string values <code class="docutils literal notranslate"><span class="pre">'all'</span></code> to pick all channels, or <code class="docutils literal notranslate"><span class="pre">'data'</span></code> to pick 
-<a class="reference external" href="https://mne.tools/dev/documentation/glossary.html#term-data-channels" title="(in MNE v1.9)"><span class="xref std std-term">data channels</span></a>. None (default) will pick good data channels. Note 
+<a class="reference external" href="https://mne.tools/dev/documentation/glossary.html#term-data-channels" title="(in MNE v1.10)"><span class="xref std std-term">data channels</span></a>. None (default) will pick good data channels. Note 
 that channels in <code class="docutils literal notranslate"><span class="pre">info['bads']</span></code> <em>will be included</em> if their names or 
 indices are explicitly provided.
 Indices of selected channels.</p>
@@ -483,8 +489,8 @@ Indices of selected channels.</p>
 </dd>
 <dt><strong>n_con</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of strongest connections shown. By default 20.</p>
 </dd>
-<dt><strong>cmap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap" title="(in Matplotlib v3.9.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.Colormap</span></code></a></span></dt><dd><p>Colormap for coloring connections by strength. If <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, must be a valid
-Matplotlib colormap (i.e. a valid key of <a class="reference external" href="https://matplotlib.org/stable/api/matplotlib_configuration_api.html#matplotlib.colormaps" title="(in Matplotlib v3.9.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colormaps</span></code></a>). Default is
+<dt><strong>cmap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap" title="(in Matplotlib v3.10.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.Colormap</span></code></a></span></dt><dd><p>Colormap for coloring connections by strength. If <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, must be a valid
+Matplotlib colormap (i.e. a valid key of <a class="reference external" href="https://matplotlib.org/stable/api/matplotlib_configuration_api.html#matplotlib.colormaps" title="(in Matplotlib v3.10.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colormaps</span></code></a>). Default is
 <code class="docutils literal notranslate"><span class="pre">&quot;RdBu&quot;</span></code>.</p>
 </dd>
 <dt><strong>min_distance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The minimum distance required between two sensors to plot a connection between
@@ -580,8 +586,8 @@ them, in meters. Default is 0.05 (i.e. 5 cm).</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -592,7 +598,7 @@ them, in meters. Default is 0.05 (i.e. 5 cm).</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-16.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-20.
       <br/>
     
   </p>
@@ -614,7 +620,8 @@ them, in meters. Default is 0.05 (i.e. 5 cm).</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

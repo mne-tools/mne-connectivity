@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.8.0.dev49+g04207214 documentation</title>
+    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</title>
   
   
   
@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -39,22 +39,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=fadb2c7d"></script>
+    <script src="../../_static/documentation_options.js?v=9e169de0"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/decoding/cohy_decomposition';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -121,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev49+g04207214 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</p>
   
 </a></div>
     
@@ -398,9 +399,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -577,7 +583,7 @@ No baseline correction applied
 <p>To fit the filters, we instantiate the
 <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> class with:</p>
 <ul class="simple">
-<li><p>the information about the data being fit/transformed (using an <a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Info</span></code></a>
+<li><p>the information about the data being fit/transformed (using an <a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Info</span></code></a>
 object);</p></li>
 <li><p>the type of connectivity we want to decompose (here CaCoh);</p></li>
 <li><p>the frequency band of the components we want to decompose (here 15-20 Hz);</p></li>
@@ -661,10 +667,10 @@ the signal-to-noise ratio benefits of the multivariate approach.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,  552.10it/s]
- 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,  564.21it/s]
- 97%|█████████▋| CSD epoch blocks : 29/30 [00:00&lt;00:00,  565.98it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  563.03it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,  491.34it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,  518.87it/s]
+ 87%|████████▋ | CSD epoch blocks : 26/30 [00:00&lt;00:00,  514.68it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  517.18it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -835,8 +841,8 @@ filters are fit to a single frequency band and not each frequency bin.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 75 ms
-Time to fit, transform, and compute connectivity (spec_conn function): 215 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 81 ms
+Time to fit, transform, and compute connectivity (spec_conn function): 256 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class offers an efficient way to analyse connectivity
@@ -1081,10 +1087,11 @@ sequentially.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,  557.53it/s]
- 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,  566.29it/s]
- 97%|█████████▋| CSD epoch blocks : 29/30 [00:00&lt;00:00,  571.71it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  568.39it/s]
+ 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:00,  381.86it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,  446.94it/s]
+ 77%|███████▋  | CSD epoch blocks : 23/30 [00:00&lt;00:00,  429.14it/s]
+ 97%|█████████▋| CSD epoch blocks : 29/30 [00:00&lt;00:00,  415.30it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  413.65it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -1342,11 +1349,11 @@ to transform each window of data and compute its connectivity.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 62 ms
-Time to transform data and compute connectivity: 96 ms
-Total time: 158 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 83 ms
+Time to transform data and compute connectivity: 113 ms
+Total time: 196 ms
 
-Time to transform data and compute connectivity per epoch (window):  3 ms
+Time to transform data and compute connectivity per epoch (window):  4 ms
 </pre></div>
 </div>
 <p>In contrast, here we follow the same sequential window approach, but fit filters to
@@ -1651,9 +1658,9 @@ considerably slower.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 850 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 983 ms
 
-Time to fit, transform, and compute connectivity per epoch (window):  28 ms
+Time to fit, transform, and compute connectivity per epoch (window):  33 ms
 </pre></div>
 </div>
 <p>Furthermore, given the noisy nature of single windows of data, there is a risk of
@@ -1930,9 +1937,9 @@ class approach above.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 163 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 198 ms
 
-Time to compute connectivity per epoch (window):  5 ms
+Time to compute connectivity per epoch (window):  7 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class also offers an efficient way to analyse
@@ -2020,7 +2027,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.764 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.198 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e219ae2adfdff83f86f08b53c680a14c/cohy_decomposition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition.ipynb</span></code></a></p>
@@ -2105,8 +2112,8 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2117,7 +2124,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-16.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-20.
       <br/>
     
   </p>
@@ -2139,7 +2146,8 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

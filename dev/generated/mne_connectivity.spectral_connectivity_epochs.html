@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.spectral_connectivity_epochs &#8212; MNE-Connectivity 0.8.0.dev49+g04207214 documentation</title>
+    <title>mne_connectivity.spectral_connectivity_epochs &#8212; MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</title>
   
   
   
@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -39,12 +39,12 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=fadb2c7d"></script>
+    <script src="../_static/documentation_options.js?v=9e169de0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,10 +52,11 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.spectral_connectivity_epochs';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -122,7 +123,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev49+g04207214 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev50+g5095aebd documentation</p>
   
 </a></div>
     
@@ -409,9 +410,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -469,12 +475,12 @@ densities (CSD/PSD) Sxy and Sxx, Syy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be epoched timeseries data as
-an <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-array-like" title="(in scikit-learn v1.6)"><span class="xref std std-term">array-like</span></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a> object, or Fourier coefficients
-for each epoch as an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object. If
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be epoched timeseries data as
+an <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-array-like" title="(in scikit-learn v1.6)"><span class="xref std std-term">array-like</span></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a> object, or Fourier coefficients
+for each epoch as an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object. If
 timeseries data, the spectral information will be computed according to the
 spectral estimation mode (see the <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter). If an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object, this spectral information
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object, this spectral information
 will be used and the <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter will be ignored.</p>
 <p>Note that it is also possible to combine multiple timeseries signals by
 providing a list of tuples, e.g.:</p>
@@ -484,10 +490,10 @@ providing a list of tuples, e.g.:</p>
 <p>which corresponds to 3 epochs where <code class="docutils literal notranslate"><span class="pre">arr_*</span></code> is an array with the same number
 of time points as <code class="docutils literal notranslate"><span class="pre">stc_*</span></code>. Data can also be a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>/<a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.13)"><span class="xref std std-term">generator</span></a>
 of arrays, <code class="docutils literal notranslate"><span class="pre">shape</span> <span class="pre">(n_signals,</span> <span class="pre">n_times)</span></code>, or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>/<a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.13)"><span class="xref std std-term">generator</span></a>
-of <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceEstimate</span></code></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolSourceEstimate</span></code></a> objects.</p>
+of <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceEstimate</span></code></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">VolSourceEstimate</span></code></a> objects.</p>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.8: </span>Fourier coefficients stored in an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a>
-or <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrumArray.html#mne.time_frequency.EpochsSpectrumArray" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrumArray</span></code></a> object can also be passed
+<p><span class="versionmodified changed">Changed in version 0.8: </span>Fourier coefficients stored in an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a>
+or <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrumArray.html#mne.time_frequency.EpochsSpectrumArray" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrumArray</span></code></a> object can also be passed
 in as data. Storing Fourier coefficients requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>.</p>
 </div>
 </dd>
@@ -533,7 +539,7 @@ causality method is called, in which case an error is raised.</p>
 </dd>
 <dt><strong>mode</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Spectrum estimation mode can be either: ‘multitaper’, ‘fourier’, or
 ‘cwt_morlet’. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>fmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The lower frequency of interest. Multiple bands are defined using
 a tuple, e.g., (8., 20.) for two bands with 8 Hz and 20 Hz lower freq.
@@ -541,7 +547,7 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 length is used. For example, with an epoch length of 1 sec, the lower
 frequency would be 5 / 1 sec = 5 Hz.</p>
 </dd>
-<dt><strong>fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The upper frequency of interest. Multiple bands are dedined using
+<dt><strong>fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The upper frequency of interest. Multiple bands are defined using
 a tuple, e.g. (13., 30.) for two band with 13 Hz and 30 Hz upper freq.</p>
 </dd>
 <dt><strong>fskip</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Omit every “(fskip + 1)-th” frequency bin to decimate in frequency
@@ -553,35 +559,35 @@ that were averaged.</p>
 </dd>
 <dt><strong>tmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to start connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
 <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-array-like" title="(in scikit-learn v1.6)"><span class="xref std std-term">array-like</span></a>, the first sample is assumed to be at time 0. For
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>, the time information contained in the object is used to
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>, the time information contained in the object is used to
 compute the time indices. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>tmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to end connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
 <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-array-like" title="(in scikit-learn v1.6)"><span class="xref std std-term">array-like</span></a>, the first sample is assumed to be at time 0. For
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>, the time information contained in the object is used to
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Epochs</span></code></a>, the time information contained in the object is used to
 compute the time indices. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>mt_bandwidth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The bandwidth of the multitaper windowing function in Hz. Only used in
 ‘multitaper’ mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>mt_adaptive</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.13)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Use adaptive weights to combine the tapered spectra into PSD. Only used in
 ‘multitaper’ mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>mt_low_bias</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.13)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Only use tapers with more than 90 percent spectral concentration within
 bandwidth. Only used in ‘multitaper’ mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>cwt_freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Array of frequencies of interest. Only used in ‘cwt_morlet’ mode. Only
 the frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and <code class="docutils literal notranslate"><span class="pre">fmax</span></code> are
 used. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
-<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> object.</p>
 </dd>
 <dt><strong>cwt_n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Number of cycles. Fixed number or one per frequency. Only used in ‘cwt_morlet’
-mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a>
+mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a>
 object.</p>
 </dd>
 <dt><strong>gc_n_lags</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of lags to use for the vector autoregressive model when
@@ -609,7 +615,7 @@ but require more memory).</p>
 </dd>
 <dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many samples to process in parallel.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.13)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.13)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
 for more info). If used, it should be passed as a
 keyword-argument only.</p>
 </dd>
@@ -975,8 +981,8 @@ the original signal in time <a class="footnote-reference brackets" href="#footci
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -987,7 +993,7 @@ the original signal in time <a class="footnote-reference brackets" href="#footci
 
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-16.
+      © Copyright 2021-2024, MNE Developers. Last updated on 2024-12-20.
       <br/>
     
   </p>
@@ -1009,7 +1015,8 @@ the original signal in time <a class="footnote-reference brackets" href="#footci
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
