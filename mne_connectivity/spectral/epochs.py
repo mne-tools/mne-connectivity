@@ -797,7 +797,7 @@ def spectral_connectivity_epochs(
         length is used. For example, with an epoch length of 1 sec, the lower
         frequency would be 5 / 1 sec = 5 Hz.
     fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
+        The upper frequency of interest. Multiple bands are defined using
         a tuple, e.g. (13., 30.) for two band with 13 Hz and 30 Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
