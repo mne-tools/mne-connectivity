@@ -803,12 +803,15 @@ def spectral_connectivity_epochs(
         'cwt_morlet'. Ignored if ``data`` is an
         :class:`~mne.time_frequency.EpochsSpectrum` or
         :class:`~mne.time_frequency.EpochsTFR` object.
-    fmin : float | tuple of float
+    fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
+        a tuple, e.g., (8., 20.) for two bands with 8 Hz and 20 Hz lower freq.
+        If ``None``, the frequency corresponding to 5 cycles based on the epoch
+        length is used. For example, with an epoch length of 1 sec, the lower
+        frequency would be 5 / 1 sec = 5 Hz.
     fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
-        a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
+        The upper frequency of interest. Multiple bands are defined using
+        a tuple, e.g. (13., 30.) for two band with 13 Hz and 30 Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency
         domain.
@@ -841,8 +844,10 @@ def spectral_connectivity_epochs(
         bandwidth. Only used in 'multitaper' mode. Ignored if ``data`` is an
         :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_freqs : array
-        Array of frequencies of interest. Only used in 'cwt_morlet' mode. Ignored if
-        ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum` object.
+        Array of frequencies of interest. Only used in 'cwt_morlet' mode. Only
+        the frequencies within the range specified by ``fmin`` and ``fmax`` are
+        used. Ignored if ``data`` is an
+        :class:`~mne.time_frequency.EpochsSpectrum` object.
     cwt_n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in 'cwt_morlet'
         mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum`

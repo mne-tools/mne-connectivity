@@ -66,12 +66,12 @@ doc = [
   'nilearn',
   'numpydoc',
   'pooch',
-  'pydata-sphinx-theme==0.14.1',
+  'pydata-sphinx-theme>=0.14.1',
   'PyQt6',
-  'sphinx',
+  'sphinx!=8.1.0',
   'sphinx-copybutton',
   'sphinx-design',
-  'sphinx-gallery>=0.17.0',
+  'sphinx-gallery>=0.18.0',
   'sphinx-issues',
   'sphinx_autodoc_typehints',
   'sphinxcontrib-bibtex',
@@ -220,6 +220,7 @@ line-length = 88
 
 [tool.ruff.lint]
 ignore = [
+  "A005", # Module name matches name in standard library
   "D100", # Missing docstring in public module
   "D104", # Missing docstring in public package
   "D413", # Missing blank line after last section
