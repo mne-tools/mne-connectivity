@@ -1722,6 +1722,9 @@ def test_multivar_spectral_connectivity_time_shapes(
         assert np.all(np.array(con.indices) == np.array(([[0, 1, 2]], [[3, 4, -1]])))
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("method", ["coh", "cacoh"])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
 def test_spectral_connectivity_time_tfr_input(method, mode):
@@ -1940,6 +1943,9 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
             )
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 def test_spectral_connectivity_time_tfr_input_error_catch():
     """Test spec_conn_time catches errors with EpochsTFR data as input."""
     # Generate data
@@ -1956,12 +1962,15 @@ def test_spectral_connectivity_time_tfr_input_error_catch():
         tfr = data.compute_tfr(method="morlet", freqs=freqs, output="power")
         spectral_connectivity_time(data=tfr, freqs=freqs)
 
-    # Catch default value warning (multitaper only)
-    tfr = data.compute_tfr(method="multitaper", freqs=freqs, output="complex")
-    with pytest.warns(RuntimeWarning, match="`mt_bandwidth` is not specified"):
-        spectral_connectivity_time(data=tfr, freqs=freqs, n_cycles=5.0)
-    with pytest.warns(RuntimeWarning, match="`n_cycles` is the default value"):
-        spectral_connectivity_time(data=tfr, freqs=freqs, mt_bandwidth=4.0)
+    # Simulate missing weights attr in EpochsTFR object
+    with pytest.raises(AttributeError, match="weights are required for multitaper"):
+        tfr = data.compute_tfr(method="multitaper", output="complex", freqs=freqs)
+        del tfr._weights
+        spectral_connectivity_time(data=tfr)
+
+    # Test no freqs caught for non-TFR input
+    with pytest.raises(TypeError, match="`freqs` must be specified"):
+        spectral_connectivity_time(data=data)
 
 
 def test_save(tmp_path):
