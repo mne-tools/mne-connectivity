@@ -16,6 +16,7 @@ from mne.time_frequency import (
     EpochsSpectrum,
     EpochsSpectrumArray,
     EpochsTFR,
+    EpochsTFRArray,
 )
 from mne.time_frequency.multitaper import (
     _compute_mt_params,
@@ -25,7 +26,7 @@ from mne.time_frequency.multitaper import (
     _psd_from_mt_adaptive,
 )
 from mne.time_frequency.spectrum import BaseSpectrum
-from mne.time_frequency.tfr import BaseTFR, cwt, morlet
+from mne.time_frequency.tfr import BaseTFR, _tfr_from_mt, cwt, morlet
 from mne.utils import _arange_div, _check_option, _time_mask, logger, verbose, warn
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
@@ -173,7 +174,10 @@ def _prepare_connectivity(
         warn_times = False
     else:  # data has a time dimension (timeseries or TFR object)
         if spectrum_computed:  # is a TFR object
-            first_epoch = (first_epoch[0][:, 0],)  # just take first freq
+            if mode == "cwt_morlet":
+                first_epoch = (first_epoch[0][:, 0],)  # just take first freq
+            else:  # multitaper
+                first_epoch = (first_epoch[0][:, 0, 0],)  # take first taper and freq
         (
             n_signals,
             times,
@@ -311,6 +315,7 @@ def _assemble_spectral_params(
     spectral_params = dict(eigvals=None, window_fun=None, wavelets=None, weights=None)
     n_tapers = None
     n_times_spectrum = 0
+    is_tfr_con = False
     if mode == "multitaper":
         window_fun, eigvals, mt_adaptive = _compute_mt_params(
             n_times, sfreq, mt_bandwidth, mt_low_bias, mt_adaptive
@@ -338,9 +343,10 @@ def _assemble_spectral_params(
             wavelets=morlet(sfreq, freqs, n_cycles=cwt_n_cycles, zero_mean=True)
         )
         n_times_spectrum = n_times
+        is_tfr_con = True
     else:
         raise ValueError("mode has an invalid value")
-    return spectral_params, mt_adaptive, n_times_spectrum, n_tapers
+    return spectral_params, mt_adaptive, n_times_spectrum, n_tapers, is_tfr_con
 
 
 ########################################################################
@@ -439,6 +445,37 @@ def _compute_spectra(
     return x_t, this_psd, weights
 
 
+def _tfr_csd_from_mt(x_mt, y_mt, weights_x, weights_y):
+    """Compute time-frequency CSD from tapered spectra.
+
+    Parameters
+    ----------
+    x_mt : array, shape (..., n_tapers, n_freqs, n_times)
+        The tapered time-frequency spectra for signals x.
+    y_mt : array, shape (..., n_tapers, n_freqs, n_times)
+        The tapered time-frequency spectra for signals y.
+    weights_x : array, shape (n_tapers, n_freqs)
+        Weights to use for combining the tapered spectra of x_mt.
+    weights_y : array, shape (n_tapers, n_freqs)
+        Weights to use for combining the tapered spectra of y_mt.
+
+    Returns
+    -------
+    csd : array, shape (..., n_freqs, n_times)
+        The CSD between x and y.
+    """
+    # expand weights dims to match x_mt and y_mt
+    weights_x = np.expand_dims(weights_x, axis=(*np.arange(x_mt.ndim - 3), -1))
+    weights_y = np.expand_dims(weights_y, axis=(*np.arange(y_mt.ndim - 3), -1))
+    # compute CSD
+    csd = np.sum(weights_x * x_mt * (weights_y * y_mt).conj(), axis=-3)
+    denom = np.sqrt((weights_x * weights_x.conj()).real.sum(axis=-3)) * np.sqrt(
+        (weights_y * weights_y.conj()).real.sum(axis=-3)
+    )
+    csd *= 2 / denom
+    return csd
+
+
 def _epoch_spectral_connectivity(
     data,
     sig_idx,
@@ -466,6 +503,7 @@ def _epoch_spectral_connectivity(
     gc_n_lags,
     n_components,
     spectrum_computed,
+    is_tfr_con,
     accumulate_inplace=True,
 ):
     """Estimate connectivity for one epoch (see spectral_connectivity)."""
@@ -517,17 +555,20 @@ def _epoch_spectral_connectivity(
     # compute tapered spectra
     if spectrum_computed:  # use existing spectral info
         # Select entries of interest (flexible indexing for optional tapers dim)
-        if tmin_idx is not None and tmax_idx is not None:
+        if tmin_idx is not None and tmax_idx is not None:  # TFR spectra
             x_t = np.asarray(data)[:, sig_idx][..., freq_mask, tmin_idx:tmax_idx]
-        else:
+        else:  # normal spectra
             x_t = np.asarray(data)[:, sig_idx][..., freq_mask]
-            if weights is None:  # assumes no tapers dim
+            if weights is None:  # assumes no tapers dim, i.e., for Fourier/Welch mode
                 x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects tapers dim
-                weights = np.ones((1, 1, 1))
+                weights = np.ones((1, 1, 1))  # assign dummy weights
         if accumulate_psd:
-            if weights is not None:  # only None if mode == 'cwt_morlet'
-                this_psd = _psd_from_mt(x_t, weights)
-            else:
+            if weights is not None:  # mode == 'multitaper' or 'fourier'
+                if not is_tfr_con:  # normal spectra (multitaper or Fourier)
+                    this_psd = _psd_from_mt(x_t, weights)
+                else:  # TFR spectra (multitaper)
+                    this_psd = np.array([_tfr_from_mt(epo_x, weights) for epo_x in x_t])
+            else:  # mode == 'cwt_morlet'
                 this_psd = (x_t * x_t.conj()).real
     else:  # compute spectral info from scratch
         x_t, this_psd, weights = _compute_spectra(
@@ -559,28 +600,29 @@ def _epoch_spectral_connectivity(
         psd = None
 
     # tell the methods that a new epoch starts
-    for method in con_methods:
-        method.start_epoch()
+    for this_method in con_methods:
+        this_method.start_epoch()
 
     # accumulate connectivity scores
     if mode in ["multitaper", "fourier"]:
         for i in range(0, n_con_signals, block_size):
             n_extra = max(0, i + block_size - n_con_signals)
             con_idx = slice(i, i + block_size - n_extra)
+            compute_csd = _csd_from_mt if not is_tfr_con else _tfr_csd_from_mt
             if mt_adaptive:
-                csd = _csd_from_mt(
+                csd = compute_csd(
                     x_t[idx_map[0][con_idx]],
                     x_t[idx_map[1][con_idx]],
                     weights[idx_map[0][con_idx]],
                     weights[idx_map[1][con_idx]],
                 )
             else:
-                csd = _csd_from_mt(
+                csd = compute_csd(
                     x_t[idx_map[0][con_idx]], x_t[idx_map[1][con_idx]], weights, weights
                 )
 
-            for method in con_methods:
-                method.accumulate(con_idx, csd)
+            for this_method in con_methods:
+                this_method.accumulate(con_idx, csd)
     else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
         for i in range(0, n_con_signals, block_size):
             n_extra = max(0, i + block_size - n_con_signals)
@@ -588,9 +630,9 @@ def _epoch_spectral_connectivity(
             # this codes can be very slow
             csd = x_t[idx_map[0][con_idx]] * x_t[idx_map[1][con_idx]].conjugate()
 
-            for method in con_methods:
-                method.accumulate(con_idx, csd)
-                # future estimator types need to be explicitly handled here
+            for this_method in con_methods:
+                this_method.accumulate(con_idx, csd)
+    # future estimator types need to be explicitly handled here
 
     return con_methods, psd
 
@@ -762,6 +804,8 @@ def spectral_connectivity_epochs(
            or :class:`~mne.time_frequency.EpochsTFR` object can also be passed in as
            data. Storing Fourier coefficients in
            :class:`~mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
+           Storing multitaper weights in :class:`~mne.time_frequency.EpochsTFR` objects
+           requires ``mne >= 1.10``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy',
@@ -834,24 +878,27 @@ def spectral_connectivity_epochs(
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz. Only used in
         'multitaper' mode. Ignored if ``data`` is an
-        :class:`~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     mt_adaptive : bool
         Use adaptive weights to combine the tapered spectra into PSD. Only used in
         'multitaper' mode. Ignored if ``data`` is an
-        :class:`~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     mt_low_bias : bool
         Only use tapers with more than 90 percent spectral concentration within
         bandwidth. Only used in 'multitaper' mode. Ignored if ``data`` is an
-        :class:`~mne.time_frequency.EpochsSpectrum` object.
+        :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     cwt_freqs : array
         Array of frequencies of interest. Only used in 'cwt_morlet' mode. Only
         the frequencies within the range specified by ``fmin`` and ``fmax`` are
-        used. Ignored if ``data`` is an
-        :class:`~mne.time_frequency.EpochsSpectrum` object.
+        used. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     cwt_n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in 'cwt_morlet'
-        mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum`
-        object.
+        mode. Ignored if ``data`` is an :class:`~mne.time_frequency.EpochsSpectrum` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
@@ -1123,6 +1170,7 @@ def spectral_connectivity_epochs(
     weights = None
     metadata = None
     spectrum_computed = False
+    is_tfr_con = False
     if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsTFR):
         names = data.ch_names
         sfreq = data.info["sfreq"]
@@ -1145,7 +1193,7 @@ def spectral_connectivity_epochs(
         metadata = data.metadata
 
         if isinstance(data, EpochsSpectrum | EpochsTFR):
-            # XXX: Will need to be updated if new Spectrum methods are added
+            # XXX: Will need to be updated if new Spectrum/TFR methods are added
             if not np.iscomplexobj(data.get_data()):
                 raise TypeError(
                     "if `data` is an EpochsSpectrum or EpochsTFR object, it must "
@@ -1157,32 +1205,35 @@ def spectral_connectivity_epochs(
                     "`data` cannot contain Fourier coefficients for individual segments"
                 )
             mode = data.method
-            if isinstance(data, EpochsSpectrum | EpochsSpectrumArray):
-                if isinstance(data, EpochsSpectrum):  # read mode from object
-                    mode = "fourier" if mode == "welch" else mode
-                else:  # infer mode from dimensions
+            if isinstance(data, EpochsSpectrum):
+                if isinstance(data, EpochsSpectrumArray):  # infer mode from dimensions
                     # Currently, actual mode doesn't matter as long as we handle tapers
                     # and their weights in the same way as for multitaper spectra
                     mode = "multitaper" if "taper" in data._dims else "fourier"
-                weights = data.weights
+                else:  # read mode from object
+                    mode = "fourier" if mode == "welch" else mode
             else:
-                if isinstance(data, EpochsTFR):  # read mode from object
-                    if mode != "morlet":  # FIXME: Add support for other TFR methods
-                        raise ValueError(
-                            "if `data` is an EpochsTFR object, the spectral method "
-                            "must be 'morlet'"
-                        )
+                if isinstance(data, EpochsTFRArray):  # infer mode from dimensions
+                    # Currently, actual mode doesn't matter as long as we handle tapers
+                    # and their weights in the same way as for multitaper spectra
+                    mode = "multitaper" if "taper" in data._dims else "morlet"
                 else:
-                    if "taper" in data._dims:  # FIXME: Add support for multitaper TFR
-                        raise ValueError(
-                            "if `data` is an EpochsTFRArray object, it cannot contain "
-                            "Fourier coefficients for individual tapers"
-                        )
-                mode = "cwt_morlet"  # currently only supported mode here
+                    mode = "cwt_morlet" if mode == "morlet" else mode
+                is_tfr_con = True
                 times_in = data.times
-                weights = None  # no weights stored in TFR objects
             spectrum_computed = True
             freqs = data.freqs
+            # Extract weights from the EpochsSpectrum/TFR object
+            if not hasattr(data, "weights"):
+                if mode == "multitaper":
+                    # XXX: Remove logic when support for mne<1.10 is dropped
+                    raise AttributeError(
+                        "weights are required for multitaper coefficients stored in "
+                        "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "
+                        "mne >= 1.10) objects"
+                    )
+            else:
+                weights = data.weights
         else:
             times_in = data.times  # input times for Epochs input type
     elif sfreq is None:
@@ -1252,7 +1303,7 @@ def spectral_connectivity_epochs(
 
             # get the window function, wavelets, etc for different modes
             if not spectrum_computed:
-                spectral_params, mt_adaptive, n_times_spectrum, n_tapers = (
+                spectral_params, mt_adaptive, n_times_spectrum, n_tapers, is_tfr_con = (
                     _assemble_spectral_params(
                         mode=mode,
                         n_times=n_times,
@@ -1271,7 +1322,7 @@ def spectral_connectivity_epochs(
                     eigvals=None, window_fun=None, wavelets=None, weights=weights
                 )
                 n_times_spectrum = n_times  # 0 if no times
-                n_tapers = None if weights is None else weights.size
+                n_tapers = None if weights is None else weights.shape[0]
 
             # unique signals for which we actually need to compute PSD etc.
             if multivariate_con:
@@ -1357,6 +1408,7 @@ def spectral_connectivity_epochs(
             gc_n_lags=gc_n_lags,
             n_components=n_components,
             spectrum_computed=spectrum_computed,
+            is_tfr_con=is_tfr_con,
             accumulate_inplace=True if n_jobs == 1 else False,
         )
         call_params.update(**spectral_params)
@@ -1521,10 +1573,9 @@ def spectral_connectivity_epochs(
         if n_components and _method in _multicomp_methods:
             kwargs.update(components=np.arange(n_components) + 1)
         # create the connectivity container
-        if mode in ["multitaper", "fourier"]:
+        if not is_tfr_con:
             klass = SpectralConnectivity
         else:
-            assert mode == "cwt_morlet"
             klass = SpectroTemporalConnectivity
             kwargs.update(times=times)
         conn_list.append(klass(**kwargs))

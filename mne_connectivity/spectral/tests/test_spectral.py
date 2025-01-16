@@ -12,6 +12,7 @@ from numpy.testing import assert_allclose, assert_array_almost_equal, assert_arr
 
 from mne_connectivity import (
     SpectralConnectivity,
+    SpectroTemporalConnectivity,
     make_signals_in_freq_bands,
     read_connectivity,
     seed_target_indices,
@@ -299,9 +300,9 @@ def test_spectral_connectivity(method, mode):
             ), con.get_data()[1, 0, gidx[0] : gidx[1]].min()
             # we see something for zero-lag
             assert_array_less(con.get_data(output="dense")[1, 0, : bidx[0]], lower_t)
-            assert np.all(
-                con.get_data(output="dense")[1, 0, bidx[1] :] < lower_t
-            ), con.get_data()[1, 0, bidx[1:]].max()
+            assert np.all(con.get_data(output="dense")[1, 0, bidx[1] :] < lower_t), (
+                con.get_data()[1, 0, bidx[1:]].max()
+            )
         elif method == "cohy":
             # imaginary coh will be zero
             check = np.imag(con.get_data(output="dense")[1, 0, gidx[0] : gidx[1]])
@@ -323,9 +324,9 @@ def test_spectral_connectivity(method, mode):
             )
             assert_array_less(con.get_data(output="dense")[1, 0, : bidx[0]], lower_t)
             assert_array_less(con.get_data(output="dense")[1, 0, bidx[1] :], lower_t)
-            assert np.all(
-                con.get_data(output="dense")[1, 0, bidx[1] :] < lower_t
-            ), con.get_data()[1, 0, bidx[1] :].max()
+            assert np.all(con.get_data(output="dense")[1, 0, bidx[1] :] < lower_t), (
+                con.get_data()[1, 0, bidx[1] :].max()
+            )
 
         # compute a subset of connections using indices and 2 jobs
         indices = (np.array([2, 1]), np.array([0, 0]))
@@ -469,17 +470,28 @@ def test_spectral_connectivity(method, mode):
     assert out_lens[0] == 10
 
 
-# Fourier coeffs in Spectrum objects added in MNE v1.8.0
 @pytest.mark.skipif(
-    not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
-)
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("method", ["coh", "cacoh"])
-@pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
-def test_spectral_connectivity_epochs_spectrum_input(method, mode):
+@pytest.mark.parametrize(
+    "mode, spectra_as_tfr",
+    [
+        ("multitaper", False),  # test multitaper in normal...
+        ("multitaper", True),  # ... and TFR mode
+        ("fourier", False),
+        ("cwt_morlet", True),
+    ],
+)
+def test_spectral_connectivity_epochs_spectrum_tfr_input(method, mode, spectra_as_tfr):
     """Test spec_conn_epochs works with EpochsSpectrum/TFR data as input.
 
     Important to test both bivariate and multivariate methods, as the latter involves
     additional steps (e.g., rank computation).
+
+    Since spec_conn_epochs doesn't have a way to compute multitaper TFR from timeseries
+    data, we can't compare the results, but we can check that the connectivity values
+    are in an expected range.
     """
     # Simulation parameters & data generation
     sfreq = 100.0  # Hz
@@ -511,43 +523,56 @@ def test_spectral_connectivity_epochs_spectrum_input(method, mode):
     else:
         indices = ([np.arange(n_seeds)], [np.arange(n_targets) + n_seeds])
 
-    # Compute Fourier coefficients
-    cwt_freqs = np.arange(10, 50)  # similar to Fourier & multitaper modes
+    # Compute spectral coefficients
+    tfr_freqs = np.arange(10, 50)  # similar to Fourier & multitaper modes
     kwargs = dict()
     if mode == "fourier":
         kwargs.update(window="hann")  # default is Hamming, but we need Hanning
         spec_mode = "welch"
     elif mode == "cwt_morlet":
-        kwargs.update(freqs=cwt_freqs)
+        kwargs.update(freqs=tfr_freqs)
         spec_mode = "morlet"
-    else:
+    else:  # multitaper
+        if spectra_as_tfr:
+            kwargs.update(freqs=tfr_freqs)
         spec_mode = mode
-    compute_method = data.compute_tfr if mode == "cwt_morlet" else data.compute_psd
-    coeffs = compute_method(method=spec_mode, output="complex", **kwargs)
+    compute_coeffs_method = data.compute_tfr if spectra_as_tfr else data.compute_psd
+    coeffs = compute_coeffs_method(method=spec_mode, output="complex", **kwargs)
 
     # Compute connectivity
     con = spectral_connectivity_epochs(data=coeffs, method=method, indices=indices)
 
-    # Check connectivity from Epochs and Spectrum/TFR are equivalent
-    con_from_epochs = spectral_connectivity_epochs(
-        data=data, method=method, indices=indices, mode=mode, cwt_freqs=cwt_freqs
-    )
-    # Works for multitaper & Morlet, but Welch of Spectrum and Fourier of spec_conn are
-    # slightly off (max. abs. diff. ~0.006). This is due to the Spectrum object using
-    # scipy.signal.spectrogram to compute the coefficients, while spec_conn uses
-    # scipy.signal.rfft, which give slightly different outputs even with identical
-    # settings.
-    if mode == "fourier":
-        atol = 7e-3
+    # Check connectivity classes are correct and that freqs/times match input data
+    if spectra_as_tfr:
+        assert isinstance(con, SpectroTemporalConnectivity), "wrong class type"
+        assert np.all(con.times == coeffs.times), "times do not match input data"
     else:
-        atol = 0
-    # spec_conn_epochs excludes freqs without at least 5 cycles, but not Spectrum
-    fstart = con.freqs.index(con_from_epochs.freqs[0])
-    assert_allclose(
-        np.abs(con.get_data()[:, fstart:]),
-        np.abs(con_from_epochs.get_data()),
-        atol=atol,
-    )
+        assert isinstance(con, SpectralConnectivity), "wrong class type"
+    assert np.all(con.freqs == coeffs.freqs), "freqs do not match input data"
+
+    # Check connectivity from Epochs and EpochsSpectrum/TFR are equivalent
+    if mode == "multitaper" and spectra_as_tfr:
+        pass  # no multitaper TFR computation from timeseries in spec_conn_epochs
+    else:
+        con_from_epochs = spectral_connectivity_epochs(
+            data=data, method=method, indices=indices, mode=mode, cwt_freqs=tfr_freqs
+        )
+        # Works for multitaper & Morlet, but Welch of Spectrum and Fourier of spec_conn
+        # are slightly off (max. abs. diff. ~0.006). This is due to the Spectrum object
+        # using scipy.signal.spectrogram to compute the coefficients, while spec_conn
+        # uses scipy.signal.rfft, which give slightly different outputs even with
+        # identical settings.
+        if mode == "fourier":
+            atol = 7e-3
+        else:
+            atol = 0
+        # spec_conn_epochs excludes freqs without at least 5 cycles, but not Spectrum
+        fstart = con.freqs.index(con_from_epochs.freqs[0])
+        assert_allclose(
+            np.abs(con.get_data()[:, fstart:]),
+            np.abs(con_from_epochs.get_data()),
+            atol=atol,
+        )
 
     # Check connectivity values are as expected
     freqs = np.array(con.freqs)
@@ -565,8 +590,8 @@ def test_spectral_connectivity_epochs_spectrum_input(method, mode):
 
 # TODO: Add general test for error catching for spec_conn_epochs
 @pytest.mark.skipif(
-    not check_version("mne", "1.8"), reason="Requires MNE v1.8.0 or higher"
-)
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 def test_spectral_connectivity_epochs_spectrum_tfr_input_error_catch():
     """Test spec_conn_epochs catches errors with EpochsSpectrum/TFR data as input."""
     # Generate data
@@ -581,10 +606,19 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input_error_catch():
     with pytest.raises(TypeError, match="must contain complex-valued Fourier coeff"):
         spectrum = data.compute_psd(output="power")
         spectral_connectivity_epochs(data=spectrum)
+    with pytest.raises(TypeError, match="must contain complex-valued Fourier coeff"):
+        tfr = data.compute_tfr(method="morlet", freqs=np.arange(15, 20), output="power")
+        spectral_connectivity_epochs(data=tfr)
 
     # Test unaggregated segments caught
     with pytest.raises(ValueError, match=r"cannot contain Fourier coeff.*segments"):
         spectrum = data.compute_psd(method="welch", average=False, output="complex")
+        spectral_connectivity_epochs(data=spectrum)
+
+    # Simulate missing weights attr in EpochsSpectrum/TFR object
+    with pytest.raises(AttributeError, match="weights are required for multitaper"):
+        spectrum = data.compute_psd(method="multitaper", output="complex")
+        del spectrum._weights
         spectral_connectivity_epochs(data=spectrum)
 
 
@@ -1314,7 +1348,7 @@ def test_spectral_connectivity_time_delayed():
     N.B.: the spectral_connectivity_time method seems to be more unstable than
     spectral_connectivity_epochs for GC estimation. Accordingly, we assess
     Granger scores only in the context of the noise-corrected TRGC metric,
-    where the true directionality of the connections seems to identified.
+    where the true directionality of the connections seems to be identified.
     """
     mode = "multitaper"  # stick with single mode in interest of time
 
@@ -1765,9 +1799,6 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
     assert_array_less(0.6, np.abs(con.get_data()[:, freqs_con].mean()))
     # check freqs of no simulated interaction (just noise) show weak connectivity
     assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), 0.3)
-
-
-test_spectral_connectivity_time_tfr_input("cacoh", "cwt_morlet")
 
 
 # TODO: Add general test for error catching for spec_conn_time
