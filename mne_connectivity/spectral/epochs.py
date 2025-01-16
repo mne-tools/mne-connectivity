@@ -25,8 +25,7 @@ from mne.time_frequency.multitaper import (
     _psd_from_mt,
     _psd_from_mt_adaptive,
 )
-from mne.time_frequency.spectrum import BaseSpectrum
-from mne.time_frequency.tfr import BaseTFR, _tfr_from_mt, cwt, morlet
+from mne.time_frequency.tfr import _tfr_from_mt, cwt, morlet
 from mne.utils import _arange_div, _check_option, _time_mask, logger, verbose, warn
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
@@ -1557,7 +1556,9 @@ def spectral_connectivity_epochs(
             method=_method,
             n_nodes=n_nodes,
             spec_method=(
-                mode if not isinstance(data, BaseSpectrum | BaseTFR) else data.method
+                mode
+                if not isinstance(data, EpochsSpectrum | EpochsTFR)
+                else data.method
             ),
             indices=indices,
             n_epochs_used=n_epochs,
