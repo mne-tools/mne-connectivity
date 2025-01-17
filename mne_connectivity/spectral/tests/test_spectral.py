@@ -616,9 +616,13 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input_error_catch():
         spectral_connectivity_epochs(data=spectrum)
 
     # Simulate missing weights attr in EpochsSpectrum/TFR object
+    spectrum = data.compute_psd(method="multitaper", output="complex")
     with pytest.raises(AttributeError, match="weights are required for multitaper"):
-        spectrum = data.compute_psd(method="multitaper", output="complex")
-        del spectrum._weights
+        spectrum_copy = spectrum.copy()
+        del spectrum_copy._weights
+        spectral_connectivity_epochs(data=spectrum_copy)
+    with pytest.raises(AttributeError, match="weights are required for multitaper"):
+        spectrum._weights = None
         spectral_connectivity_epochs(data=spectrum)
 
 
@@ -1963,9 +1967,13 @@ def test_spectral_connectivity_time_tfr_input_error_catch():
         spectral_connectivity_time(data=tfr, freqs=freqs)
 
     # Simulate missing weights attr in EpochsTFR object
+    tfr = data.compute_tfr(method="multitaper", output="complex", freqs=freqs)
     with pytest.raises(AttributeError, match="weights are required for multitaper"):
-        tfr = data.compute_tfr(method="multitaper", output="complex", freqs=freqs)
-        del tfr._weights
+        tfr_copy = tfr.copy()
+        del tfr_copy._weights
+        spectral_connectivity_time(data=tfr_copy)
+    with pytest.raises(AttributeError, match="weights are required for multitaper"):
+        tfr._weights = None
         spectral_connectivity_time(data=tfr)
 
     # Test no freqs caught for non-TFR input

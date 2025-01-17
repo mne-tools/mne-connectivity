@@ -440,14 +440,16 @@ def spectral_connectivity_time(
             else:  # read mode from object
                 mode = "cwt_morlet" if data.method == "morlet" else data.method
             # Extract weights from the EpochsTFR object
-            if not hasattr(data, "weights"):
-                if mode == "multitaper":
-                    # XXX: Remove logic when support for mne<1.10 is dropped
-                    raise AttributeError(
-                        "weights are required for multitaper coefficients stored in "
-                        "EpochsTFR objects (requires mne >= 1.10)"
-                    )
-            else:
+            if not hasattr(data, "weights") or (
+                data.weights is None and mode == "multitaper"
+            ):
+                # XXX: Remove logic when support for mne<1.10 is dropped
+                raise AttributeError(
+                    "weights are required for multitaper coefficients stored in "
+                    "EpochsTFR objects (requires mne >= 1.10); objects saved from "
+                    "older versions of mne will need to be recomputed."
+                )
+            if hasattr(data, "weights"):
                 weights = data.weights
             # TFR objs will drop bad channels, so specify picking all channels
             data = data.get_data(picks=np.arange(data.info["nchan"]))

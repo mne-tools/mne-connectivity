@@ -1223,15 +1223,17 @@ def spectral_connectivity_epochs(
             spectrum_computed = True
             freqs = data.freqs
             # Extract weights from the EpochsSpectrum/TFR object
-            if not hasattr(data, "weights"):
-                if mode == "multitaper":
-                    # XXX: Remove logic when support for mne<1.10 is dropped
-                    raise AttributeError(
-                        "weights are required for multitaper coefficients stored in "
-                        "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "
-                        "mne >= 1.10) objects"
-                    )
-            else:
+            if not hasattr(data, "weights") or (
+                data.weights is None and mode == "multitaper"
+            ):
+                # XXX: Remove logic when support for mne<1.10 is dropped
+                raise AttributeError(
+                    "weights are required for multitaper coefficients stored in "
+                    "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "
+                    "mne >= 1.10) objects; objects saved from older versions of mne "
+                    "will need to be recomputed."
+                )
+            if hasattr(data, "weights"):
                 weights = data.weights
         else:
             times_in = data.times  # input times for Epochs input type
