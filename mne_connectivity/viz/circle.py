@@ -5,7 +5,6 @@
 #
 # License: Simplified BSD
 
-from mne.utils import warn
 from mne.viz.circle import _plot_connectivity_circle
 
 
@@ -34,8 +33,6 @@ def plot_connectivity_circle(
     fontsize_colorbar=8,
     padding=6.0,
     ax=None,
-    fig=None,
-    subplot=None,
     interactive=True,
     node_linewidth=2.0,
     show=True,
@@ -101,19 +98,6 @@ def plot_connectivity_circle(
         Space to add around figure to accommodate long labels.
     ax : instance of matplotlib PolarAxes | None
         The axes to use to plot the connectivity circle.
-    fig : None | instance of matplotlib.figure.Figure
-        The figure to use. If None, a new figure with the specified background
-        color will be created.
-
-        Deprecated: will be removed in version 0.5.
-
-    subplot : int | tuple, shape (3,)
-        Location of the subplot when creating figures with multiple plots. E.g.
-        121 or (1, 2, 1) for 1 row, 2 columns, plot 1. See
-        matplotlib.pyplot.subplot.
-
-        Deprecated: will be removed in version 0.5.
-
     interactive : bool
         When enabled, left-click on a node to show only connections to that
         node. Right-click shows all connections.
@@ -142,26 +126,10 @@ def plot_connectivity_circle(
     If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the
     figure labels, title, and legend may be cut off in the output figure.
     """
-    import matplotlib.pyplot as plt
-
     from mne_connectivity.base import BaseConnectivity
 
     if isinstance(con, BaseConnectivity):
         con = con.get_data()
-
-    if fig is not None or subplot is not None:
-        warn(
-            "Passing a `fig` and `subplot` is deprecated and not supported after "
-            "mne-connectivity version 0.4. Please use the `ax` argument and pass a "
-            "matplotlib axes object with polar coordinates instead",
-            DeprecationWarning,
-        )
-        if ax is None:  # don't overwrite ax if passed
-            if fig is None:
-                fig = plt.figure(figsize=(8, 8), facecolor=facecolor)
-            if not isinstance(subplot, tuple):
-                subplot = (subplot,)
-            ax = plt.subplot(*subplot, polar=True)
 
     return _plot_connectivity_circle(
         con=con,
