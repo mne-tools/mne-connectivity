@@ -171,10 +171,14 @@ plot_connectivity_circle(
     n_lines=300,
     node_angles=node_angles,
     node_colors=label_colors,
-    title="All-to-All Connectivity left-Auditory " "Condition (PLI)",
+    title="All-to-All Connectivity left-Auditory " "Condition",
     ax=ax,
+    show=False
 )
+# Add a colorbar label
+fig.mne.colorbar.set_label('PLI', color='w', fontsize=10)
 fig.tight_layout()
+fig.show()
 
 ###############################################################################
 # Make multiple connectivity plots in the same figure
