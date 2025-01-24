@@ -10,8 +10,14 @@ import numpy as np
 import xarray as xr
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.time_frequency import dpss_windows, tfr_array_morlet, tfr_array_multitaper
-from mne.utils import _validate_type, logger, verbose
+from mne.time_frequency import (
+    EpochsTFR,
+    EpochsTFRArray,
+    dpss_windows,
+    tfr_array_morlet,
+    tfr_array_multitaper,
+)
+from mne.utils import _check_option, _validate_type, logger, verbose
 
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -32,7 +38,7 @@ from .smooth import _create_kernel, _smooth_spectra
 @fill_doc
 def spectral_connectivity_time(
     data,
-    freqs,
+    freqs=None,
     method="coh",
     average=False,
     indices=None,
@@ -66,12 +72,26 @@ def spectral_connectivity_time(
 
     Parameters
     ----------
-    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs
-        The data from which to compute connectivity.
-    freqs : array_like
-        Array of frequencies of interest for time-frequency decomposition.
-        Only the frequencies within the range specified by ``fmin`` and
-        ``fmax`` are used.
+    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | ~mne.time_frequency.EpochsTFR
+        The data from which to compute connectivity. Can be epoched timeseries data as
+        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients
+        for each epoch as an :class:`~mne.time_frequency.EpochsTFR` object. If
+        timeseries data, the spectral information will be computed according to the
+        spectral estimation mode (see the ``mode`` parameter). If an
+        :class:`~mne.time_frequency.EpochsTFR` object, existing spectral information
+        will be used and the ``mode`` parameter will be ignored.
+
+        .. versionchanged:: 0.8
+           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsTFR`
+           object can also be passed in as data. Storing multitaper weights in
+           :class:`~mne.time_frequency.EpochsTFR` objects requires ``mne >= 1.10``.
+    freqs : array_like | None
+        Array of frequencies of interest for time-frequency decomposition. Only the
+        frequencies within the range specified by ``fmin`` and ``fmax`` are used. If
+        ``data`` is an :term:`array-like` or :class:`~mne.Epochs` object, the
+        frequencies must be specified. If ``data`` is an
+        :class:`~mne.time_frequency.EpochsTFR` object, ``data.freqs`` is used and this
+        parameter is ignored.
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cacoh',
         'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
@@ -104,8 +124,8 @@ def spectral_connectivity_time(
         connections between all channels are computed, unless a Granger
         causality method is called, in which case an error is raised.
     sfreq : float
-        The sampling frequency. Required if data is not
-        :class:`Epochs <mne.Epochs>`.
+        The sampling frequency. Required if ``data`` is not an :class:`~mne.Epochs` or
+        :class:`~mne.time_frequency.EpochsTFR` object.
     fmin : float | tuple of float | None
         The lower frequency of interest. Multiple bands are defined using
         a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower
@@ -133,21 +153,24 @@ def spectral_connectivity_time(
         Amount of time to consider as padding at the beginning and end of each
         epoch in seconds. See Notes for more information.
     mode : str
-        Time-frequency decomposition method. Can be either: 'multitaper', or
-        'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
-        :func:`mne.time_frequency.tfr_array_morlet` for reference.
+        Time-frequency decomposition method. Can be either: ``'multitaper'``, or
+        ``'cwt_morlet'``. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` for reference. Ignored if ``data``
+        is an :class:`~mne.time_frequency.EpochsTFR` object.
     mt_bandwidth : float | None
-        Product between the temporal window length (in seconds) and the full
-        frequency bandwidth (in Hz). This product can be seen as the surface
-        of the window on the time/frequency plane and controls the frequency
-        bandwidth (thus the frequency resolution) and the number of good
-        tapers. See :func:`mne.time_frequency.tfr_array_multitaper`
-        documentation.
+        Product between the temporal window length (in seconds) and the full frequency
+        bandwidth (in Hz). This product can be seen as the surface of the window on the
+        time/frequency plane and controls the frequency bandwidth (thus the frequency
+        resolution) and the number of good tapers. See
+        :func:`mne.time_frequency.tfr_array_multitaper` documentation. Ignored if
+        ``data`` is an :class:`~mne.time_frequency.EpochsTFR` object.
     n_cycles : float | array_like of float
-        Number of cycles in the wavelet, either a fixed number or one per
-        frequency. The number of cycles ``n_cycles`` and the frequencies of
-        interest ``cwt_freqs`` define the temporal window length. For details,
-        see :func:`mne.time_frequency.tfr_array_morlet` documentation.
+        Number of cycles in the wavelet, either a fixed number or one per frequency. The
+        number of cycles ``n_cycles`` and the frequencies of interest ``freqs`` define
+        the temporal window length. For details, see
+        :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` documentation. Ignored if ``data``
+        is an :class:`~mne.time_frequency.EpochsTFR` object.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when
         computing Granger causality. Higher values increase computational cost,
@@ -183,10 +206,10 @@ def spectral_connectivity_time(
         instances corresponding to connectivity measures if several connectivity
         measures are specified. The shape of each connectivity dataset is ([n_epochs,]
         n_cons, [n_comps,] n_freqs). ``n_comps`` is present for valid multivariate
-        methods if ``n_components > 1``.When "indices" is None and a bivariate method is
-        called, "n_cons = n_signals ** 2", or if a multivariate method is called "n_cons
-        = 1". When "indices" is specified, "n_con = len(indices[0])" for bivariate and
-        multivariate methods.
+        methods if ``n_components > 1``. When "indices" is None and a bivariate method
+        is called, "n_cons = n_signals ** 2", or if a multivariate method is called
+        "n_cons = 1". When "indices" is specified, "n_con = len(indices[0])" for
+        bivariate and multivariate methods.
 
     See Also
     --------
@@ -369,12 +392,23 @@ def spectral_connectivity_time(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     events = None
     event_id = None
     # extract data from Epochs object
-    _validate_type(data, (np.ndarray, BaseEpochs), "`data`", "Epochs or a NumPy array")
-    if isinstance(data, BaseEpochs):
+    _validate_type(
+        data,
+        (np.ndarray, BaseEpochs, EpochsTFR),
+        "`data`",
+        "Epochs, EpochsTFR, or a NumPy array",
+    )
+    if not isinstance(data, EpochsTFR) and freqs is None:
+        raise TypeError(
+            "`freqs` must be specified when `data` is not an EpochsTFR object"
+        )
+    weights = None
+    spectrum_computed = False
+    if isinstance(data, BaseEpochs | EpochsTFR):
         names = data.ch_names
         sfreq = data.info["sfreq"]
         events = data.events
@@ -392,12 +426,42 @@ def spectral_connectivity_time(
         if hasattr(data, "annotations") and not annots_in_metadata:
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
-        # XXX: remove logic once support for mne<1.6 is dropped
-        kwargs = dict()
-        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-            kwargs["copy"] = False
-        data = data.get_data(**kwargs)
-        n_epochs, n_signals, n_times = data.shape
+        if isinstance(data, BaseEpochs):
+            # XXX: remove logic once support for mne<1.6 is dropped
+            kwargs = dict()
+            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
+                kwargs["copy"] = False
+            data = data.get_data(**kwargs)
+            n_epochs, n_signals, n_times = data.shape
+        else:
+            freqs = data.freqs  # use freqs from EpochsTFR object
+            if isinstance(data, EpochsTFRArray):  # infer mode from dimensions
+                mode = "multitaper" if "taper" in data._dims else "cwt_morlet"
+            else:  # read mode from object
+                mode = "cwt_morlet" if data.method == "morlet" else data.method
+            # Extract weights from the EpochsTFR object
+            if not hasattr(data, "weights") or (
+                data.weights is None and mode == "multitaper"
+            ):
+                # XXX: Remove logic when support for mne<1.10 is dropped
+                raise AttributeError(
+                    "weights are required for multitaper coefficients stored in "
+                    "EpochsTFR objects (requires mne >= 1.10); objects saved from "
+                    "older versions of mne will need to be recomputed."
+                )
+            if hasattr(data, "weights"):
+                weights = data.weights
+            # TFR objs will drop bad channels, so specify picking all channels
+            data = data.get_data(picks=np.arange(data.info["nchan"]))
+            if not np.iscomplexobj(data):
+                raise TypeError(
+                    "if `data` is an EpochsTFR object, it must contain complex-valued "
+                    "Fourier coefficients, such as that returned from "
+                    "Epochs.compute_tfr() with `output='complex'`"
+                )
+            n_epochs, n_signals = data.shape[:2]
+            n_times = data.shape[-1]
+            spectrum_computed = True
     else:
         data = np.asarray(data)
         n_epochs, n_signals, n_times = data.shape
@@ -520,8 +584,7 @@ def spectral_connectivity_time(
         n_components = _check_n_components_input(n_components, rank)
         if n_components == 1:
             # n_components=0 means space for a components dimension is not allocated in
-            # the results, similar to how n_times_spectrum=0 is used to indicate that
-            # time is not a dimension in the results
+            # the results
             n_components = 0
     else:
         rank = None
@@ -620,13 +683,15 @@ def spectral_connectivity_time(
         padding=padding,
         kw_cwt={},
         kw_mt={},
+        weights=weights,
+        multivariate_con=multivariate_con,
+        spectrum_computed=spectrum_computed,
         n_jobs=n_jobs,
         verbose=verbose,
-        multivariate_con=multivariate_con,
     )
 
     for epoch_idx in np.arange(n_epochs):
-        logger.info(f"   Processing epoch {epoch_idx+1} / {n_epochs} ...")
+        logger.info(f"   Processing epoch {epoch_idx + 1} / {n_epochs} ...")
         scores, patterns = _spectral_connectivity(data[epoch_idx], **call_params)
         for m in method:
             conn[m][epoch_idx] = np.stack(scores[m], axis=0)
@@ -713,16 +778,18 @@ def _spectral_connectivity(
     padding,
     kw_cwt,
     kw_mt,
+    weights,
+    multivariate_con,
+    spectrum_computed,
     n_jobs,
     verbose,
-    multivariate_con,
 ):
     """Estimate time-resolved connectivity for one epoch.
 
     Parameters
     ----------
-    data : array_like, shape (n_channels, n_times)
-        Time-series data.
+    data : array_like, shape (channels, [freqs,] [tapers,] times)
+        Time-series data or time-frequency data.
     method : list of str
         List of connectivity metrics to compute.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
@@ -764,8 +831,12 @@ def _spectral_connectivity(
     padding : float
         Amount of time to consider as padding at the beginning and end of each
         epoch in seconds.
+    weights : array, shape (n_tapers, n_freqs) | None
+        Taper weights for multitaper spectral estimation.
     multivariate_con : bool
         Whether or not multivariate connectivity is to be computed.
+    spectrum_computed : bool
+        Whether or not the time-frequency decomposition has already been computed.
 
     Returns
     -------
@@ -774,7 +845,6 @@ def _spectral_connectivity(
         ``method``. Each element is an array of shape (n_cons, [n_comps], n_freqs) or
         (n_cons, [n_comps], n_fbands) if ``faverage`` is `True`. ``n_comps`` is present
         for valid multivariate methods if ``n_components > 0``.
-
     patterns : dict
         Dictionary containing the connectivity patterns (for reconstructing the
         connectivity components in channel-space) corresponding to the metrics in
@@ -784,51 +854,63 @@ def _spectral_connectivity(
         and target signals (respectively). ``n_comps`` is present for valid multivariate
         methods if ``n_components > 0``.
     """
-    n_cons = len(source_idx)
-    data = np.expand_dims(data, axis=0)
-    kw_cwt.setdefault("zero_mean", False)  # avoid FutureWarning
-    if mode == "cwt_morlet":
-        out = tfr_array_morlet(
-            data,
-            sfreq,
-            freqs,
-            n_cycles=n_cycles,
-            output="complex",
-            decim=decim,
-            n_jobs=n_jobs,
-            **kw_cwt,
-        )
-        out = np.expand_dims(out, axis=2)  # same dims with multitaper
-        weights = None
-    elif mode == "multitaper":
-        out = tfr_array_multitaper(
-            data,
-            sfreq,
-            freqs,
-            n_cycles=n_cycles,
-            time_bandwidth=mt_bandwidth,
-            output="complex",
-            decim=decim,
-            n_jobs=n_jobs,
-            **kw_mt,
-        )
-        if isinstance(n_cycles, int | float):
-            n_cycles = [n_cycles] * len(freqs)
-        mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
-        n_tapers = int(np.floor(mt_bandwidth - 1))
-        weights = np.zeros((n_tapers, len(freqs), out.shape[-1]))
-        for i, (f, n_c) in enumerate(zip(freqs, n_cycles)):
-            window_length = np.arange(0.0, n_c / float(f), 1.0 / sfreq).shape[0]
-            half_nbw = mt_bandwidth / 2.0
-            n_tapers = int(np.floor(mt_bandwidth - 1))
-            _, eigvals = dpss_windows(window_length, half_nbw, n_tapers, sym=False)
-            weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
-            # weights have shape (n_tapers, n_freqs, n_times)
+    # check that spectral mode is recognised
+    _check_option("mode", mode, ("cwt_morlet", "multitaper"))
+
+    # compute time-frequency decomposition
+    mt_bandwidth = mt_bandwidth if mt_bandwidth else 4
+    if not spectrum_computed:
+        data = np.expand_dims(data, axis=0)
+        kw_cwt.setdefault("zero_mean", False)  # avoid FutureWarning
+        if mode == "cwt_morlet":
+            out = tfr_array_morlet(
+                data,
+                sfreq,
+                freqs,
+                n_cycles=n_cycles,
+                output="complex",
+                decim=decim,
+                n_jobs=n_jobs,
+                **kw_cwt,
+            )
+        else:
+            out = tfr_array_multitaper(
+                data,
+                sfreq,
+                freqs,
+                n_cycles=n_cycles,
+                time_bandwidth=mt_bandwidth,
+                output="complex",
+                decim=decim,
+                n_jobs=n_jobs,
+                **kw_mt,
+            )
+        out = np.squeeze(out, axis=0)
     else:
-        raise ValueError("Mode must be 'cwt_morlet' or 'multitaper'.")
+        out = data
 
-    out = np.squeeze(out, axis=0)
+    # give tapers dim to cwt_morlet output
+    if mode == "cwt_morlet":
+        out = np.expand_dims(out, axis=1)
 
+    # compute taper weights
+    if mode == "multitaper":
+        if not spectrum_computed:  # compute from scratch
+            if isinstance(n_cycles, int | float):
+                n_cycles = [n_cycles] * len(freqs)
+            n_tapers = out.shape[-3]
+            n_times = out.shape[-1]
+            half_nbw = mt_bandwidth / 2.0
+            weights = np.zeros((n_tapers, len(freqs), n_times))
+            for i, (f, n_c) in enumerate(zip(freqs, n_cycles)):
+                window_length = np.arange(0.0, n_c / float(f), 1.0 / sfreq).shape[0]
+                _, eigvals = dpss_windows(window_length, half_nbw, n_tapers, sym=False)
+                weights[:, i, :] = np.sqrt(eigvals[:, np.newaxis])
+                # weights have shape (n_tapers, n_freqs, n_times)
+        else:  # add time dimension to existing weights
+            weights = np.repeat(weights[..., np.newaxis], out.shape[-1], axis=-1)
+
+    # pad spectrum and weights
     if padding:
         if padding < 0:
             raise ValueError(f"Padding cannot be negative, got {padding}.")
@@ -843,6 +925,7 @@ def _spectral_connectivity(
     # compute for each connectivity method
     scores = {}
     patterns = {}
+    n_cons = len(source_idx)
     conn = _parallel_con(
         out,
         method,
@@ -929,7 +1012,7 @@ def _parallel_con(
         Number of pairs of signals.
     faverage : bool
         Average over frequency bands.
-    weights : array_like, shape (n_tapers, n_freqs, n_times)
+    weights : array_like, shape (n_tapers, n_freqs, n_times) | None
         Multitaper weights.
     multivariate_con : bool
         Whether or not multivariate connectivity is being computed.
@@ -1112,7 +1195,6 @@ def _multivariate_con(
         connectivity method. Each element is an array with shape ([n_comps], n_freqs) or
         ([n_comps], n_fbands) depending on ``faverage``. ``n_comps`` is present for
         valid multivariate methods if ``n_components > 0``.
-
     patterns : list
         List of connectivity patterns between seed and target signals for each
         connectivity method. Each element is an array of length 2 corresponding to the
