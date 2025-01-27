@@ -434,7 +434,7 @@ units : str (default 'AU')
 """
 
 docdict["axes_topomap"] = """
-axes : list of list of matplotlib.axes.Axes | None (default None)
+axes : length-2 tuple of list of matplotlib.axes.Axes | None (default None)
     The axes to plot to. If `None`, a new figure will be created with the correct number
     of axes. If not `None`, there must be two lists containing the axes for the seeds
     and targets, respectively. In each of these two lists, the number of axes must match
