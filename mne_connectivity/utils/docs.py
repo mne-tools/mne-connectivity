@@ -443,7 +443,7 @@ axes : list of list of matplotlib.axes.Axes | None (default None)
 
 docdict["name_format_topomap"] = r"""
 name_format : str | None (default None)
-    The string format for axes titles. If `None`, uses ``f"{method}%%01d"``, i.e. the
+    The string format for axes titles. If `None`, uses ``f"{method}%01d"``, i.e. the
     method name followed by the component number.
 """
 

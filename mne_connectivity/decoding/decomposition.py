@@ -604,7 +604,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         """Plot topographic filters of components.
 
         The filters are used to extract discriminant neural sources from the measured
-        data (a.k.a. the backward model). :footcite:`HaufeEtAl2014`.
+        data (a.k.a. the backward model) :footcite:`HaufeEtAl2014`.
 
         Seed and target filters are plotted separately.
 
