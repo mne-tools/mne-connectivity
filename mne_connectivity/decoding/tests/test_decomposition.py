@@ -715,3 +715,7 @@ def test_spectral_decomposition_error_catch(method, mode):
     for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
         with pytest.raises(TypeError, match="`info` must be an instance of mne.Info"):
             plot({"info": epochs.info})
+        with pytest.raises(ValueError, match="Invalid value for the 'axes' parameter"):
+            plot(epochs.info, axes=[None])
+        with pytest.raises(ValueError, match="Invalid value for the 'axes' parameter"):
+            plot(epochs.info, axes=[None, None, None])
