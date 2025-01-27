@@ -714,6 +714,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         _validate_type(info, Info, "`info`", "mne.Info")
         if components is None:
             components = np.arange(self.n_components)
+        if axes is not None:
+            _check_option("axes", len(axes), [2], " length")
 
         # plot seeds and targets
         figs = []
@@ -749,7 +751,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                     colorbar=colorbar,
                     cbar_fmt=cbar_fmt,
                     units=units,
-                    axes=axes,
+                    axes=axes[group_idx] if axes is not None else None,
                     time_format=f"{self._conn_estimator.name}%01d"
                     if name_format is None
                     else name_format,

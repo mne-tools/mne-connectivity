@@ -434,9 +434,11 @@ units : str (default 'AU')
 """
 
 docdict["axes_topomap"] = """
-axes : matplotlib.axes.Axes | list of matplotlib.axes.Axes | None (default None)
+axes : list of list of matplotlib.axes.Axes | None (default None)
     The axes to plot to. If `None`, a new figure will be created with the correct number
-    of axes. If not `None`, the number of axes must match ``components``.
+    of axes. If not `None`, there must be two lists containing the axes for the seeds
+    and targets, respectively. In each of these two lists, the number of axes must match
+    ``components`` if ``colorbar=False``, or ``components * 2`` if ``colorbar=True``.
 """
 
 docdict["name_format_topomap"] = r"""
