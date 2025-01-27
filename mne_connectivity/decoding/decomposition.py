@@ -727,6 +727,10 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             # create Evoked object
             evoked = EvokedArray(plot_data[group_idx], group_info, tmin=0)
             # then call plot_topomap
+            if name_format is None:
+                group_name_format = f"{self._conn_estimator.name}%01d_{group_name}"
+            else:
+                group_name_format = name_format + f"_{group_name}"
             figs.append(
                 evoked.plot_topomap(
                     times=components,
@@ -752,15 +756,12 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                     cbar_fmt=cbar_fmt,
                     units=units,
                     axes=axes[group_idx] if axes is not None else None,
-                    time_format=f"{self._conn_estimator.name}%01d"
-                    if name_format is None
-                    else name_format,
+                    time_format=group_name_format,
                     nrows=nrows,
                     ncols=ncols,
                     show=False,  # set Seeds/Targets suptitle first
                 )
             )
-            figs[-1].suptitle(group_name)  # differentiate seeds from targets
             plt_show(show=show, fig=figs[-1])
 
         return figs
