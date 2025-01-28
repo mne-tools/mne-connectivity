@@ -719,7 +719,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         # plot seeds and targets
         figs = []
-        for group_idx, group_name in zip([0, 1], ["Seeds", "Targets"]):
+        for group_idx, group_name in zip([0, 1], ["seeds", "targets"]):
             # create info for seeds/targets
             group_info = pick_info(info, self.indices[group_idx])
             with group_info._unlock():
@@ -728,9 +728,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             evoked = EvokedArray(plot_data[group_idx], group_info, tmin=0)
             # then call plot_topomap
             if name_format is None:
-                group_name_format = f"{self._conn_estimator.name}%01d_{group_name}"
+                group_name_format = f"{self._conn_estimator.name}%01d ({group_name})"
             else:
-                group_name_format = name_format + f"_{group_name}"
+                group_name_format = name_format + f" ({group_name})"
             figs.append(
                 evoked.plot_topomap(
                     times=components,
@@ -759,7 +759,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                     time_format=group_name_format,
                     nrows=nrows,
                     ncols=ncols,
-                    show=False,  # set Seeds/Targets suptitle first
+                    show=False,
                 )
             )
             plt_show(show=show, fig=figs[-1])
