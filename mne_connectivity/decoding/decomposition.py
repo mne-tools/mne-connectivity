@@ -62,17 +62,17 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     Once fit, the filters can be used to transform data into the underlying connectivity
     components. Connectivity can be computed on this transformed data using the
     bivariate coherency-based methods of the
-    `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions. These bivariate methods
-    are:
+    :func:`~mne_connectivity.spectral_connectivity_epochs` and
+    :func:`~mne_connectivity.spectral_connectivity_time` functions. These bivariate
+    methods are:
 
     * ``"cohy"`` and ``"coh"`` for CaCoh :footcite:`VidaurreEtAl2019`
     * ``"imcoh"`` for MIC :footcite:`EwaldEtAl2012`
 
     The approach taken here is to optimise the connectivity in a given frequency band.
     Frequency bin-wise optimisation is offered in the multivariate coherency-based
-    methods of the `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
+    methods of the :func:`~mne_connectivity.spectral_connectivity_epochs` and
+    :func:`~mne_connectivity.spectral_connectivity_time` functions.
 
     References
     ----------
@@ -131,7 +131,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         mt_adaptive=False,
         mt_low_bias=True,
         cwt_freqs=None,
-        cwt_n_cycles=7,
+        cwt_n_cycles=7.0,
         n_components=None,
         rank=None,
         n_jobs=1,
@@ -277,7 +277,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        X : array, shape=(n_epochs, n_signals, n_times)
+        X : array, shape (n_epochs, n_signals, n_times)
             The input data which the connectivity decomposition filters should be fit
             to.
         y : None
@@ -397,12 +397,12 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        X : array, shape=((n_epochs, ) n_signals, n_times)
+        X : array, shape ([n_epochs,] n_signals, n_times)
             The data to be transformed by the connectivity decomposition filters.
 
         Returns
         -------
-        X_transformed : array, shape=((n_epochs, ) n_components*2, n_times)
+        X_transformed : array, shape ([n_epochs,] n_components*2, n_times)
             The transformed data. The first ``n_components`` channels are the
             transformed seeds, and the last ``n_components`` channels are the
             transformed targets.
@@ -424,7 +424,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        X : array, shape=(n_epochs, n_signals, n_times)
+        X : array, shape (n_epochs, n_signals, n_times)
             The input data which the connectivity decomposition filters should be fit to
             and subsequently transformed.
         y : None
@@ -435,7 +435,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Returns
         -------
-        X_transformed : array, shape=(n_epochs, n_components*2, n_times)
+        X_transformed : array, shape (n_epochs, n_components*2, n_times)
             The transformed data. The first ``n_components`` channels are the
             transformed seeds, and the last ``n_components`` channels are the
             transformed targets.
@@ -449,11 +449,11 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         Returns
         -------
         indices_transformed : tuple of array
-            Indices of seeds and targets in the transformed data with the form (seeds,
-            targets) to be used when passing the data to
-            `~mne_connectivity.spectral_connectivity_epochs` and
-            `~mne_connectivity.spectral_connectivity_time`. Entries of the indices are
-            arranged such that connectivity would be computed between the first seed
+            Indices of seeds and targets in the transformed data with the form ``(seeds,
+            targets)`` to be used when passing the data to
+            :func:`~mne_connectivity.spectral_connectivity_epochs` and
+            :func:`~mne_connectivity.spectral_connectivity_time`. Entries of the indices
+            are arranged such that connectivity would be computed between the first seed
             component and first target component, second seed component and second
             target component, etc...
         """
@@ -495,8 +495,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     ):
         """Plot topographic patterns of components.
 
-        The patterns explain how the measured data was generated from the
-        neural sources (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
+        The patterns explain how the measured data was generated from the neural sources
+        (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
 
         Seed and target patterns are plotted separately.
 

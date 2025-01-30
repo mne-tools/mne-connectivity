@@ -58,9 +58,9 @@ def create_test_dataset(
 
     Returns
     -------
-    data : np.ndarray of shape (n_epochs, n_signals, n_times)
+    data : array of shape (n_epochs, n_signals, n_times)
         The epoched dataset.
-    times_data : np.ndarray of shape (n_times, )
+    times_data : array of shape (n_times, )
         The times at which each sample of the ``data`` occurs at.
     """
     # Use a case known to have no spurious correlations (it would bad if

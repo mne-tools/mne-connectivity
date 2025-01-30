@@ -14,14 +14,14 @@ def parallel_loop(func, n_jobs=1, verbose=1):
     func : function
         function to be executed in parallel
     n_jobs : int | None
-        Number of jobs. If set to None, do not attempt to use joblib.
+        Number of jobs. If set to ``None``, do not attempt to use joblib.
     verbose : int
         verbosity level
 
     Notes
     -----
-    Execution of the main script must be guarded with
-    `if __name__ == '__main__':` when using parallelization.
+    Execution of the main script must be guarded with ``if __name__ == '__main__':``
+    when using parallelization.
     """
     if n_jobs:
         try:
@@ -53,20 +53,20 @@ def check_indices(indices):
 
     Parameters
     ----------
-    indices : tuple of array of int, shape (2, n_cons)
+    indices : tuple of array_like, shape (2, n_cons)
         Tuple containing index pairs.
 
     Returns
     -------
-    indices : tuple of array of int, shape (2, n_cons)
+    indices : tuple of array_like, shape (2, n_cons)
         The indices.
 
     Notes
     -----
-    Indices for bivariate connectivity should be a tuple of length 2,
-    containing the channel indices for the seed and target channel pairs,
-    respectively. Seed and target indices should be equal-length array-likes of
-    integers representing the indices of the individual channels in the data.
+    Indices for bivariate connectivity should be a tuple of length 2, containing the
+    channel indices for the seed and target channel pairs, respectively. Seed and target
+    indices should be equal-length array-likes of integers representing the indices of
+    the individual channels in the data.
     """
     if not isinstance(indices, tuple) or len(indices) != 2:
         raise ValueError("indices must be a tuple of length 2")
@@ -90,37 +90,34 @@ def _check_multivariate_indices(indices, n_chans):
 
     Parameters
     ----------
-    indices : tuple of array of array of int, shape (2, n_cons, variable)
+    indices : tuple of array_like of array_like, shape (2, n_cons, variable)
         Tuple containing index sets.
-
     n_chans : int
-        The number of channels in the data. Used when converting negative
-        indices to positive indices.
+        The number of channels in the data. Used when converting negative indices to
+        positive indices.
 
     Returns
     -------
-    indices : array of array of int, shape of (2, n_cons, max_n_chans)
+    indices : array of array, shape of (2, n_cons, max_n_chans)
         The padded indices as a masked array.
 
     Notes
     -----
-    Indices for multivariate connectivity should be a tuple of length 2
-    containing the channel indices for the seed and target channel sets,
-    respectively. Seed and target indices should be equal-length array-likes
-    representing the indices of the channel sets in the data for each
-    connection. The indices for each connection should be an array-like of
-    integers representing the individual channels in the data. The length of
-    indices for each connection do not need to be equal. All indices within a
+    Indices for multivariate connectivity should be a tuple of length 2 containing the
+    channel indices for the seed and target channel sets, respectively. Seed and target
+    indices should be equal-length array-likes representing the indices of the channel
+    sets in the data for each connection. The indices for each connection should be an
+    array-like of integers representing the individual channels in the data. The length
+    of indices for each connection do not need to be equal. All indices within a
     connection must be unique.
 
-    If the seed and target indices are given as lists or tuples, they will be
-    converted to numpy arrays. Because the number of channels can differ across
-    connections or between the seeds and targets for a given connection (i.e.
-    ragged/jagged indices), the returned array will be padded out to a 'full'
-    array with an invalid index (``-1``) according to the maximum number of
-    channels in the seed or target of any one connection. These invalid
-    entries are then masked and returned as numpy masked arrays. E.g. the
-    ragged indices of shape ``(2, n_cons, variable)``::
+    If the seed and target indices are given as lists or tuples, they will be converted
+    to numpy arrays. Because the number of channels can differ across connections or
+    between the seeds and targets for a given connection (i.e. ragged/jagged indices),
+    the returned array will be padded out to a 'full' array with an invalid index
+    (``-1``) according to the maximum number of channels in the seed or target of any
+    one connection. These invalid entries are then masked and returned as numpy masked
+    arrays. E.g. the ragged indices of shape ``(2, n_cons, variable)``::
 
             indices = ([[0, 1], [0, 1   ]],  # seeds
                        [[2, 3], [4, 5, 6]])  # targets
@@ -130,19 +127,18 @@ def _check_multivariate_indices(indices, n_chans):
             indices = ([[0, 1, -1], [0, 1, -1]],  # seeds
                        [[2, 3, -1], [4, 5,  6]])  # targets
 
-    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The
-    invalid entries are then masked::
+    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The invalid
+    entries are then masked::
 
             indices = ([[0, 1, --], [0, 1, --]],  # seeds
                        [[2, 3, --], [4, 5,  6]])  # targets
 
     In case "indices" contains negative values to index channels, these will be
-    converted to the corresponding positive-valued index before any masking is
-    applied.
+    converted to the corresponding positive-valued index before any masking is applied.
 
-    More information on working with multivariate indices and handling
-    connections where the number of seeds and targets are not equal can be
-    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
+    More information on working with multivariate indices and handling connections where
+    the number of seeds and targets are not equal can be found in the
+    :doc:`../auto_examples/handling_ragged_arrays` example.
     """
     if not isinstance(indices, tuple) or len(indices) != 2:
         raise ValueError("indices must be a tuple of length 2")
@@ -196,22 +192,22 @@ def seed_target_indices(seeds, targets):
 
     Parameters
     ----------
-    seeds : array of int | int, shape (n_unique_seeds)
-        Seed indices.
-    targets : array of int | int, shape (n_unique_targets)
-        Indices of signals for which to compute connectivity.
+    seeds : array_like, shape (n_unique_seeds) | int
+        Indices of signals for which to compute connectivity from.
+    targets : array_like, shape (n_unique_targets) | int
+        Indices of signals for which to compute connectivity to.
 
     Returns
     -------
-    indices : tuple of array of int, shape (2, n_cons)
+    indices : tuple of array, shape (2, n_cons)
         The indices parameter used for connectivity computation.
 
     Notes
     -----
-    ``seeds`` and ``targets`` should be array-likes or integers representing
-    the indices of the channel pairs in the data for each connection. ``seeds``
-    and ``targets`` will be expanded such that connectivity will be computed
-    between each seed and each target. E.g. the seeds and targets::
+    ``seeds`` and ``targets`` should be array-likes or integers representing the indices
+    of the channel pairs in the data for each connection. ``seeds`` and ``targets`` will
+    be expanded such that connectivity will be computed between each seed and each
+    target. E.g. the seeds and targets::
 
             seeds   = [0, 1]
             targets = [2, 3, 4]
@@ -244,28 +240,26 @@ def seed_target_multivariate_indices(seeds, targets):
 
     Parameters
     ----------
-    seeds : array of array of int, shape (n_unique_seeds, variable)
-        Seed indices.
-
-    targets : array of array of int, shape (n_unique_targets, variable)
-        Target indices.
+    seeds : array_like, shape (n_unique_seeds, variable)
+        Indices of signals for which to compute connectivity from.
+    targets : array_like, shape (n_unique_targets, variable)
+        Indices of signals for which to compute connectivity to.
 
     Returns
     -------
-    indices : tuple of array of array of int, shape (2, n_cons, variable)
+    indices : tuple of array, shape (2, n_cons, variable)
         The indices as a numpy object array.
 
     Notes
     -----
-    ``seeds`` and ``targets`` should be array-likes representing the indices of
-    the channel sets in the data for each connection. The indices for each
-    connection should be an array-like of integers representing the individual
-    channels in the data. The length of indices for each connection do not need
-    to be equal. Furthermore, all indices within a connection must be unique.
+    ``seeds`` and ``targets`` should be array-likes representing the indices of the
+    channel sets in the data for each connection. The indices for each connection should
+    be an array-like of integers representing the individual channels in the data. The
+    length of indices for each connection do not need to be equal. Furthermore, all
+    indices within a connection must be unique.
 
-    Because the number of channels per connection can vary, the indices are
-    stored as numpy arrays with ``dtype=object``. E.g. ``seeds`` and
-    ``targets``::
+    Because the number of channels per connection can vary, the indices are stored as
+    numpy arrays with ``dtype=object``. E.g. ``seeds`` and ``targets``::
 
             seeds   = [[0]]
             targets = [[1, 2], [3, 4, 5]]
@@ -275,12 +269,12 @@ def seed_target_multivariate_indices(seeds, targets):
             indices = (np.array([[0   ], [0      ]], dtype=object),  # seeds
                        np.array([[1, 2], [3, 4, 5]], dtype=object))  # targets
 
-    Even if the number of channels does not vary, the indices will still be
-    stored as object arrays for compatibility.
+    Even if the number of channels does not vary, the indices will still be stored as
+    object arrays for compatibility.
 
-    More information on working with multivariate indices and handling
-    connections where the number of seeds and targets are not equal can be
-    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
+    More information on working with multivariate indices and handling connections where
+    the number of seeds and targets are not equal can be found in the
+    :doc:`../auto_examples/handling_ragged_arrays` example.
     """
     array_like = (np.ndarray, list, tuple)
 
@@ -309,22 +303,21 @@ def degree(connectivity, threshold_prop=0.2):
 
     Parameters
     ----------
-    connectivity : ndarray, shape (n_nodes, n_nodes)
+    connectivity : array, shape (n_nodes, n_nodes) | Connectivity
         The connectivity matrix.
     threshold_prop : float
-        The proportion of edges to keep in the graph before
-        computing the degree. The value should be between 0
-        and 1.
+        The proportion of edges to keep in the graph before computing the degree. The
+        value should be between 0 and 1.
 
     Returns
     -------
-    degree : ndarray, shape (n_nodes,)
+    degree : array, shape (n_nodes,)
         The computed degree.
 
     Notes
     -----
-    During thresholding, the symmetry of the connectivity matrix is
-    auto-detected based on :func:`numpy.allclose` of it with its transpose.
+    During thresholding, the symmetry of the connectivity matrix is auto-detected based
+    on :func:`numpy.allclose` of it with its transpose.
     """
     from mne_connectivity.base import BaseConnectivity
 

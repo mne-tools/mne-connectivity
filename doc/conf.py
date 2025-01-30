@@ -133,6 +133,8 @@ numpydoc_xref_ignore = {
     "n_events",
     "n_cons",
     "max_n_chans",
+    "n_seeds",
+    "n_targets",
     "n_unique_seeds",
     "n_unique_targets",
     "variable",
