@@ -144,8 +144,9 @@ class EpochMixin:
 
         Returns
         -------
-        conn : instance of Connectivity | SpectralConnectivity | TemporalConnectivity | SpectroTemporalConnectivity
-            The combined connectivity data structure.
+        conn : instance of Connectivity
+            The combined connectivity data structure. Instance type reflects that of the
+            current instance, without the epoch dimension.
         """  # noqa: E501
         from .io import _xarray_to_conn
 
