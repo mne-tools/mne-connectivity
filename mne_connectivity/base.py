@@ -146,7 +146,7 @@ class EpochMixin:
         -------
         conn : instance of Connectivity
             The combined connectivity data structure. Instance type reflects that of the
-            current instance, without the epoch dimension.
+            input instance, without the epoch dimension.
         """  # noqa: E501
         from .io import _xarray_to_conn
 
