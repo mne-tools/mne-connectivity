@@ -3,7 +3,7 @@
 # License: BSD (3-clause)
 
 import numpy as np
-from mne.time_frequency import EpochsSpectrum, EpochsSpectrumArray
+from mne.time_frequency import EpochsSpectrum
 from mne.utils import _validate_type
 
 
@@ -12,25 +12,25 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
 
     Parameters
     ----------
-    data : ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsSpectrumArray
+    data : ~mne.time_frequency.EpochsSpectrum
         The Fourier coefficients to create the null hypothesis surrogate data for. Can
         be generated from :meth:`mne.Epochs.compute_psd` with ``output='complex'``
         (requires ``mne >= 1.8``).
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
     rng_seed : int | None (default None)
-        The seed to use for the random number generator. If `None`, no seed is
+        The seed to use for the random number generator. If ``None``, no seed is
         specified.
     return_generator : bool (default True)
-        Whether or not to return the surrogate data as a :term:`generator` object
-        instead of a :class:`list`. This allows iterating over the surrogates without
-        having to keep them all in memory.
+        Whether or not to return the surrogate data as a generator object instead of a
+        list. This allows iterating over the surrogates without having to keep them all
+        in memory.
 
     Returns
     -------
     surrogate_data : list of ~mne.time_frequency.EpochsSpectrum
         The surrogate data for the null hypothesis with ``n_shuffles`` entries. Returned
-        as a :term:`generator` if ``return_generator=True``.
+        as a generator if ``return_generator=True``.
 
     Notes
     -----
@@ -78,7 +78,7 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
     # Validate inputs
     _validate_type(
         data,
-        (EpochsSpectrum, EpochsSpectrumArray),
+        (EpochsSpectrum),
         "data",
         "mne.time_frequency.EpochsSpectrum or mne.time_frequency.EpochsSpectrumArray",
     )

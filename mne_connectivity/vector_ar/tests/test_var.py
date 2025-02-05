@@ -55,11 +55,11 @@ def create_noisy_data(
 
     Returns
     -------
-    sample_data : ndarray, shape (n_channels, n_samples)
+    sample_data : array, shape (n_channels, n_samples)
         Observed sample data. Possibly with noise.
-    sample_eigs : np.ndarray
+    sample_eigs : array
         The true eigenvalues of the system.
-    sample_A : np.ndarray
+    sample_A : array
         (Optional) if ``return_A`` is True, then returns the
         true linear system matrix.
     """

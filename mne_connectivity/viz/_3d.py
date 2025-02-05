@@ -33,18 +33,18 @@ def plot_sensors_connectivity(
 
     Parameters
     ----------
-    info : dict | None
+    info : mne.Info
         The measurement info.
     con : array, shape (n_channels, n_channels) | Connectivity
-        The computed connectivity measure(s).
+        The connectivity data to plot.
     %(picks_good_data)s
         Indices of selected channels.
     cbar_label : str
         Label for the colorbar.
     n_con : int
-        Number of strongest connections shown. By default 20.
+        Number of strongest connections shown (default 20).
     cmap : str | instance of matplotlib.colors.Colormap
-        Colormap for coloring connections by strength. If :class:`str`, must be a valid
+        Colormap for coloring connections by strength. If a str, must be a valid
         Matplotlib colormap (i.e. a valid key of `matplotlib.colormaps`). Default is
         ``"RdBu"``.
     min_distance : float

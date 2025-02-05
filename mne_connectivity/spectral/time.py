@@ -47,13 +47,13 @@ def spectral_connectivity_time(
     fmax=None,
     fskip=0,
     faverage=False,
-    sm_times=0,
+    sm_times=0.0,
     sm_freqs=1,
     sm_kernel="hanning",
-    padding=0,
+    padding=0.0,
     mode="cwt_morlet",
     mt_bandwidth=None,
-    n_cycles=7,
+    n_cycles=7.0,
     gc_n_lags=40,
     rank=None,
     n_components=1,
@@ -63,39 +63,37 @@ def spectral_connectivity_time(
 ):
     r"""Compute time-frequency-domain connectivity measures.
 
-    This function computes spectral connectivity over time from epoched data.
-    The data may consist of a single epoch.
+    This function computes spectral connectivity over time from epoched data. The data
+    may consist of a single epoch.
 
-    The connectivity method(s) are specified using the ``method`` parameter.
-    All methods are based on time-resolved estimates of the cross- and
-    power spectral densities (CSD/PSD) Sxy and Sxx, Syy.
+    The connectivity method(s) are specified using the ``method`` parameter. All methods
+    are based on time-resolved estimates of the cross- and power spectral densities
+    (CSD/PSD) Sxy and Sxx, Syy.
 
     Parameters
     ----------
     data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | ~mne.time_frequency.EpochsTFR
-        The data from which to compute connectivity. Can be epoched timeseries data as
-        an :term:`array-like` or :class:`~mne.Epochs` object, or Fourier coefficients
-        for each epoch as an :class:`~mne.time_frequency.EpochsTFR` object. If
-        timeseries data, the spectral information will be computed according to the
-        spectral estimation mode (see the ``mode`` parameter). If an
-        :class:`~mne.time_frequency.EpochsTFR` object, existing spectral information
-        will be used and the ``mode`` parameter will be ignored.
+        The data from which to compute connectivity. Can be epoched time series data as
+        an array-like or :class:`mne.Epochs` object, or Fourier coefficients for each
+        epoch as an :class:`mne.time_frequency.EpochsTFR` object. If time series data,
+        the spectral information will be computed according to the spectral estimation
+        mode (see the ``mode`` parameter). If an :class:`mne.time_frequency.EpochsTFR`
+        object, existing spectral information will be used and the ``mode`` parameter
+        will be ignored.
 
         .. versionchanged:: 0.8
-           Fourier coefficients stored in an :class:`~mne.time_frequency.EpochsTFR`
+           Fourier coefficients stored in an :class:`mne.time_frequency.EpochsTFR`
            object can also be passed in as data. Storing multitaper weights in
-           :class:`~mne.time_frequency.EpochsTFR` objects requires ``mne >= 1.10``.
+           :class:`mne.time_frequency.EpochsTFR` objects requires ``mne >= 1.10``.
     freqs : array_like | None
-        Array of frequencies of interest for time-frequency decomposition. Only the
+        Array-like of frequencies of interest for time-frequency decomposition. Only the
         frequencies within the range specified by ``fmin`` and ``fmax`` are used. If
-        ``data`` is an :term:`array-like` or :class:`~mne.Epochs` object, the
-        frequencies must be specified. If ``data`` is an
-        :class:`~mne.time_frequency.EpochsTFR` object, ``data.freqs`` is used and this
-        parameter is ignored.
+        ``data`` is an array-like or :class:`mne.Epochs` object, the frequencies must
+        be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,
+        ``data.freqs`` is used and this parameter is ignored.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'cacoh',
-        'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
-        are:
+        Connectivity measure(s) to compute. These can be ``['coh', 'cacoh', 'mic',
+        'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These are:
 
         * %(coh)s
         * %(cacoh)s
@@ -108,94 +106,90 @@ def spectral_connectivity_time(
         * %(gc)s
         * %(gc_tr)s
 
-        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``)
-        cannot be called with the other methods.
+        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``) cannot be
+        called with the other methods.
     average : bool
-        Average connectivity scores over epochs. If ``True``, output will be
-        an instance of :class:`SpectralConnectivity`, otherwise
-        :class:`EpochSpectralConnectivity`.
+        Average connectivity scores over epochs. If ``True``, output will be an instance
+        of :class:`SpectralConnectivity`, otherwise :class:`EpochSpectralConnectivity`.
     indices : tuple of array_like | None
-        Two arrays with indices of connections for which to compute
-        connectivity. If a bivariate method is called, each array for the seeds
-        and targets should contain the channel indices for the each bivariate
-        connection. If a multivariate method is called, each array for the
-        seeds and targets should consist of nested arrays containing
-        the channel indices for each multivariate connection. If None,
-        connections between all channels are computed, unless a Granger
+        Two array-likes with indices of connections for which to compute connectivity.
+        If a bivariate method is called, each array for the seeds and targets should
+        contain the channel indices for the each bivariate connection. If a multivariate
+        method is called, each array for the seeds and targets should consist of nested
+        arrays containing the channel indices for each multivariate connection. If
+        ``None``, connections between all channels are computed, unless a Granger
         causality method is called, in which case an error is raised.
-    sfreq : float
-        The sampling frequency. Required if ``data`` is not an :class:`~mne.Epochs` or
-        :class:`~mne.time_frequency.EpochsTFR` object.
+    sfreq : float | None
+        The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     fmin : float | tuple of float | None
-        The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower
-        bounds. If `None`, the lowest frequency in ``freqs`` is used.
+        The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,
+        ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower bounds. If ``None``, the
+        lowest frequency in ``freqs`` is used.
     fmax : float | tuple of float | None
-        The upper frequency of interest. Multiple bands are defined using
-        a tuple, e.g. ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper
-        bounds. If `None`, the highest frequency in ``freqs`` is used.
+        The upper frequency of interest. Multiple bands are defined using a tuple, e.g.
+        ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``, the
+        highest frequency in ``freqs`` is used.
     fskip : int
-        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency
-        domain.
+        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.
     faverage : bool
-        Average connectivity scores for each frequency band. If `True`,
-        the output ``freqs`` will be an array of the median frequencies of each
-        band.
+        Average connectivity scores for each frequency band. If ``True``, the output
+        ``freqs`` will be an array of the median frequencies of each band.
     sm_times : float
-        Amount of time to consider for the temporal smoothing in seconds.
-        If zero, no temporal smoothing is applied.
+        Amount of time to consider for the temporal smoothing in seconds. If 0, no
+        temporal smoothing is applied.
     sm_freqs : int
-        Number of points for frequency smoothing. By default, 1 is used which
-        is equivalent to no smoothing.
-    sm_kernel : {'square', 'hanning'}
-        Smoothing kernel type. Choose either 'square' or 'hanning'.
+        Number of points for frequency smoothing. By default, 1 is used which is
+        equivalent to no smoothing.
+    sm_kernel : ``'square'`` | ``'hanning'``
+        Smoothing kernel type. For ``'hanning'``, see :func:`numpy.hanning`.
     padding : float
-        Amount of time to consider as padding at the beginning and end of each
-        epoch in seconds. See Notes for more information.
-    mode : str
-        Time-frequency decomposition method. Can be either: ``'multitaper'``, or
-        ``'cwt_morlet'``. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        Amount of time to consider as padding at the beginning and end of each epoch in
+        seconds. See Notes for more information.
+    mode : ``'multitaper'`` | ``'cwt_morlet'``
+        Time-frequency decomposition method. See
+        :func:`mne.time_frequency.tfr_array_multitaper` and
         :func:`mne.time_frequency.tfr_array_morlet` for reference. Ignored if ``data``
-        is an :class:`~mne.time_frequency.EpochsTFR` object.
+        is an :class:`mne.time_frequency.EpochsTFR` object.
     mt_bandwidth : float | None
         Product between the temporal window length (in seconds) and the full frequency
         bandwidth (in Hz). This product can be seen as the surface of the window on the
         time/frequency plane and controls the frequency bandwidth (thus the frequency
         resolution) and the number of good tapers. See
         :func:`mne.time_frequency.tfr_array_multitaper` documentation. Ignored if
-        ``data`` is an :class:`~mne.time_frequency.EpochsTFR` object.
-    n_cycles : float | array_like of float
+        ``data`` is an :class:`mne.time_frequency.EpochsTFR` object.
+    n_cycles : float | array_like
         Number of cycles in the wavelet, either a fixed number or one per frequency. The
         number of cycles ``n_cycles`` and the frequencies of interest ``freqs`` define
         the temporal window length. For details, see
         :func:`mne.time_frequency.tfr_array_multitaper` and
         :func:`mne.time_frequency.tfr_array_morlet` documentation. Ignored if ``data``
-        is an :class:`~mne.time_frequency.EpochsTFR` object.
+        is an :class:`mne.time_frequency.EpochsTFR` object.
     gc_n_lags : int
-        Number of lags to use for the vector autoregressive model when
-        computing Granger causality. Higher values increase computational cost,
-        but reduce the degree of spectral smoothing in the results. Only used
-        if ``method`` contains any of ``['gc', 'gc_tr']``.
-    rank : tuple of array | None
-        Two arrays with the rank to project the seed and target data to,
-        respectively, using singular value decomposition. If `None`, the rank
-        of the data is computed and projected to. Only used if ``method``
-        contains any of ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
-    n_components : int
-        Number of connectivity components to extract from the data. If an `int`, the
-        number of components must be <= the minimum rank of the seeds and targets. E.g.
+        Number of lags to use for the vector autoregressive model when computing Granger
+        causality. Higher values increase computational cost, but reduce the degree of
+        spectral smoothing in the results. Only used if ``method`` contains any of
+        ``['gc', 'gc_tr']``.
+    rank : tuple of array_like | None
+        Two array-likes with the rank to project the seed and target data to,
+        respectively, using singular value decomposition. If ``None``, the rank of the
+        data is computed and projected to. Only used if ``method`` contains any of
+        ``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``.
+    n_components : int | None
+        Number of connectivity components to extract from the data. If an int, the
+        number of components must be <= the minimum rank of the seeds and targets. E.g.,
         if the seed channels had a rank of 5 and the target channels had a rank of 3,
-        ``n_components`` must be <= 3. If `None`, the number of components equal to the
-        minimum rank of the seeds and targets is extracted (see the ``rank`` parameter).
-        Only used if ``method`` contains any of ``['cacoh', 'mic']``.
+        ``n_components`` must be <= 3. If ``None``, the number of components equal to
+        the minimum rank of the seeds and targets is extracted (see the ``rank``
+        parameter). Only used if ``method`` contains any of ``['cacoh', 'mic']``.
 
         .. versionadded:: 0.8
     decim : int
-        To reduce memory usage, decimation factor after time-frequency
-        decomposition. Returns ``tfr[…, ::decim]``.
+        To reduce memory usage, decimation factor after time-frequency decomposition.
+        Returns ``tfr[…, ::decim]``.
     n_jobs : int
-        Number of connections to compute in parallel. Memory mapping must be
-        activated. Please see the Notes section for details.
+        Number of connections to compute in parallel. Memory mapping must be activated.
+        Please see the Notes section for details.
     %(verbose)s
 
     Returns
@@ -204,12 +198,14 @@ def spectral_connectivity_time(
         Computed connectivity measure(s). An instance of
         :class:`EpochSpectralConnectivity`, :class:`SpectralConnectivity`, or a list of
         instances corresponding to connectivity measures if several connectivity
-        measures are specified. The shape of each connectivity dataset is ([n_epochs,]
-        n_cons, [n_comps,] n_freqs). ``n_comps`` is present for valid multivariate
-        methods if ``n_components > 1``. When "indices" is None and a bivariate method
-        is called, "n_cons = n_signals ** 2", or if a multivariate method is called
-        "n_cons = 1". When "indices" is specified, "n_con = len(indices[0])" for
-        bivariate and multivariate methods.
+        measures are specified. The shape of each connectivity dataset is
+        ``([n_epochs,] n_cons, [n_comps,] n_freqs)``:
+
+        - ``n_comps`` is present for valid multivariate methods if ``n_components > 1``
+        - When ``indices`` is ``None`` and a bivariate method is called, ``n_cons =
+          n_signals ** 2``, or if a multivariate method is called ``n_cons = 1``
+        - When ``indices`` is specified, ``n_con = len(indices[0])`` for bivariate and
+          multivariate methods.
 
     See Also
     --------
@@ -219,39 +215,39 @@ def spectral_connectivity_time(
 
     Notes
     -----
-    Please note that the interpretation of the measures in this function
-    depends on the data and underlying assumptions and does not necessarily
-    reflect a causal relationship between brain regions.
+    Please note that the interpretation of the measures in this function depends on the
+    data and underlying assumptions and does not necessarily reflect a causal
+    relationship between brain regions.
 
-    The connectivity measures are computed over time within each epoch and
-    optionally averaged over epochs. High connectivity values indicate that
-    the phase coupling (interpreted as estimated connectivity) differences
-    between signals stay consistent over time.
+    The connectivity measures are computed over time within each epoch and optionally
+    averaged over epochs. High connectivity values indicate that the phase coupling
+    (interpreted as estimated connectivity) differences between signals stay consistent
+    over time.
 
-    The spectral densities can be estimated using a multitaper method with
-    digital prolate spheroidal sequence (DPSS) windows, or a continuous wavelet
-    transform using Morlet wavelets. The spectral estimation mode is specified
-    using the ``mode`` parameter.
+    The spectral densities can be estimated using a multitaper method with digital
+    prolate spheroidal sequence (DPSS) windows, or a continuous wavelet transform using
+    Morlet wavelets. The spectral estimation mode is specified using the ``mode``
+    parameter.
 
-    When using the multitaper spectral estimation method, the
-    cross-spectral density is computed separately for each taper and aggregated
-    using a weighted average, where the weights correspond to the concentration
-    ratios between the DPSS windows.
+    When using the multitaper spectral estimation method, the cross-spectral density is
+    computed separately for each taper and aggregated using a weighted average, where
+    the weights correspond to the concentration ratios between the DPSS windows.
 
-    Spectral estimation using multitaper or Morlet wavelets introduces edge
-    effects that depend on the length of the wavelet. To remove edge effects,
-    the parameter ``padding`` can be used to prune the edges of the signal.
-    Please see the documentation of
-    :func:`mne.time_frequency.tfr_array_multitaper` and
-    :func:`mne.time_frequency.tfr_array_morlet` for details on wavelet length
-    (i.e., time window length).
+    Spectral estimation using multitaper or Morlet wavelets introduces edge effects that
+    depend on the length of the wavelet. To remove edge effects, the parameter
+    ``padding`` can be used to prune the edges of the signal. Please see the
+    documentation of :func:`mne.time_frequency.tfr_array_multitaper` and
+    :func:`mne.time_frequency.tfr_array_morlet` for details on wavelet length (i.e.,
+    time window length).
 
-    By default, the connectivity between all signals is computed (only
-    connections corresponding to the lower-triangular part of the connectivity
-    matrix). If one is only interested in the connectivity between some
-    signals, the "indices" parameter can be used. For example, to compute the
-    connectivity between the signal with index 0 and signals "2, 3, 4" (a total
-    of 3 connections) one can use the following::
+    Complex multitaper, or Morlet coefficients can also be passed in as data in the form
+    of :class:`mne.time_frequency.EpochsTFR` objects.
+
+    By default, the connectivity between all signals is computed (only connections
+    corresponding to the lower-triangular part of the connectivity matrix). If one is
+    only interested in the connectivity between some signals, the ``indices`` parameter
+    can be used. For example, to compute the connectivity between the signal with index
+    0 and signals "2, 3, 4" (a total of 3 connections) one can use the following::
 
         indices = (np.array([0, 0, 0]),    # row indices
                    np.array([2, 3, 4]))    # col indices
@@ -259,30 +255,29 @@ def spectral_connectivity_time(
         con = spectral_connectivity_time(data, method='coh',
                                          indices=indices, ...)
 
-    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity
-    scores are in the same order as defined indices.
+    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity scores are in
+    the same order as defined indices.
 
-    For multivariate methods, this is handled differently. If "indices" is
-    None, connectivity between all signals will be computed and a single
-    connectivity spectrum will be returned (this is not possible if a Granger
-    causality method is called). If "indices" is specified, seed and target
-    indices for each connection should be specified as nested array-likes. For
-    example, to compute the connectivity between signals (0, 1) -> (2, 3) and
-    (0, 1) -> (4, 5), indices should be specified as::
+    For multivariate methods, this is handled differently. If ``indices`` is ``None``,
+    connectivity between all signals will be computed and a single connectivity spectrum
+    will be returned (this is not possible if a Granger causality method is called). If
+    ``indices`` is specified, seed and target indices for each connection should be
+    specified as nested array-likes. For example, to compute the connectivity between
+    signals (0, 1) -> (2, 3) and (0, 1) -> (4, 5), indices should be specified as::
 
         indices = (np.array([[0, 1], [0, 1]]),  # seeds
                    np.array([[2, 3], [4, 5]]))  # targets
 
-    More information on working with multivariate indices and handling
-    connections where the number of seeds and targets are not equal can be
-    found in the :doc:`../auto_examples/handling_ragged_arrays` example.
+    More information on working with multivariate indices and handling connections where
+    the number of seeds and targets are not equal can be found in the
+    :doc:`../auto_examples/handling_ragged_arrays` example.
 
     **Supported Connectivity Measures**
 
     The connectivity method(s) is specified using the ``method`` parameter. The
-    following methods are supported (note: ``E[]`` denotes average over
-    epochs). Multiple measures can be computed at once by using a list/tuple,
-    e.g., ``['coh', 'pli']`` to compute coherence and PLI.
+    following methods are supported (note: ``E[]`` denotes average over epochs).
+    Multiple measures can be computed at once by using a list/tuple, e.g., ``['coh',
+    'pli']`` to compute coherence and PLI.
 
         'coh' : Coherence given by::
 
@@ -290,50 +285,46 @@ def spectral_connectivity_time(
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
-        'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019`
-        given by:
+        'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019` given by:
 
             :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
             (\Phi)\boldsymbol{b}}{\sqrt{\boldsymbol{a}^T\boldsymbol{a}
             \boldsymbol{b}^T\boldsymbol{b}}}}`
 
-            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density
-            between seeds and targets transformed for a given phase angle
-            :math:`\Phi`; and :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}`
-            are eigenvectors for the seeds and targets, such that
-            :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)\boldsymbol{b}`
-            maximises coherency between the seeds and targets. Taking the
-            absolute value of the results gives maximised coherence.
+            where: :math:`\boldsymbol{D}(\Phi)` is the cross-spectral density between
+            seeds and targets transformed for a given phase angle :math:`\Phi`; and
+            :math:`\boldsymbol{a}` and :math:`\boldsymbol{b}` are eigenvectors for the
+            seeds and targets, such that :math:`\boldsymbol{a}^T\boldsymbol{D}(\Phi)
+            \boldsymbol{b}` maximises coherency between the seeds and targets. Taking
+            the absolute value of the results gives maximised coherence.
 
-        'mic' : Maximised Imaginary part of Coherency (MIC)
-        :footcite:`EwaldEtAl2012` given by:
+        'mic' : Maximised Imaginary part of Coherency (MIC) :footcite:`EwaldEtAl2012`
+        given by:
 
             :math:`\textrm{MIC}=\Large{\frac{\boldsymbol{\alpha}^T
             \boldsymbol{E \beta}}{\parallel\boldsymbol{\alpha}\parallel
             \parallel\boldsymbol{\beta}\parallel}}`
 
-            where: :math:`\boldsymbol{E}` is the imaginary part of the
-            transformed cross-spectral density between seeds and targets; and
-            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are
-            eigenvectors for the seeds and targets, such that
-            :math:`\boldsymbol{\alpha}^T \boldsymbol{E \beta}` maximises the
-            imaginary part of coherency between the seeds and targets.
+            where: :math:`\boldsymbol{E}` is the imaginary part of the transformed
+            cross-spectral density between seeds and targets; and
+            :math:`\boldsymbol{\alpha}` and :math:`\boldsymbol{\beta}` are eigenvectors
+            for the seeds and targets, such that :math:`\boldsymbol{\alpha}^T
+            \boldsymbol{E \beta}` maximises the imaginary part of coherency between the
+            seeds and targets.
 
-        'mim' : Multivariate Interaction Measure (MIM)
-        :footcite:`EwaldEtAl2012` given by:
+        'mim' : Multivariate Interaction Measure (MIM) :footcite:`EwaldEtAl2012` given
+        by:
 
             :math:`\textrm{MIM}=tr(\boldsymbol{EE}^T)`
 
-            where :math:`\boldsymbol{E}` is the imaginary part of the
-            transformed cross-spectral density between seeds and targets.
+            where :math:`\boldsymbol{E}` is the imaginary part of the transformed
+            cross-spectral density between seeds and targets.
 
-        'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given
-        by::
+        'plv' : Phase-Locking Value (PLV) :footcite:`LachauxEtAl1999` given by::
 
             PLV = |E[Sxy/|Sxy|]|
 
-        'ciplv' : Corrected imaginary PLV (ciPLV) :footcite:`BrunaEtAl2018`
-        given by::
+        'ciplv' : Corrected imaginary PLV (ciPLV) :footcite:`BrunaEtAl2018` given by::
 
                              |E[Im(Sxy/|Sxy|)]|
             ciPLV = ------------------------------------
@@ -343,49 +334,45 @@ def spectral_connectivity_time(
 
             PLI = |E[sign(Im(Sxy))]|
 
-        'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011`
-        given by::
+        'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011` given by::
 
                       |E[Im(Sxy)]|
             WPLI = ------------------
                       E[|Im(Sxy)|]
 
-        'gc' : State-space Granger Causality (GC) :footcite:`BarnettSeth2015`
-        given by:
+        'gc' : State-space Granger Causality (GC) :footcite:`BarnettSeth2015` given by:
 
             :math:`GC = ln\Large{(\frac{\lvert\boldsymbol{S}_{tt}\rvert}{\lvert
             \boldsymbol{S}_{tt}-\boldsymbol{H}_{ts}\boldsymbol{\Sigma}_{ss
             \lvert t}\boldsymbol{H}_{ts}^*\rvert}})`
 
             where: :math:`s` and :math:`t` represent the seeds and targets,
-            respectively; :math:`\boldsymbol{H}` is the spectral transfer
-            function; :math:`\boldsymbol{\Sigma}` is the residuals matrix of
-            the autoregressive model; and :math:`\boldsymbol{S}` is
-            :math:`\boldsymbol{\Sigma}` transformed by :math:`\boldsymbol{H}`.
+            respectively; :math:`\boldsymbol{H}` is the spectral transfer function;
+            :math:`\boldsymbol{\Sigma}` is the residuals matrix of the autoregressive
+            model; and :math:`\boldsymbol{S}` is :math:`\boldsymbol{\Sigma}` transformed
+            by :math:`\boldsymbol{H}`.
 
         'gc_tr' : State-space GC on time-reversed signals
-        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation
-        as for 'gc', but where the autocovariance sequence from which the
-        autoregressive model is produced is transposed to mimic the reversal of
-        the original signal in time :footcite:`HaufeEtAl2012`.
+        :footcite:`BarnettSeth2015,WinklerEtAl2016` given by the same equation as for
+        ``'gc'``, but where the autocovariance sequence from which the autoregressive
+        model is produced is transposed to mimic the reversal of the original signal in
+        time :footcite:`HaufeEtAl2012`.
 
-    Parallel computation can be activated by setting the ``n_jobs`` parameter.
-    Under the hood, this utilizes the ``joblib`` library. For effective
-    parallelization, you should activate memory mapping in MNE-Python by
-    setting ``MNE_MEMMAP_MIN_SIZE`` and ``MNE_CACHE_DIR``. Activating memory
-    mapping will make ``joblib`` store arrays greater than the minimum size on
-    disc, and forego direct RAM access for more efficient processing.
-    For example, in your code, run
+    Parallel computation can be activated by setting the ``n_jobs`` parameter. Under the
+    hood, this utilizes the ``joblib`` library. For effective parallelization, you
+    should activate memory mapping in MNE-Python by setting ``MNE_MEMMAP_MIN_SIZE`` and
+    ``MNE_CACHE_DIR``. Activating memory mapping will make ``joblib`` store arrays
+    greater than the minimum size on disc, and forego direct RAM access for more
+    efficient processing. For example, in your code, run::
 
         mne.set_config('MNE_MEMMAP_MIN_SIZE', '10M')
         mne.set_config('MNE_CACHE_DIR', '/dev/shm')
 
-    When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying joblib implementation
-    results in pickling and unpickling the whole array each time a pair of
-    indices is accessed, which is slow, compared to memory mapping the array.
+    When ``MNE_MEMMAP_MIN_SIZE=None``, the underlying ``joblib`` implementation results
+    in pickling and unpickling the whole array each time a pair of indices is accessed,
+    which is slow, compared to memory mapping the array.
 
-    This function is based on the ``frites.conn.conn_spec`` implementation in
-    Frites.
+    This function is based on the ``frites.conn.conn_spec`` implementation in Frites.
 
     .. versionadded:: 0.3
 
@@ -807,30 +794,27 @@ def _spectral_connectivity(
     sfreq : float
         Sampling frequency.
     freqs : array_like
-        Array of frequencies of interest for time-frequency decomposition.
-        Only the frequencies within the range specified by ``fmin`` and
-        ``fmax`` are used.
+        Array of frequencies of interest for time-frequency decomposition. Only the
+        frequencies within the range specified by ``fmin`` and ``fmax`` are used.
     faverage : bool
         Average over frequency bands.
     n_cycles : float | array_like of float
-        Number of cycles in the wavelet, either a fixed number or one per
-        frequency.
+        Number of cycles in the wavelet, either a fixed number or one per frequency.
     mt_bandwidth : float | None
         Multitaper time-bandwidth.
     gc_n_lags : int
-        Number of lags to use for the vector autoregressive model when
-        computing Granger causality.
+        Number of lags to use for the vector autoregressive model when computing Granger
+        causality.
     rank : tuple of array
         Ranks to project the seed and target data to.
     n_components : int
         Number of connectivity components to extract from the data. If 0, only the first
         component is extracted.
     decim : int
-        Decimation factor after time-frequency
-        decomposition.
+        Decimation factor after time-frequency decomposition.
     padding : float
-        Amount of time to consider as padding at the beginning and end of each
-        epoch in seconds.
+        Amount of time to consider as padding at the beginning and end of each epoch in
+        seconds.
     weights : array, shape (n_tapers, n_freqs) | None
         Taper weights for multitaper spectral estimation.
     multivariate_con : bool
@@ -842,15 +826,15 @@ def _spectral_connectivity(
     -------
     scores : dict
         Dictionary containing the connectivity estimates corresponding to the metrics in
-        ``method``. Each element is an array of shape (n_cons, [n_comps], n_freqs) or
-        (n_cons, [n_comps], n_fbands) if ``faverage`` is `True`. ``n_comps`` is present
-        for valid multivariate methods if ``n_components > 0``.
+        ``method``. Each element is an array of shape (n_cons, [n_comps,] n_freqs) or
+        (n_cons, [n_comps,] n_fbands) if ``faverage`` is ``True``. ``n_comps`` is
+        present for valid multivariate methods if ``n_components > 0``.
     patterns : dict
         Dictionary containing the connectivity patterns (for reconstructing the
         connectivity components in channel-space) corresponding to the metrics in
         ``method``, if multivariate methods are called, else an empty dictionary. Each
-        element is an array of shape (2, [n_comps], n_channels, n_freqs) or (2,
-        n_channels, n_fbands) if ``faverage`` is `True`, where 2 corresponds to the seed
+        element is an array of shape ``(2, [n_comps,] n_channels, n_freqs)`` or ``(2,
+        n_channels, n_fbands)`` if ``faverage=True``, where 2 corresponds to the seed
         and target signals (respectively). ``n_comps`` is present for valid multivariate
         methods if ``n_components > 0``.
     """
@@ -999,8 +983,8 @@ def _parallel_con(
     signals_use : list of int
         The unique signals on which connectivity is to be computed.
     gc_n_lags : int
-        Number of lags to use for the vector autoregressive model when
-        computing Granger causality.
+        Number of lags to use for the vector autoregressive model when computing Granger
+        causality.
     rank : tuple of array of int
         Ranks to project the seed and target data to.
     n_components : int
@@ -1020,11 +1004,11 @@ def _parallel_con(
     Returns
     -------
     out : tuple of list of array
-        Connectivity estimates for each signal pair, method, and frequency or
-        frequency band. If bivariate methods are called, the output is a tuple
-        of a list of arrays containing the connectivity scores. If multivariate
-        methods are called, the output is a tuple of lists containing arrays
-        for the connectivity scores and patterns, respectively.
+        Connectivity estimates for each signal pair, method, and frequency or frequency
+        band. If bivariate methods are called, the output is a tuple of a list of arrays
+        containing the connectivity scores. If multivariate methods are called, the
+        output is a tuple of lists containing arrays for the connectivity scores and
+        patterns, respectively.
     """
     if "coh" in method:
         # psd
@@ -1105,9 +1089,9 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
     Returns
     -------
     out : list
-        List of connectivity estimates between signals ``x`` and ``y``
-        corresponding to the methods in ``method``. Each element is an array
-        with shape (n_freqs,) or (n_fbands) depending on ``faverage``.
+        List of connectivity estimates between signals ``x`` and ``y`` corresponding to
+        the methods in ``method``. Each element is an array with shape ``(n_freqs,)`` or
+        ``(n_fbands)`` depending on ``faverage``.
     """
     w_x, w_y = w[x], w[y]
     if weights is not None:
@@ -1159,12 +1143,11 @@ def _multivariate_con(
     w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
         Time-frequency data.
     seeds : array, shape of (n_cons, n_channels)
-        Seed channel indices. ``n_channels`` is the largest number of channels
-        across all connections, with missing entries padded with ``-1``.
+        Seed channel indices. ``n_channels`` is the largest number of channels across
+        all connections, with missing entries padded with ``-1``.
     targets : array, shape of (n_cons, n_channels)
-        Target channel indices. ``n_channels`` is the largest number of
-        channels across all connections, with missing entries padded with
-        ``-1``.
+        Target channel indices. ``n_channels`` is the largest number of channels across
+        all connections, with missing entries padded with ``-1``.
     signals_use : list of int
         The unique signals on which connectivity is to be computed.
     method : str
@@ -1178,8 +1161,8 @@ def _multivariate_con(
     weights : array_like, shape (n_tapers, n_freqs, n_times) | None
         Multitaper weights.
     gc_n_lags : int
-        Number of lags to use for the vector autoregressive model when
-        computing Granger causality.
+        Number of lags to use for the vector autoregressive model when computing Granger
+        causality.
     rank : tuple of array, shape of (2, n_cons)
         Ranks to project the seed and target data to.
     n_components : int
@@ -1192,17 +1175,17 @@ def _multivariate_con(
     -------
     scores : list
         List of connectivity scores between seed and target signals for each
-        connectivity method. Each element is an array with shape ([n_comps], n_freqs) or
-        ([n_comps], n_fbands) depending on ``faverage``. ``n_comps`` is present for
-        valid multivariate methods if ``n_components > 0``.
+        connectivity method. Each element is an array with shape
+        ``([n_comps,] n_freqs)`` or ``([n_comps,] n_fbands)`` depending on ``faverage``.
+        ``n_comps`` is present for valid multivariate methods if ``n_components > 0``.
     patterns : list
         List of connectivity patterns between seed and target signals for each
         connectivity method. Each element is an array of length 2 corresponding to the
-        seed and target patterns, respectively, each with shape ([n_comps], n_channels,
-        n_freqs) or ([n_comps], n_channels, n_fbands) depending on ``faverage``.
-        ``n_comps`` is present for valid multivariate methods if ``n_components > 0``.
-        ``n_channels`` is the largest number of channels across all connections, with
-        missing entries padded with ``np.nan``.
+        seed and target patterns, respectively, each with shape ``([n_comps,]
+        n_channels, n_freqs)`` or ``([n_comps], n_channels, n_fbands) depending on
+        ``faverage``. ``n_comps`` is present for valid multivariate methods if
+        ``n_components > 0``. ``n_channels`` is the largest number of channels across
+        all connections, with missing entries padded with ``np.nan``.
     """
     csd = []
     for x in signals_use:
@@ -1265,13 +1248,13 @@ def _plv(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like, shape (n_freqs, n_times)
-        The cross PSD between channel 'x' and channel 'y' across
-        frequency and time points.
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
 
     Returns
     -------
-    plv : array-like, shape (n_freqs, n_times)
+    plv : array, shape (n_freqs, n_times)
         The estimated PLV.
     """
     s_xy = s_xy / np.abs(s_xy)
@@ -1284,13 +1267,13 @@ def _ciplv(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like, shape (n_freqs, n_times)
-        The cross PSD between channel 'x' and channel 'y' across
-        frequency and time points.
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
 
     Returns
     -------
-    ciplv : array-like, shape (n_freqs, n_times)
+    ciplv : array, shape (n_freqs, n_times)
         The estimated ciPLV.
     """
     s_xy = s_xy / np.abs(s_xy)
@@ -1305,13 +1288,13 @@ def _pli(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like, shape (n_freqs, n_times)
-        The cross PSD between channel 'x' and channel 'y' across
-        frequency and time points.
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
 
     Returns
     -------
-    pli : array-like, shape (n_freqs, n_times)
+    pli : array, shape (n_freqs, n_times)
         The estimated PLI.
     """
     pli = np.abs(np.mean(np.sign(np.imag(s_xy)), axis=-1, keepdims=True))
@@ -1323,13 +1306,13 @@ def _wpli(s_xy):
 
     Parameters
     ----------
-    s_xy : array-like, shape (n_freqs, n_times)
-        The cross PSD between channel 'x' and channel 'y' across
-        frequency and time points.
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
 
     Returns
     -------
-    wpli : array-like, shape (n_freqs, n_times)
+    wpli : array, shape (n_freqs, n_times)
         The estimated wPLI.
     """
     con_num = np.abs(s_xy.imag.mean(axis=-1, keepdims=True))
@@ -1343,17 +1326,17 @@ def _coh(s_xx, s_yy, s_xy):
 
     Parameters
     ----------
-    s_xx : array-like, shape (n_freqs, n_times)
+    s_xx : array, shape (n_freqs, n_times)
         The PSD of channel 'x'.
-    s_yy : array-like, shape (n_freqs, n_times)
+    s_yy : array, shape (n_freqs, n_times)
         The PSD of channel 'y'.
-    s_xy : array-like, shape (n_freqs, n_times)
-        The cross PSD between channel 'x' and channel 'y' across
-        frequency and time points.
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
 
     Returns
     -------
-    coh : array-like, shape (n_freqs, n_times)
+    coh : array, shape (n_freqs, n_times)
         The estimated COH.
     """
     con_num = np.abs(s_xy.mean(axis=-1, keepdims=True))
@@ -1382,14 +1365,14 @@ def _foi_average(conn, foi_idx):
 
     Parameters
     ----------
-    conn : array_like, shape (..., n_freqs, n_times)
+    conn : array, shape (..., n_freqs, n_times)
         Connectivity estimate array.
-    foi_idx : array_like, shape (n_foi, 2)
+    foi_idx : array, shape (n_foi, 2)
         Upper and lower frequency bounds of each frequency band.
 
     Returns
     -------
-    conn_f : np.ndarray, shape (..., n_fbands, n_times)
+    conn_f : array, shape (..., n_fbands, n_times)
         Connectivity estimate array, averaged within frequency bands.
     """
     # get the number of foi

@@ -9,9 +9,8 @@ def _create_kernel(sm_times, sm_freqs, kernel="hanning"):
     Parameters
     ----------
     sm_times : int, array_like
-        Number of points to consider for the temporal smoothing,
-        if it is an array it will be considered that the kernel
-        if frequency dependent.
+        Number of points to consider for the temporal smoothing, if it is an array it
+        will be considered that the kernel if frequency dependent.
     sm_freqs : int
         Number of points to consider for the frequency smoothing
     kernel : {'square', 'hanning'}
@@ -71,8 +70,8 @@ def _create_kernel(sm_times, sm_freqs, kernel="hanning"):
 def _smooth_spectra(spectra, kernel, scale=False, decim=1):
     """Smoothing spectra.
 
-    This function assumes that the frequency and time axis are respectively
-    located at positions (..., freqs, times).
+    This function assumes that the frequency and time axis are respectively located at
+    positions (..., freqs, times).
 
     Parameters
     ----------

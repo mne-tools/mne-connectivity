@@ -42,44 +42,43 @@ def plot_connectivity_circle(
     Parameters
     ----------
     con : array | Connectivity
-        Connectivity scores. Can be a square matrix, or a 1D array. If a 1D
-        array is provided, "indices" has to be used to define the connection
-        indices.
+        Connectivity scores. Can be a square matrix, or a 1D array. If a 1D array is
+        provided, ``indices`` has to be used to define the connection indices.
     node_names : list of str
-        Node names. The order corresponds to the order in con.
-    indices : tuple of array | None
-        Two arrays with indices of connections for which the connections
-        strengths are defined in con. Only needed if con is a 1D array.
+        Node names. The order corresponds to the order in ``con``.
+    indices : tuple of array_like | None
+        Two arrays with indices of connections for which the connections strengths are
+        defined in ``con``. Only needed if ``con`` is a 1D array.
     n_lines : int | None
-        If not None, only the n_lines strongest connections (strength=abs(con))
-        are drawn.
+        If not ``None``, only the ``n_lines`` strongest connections
+        (``strength=abs(con)``) are drawn.
     node_angles : array, shape (n_node_names,) | None
-        Array with node positions in degrees. If None, the nodes are equally
-        spaced on the circle. See mne.viz.circular_layout.
+        Array with node positions in degrees. If ``None``, the nodes are equally spaced
+        on the circle. See :func:`mne.viz.circular_layout`.
     node_width : float | None
-        Width of each node in degrees. If None, the minimum angle between any
-        two nodes is used as the width.
+        Width of each node in degrees. If ``None``, the minimum angle between any two
+        nodes is used as the width.
     node_height : float
-        The relative height of the colored bar labeling each node. Default 1.0
-        is the standard height.
+        The relative height of the colored bar labeling each node. Default 1.0 is the
+        standard height.
     node_colors : list of tuple | list of str
-        List with the color to use for each node. If fewer colors than nodes
-        are provided, the colors will be repeated. Any color supported by
-        matplotlib can be used, e.g., RGBA tuples, named colors.
+        List with the color to use for each node. If fewer colors than nodes are
+        provided, the colors will be repeated. Any color supported by matplotlib can be
+        used, e.g., RGBA tuples, named colors.
     facecolor : str
-        Color to use for background. See matplotlib.colors.
+        Color to use for background. See :mod:`matplotlib.colors`.
     textcolor : str
-        Color to use for text. See matplotlib.colors.
+        Color to use for text. See :mod:`matplotlib.colors`.
     node_edgecolor : str
-        Color to use for lines around nodes. See matplotlib.colors.
+        Color to use for lines around nodes. See :mod:`matplotlib.colors`.
     linewidth : float
         Line width to use for connections.
     colormap : str | instance of matplotlib.colors.LinearSegmentedColormap
         Colormap to use for coloring the connections.
     vmin : float | None
-        Minimum value for colormap. If None, it is determined automatically.
+        Minimum value for colormap. If ``None``, it is determined automatically.
     vmax : float | None
-        Maximum value for colormap. If None, it is determined automatically.
+        Maximum value for colormap. If ``None``, it is determined automatically.
     colorbar : bool
         Display a colorbar or not.
     title : str
@@ -96,15 +95,15 @@ def plot_connectivity_circle(
         Font size to use for colorbar.
     padding : float
         Space to add around figure to accommodate long labels.
-    ax : instance of matplotlib PolarAxes | None
+    ax : instance of matplotlib.projections.polar.PolarAxes | None
         The axes to use to plot the connectivity circle.
     interactive : bool
-        When enabled, left-click on a node to show only connections to that
-        node. Right-click shows all connections.
+        When enabled, left-click on a node to show only connections to that node.
+        Right-click shows all connections.
     node_linewidth : float
-        Line with for nodes.
+        Line width for nodes.
     show : bool
-        Show figure if True.
+        Show figure if ``True``.
 
     Returns
     -------
@@ -115,16 +114,16 @@ def plot_connectivity_circle(
 
     Notes
     -----
-    This code is based on a circle graph example by Nicolas P. Rougier
+    This code is based on a circle graph example by Nicolas P. Rougier.
 
-    By default, :func:`matplotlib.pyplot.savefig` does not take ``facecolor``
-    into account when saving, even if set when a figure is generated. This
-    can be addressed via, e.g.::
+    By default, :func:`matplotlib.pyplot.savefig` does not take ``facecolor`` into
+    account when saving, even if set when a figure is generated. This can be addressed
+    via, e.g.::
 
     >>> fig.savefig(fname_fig, facecolor='black') # doctest:+SKIP
 
-    If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the
-    figure labels, title, and legend may be cut off in the output figure.
+    If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the figure
+    labels, title, and legend may be cut off in the output figure.
     """
     from mne_connectivity.base import BaseConnectivity
 

@@ -14,11 +14,11 @@ def make_signals_in_freq_bands(
     freq_band,
     n_epochs=10,
     n_times=200,
-    sfreq=100,
-    trans_bandwidth=1,
+    sfreq=100.0,
+    trans_bandwidth=1.0,
     snr=0.7,
     connection_delay=5,
-    tmin=0,
+    tmin=0.0,
     ch_names=None,
     ch_types="eeg",
     rng_seed=None,
@@ -31,7 +31,7 @@ def make_signals_in_freq_bands(
         Number of seed channels to simulate.
     n_targets : int
         Number of target channels to simulate.
-    freq_band : tuple of int or float
+    freq_band : tuple of float
         Frequency band where the connectivity should be simulated, where the first entry
         corresponds to the lower frequency, and the second entry to the higher
         frequency.
@@ -39,9 +39,9 @@ def make_signals_in_freq_bands(
         Number of epochs in the simulated data.
     n_times : int (default 200)
         Number of timepoints each epoch of the simulated data.
-    sfreq : int | float (default 100)
+    sfreq : float (default 100.0)
         Sampling frequency of the simulated data, in Hz.
-    trans_bandwidth : int | float (default 1)
+    trans_bandwidth : float (default 1.0)
         Transition bandwidth of the filter to apply to isolate activity in
         ``freq_band``, in Hz. These are passed to the ``l_bandwidth`` and
         ``h_bandwidth`` keyword arguments in :func:`mne.filter.create_filter`.
@@ -51,23 +51,24 @@ def make_signals_in_freq_bands(
         Number of timepoints for the delay of connectivity between the seeds and
         targets. If > 0, the target data is a delayed form of the seed data. If < 0, the
         seed data is a delayed form of the target data.
-    tmin : int | float (default 0)
+    tmin : float (default 0.0)
         Earliest time of each epoch.
     ch_names : list of str | None (default None)
-        Names of the channels in the simulated data. If `None`, the channels are named
+        Names of the channels in the simulated data. If ``None``, the channels are named
         according to their index and the frequency band of interaction. If specified,
         must be a list of ``n_seeds + n_targets`` channel names.
-    ch_types : str | list of str (default "eeg")
-        Types of the channels in the simulated data. If specified as a list, must be a
+    ch_types : str | list of str (default ``'eeg'``)
+        Types of the channels in the simulated data. Must be a recognised data channel
+        type (see :term:`mne:data channels`). If specified as a list, must be a
         list of ``n_seeds + n_targets`` channel names.
     rng_seed : int | None (default None)
-        Seed to use for the random number generator. If `None`, no seed is specified.
+        Seed to use for the random number generator. If ``None``, no seed is specified.
 
     Returns
     -------
-    epochs : mne.EpochsArray of shape (n_epochs, ``n_seeds + n_targets``, n_times)
-        The simulated data stored in an `mne.EpochsArray` object. The channels are
-        arranged according to seeds, then targets.
+    epochs : ~mne.EpochsArray, shape (n_epochs, n_seeds + n_targets, n_times)
+        The simulated data stored in an :class:`mne.EpochsArray` object. The channels
+        are arranged according to seeds, then targets.
 
     Notes
     -----

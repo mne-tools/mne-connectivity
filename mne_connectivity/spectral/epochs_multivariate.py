@@ -397,14 +397,14 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         Parameters
         ----------
-        C_r : np.ndarray, shape=(n_freqs, n_times, n_channels, n_channels)
+        C_r : array, shape (n_freqs, n_times, n_channels, n_channels)
             Real part of the CSD. Expected to be symmetric and non-singular.
         n_seeds : int
             Number of seed channels for the connection.
 
         Returns
         -------
-        T : np.ndarray, shape=(n_freqs, n_times, n_channels, n_channels)
+        T : array, shape (n_freqs, n_times, n_channels, n_channels)
             Inverse square root of the real-valued CSD. Name comes from Ewald
             et al. (2012).
 
@@ -667,13 +667,12 @@ class _CaCohEst(_MultivariateCohEstBase):
     def _final_optimise_phi(self, C_ab, T_aa, T_bb, max_coh, max_phis):
         """Fine-tune the angle at which coherence is maximised.
 
-        Uses a 2nd order Taylor expansion to approximate change in coherence
-        w.r.t. phi, and determining the next phi to evaluate coherence on (over
-        a total of 10 iterations).
+        Uses a 2nd order Taylor expansion to approximate change in coherence w.r.t. phi,
+        and determining the next phi to evaluate coherence on (over a total of 10
+        iterations).
 
-        Depending on how the new phi affects coherence, the step size for the
-        subsequent iteration is adjusted, like that in the Levenberg-Marquardt
-        algorithm.
+        Depending on how the new phi affects coherence, the step size for the subsequent
+        iteration is adjusted, like that in the Levenberg-Marquardt algorithm.
 
         Each time-freq. entry of coherence has its own corresponding phi.
         """
@@ -792,7 +791,7 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         See "Methods - Extracting further source pairs" of Dähne et al. (2014),
         NeuroImage, DOI: 10.1016/j.neuroimage.2014.03.075, for an example of applying
-        this approach to timeseries data.
+        this approach to time series data.
         """
         # get orthogonal basis space for filters
         # (streamlined version of scipy.linalg.null_space() suited for our purposes)
@@ -1065,8 +1064,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """Compute innovations-form parameters for a state-space model.
 
         Parameters computed from a full VAR model using Aoki's method. For a
-        non-moving-average full VAR model, the state-space parameter C
-        (observation matrix) is identical to AF of the VAR model.
+        non-moving-average full VAR model, the state-space parameter C (observation
+        matrix) is identical to AF of the VAR model.
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
@@ -1112,14 +1111,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     def _iss_to_tf(self, A, C, K, z):
         """Compute transfer function for innovations-form state-space params.
 
-        In the frequency domain, the back-shift operator, z, is a vector of
-        points on a unit circle in the complex plane. z = e^-iw, where -pi < w
-        <= pi.
+        In the frequency domain, the back-shift operator, z, is a vector of points on a
+        unit circle in the complex plane. z = e^-iw, where -pi < w <= pi.
 
-        A note on efficiency: solving over the 4D time-freq. tensor is slower
-        than looping over times and freqs when n_times and n_freqs high, and
-        when n_times and n_freqs low, looping over times and freqs very fast
-        anyway (plus tensor solving doesn't allow for parallelisation).
+        A note on efficiency: solving over the 4D time-freq. tensor is slower than
+        looping over times and freqs when n_times and n_freqs high, and when n_times and
+        n_freqs low, looping over times and freqs very fast anyway (plus tensor solving
+        doesn't allow for parallelisation).
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
@@ -1147,9 +1145,9 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     def _partial_covar(self, V, seeds, targets):
         """Compute partial covariance of a matrix.
 
-        Given a covariance matrix V, the partial covariance matrix of V between
-        indices i and j, given k (V_ij|k), is equivalent to V_ij - V_ik *
-        V_kk^-1 * V_kj. In this case, i and j are seeds, and k are targets.
+        Given a covariance matrix V, the partial covariance matrix of V between indices
+        i and j, given k (V_ij|k), is equivalent to V_ij - V_ik * V_kk^-1 * V_kj. In
+        this case, i and j are seeds, and k are targets.
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
