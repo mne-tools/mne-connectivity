@@ -91,15 +91,18 @@ def _check_multivariate_indices(indices, n_chans):
 
     Parameters
     ----------
-    indices : tuple of array_like of array_like, shape (2, n_cons, variable)
-        Tuple containing index sets.
+    indices : tuple of length 2 of array_like
+        A tuple of two array-likes containing the seed and target indices, respectively,
+        to use for connectivity computation. Each array-like has ``n_cons`` array-like
+        entries containing the channel indices for each connection. The number of
+        channels within each connection can vary.
     n_chans : int
         The number of channels in the data. Used when converting negative indices to
         positive indices.
 
     Returns
     -------
-    indices : array of array, shape of (2, n_cons, max_n_chans)
+    indices : array, shape (2, n_cons, max_n_chans)
         The padded indices as a masked array.
 
     Notes
@@ -242,16 +245,22 @@ def seed_target_multivariate_indices(seeds, targets):
 
     Parameters
     ----------
-    seeds : array_like, shape (n_unique_seeds, variable)
-        Indices of signals for which to compute connectivity from.
-    targets : array_like, shape (n_unique_targets, variable)
-        Indices of signals for which to compute connectivity to.
+    seeds : array_like
+        Indices of signals for which to compute connectivity from. Has
+        ``n_unique_seeds`` array-like entries containing the channel indices for each
+        seed. The number of channels within each seed can vary.
+    targets : array_like
+        Indices of signals for which to compute connectivity to. Has
+        ``n_unique_targets`` array-like entries containing the channel indices for each
+        target. The number of channels within each target can vary.
 
     Returns
     -------
-    indices : tuple of length 2 of array, shape (n_cons, variable)
+    indices : tuple of length 2 of array
         A tuple of two numpy object arrays containing the seed and target indices,
-        respectively, to use for connectivity computation. The number of channels within
+        respectively, to use for connectivity computation. Each array has ``n_cons``
+        array entries containing the channel indices for each connection, where
+        ``n_cons = n_unique_seeds * n_unique_targets``. The number of channels within
         each connection can vary.
 
     Notes

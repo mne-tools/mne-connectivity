@@ -201,9 +201,10 @@ fmax : float | None (default None)
 
 docdict["indices_decoding"] = """
 indices : tuple of array_like
-    A tuple of two arrays, containing the indices of the seed and target channels in the
-    input data, respectively. The indices of only a single connection (i.e. between one
-    group of seeds and one group of targets) is supported.
+    A tuple of two array-likes, containing the indices of the seed and target channels
+    in the input data, respectively. The indices of only a single connection (i.e.
+    between one group of seeds and one group of targets) is supported, such that the
+    array-likes have shape ``(n_seed_channels,)`` and ``(n_target_channels,)``.
 """
 
 docdict["n_components"] = """
