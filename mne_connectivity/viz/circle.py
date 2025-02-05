@@ -125,6 +125,9 @@ def plot_connectivity_circle(
 
     If ``facecolor`` is not set via :func:`matplotlib.pyplot.savefig`, the
     figure labels, title, and legend may be cut off in the output figure.
+
+    If ``colorbar=True``, the :class:`Colorbar <matplotlib.colorbar.Colorbar>`
+    object will be accessible via ``fig.mne.colorbar``.
     """
     from mne_connectivity.base import BaseConnectivity
 
