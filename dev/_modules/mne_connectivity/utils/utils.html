@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.8.0.dev59+g020ca0d7 documentation</title>
+    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.8.0.dev60+gee3aad34 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3b2d1695"></script>
+    <script src="../../../_static/documentation_options.js?v=2f79fb19"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev59+g020ca0d7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev60+gee3aad34 documentation</p>
   
 </a></div>
     
@@ -424,14 +424,14 @@
 <span class="sd">    func : function</span>
 <span class="sd">        function to be executed in parallel</span>
 <span class="sd">    n_jobs : int | None</span>
-<span class="sd">        Number of jobs. If set to None, do not attempt to use joblib.</span>
+<span class="sd">        Number of jobs. If set to ``None``, do not attempt to use joblib.</span>
 <span class="sd">    verbose : int</span>
 <span class="sd">        verbosity level</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Execution of the main script must be guarded with</span>
-<span class="sd">    `if __name__ == &#39;__main__&#39;:` when using parallelization.</span>
+<span class="sd">    Execution of the main script must be guarded with ``if __name__ == &#39;__main__&#39;:``</span>
+<span class="sd">    when using parallelization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n_jobs</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -465,20 +465,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
-<span class="sd">        Tuple containing index pairs.</span>
+<span class="sd">    indices : tuple of length 2 of array_like, shape (n_cons,)</span>
+<span class="sd">        A tuple of 2 arrays containing the seed and target channel indices,</span>
+<span class="sd">        respectively.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
-<span class="sd">        The indices.</span>
+<span class="sd">    indices : tuple of length 2 of array_like, shape (n_cons,)</span>
+<span class="sd">        The indices to use for connectivity computation.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Indices for bivariate connectivity should be a tuple of length 2,</span>
-<span class="sd">    containing the channel indices for the seed and target channel pairs,</span>
-<span class="sd">    respectively. Seed and target indices should be equal-length array-likes of</span>
-<span class="sd">    integers representing the indices of the individual channels in the data.</span>
+<span class="sd">    Indices for bivariate connectivity should be a tuple of length 2, containing the</span>
+<span class="sd">    channel indices for the seed and target channel pairs, respectively. Seed and target</span>
+<span class="sd">    indices should be equal-length array-likes of integers representing the indices of</span>
+<span class="sd">    the individual channels in the data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;indices must be a tuple of length 2&quot;</span><span class="p">)</span>
@@ -503,37 +504,37 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    indices : tuple of array of array of int, shape (2, n_cons, variable)</span>
-<span class="sd">        Tuple containing index sets.</span>
-
+<span class="sd">    indices : tuple of length 2 of array_like</span>
+<span class="sd">        A tuple of two array-likes containing the seed and target indices, respectively,</span>
+<span class="sd">        to use for connectivity computation. Each array-like has ``n_cons`` array-like</span>
+<span class="sd">        entries containing the channel indices for each connection. The number of</span>
+<span class="sd">        channels within each connection can vary.</span>
 <span class="sd">    n_chans : int</span>
-<span class="sd">        The number of channels in the data. Used when converting negative</span>
-<span class="sd">        indices to positive indices.</span>
+<span class="sd">        The number of channels in the data. Used when converting negative indices to</span>
+<span class="sd">        positive indices.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : array of array of int, shape of (2, n_cons, max_n_chans)</span>
+<span class="sd">    indices : array, shape (2, n_cons, max_n_chans)</span>
 <span class="sd">        The padded indices as a masked array.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Indices for multivariate connectivity should be a tuple of length 2</span>
-<span class="sd">    containing the channel indices for the seed and target channel sets,</span>
-<span class="sd">    respectively. Seed and target indices should be equal-length array-likes</span>
-<span class="sd">    representing the indices of the channel sets in the data for each</span>
-<span class="sd">    connection. The indices for each connection should be an array-like of</span>
-<span class="sd">    integers representing the individual channels in the data. The length of</span>
-<span class="sd">    indices for each connection do not need to be equal. All indices within a</span>
+<span class="sd">    Indices for multivariate connectivity should be a tuple of length 2 containing the</span>
+<span class="sd">    channel indices for the seed and target channel sets, respectively. Seed and target</span>
+<span class="sd">    indices should be equal-length array-likes representing the indices of the channel</span>
+<span class="sd">    sets in the data for each connection. The indices for each connection should be an</span>
+<span class="sd">    array-like of integers representing the individual channels in the data. The length</span>
+<span class="sd">    of indices for each connection do not need to be equal. All indices within a</span>
 <span class="sd">    connection must be unique.</span>
 
-<span class="sd">    If the seed and target indices are given as lists or tuples, they will be</span>
-<span class="sd">    converted to numpy arrays. Because the number of channels can differ across</span>
-<span class="sd">    connections or between the seeds and targets for a given connection (i.e.</span>
-<span class="sd">    ragged/jagged indices), the returned array will be padded out to a &#39;full&#39;</span>
-<span class="sd">    array with an invalid index (``-1``) according to the maximum number of</span>
-<span class="sd">    channels in the seed or target of any one connection. These invalid</span>
-<span class="sd">    entries are then masked and returned as numpy masked arrays. E.g. the</span>
-<span class="sd">    ragged indices of shape ``(2, n_cons, variable)``::</span>
+<span class="sd">    If the seed and target indices are given as lists or tuples, they will be converted</span>
+<span class="sd">    to numpy arrays. Because the number of channels can differ across connections or</span>
+<span class="sd">    between the seeds and targets for a given connection (i.e. ragged/jagged indices),</span>
+<span class="sd">    the returned array will be padded out to a &#39;full&#39; array with an invalid index</span>
+<span class="sd">    (``-1``) according to the maximum number of channels in the seed or target of any</span>
+<span class="sd">    one connection. These invalid entries are then masked and returned as numpy masked</span>
+<span class="sd">    arrays. E.g. the ragged indices of shape ``(2, n_cons, variable)``::</span>
 
 <span class="sd">            indices = ([[0, 1], [0, 1   ]],  # seeds</span>
 <span class="sd">                       [[2, 3], [4, 5, 6]])  # targets</span>
@@ -543,19 +544,18 @@
 <span class="sd">            indices = ([[0, 1, -1], [0, 1, -1]],  # seeds</span>
 <span class="sd">                       [[2, 3, -1], [4, 5,  6]])  # targets</span>
 
-<span class="sd">    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The</span>
-<span class="sd">    invalid entries are then masked::</span>
+<span class="sd">    to have shape ``(2, n_cons, max_n_chans)``, where ``max_n_chans = 3``. The invalid</span>
+<span class="sd">    entries are then masked::</span>
 
 <span class="sd">            indices = ([[0, 1, --], [0, 1, --]],  # seeds</span>
 <span class="sd">                       [[2, 3, --], [4, 5,  6]])  # targets</span>
 
 <span class="sd">    In case &quot;indices&quot; contains negative values to index channels, these will be</span>
-<span class="sd">    converted to the corresponding positive-valued index before any masking is</span>
-<span class="sd">    applied.</span>
+<span class="sd">    converted to the corresponding positive-valued index before any masking is applied.</span>
 
-<span class="sd">    More information on working with multivariate indices and handling</span>
-<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
-<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+<span class="sd">    More information on working with multivariate indices and handling connections where</span>
+<span class="sd">    the number of seeds and targets are not equal can be found in the</span>
+<span class="sd">    :doc:`../auto_examples/handling_ragged_arrays` example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;indices must be a tuple of length 2&quot;</span><span class="p">)</span>
@@ -611,22 +611,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    seeds : array of int | int, shape (n_unique_seeds)</span>
-<span class="sd">        Seed indices.</span>
-<span class="sd">    targets : array of int | int, shape (n_unique_targets)</span>
-<span class="sd">        Indices of signals for which to compute connectivity.</span>
+<span class="sd">    seeds : array_like, shape (n_unique_seeds) | int</span>
+<span class="sd">        Indices of signals for which to compute connectivity from.</span>
+<span class="sd">    targets : array_like, shape (n_unique_targets) | int</span>
+<span class="sd">        Indices of signals for which to compute connectivity to.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : tuple of array of int, shape (2, n_cons)</span>
-<span class="sd">        The indices parameter used for connectivity computation.</span>
+<span class="sd">    indices : tuple of length 2 of array, shape (n_cons,)</span>
+<span class="sd">        A tuple of 2 arrays containing the seed and target indices, respectively, to use</span>
+<span class="sd">        for connectivity computation.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    ``seeds`` and ``targets`` should be array-likes or integers representing</span>
-<span class="sd">    the indices of the channel pairs in the data for each connection. ``seeds``</span>
-<span class="sd">    and ``targets`` will be expanded such that connectivity will be computed</span>
-<span class="sd">    between each seed and each target. E.g. the seeds and targets::</span>
+<span class="sd">    ``seeds`` and ``targets`` should be array-likes or integers representing the indices</span>
+<span class="sd">    of the channel pairs in the data for each connection. ``seeds`` and ``targets`` will</span>
+<span class="sd">    be expanded such that connectivity will be computed between each seed and each</span>
+<span class="sd">    target. E.g. the seeds and targets::</span>
 
 <span class="sd">            seeds   = [0, 1]</span>
 <span class="sd">            targets = [2, 3, 4]</span>
@@ -662,28 +663,34 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    seeds : array of array of int, shape (n_unique_seeds, variable)</span>
-<span class="sd">        Seed indices.</span>
-
-<span class="sd">    targets : array of array of int, shape (n_unique_targets, variable)</span>
-<span class="sd">        Target indices.</span>
+<span class="sd">    seeds : array_like</span>
+<span class="sd">        Indices of signals for which to compute connectivity from. Has</span>
+<span class="sd">        ``n_unique_seeds`` array-like entries containing the channel indices for each</span>
+<span class="sd">        seed. The number of channels within each seed can vary.</span>
+<span class="sd">    targets : array_like</span>
+<span class="sd">        Indices of signals for which to compute connectivity to. Has</span>
+<span class="sd">        ``n_unique_targets`` array-like entries containing the channel indices for each</span>
+<span class="sd">        target. The number of channels within each target can vary.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    indices : tuple of array of array of int, shape (2, n_cons, variable)</span>
-<span class="sd">        The indices as a numpy object array.</span>
+<span class="sd">    indices : tuple of length 2 of array</span>
+<span class="sd">        A tuple of two numpy object arrays containing the seed and target indices,</span>
+<span class="sd">        respectively, to use for connectivity computation. Each array has ``n_cons``</span>
+<span class="sd">        array entries containing the channel indices for each connection, where</span>
+<span class="sd">        ``n_cons = n_unique_seeds * n_unique_targets``. The number of channels within</span>
+<span class="sd">        each connection can vary.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    ``seeds`` and ``targets`` should be array-likes representing the indices of</span>
-<span class="sd">    the channel sets in the data for each connection. The indices for each</span>
-<span class="sd">    connection should be an array-like of integers representing the individual</span>
-<span class="sd">    channels in the data. The length of indices for each connection do not need</span>
-<span class="sd">    to be equal. Furthermore, all indices within a connection must be unique.</span>
+<span class="sd">    ``seeds`` and ``targets`` should be array-likes representing the indices of the</span>
+<span class="sd">    channel sets in the data for each connection. The indices for each connection should</span>
+<span class="sd">    be an array-like of integers representing the individual channels in the data. The</span>
+<span class="sd">    length of indices for each connection do not need to be equal. Furthermore, all</span>
+<span class="sd">    indices within a connection must be unique.</span>
 
-<span class="sd">    Because the number of channels per connection can vary, the indices are</span>
-<span class="sd">    stored as numpy arrays with ``dtype=object``. E.g. ``seeds`` and</span>
-<span class="sd">    ``targets``::</span>
+<span class="sd">    Because the number of channels per connection can vary, the indices are stored as</span>
+<span class="sd">    numpy arrays with ``dtype=object``. E.g. ``seeds`` and ``targets``::</span>
 
 <span class="sd">            seeds   = [[0]]</span>
 <span class="sd">            targets = [[1, 2], [3, 4, 5]]</span>
@@ -693,12 +700,12 @@
 <span class="sd">            indices = (np.array([[0   ], [0      ]], dtype=object),  # seeds</span>
 <span class="sd">                       np.array([[1, 2], [3, 4, 5]], dtype=object))  # targets</span>
 
-<span class="sd">    Even if the number of channels does not vary, the indices will still be</span>
-<span class="sd">    stored as object arrays for compatibility.</span>
+<span class="sd">    Even if the number of channels does not vary, the indices will still be stored as</span>
+<span class="sd">    object arrays for compatibility.</span>
 
-<span class="sd">    More information on working with multivariate indices and handling</span>
-<span class="sd">    connections where the number of seeds and targets are not equal can be</span>
-<span class="sd">    found in the :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+<span class="sd">    More information on working with multivariate indices and handling connections where</span>
+<span class="sd">    the number of seeds and targets are not equal can be found in the</span>
+<span class="sd">    :doc:`../auto_examples/handling_ragged_arrays` example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">array_like</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
 
@@ -730,22 +737,21 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    connectivity : ndarray, shape (n_nodes, n_nodes)</span>
+<span class="sd">    connectivity : array, shape (n_nodes, n_nodes) | Connectivity</span>
 <span class="sd">        The connectivity matrix.</span>
 <span class="sd">    threshold_prop : float</span>
-<span class="sd">        The proportion of edges to keep in the graph before</span>
-<span class="sd">        computing the degree. The value should be between 0</span>
-<span class="sd">        and 1.</span>
+<span class="sd">        The proportion of edges to keep in the graph before computing the degree. The</span>
+<span class="sd">        value should be between 0 and 1.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    degree : ndarray, shape (n_nodes,)</span>
+<span class="sd">    degree : array, shape (n_nodes,)</span>
 <span class="sd">        The computed degree.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    During thresholding, the symmetry of the connectivity matrix is</span>
-<span class="sd">    auto-detected based on :func:`numpy.allclose` of it with its transpose.</span>
+<span class="sd">    During thresholding, the symmetry of the connectivity matrix is auto-detected based</span>
+<span class="sd">    on :func:`numpy.allclose` of it with its transpose.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConnectivity</span>
 
@@ -836,7 +842,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-02-03.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-02-05.
       <br/>
     
   </p>
