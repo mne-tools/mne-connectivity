@@ -53,13 +53,13 @@ def check_indices(indices):
 
     Parameters
     ----------
-    indices : tuple of length 2 of array_like, shape (n_cons)
+    indices : tuple of length 2 of array_like, shape (n_cons,)
         A tuple of 2 arrays containing the seed and target channel indices,
         respectively.
 
     Returns
     -------
-    indices : tuple of length 2 of array_like, shape (n_cons)
+    indices : tuple of length 2 of array_like, shape (n_cons,)
         The indices to use for connectivity computation.
 
     Notes
@@ -200,7 +200,7 @@ def seed_target_indices(seeds, targets):
 
     Returns
     -------
-    indices : tuple of length 2 of array, shape (n_cons)
+    indices : tuple of length 2 of array, shape (n_cons,)
         A tuple of 2 arrays containing the seed and target indices, respectively, to use
         for connectivity computation.
 
