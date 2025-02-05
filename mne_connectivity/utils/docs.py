@@ -229,15 +229,17 @@ rank : tuple of int | None (default None)
 
 # Decoding attrs
 docdict["filters_"] = """
-filters_ : tuple of array, shape (2, n_signals, n_components)
+filters_ : tuple of length 2
     A tuple of two arrays containing the spatial filters for transforming the seed and
-    target data, respectively.
+    target data, respectively. The arrays have shape ``(n_seeds, n_components)`` and
+    ``(n_targets, n_components)``.
 """
 
 docdict["patterns_"] = """
-patterns_ : tuple of array, shape (2, n_components, n_signals)
+patterns_ : tuple of length 2
     A tuple of two arrays containing the spatial patterns corresponding to the spatial
-    filters for the seed and target data, respectively.
+    filters for the seed and target data, respectively. The arrays have shape
+    ``(n_components, n_seeds)`` and ``(n_components, n_targets)``.
 """
 
 # Decoding plotting
@@ -424,7 +426,7 @@ units : str (default ``'AU'``)
 """
 
 docdict["axes_topomap"] = """
-axes : length-2 tuple of list of matplotlib.axes.Axes | None (default None)
+axes : tuple of length 2 of list of matplotlib.axes.Axes | None (default None)
     The axes to plot to. If ``None``, a new figure will be created with the correct
     number of axes. If not ``None``, there must be two lists containing the axes for the
     seeds and targets, respectively. In each of these two lists, the number of axes must
