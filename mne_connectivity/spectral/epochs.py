@@ -566,7 +566,7 @@ def _epoch_spectral_connectivity(
                 if not is_tfr_con:  # normal spectra (multitaper or Fourier)
                     this_psd = _psd_from_mt(x_t, weights)
                 else:  # TFR spectra (multitaper)
-                    this_psd = np.array([_tfr_from_mt(epo_x, weights) for epo_x in x_t])
+                    this_psd = _tfr_from_mt(x_t, weights)
             else:  # mode == 'cwt_morlet'
                 this_psd = (x_t * x_t.conj()).real
     else:  # compute spectral info from scratch

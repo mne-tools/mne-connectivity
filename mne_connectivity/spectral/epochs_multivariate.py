@@ -46,9 +46,7 @@ def _check_rank_input(rank, data, indices):
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
             # Convert to power and aggregate over time before computing rank
             if "taper" in data._dims:
-                data_arr = np.sum(
-                    [_tfr_from_mt(epoch, data.weights) for epoch in data_arr], axis=-1
-                )
+                data_arr = np.sum(_tfr_from_mt(data_arr, data.weights), axis=-1)
             else:
                 data_arr = np.sum((data_arr * data_arr.conj()).real, axis=-1)
         else:
