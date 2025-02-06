@@ -25,7 +25,7 @@ from mne.time_frequency.multitaper import (
     _psd_from_mt,
     _psd_from_mt_adaptive,
 )
-from mne.time_frequency.tfr import _tfr_from_mt, cwt, morlet
+from mne.time_frequency.tfr import cwt, morlet
 from mne.utils import _arange_div, _check_option, _time_mask, logger, verbose, warn
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
@@ -566,6 +566,9 @@ def _epoch_spectral_connectivity(
                 if not is_tfr_con:  # normal spectra (multitaper or Fourier)
                     this_psd = _psd_from_mt(x_t, weights)
                 else:  # TFR spectra (multitaper)
+                    # XXX: Move import to top when support for mne<1.10 is dropped
+                    from mne.time_frequency.tfr import _tfr_from_mt
+
                     this_psd = _tfr_from_mt(x_t, weights)
             else:  # mode == 'cwt_morlet'
                 this_psd = (x_t * x_t.conj()).real

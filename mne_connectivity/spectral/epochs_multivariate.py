@@ -17,7 +17,6 @@ from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import EpochsSpectrum, EpochsTFR
 from mne.time_frequency.multitaper import _psd_from_mt
-from mne.time_frequency.tfr import _tfr_from_mt
 from mne.utils import ProgressBar, _validate_type, logger
 
 
@@ -46,6 +45,9 @@ def _check_rank_input(rank, data, indices):
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
             # Convert to power and aggregate over time before computing rank
             if "taper" in data._dims:
+                # XXX: Move import to top when support for mne<1.10 is dropped
+                from mne.time_frequency.tfr import _tfr_from_mt
+
                 data_arr = np.sum(_tfr_from_mt(data_arr, data.weights), axis=-1)
             else:
                 data_arr = np.sum((data_arr * data_arr.conj()).real, axis=-1)
