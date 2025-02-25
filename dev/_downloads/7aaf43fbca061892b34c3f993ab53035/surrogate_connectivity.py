@@ -113,7 +113,7 @@ pretrial_con = spectral_connectivity_epochs(
 # Generate surrogate data
 n_shuffles = 100  # recommended is >= 1,000; limited here to reduce compute time
 pretrial_surrogates = make_surrogate_data(
-    pretrial_coeffs, n_shuffles=n_shuffles, rng_seed=44
+    pretrial_coeffs, n_shuffles=n_shuffles, rng_seed=42
 )
 
 # Compute connectivity for surrogate data
