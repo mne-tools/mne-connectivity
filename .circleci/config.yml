@@ -32,25 +32,9 @@ jobs:
       - run:
           name: Set BASH_ENV
           command: |
-            set -eo pipefail
-            curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
-            chmod +x setup_xvfb.sh
-            ./setup_xvfb.sh
-            sudo apt install -qq graphviz optipng libxft2 ffmpeg
-            echo "set -eo pipefail" | tee -a $BASH_ENV
-            echo "export OPENBLAS_NUM_THREADS=4" | tee -a $BASH_ENV
-            echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" | tee -a $BASH_ENV
-            echo "export MNE_FULL_DATE=true" | tee -a $BASH_ENV
-            echo "export MNE_3D_BACKEND=pyvistaqt" | tee -a $BASH_ENV
-            echo "export MNE_3D_OPTION_MULTI_SAMPLES=1" | tee -a $BASH_ENV
-            echo "export MNE_BROWSER_BACKEND=qt" | tee -a $BASH_ENV
-            echo "export MNE_BROWSER_PRECOMPUTE=false" | tee -a $BASH_ENV
-            echo "export PATH=~/.local/bin/:$PATH" | tee -a $BASH_ENV
-            echo "export DISPLAY=:99" | tee -a $BASH_ENV
-            echo "BASH_ENV:"
-            cat $BASH_ENV
-            mkdir -p ~/mne_data
-            touch pattern.txt;
+            git clone https://github.com/mne-tools/mne-python
+            cd mne-python
+            ./tools/circleci_bash_env.sh
 
       - run:
           name: Merge with upstream
@@ -73,7 +57,6 @@ jobs:
             git clone https://github.com/mne-tools/mne-python
             cd mne-python
             ./tools/circleci_dependencies.sh
-            cd ..
 
       - save_cache:
           key: pip-cache-312
