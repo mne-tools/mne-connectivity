@@ -2,8 +2,8 @@ version: 2.1
 
 jobs:
   build_docs:
-    docker:
-      - image: cimg/base:current-22.04
+    machine:
+      image: ubuntu-2404:current
     steps:
       - restore_cache:
           keys:
@@ -32,25 +32,22 @@ jobs:
       - run:
           name: Set BASH_ENV
           command: |
-            set -e
+            set -eo pipefail
             curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/setup_xvfb.sh -o setup_xvfb.sh
             chmod +x setup_xvfb.sh
             ./setup_xvfb.sh
-            sudo apt install -qq graphviz optipng python3.10-venv python3-venv libxft2 ffmpeg
-            python3.10 -m venv ~/python_env
-            echo "set -e" >> $BASH_ENV
-            echo "export OPENBLAS_NUM_THREADS=4" >> $BASH_ENV
-            echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" >> $BASH_ENV
-            echo "export MNE_FULL_DATE=true" >> $BASH_ENV
-            echo "export MNE_3D_BACKEND=pyvistaqt" >> $BASH_ENV
-            echo "export MNE_3D_OPTION_MULTI_SAMPLES=1" >> $BASH_ENV
-            echo "export MNE_BROWSER_BACKEND=qt" >> $BASH_ENV
-            echo "export MNE_BROWSER_PRECOMPUTE=false" >> $BASH_ENV
-            echo "export PATH=~/.local/bin/:$PATH" >> $BASH_ENV
-            echo "export DISPLAY=:99" >> $BASH_ENV
-            echo "source ~/python_env/bin/activate" >> $BASH_ENV
-            mkdir -p ~/.local/bin
-            ln -s ~/python_env/bin/python ~/.local/bin/python
+            sudo apt install -qq graphviz optipng libxft2 ffmpeg
+            echo "set -eo pipefail" | tee -a $BASH_ENV
+            echo "export OPENBLAS_NUM_THREADS=4" | tee -a $BASH_ENV
+            echo "export XDG_RUNTIME_DIR=/tmp/runtime-circleci" | tee -a $BASH_ENV
+            echo "export MNE_FULL_DATE=true" | tee -a $BASH_ENV
+            echo "export MNE_3D_BACKEND=pyvistaqt" | tee -a $BASH_ENV
+            echo "export MNE_3D_OPTION_MULTI_SAMPLES=1" | tee -a $BASH_ENV
+            echo "export MNE_BROWSER_BACKEND=qt" | tee -a $BASH_ENV
+            echo "export MNE_BROWSER_PRECOMPUTE=false" | tee -a $BASH_ENV
+            echo "export PATH=~/.local/bin/:$PATH" | tee -a $BASH_ENV
+            echo "export DISPLAY=:99" | tee -a $BASH_ENV
+            echo "source ~/python_env/bin/activate" | tee -a $BASH_ENV
             echo "BASH_ENV:"
             cat $BASH_ENV
             mkdir -p ~/mne_data
@@ -69,29 +66,20 @@ jobs:
       # Load pip cache
       - restore_cache:
           keys:
-            - pip-cache
-      - restore_cache:
-          keys:
-            - user-install-bin-cache-310
+            - pip-cache-312
 
       - run:
           name: Get Python running and install dependencies
           command: |
-            pip install git+https://github.com/mne-tools/mne-python@main
-            curl https://raw.githubusercontent.com/mne-tools/mne-python/main/tools/circleci_dependencies.sh -o circleci_dependencies.sh
-            chmod +x circleci_dependencies.sh
-            ./circleci_dependencies.sh
+            git clone https://github.com/mne-tools/mne-python
+            cd mne-python
+            ./tools/circleci_dependencies.sh
+            cd ..
 
       - save_cache:
-          key: pip-cache
+          key: pip-cache-312
           paths:
             - ~/.cache/pip
-
-      - save_cache:
-          key: user-install-bin-cache-310
-          paths:
-            - ~/.local/lib/python3.10/site-packages
-            - ~/.local/bin
 
       # Look at what we have and fail early if there is some library conflict
       - run:
