@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</title>
+    <title>mne_connectivity.spectral_connectivity_time &#8212; MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=99a73ade"></script>
+    <script src="../_static/documentation_options.js?v=66eb66b7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,7 +123,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</p>
   
 </a></div>
     
@@ -477,7 +477,7 @@ are based on time-resolved estimates of the cross- and power spectral densities
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be epoched time series data as
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be epoched time series data as
 an array-like or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object, or Fourier coefficients for each
 epoch as an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object. If time series data,
 the spectral information will be computed according to the spectral estimation
@@ -490,7 +490,7 @@ object can also be passed in as data. Storing multitaper weights in
 <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> objects requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.10</span></code>.</p>
 </div>
 </dd>
-<dt><strong>freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Array-like of frequencies of interest for time-frequency decomposition. Only the
+<dt><strong>freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Array-like of frequencies of interest for time-frequency decomposition. Only the
 frequencies within the range specified by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and <code class="docutils literal notranslate"><span class="pre">fmax</span></code> are used. If
 <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object, the frequencies must
 be specified. If <code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object,
@@ -516,7 +516,7 @@ called with the other methods.</p>
 <dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.13)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Average connectivity scores over epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output will be an instance
 of <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>, otherwise <a class="reference internal" href="mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with indices of connections for which to compute connectivity.
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with indices of connections for which to compute connectivity.
 If a bivariate method is called, each array for the seeds and targets should
 contain the channel indices for the each bivariate connection. If a multivariate
 method is called, each array for the seeds and targets should consist of nested
@@ -546,7 +546,7 @@ temporal smoothing is applied.</p>
 <dt><strong>sm_freqs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of points for frequency smoothing. By default, 1 is used which is
 equivalent to no smoothing.</p>
 </dd>
-<dt><strong>sm_kernel</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'square'</span></code> | <code class="docutils literal notranslate"><span class="pre">'hanning'</span></code></span></dt><dd><p>Smoothing kernel type. For <code class="docutils literal notranslate"><span class="pre">'hanning'</span></code>, see <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.hanning.html#numpy.hanning" title="(in NumPy v2.3.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.hanning()</span></code></a>.</p>
+<dt><strong>sm_kernel</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'square'</span></code> | <code class="docutils literal notranslate"><span class="pre">'hanning'</span></code></span></dt><dd><p>Smoothing kernel type. For <code class="docutils literal notranslate"><span class="pre">'hanning'</span></code>, see <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.hanning.html#numpy.hanning" title="(in NumPy v2.4.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.hanning()</span></code></a>.</p>
 </dd>
 <dt><strong>padding</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Amount of time to consider as padding at the beginning and end of each epoch in
 seconds. See Notes for more information.</p>
@@ -563,7 +563,7 @@ resolution) and the number of good tapers. See
 <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> documentation. Ignored if
 <code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a></span></dt><dd><p>Number of cycles in the wavelet, either a fixed number or one per frequency. The
+<dt><strong>n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a></span></dt><dd><p>Number of cycles in the wavelet, either a fixed number or one per frequency. The
 number of cycles <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code> and the frequencies of interest <code class="docutils literal notranslate"><span class="pre">freqs</span></code> define
 the temporal window length. For details, see
 <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.tfr_array_multitaper.html#mne.time_frequency.tfr_array_multitaper" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.time_frequency.tfr_array_multitaper()</span></code></a> and
@@ -575,7 +575,7 @@ causality. Higher values increase computational cost, but reduce the degree of
 spectral smoothing in the results. Only used if <code class="docutils literal notranslate"><span class="pre">method</span></code> contains any of
 <code class="docutils literal notranslate"><span class="pre">['gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
 </dd>
-<dt><strong>rank</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with the rank to project the seed and target data to,
+<dt><strong>rank</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with the rank to project the seed and target data to,
 respectively, using singular value decomposition. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the rank of the
 data is computed and projected to. Only used if <code class="docutils literal notranslate"><span class="pre">method</span></code> contains any of
 <code class="docutils literal notranslate"><span class="pre">['cacoh',</span> <span class="pre">'mic',</span> <span class="pre">'mim',</span> <span class="pre">'gc',</span> <span class="pre">'gc_tr']</span></code>.</p>
@@ -908,7 +908,7 @@ which is slow, compared to memory mapping the array.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-19.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-22.
       <br/>
     
   </p>

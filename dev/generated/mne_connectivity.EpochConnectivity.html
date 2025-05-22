@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.EpochConnectivity &#8212; MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</title>
+    <title>mne_connectivity.EpochConnectivity &#8212; MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=99a73ade"></script>
+    <script src="../_static/documentation_options.js?v=66eb66b7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</p>
   
 </a></div>
     
@@ -475,7 +475,7 @@ multivariate methods where each connection has multiple components of connectivi
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([epochs,] n_estimated_nodes[, components, freqs, times])</span></dt><dd><p>The connectivity data that is a raveled array of <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_estimated_nodes,</span> <span class="pre">...)</span></code>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([epochs,] n_estimated_nodes[, components, freqs, times])</span></dt><dd><p>The connectivity data that is a raveled array of <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_estimated_nodes,</span> <span class="pre">...)</span></code>
 shape. The <code class="docutils literal notranslate"><span class="pre">n_estimated_nodes</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out</span></code> if one has
 computed the full connectivity, or a subset of nodes equal to the length of the
 arrays in <code class="docutils literal notranslate"><span class="pre">indices</span></code> passed in.</p>
@@ -483,11 +483,11 @@ arrays in <code class="docutils literal notranslate"><span class="pre">indices</
 <dt><strong>n_nodes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The number of nodes in the dataset used to compute connectivity. This should be
 equal to the number of signals in the original dataset.</p>
 </dd>
-<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute connectivity. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute connectivity. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 (default), then names will be a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <code class="docutils literal notranslate"><span class="pre">'all'</span></code> | <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The indices of relevant connectivity data. If <code class="docutils literal notranslate"><span class="pre">'all'</span></code> (default), then data is
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <code class="docutils literal notranslate"><span class="pre">'all'</span></code> | <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The indices of relevant connectivity data. If <code class="docutils literal notranslate"><span class="pre">'all'</span></code> (default), then data is
 connectivity between all nodes. If <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code>, then data is symmetric
 connectivity between all nodes. If a tuple, then contains two array-likes where the
 first array represents the “in nodes” (seeds), and the second array represents the
@@ -679,7 +679,7 @@ defined as a tuple of arrays, or <code class="docutils literal notranslate"><spa
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>The output connectivity data.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>The output connectivity data.</p>
 </dd>
 </dl>
 </dd>
@@ -745,13 +745,13 @@ the total number of nodes in the original dataset.</p>
 <dd class="field-odd"><dl>
 <dt><strong>node_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Node names. The order corresponds to the order in <code class="docutils literal notranslate"><span class="pre">con</span></code>.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which the connections strengths are
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which the connections strengths are
 defined in <code class="docutils literal notranslate"><span class="pre">con</span></code>. Only needed if <code class="docutils literal notranslate"><span class="pre">con</span></code> is a 1D array.</p>
 </dd>
 <dt><strong>n_lines</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, only the <code class="docutils literal notranslate"><span class="pre">n_lines</span></code> strongest connections
 (<code class="docutils literal notranslate"><span class="pre">strength=abs(con)</span></code>) are drawn.</p>
 </dd>
-<dt><strong>node_angles</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_node_names,) | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Array with node positions in degrees. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the nodes are equally spaced
+<dt><strong>node_angles</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_node_names,) | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Array with node positions in degrees. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the nodes are equally spaced
 on the circle. See <a class="reference external" href="https://mne.tools/dev/generated/mne.viz.circular_layout.html#mne.viz.circular_layout" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.viz.circular_layout()</span></code></a>.</p>
 </dd>
 <dt><strong>node_width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Width of each node in degrees. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the minimum angle between any two
@@ -834,13 +834,13 @@ labels, title, and legend may be cut off in the output figure.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([n_epochs,] n_signals, n_times)</span></dt><dd><p>Epoched or continuous data set.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([n_epochs,] n_signals, n_times)</span></dt><dd><p>Epoched or continuous data set.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>predicted</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([n_epochs,] n_signals, n_times)</span></dt><dd><p>Data as predicted by the VAR model of shape same as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dt><strong>predicted</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape ([n_epochs,] n_signals, n_times)</span></dt><dd><p>Data as predicted by the VAR model of shape same as <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -909,16 +909,16 @@ extension).</p>
 <dt><strong>noise_func</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This function is used to create the generating noise process. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 Gaussian white noise with zero mean and unit variance is used.</p>
 </dd>
-<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">random_state</span></code> is an int, it will be used as a seed for
-<a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.3.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the seed will be obtained from the
-operating system (see <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.3.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> for details). Default is
+<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">random_state</span></code> is an int, it will be used as a seed for
+<a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.4.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the seed will be obtained from the
+operating system (see <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.4.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> for details). Default is
 <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_samples, n_channels)</span></dt><dd><p>Generated data.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, shape (n_samples, n_channels)</span></dt><dd><p>Generated data.</p>
 </dd>
 </dl>
 </dd>
@@ -1033,7 +1033,7 @@ operating system (see <a class="reference external" href="https://numpy.org/devd
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-19.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-22.
       <br/>
     
   </p>

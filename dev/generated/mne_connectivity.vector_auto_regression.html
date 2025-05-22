@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.vector_auto_regression &#8212; MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</title>
+    <title>mne_connectivity.vector_auto_regression &#8212; MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=99a73ade"></script>
+    <script src="../_static/documentation_options.js?v=66eb66b7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,7 +123,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev73+gecb31a9c documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev74+gd9c260c0 documentation</p>
   
 </a></div>
     
@@ -472,13 +472,13 @@
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.13)"><span>generator</span></a></span></dt><dd><p>The data from which to compute connectivity. The epochs dimension is interpreted
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.13)"><span>generator</span></a></span></dt><dd><p>The data from which to compute connectivity. The epochs dimension is interpreted
 differently, depending on <code class="docutils literal notranslate"><span class="pre">'output'</span></code> argument.</p>
 </dd>
-<dt><strong>times</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The time points used to construct the epoched <code class="docutils literal notranslate"><span class="pre">data</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then
+<dt><strong>times</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The time points used to construct the epoched <code class="docutils literal notranslate"><span class="pre">data</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">times_used</span></code> in the returned <code class="docutils literal notranslate"><span class="pre">conn</span></code> will not be available.</p>
 </dd>
-<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.3.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute connectivity. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute connectivity. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 (default), then names will be a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </dd>
@@ -676,7 +676,7 @@ channels, unless you have good reason.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-19.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-05-22.
       <br/>
     
   </p>
