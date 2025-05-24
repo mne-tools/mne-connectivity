@@ -66,7 +66,6 @@ jobs:
         if: matrix.mne-version == 'mne-main'
         run: pip install git+https://github.com/mne-tools/mne-python@main
       - run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       - name: Display versions and environment information
         run: |
           echo $TZ
