@@ -48,6 +48,7 @@ on numpy array inputs.
    vector_auto_regression
    spectral_connectivity_epochs
    spectral_connectivity_time
+   wsmi
 
 Decoding classes
 ================

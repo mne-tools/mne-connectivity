@@ -36,3 +36,4 @@ from .utils import (
     seed_target_multivariate_indices,
 )
 from .vector_ar import select_order, vector_auto_regression
+from .wsmi import wsmi
