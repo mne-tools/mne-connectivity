@@ -5,6 +5,7 @@
 # License: BSD (3-clause)
 
 import math
+import warnings
 from itertools import permutations
 
 import numba
@@ -162,7 +163,7 @@ def _wsmi_python_jitted(data_sym, counts, wts_matrix, weighted=True):
     return result
 
 
-def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0, filter_freq=None):
+def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0):
     """Validate kernel and tau parameters for wSMI computation.
 
     Parameters
@@ -175,8 +176,6 @@ def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0, filter_freq=None):
         Sampling frequency of the data.
     memory_limit_gb : float
         Memory limit in GB for kernel validation. Default is 1.0.
-    filter_freq : float | None
-        Low-pass filter frequency in Hz to validate if provided.
 
     Raises
     ------
@@ -208,16 +207,6 @@ def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0, filter_freq=None):
                 f"Otherwise, consider kernel <= 7."
             )
 
-    # Validate filter frequency if provided
-    if filter_freq is not None:
-        _validate_type(filter_freq, "numeric", "filter_freq")
-        nyquist = sfreq / 2.0
-        if filter_freq <= 0 or filter_freq >= nyquist:
-            raise ValueError(
-                f"filter_freq ({filter_freq:.2f}) must be > 0 and < Nyquist "
-                f"frequency ({nyquist:.2f} Hz)"
-            )
-
 
 @fill_doc
 @verbose
@@ -228,7 +217,7 @@ def wsmi(
     indices=None,
     tmin=None,
     tmax=None,
-    filter_freq=None,
+    anti_aliasing=True,
     weighted=True,
     average=False,
     memory_limit_gb=1.0,
@@ -256,9 +245,15 @@ def wsmi(
         of epoch.
     tmax : float | None
         Time to end connectivity estimation. If ``None``, uses end of epoch.
-    filter_freq : float | None
-        Low-pass filter frequency in Hz. If ``None``, defaults to
-        ``sfreq / (kernel * tau)``.
+    anti_aliasing : bool
+        Whether to apply anti-aliasing low-pass filtering before symbolic
+        transformation. If ``True`` (default), applies automatic low-pass filtering
+        at ``sfreq / (kernel * tau)`` Hz to prevent aliasing artifacts in ordinal
+        patterns. If ``False``, no filtering is applied and the symbolic
+        transformation is computed on the raw (possibly preprocessed) data.
+        **Warning**: Setting to ``False`` may produce unreliable results if the
+        effective sampling rate (``sfreq / tau``) violates the Nyquist criterion
+        for the spectral content of your data.
     weighted : bool
         Whether to compute weighted SMI (wSMI) or standard SMI.
         If ``True`` (default), computes wSMI with distance-based weights.
@@ -298,6 +293,14 @@ def wsmi(
     When ``weighted=False``, the function computes standard Symbolic Mutual Information
     (SMI) without distance-based weighting.
 
+    **Anti-aliasing filtering**:
+    By default, the function applies automatic low-pass filtering to prevent aliasing
+    artifacts that can corrupt ordinal patterns when ``tau > 1``. The filter frequency
+    is set to ``sfreq / (kernel * tau)`` Hz, which ensures the spectral content matches
+    the effective temporal sampling rate of the symbolic transformation. Users who have
+    already applied appropriate preprocessing can disable this by setting
+    ``anti_aliasing=False``.
+
     References
     ----------
     .. footbibliography::
@@ -306,9 +309,10 @@ def wsmi(
     _validate_type(epochs, BaseEpochs, "epochs")
     _validate_type(weighted, bool, "weighted")
     _validate_type(average, bool, "average")
+    _validate_type(anti_aliasing, bool, "anti_aliasing")
 
     # Validate all parameters early
-    _validate_kernel(kernel, tau, epochs.info["sfreq"], memory_limit_gb, filter_freq)
+    _validate_kernel(kernel, tau, epochs.info["sfreq"], memory_limit_gb)
 
     sfreq = epochs.info["sfreq"]
     events = epochs.events
@@ -382,26 +386,49 @@ def wsmi(
 
         logger.info(f"computing connectivity for {len(indices_use[0])} connections")
 
-    # --- 2. Filtering (match original exactly) ---
-    if filter_freq is None:
-        # kernel and tau are already validated in _validate_kernel
-        filter_freq = np.double(sfreq) / kernel / tau  # Use np.double like original
+        # --- 2. Anti-aliasing filtering (if enabled) ---
+    if anti_aliasing:
+        # Apply automatic anti-aliasing filter based on effective sampling rate
+        anti_alias_freq = np.double(sfreq) / kernel / tau
+        nyquist_freq = sfreq / 2.0
+
+        # Check if anti-aliasing frequency is reasonable
+        if anti_alias_freq >= nyquist_freq * 0.99:
+            # Anti-aliasing frequency too close to Nyquist - skip filtering
+            logger.info(
+                f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
+                f"Nyquist frequency ({nyquist_freq:.2f} Hz). "
+                f"Skipping anti-aliasing filter."
+            )
+            fdata = data_for_comp.transpose(1, 2, 0)
+        else:
+            logger.info(f"Applying anti-aliasing filter at {anti_alias_freq:.2f} Hz")
+
+            # Design and apply low-pass filter
+            normalized_freq = 2.0 * anti_alias_freq / np.double(sfreq)
+            b, a = butter(6, normalized_freq, "lowpass")
+            data_concatenated = np.hstack(
+                data_for_comp
+            )  # Concatenate epochs horizontally
+
+            # Filter the concatenated data
+            fdata_concatenated = filtfilt(b, a, data_concatenated)
+
+            # Split back into epochs and transpose to match original format
+            fdata = np.transpose(
+                np.array(np.split(fdata_concatenated, n_epochs, axis=1)), [1, 2, 0]
+            )
     else:
-        # filter_freq is already validated in _validate_kernel if provided
-        filter_freq = float(filter_freq)
-    logger.info(f"Filtering  at {filter_freq:.2f} Hz")  # Match original message format
-
-    # Match original exactly: concatenate epochs, filter, then split back
-    b, a = butter(6, 2.0 * filter_freq / np.double(sfreq), "lowpass")
-    data_concatenated = np.hstack(data_for_comp)  # Concatenate epochs horizontally
-
-    # Filter the concatenated data
-    fdata_concatenated = filtfilt(b, a, data_concatenated)
-
-    # Split back into epochs and transpose to match original format
-    fdata = np.transpose(
-        np.array(np.split(fdata_concatenated, n_epochs, axis=1)), [1, 2, 0]
-    )
+        # Skip filtering - use data as-is but warn about potential issues
+        effective_sfreq = sfreq / tau
+        warnings.warn(
+            f"Anti-aliasing disabled. Effective sampling rate for symbolic "
+            f"transformation is {effective_sfreq:.1f} Hz (sfreq/tau = {sfreq}/{tau}). "
+            f"Ensure your data is appropriately filtered to prevent aliasing artifacts",
+            UserWarning,
+        )
+        # Transpose to match filtered data format: (n_channels, n_times, n_epochs)
+        fdata = data_for_comp.transpose(1, 2, 0)
 
     # --- Time masking (match original exactly) ---
     time_mask = _time_mask(epochs.times, tmin, tmax)

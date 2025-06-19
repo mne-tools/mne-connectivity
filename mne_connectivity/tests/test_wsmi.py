@@ -30,7 +30,7 @@ def test_wsmi_basic():
     epochs.set_montage(montage, match_case=False)
 
     # Test basic functionality
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
     assert hasattr(result, "get_data")
@@ -64,7 +64,7 @@ def test_wsmi_eeg_data():
     epochs.set_montage(montage, match_case=False)
 
     # Test with different parameters
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=50.0)
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
     data_matrix = result.get_data()
@@ -73,8 +73,8 @@ def test_wsmi_eeg_data():
     assert np.all(np.isfinite(data_matrix))
 
 
-def test_wsmi_default_filter_frequency():
-    """Test wSMI with default filter frequency (None)."""
+def test_wsmi_default_anti_aliasing():
+    """Test wSMI with default anti-aliasing behavior."""
     sfreq = 100.0
     n_epochs, n_channels, n_times = 2, 3, 200
     rng = np.random.RandomState(42)
@@ -88,8 +88,8 @@ def test_wsmi_default_filter_frequency():
     montage = mne.channels.make_standard_montage("standard_1020")
     epochs.set_montage(montage, match_case=False)
 
-    # Test with None filter frequency
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=None)
+    # Test with default anti-aliasing
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
     data_matrix = result.get_data()
@@ -112,7 +112,7 @@ def test_wsmi_mixed_channel_types():
     epochs = EpochsArray(data, info, tmin=0.0)
 
     # Test with mixed channel types
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
     data_matrix = result.get_data()
@@ -140,7 +140,7 @@ def test_wsmi_bad_channels():
     epochs.info["bads"] = ["Pz"]
 
     # Test with bad channels
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result - should have 3 good channels
     data_matrix = result.get_data()
@@ -167,19 +167,19 @@ def test_wsmi_input_validation():
 
     # Test invalid kernel (should be positive integer)
     with pytest.raises(ValueError, match="kernel.*must be > 1"):
-        wsmi(epochs, kernel=0, tau=1, filter_freq=30.0)
+        wsmi(epochs, kernel=0, tau=1)
 
     # Test invalid tau (should be positive integer)
     with pytest.raises(ValueError, match="tau.*must be > 0"):
-        wsmi(epochs, kernel=3, tau=0, filter_freq=30.0)
+        wsmi(epochs, kernel=3, tau=0)
 
-    # Test invalid filter_freq (should be positive or None)
-    with pytest.raises(ValueError, match="filter_freq.*must be > 0"):
-        wsmi(epochs, kernel=3, tau=1, filter_freq=-10.0)
+    # Test invalid anti_aliasing (should be boolean)
+    with pytest.raises(TypeError, match="anti_aliasing must be an instance of bool"):
+        wsmi(epochs, kernel=3, tau=1, anti_aliasing="yes")
 
     # Test invalid weighted (should be boolean)
     with pytest.raises(TypeError, match="weighted must be an instance of bool"):
-        wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, weighted="yes")
+        wsmi(epochs, kernel=3, tau=1, weighted="yes")
 
 
 def test_wsmi_memory_check():
@@ -195,7 +195,7 @@ def test_wsmi_memory_check():
     epochs = EpochsArray(data, info, tmin=0.0)
 
     # Test with larger data
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
     data_matrix = result.get_data()
@@ -220,7 +220,7 @@ def test_wsmi_time_window():
     epochs.set_montage(montage, match_case=False)
 
     # Test with time window
-    result = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, tmin=0.5, tmax=2.0)
+    result = wsmi(epochs, kernel=3, tau=1, tmin=0.5, tmax=2.0)
 
     # Check the result
     data_matrix = result.get_data()
@@ -245,7 +245,7 @@ def test_wsmi_insufficient_samples():
     epochs.set_montage(montage, match_case=False)
 
     # Should handle small samples gracefully with very low filter frequency
-    result = wsmi(epochs, kernel=2, tau=1, filter_freq=5.0)
+    result = wsmi(epochs, kernel=2, tau=1)
 
     # Check the result
     data_matrix = result.get_data()
@@ -254,7 +254,7 @@ def test_wsmi_insufficient_samples():
 
     # Test that insufficient samples after time masking raises error
     with pytest.raises(ValueError, match=r"but at least[\s\S]*are needed"):
-        wsmi(epochs, kernel=5, tau=3, tmin=0.1, tmax=0.15, filter_freq=5.0)
+        wsmi(epochs, kernel=5, tau=3, tmin=0.1, tmax=0.15)
 
 
 def test_wsmi_deterministic():
@@ -282,13 +282,11 @@ def test_wsmi_deterministic():
         epochs1,
         kernel=3,
         tau=1,
-        filter_freq=25.0,
     )
     conn2 = wsmi(
         epochs2,
         kernel=3,
         tau=1,
-        filter_freq=25.0,
     )
 
     # Results should be identical
@@ -305,7 +303,7 @@ def test_wsmi_single_channel():
 
     # Should raise error - single channel connectivity is not meaningful
     with pytest.raises(ValueError, match="At least 2 channels are required"):
-        wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+        wsmi(epochs, kernel=3, tau=1)
 
 
 def test_wsmi_meg_data():
@@ -320,7 +318,7 @@ def test_wsmi_meg_data():
     epochs = EpochsArray(data, info, tmin=0.0)
 
     # Test with MEG data
-    conn = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    conn = wsmi(epochs, kernel=3, tau=1)
 
     assert conn.n_nodes == n_channels
     assert conn.method == "wSMI"
@@ -354,7 +352,7 @@ def test_wsmi_eeg_without_montage():
     epochs = EpochsArray(data, info, tmin=0.0)
 
     # Should work fine without any special preprocessing
-    conn = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    conn = wsmi(epochs, kernel=3, tau=1)
 
     assert conn.method == "wSMI"
     assert np.all(np.isfinite(conn.get_data()))
@@ -380,7 +378,6 @@ def test_wsmi_parameter_combinations(kernel, tau):
         epochs,
         kernel=kernel,
         tau=tau,
-        filter_freq=30.0,
     )
 
     assert conn.method == "wSMI"
@@ -406,10 +403,10 @@ def test_wsmi_weighted_parameter():
     epochs.set_montage(montage, on_missing="ignore")
 
     # Test wSMI (weighted=True, default)
-    conn_wsmi = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, weighted=True)
+    conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True)
 
     # Test SMI (weighted=False)
-    conn_smi = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, weighted=False)
+    conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False)
 
     # Basic checks for both
     assert conn_wsmi.method == "wSMI"
@@ -454,7 +451,7 @@ def test_wsmi_indices_parameter():
 
     # Test with specific indices
     indices = (np.array([0, 1]), np.array([2, 3]))  # Fz-Pz, Cz-Oz
-    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, filter_freq=30.0)
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices)
 
     # Should compute only the specified connections
     assert conn.get_data().shape == (n_epochs, 2, 1)  # 2 connections
@@ -462,14 +459,14 @@ def test_wsmi_indices_parameter():
     assert np.all(np.isfinite(conn.get_data()))
 
     # Test with all connections (default)
-    conn_all = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0)
+    conn_all = wsmi(epochs, kernel=3, tau=1)
     expected_all_connections = n_channels * (n_channels - 1) // 2
     assert conn_all.get_data().shape == (n_epochs, expected_all_connections, 1)
 
     # Test invalid indices
     invalid_indices = (np.array([0, 1]), np.array([5, 6]))  # Out of range
     with pytest.raises(ValueError, match="Index.*is out of range"):
-        wsmi(epochs, kernel=3, tau=1, indices=invalid_indices, filter_freq=30.0)
+        wsmi(epochs, kernel=3, tau=1, indices=invalid_indices)
 
     # Test self-connectivity (same channel pairs)
     self_indices = (
@@ -477,12 +474,12 @@ def test_wsmi_indices_parameter():
         np.array([0, 2]),
     )  # First pair is self-connectivity
     with pytest.raises(ValueError, match="Self-connectivity not supported"):
-        wsmi(epochs, kernel=3, tau=1, indices=self_indices, filter_freq=30.0)
+        wsmi(epochs, kernel=3, tau=1, indices=self_indices)
 
     # Test empty indices
     empty_indices = (np.array([]), np.array([]))
     with pytest.raises(ValueError, match="No valid connections specified"):
-        wsmi(epochs, kernel=3, tau=1, indices=empty_indices, filter_freq=30.0)
+        wsmi(epochs, kernel=3, tau=1, indices=empty_indices)
 
 
 def test_wsmi_average_parameter():
@@ -500,10 +497,10 @@ def test_wsmi_average_parameter():
     epochs.set_montage(montage, on_missing="ignore")
 
     # Test without averaging (default)
-    conn_no_avg = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, average=False)
+    conn_no_avg = wsmi(epochs, kernel=3, tau=1, average=False)
 
     # Test with averaging
-    conn_avg = wsmi(epochs, kernel=3, tau=1, filter_freq=30.0, average=True)
+    conn_avg = wsmi(epochs, kernel=3, tau=1, average=True)
 
     # Check types and shapes
     from mne_connectivity.base import EpochTemporalConnectivity, SpectralConnectivity
@@ -540,9 +537,7 @@ def test_wsmi_indices_and_average_combined():
 
     # Test specific indices with averaging
     indices = (np.array([0, 1]), np.array([2, 3]))  # 2 connections
-    conn = wsmi(
-        epochs, kernel=3, tau=1, indices=indices, average=True, filter_freq=30.0
-    )
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
 
     # Should return averaged connectivity for specified connections
     from mne_connectivity.base import SpectralConnectivity
@@ -550,6 +545,45 @@ def test_wsmi_indices_and_average_combined():
     assert isinstance(conn, SpectralConnectivity)
     assert conn.get_data().shape == (2, 1)  # 2 connections, averaged
     assert np.all(np.isfinite(conn.get_data()))
+
+
+def test_wsmi_anti_aliasing_parameter():
+    """Test anti_aliasing parameter functionality."""
+    sfreq = 100.0
+    n_epochs, n_channels, n_times = 2, 3, 200
+    rng = np.random.RandomState(42)
+    data = rng.randn(n_epochs, n_channels, n_times)
+
+    ch_names = ["Fz", "Cz", "Pz"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    montage = mne.channels.make_standard_montage("standard_1020")
+    epochs.set_montage(montage, on_missing="ignore")
+
+    # Test with anti-aliasing enabled (default)
+    conn_with_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=True)
+
+    # Test with anti-aliasing disabled
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        conn_without_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=False)
+
+        # Should produce a warning about potential aliasing
+        assert len(w) > 0
+        assert "Anti-aliasing disabled" in str(w[0].message)
+
+    # Both should return valid connectivity objects
+    assert conn_with_filter.method == "wSMI"
+    assert conn_without_filter.method == "wSMI"
+    assert np.all(np.isfinite(conn_with_filter.get_data()))
+    assert np.all(np.isfinite(conn_without_filter.get_data()))
+
+    # Results should be different due to filtering
+    # (though with random data, differences might be subtle)
+    assert conn_with_filter.get_data().shape == conn_without_filter.get_data().shape
 
 
 # =============================================================================
@@ -617,7 +651,6 @@ def test_wsmi_against_test_data_all_cases():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -674,7 +707,6 @@ def test_wsmi_linear_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -731,7 +763,6 @@ def test_wsmi_nonlinear_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -793,7 +824,6 @@ def test_wsmi_network_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -855,7 +885,6 @@ def test_wsmi_no_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -914,7 +943,6 @@ def test_wsmi_parameter_variations():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
@@ -974,7 +1002,6 @@ def test_wsmi_performance_comparison():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
         execution_time = time.time() - start_time
@@ -1032,7 +1059,6 @@ def test_wsmi_connectivity_patterns():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            filter_freq=method_params.get("filter_freq", None),
             memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
