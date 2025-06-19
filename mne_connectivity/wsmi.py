@@ -9,15 +9,14 @@ from itertools import permutations
 
 import numba
 import numpy as np
-from mne import pick_types
 from mne.epochs import BaseEpochs
-from mne.preprocessing import compute_current_source_density
 from mne.utils import _time_mask, logger, verbose
 from mne.utils.check import _validate_type
 from mne.utils.docs import fill_doc
 from scipy.signal import butter, filtfilt
 
-from .base import EpochTemporalConnectivity
+from .base import EpochTemporalConnectivity, SpectralConnectivity
+from .utils import check_indices
 
 
 def _define_symbols(kernel):
@@ -226,11 +225,12 @@ def wsmi(
     epochs,
     kernel,
     tau,
+    indices=None,
     tmin=None,
     tmax=None,
     filter_freq=None,
-    csd=True,
     weighted=True,
+    average=False,
     memory_limit_gb=1.0,
     verbose=None,
 ):
@@ -246,21 +246,27 @@ def wsmi(
     tau : int
         Time delay (lag) between consecutive pattern elements.
         Must be > 0.
+    indices : tuple of array_like | None
+        Two array-likes with indices of connections for which to compute connectivity.
+        If ``None``, all connections are computed (lower triangular matrix).
+        For example, to compute connectivity between channels 0 and 2, and between
+        channels 1 and 3, use ``indices = (np.array([0, 1]), np.array([2, 3]))``.
     tmin : float | None
-        Time to start connectivity estimation. If None, uses beginning
+        Time to start connectivity estimation. If ``None``, uses beginning
         of epoch.
     tmax : float | None
-        Time to end connectivity estimation. If None, uses end of epoch.
+        Time to end connectivity estimation. If ``None``, uses end of epoch.
     filter_freq : float | None
-        Low-pass filter frequency in Hz. If None, defaults to
-        sfreq / (kernel * tau).
-    csd : bool
-        Whether to apply Current Source Density (CSD) computation
-        for EEG channels. Default is True.
+        Low-pass filter frequency in Hz. If ``None``, defaults to
+        ``sfreq / (kernel * tau)``.
     weighted : bool
         Whether to compute weighted SMI (wSMI) or standard SMI.
-        If True (default), computes wSMI with distance-based weights.
-        If False, computes standard SMI without weights.
+        If ``True`` (default), computes wSMI with distance-based weights.
+        If ``False``, computes standard SMI without weights.
+    average : bool
+        Whether to average connectivity across epochs. If ``True``, returns
+        connectivity averaged over epochs. If ``False`` (default), returns
+        connectivity for each epoch separately.
     memory_limit_gb : float
         Memory limit in GB for kernel validation. Default is 1.0.
         Increase if you have more RAM and want to use larger kernels.
@@ -268,11 +274,15 @@ def wsmi(
 
     Returns
     -------
-    conn : instance of EpochTemporalConnectivity
-        Computed connectivity measures. The connectivity object contains
-        the weighted symbolic mutual information values between all channel pairs
-        (if weighted=True) or the standard symbolic mutual information values
-        between all channel pairs (if weighted=False).
+    conn : instance of SpectralConnectivity or EpochTemporalConnectivity
+        Computed connectivity measures. If ``average=True``, returns a
+        :class:`SpectralConnectivity` instance with connectivity averaged
+        across epochs. If ``average=False``, returns an
+        :class:`EpochTemporalConnectivity` instance with connectivity
+        for each epoch. The connectivity object contains the weighted
+        symbolic mutual information values (if ``weighted=True``) or the
+        standard symbolic mutual information values (if ``weighted=False``)
+        between the specified channel pairs.
 
     Notes
     -----
@@ -285,7 +295,7 @@ def wsmi(
     2. Computation of mutual information between symbolic sequences
     3. Weighting based on pattern distance for enhanced sensitivity
 
-    When weighted=False, the function computes standard Symbolic Mutual Information
+    When ``weighted=False``, the function computes standard Symbolic Mutual Information
     (SMI) without distance-based weighting.
 
     References
@@ -294,8 +304,8 @@ def wsmi(
     """
     # Input validation
     _validate_type(epochs, BaseEpochs, "epochs")
-    _validate_type(csd, bool, "csd")
     _validate_type(weighted, bool, "weighted")
+    _validate_type(average, bool, "average")
 
     # Validate all parameters early
     _validate_kernel(kernel, tau, epochs.info["sfreq"], memory_limit_gb, filter_freq)
@@ -305,62 +315,72 @@ def wsmi(
     event_id = epochs.event_id
     metadata = epochs.metadata
 
-    # --- 1. Preprocessing (CSD) ---
-    # Apply CSD to EEG channels if requested and available
-    if (
-        csd
-        and "eeg" in epochs
-        and pick_types(epochs.info, meg=False, eeg=True).size > 0
-    ):
-        logger.info("Computing Current Source Density (CSD) for EEG channels.")
-        epochs_temp = epochs.copy()
-        if epochs_temp.info["bads"]:
-            logger.info(
-                f"""Interpolating {len(epochs_temp.info["bads"])} bad EEG channels
-                for CSD computation."""
-            )
-            epochs_temp.interpolate_bads(reset_bads=True)
+    # Get data from all channels and manually exclude bad channels
+    data_for_comp = epochs.get_data()
+    picked_ch_names = [ch for ch in epochs.ch_names if ch not in epochs.info["bads"]]
 
-        epochs_csd = compute_current_source_density(epochs_temp, lambda2=1e-5)
-        # Check if CSD actually produced CSD channels
-        if pick_types(epochs_csd.info, csd=True).size > 0:
-            epochs = epochs_csd
-        else:
-            logger.warning(
-                """CSD computation did not result in any CSD channels.
-                Using original EEG data for EEG channels."""
-            )
-
-    # Pick data channels for connectivity computation
-    # MEG, EEG, CSD, SEEG, ECoG are typical data channels. Exclude bads.
-    picks = pick_types(
-        epochs.info,
-        meg=True,
-        eeg=True,
-        csd=True,
-        seeg=True,
-        ecog=True,
-        ref_meg=False,
-        exclude="bads",
-    )
-
-    if len(picks) == 0:
+    # Check if we have any good channels
+    if len(picked_ch_names) == 0:
         raise ValueError(
-            """No suitable channels (MEG, EEG, CSD, SEEG, ECoG)
-            found after picking logic.
-            Check channel types and 'bads'."""
+            "No good channels found. Check that channels are not all marked as bad."
         )
 
-    data_for_comp = epochs.get_data(picks=picks)
-    picked_ch_names = [epochs.ch_names[i] for i in picks]
+    # Remove bad channel data if any bad channels exist
+    if epochs.info["bads"]:
+        bad_indices = [
+            i for i, ch in enumerate(epochs.ch_names) if ch in epochs.info["bads"]
+        ]
+        good_indices = [i for i in range(len(epochs.ch_names)) if i not in bad_indices]
+        data_for_comp = data_for_comp[:, good_indices, :]
     n_epochs, n_channels_picked, n_times_epoch = data_for_comp.shape
 
     if n_channels_picked == 0:  # Should be caught by len(picks) == 0
         raise ValueError("No channels selected for wSMI computation after picking.")
+
+    # Check for insufficient channels for connectivity computation
+    if n_channels_picked < 2:
+        raise ValueError(
+            f"At least 2 channels are required for connectivity computation, "
+            f"but only {n_channels_picked} available after excluding bad channels."
+        )
+
     logger.info(
         f"Processing {n_epochs} epochs, {n_channels_picked} channels "
         f"({picked_ch_names}), {n_times_epoch} time points per epoch."
     )
+
+    # Handle indices parameter
+    if indices is None:
+        logger.info("using all connections for lower-triangular matrix")
+        # Only compute lower-triangular connections (excluding diagonal)
+        indices_use = np.tril_indices(n_channels_picked, k=-1)
+    else:
+        indices_use = check_indices(indices)
+
+        # Check that we have at least one valid connection
+        if len(indices_use[0]) == 0:
+            raise ValueError("No valid connections specified in indices parameter.")
+
+        # Validate that indices are within the range of picked channels
+        max_idx = max(np.max(indices_use[0]), np.max(indices_use[1]))
+        if max_idx >= n_channels_picked:
+            raise ValueError(
+                f"Index {max_idx} is out of range for {n_channels_picked} channels"
+            )
+
+        # Check that indices don't refer to the same channel (no self-connectivity)
+        same_channel_mask = indices_use[0] == indices_use[1]
+        if np.any(same_channel_mask):
+            invalid_pairs = [
+                (indices_use[0][i], indices_use[1][i])
+                for i in range(len(indices_use[0]))
+                if same_channel_mask[i]
+            ]
+            raise ValueError(
+                f"Self-connectivity not supported. Found invalid pairs: {invalid_pairs}"
+            )
+
+        logger.info(f"computing connectivity for {len(indices_use[0])} connections")
 
     # --- 2. Filtering (match original exactly) ---
     if filter_freq is None:
@@ -436,40 +456,46 @@ def wsmi(
     result_epoched = result.transpose(2, 0, 1)
 
     # --- Packaging results ---
-    if n_channels_picked > 1:
-        # Extract upper triangular part (excluding diagonal) for connectivity object
-        triu_inds = np.triu_indices(n_channels_picked, k=1)
-        indices_list = list(zip(triu_inds[0], triu_inds[1]))
+    # Extract connectivity for specified connections only
+    n_cons = len(indices_use[0])
+    result_conn_data = np.zeros((n_epochs, n_cons, 1))
+    indices_list = list(zip(indices_use[0], indices_use[1]))
 
-        # Extract connectivity data for upper triangular connections only
-        result_conn_data = np.zeros((n_epochs, len(indices_list), 1))
-        for epoch_idx in range(n_epochs):
-            for conn_idx, (i, j) in enumerate(indices_list):
-                result_conn_data[epoch_idx, conn_idx, 0] = result_epoched[
-                    epoch_idx, i, j
-                ]
-    else:
-        # For single channel or no channels, create empty connectivity
-        logger.info(
-            f"Only 1 channel selected, {method_name} connectivity will be empty."
-        )
-        result_conn_data = np.empty((n_epochs, 0, 1))
-        indices_list = []
+    for epoch_idx in range(n_epochs):
+        for conn_idx, (i, j) in enumerate(indices_list):
+            result_conn_data[epoch_idx, conn_idx, 0] = result_epoched[epoch_idx, i, j]
 
     # Create connectivity object with prepared data
-    result_connectivity = EpochTemporalConnectivity(
-        data=result_conn_data,
-        names=picked_ch_names,
-        times=None,
-        method="wSMI" if weighted else "SMI",
-        indices=indices_list,
-        n_epochs_used=n_epochs,
-        n_nodes=n_channels_picked,
-        sfreq=sfreq,
-        events=events,
-        event_id=event_id,
-        metadata=metadata,
-    )
+    if average:
+        # Average across epochs to get shape (n_cons, n_times)
+        result_conn_data_avg = np.mean(result_conn_data, axis=0)  # Shape: (n_cons, 1)
+        result_connectivity = SpectralConnectivity(
+            data=result_conn_data_avg,
+            names=picked_ch_names,
+            freqs=[0.0],  # Single "frequency" for time-domain measure
+            method="wSMI" if weighted else "SMI",
+            indices=indices_list,
+            n_epochs_used=n_epochs,
+            n_nodes=n_channels_picked,
+            events=events,
+            event_id=event_id,
+            metadata=metadata,
+        )
+    else:
+        # Return epoch-wise connectivity
+        result_connectivity = EpochTemporalConnectivity(
+            data=result_conn_data,
+            names=picked_ch_names,
+            times=None,
+            method="wSMI" if weighted else "SMI",
+            indices=indices_list,
+            n_epochs_used=n_epochs,
+            n_nodes=n_channels_picked,
+            sfreq=sfreq,
+            events=events,
+            event_id=event_id,
+            metadata=metadata,
+        )
 
     logger.info(f"{method_name} computation finished.")
 
