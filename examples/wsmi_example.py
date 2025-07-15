@@ -1,6 +1,6 @@
 """
 =========================================================
-Weighted Symbolic Mutual Information (wSMI) connectivity
+Weighted Symbolic Mutual Information (wSMI) connectivity.
 =========================================================
 
 This example demonstrates the weighted Symbolic Mutual Information (wSMI)
@@ -35,7 +35,7 @@ from mne_connectivity import wsmi
 
 # %%
 # Simulating Data with Different Connectivity Patterns
-# ===================================================
+# =====================================================
 #
 # To demonstrate wSMI's capabilities, we'll create synthetic EEG data with
 # different types of connectivity: linear coupling, nonlinear coupling, and
@@ -435,8 +435,3 @@ print("- Epoch averaging for group analysis")
 # References
 # ----------
 # .. footbibliography::
-#
-# .. [1] King, J. R., Sitt, J. D., Faugeras, F., Rohaut, B., El Karoui, I.,
-#        Cohen, L., ... & Dehaene, S. (2013). Information sharing in the
-#        brain indexes consciousness in noncommunicative patients. Current
-#        biology, 23(19), 1914-1919.
