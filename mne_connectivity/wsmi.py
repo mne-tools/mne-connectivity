@@ -16,7 +16,7 @@ from mne.utils.check import _validate_type
 from mne.utils.docs import fill_doc
 from scipy.signal import butter, filtfilt
 
-from .base import EpochTemporalConnectivity, SpectralConnectivity
+from .base import Connectivity, EpochConnectivity
 from .utils import check_indices
 
 
@@ -251,9 +251,11 @@ def wsmi(
         at ``sfreq / (kernel * tau)`` Hz to prevent aliasing artifacts in ordinal
         patterns. If ``False``, no filtering is applied and the symbolic
         transformation is computed on the raw (possibly preprocessed) data.
-        **Warning**: Setting to ``False`` may produce unreliable results if the
-        effective sampling rate (``sfreq / tau``) violates the Nyquist criterion
-        for the spectral content of your data.
+
+        .. warning::
+            Setting to ``False`` may produce unreliable results if the
+            effective sampling rate (``sfreq / tau``) violates the Nyquist criterion
+            for the spectral content of your data.
     weighted : bool
         Whether to compute weighted SMI (wSMI) or standard SMI.
         If ``True`` (default), computes wSMI with distance-based weights.
@@ -319,7 +321,7 @@ def wsmi(
     event_id = epochs.event_id
     metadata = epochs.metadata
 
-    # Get data from all channels and manually exclude bad channels
+    # Handle bad channels manually (consistent with other connectivity functions)
     data_for_comp = epochs.get_data()
     picked_ch_names = [ch for ch in epochs.ch_names if ch not in epochs.info["bads"]]
 
@@ -336,16 +338,15 @@ def wsmi(
         ]
         good_indices = [i for i in range(len(epochs.ch_names)) if i not in bad_indices]
         data_for_comp = data_for_comp[:, good_indices, :]
-    n_epochs, n_channels_picked, n_times_epoch = data_for_comp.shape
 
-    if n_channels_picked == 0:  # Should be caught by len(picks) == 0
-        raise ValueError("No channels selected for wSMI computation after picking.")
+    n_epochs, n_channels_picked, n_times_epoch = data_for_comp.shape
 
     # Check for insufficient channels for connectivity computation
     if n_channels_picked < 2:
         raise ValueError(
             f"At least 2 channels are required for connectivity computation, "
-            f"but only {n_channels_picked} available after excluding bad channels."
+            f"but only {n_channels_picked} channels available after excluding "
+            f"bad channels."
         )
 
     logger.info(
@@ -485,21 +486,24 @@ def wsmi(
     # --- Packaging results ---
     # Extract connectivity for specified connections only
     n_cons = len(indices_use[0])
-    result_conn_data = np.zeros((n_epochs, n_cons, 1))
+    result_conn_data = np.zeros((n_epochs, n_cons))
     indices_list = list(zip(indices_use[0], indices_use[1]))
 
     for epoch_idx in range(n_epochs):
         for conn_idx, (i, j) in enumerate(indices_list):
-            result_conn_data[epoch_idx, conn_idx, 0] = result_epoched[epoch_idx, i, j]
+            # wSMI computation only fills upper triangle, so swap indices if i > j
+            if i > j:
+                result_conn_data[epoch_idx, conn_idx] = result_epoched[epoch_idx, j, i]
+            else:
+                result_conn_data[epoch_idx, conn_idx] = result_epoched[epoch_idx, i, j]
 
     # Create connectivity object with prepared data
     if average:
-        # Average across epochs to get shape (n_cons, n_times)
-        result_conn_data_avg = np.mean(result_conn_data, axis=0)  # Shape: (n_cons, 1)
-        result_connectivity = SpectralConnectivity(
+        # Average across epochs to get shape (n_cons,)
+        result_conn_data_avg = np.mean(result_conn_data, axis=0)
+        result_connectivity = Connectivity(
             data=result_conn_data_avg,
             names=picked_ch_names,
-            freqs=[0.0],  # Single "frequency" for time-domain measure
             method="wSMI" if weighted else "SMI",
             indices=indices_list,
             n_epochs_used=n_epochs,
@@ -510,15 +514,13 @@ def wsmi(
         )
     else:
         # Return epoch-wise connectivity
-        result_connectivity = EpochTemporalConnectivity(
+        result_connectivity = EpochConnectivity(
             data=result_conn_data,
             names=picked_ch_names,
-            times=None,
             method="wSMI" if weighted else "SMI",
             indices=indices_list,
             n_epochs_used=n_epochs,
             n_nodes=n_channels_picked,
-            sfreq=sfreq,
             events=events,
             event_id=event_id,
             metadata=metadata,

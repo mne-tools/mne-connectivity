@@ -123,10 +123,11 @@ plt.show()
 # ======================================
 #
 # First, let's compute wSMI with default parameters. By default, wSMI uses:
-# - Anti-aliasing filtering enabled (anti_aliasing=True)
-# - Weighted symbolic mutual information (weighted=True)
-# - All channel pairs (indices=None)
-# - Individual epoch connectivity (average=False)
+#
+# - Anti-aliasing filtering enabled (``anti_aliasing=True``)
+# - Weighted symbolic mutual information (``weighted=True``)
+# - All channel pairs (``indices=None``)
+# - Individual epoch connectivity (``average=False``)
 
 # Compute wSMI with default parameters
 conn_default = wsmi(epochs, kernel=3, tau=1)
@@ -184,8 +185,9 @@ print(f"Source ↔ Independent: {full_matrix[0, 3]:.3f}")
 # ============================================
 #
 # The kernel and tau parameters control the temporal scale of the analysis:
-# - kernel: Number of time points in each symbolic pattern (2-7 typical)
-# - tau: Time delay between pattern elements (1 = consecutive samples)
+#
+# - ``kernel``: Number of time points in each symbolic pattern (2-7 typical)
+# - ``tau``: Time delay between pattern elements (1 = consecutive samples)
 #
 # Let's explore how these parameters affect connectivity detection.
 
@@ -257,7 +259,7 @@ print(f"Improvement ratio:   {wsmi_values / smi_values:.2f}x")
 # ==============================================
 #
 # wSMI includes automatic anti-aliasing filtering to prevent artifacts when
-# tau > 1. Let's demonstrate the difference this makes.
+# ``tau > 1``. Let's demonstrate the difference this makes.
 
 
 # Compute with and without anti-aliasing
@@ -359,6 +361,17 @@ plt.title("wSMI Connectivity: Real EEG Data\n(Visual stimulus epochs)")
 plt.tight_layout()
 plt.show()
 
+# Brief interpretation of results
+print("\nReal EEG Results Interpretation:")
+print("The connectivity matrix shows wSMI values between electrode pairs during")
+print("visual stimulus processing. Higher values indicate stronger information")
+print("sharing between brain regions, which may reflect:")
+print("- Coordinated visual processing networks")
+print("- Task-related functional connectivity")
+print("- Individual differences in brain network organization")
+print("Note: Values depend on electrode placement, stimulus type, and individual")
+print("brain anatomy. Clinical interpretation requires comparison with controls.")
+
 # %%
 # Selective Connectivity Analysis
 # ===============================
@@ -399,27 +412,32 @@ print(f"Type: {type(conn_averaged)}")
 # ===========================
 #
 # **When to use wSMI:**
+#
 # - Studying nonlinear brain connectivity
 # - Investigating information integration and consciousness
 # - Analyzing temporal dependencies in neural signals
 # - When linear methods (coherence, PLV) may miss important relationships
 #
 # **Parameter selection guidelines:**
-# - kernel: Start with 3, increase to 4-5 for more complex patterns (requires more data)
-# - tau: Use 1 for high-resolution analysis, 2-3 for slower dynamics
-# - anti_aliasing: Keep True unless you've already filtered appropriately
-# - weighted: Keep True for most applications (wSMI vs SMI)
+#
+# - ``kernel``: Start with 3, increase to 4-5 for more complex patterns
+#   (requires more data)
+# - ``tau``: Use 1 for high-resolution analysis, 2-3 for slower dynamics
+# - ``anti_aliasing``: Keep ``True`` unless you've already filtered appropriately
+# - ``weighted``: Keep ``True`` for most applications (wSMI vs SMI)
 #
 # **Data requirements:**
-# - Sufficient epoch length: At least tau*(kernel-1)+1 samples per epoch
+#
+# - Sufficient epoch length: At least ``tau*(kernel-1)+1`` samples per epoch
 # - Adequate SNR: wSMI is robust but benefits from clean data
 # - Stationary signals: Works best with preprocessed, artifact-free data
 #
 # **Interpretation:**
+#
 # - Values near 0: Minimal information sharing
 # - Higher values: Stronger information integration
 # - Compare relative values rather than absolute thresholds
-# - Consider the temporal scale defined by your tau parameter
+# - Consider the temporal scale defined by your ``tau`` parameter
 
 print("\nwSMI analysis complete!")
 print("This example demonstrated:")

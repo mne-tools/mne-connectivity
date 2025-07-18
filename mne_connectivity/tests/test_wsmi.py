@@ -38,7 +38,7 @@ def test_wsmi_basic():
 
     # We expect a lower-triangular connectivity matrix
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -69,7 +69,7 @@ def test_wsmi_eeg_data():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -94,7 +94,7 @@ def test_wsmi_default_anti_aliasing():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -117,7 +117,7 @@ def test_wsmi_mixed_channel_types():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -146,7 +146,7 @@ def test_wsmi_bad_channels():
     data_matrix = result.get_data()
     n_good_channels = n_channels - 1  # 3 good channels
     n_connections = n_good_channels * (n_good_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -200,7 +200,7 @@ def test_wsmi_memory_check():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -225,7 +225,7 @@ def test_wsmi_time_window():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
 
@@ -250,7 +250,7 @@ def test_wsmi_insufficient_samples():
     # Check the result
     data_matrix = result.get_data()
     n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections, 1)
+    assert data_matrix.shape == (n_epochs, n_connections)
 
     # Test that insufficient samples after time masking raises error
     with pytest.raises(ValueError, match=r"but at least[\s\S]*are needed"):
@@ -418,8 +418,8 @@ def test_wsmi_weighted_parameter():
 
     # Check connectivity shapes are the same
     expected_connections = n_channels * (n_channels - 1) // 2
-    assert conn_wsmi.get_data().shape == (n_epochs, expected_connections, 1)
-    assert conn_smi.get_data().shape == (n_epochs, expected_connections, 1)
+    assert conn_wsmi.get_data().shape == (n_epochs, expected_connections)
+    assert conn_smi.get_data().shape == (n_epochs, expected_connections)
 
     # Check that values are finite for both
     wsmi_data = conn_wsmi.get_data()
@@ -454,14 +454,14 @@ def test_wsmi_indices_parameter():
     conn = wsmi(epochs, kernel=3, tau=1, indices=indices)
 
     # Should compute only the specified connections
-    assert conn.get_data().shape == (n_epochs, 2, 1)  # 2 connections
+    assert conn.get_data().shape == (n_epochs, 2)  # 2 connections
     assert conn.n_nodes == n_channels
     assert np.all(np.isfinite(conn.get_data()))
 
     # Test with all connections (default)
     conn_all = wsmi(epochs, kernel=3, tau=1)
     expected_all_connections = n_channels * (n_channels - 1) // 2
-    assert conn_all.get_data().shape == (n_epochs, expected_all_connections, 1)
+    assert conn_all.get_data().shape == (n_epochs, expected_all_connections)
 
     # Test invalid indices
     invalid_indices = (np.array([0, 1]), np.array([5, 6]))  # Out of range
@@ -503,14 +503,14 @@ def test_wsmi_average_parameter():
     conn_avg = wsmi(epochs, kernel=3, tau=1, average=True)
 
     # Check types and shapes
-    from mne_connectivity.base import EpochTemporalConnectivity, SpectralConnectivity
+    from mne_connectivity.base import Connectivity, EpochConnectivity
 
-    assert isinstance(conn_no_avg, EpochTemporalConnectivity)
-    assert isinstance(conn_avg, SpectralConnectivity)
+    assert isinstance(conn_no_avg, EpochConnectivity)
+    assert isinstance(conn_avg, Connectivity)
 
     expected_connections = n_channels * (n_channels - 1) // 2
-    assert conn_no_avg.get_data().shape == (n_epochs, expected_connections, 1)
-    assert conn_avg.get_data().shape == (expected_connections, 1)
+    assert conn_no_avg.get_data().shape == (n_epochs, expected_connections)
+    assert conn_avg.get_data().shape == (expected_connections,)
 
     # Check that averaged connectivity is close to manual average
     manual_avg = np.mean(conn_no_avg.get_data(), axis=0)
@@ -540,10 +540,10 @@ def test_wsmi_indices_and_average_combined():
     conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
 
     # Should return averaged connectivity for specified connections
-    from mne_connectivity.base import SpectralConnectivity
+    from mne_connectivity.base import Connectivity
 
-    assert isinstance(conn, SpectralConnectivity)
-    assert conn.get_data().shape == (2, 1)  # 2 connections, averaged
+    assert isinstance(conn, Connectivity)
+    assert conn.get_data().shape == (2,)  # 2 connections, averaged
     assert np.all(np.isfinite(conn.get_data()))
 
 
