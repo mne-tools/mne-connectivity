@@ -143,8 +143,8 @@ n_channels = len(ch_names)
 # Create full connectivity matrix from lower triangular
 full_matrix = np.zeros((n_channels, n_channels))
 for idx, (i, j) in enumerate(conn_default.indices):
-    full_matrix[i, j] = conn_matrix[idx, 0]
-    full_matrix[j, i] = conn_matrix[idx, 0]  # Make symmetric
+    full_matrix[i, j] = conn_matrix[idx]
+    full_matrix[j, i] = conn_matrix[idx]  # Make symmetric
 
 # %%
 # Visualizing wSMI Connectivity Results
@@ -206,7 +206,7 @@ for kernel, tau in param_combinations:
     conn_avg = conn.get_data().mean(axis=0)
 
     # Extract Source ↔ Linear Coupled connectivity (first connection)
-    source_linear = conn_avg[0, 0]  # Connection between channels 0 and 1
+    source_linear = conn_avg[0]  # Connection between channels 0 and 1
     connectivity_results[f"k{kernel}_t{tau}"] = source_linear
 
 # Plot parameter effects
@@ -246,8 +246,8 @@ conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True, verbose=False)
 conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False, verbose=False)
 
 # Extract connectivity values (Source ↔ Linear Coupled)
-wsmi_values = conn_wsmi.get_data().mean(axis=0)[0, 0]
-smi_values = conn_smi.get_data().mean(axis=0)[0, 0]
+wsmi_values = conn_wsmi.get_data().mean(axis=0)[0]
+smi_values = conn_smi.get_data().mean(axis=0)[0]
 
 print("\nComparison of wSMI vs SMI:")
 print(f"wSMI (weighted):     {wsmi_values:.3f}")
@@ -272,8 +272,8 @@ with warnings.catch_warnings(record=True) as w:
         print(f"Warning when anti-aliasing disabled: {w[0].message}")
 
 # Compare results
-filtered_connectivity = conn_filtered.get_data().mean(axis=0)[0, 0]
-unfiltered_connectivity = conn_unfiltered.get_data().mean(axis=0)[0, 0]
+filtered_connectivity = conn_filtered.get_data().mean(axis=0)[0]
+unfiltered_connectivity = conn_unfiltered.get_data().mean(axis=0)[0]
 
 print("\nAnti-aliasing Effect (tau=2):")
 print(f"With anti-aliasing:    {filtered_connectivity:.3f}")
@@ -331,8 +331,8 @@ n_eeg = len(eeg_picks)
 real_full_matrix = np.zeros((n_eeg, n_eeg))
 
 for idx, (i, j) in enumerate(conn_real.indices):
-    real_full_matrix[i, j] = real_conn_matrix[idx, 0]
-    real_full_matrix[j, i] = real_conn_matrix[idx, 0]
+    real_full_matrix[i, j] = real_conn_matrix[idx]
+    real_full_matrix[j, i] = real_conn_matrix[idx]
 
 # Plot connectivity matrix
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
@@ -391,7 +391,7 @@ print(
 )
 
 # Show connectivity values
-selective_values = conn_selective.get_data().mean(axis=0)[:, 0]
+selective_values = conn_selective.get_data().mean(axis=0)
 for idx, (i, j) in enumerate(conn_selective.indices):
     print(f"{eeg_picks[i]} ↔ {eeg_picks[j]}: {selective_values[idx]:.3f}")
 
