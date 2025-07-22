@@ -142,10 +142,10 @@ def test_wsmi_bad_channels():
     # Test with bad channels
     result = wsmi(epochs, kernel=3, tau=1)
 
-    # Check the result - should have 3 good channels
+    # Check the result - should process all channels (including bad ones)
     data_matrix = result.get_data()
-    n_good_channels = n_channels - 1  # 3 good channels
-    n_connections = n_good_channels * (n_good_channels - 1) // 2
+    # All 4 channels are processed (bad channels are not excluded)
+    n_connections = n_channels * (n_channels - 1) // 2
     assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
 
@@ -325,7 +325,7 @@ def test_wsmi_meg_data():
 
 
 def test_wsmi_all_channels_as_bad():
-    """Test error when all channels are marked as bad."""
+    """Test wSMI when all channels are marked as bad."""
     sfreq = 100.0
     data = np.random.RandomState(0).randn(2, 2, 100)
 
@@ -335,9 +335,14 @@ def test_wsmi_all_channels_as_bad():
     epochs = EpochsArray(data, info, tmin=0.0)
     epochs.info["bads"] = ch_names  # Mark all channels as bad
 
-    # Should raise error - no good channels for connectivity
-    with pytest.raises(ValueError, match="No good channels found"):
-        wsmi(epochs, kernel=3, tau=1)
+    # Should process all channels (bad channels are not excluded)
+    result = wsmi(epochs, kernel=3, tau=1)
+
+    # Check that result is valid
+    data_matrix = result.get_data()
+    n_connections = len(ch_names) * (len(ch_names) - 1) // 2
+    assert data_matrix.shape == (2, n_connections)
+    assert np.all(np.isfinite(data_matrix))
 
 
 def test_wsmi_eeg_without_montage():
