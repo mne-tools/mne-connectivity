@@ -321,24 +321,9 @@ def wsmi(
     event_id = epochs.event_id
     metadata = epochs.metadata
 
-    # Handle bad channels manually (consistent with other connectivity functions)
+    # Get data (following envelope_correlation pattern)
+    picked_ch_names = epochs.ch_names
     data_for_comp = epochs.get_data()
-    picked_ch_names = [ch for ch in epochs.ch_names if ch not in epochs.info["bads"]]
-
-    # Check if we have any good channels
-    if len(picked_ch_names) == 0:
-        raise ValueError(
-            "No good channels found. Check that channels are not all marked as bad."
-        )
-
-    # Remove bad channel data if any bad channels exist
-    if epochs.info["bads"]:
-        bad_indices = [
-            i for i, ch in enumerate(epochs.ch_names) if ch in epochs.info["bads"]
-        ]
-        good_indices = [i for i in range(len(epochs.ch_names)) if i not in bad_indices]
-        data_for_comp = data_for_comp[:, good_indices, :]
-
     n_epochs, n_channels_picked, n_times_epoch = data_for_comp.shape
 
     # Check for insufficient channels for connectivity computation
