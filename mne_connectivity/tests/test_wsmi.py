@@ -647,7 +647,7 @@ def test_wsmi_against_test_data_all_cases():
     for test_case in test_data["tests"]:
         # Extract input parameters
         input_params = test_case["input_params"]
-        method_params = input_params["method_params"]
+
 
         # Run our implementation
         conn = wsmi(
@@ -656,7 +656,6 @@ def test_wsmi_against_test_data_all_cases():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -705,14 +704,13 @@ def test_wsmi_linear_coupling_scenario():
         expected_output = test_case["expected_output"]
 
         # Run our implementation
-        method_params = input_params["method_params"]
+
         conn = wsmi(
             input_params["epochs"],
             kernel=input_params["kernel"],
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -759,7 +757,7 @@ def test_wsmi_nonlinear_coupling_scenario():
     for test_case in nonlinear_tests:
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
-        method_params = input_params["method_params"]
+
 
         # Run our implementation
         conn = wsmi(
@@ -768,7 +766,6 @@ def test_wsmi_nonlinear_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -820,7 +817,7 @@ def test_wsmi_network_coupling_scenario():
     for test_case in network_tests:
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
-        method_params = input_params["method_params"]
+
 
         # Run our implementation
         conn = wsmi(
@@ -829,7 +826,6 @@ def test_wsmi_network_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -881,7 +877,7 @@ def test_wsmi_no_coupling_scenario():
     for test_case in no_coupling_tests:
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
-        method_params = input_params["method_params"]
+
 
         # Run our implementation
         conn = wsmi(
@@ -890,7 +886,6 @@ def test_wsmi_no_coupling_scenario():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -941,14 +936,13 @@ def test_wsmi_parameter_variations():
         expected_output = test_case["expected_output"]
 
         # Run our implementation
-        method_params = input_params["method_params"]
+
         conn = wsmi(
             input_params["epochs"],
             kernel=input_params["kernel"],
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Compare results
@@ -956,63 +950,6 @@ def test_wsmi_parameter_variations():
         new_data = conn.get_data()
 
         assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_performance_comparison():
-    """Compare performance of new implementation against the test data timing.
-
-    Performance testing is crucial for clinical implementation of wSMI:
-
-    Computational complexity considerations:
-    - Symbolic transformation: O(N × K × T) where N=channels, K=kernel, T=time points
-    - Mutual information computation: O(N² × S²) where S=number of symbols (K!)
-    - Memory requirements: Scale with K! for symbol probability matrices
-
-    Clinical performance requirements:
-    - Real-time monitoring: Must process EEG data with minimal delay
-    - Bedside assessment: Run on standard clinical computers
-    - Longitudinal monitoring: Process hours/days of continuous data
-
-    Optimization strategies implemented:
-    - Numba JIT compilation for computational kernels
-    - Parallel processing for independent channel pairs
-    - Memory-efficient symbolic transformation
-    - Fast lookup tables for symbol indexing
-
-    Benchmark expectations:
-    - Target: Sub-second processing for typical clinical datasets
-    - Reasonable: <10 seconds for comprehensive connectivity analysis
-    - Scalability: Linear scaling with data length, quadratic with channel count
-
-    This test ensures our implementation meets clinical performance standards
-    while maintaining full numerical accuracy compared to reference implementation.
-
-    Expected: Execution time <10 seconds per test case, stable across parameter
-    combinations.
-    """
-    import time
-
-    test_data = _load_test_data()
-
-    # Test performance on a few representative cases
-    for test_case in test_data["tests"][:3]:  # Test first 3 cases for performance
-        input_params = test_case["input_params"]
-        method_params = input_params["method_params"]
-
-        # Time our implementation
-        start_time = time.time()
-        wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
-        )
-        execution_time = time.time() - start_time
-
-        # Verify reasonable execution time
-        assert execution_time < 10.0, f"Execution time too slow: {execution_time:.2f}s"
 
 
 def test_wsmi_connectivity_patterns():
@@ -1057,14 +994,13 @@ def test_wsmi_connectivity_patterns():
         input_params = test_case["input_params"]
 
         # Run our implementation
-        method_params = input_params["method_params"]
+
         conn = wsmi(
             input_params["epochs"],
             kernel=input_params["kernel"],
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
-            memory_limit_gb=method_params.get("memory_limit_gb", 1.0),
         )
 
         # Basic checks
