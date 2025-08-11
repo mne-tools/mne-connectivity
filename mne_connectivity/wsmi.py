@@ -8,9 +8,9 @@ import math
 import warnings
 from itertools import permutations
 
-import numba
 import numpy as np
 from mne.epochs import BaseEpochs
+from mne.fixes import jit
 from mne.utils import _time_mask, logger, verbose
 from mne.utils.check import _validate_type
 from mne.utils.docs import fill_doc
@@ -39,7 +39,7 @@ def _define_symbols(kernel):
     return result
 
 
-def _symb_python_optimized(data, kernel, tau):
+def _symb(data, kernel, tau):
     """Compute symbolic transform using original logic but optimized.
 
     This matches the original _symb_python exactly but with optimizations.
@@ -87,8 +87,10 @@ def _get_weights_matrix(nsym):
     return wts
 
 
-@numba.njit(parallel=True)  # Enabled parallel execution
-def _wsmi_python_jitted(data_sym, counts, wts_matrix, weighted=True):
+@jit(parallel=True)  # Enabled parallel execution
+def _wsmi_jitted(  # pragma: no cover
+    data_sym, counts, wts_matrix, weighted=True
+):
     """Compute raw wSMI or SMI from symbolic data (Numba-jitted).
 
     Parameters
@@ -115,7 +117,7 @@ def _wsmi_python_jitted(data_sym, counts, wts_matrix, weighted=True):
     epsilon = 1e-15
     log_counts = np.log(counts + epsilon)
 
-    for trial_idx in numba.prange(ntrials):
+    for trial_idx in range(ntrials):
         for ch1_idx in range(nchannels):
             for ch2_idx in range(ch1_idx + 1, nchannels):
                 pxy = np.zeros((n_unique_symbols, n_unique_symbols), dtype=np.double)
@@ -163,7 +165,7 @@ def _wsmi_python_jitted(data_sym, counts, wts_matrix, weighted=True):
     return result
 
 
-def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0):
+def _validate_kernel(kernel, tau):
     """Validate kernel and tau parameters for wSMI computation.
 
     Parameters
@@ -172,40 +174,31 @@ def _validate_kernel(kernel, tau, sfreq, memory_limit_gb=1.0):
         Pattern length (symbol dimension) for symbolic analysis.
     tau : int
         Time delay (lag) between consecutive pattern elements.
-    sfreq : float
-        Sampling frequency of the data.
-    memory_limit_gb : float
-        Memory limit in GB for kernel validation. Default is 1.0.
 
     Raises
     ------
     ValueError
-        If kernel or tau parameters are invalid or memory requirements exceed limits.
+        If kernel or tau parameters are invalid.
     """
     _validate_type(kernel, "int", "kernel")
     _validate_type(tau, "int", "tau")
-    _validate_type(memory_limit_gb, "numeric", "memory_limit_gb")
 
     if kernel <= 1:
         raise ValueError(f"kernel (pattern length) must be > 1, got {kernel}")
     if tau <= 0:
         raise ValueError(f"tau (delay) must be > 0, got {tau}")
-    if memory_limit_gb <= 0:
-        raise ValueError(f"memory_limit_gb must be > 0, got {memory_limit_gb}")
 
-    # Memory validation for large kernels
+    # Warn about potentially large memory requirements for large kernels
     if kernel > 7:  # Factorial grows extremely fast beyond this
         n_symbols = math.factorial(kernel)
         memory_gb = (n_symbols**2 * 8) / (1024**3)  # 8 bytes per double
-
-        if memory_gb > memory_limit_gb:
-            raise ValueError(
-                f"kernel={kernel} would require ~{memory_gb:.1f} GB of memory "
-                f"(factorial({kernel}) = {n_symbols} symbols). "
-                f"Current limit: {memory_limit_gb} GB. "
-                f"If you have enough RAM, increase 'memory_limit_gb' parameter. "
-                f"Otherwise, consider kernel <= 7."
-            )
+        warnings.warn(
+            f"kernel={kernel} will require ~{memory_gb:.1f} GB of memory "
+            f"(factorial({kernel}) = {n_symbols} symbols). "
+            f"Consider using kernel <= 7 if you encounter memory errors.",
+            UserWarning,
+            stacklevel=3,
+        )
 
 
 @fill_doc
@@ -220,15 +213,15 @@ def wsmi(
     anti_aliasing=True,
     weighted=True,
     average=False,
-    memory_limit_gb=1.0,
     verbose=None,
 ):
     """Compute weighted symbolic mutual information (wSMI).
 
     Parameters
     ----------
-    epochs : ~mne.Epochs
-        The data from which to compute connectivity.
+    epochs : ~mne.Epochs | array-like
+        The data from which to compute connectivity. Can be an MNE Epochs object
+        or array-like data of shape (n_epochs, n_channels, n_times).
     kernel : int
         Pattern length (symbol dimension) for symbolic analysis.
         Must be > 1. Values > 7 may require significant memory.
@@ -264,18 +257,15 @@ def wsmi(
         Whether to average connectivity across epochs. If ``True``, returns
         connectivity averaged over epochs. If ``False`` (default), returns
         connectivity for each epoch separately.
-    memory_limit_gb : float
-        Memory limit in GB for kernel validation. Default is 1.0.
-        Increase if you have more RAM and want to use larger kernels.
     %(verbose)s
 
     Returns
     -------
-    conn : instance of SpectralConnectivity or EpochTemporalConnectivity
+    conn : instance of Connectivity or EpochConnectivity
         Computed connectivity measures. If ``average=True``, returns a
-        :class:`SpectralConnectivity` instance with connectivity averaged
-        across epochs. If ``average=False``, returns an
-        :class:`EpochTemporalConnectivity` instance with connectivity
+        :class:`Connectivity` instance with connectivity averaged across epochs. If
+        ``average=False``, returns an :class:`EpochConnectivity` instance with
+        connectivity
         for each epoch. The connectivity object contains the weighted
         symbolic mutual information values (if ``weighted=True``) or the
         standard symbolic mutual information values (if ``weighted=False``)
@@ -288,6 +278,7 @@ def wsmi(
     based on symbolic dynamics :footcite:`KingEtAl2013`.
 
     The method involves:
+
     1. Symbolic transformation of time series using ordinal patterns
     2. Computation of mutual information between symbolic sequences
     3. Weighting based on pattern distance for enhanced sensitivity
@@ -307,43 +298,69 @@ def wsmi(
     ----------
     .. footbibliography::
     """
-    # Input validation
-    _validate_type(epochs, BaseEpochs, "epochs")
+    # Input validation and data handling for both Epochs and arrays
     _validate_type(weighted, bool, "weighted")
     _validate_type(average, bool, "average")
     _validate_type(anti_aliasing, bool, "anti_aliasing")
 
+    # Handle both MNE Epochs and array inputs
+    if isinstance(epochs, BaseEpochs):
+        # MNE Epochs object
+        sfreq = epochs.info["sfreq"]
+        events = epochs.events
+        event_id = epochs.event_id
+        metadata = epochs.metadata
+        ch_names = epochs.ch_names
+        data_for_comp = epochs.get_data()
+        n_epochs, n_channels, n_times_epoch = data_for_comp.shape
+    else:
+        # Array-like input
+        data_for_comp = np.asarray(epochs)
+        if data_for_comp.ndim != 3:
+            raise ValueError(
+                f"Array input must be 3D (n_epochs, n_channels, n_times), "
+                f"got shape {data_for_comp.shape}"
+            )
+        n_epochs, n_channels, n_times_epoch = data_for_comp.shape
+
+        # Set default values for array input
+        sfreq = 1.0  # Default sampling frequency for arrays
+        events = None
+        event_id = None
+        metadata = None
+        ch_names = [f"CH_{i}" for i in range(n_channels)]
+
+        # Warn user about default sampling frequency
+        if anti_aliasing:
+            warnings.warn(
+                "Array input detected with default sfreq=1.0 Hz. "
+                "Anti-aliasing filter frequency will be computed based on this. "
+                "Consider using MNE Epochs object for proper frequency handling.",
+                UserWarning,
+                stacklevel=2,
+            )
+
     # Validate all parameters early
-    _validate_kernel(kernel, tau, epochs.info["sfreq"], memory_limit_gb)
-
-    sfreq = epochs.info["sfreq"]
-    events = epochs.events
-    event_id = epochs.event_id
-    metadata = epochs.metadata
-
-    # Get data (following envelope_correlation pattern)
-    picked_ch_names = epochs.ch_names
-    data_for_comp = epochs.get_data()
-    n_epochs, n_channels_picked, n_times_epoch = data_for_comp.shape
+    _validate_kernel(kernel, tau)
 
     # Check for insufficient channels for connectivity computation
-    if n_channels_picked < 2:
+    if n_channels < 2:
         raise ValueError(
             f"At least 2 channels are required for connectivity computation, "
-            f"but only {n_channels_picked} channels available after excluding "
+            f"but only {n_channels} channels available after excluding "
             f"bad channels."
         )
 
     logger.info(
-        f"Processing {n_epochs} epochs, {n_channels_picked} channels "
-        f"({picked_ch_names}), {n_times_epoch} time points per epoch."
+        f"Processing {n_epochs} epochs, {n_channels} channels "
+        f"({ch_names}), {n_times_epoch} time points per epoch."
     )
 
     # Handle indices parameter
     if indices is None:
         logger.info("using all connections for lower-triangular matrix")
         # Only compute lower-triangular connections (excluding diagonal)
-        indices_use = np.tril_indices(n_channels_picked, k=-1)
+        indices_use = np.tril_indices(n_channels, k=-1)
     else:
         indices_use = check_indices(indices)
 
@@ -351,11 +368,11 @@ def wsmi(
         if len(indices_use[0]) == 0:
             raise ValueError("No valid connections specified in indices parameter.")
 
-        # Validate that indices are within the range of picked channels
+        # Validate that indices are within the range of channels
         max_idx = max(np.max(indices_use[0]), np.max(indices_use[1]))
-        if max_idx >= n_channels_picked:
+        if max_idx >= n_channels:
             raise ValueError(
-                f"Index {max_idx} is out of range for {n_channels_picked} channels"
+                f"Index {max_idx} is out of range for {n_channels} channels"
             )
 
         # Check that indices don't refer to the same channel (no self-connectivity)
@@ -416,9 +433,15 @@ def wsmi(
         # Transpose to match filtered data format: (n_channels, n_times, n_epochs)
         fdata = data_for_comp.transpose(1, 2, 0)
 
-    # --- Time masking (match original exactly) ---
-    time_mask = _time_mask(epochs.times, tmin, tmax)
-    fdata_masked = fdata[:, time_mask, :]
+    # --- Time masking (handle both Epochs and array inputs) ---
+    if isinstance(epochs, BaseEpochs):
+        time_mask = _time_mask(epochs.times, tmin, tmax)
+        fdata_masked = fdata[:, time_mask, :]
+    else:
+        # For array inputs, create time vector and apply masking
+        times = np.arange(n_times_epoch) / sfreq
+        time_mask = _time_mask(times, tmin, tmax)
+        fdata_masked = fdata[:, time_mask, :]
 
     # Check if time masking resulted in too few samples for symbolization
     min_samples_needed_for_one_symbol = tau * (kernel - 1) + 1
@@ -431,30 +454,28 @@ def wsmi(
         )
 
     # Data is already for symbolic transformation:
-    # (n_channels_picked, n_times, n_epochs)
+    # (n_channels, n_times, n_epochs)
     fdata_for_symb = fdata_masked
 
     # --- 3. Symbolic Transformation ---
     logger.info("Performing symbolic transformation...")
     try:
-        sym, count = _symb_python_optimized(fdata_for_symb, kernel, tau)
+        sym, count = _symb(fdata_for_symb, kernel, tau)
+    except MemoryError:
+        n_symbols = math.factorial(kernel)
+        memory_gb = (n_symbols**2 * 8) / (1024**3)
+        raise MemoryError(
+            f"Insufficient memory for kernel={kernel} (requires ~{memory_gb:.1f} GB). "
+            f"Try reducing kernel size (e.g., kernel <= 7) or use fewer "
+            f"channels/epochs."
+        )
     except Exception as e:
-        logger.error(f"Error during symbolic transformation: {e}")
-        raise
+        raise RuntimeError(
+            "Error during symbolic transformation. Please contact the "
+            "MNE-Connectivity developers."
+        ) from e
 
     n_unique_symbols = count.shape[1]
-    if (
-        sym.shape[0] != n_channels_picked
-        or sym.shape[2] != n_epochs
-        or count.shape[0] != n_channels_picked
-        or count.shape[2] != n_epochs
-    ):
-        raise ValueError(
-            f"""Symbolic transformation output has unexpected shape.
-            Got sym: {sym.shape}, count: {count.shape}.
-            Expected channels: {n_channels_picked}, epochs: {n_epochs}."""
-        )
-
     wts = _get_weights_matrix(n_unique_symbols)
 
     # --- 4. wSMI/SMI Computation (Jitted) ---
@@ -463,8 +484,8 @@ def wsmi(
         f"""Computing {method_name} for {n_unique_symbols} unique symbols
         (Numba-jitted)..."""
     )
-    result = _wsmi_python_jitted(sym, count, wts, weighted)
-    # result is (n_channels_picked, n_channels_picked, n_epochs)
+    result = _wsmi_jitted(sym, count, wts, weighted)
+    # result is (n_channels, n_channels, n_epochs)
 
     result_epoched = result.transpose(2, 0, 1)
 
@@ -488,11 +509,11 @@ def wsmi(
         result_conn_data_avg = np.mean(result_conn_data, axis=0)
         result_connectivity = Connectivity(
             data=result_conn_data_avg,
-            names=picked_ch_names,
+            names=ch_names,
             method="wSMI" if weighted else "SMI",
             indices=indices_list,
             n_epochs_used=n_epochs,
-            n_nodes=n_channels_picked,
+            n_nodes=n_channels,
             events=events,
             event_id=event_id,
             metadata=metadata,
@@ -501,11 +522,11 @@ def wsmi(
         # Return epoch-wise connectivity
         result_connectivity = EpochConnectivity(
             data=result_conn_data,
-            names=picked_ch_names,
+            names=ch_names,
             method="wSMI" if weighted else "SMI",
             indices=indices_list,
             n_epochs_used=n_epochs,
-            n_nodes=n_channels_picked,
+            n_nodes=n_channels,
             events=events,
             event_id=event_id,
             metadata=metadata,

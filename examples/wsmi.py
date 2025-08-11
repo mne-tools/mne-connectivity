@@ -166,7 +166,7 @@ for i in range(n_channels):
             f"{full_matrix[i, j]:.3f}",
             ha="center",
             va="center",
-            color="white" if full_matrix[i, j] > full_matrix.max() / 2 else "black",
+            color="black" if full_matrix[i, j] > full_matrix.max() / 2 else "white",
         )
 
 plt.colorbar(im, ax=ax, label="wSMI")
@@ -299,7 +299,7 @@ events = mne.read_events(event_fname, verbose=False)
 
 # Pick a few EEG channels for demonstration
 eeg_picks = ["EEG 001", "EEG 002", "EEG 003", "EEG 004"]
-raw.pick_channels(eeg_picks)
+raw.pick(eeg_picks)
 
 # Create epochs around visual stimuli
 epochs_real = mne.Epochs(
@@ -351,9 +351,9 @@ for i in range(n_eeg):
             f"{real_full_matrix[i, j]:.3f}",
             ha="center",
             va="center",
-            color="white"
+            color="black"
             if real_full_matrix[i, j] > real_full_matrix.max() / 2
-            else "black",
+            else "white",
         )
 
 plt.colorbar(im, ax=ax, label="wSMI")
