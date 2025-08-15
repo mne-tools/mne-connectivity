@@ -175,8 +175,8 @@ def test_make_signals_in_freq_bands_error_catch():
 
 
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.3, True], [0.1, False]))
-@pytest.mark.parametrize("mode", ["multitaper", "fourier"])
-def test_make_surrogate_data(snr, should_be_significant, mode):
+@pytest.mark.parametrize("method", ["multitaper", "welch", "morlet"])
+def test_make_surrogate_data(snr, should_be_significant, method):
     """Test `make_surrogate_data` creates data for null hypothesis testing."""
     # Generate data
     n_seeds = 2
@@ -186,7 +186,7 @@ def test_make_surrogate_data(snr, should_be_significant, mode):
     sfreq = 100
     n_times = sfreq * 2
     n_shuffles = 1000
-    rng_seed = 44
+    rng_seed = 0
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
@@ -202,22 +202,28 @@ def test_make_surrogate_data(snr, should_be_significant, mode):
     )
 
     # Compute Fourier coefficients and generate surrogates
-    spectrum = data.compute_psd(
-        method="welch" if mode == "fourier" else mode, output="complex"
-    )
-    surrogate_spectrum = make_surrogate_data(
-        data=spectrum, n_shuffles=1000, rng_seed=rng_seed
+    fmin, fmax = 6, 50
+    if method == "morlet":
+        coeffs = data.compute_tfr(
+            method=method, freqs=np.arange(fmin, fmax + 1, 1), output="complex"
+        )
+    else:
+        coeffs = data.compute_psd(method=method, fmin=fmin, fmax=fmax, output="complex")
+    surrogate_coeffs = make_surrogate_data(
+        data=coeffs, n_shuffles=1000, rng_seed=rng_seed
     )
 
     # Compute connectivity
-    con = spectral_connectivity_epochs(data=spectrum, method="coh", indices=indices)
+    con = spectral_connectivity_epochs(data=coeffs, method="coh", indices=indices)
     freqs = np.array(con.freqs)
     connectivity = np.zeros((n_shuffles + 1, *con.shape))
     connectivity[0] = con.get_data()  # first entry is original data
-    for shuffle_i, shuffle_data in enumerate(surrogate_spectrum):
+    for shuffle_i, shuffle_data in enumerate(surrogate_coeffs):
         connectivity[shuffle_i + 1] = spectral_connectivity_epochs(
             data=shuffle_data, method="coh", indices=indices, verbose=False
         ).get_data()
+    if method == "morlet":
+        connectivity = np.mean(connectivity, axis=-1)  # average over time
 
     # Determine if connectivity significant
     alpha = 0.05
@@ -283,7 +289,9 @@ def test_make_surrogate_data_error_catch():
     spectrum = EpochsSpectrumArray(data=data, info=info, freqs=np.arange(n_freqs))
 
     # check bad data
-    with pytest.raises(TypeError, match=r"data must be an instance of.*EpochsSpectrum"):
+    with pytest.raises(
+        TypeError, match=r"data must be an instance of.*EpochsSpectrum.*EpochsTFR"
+    ):
         make_surrogate_data(data=data)
     with pytest.raises(TypeError, match="values in `data` must be complex-valued"):
         bad_dtype_data = EpochsSpectrumArray(
