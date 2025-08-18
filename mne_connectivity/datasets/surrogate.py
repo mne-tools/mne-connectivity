@@ -14,7 +14,8 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
     ----------
     data : ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR
         The Fourier coefficients to create the null hypothesis surrogate data for. Can
-        be generated from :meth:`mne.Epochs.compute_psd` with ``output='complex'``.
+        be generated from :meth:`mne.Epochs.compute_psd` or
+        :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.
 
         .. note::
             Storing Fourier coefficients in :class:`mne.time_frequency.EpochsSpectrum`
