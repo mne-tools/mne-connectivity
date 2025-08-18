@@ -186,7 +186,7 @@ def test_make_surrogate_data(snr, should_be_significant, method):
     sfreq = 100
     n_times = sfreq * 2
     n_shuffles = 1000
-    rng_seed = 0
+    rng_seed = 1
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
