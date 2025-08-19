@@ -208,6 +208,8 @@ def wsmi(
     kernel,
     tau,
     indices=None,
+    sfreq=None,
+    names=None,
     tmin=None,
     tmax=None,
     anti_aliasing=True,
@@ -219,9 +221,9 @@ def wsmi(
 
     Parameters
     ----------
-    epochs : ~mne.Epochs | array-like
-        The data from which to compute connectivity. Can be an MNE Epochs object
-        or array-like data of shape (n_epochs, n_channels, n_times).
+    epochs : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs
+        The data from which to compute connectivity. Can be an :class:`mne.Epochs`
+        object or array-like data.
     kernel : int
         Pattern length (symbol dimension) for symbolic analysis.
         Must be > 1. Values > 7 may require significant memory.
@@ -233,6 +235,10 @@ def wsmi(
         If ``None``, all connections are computed (lower triangular matrix).
         For example, to compute connectivity between channels 0 and 2, and between
         channels 1 and 3, use ``indices = (np.array([0, 1]), np.array([2, 3]))``.
+    sfreq : float | None
+        The sampling frequency. Required if ``epochs`` is an array-like.
+    names : list | None
+        Channel names. If None and ``epochs`` is array-like, default names will be used.
     tmin : float | None
         Time to start connectivity estimation. If ``None``, uses beginning
         of epoch.
@@ -315,6 +321,9 @@ def wsmi(
         n_epochs, n_channels, n_times_epoch = data_for_comp.shape
     else:
         # Array-like input
+        if sfreq is None:
+            raise ValueError("Sampling frequency (sfreq) is required with array input.")
+
         data_for_comp = np.asarray(epochs)
         if data_for_comp.ndim != 3:
             raise ValueError(
@@ -324,21 +333,20 @@ def wsmi(
         n_epochs, n_channels, n_times_epoch = data_for_comp.shape
 
         # Set default values for array input
-        sfreq = 1.0  # Default sampling frequency for arrays
         events = None
         event_id = None
         metadata = None
-        ch_names = [f"CH_{i}" for i in range(n_channels)]
 
-        # Warn user about default sampling frequency
-        if anti_aliasing:
-            warnings.warn(
-                "Array input detected with default sfreq=1.0 Hz. "
-                "Anti-aliasing filter frequency will be computed based on this. "
-                "Consider using MNE Epochs object for proper frequency handling.",
-                UserWarning,
-                stacklevel=2,
-            )
+        # Handle names parameter
+        if names is None:
+            ch_names = [f"CH_{i}" for i in range(n_channels)]
+        else:
+            if len(names) != n_channels:
+                raise ValueError(
+                    f"Number of names ({len(names)}) must match number of "
+                    f"channels ({n_channels})"
+                )
+            ch_names = names
 
     # Validate all parameters early
     _validate_kernel(kernel, tau)
