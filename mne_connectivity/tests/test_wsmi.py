@@ -648,7 +648,6 @@ def test_wsmi_against_test_data_all_cases():
         # Extract input parameters
         input_params = test_case["input_params"]
 
-
         # Run our implementation
         conn = wsmi(
             input_params["epochs"],
@@ -758,7 +757,6 @@ def test_wsmi_nonlinear_coupling_scenario():
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
 
-
         # Run our implementation
         conn = wsmi(
             input_params["epochs"],
@@ -818,7 +816,6 @@ def test_wsmi_network_coupling_scenario():
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
 
-
         # Run our implementation
         conn = wsmi(
             input_params["epochs"],
@@ -877,7 +874,6 @@ def test_wsmi_no_coupling_scenario():
     for test_case in no_coupling_tests:
         input_params = test_case["input_params"]
         expected_output = test_case["expected_output"]
-
 
         # Run our implementation
         conn = wsmi(
@@ -1011,3 +1007,64 @@ def test_wsmi_connectivity_patterns():
         conn_data = conn.get_data()
         assert np.all(conn_data >= -2.0), "wSMI values too negative"
         assert np.all(conn_data <= 2.0), "wSMI values too high"
+
+
+def test_wsmi_array_input():
+    """Test wSMI with array-like input."""
+    # Create test data as numpy array
+    sfreq = 100.0
+    n_epochs, n_channels, n_times = 3, 4, 200
+    rng = np.random.RandomState(42)
+    data = rng.randn(n_epochs, n_channels, n_times)
+
+    # Test with default names
+    result_default = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
+
+    # Check the result
+    assert hasattr(result_default, "get_data")
+    data_matrix = result_default.get_data()
+
+    # We expect a lower-triangular connectivity matrix
+    n_connections = n_channels * (n_channels - 1) // 2
+    assert data_matrix.shape == (n_epochs, n_connections)
+    assert np.all(np.isfinite(data_matrix))
+
+    # Check that default channel names were used
+    expected_names = [f"CH_{i}" for i in range(n_channels)]
+    assert result_default.names == expected_names
+
+    # Test with custom names
+    custom_names = ["A", "B", "C", "D"]
+    result_custom = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=custom_names)
+    assert result_custom.names == custom_names
+
+    # Test that connectivity values are the same regardless of names
+    assert_allclose(result_default.get_data(), result_custom.get_data())
+
+    # Test error when sfreq is not provided
+    with pytest.raises(ValueError, match="Sampling frequency \\(sfreq\\) is required"):
+        wsmi(data, kernel=3, tau=1)
+
+    # Test error when wrong number of names provided
+    with pytest.raises(
+        ValueError, match="Number of names .* must match number of channels"
+    ):
+        wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=["A", "B"])  # Too few names
+
+    # Test error for wrong array shape
+    data_2d = data[0]  # Remove epochs dimension
+    with pytest.raises(ValueError, match="Array input must be 3D"):
+        wsmi(data_2d, kernel=3, tau=1, sfreq=sfreq)
+
+    # Test that array input gives same results as Epochs input for same data
+    ch_names = ["ch1", "ch2", "ch3", "ch4"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    result_epochs = wsmi(epochs, kernel=3, tau=1)
+    result_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=ch_names)
+
+    # Should get identical results
+    assert_allclose(result_epochs.get_data(), result_array.get_data(), rtol=1e-10)
+    assert result_epochs.names == result_array.names
+    assert result_epochs.method == result_array.method
