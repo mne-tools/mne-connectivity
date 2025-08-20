@@ -1017,21 +1017,16 @@ def test_wsmi_array_input():
     rng = np.random.RandomState(42)
     data = rng.randn(n_epochs, n_channels, n_times)
 
-    # Test with default names
+    # Test with default names (None)
     result_default = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
 
     # Check the result
-    assert hasattr(result_default, "get_data")
     data_matrix = result_default.get_data()
 
     # We expect a lower-triangular connectivity matrix
     n_connections = n_channels * (n_channels - 1) // 2
     assert data_matrix.shape == (n_epochs, n_connections)
     assert np.all(np.isfinite(data_matrix))
-
-    # Check that default channel names were used
-    expected_names = [f"CH_{i}" for i in range(n_channels)]
-    assert result_default.names == expected_names
 
     # Test with custom names
     custom_names = ["A", "B", "C", "D"]

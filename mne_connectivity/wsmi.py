@@ -238,7 +238,7 @@ def wsmi(
     sfreq : float | None
         The sampling frequency. Required if ``epochs`` is an array-like.
     names : list | None
-        Channel names. If None and ``epochs`` is array-like, default names will be used.
+        Channel names. If None, default names will be used.
     tmin : float | None
         Time to start connectivity estimation. If ``None``, uses beginning
         of epoch.
@@ -337,16 +337,13 @@ def wsmi(
         event_id = None
         metadata = None
 
-        # Handle names parameter
-        if names is None:
-            ch_names = [f"CH_{i}" for i in range(n_channels)]
-        else:
-            if len(names) != n_channels:
-                raise ValueError(
-                    f"Number of names ({len(names)}) must match number of "
-                    f"channels ({n_channels})"
-                )
-            ch_names = names
+        # Handle names parameter - just validate if provided
+        if names is not None and len(names) != n_channels:
+            raise ValueError(
+                f"Number of names ({len(names)}) must match number of "
+                f"channels ({n_channels})"
+            )
+        ch_names = names
 
     # Validate all parameters early
     _validate_kernel(kernel, tau)
