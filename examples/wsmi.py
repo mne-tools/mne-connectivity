@@ -1,7 +1,7 @@
 """
-=========================================================
-Weighted Symbolic Mutual Information (wSMI) connectivity.
-=========================================================
+=======================================================================
+Compute connectivity using weighted symbolic mutual information (wSMI)
+=======================================================================
 
 This example demonstrates the weighted Symbolic Mutual Information (wSMI)
 connectivity measure :footcite:`KingEtAl2013` for detecting nonlinear
@@ -24,11 +24,11 @@ that are characteristic of conscious brain states.
 #
 # License: BSD (3-clause)
 
-import warnings
-
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from mne.datasets import sample
 
 from mne_connectivity import wsmi
@@ -42,59 +42,59 @@ from mne_connectivity import wsmi
 # independent signals.
 
 
-def create_synthetic_eeg_data(sfreq=500, n_epochs=50, epoch_length=2.0):
-    """Create synthetic EEG data with different connectivity patterns."""
-    n_times = int(sfreq * epoch_length)
+sfreq = 500
+n_epochs = 50
+epoch_length = 2.0
 
-    # Create time vector
-    times = np.arange(n_times) / sfreq
+n_times = int(sfreq * epoch_length)
 
-    # Initialize data array (n_epochs, n_channels, n_times)
-    data = np.zeros((n_epochs, 4, n_times))
+# Create time vector
+times = np.arange(n_times) / sfreq
 
-    for epoch in range(n_epochs):
-        # Set random seed for reproducibility within epoch variation
-        rng = np.random.RandomState(42 + epoch)
+# Initialize data array (n_epochs, n_channels, n_times)
+data = np.zeros((n_epochs, 4, n_times))
 
-        # Channel 1: Source signal (alpha rhythm + noise)
-        alpha_freq = 10 + rng.normal(0, 0.5)  # Variable alpha frequency
-        ch1 = np.sin(2 * np.pi * alpha_freq * times) + 0.3 * rng.randn(n_times)
+for epoch in range(n_epochs):
+    # Set random seed for reproducibility within epoch variation
+    rng = np.random.default_rng(42 + epoch)
 
-        # Channel 2: Linear coupling to ch1 (strong connectivity expected)
-        coupling_strength = 0.7 + rng.normal(0, 0.1)
-        delay_samples = int(0.05 * sfreq)  # 50ms delay
-        ch2_base = coupling_strength * np.roll(ch1, delay_samples)
-        ch2 = ch2_base + 0.2 * rng.randn(n_times)
+    # Channel 1: Source signal (alpha rhythm + noise)
+    # Scale to realistic EEG values (hundreds of microvolts)
+    alpha_freq = 10 + rng.normal(0, 0.5)  # Variable alpha frequency
+    ch1 = 100e-6 * (
+        np.sin(2 * np.pi * alpha_freq * times) + 0.3 * rng.standard_normal(n_times)
+    )
 
-        # Channel 3: Nonlinear coupling to ch1 (wSMI should detect this)
-        # Phase-amplitude coupling + quadratic transformation
-        ch3_phase = np.angle(np.sin(2 * np.pi * alpha_freq * times))
-        ch3_amp = 0.5 * (1 + np.tanh(2 * ch1))  # Nonlinear transformation
-        ch3 = ch3_amp * np.sin(ch3_phase + np.pi / 4) + 0.3 * rng.randn(n_times)
+    # Channel 2: Linear coupling to ch1 (strong connectivity expected)
+    coupling_strength = 0.7 + rng.normal(0, 0.1)
+    delay_samples = int(0.05 * sfreq)  # 50ms delay
+    ch2_base = coupling_strength * np.roll(ch1, delay_samples)
+    ch2 = ch2_base + 20e-6 * rng.standard_normal(n_times)
 
-        # Channel 4: Independent signal (low connectivity expected)
-        beta_freq = 20 + rng.normal(0, 1)
-        ch4 = np.sin(2 * np.pi * beta_freq * times) + 0.4 * rng.randn(n_times)
+    # Channel 3: Nonlinear coupling to ch1 (wSMI should detect this)
+    # Phase-amplitude coupling + quadratic transformation
+    ch3_phase = np.angle(np.sin(2 * np.pi * alpha_freq * times))
+    ch3_amp = 0.5 * (1 + np.tanh(2 * ch1 / 50e-6))  # Nonlinear transformation
+    ch3 = 80e-6 * ch3_amp * np.sin(ch3_phase + np.pi / 4) + 30e-6 * rng.standard_normal(
+        n_times
+    )
 
-        data[epoch, 0, :] = ch1
-        data[epoch, 1, :] = ch2
-        data[epoch, 2, :] = ch3
-        data[epoch, 3, :] = ch4
+    # Channel 4: Independent signal (low connectivity expected)
+    beta_freq = 20 + rng.normal(0, 1)
+    ch4 = 120e-6 * (
+        np.sin(2 * np.pi * beta_freq * times) + 0.4 * rng.standard_normal(n_times)
+    )
 
-    return data
+    data[epoch, 0, :] = ch1
+    data[epoch, 1, :] = ch2
+    data[epoch, 2, :] = ch3
+    data[epoch, 3, :] = ch4
 
-
-# Create synthetic data
-sfreq = 500  # Hz
-data = create_synthetic_eeg_data(sfreq=sfreq, n_epochs=50, epoch_length=2.0)
 
 # Create MNE Epochs object
 ch_names = ["Source", "Linear_Coupled", "Nonlinear_Coupled", "Independent"]
-ch_types = ["eeg"] * 4
-info = mne.create_info(ch_names, sfreq=sfreq, ch_types=ch_types)
+info = mne.create_info(ch_names, sfreq=sfreq, ch_types="eeg")
 epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
-
-print(f"Created synthetic EEG data: {epochs}")
 
 # %%
 # Visualizing the Synthetic Data
@@ -103,82 +103,78 @@ print(f"Created synthetic EEG data: {epochs}")
 # Let's examine our synthetic data to understand the different connectivity
 # patterns we've created.
 
-# Plot a sample of the data
-fig, axes = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
-epoch_data = epochs.get_data()[0]  # First epoch
-times = epochs.times[:500]  # First 1 second
-
-for i, ch_name in enumerate(ch_names):
-    axes[i].plot(times, epoch_data[i, :500])
-    axes[i].set_ylabel(ch_name)
-    axes[i].grid(True, alpha=0.3)
-
-axes[-1].set_xlabel("Time (s)")
-plt.suptitle("Synthetic EEG Data with Different Connectivity Patterns")
-plt.tight_layout()
-plt.show()
+# Plot a sample of the data using MNE's built-in plotting
+fig = epochs.plot(
+    n_epochs=1,
+    scalings="auto",
+    show_scrollbars=False,
+    block=False,
+    title="Synthetic EEG Data with Different Connectivity Patterns",
+)
 
 # %%
 # Computing wSMI with Default Parameters
 # ======================================
 #
-# First, let's compute wSMI with default parameters. By default, wSMI uses:
+# First, let's compute wSMI with default parameters. The two key parameters are:
 #
+# - ``kernel``: Number of time points in each symbolic pattern (here 3).
+#   This controls pattern complexity - larger values detect more complex patterns
+#   but require more data. Values of 3-5 are typical.
+# - ``tau``: Time delay between pattern elements in samples (here 1).
+#   This controls temporal resolution - tau=1 uses consecutive samples,
+#   larger values focus on slower dynamics but reduce effective sampling rate.
+#
+# **Important**: Poor parameter choices can miss nonlinear coupling! We'll explore
+# this systematically below.
+#
+# Other defaults:
 # - Anti-aliasing filtering enabled (``anti_aliasing=True``)
 # - Weighted symbolic mutual information (``weighted=True``)
 # - All channel pairs (``indices=None``)
 # - Individual epoch connectivity (``average=False``)
 
-# Compute wSMI with default parameters
+# Compute wSMI with default parameters (individual epoch connectivity)
 conn_default = wsmi(epochs, kernel=3, tau=1)
 
 print(f"wSMI connectivity shape: {conn_default.get_data().shape}")
 print(f"Method: {conn_default.method}")
 print(f"Number of connections: {len(conn_default.indices)}")
+print("Data type: Individual epoch connectivity (n_epochs, n_connections)")
 
-# Extract connectivity matrix for visualization
-conn_matrix = conn_default.get_data().mean(axis=0)  # Average over epochs
-n_channels = len(ch_names)
+# Show connectivity for a few example pairs from first and second epochs
+print("\nExample connectivity values (showing epoch-to-epoch variability):")
+named_indices = np.array(conn_default.attrs["node_names"])[
+    np.array(conn_default.indices)
+]
+for i, node_names in enumerate(named_indices[:3]):  # First 3 pairs only
+    conn_val_ep1 = conn_default.get_data()[0, i]  # First epoch, i-th connection
+    conn_val_ep2 = conn_default.get_data()[1, i]  # Second epoch, i-th connection
+    print(
+        f"{' ↔ '.join(node_names)}: "
+        f"Epoch 1: {conn_val_ep1:.4f}, Epoch 2: {conn_val_ep2:.4f}"
+    )
 
-# Create full connectivity matrix from lower triangular
-full_matrix = np.zeros((n_channels, n_channels))
-for idx, (i, j) in enumerate(conn_default.indices):
-    full_matrix[i, j] = conn_matrix[idx]
-    full_matrix[j, i] = conn_matrix[idx]  # Make symmetric
 
 # %%
 # Visualizing wSMI Connectivity Results
 # =====================================
 
-fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-im = ax.imshow(full_matrix, cmap="viridis", vmin=0, vmax=full_matrix.max())
-ax.set_xticks(range(n_channels))
-ax.set_yticks(range(n_channels))
-ax.set_xticklabels(ch_names, rotation=45)
-ax.set_yticklabels(ch_names)
+# Now compute averaged connectivity for visualization
+conn_ave = wsmi(epochs, kernel=3, tau=1, average=True)
+# Create connectivity matrix for visualization
+names = conn_ave.attrs["node_names"]
+n_ch = len(names)
+full_matrix = np.zeros((n_ch, n_ch))
+for conn_value, (i, j) in zip(conn_ave.get_data(), conn_ave.indices):
+    full_matrix[i, j] = full_matrix[j, i] = conn_value
 
-# Add connectivity values as text
-for i in range(n_channels):
-    for j in range(n_channels):
-        text = ax.text(
-            j,
-            i,
-            f"{full_matrix[i, j]:.3f}",
-            ha="center",
-            va="center",
-            color="black" if full_matrix[i, j] > full_matrix.max() / 2 else "white",
-        )
-
-plt.colorbar(im, ax=ax, label="wSMI")
-plt.title("wSMI Connectivity Matrix\n(Higher values = stronger connectivity)")
-plt.tight_layout()
-plt.show()
-
-# Print connectivity summary
-print("\nConnectivity Summary:")
-print(f"Source ↔ Linear Coupled: {full_matrix[0, 1]:.3f}")
-print(f"Source ↔ Nonlinear Coupled: {full_matrix[0, 2]:.3f}")
-print(f"Source ↔ Independent: {full_matrix[0, 3]:.3f}")
+# Use pandas and seaborn for cleaner visualization
+df = pd.DataFrame(data=full_matrix, index=names, columns=names)
+ax = sns.heatmap(df, annot=True, fmt="0.4f", cmap="viridis", vmin=0)
+ax.set_title("wSMI Connectivity Matrix\n(Higher values = stronger connectivity)")
+ax.tick_params(axis="x", labelrotation=45)
+ax.figure.tight_layout()
 
 # %%
 # Exploring Parameter Effects: kernel and tau
@@ -189,145 +185,151 @@ print(f"Source ↔ Independent: {full_matrix[0, 3]:.3f}")
 # - ``kernel``: Number of time points in each symbolic pattern (2-7 typical)
 # - ``tau``: Time delay between pattern elements (1 = consecutive samples)
 #
-# Let's explore how these parameters affect connectivity detection.
+# Let's explore how these parameters affect connectivity detection systematically
+# using a grid search approach to see which combinations recover the strongest
+# coupling for each channel pair.
 
-# Test different parameter combinations
-param_combinations = [
-    (3, 1),  # Fine temporal resolution
-    (3, 2),  # Coarser temporal resolution
-    (4, 1),  # More complex patterns
-    (4, 2),  # Complex patterns + coarser resolution
-]
+# Define parameter ranges for comprehensive exploration
+kernels = [3, 4, 5]
+taus = [1, 2, 3]
 
-connectivity_results = {}
+# Store results for each Source connection
+channel_names = ["Linear_Coupled", "Nonlinear_Coupled", "Independent"]
+results = {name: np.zeros((len(kernels), len(taus))) for name in channel_names}
 
-for kernel, tau in param_combinations:
-    conn = wsmi(epochs, kernel=kernel, tau=tau, verbose=False)
-    conn_avg = conn.get_data().mean(axis=0)
+# Perform grid search
+for i, kernel in enumerate(kernels):
+    for j, tau in enumerate(taus):
+        conn = wsmi(epochs, kernel=kernel, tau=tau, average=True, verbose=False)
 
-    # Extract Source ↔ Linear Coupled connectivity (first connection)
-    source_linear = conn_avg[0]  # Connection between channels 0 and 1
-    connectivity_results[f"k{kernel}_t{tau}"] = source_linear
+        # Extract Source connections (indices 0, 1, 2 are Source to other channels)
+        for k, channel_name in enumerate(channel_names):
+            results[channel_name][i, j] = conn.get_data()[k]
 
-# Plot parameter effects
-fig, ax = plt.subplots(figsize=(10, 6))
-params = list(connectivity_results.keys())
-values = list(connectivity_results.values())
+# Create heatmaps showing parameter effects for each coupling type
+fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
-bars = ax.bar(params, values, color=["skyblue", "lightcoral", "lightgreen", "gold"])
-ax.set_ylabel("wSMI (Source ↔ Linear Coupled)")
-ax.set_xlabel("Parameter Combination (kernel_tau)")
-ax.set_title("Effect of kernel and tau Parameters on wSMI")
-ax.grid(True, alpha=0.3)
+for idx, (channel_name, data) in enumerate(results.items()):
+    im = axes[idx].imshow(data, cmap="plasma", aspect="auto")  # Different colormap
+    axes[idx].set_title(f"Source ↔ {channel_name}")
+    axes[idx].set_xlabel("tau")
+    axes[idx].set_ylabel("kernel")
+    axes[idx].set_xticks(range(len(taus)))
+    axes[idx].set_xticklabels(taus)
+    axes[idx].set_yticks(range(len(kernels)))
+    axes[idx].set_yticklabels(kernels)
 
-# Add value labels on bars
-for bar, value in zip(bars, values):
-    height = bar.get_height()
-    ax.text(
-        bar.get_x() + bar.get_width() / 2.0,
-        height + 0.001,
-        f"{value:.3f}",
-        ha="center",
-        va="bottom",
-    )
+    # Add text annotations
+    for ii in range(len(kernels)):
+        for jj in range(len(taus)):
+            text = axes[idx].text(
+                jj,
+                ii,
+                f"{data[ii, jj]:.3f}",
+                ha="center",
+                va="center",
+                color="white",
+                fontsize=8,
+            )
+    plt.colorbar(im, ax=axes[idx], label="wSMI")
 
+plt.suptitle("Parameter Grid Search: wSMI Recovery for Different Coupling Types")
 plt.tight_layout()
-plt.show()
 
 # %%
 # Comparing wSMI vs SMI (weighted vs unweighted)
 # ===============================================
 #
-# wSMI uses distance-based weighting of symbolic patterns, while standard SMI
-# treats all patterns equally. Let's compare their sensitivity.
+# wSMI applies binary weights that set to zero the mutual information from:
+# 1) Identical symbol pairs (which could arise from common sources)
+# 2) Opposed symbol pairs (which could reflect two sides of a single dipole)
+# This weighting scheme discards spurious correlations from common sources
+# while preserving genuine information sharing between distant brain regions.
+#
+# **Interpretation**: The weighting reduces artifacts but may also affect
+# genuine connectivity estimates. The net effect depends on the balance between
+# artifact reduction and genuine signal preservation in your specific data.
 
 # Compute both weighted and unweighted versions
-conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True, verbose=False)
-conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False, verbose=False)
+conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True, average=True, verbose=False)
+conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False, average=True, verbose=False)
 
 # Extract connectivity values (Source ↔ Linear Coupled)
-wsmi_values = conn_wsmi.get_data().mean(axis=0)[0]
-smi_values = conn_smi.get_data().mean(axis=0)[0]
+wsmi_values = conn_wsmi.get_data()[0]
+smi_values = conn_smi.get_data()[0]
 
 print("\nComparison of wSMI vs SMI:")
 print(f"wSMI (weighted):     {wsmi_values:.3f}")
 print(f"SMI (unweighted):    {smi_values:.3f}")
-print(f"Improvement ratio:   {wsmi_values / smi_values:.2f}x")
+print(f"Difference:          {smi_values - wsmi_values:.3f}")
+print("Note: The weighting scheme zeros out identical and opposed symbol")
+print("      pairs to reduce common source artifacts, which can affect")
+print("      the final connectivity estimates in either direction.")
 
 # %%
 # Anti-aliasing: Understanding the Preprocessing
 # ==============================================
 #
 # wSMI includes automatic anti-aliasing filtering to prevent artifacts when
-# ``tau > 1``. Let's demonstrate the difference this makes.
-
-
-# Compute with and without anti-aliasing
-conn_filtered = wsmi(epochs, kernel=3, tau=2, anti_aliasing=True, verbose=False)
-
-with warnings.catch_warnings(record=True) as w:
-    warnings.simplefilter("always")
-    conn_unfiltered = wsmi(epochs, kernel=3, tau=2, anti_aliasing=False, verbose=False)
-    if w:
-        print(f"Warning when anti-aliasing disabled: {w[0].message}")
-
-# Compare results
-filtered_connectivity = conn_filtered.get_data().mean(axis=0)[0]
-unfiltered_connectivity = conn_unfiltered.get_data().mean(axis=0)[0]
-
-print("\nAnti-aliasing Effect (tau=2):")
-print(f"With anti-aliasing:    {filtered_connectivity:.3f}")
-print(f"Without anti-aliasing: {unfiltered_connectivity:.3f}")
-print(
-    f"Difference:            {abs(filtered_connectivity - unfiltered_connectivity):.3f}"
-)
+# ``tau > 1``. This filtering is crucial for accurate results:
+#
+# **When to use anti_aliasing=True (default):**
+# - Always recommended unless you've already filtered your data appropriately
+# - Essential when tau > 1 to prevent aliasing artifacts
+# - Automatically applies low-pass filtering at appropriate frequencies
+#
+# **When anti_aliasing=False might be acceptable:**
+# - You've already applied appropriate low-pass filtering to your data
+# - You want to save computation time and are confident in your preprocessing
+# - **Warning**: Results may be inaccurate/unreliable without proper filtering
+#
+# The tau parameter affects your effective sampling frequency multiplicatively.
+# For example, tau=2 reduces your effective sampling rate by half, so
+# high-temporal-fidelity coupling (sample-to-sample) may not be detected
+# if you set tau to higher values. This affects the time-scale on which
+# signals are considered coupled.
 
 # %%
-# Using Real EEG Data: Sample Dataset
-# ===================================
+# Computing wSMI on real EEG data
+# ===============================
 #
 # Now let's apply wSMI to real EEG data from the MNE sample dataset.
+# We'll use the pre-filtered data and do minimal preprocessing.
 
-# Load sample data
+# Load sample data (already filtered 0.1-40 Hz)
 data_path = sample.data_path()
-raw_fname = data_path / "MEG" / "sample" / "sample_audvis_filt-0-40_raw.fif"
-event_fname = data_path / "MEG" / "sample" / "sample_audvis_filt-0-40_raw-eve.fif"
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+event_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
 
-# Load and preprocess data
+# Load data and events
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 events = mne.read_events(event_fname, verbose=False)
 
-# Pick a few EEG channels for demonstration
+# Pick 4 EEG channels - no additional filtering needed
 eeg_picks = ["EEG 001", "EEG 002", "EEG 003", "EEG 004"]
 raw.pick(eeg_picks)
 
-# Create epochs around visual stimuli
+# Simple epoching around visual stimuli (event 3)
 epochs_real = mne.Epochs(
     raw,
     events,
     event_id=3,
-    tmin=-0.2,
-    tmax=0.8,
-    baseline=(-0.2, 0),
+    tmin=-0.1,
+    tmax=0.4,
+    baseline=None,
     preload=True,
     verbose=False,
 )
 
-# Apply minimal preprocessing
-epochs_real.filter(1, 30, verbose=False)  # Basic band-pass filter
-
 print(f"Real EEG data: {epochs_real}")
-
-# %%
-# Computing wSMI on Real Data
-# ===========================
+print(f"Channels: {epochs_real.ch_names}")
 
 # Compute wSMI on real EEG data
 conn_real = wsmi(epochs_real, kernel=3, tau=1, verbose=False)
 
 # Create connectivity matrix for visualization
 real_conn_matrix = conn_real.get_data().mean(axis=0)
-n_eeg = len(eeg_picks)
+n_eeg = len(epochs_real.ch_names)
 real_full_matrix = np.zeros((n_eeg, n_eeg))
 
 for idx, (i, j) in enumerate(conn_real.indices):
@@ -339,8 +341,8 @@ fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 im = ax.imshow(real_full_matrix, cmap="viridis", vmin=0)
 ax.set_xticks(range(n_eeg))
 ax.set_yticks(range(n_eeg))
-ax.set_xticklabels(eeg_picks)
-ax.set_yticklabels(eeg_picks)
+ax.set_xticklabels(epochs_real.ch_names)
+ax.set_yticklabels(epochs_real.ch_names)
 
 # Add connectivity values
 for i in range(n_eeg):
@@ -361,51 +363,34 @@ plt.title("wSMI Connectivity: Real EEG Data\n(Visual stimulus epochs)")
 plt.tight_layout()
 plt.show()
 
+print(f"Strongest connections in real EEG data (>{np.mean(real_conn_matrix):.3f}):")
+for i, ch1 in enumerate(epochs_real.ch_names):
+    for j, ch2 in enumerate(epochs_real.ch_names[i + 1 :], i + 1):
+        print(f"{ch1} ↔ {ch2}: {real_full_matrix[i, j]:.3f}")
+
 # Brief interpretation of results
-print("\nReal EEG Results Interpretation:")
-print("The connectivity matrix shows wSMI values between electrode pairs during")
-print("visual stimulus processing. Higher values indicate stronger information")
-print("sharing between brain regions, which may reflect:")
-print("- Coordinated visual processing networks")
-print("- Task-related functional connectivity")
-print("- Individual differences in brain network organization")
-print("Note: Values depend on electrode placement, stimulus type, and individual")
-print("brain anatomy. Clinical interpretation requires comparison with controls.")
+#
+# The connectivity matrix shows wSMI values between electrode pairs during
+# visual stimulus processing. Higher values indicate stronger information
+# sharing between brain regions, which may reflect coordinated visual
+# processing networks and task-related functional connectivity.
+#
+# Note: Values depend on electrode placement, stimulus type, and individual
+# brain anatomy. Clinical interpretation requires comparison with controls.
 
 # %%
-# Selective Connectivity Analysis
-# ===============================
+# Tips for Large Datasets and Group Analysis
+# ===========================================
 #
-# For large datasets, you might want to compute connectivity only between
-# specific channel pairs using the indices parameter.
-
-# Define specific connections of interest
-indices = ([0, 0, 1], [1, 2, 2])  # EEG001↔EEG002, EEG001↔EEG003, EEG002↔EEG003
-
-conn_selective = wsmi(epochs_real, kernel=3, tau=1, indices=indices, verbose=False)
-
-print("\nSelective connectivity analysis:")
-print(f"Number of connections computed: {len(conn_selective.indices)}")
-print(
-    f"Connections: {[(eeg_picks[i], eeg_picks[j]) for i, j in conn_selective.indices]}"
-)
-
-# Show connectivity values
-selective_values = conn_selective.get_data().mean(axis=0)
-for idx, (i, j) in enumerate(conn_selective.indices):
-    print(f"{eeg_picks[i]} ↔ {eeg_picks[j]}: {selective_values[idx]:.3f}")
-
-# %%
-# Averaging Across Epochs
-# ========================
+# **Selective connectivity analysis**: For large datasets with many channels,
+# use the ``indices`` parameter to compute connectivity only between specific
+# channel pairs of interest, which can significantly reduce computation time.
 #
-# For group-level analysis, you might want connectivity averaged across epochs.
+# **Cross-subject analysis**: For group-level or between-group analysis,
+# it's often easier to work with within-subject averages over epochs by
+# setting ``average=True``. This provides one connectivity value per connection
+# per subject, which can then be used for statistical comparisons across subjects.
 
-conn_averaged = wsmi(epochs_real, kernel=3, tau=1, average=True, verbose=False)
-
-print("\nEpoch-averaged connectivity:")
-print(f"Data shape: {conn_averaged.get_data().shape}")
-print(f"Type: {type(conn_averaged)}")
 
 # %%
 # Summary and Best Practices
@@ -437,17 +422,12 @@ print(f"Type: {type(conn_averaged)}")
 # - Values near 0: Minimal information sharing
 # - Higher values: Stronger information integration
 # - Compare relative values rather than absolute thresholds
-# - Consider the temporal scale defined by your ``tau`` parameter
+# - Consider the temporal scale defined by your ``tau`` parameter: ``tau > 1``
+#   lowers your effective sampling frequency multiplicatively, affecting your
+#   interpretation of the time-scale on which signals are coupled. For example,
+#   high-temporal-fidelity coupling (sample-to-sample) may not be detected
+#   if you set ``tau`` to a higher value, as it focuses on slower dynamics.
 
-print("\nwSMI analysis complete!")
-print("This example demonstrated:")
-print("- Basic wSMI computation and visualization")
-print("- Parameter exploration (kernel, tau)")
-print("- Comparison of weighted vs unweighted SMI")
-print("- Anti-aliasing effects")
-print("- Application to real EEG data")
-print("- Selective connectivity analysis")
-print("- Epoch averaging for group analysis")
 
 # %%
 # References

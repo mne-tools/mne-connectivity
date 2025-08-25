@@ -7,7 +7,7 @@ import mne
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_equal
 
 from mne_connectivity import wsmi
 
@@ -33,7 +33,6 @@ def test_wsmi_basic():
     result = wsmi(epochs, kernel=3, tau=1)
 
     # Check the result
-    assert hasattr(result, "get_data")
     data_matrix = result.get_data()
 
     # We expect a lower-triangular connectivity matrix
@@ -263,10 +262,9 @@ def test_wsmi_deterministic():
     n_epochs, n_channels, n_times = 2, 3, 150
 
     # Create identical datasets
-    rng1 = np.random.RandomState(42)
-    rng2 = np.random.RandomState(42)
-    data1 = rng1.randn(n_epochs, n_channels, n_times)
-    data2 = rng2.randn(n_epochs, n_channels, n_times)
+    rng = np.random.default_rng(42)
+    data1 = rng.standard_normal((n_epochs, n_channels, n_times))
+    data2 = data1.copy()
 
     ch_names = ["Fz", "Cz", "Pz"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
@@ -290,7 +288,7 @@ def test_wsmi_deterministic():
     )
 
     # Results should be identical
-    assert_allclose(conn1.get_data(), conn2.get_data())
+    assert_array_equal(conn1.get_data(), conn2.get_data())
 
 
 def test_wsmi_single_channel():
