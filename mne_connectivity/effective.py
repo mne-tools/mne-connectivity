@@ -179,10 +179,7 @@ def phase_slope_index(
     )
 
     # extract class properties from the spectral connectivity structure
-    if isinstance(cohy, SpectroTemporalConnectivity):
-        times = cohy.times
-    else:
-        times = None
+    times = cohy.attrs.get("times")
     freqs_ = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
