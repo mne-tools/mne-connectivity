@@ -5,7 +5,7 @@
 import copy
 
 import numpy as np
-from mne.utils import logger, verbose
+from mne.utils import logger, verbose, warn
 
 from .base import SpectralConnectivity, SpectroTemporalConnectivity
 from .spectral import spectral_connectivity_epochs
@@ -63,8 +63,10 @@ def phase_slope_index(
         Two array-likes with indices of connections for which to compute connectivity.
         If ``None``, all connections are computed. See Notes of
         :func:`~mne_connectivity.spectral_connectivity_epochs` for details.
-    sfreq : float
-        The sampling frequency.
+    sfreq : float | None
+        The sampling frequency. Default is ``2*np.pi`` in 0.8 but will change to
+        ``None`` in 0.9, set it explicitly when ``data`` is an array-like to avoid a
+        warning.
     mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``
         Spectrum estimation mode.
     fmin : float | tuple of float
@@ -120,6 +122,15 @@ def phase_slope_index(
     .. footbibliography::
     """
     logger.info("Estimating phase slope index (PSI)")
+
+    if sfreq == 2 * np.pi and isinstance(data, np.ndarray | list | tuple | set):
+        warn(
+            "The current default of sfreq=2*np.pi will change to sfreq=None in 0.9. "
+            "Set the value of sfreq explicitly for array-like inputs to avoid this "
+            "warning",
+            FutureWarning,
+        )
+
     # estimate the coherency
     cohy = spectral_connectivity_epochs(
         data,
