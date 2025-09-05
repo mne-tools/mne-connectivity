@@ -18,7 +18,7 @@ def phase_slope_index(
     data,
     names=None,
     indices=None,
-    sfreq=2 * np.pi,
+    sfreq="",
     mode="multitaper",
     fmin=None,
     fmax=np.inf,
@@ -64,9 +64,9 @@ def phase_slope_index(
         If ``None``, all connections are computed. See Notes of
         :func:`~mne_connectivity.spectral_connectivity_epochs` for details.
     sfreq : float | None
-        The sampling frequency. Default is ``2*np.pi`` in 0.8 but will change to
-        ``None`` in 0.9, set it explicitly when ``data`` is an array-like to avoid a
-        warning.
+        The sampling frequency. Default is an empty string for ``2*np.pi`` in 0.8, but
+        will change to ``None`` in 0.9. Set it explicitly when ``data`` is an array-like
+        to avoid a warning.
     mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``
         Spectrum estimation mode.
     fmin : float | tuple of float
@@ -123,13 +123,15 @@ def phase_slope_index(
     """
     logger.info("Estimating phase slope index (PSI)")
 
-    if sfreq == 2 * np.pi and isinstance(data, np.ndarray | list | tuple | set):
-        warn(
-            "The current default of sfreq=2*np.pi will change to sfreq=None in 0.9. "
-            "Set the value of sfreq explicitly for array-like inputs to avoid this "
-            "warning",
-            FutureWarning,
-        )
+    if sfreq == "":
+        sfreq = 2 * np.pi
+        if isinstance(data, np.ndarray | list | tuple | set):
+            warn(
+                "The current default of sfreq=2*np.pi will change to sfreq=None in "
+                "0.9. Set the value of sfreq explicitly for array-like inputs to avoid "
+                "this warning",
+                FutureWarning,
+            )
 
     # estimate the coherency
     cohy = spectral_connectivity_epochs(
