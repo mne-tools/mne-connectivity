@@ -3,7 +3,7 @@
 # License: BSD (3-clause)
 
 import numpy as np
-from mne.time_frequency import EpochsSpectrum
+from mne.time_frequency import EpochsSpectrum, EpochsTFR
 from mne.utils import _validate_type
 
 
@@ -12,10 +12,14 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
 
     Parameters
     ----------
-    data : ~mne.time_frequency.EpochsSpectrum
+    data : ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR
         The Fourier coefficients to create the null hypothesis surrogate data for. Can
-        be generated from :meth:`mne.Epochs.compute_psd` with ``output='complex'``
-        (requires ``mne >= 1.8``).
+        be generated from :meth:`mne.Epochs.compute_psd` or
+        :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.
+
+        .. note::
+            Storing Fourier coefficients in :class:`mne.time_frequency.EpochsSpectrum`
+            objects requires ``mne >= 1.8``.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
     rng_seed : int | None (default None)
@@ -28,7 +32,7 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
 
     Returns
     -------
-    surrogate_data : list of ~mne.time_frequency.EpochsSpectrum
+    surrogate_data : list of ~mne.time_frequency.EpochsSpectrum or ~mne.time_frequency.EpochsTFR
         The surrogate data for the null hypothesis with ``n_shuffles`` entries. Returned
         as a generator if ``return_generator=True``.
 
@@ -74,13 +78,16 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     # Validate inputs
     _validate_type(
         data,
-        (EpochsSpectrum),
+        (EpochsSpectrum, EpochsTFR),
         "data",
-        "mne.time_frequency.EpochsSpectrum or mne.time_frequency.EpochsSpectrumArray",
+        (
+            "mne.time_frequency.EpochsSpectrum, mne.time_frequency.EpochsSpectrumArray,"
+            " mne.time_frequency.EpochsTFR, or mne.time_frequency.EpochsTFRArray",
+        ),
     )
     if not np.iscomplexobj(data.get_data()):
         raise TypeError("values in `data` must be complex-valued")
@@ -97,7 +104,7 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
     _validate_type(return_generator, bool, "return_generator", "bool")
     # rng_seed checked by NumPy later
 
-    # Make surrogate data and package into EpochsSpectrum objects
+    # Make surrogate data and package into EpochsSpectrum/TFR objects
     surrogate_data = _shuffle_coefficients(data, n_shuffles, rng_seed)
     if not return_generator:
         surrogate_data = [shuffle for shuffle in surrogate_data]
@@ -108,25 +115,38 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
 def _shuffle_coefficients(data, n_shuffles, rng_seed):
     """Shuffle coefficients over epochs to create surrogate data.
 
-    Surrogate data for each shuffle packaged into an EpochsSpectrum object, which are
-    together returned as a generator to minimise memory demand.
+    Surrogate data for each shuffle packaged into an EpochsSpectrum/TFR object, which
+    are together returned as a generator to minimise memory demand.
     """
-    # Extract data array and EpochsSpectrum information
+    # Extract data array and EpochsSpectrum/TFR information
+    if isinstance(data, EpochsSpectrum):
+        data_class = EpochsSpectrum
+        defaults = dict(
+            method=None,
+            fmin=None,
+            fmax=None,
+            tmin=None,
+            tmax=None,
+            picks=None,
+            exclude=(),
+            proj=None,
+            remove_dc=None,
+            n_jobs=None,
+        )
+    else:
+        data_class = EpochsTFR
+        defaults = dict(
+            method=None,
+            freqs=None,
+            tmin=None,
+            tmax=None,
+            picks=None,
+            proj=None,
+            decim=None,
+            n_jobs=None,
+        )
     data_arr = data.get_data()
     state = data.__getstate__()
-    defaults = dict(
-        method=None,
-        fmin=None,
-        fmax=None,
-        tmin=None,
-        tmax=None,
-        picks=None,
-        exclude=(),
-        proj=None,
-        remove_dc=None,
-        n_jobs=None,
-        verbose=None,
-    )
 
     # Make surrogate data
     rng = np.random.default_rng(rng_seed)
@@ -138,4 +158,4 @@ def _shuffle_coefficients(data, n_shuffles, rng_seed):
 
         # Package surrogate data for this shuffle
         state["data"] = surrogate_arr
-        yield EpochsSpectrum(state, **defaults)  # return surrogate data as a generator
+        yield data_class(inst=state, **defaults)  # return surrogate data as a generator
