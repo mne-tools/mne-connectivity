@@ -707,8 +707,8 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         else:
             if (
                 isinstance(self.indices, tuple)
-                and not isinstance(self.indices[0], int)
-                and not isinstance(self.indices[1], int)
+                and not np.all(isinstance(ind, int) for ind in self.indices[0])
+                and not np.all(isinstance(ind, int) for ind in self.indices[1])
             ):  # i.e. check if multivariate results based on nested indices
                 # multivariate results cannot be returned in a dense form as a single
                 # set of results would correspond to multiple entries in the matrix, and
