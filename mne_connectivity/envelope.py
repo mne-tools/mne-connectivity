@@ -9,6 +9,7 @@ import inspect
 
 import numpy as np
 from mne import BaseEpochs
+from mne._fiff.pick import _picks_to_idx
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _ensure_int, _validate_type, logger, verbose, warn
@@ -75,11 +76,15 @@ def envelope_correlation(
 
     corrs = list()
 
+    picks = None
     n_nodes = None
 
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
+        # Find good channels
+        picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         names = data.ch_names
         events = data.events
         event_id = data.event_id
@@ -123,6 +128,10 @@ def envelope_correlation(
                 f"n_nodes mismatch between data[0] and data[{ei}], got {n_nodes} and "
                 f"{corrs[0].shape[0]}"
             )
+        # pick only good channels
+        if picks is None:
+            picks = np.arange(n_nodes)
+        epoch_data = epoch_data[picks]
 
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
@@ -169,9 +178,9 @@ def envelope_correlation(
                 label_data_orth_std[label_data_orth_std == 0] = 1
 
             # correlation is dot product divided by variances
-            corr[li] = np.sum(label_data_orth * data_mag_nomean, axis=1)
-            corr[li] /= data_mag_std
-            corr[li] /= label_data_orth_std
+            corr[li, picks] = np.sum(label_data_orth * data_mag_nomean, axis=1)
+            corr[li, picks] /= data_mag_std
+            corr[li, picks] /= label_data_orth_std
         if orthogonalize:
             # Make it symmetric (it isn't at this point)
             if absolute:
