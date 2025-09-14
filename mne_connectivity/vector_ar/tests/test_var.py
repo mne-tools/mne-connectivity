@@ -280,6 +280,10 @@ def test_vector_auto_regression():
         conn.get_data().mean(axis=0), single_conn.get_data(), decimal=1
     )
 
+    # compute single var with multiple lags
+    single_conn_plags = vector_auto_regression(data, model="avg-epochs", lags=2)
+    single_conn_plags.get_data("dense")  # just check data can be reshaped properly
+
     # compute residuals
     residuals = data - parr_conn.predict(data)
     assert residuals.shape == data.shape
