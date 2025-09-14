@@ -157,7 +157,7 @@ def test_envelope_correlation():
 def test_envelope_correlation_bad_channels():
     """Test bad channels are ignored in envelope_correlation."""
     rng = np.random.default_rng(0)
-    n_epochs, n_signals, n_times = 2, 3, 64
+    n_epochs, n_signals, n_times = 1, 3, 64
     data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     info = create_info(n_signals, sfreq=n_times, ch_types="eeg")
     info["bads"] = ["1"]
@@ -166,6 +166,7 @@ def test_envelope_correlation_bad_channels():
 
     assert corr.n_nodes == n_signals
     assert corr.names == data.ch_names
+    assert_array_equal(corr.get_data()[:, [0, 1, 1, 2], [1, 0, 2, 1], :], 0)  # bads
     assert corr.get_data().shape[1:3] == (n_signals, n_signals)
 
 

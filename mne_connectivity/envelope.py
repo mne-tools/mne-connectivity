@@ -178,9 +178,9 @@ def envelope_correlation(
                 label_data_orth_std[label_data_orth_std == 0] = 1
 
             # correlation is dot product divided by variances
-            corr[li, picks] = np.sum(label_data_orth * data_mag_nomean, axis=1)
-            corr[li, picks] /= data_mag_std
-            corr[li, picks] /= label_data_orth_std
+            corr[picks[li], picks] = np.sum(label_data_orth * data_mag_nomean, axis=1)
+            corr[picks[li], picks] /= data_mag_std
+            corr[picks[li], picks] /= label_data_orth_std
         if orthogonalize:
             # Make it symmetric (it isn't at this point)
             if absolute:
