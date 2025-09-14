@@ -3,11 +3,17 @@ import inspect
 import numpy as np
 import scipy
 from mne import BaseEpochs
+from mne._fiff.pick import _picks_to_idx
 from mne.utils import logger, verbose
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 
-from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
+from ..base import (
+    Connectivity,
+    EpochConnectivity,
+    EpochTemporalConnectivity,
+    TemporalConnectivity,
+)
 from ..utils import fill_doc
 
 
@@ -52,12 +58,13 @@ def vector_auto_regression(
 
     Returns
     -------
-    conn : Connectivity | EpochConnectivity | EpochTemporalConnectivity
+    conn : Connectivity | EpochConnectivity | TemporalConnectivity | EpochTemporalConnectivity
         The connectivity data estimated.
 
     See Also
     --------
     mne_connectivity.Connectivity
+    mne_connectivity.TemporalConnectivity
     mne_connectivity.EpochConnectivity
     mne_connectivity.EpochTemporalConnectivity
 
@@ -122,16 +129,19 @@ def vector_auto_regression(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     if model not in ["avg-epochs", "dynamic"]:
         raise ValueError(
             f'"model" parameter must be one of (avg-epochs, dynamic), not {model}.'
         )
 
+    picks = None
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
-        names = data.ch_names
+        # Find good channels
+        picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         events = data.events
         event_id = data.event_id
         times = data.times
@@ -151,7 +161,6 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        # get the actual data in numpy
         # XXX: remove logic once support for mne<1.6 is dropped
         kwargs = dict()
         if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
@@ -162,6 +171,10 @@ def vector_auto_regression(
 
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape
+
+    # Get good channels
+    if picks is not None:
+        data = data[:, picks]
 
     model_params = {
         "lags": lags,
@@ -185,20 +198,44 @@ def vector_auto_regression(
         # get the coefficients
         coef = b.transpose()
 
+        # reshape coefficients to treat lags as times
+        coef = coef.reshape((coef.shape[0], coef.shape[0], lags))
+
+        # store coeffs in matrix consistent with n_nodes
+        if coef.shape[0] != n_nodes:
+            coef_holder = np.zeros((n_nodes, n_nodes, lags))
+            coef_holder[np.ix_(picks, picks, np.arange(lags))] = coef
+            coef = coef_holder
+
         # create connectivity
-        coef = coef.flatten()
-        conn = Connectivity(
-            data=coef,
-            n_nodes=n_nodes,
-            names=names,
-            n_epochs_used=n_epochs,
-            times_used=times,
-            method="VAR",
-            metadata=metadata,
-            events=events,
-            event_id=event_id,
-            **model_params,
-        )
+        coef = coef.reshape((-1, lags))
+        if lags > 1:
+            conn = TemporalConnectivity(
+                data=coef,
+                times=list(range(lags)),
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(p)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
+        else:
+            conn = Connectivity(
+                data=coef[:, 0],  # take first and only lag
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(1)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
     else:
         assert model == "dynamic"
         # compute time-varying VAR model where each epoch
@@ -211,7 +248,15 @@ def vector_auto_regression(
             n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
         )
+        # store coeffs in matrix consistent with n_nodes
+        if A_mats.shape[1] != n_nodes:
+            A_mats_holder = np.zeros((n_epochs, n_nodes, n_nodes, lags))
+            A_mats_holder[
+                np.ix_(np.arange(n_epochs), picks, picks, np.arange(lags))
+            ] = A_mats
+            A_mats = A_mats_holder
         # create connectivity
+        A_mats = A_mats.reshape((n_epochs, -1, lags))
         if lags > 1:
             conn = EpochTemporalConnectivity(
                 data=A_mats,
@@ -228,7 +273,7 @@ def vector_auto_regression(
             )
         else:
             conn = EpochConnectivity(
-                data=A_mats,
+                data=A_mats[..., 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
                 n_epochs_used=n_epochs,
@@ -360,11 +405,6 @@ def _system_identification(data, lags, l2_reg=0, n_jobs=-1, compute_fb_operator=
                     jdx * n_nodes : n_nodes * (jdx + 1), :
                 ].T
 
-    # ravel the matrix
-    if lags == 1:
-        A_mats = A_mats.reshape((n_epochs, -1))
-    else:
-        A_mats = A_mats.reshape((n_epochs, -1, lags))
     return A_mats
 
 

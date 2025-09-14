@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from mne import EpochsArray, create_info
 from mne.utils import assert_object_equal
 from numpy.testing import (
     assert_almost_equal,
@@ -304,3 +305,23 @@ def test_vector_auto_regression():
     big_epoch_data = rng.randn(n_times * 2, n_signals, n_times)
     parr_conn = vector_auto_regression(big_epoch_data, times=times, n_jobs=-1)
     parr_conn.predict(big_epoch_data)
+
+
+@pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
+def test_vector_auto_regression_bad_channels(model):
+    """Test bad channels are ignored in vector_auto_regression."""
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 1, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+    info = create_info(n_signals, sfreq=n_times, ch_types="eeg")
+    info["bads"] = ["1"]
+    data = EpochsArray(data, info)
+    corr = vector_auto_regression(data, model=model)
+    corr_data = corr.get_data()
+    if model == "dynamic":
+        corr_data = corr_data[0]  # take only epoch
+
+    assert corr.n_nodes == n_signals
+    assert corr.names == data.ch_names
+    assert_array_equal(corr_data[[0, 2, 1, 1, 1], [1, 1, 0, 1, 2]], 0)  # bads indices
+    assert corr_data.shape == (n_signals, n_signals)
