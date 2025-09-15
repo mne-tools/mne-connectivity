@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.8.0.dev93+g6b7a4b1e8 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.8.0.dev94+gdf3de3c6f documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=b72cb2f9"></script>
+    <script src="../../_static/documentation_options.js?v=6b9cced6"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -121,7 +121,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev93+g6b7a4b1e8 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev94+gdf3de3c6f documentation</p>
   
 </a></div>
     
@@ -517,19 +517,26 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  6%|██▎                                  | 5.60M/88.2M [00:00&lt;00:01, 56.0MB/s]
- 18%|██████▋                              | 15.8M/88.2M [00:00&lt;00:00, 83.2MB/s]
- 30%|███████████▏                         | 26.8M/88.2M [00:00&lt;00:00, 95.3MB/s]
- 43%|████████████████▎                     | 37.8M/88.2M [00:00&lt;00:00, 101MB/s]
- 55%|█████████████████████                 | 48.9M/88.2M [00:00&lt;00:00, 105MB/s]
- 68%|█████████████████████████▊            | 60.0M/88.2M [00:00&lt;00:00, 107MB/s]
- 81%|██████████████████████████████▋       | 71.1M/88.2M [00:00&lt;00:00, 108MB/s]
- 93%|███████████████████████████████████▍  | 82.3M/88.2M [00:00&lt;00:00, 109MB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for epilepsy_ecog...
+
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 388GB/s]
+  8%|██▉                                  | 6.85M/88.2M [00:00&lt;00:01, 68.5MB/s]
+ 17%|██████▏                              | 14.8M/88.2M [00:00&lt;00:00, 74.9MB/s]
+ 25%|█████████▎                           | 22.3M/88.2M [00:00&lt;00:00, 73.9MB/s]
+ 34%|████████████▍                        | 29.7M/88.2M [00:00&lt;00:00, 60.6MB/s]
+ 41%|███████████████                      | 36.0M/88.2M [00:00&lt;00:00, 53.5MB/s]
+ 47%|█████████████████▍                   | 41.6M/88.2M [00:00&lt;00:00, 50.7MB/s]
+ 53%|███████████████████▋                 | 46.9M/88.2M [00:00&lt;00:00, 48.7MB/s]
+ 59%|█████████████████████▊               | 51.8M/88.2M [00:00&lt;00:00, 44.9MB/s]
+ 65%|███████████████████████▉             | 56.9M/88.2M [00:01&lt;00:00, 46.3MB/s]
+ 71%|██████████████████████████▏          | 62.5M/88.2M [00:01&lt;00:00, 48.9MB/s]
+ 80%|█████████████████████████████▌       | 70.3M/88.2M [00:01&lt;00:00, 57.1MB/s]
+ 89%|████████████████████████████████▊    | 78.2M/88.2M [00:01&lt;00:00, 63.4MB/s]
+ 98%|████████████████████████████████████▏| 86.2M/88.2M [00:01&lt;00:00, 68.2MB/s]
+  0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 333GB/s]
 Download complete in 03s (84.1 MB)
-/home/circleci/python_env/lib/python3.12/site-packages/mne_bids/dig.py:608: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
+/home/circleci/python_env/lib/python3.12/site-packages/mne_bids/dig.py:622: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
 
 [&#39;RQ1&#39;, &#39;RQ2&#39;, &#39;N/A&#39;].
 
@@ -711,9 +718,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-8ac3c047-3d9f-41c9-8369-34c208ea39c7"
+<tr class="mne-repr-section-header general-0ebb726b-8469-4cac-b5a2-f94e770f727e"
      title="Hide section"
-    onclick="toggleVisibility('general-8ac3c047-3d9f-41c9-8369-34c208ea39c7')">
+    onclick="toggleVisibility('general-0ebb726b-8469-4cac-b5a2-f94e770f727e')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -725,7 +732,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-8ac3c047-3d9f-41c9-8369-34c208ea39c7 ">
+<tr class="repr-element general-0ebb726b-8469-4cac-b5a2-f94e770f727e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -736,19 +743,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-8ac3c047-3d9f-41c9-8369-34c208ea39c7 ">
+<tr class="repr-element general-0ebb726b-8469-4cac-b5a2-f94e770f727e ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-8ac3c047-3d9f-41c9-8369-34c208ea39c7 ">
+<tr class="repr-element general-0ebb726b-8469-4cac-b5a2-f94e770f727e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-8ac3c047-3d9f-41c9-8369-34c208ea39c7 ">
+<tr class="repr-element general-0ebb726b-8469-4cac-b5a2-f94e770f727e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -757,7 +764,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-8ac3c047-3d9f-41c9-8369-34c208ea39c7 ">
+<tr class="repr-element general-0ebb726b-8469-4cac-b5a2-f94e770f727e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -772,9 +779,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-f74d799b-6d05-4a0a-8563-c8b9eb1a9252"
+<tr class="mne-repr-section-header acquisition-46d6244b-b90d-48d0-ac29-76ed268fd102"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-f74d799b-6d05-4a0a-8563-c8b9eb1a9252')">
+    onclick="toggleVisibility('acquisition-46d6244b-b90d-48d0-ac29-76ed268fd102')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -786,7 +793,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-f74d799b-6d05-4a0a-8563-c8b9eb1a9252 ">
+<tr class="repr-element acquisition-46d6244b-b90d-48d0-ac29-76ed268fd102 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -799,14 +806,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-f74d799b-6d05-4a0a-8563-c8b9eb1a9252 ">
+<tr class="repr-element acquisition-46d6244b-b90d-48d0-ac29-76ed268fd102 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f74d799b-6d05-4a0a-8563-c8b9eb1a9252 ">
+<tr class="repr-element acquisition-46d6244b-b90d-48d0-ac29-76ed268fd102 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -821,9 +828,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-c344a6d8-7a34-4bfb-89f6-215736065462"
+<tr class="mne-repr-section-header channels-4bd0deb1-7e5e-4012-a27c-894f1c6b9273"
      title="Hide section"
-    onclick="toggleVisibility('channels-c344a6d8-7a34-4bfb-89f6-215736065462')">
+    onclick="toggleVisibility('channels-4bd0deb1-7e5e-4012-a27c-894f1c6b9273')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -836,7 +843,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-c344a6d8-7a34-4bfb-89f6-215736065462 ">
+<tr class="repr-element channels-4bd0deb1-7e5e-4012-a27c-894f1c6b9273 ">
     <td class="mne-repr-section-toggle"></td>
     <td>ECoG</td>
     <td>
@@ -849,7 +856,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-c344a6d8-7a34-4bfb-89f6-215736065462 ">
+<tr class="repr-element channels-4bd0deb1-7e5e-4012-a27c-894f1c6b9273 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -864,9 +871,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-1df97695-cd0a-4284-8535-84cc17cef5d5"
+<tr class="mne-repr-section-header filters-ea7c56a3-49df-4e65-af88-6cb96f77975a"
      title="Hide section"
-    onclick="toggleVisibility('filters-1df97695-cd0a-4284-8535-84cc17cef5d5')">
+    onclick="toggleVisibility('filters-ea7c56a3-49df-4e65-af88-6cb96f77975a')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -878,14 +885,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-1df97695-cd0a-4284-8535-84cc17cef5d5 ">
+<tr class="repr-element filters-ea7c56a3-49df-4e65-af88-6cb96f77975a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-1df97695-cd0a-4284-8535-84cc17cef5d5 ">
+<tr class="repr-element filters-ea7c56a3-49df-4e65-af88-6cb96f77975a ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1307,24 +1314,28 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|▌         | 17/302 [00:00&lt;00:01, 164.86it/s]
- 11%|█▏        | 34/302 [00:00&lt;00:01, 165.08it/s]
- 17%|█▋        | 51/302 [00:00&lt;00:01, 165.07it/s]
- 23%|██▎       | 68/302 [00:00&lt;00:01, 165.33it/s]
- 28%|██▊       | 85/302 [00:00&lt;00:01, 164.59it/s]
- 34%|███▍      | 102/302 [00:00&lt;00:01, 163.87it/s]
- 39%|███▉      | 119/302 [00:00&lt;00:01, 163.69it/s]
- 45%|████▌     | 136/302 [00:00&lt;00:01, 163.61it/s]
- 51%|█████     | 153/302 [00:00&lt;00:00, 162.16it/s]
- 56%|█████▋    | 170/302 [00:01&lt;00:00, 161.91it/s]
- 62%|██████▏   | 187/302 [00:01&lt;00:00, 161.24it/s]
- 68%|██████▊   | 204/302 [00:01&lt;00:00, 160.99it/s]
- 73%|███████▎  | 221/302 [00:01&lt;00:00, 160.04it/s]
- 79%|███████▉  | 238/302 [00:01&lt;00:00, 160.80it/s]
- 84%|████████▍ | 255/302 [00:01&lt;00:00, 160.73it/s]
- 90%|█████████ | 272/302 [00:01&lt;00:00, 160.11it/s]
- 96%|█████████▌| 289/302 [00:01&lt;00:00, 160.34it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 161.96it/s]
+  5%|▍         | 14/302 [00:00&lt;00:02, 130.83it/s]
+  9%|▉         | 28/302 [00:00&lt;00:02, 131.19it/s]
+ 14%|█▍        | 42/302 [00:00&lt;00:01, 131.48it/s]
+ 19%|█▊        | 56/302 [00:00&lt;00:01, 132.62it/s]
+ 23%|██▎       | 70/302 [00:00&lt;00:01, 132.89it/s]
+ 28%|██▊       | 84/302 [00:00&lt;00:01, 133.40it/s]
+ 32%|███▏      | 98/302 [00:00&lt;00:01, 133.76it/s]
+ 37%|███▋      | 112/302 [00:00&lt;00:01, 133.65it/s]
+ 42%|████▏     | 126/302 [00:00&lt;00:01, 133.29it/s]
+ 46%|████▋     | 140/302 [00:01&lt;00:01, 133.65it/s]
+ 51%|█████     | 154/302 [00:01&lt;00:01, 133.72it/s]
+ 56%|█████▌    | 168/302 [00:01&lt;00:01, 133.63it/s]
+ 60%|██████    | 182/302 [00:01&lt;00:00, 132.97it/s]
+ 65%|██████▍   | 196/302 [00:01&lt;00:00, 132.80it/s]
+ 70%|██████▉   | 210/302 [00:01&lt;00:00, 133.32it/s]
+ 74%|███████▍  | 224/302 [00:01&lt;00:00, 133.76it/s]
+ 79%|███████▉  | 238/302 [00:01&lt;00:00, 133.23it/s]
+ 83%|████████▎ | 252/302 [00:01&lt;00:00, 133.26it/s]
+ 88%|████████▊ | 266/302 [00:01&lt;00:00, 133.18it/s]
+ 93%|█████████▎| 280/302 [00:02&lt;00:00, 133.29it/s]
+ 97%|█████████▋| 294/302 [00:02&lt;00:00, 133.07it/s]
+100%|██████████| 302/302 [00:02&lt;00:00, 133.11it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MiB&gt;
 </pre></div>
 </div>
@@ -1370,7 +1381,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x79d8a8b3caa0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x72c465d94b30&gt;
 </pre></div>
 </div>
 </section>
@@ -1433,10 +1444,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x79d8c9c711f0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x72c47c1a1550&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 36.783 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.464 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1524,7 +1535,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-09-08.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-09-15.
       <br/>
     
   </p>
