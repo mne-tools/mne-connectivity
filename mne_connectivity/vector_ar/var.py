@@ -7,7 +7,12 @@ from mne.utils import logger, verbose
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 
-from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
+from ..base import (
+    Connectivity,
+    EpochConnectivity,
+    EpochTemporalConnectivity,
+    TemporalConnectivity,
+)
 from ..utils import fill_doc
 
 
@@ -30,7 +35,7 @@ def vector_auto_regression(
     ----------
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs | generator
         The data from which to compute connectivity. The epochs dimension is interpreted
-        differently, depending on ``'output'`` argument.
+        differently, depending on the ``'model'`` argument.
     times : array_like | None
         The time points used to construct the epoched ``data``. If ``None``, then
         ``times_used`` in the returned ``conn`` will not be available.
@@ -52,12 +57,13 @@ def vector_auto_regression(
 
     Returns
     -------
-    conn : Connectivity | EpochConnectivity | EpochTemporalConnectivity
+    conn : Connectivity | TemporalConnectivity | EpochConnectivity | EpochTemporalConnectivity
         The connectivity data estimated.
 
     See Also
     --------
     mne_connectivity.Connectivity
+    mne_connectivity.TemporalConnectivity
     mne_connectivity.EpochConnectivity
     mne_connectivity.EpochTemporalConnectivity
 
@@ -122,7 +128,7 @@ def vector_auto_regression(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     if model not in ["avg-epochs", "dynamic"]:
         raise ValueError(
             f'"model" parameter must be one of (avg-epochs, dynamic), not {model}.'
@@ -185,20 +191,37 @@ def vector_auto_regression(
         # get the coefficients
         coef = b.transpose()
 
+        # reshape coefficients to treat lags as times
+        coef = coef.reshape((-1, lags))
+
         # create connectivity
-        coef = coef.flatten()
-        conn = Connectivity(
-            data=coef,
-            n_nodes=n_nodes,
-            names=names,
-            n_epochs_used=n_epochs,
-            times_used=times,
-            method="VAR",
-            metadata=metadata,
-            events=events,
-            event_id=event_id,
-            **model_params,
-        )
+        if lags > 1:
+            conn = TemporalConnectivity(
+                data=coef,
+                times=list(range(lags)),
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(p)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
+        else:
+            conn = Connectivity(
+                data=coef[:, 0],  # take first and only lag
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(1)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
     else:
         assert model == "dynamic"
         # compute time-varying VAR model where each epoch
