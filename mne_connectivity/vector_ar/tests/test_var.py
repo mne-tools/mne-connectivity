@@ -313,7 +313,7 @@ def test_vector_auto_regression():
 
 @pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
 def test_vector_auto_regression_bad_channels(model):
-    """Test bad channels are ignored in vector_auto_regression."""
+    """Test bad channels are handled properly in vector_auto_regression."""
     rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 1, 3, 64
     data = rng.standard_normal(size=(n_epochs, n_signals, n_times))

@@ -155,7 +155,7 @@ def test_envelope_correlation():
 
 
 def test_envelope_correlation_bad_channels():
-    """Test bad channels are ignored in envelope_correlation."""
+    """Test bad channels are handled properly in envelope_correlation."""
     rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 1, 3, 64
     data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
