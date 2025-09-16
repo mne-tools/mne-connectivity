@@ -36,7 +36,7 @@ def vector_auto_regression(
     ----------
     data : array_like, shape (n_epochs, n_signals, n_times) | Epochs | generator
         The data from which to compute connectivity. The epochs dimension is interpreted
-        differently, depending on ``'output'`` argument.
+        differently, depending on the ``'model'`` argument.
     times : array_like | None
         The time points used to construct the epoched ``data``. If ``None``, then
         ``times_used`` in the returned ``conn`` will not be available.
@@ -58,7 +58,7 @@ def vector_auto_regression(
 
     Returns
     -------
-    conn : Connectivity | EpochConnectivity | TemporalConnectivity | EpochTemporalConnectivity
+    conn : Connectivity | TemporalConnectivity | EpochConnectivity | EpochTemporalConnectivity
         The connectivity data estimated.
 
     See Also
