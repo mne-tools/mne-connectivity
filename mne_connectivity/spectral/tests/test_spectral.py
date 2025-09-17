@@ -8,7 +8,12 @@ import pytest
 from mne import EpochsArray, SourceEstimate, create_info
 from mne.filter import filter_data
 from mne.utils import check_version
-from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_less
+from numpy.testing import (
+    assert_allclose,
+    assert_array_almost_equal,
+    assert_array_equal,
+    assert_array_less,
+)
 
 from mne_connectivity import (
     SpectralConnectivity,
@@ -1183,6 +1188,90 @@ def test_multivar_spectral_connectivity_flipped_indices():
     assert not np.all(con_st.get_data() == con_ts.get_data())
     assert_allclose(con_st.get_data()[:, 0], con_st_ts.get_data()[:, 0])
     assert_allclose(con_ts.get_data()[:, 0], con_st_ts.get_data()[:, 1])
+
+
+@pytest.mark.parametrize(
+    "conn_func", [spectral_connectivity_epochs, spectral_connectivity_time]
+)
+@pytest.mark.parametrize("method", ["coh", "cacoh"])
+@pytest.mark.parametrize("picks", [None, "all", "goods"])
+@pytest.mark.parametrize("data_as_spectra", [False, True])
+def test_spectral_connectivity_bad_channels(conn_func, method, picks, data_as_spectra):
+    """Test spectral_connectivity_epochs bad channels handling.
+
+    Important to test indices handling with both bivariate and multivariate methods.
+    """
+    # Simulate data
+    rng = np.random.default_rng(0)
+    n_epochs = 2
+    n_channels = 3  # do not change!
+    sfreq = 50
+    data = rng.standard_normal((n_epochs, n_channels, sfreq))
+    info = create_info(n_channels, sfreq, "eeg")
+    data = EpochsArray(data, info)
+    con_freqs = np.arange(15, 25)
+    if data_as_spectra:
+        if conn_func is spectral_connectivity_epochs:
+            data = data.compute_psd(
+                method="welch", fmin=con_freqs[0], fmax=con_freqs[1], output="complex"
+            )
+        else:
+            data = data.compute_tfr(method="morlet", freqs=con_freqs, output="complex")
+
+    # Mark a channel as bad
+    data.info["bads"] = [data.ch_names[1]]
+
+    # Create indices
+    if picks is not None:
+        if picks == "all":  # explicit bad inclusion
+            indices = (np.array([1, 2, 2]), np.array([0, 0, 1]))
+        else:  # ("goods") explicit bad exclusion
+            indices = (np.array([2]), np.array([0]))
+        if method != "coh":  # multivariate indices must be nested
+            indices = tuple([[i] for i in ind] for ind in indices)
+        n_cons = len(indices[0])
+    else:
+        indices = None  # implicit bad exclusion
+        n_cons = n_channels**2 if method == "coh" else 1
+
+    # Compute connectivity
+    conn_kwargs = dict()
+    if conn_func is spectral_connectivity_epochs:
+        conn_kwargs["fmin"] = con_freqs[0]
+        conn_kwargs["fmax"] = con_freqs[-1]
+    else:
+        conn_kwargs["freqs"] = con_freqs
+        conn_kwargs["average"] = True
+    con = conn_func(data, method=method, indices=indices, **conn_kwargs)
+    n_freqs = len(con.freqs)
+
+    # Check connectivity object properties
+    assert con.n_nodes == n_channels
+    assert con.names == data.ch_names
+
+    # Check dense shape same regardless of indices (not for multivariate connectivity)
+    if method == "coh":
+        assert con.get_data("dense").shape == (n_channels, n_channels, n_freqs)
+
+    # Check raveled shape and contents depends on indices
+    raveled_data = np.abs(con.get_data("raveled"))  # abs for CaCoh
+    assert raveled_data.shape == (n_cons, n_freqs)  # n_cons depends on picks
+    if picks is not None:
+        # with "all" channels used, bads entries are present and are non-zero
+        # with "goods" channels used, bads entries are non-existent
+        # in both cases, all entries are non-zero
+        assert_array_less(0, raveled_data)
+        if method != "coh":  # check shape of patterns (1 channel per connection)
+            assert np.shape(con.attrs["patterns"]) == (2, n_cons, 1, n_freqs)
+    else:  # indices=None → all-to-all connectivity
+        if method == "coh":  # bads entries present, but filled with zeros
+            assert_array_equal(raveled_data[[3, 7]], 0)  # bads indices
+            # (use np.ravel_multi_index to find dense array indices in raveled array)
+        else:  # only good channs used for single multivar connection (so all non-zero)
+            assert_array_less(0, raveled_data)
+            # but we can check shape (all chans) and entries (bads=zeros) of patterns
+            assert np.shape(con.attrs["patterns"]) == (2, n_cons, n_channels, n_freqs)
+            assert_array_equal(0, np.array(con.attrs["patterns"])[:, :, 1, :])
 
 
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))
