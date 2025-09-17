@@ -33,6 +33,7 @@ Bug
 ~~~
 
 - Improve the documentation of the ``fmin`` and ``cwt_freqs`` parameters in the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Richard Köhler`_ and `Daniel McCloy`_ (:pr:`242`).
+- Ignore bad channels in computations in :func:`~mne_connectivity.envelope_correlation` and :func:`~mne_connectivity.vector_auto_regression`, and in :func:`~mne_connectivity.spectral_connectivity_epochs`, :func:`~mne_connectivity.spectral_connectivity_time`, and :func:`~mne_connectivity.phase_slope_index` when indices are not specified, by `Thomas Binns`_ (:pr:`334`).
 
 API
 ~~~
