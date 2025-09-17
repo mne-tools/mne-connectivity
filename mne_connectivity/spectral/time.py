@@ -8,6 +8,7 @@ import inspect
 
 import numpy as np
 import xarray as xr
+from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.time_frequency import (
@@ -382,6 +383,7 @@ def spectral_connectivity_time(
     """  # noqa: E501
     events = None
     event_id = None
+    picks = None
     # extract data from Epochs object
     _validate_type(
         data,
@@ -396,6 +398,10 @@ def spectral_connectivity_time(
     weights = None
     spectrum_computed = False
     if isinstance(data, BaseEpochs | EpochsTFR):
+        # Find good channels
+        if indices is None:
+            picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         names = data.ch_names
         sfreq = data.info["sfreq"]
         events = data.events
@@ -456,6 +462,13 @@ def spectral_connectivity_time(
         metadata = None
         if sfreq is None:
             raise ValueError("Sampling frequency (sfreq) is required with array input.")
+
+    # sort valid channel info
+    if picks is not None:
+        n_good_signals = len(picks)
+    else:
+        n_good_signals = n_signals
+        picks = np.arange(n_good_signals)
 
     # check that method is a list
     if isinstance(method, str):
@@ -518,14 +531,12 @@ def spectral_connectivity_time(
                 )
             logger.info("using all indices for multivariate connectivity")
             # indices expected to be a masked array, even if not ragged
-            indices_use = (
-                np.arange(n_signals, dtype=int)[np.newaxis, :],
-                np.arange(n_signals, dtype=int)[np.newaxis, :],
-            )
+            indices_use = (picks[np.newaxis, :], picks[np.newaxis, :])
             indices_use = np.ma.masked_array(indices_use, mask=False, fill_value=-1)
         else:
             logger.info("only using indices for lower-triangular matrix")
-            indices_use = np.tril_indices(n_signals, k=-1)
+            indices_use = np.tril_indices(n_good_signals, k=-1)
+            indices_use = tuple(picks[ind] for ind in indices_use)
     else:
         if multivariate_con:
             # pad ragged indices and mask the invalid entries
@@ -689,23 +700,37 @@ def spectral_connectivity_time(
             # convert to [seeds/targets x epochs x cons x [comps] x channels x freqs]
             conn_patterns[m] = np.moveaxis(conn_patterns[m], 1, 0)
 
-    if indices is None and not multivariate_con:
-        conn_flat = conn
-        conn = dict()
-        for m in method:
-            this_conn = np.zeros(
-                (n_epochs, n_signals, n_signals) + conn_flat[m].shape[2:],
-                dtype=conn_flat[m].dtype,
-            )
-            this_conn[:, source_idx, target_idx] = conn_flat[m]
-            this_conn = this_conn.reshape(
-                (
-                    n_epochs,
-                    n_signals**2,
+    if indices is None:
+        if not multivariate_con:
+            # return all-to-all connectivity matrices raveled into a 1D array
+            conn_flat = conn
+            conn = dict()
+            for m in method:
+                this_conn = np.zeros(
+                    (n_epochs, n_signals, n_signals) + conn_flat[m].shape[2:],
+                    dtype=conn_flat[m].dtype,
                 )
-                + conn_flat[m].shape[2:]
-            )
-            conn[m] = this_conn
+                this_conn[:, source_idx, target_idx] = conn_flat[m]
+                this_conn = this_conn.reshape(
+                    (
+                        n_epochs,
+                        n_signals**2,
+                    )
+                    + conn_flat[m].shape[2:]
+                )
+                conn[m] = this_conn
+        elif n_signals != n_good_signals:
+            # add missing bads to the multivariate patterns
+            patterns_full = dict()
+            for m in method:
+                if conn_patterns[m] is not None:
+                    patterns_full[m] = np.zeros(
+                        (2, n_epochs, n_cons, n_signals, n_freqs)
+                    )
+                    patterns_full[m][..., picks, :] = conn_patterns[m]
+                else:
+                    patterns_full[m] = None
+            conn_patterns = patterns_full
 
     # create the connectivity containers
     out = []

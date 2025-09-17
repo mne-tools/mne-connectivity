@@ -1190,10 +1190,13 @@ def test_multivar_spectral_connectivity_flipped_indices():
     assert_allclose(con_ts.get_data()[:, 0], con_st_ts.get_data()[:, 1])
 
 
+@pytest.mark.parametrize(
+    "conn_func", [spectral_connectivity_epochs, spectral_connectivity_time]
+)
 @pytest.mark.parametrize("method", ["coh", "cacoh"])
 @pytest.mark.parametrize("picks", [None, "all", "goods"])
 @pytest.mark.parametrize("data_as_spectra", [False, True])
-def test_spectral_connectivity_bad_channels(method, picks, data_as_spectra):
+def test_spectral_connectivity_bad_channels(conn_func, method, picks, data_as_spectra):
     """Test spectral_connectivity_epochs bad channels handling.
 
     Important to test indices handling with both bivariate and multivariate methods.
@@ -1206,8 +1209,14 @@ def test_spectral_connectivity_bad_channels(method, picks, data_as_spectra):
     data = rng.standard_normal((n_epochs, n_channels, sfreq))
     info = create_info(n_channels, sfreq, "eeg")
     data = EpochsArray(data, info)
+    con_freqs = np.arange(15, 25)
     if data_as_spectra:
-        data = data.compute_psd(method="welch", output="complex")
+        if conn_func is spectral_connectivity_epochs:
+            data = data.compute_psd(
+                method="welch", fmin=con_freqs[0], fmax=con_freqs[1], output="complex"
+            )
+        else:
+            data = data.compute_tfr(method="morlet", freqs=con_freqs, output="complex")
 
     # Mark a channel as bad
     data.info["bads"] = [data.ch_names[1]]
@@ -1226,7 +1235,14 @@ def test_spectral_connectivity_bad_channels(method, picks, data_as_spectra):
         n_cons = n_channels**2 if method == "coh" else 1
 
     # Compute connectivity
-    con = spectral_connectivity_epochs(data, method=method, indices=indices)
+    conn_kwargs = dict()
+    if conn_func is spectral_connectivity_epochs:
+        conn_kwargs["fmin"] = con_freqs[0]
+        conn_kwargs["fmax"] = con_freqs[-1]
+    else:
+        conn_kwargs["freqs"] = con_freqs
+        conn_kwargs["average"] = True
+    con = conn_func(data, method=method, indices=indices, **conn_kwargs)
     n_freqs = len(con.freqs)
 
     # Check connectivity object properties
