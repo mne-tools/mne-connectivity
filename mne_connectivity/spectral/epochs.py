@@ -9,6 +9,7 @@ import inspect
 from functools import partial
 
 import numpy as np
+from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
@@ -143,6 +144,7 @@ def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
 
 def _prepare_connectivity(
     epoch_block,
+    picks,
     times_in,
     tmin,
     tmax,
@@ -189,6 +191,13 @@ def _prepare_connectivity(
         ) = _check_times(
             data=first_epoch, sfreq=sfreq, times=times_in, tmin=tmin, tmax=tmax
         )
+
+    # Sort valid channel picks
+    if picks is not None:
+        n_good_signals = len(picks)
+    else:
+        n_good_signals = n_signals
+        picks = np.arange(n_good_signals)
 
     # Sort freqs
     if not spectrum_computed:  # is an (ordinary) time series
@@ -248,15 +257,13 @@ def _prepare_connectivity(
                 )
             logger.info("using all indices for multivariate connectivity")
             # indices expected to be a masked array, even if not ragged
-            indices_use = (
-                np.arange(n_signals, dtype=int)[np.newaxis, :],
-                np.arange(n_signals, dtype=int)[np.newaxis, :],
-            )
+            indices_use = (picks[np.newaxis, :], picks[np.newaxis, :])
             indices_use = np.ma.masked_array(indices_use, mask=False, fill_value=-1)
         else:
             logger.info("only using indices for lower-triangular matrix")
             # only compute r for lower-triangular region
-            indices_use = np.tril_indices(n_signals, -1)
+            indices_use = np.tril_indices(n_good_signals, -1)
+            indices_use = tuple(picks[ind] for ind in indices_use)
     else:
         if multivariate_con:
             # pad ragged indices and mask the invalid entries
@@ -293,6 +300,7 @@ def _prepare_connectivity(
         freqs_bands,
         freq_idx_bands,
         n_signals,
+        n_good_signals,
         indices_use,
         warn_times,
     )
@@ -1158,9 +1166,14 @@ def spectral_connectivity_epochs(
     freqs = None
     weights = None
     metadata = None
+    picks = None
     spectrum_computed = False
     is_tfr_con = False
     if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsTFR):
+        # Find good channels
+        if indices is None:
+            picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         names = data.ch_names
         sfreq = data.info["sfreq"]
 
@@ -1252,10 +1265,12 @@ def spectral_connectivity_epochs(
                 freqs_bands,
                 freq_idx_bands,
                 n_signals,
+                n_good_signals,
                 indices_use,
                 warn_times,
             ) = _prepare_connectivity(
                 epoch_block=epoch_block,
+                picks=picks,
                 times_in=times_in,
                 tmin=tmin,
                 tmax=tmax,
@@ -1517,23 +1532,37 @@ def spectral_connectivity_epochs(
         freqs_used = freqs_bands
         freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
-    if indices is None and not multivariate_con:
-        # return all-to-all connectivity matrices
-        # raveled into a 1D array
-        logger.info("    assembling connectivity matrix")
-        con_flat = con
-        con = list()
-        for this_con_flat in con_flat:
-            this_con = np.zeros(
-                (n_signals, n_signals) + this_con_flat.shape[1:],
-                dtype=this_con_flat.dtype,
-            )
-            this_con[indices_use] = this_con_flat
+    if indices is None:
+        if not multivariate_con:
+            # return all-to-all connectivity matrices raveled into a 1D array
+            logger.info("    assembling connectivity matrix")
+            con_flat = con
+            con = list()
+            for this_con_flat in con_flat:
+                this_con = np.zeros(
+                    (n_signals, n_signals) + this_con_flat.shape[1:],
+                    dtype=this_con_flat.dtype,
+                )
+                this_con[indices_use] = this_con_flat
 
-            # ravel 2D connectivity into a 1D array
-            # while keeping other dimensions
-            this_con = this_con.reshape((n_signals**2,) + this_con_flat.shape[1:])
-            con.append(this_con)
+                # ravel 2D connectivity into a 1D array
+                # while keeping other dimensions
+                this_con = this_con.reshape((n_signals**2,) + this_con_flat.shape[1:])
+                con.append(this_con)
+        elif n_signals != n_good_signals:
+            # add missing bads to the multivariate patterns
+            patterns_full = list()
+            for this_patterns in patterns:
+                if this_patterns is not None:
+                    this_patterns_full = np.zeros(
+                        (2, n_cons, n_signals) + this_patterns.shape[3:]
+                    )
+                    this_patterns_full[:, :, sig_idx] = this_patterns
+                else:
+                    this_patterns_full = None
+                patterns_full.append(this_patterns_full)
+            patterns = patterns_full
+
     # number of nodes in the original data
     n_nodes = n_signals
 
