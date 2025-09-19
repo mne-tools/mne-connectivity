@@ -392,7 +392,10 @@ def test_metadata_handling(func, tmpdir, epochs):
     an ``mne.Epochs`` object input.
     """
     kwargs = dict()
-    if isinstance(epochs, np.ndarray) and func == spectral_connectivity_epochs:
+    if isinstance(epochs, np.ndarray) and func in (
+        spectral_connectivity_epochs,
+        phase_slope_index,
+    ):
         kwargs["sfreq"] = 5
 
     # for each function, check that Annotations were added to the metadata
