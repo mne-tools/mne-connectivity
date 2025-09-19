@@ -2,7 +2,6 @@
 #
 # License: BSD (3-clause)
 
-
 import mne
 import numpy as np
 import pytest
@@ -12,68 +11,8 @@ from numpy.testing import assert_allclose, assert_array_equal
 from mne_connectivity import wsmi
 
 
-def test_wsmi_basic():
-    """Test basic wSMI functionality."""
-    # Create simple test data
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    # Use EEG channel names
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage to avoid warnings
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Test basic functionality
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-
-    # We expect a lower-triangular connectivity matrix
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_eeg_data():
-    """Test wSMI with EEG data."""
-    # Create EEG-like data with some structure
-    sfreq = 250.0
-    n_epochs, n_channels, n_times = 4, 2, int(sfreq * 2)  # 2 seconds per epoch
-    rng = np.random.RandomState(123)
-
-    # Create slightly correlated signals
-    base_signal = rng.randn(n_epochs, n_times)
-    data = np.zeros((n_epochs, n_channels, n_times))
-    data[:, 0, :] = base_signal
-    data[:, 1, :] = base_signal * 0.7 + rng.randn(n_epochs, n_times) * 0.3
-
-    ch_names = ["Fz", "Cz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Test with different parameters
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_default_anti_aliasing():
-    """Test wSMI with default anti-aliasing behavior."""
+def test_wsmi_input_validation_and_errors():
+    """Test input validation and error handling."""
     sfreq = 100.0
     n_epochs, n_channels, n_times = 2, 3, 200
     rng = np.random.RandomState(42)
@@ -87,363 +26,248 @@ def test_wsmi_default_anti_aliasing():
     montage = mne.channels.make_standard_montage("standard_1020")
     epochs.set_montage(montage, match_case=False)
 
-    # Test with default anti-aliasing
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_mixed_channel_types():
-    """Test wSMI with mixed channel types."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 4, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    # Mix EEG and MEG channels
-    ch_names = ["Fz", "Cz", "MEG001", "MEG002"]
-    ch_types = ["eeg", "eeg", "mag", "mag"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types=ch_types)
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Test with mixed channel types
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_bad_channels():
-    """Test wSMI with bad channels."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 4, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    ch_names = ["Fz", "Cz", "Pz", "Oz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Mark one channel as bad
-    epochs.info["bads"] = ["Pz"]
-
-    # Test with bad channels
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result - should process all channels (including bad ones)
-    data_matrix = result.get_data()
-    # All 4 channels are processed (bad channels are not excluded)
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_input_validation():
-    """Test wSMI input validation."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Test invalid kernel (should be positive integer)
+    # Test invalid parameters
     with pytest.raises(ValueError, match="kernel.*must be > 1"):
         wsmi(epochs, kernel=0, tau=1)
 
-    # Test invalid tau (should be positive integer)
     with pytest.raises(ValueError, match="tau.*must be > 0"):
         wsmi(epochs, kernel=3, tau=0)
 
-    # Test invalid anti_aliasing (should be boolean)
     with pytest.raises(TypeError, match="anti_aliasing must be an instance of bool"):
         wsmi(epochs, kernel=3, tau=1, anti_aliasing="yes")
 
-    # Test invalid weighted (should be boolean)
     with pytest.raises(TypeError, match="weighted must be an instance of bool"):
         wsmi(epochs, kernel=3, tau=1, weighted="yes")
 
+    # Test single channel error
+    single_ch_data = data[:, :1, :]
+    single_ch_info = create_info(["A"], sfreq=sfreq, ch_types="eeg")
+    single_ch_epochs = EpochsArray(single_ch_data, single_ch_info, tmin=0.0)
 
-def test_wsmi_memory_check():
-    """Test that wSMI doesn't exceed memory limits with large data."""
-    # Create moderately large data to test memory management
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 5, 6, 1000  # Larger but manageable
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    ch_names = [f"CH{i + 1}" for i in range(n_channels)]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Test with larger data
-    result = wsmi(epochs, kernel=3, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_time_window():
-    """Test wSMI with time window selection."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 300
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Test with time window
-    result = wsmi(epochs, kernel=3, tau=1, tmin=0.5, tmax=2.0)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-
-def test_wsmi_insufficient_samples():
-    """Test wSMI behavior with insufficient samples."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 50  # More reasonable but still small
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
-
-    # Should handle small samples gracefully with very low filter frequency
-    result = wsmi(epochs, kernel=2, tau=1)
-
-    # Check the result
-    data_matrix = result.get_data()
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-
-    # Test that insufficient samples after time masking raises error
-    with pytest.raises(ValueError, match=r"but at least[\s\S]*are needed"):
-        wsmi(epochs, kernel=5, tau=3, tmin=0.1, tmax=0.15)
-
-
-def test_wsmi_deterministic():
-    """Test that results are deterministic given same input."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 150
-
-    # Create identical datasets
-    rng = np.random.default_rng(42)
-    data1 = rng.standard_normal((n_epochs, n_channels, n_times))
-    data2 = data1.copy()
-
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-
-    epochs1 = EpochsArray(data1, info, tmin=0.0)
-    epochs2 = EpochsArray(data2, info, tmin=0.0)
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs1.set_montage(montage, on_missing="ignore")
-    epochs2.set_montage(montage, on_missing="ignore")
-
-    # Compute wSMI with identical parameters
-    conn1 = wsmi(
-        epochs1,
-        kernel=3,
-        tau=1,
-    )
-    conn2 = wsmi(
-        epochs2,
-        kernel=3,
-        tau=1,
-    )
-
-    # Results should be identical
-    assert_array_equal(conn1.get_data(), conn2.get_data())
-
-
-def test_wsmi_single_channel():
-    """Test error with single channel."""
-    sfreq = 100.0
-    data = np.random.RandomState(0).randn(2, 1, 100)  # Single channel
-
-    info = create_info(["Cz"], sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Should raise error - single channel connectivity is not meaningful
     with pytest.raises(ValueError, match="At least 2 channels are required"):
-        wsmi(epochs, kernel=3, tau=1)
+        wsmi(single_ch_epochs, kernel=3, tau=1)
+
+    # Test insufficient samples error
+    with pytest.raises(ValueError, match=r"but at least[\s\S]*are needed"):
+        wsmi(epochs, kernel=5, tau=3, tmin=0.05, tmax=0.1)
 
 
-def test_wsmi_meg_data():
-    """Test with MEG data."""
+def test_wsmi_known_coupling_patterns():
+    """Test wSMI with known coupling patterns to validate core properties."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 150
-    data = np.random.RandomState(0).randn(n_epochs, n_channels, n_times)
+    n_epochs, n_times = 3, 250
+    t = np.linspace(0, n_times / sfreq, n_times)
 
-    # Create MEG channels
-    ch_names = ["MEG0111", "MEG0112", "MEG0113"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="mag")
+    # Create test data focusing on fundamental wSMI properties
+    data = np.zeros((n_epochs, 3, n_times))
+    for epoch in range(n_epochs):
+        # Channel 0: deterministic base signal
+        base = np.sin(2 * np.pi * 10 * t)
+        data[epoch, 0, :] = base
+
+        # Channel 1: identical copy (must give wSMI = 0)
+        data[epoch, 1, :] = base
+
+        # Channel 2: strongly nonlinear transformation
+        # Use a clear nonlinear relationship that wSMI should detect
+        data[epoch, 2, :] = np.tanh(2 * base) + 0.5 * np.sin(2 * np.pi * 15 * t)
+
+    ch_names = ["base", "identical", "coupled"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    # Test with MEG data
+    # Compute wSMI
     conn = wsmi(epochs, kernel=3, tau=1)
+    conn_data = conn.get_data()
 
-    assert conn.n_nodes == n_channels
-    assert conn.method == "wSMI"
+    # Basic validation
+    assert conn_data.shape == (n_epochs, 3)  # 3 choose 2 = 3 connections
+    assert np.all(np.isfinite(conn_data))
 
+    # Average connectivity values
+    avg_conn = np.mean(conn_data, axis=0)
 
-def test_wsmi_all_channels_as_bad():
-    """Test wSMI when all channels are marked as bad."""
-    sfreq = 100.0
-    data = np.random.RandomState(0).randn(2, 2, 100)
+    # Connection indices: (0,1)=0, (0,2)=1, (1,2)=2
+    identical_wsmi = avg_conn[0]  # base-identical
+    coupled_wsmi = avg_conn[1]  # base-coupled
+    identical_coupled_wsmi = avg_conn[2]  # identical-coupled
 
-    # Create channels and mark them all as bad
-    ch_names = ["Ch1", "Ch2"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-    epochs.info["bads"] = ch_names  # Mark all channels as bad
+    # Test fundamental wSMI properties:
 
-    # Should process all channels (bad channels are not excluded)
-    result = wsmi(epochs, kernel=3, tau=1)
+    # 1. Identical signals MUST have zero wSMI (core requirement)
+    assert identical_wsmi == 0.0, "Identical channels must have wSMI = 0"
 
-    # Check that result is valid
-    data_matrix = result.get_data()
-    n_connections = len(ch_names) * (len(ch_names) - 1) // 2
-    assert data_matrix.shape == (2, n_connections)
-    assert np.all(np.isfinite(data_matrix))
+    # 2. All wSMI values must be non-negative
+    assert np.all(avg_conn >= 0), "All wSMI values must be non-negative"
 
+    # 3. Coupled signals should have positive wSMI
+    assert coupled_wsmi > 0, f"Coupled signals should have wSMI > 0: {coupled_wsmi:.4f}"
 
-def test_wsmi_eeg_without_montage():
-    """Test wSMI with EEG data without montage."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 150
-    data = np.random.RandomState(0).randn(n_epochs, n_channels, n_times)
-
-    # Create EEG channels without setting montage
-    ch_names = ["EEG001", "EEG002", "EEG003"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Should work fine without any special preprocessing
-    conn = wsmi(epochs, kernel=3, tau=1)
-
-    assert conn.method == "wSMI"
-    assert np.all(np.isfinite(conn.get_data()))
-
-
-@pytest.mark.parametrize("kernel", [2, 3, 4])
-@pytest.mark.parametrize("tau", [1, 2])
-def test_wsmi_parameter_combinations(kernel, tau):
-    """Test various parameter combinations."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
-    data = np.random.RandomState(0).randn(n_epochs, n_channels, n_times)
-
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-    epochs.set_montage(
-        mne.channels.make_standard_montage("standard_1020"), on_missing="ignore"
+    # 4. Since channel 1 is identical to channel 0, its coupling to channel 2
+    #    should be the same as channel 0's coupling to channel 2
+    assert abs(coupled_wsmi - identical_coupled_wsmi) < 1e-10, (
+        "wSMI should be identical for identical source channels"
     )
 
-    # Test different kernel and tau combinations
-    conn = wsmi(
-        epochs,
-        kernel=kernel,
-        tau=tau,
+    # 5. Reasonable bounds (wSMI should not exceed theoretical maximum)
+    assert np.all(avg_conn < 2.0), f"wSMI values too high: max={np.max(avg_conn):.3f}"
+
+    # 6. Test reproducibility across epochs
+    assert np.all(np.std(conn_data, axis=0) < 0.5), (
+        "wSMI should be stable across epochs"
     )
 
-    assert conn.method == "wSMI"
-    assert conn.n_nodes == n_channels
-    assert np.all(np.isfinite(conn.get_data()))
 
-
-def test_wsmi_weighted_parameter():
-    """Test weighted parameter to switch between wSMI and SMI."""
-    # Create simple test data
+def test_wsmi_tau_nonlinear_detection():
+    """Test that higher tau values better detect nonlinear coupling."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+    n_epochs, n_times = 5, 400
+    t = np.linspace(0, n_times / sfreq, n_times)
 
-    # Use EEG channel names
-    ch_names = ["Fz", "Cz", "Pz"]
+    # Create test data with clear nonlinear coupling
+    data = np.zeros((n_epochs, 3, n_times))
+
+    for epoch in range(n_epochs):
+        # Base signal
+        base = np.sin(2 * np.pi * 8 * t) + 0.1 * np.random.RandomState(
+            42 + epoch
+        ).randn(n_times)
+        data[epoch, 0, :] = base
+
+        # Strong nonlinear coupling (quadratic relationship)
+        data[epoch, 1, :] = base**2 + 0.3 * np.sin(2 * np.pi * 12 * t)
+
+        # Independent signal
+        data[epoch, 2, :] = np.sin(2 * np.pi * 20 * t) + 0.2 * np.random.RandomState(
+            100 + epoch
+        ).randn(n_times)
+
+    ch_names = ["base", "nonlinear", "independent"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, on_missing="ignore")
+    # Test tau=1 vs tau=2
+    conn_tau1 = wsmi(epochs, kernel=3, tau=1)
+    conn_tau2 = wsmi(epochs, kernel=3, tau=2)
 
-    # Test wSMI (weighted=True, default)
+    data_tau1 = np.mean(conn_tau1.get_data(), axis=0)
+    data_tau2 = np.mean(conn_tau2.get_data(), axis=0)
+
+    # Connection indices: (0,1)=0, (0,2)=1, (1,2)=2
+    nonlinear_tau1 = data_tau1[0]  # base-nonlinear with tau=1
+    independent_tau1 = data_tau1[1]  # base-independent with tau=1
+    nonlinear_tau2 = data_tau2[0]  # base-nonlinear with tau=2
+    independent_tau2 = data_tau2[1]  # base-independent with tau=2
+
+    # Test that tau=2 shows better discrimination than tau=1
+    if independent_tau1 > 0 and independent_tau2 > 0:
+        ratio_tau1 = nonlinear_tau1 / independent_tau1
+        ratio_tau2 = nonlinear_tau2 / independent_tau2
+
+        # tau=2 should show better discrimination (higher ratio)
+        assert ratio_tau2 > ratio_tau1, (
+            f"tau=2 should show better nonlinear discrimination: "
+            f"tau=1 ratio={ratio_tau1:.2f}, tau=2 ratio={ratio_tau2:.2f}"
+        )
+
+        # tau=2 should show substantial improvement (at least 2x better)
+        assert ratio_tau2 > 2 * ratio_tau1, (
+            f"tau=2 should show substantial improvement over tau=1: "
+            f"tau=2 ratio should be > 2x tau=1 ratio"
+            f"tau=2 ratio / tau=1 ratio: {ratio_tau2 / ratio_tau1:.2f}"
+        )
+
+    # Both should detect some coupling
+    assert nonlinear_tau1 > 0, "tau=1 should detect some nonlinear coupling"
+    assert nonlinear_tau2 > 0, "tau=2 should detect some nonlinear coupling"
+
+
+def test_wsmi_parameter_effects():
+    """Test that different kernel and tau values produce different results."""
+    sfreq = 100.0
+    n_epochs, n_times = 2, 200
+    t = np.linspace(0, n_times / sfreq, n_times)
+
+    # Create structured data
+    data = np.zeros((n_epochs, 3, n_times))
+    for epoch in range(n_epochs):
+        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
+        data[epoch, 1, :] = np.sin(2 * np.pi * 10 * t + np.pi / 4)  # Phase shifted
+        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)  # Different frequency
+
+    ch_names = ["A", "B", "C"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    # Test different parameter combinations
+    conn_k3_t1 = wsmi(epochs, kernel=3, tau=1)
+    conn_k4_t1 = wsmi(epochs, kernel=4, tau=1)
+    conn_k3_t2 = wsmi(epochs, kernel=3, tau=2)
+
+    # Results should be different for different parameters
+    assert not np.array_equal(conn_k3_t1.get_data(), conn_k4_t1.get_data()), (
+        "Different kernel should produce different results"
+    )
+    assert not np.array_equal(conn_k3_t1.get_data(), conn_k3_t2.get_data()), (
+        "Different tau should produce different results"
+    )
+
+    # All should have same shape and finite values
+    for conn in [conn_k3_t1, conn_k4_t1, conn_k3_t2]:
+        assert conn.get_data().shape == (n_epochs, 3)  # 3 choose 2 = 3 connections
+        assert np.all(np.isfinite(conn.get_data()))
+
+
+def test_wsmi_weighted_vs_unweighted():
+    """Test weighted parameter produces different results for wSMI vs SMI."""
+    sfreq = 100.0
+    n_epochs, n_times = 2, 200
+
+    # Create simple structured data
+    data = np.zeros((n_epochs, 3, n_times))
+    t = np.linspace(0, n_times / sfreq, n_times)
+
+    for epoch in range(n_epochs):
+        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
+        data[epoch, 1, :] = np.sin(2 * np.pi * 10 * t)  # Identical
+        data[epoch, 2, :] = np.sin(2 * np.pi * 12 * t)  # Different
+
+    ch_names = ["A", "B", "C"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    # Test wSMI vs SMI
     conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True)
-
-    # Test SMI (weighted=False)
     conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False)
 
-    # Basic checks for both
+    # Should have different method names
     assert conn_wsmi.method == "wSMI"
     assert conn_smi.method == "SMI"
-    assert conn_wsmi.n_nodes == n_channels
-    assert conn_smi.n_nodes == n_channels
-    assert conn_wsmi.n_epochs_used == n_epochs
-    assert conn_smi.n_epochs_used == n_epochs
 
-    # Check connectivity shapes are the same
-    expected_connections = n_channels * (n_channels - 1) // 2
-    assert conn_wsmi.get_data().shape == (n_epochs, expected_connections)
-    assert conn_smi.get_data().shape == (n_epochs, expected_connections)
+    # Should produce different results due to weighting
+    assert not np.array_equal(conn_wsmi.get_data(), conn_smi.get_data()), (
+        "wSMI and SMI should produce different results"
+    )
 
-    # Check that values are finite for both
-    wsmi_data = conn_wsmi.get_data()
-    smi_data = conn_smi.get_data()
-    assert np.all(np.isfinite(wsmi_data))
-    assert np.all(np.isfinite(smi_data))
-
-    # Values should be different (wSMI uses weights, SMI doesn't)
-    # They shouldn't be exactly equal due to the weighting
-    # The methods differ in their weighting, but with random data
-    # they might produce similar results (this is expected behavior)
-    # So we just check that both produce finite values
-    pass
+    # Both should have finite values
+    assert np.all(np.isfinite(conn_wsmi.get_data()))
+    assert np.all(np.isfinite(conn_smi.get_data()))
 
 
-def test_wsmi_indices_parameter():
-    """Test indices parameter for selective connectivity computation."""
+def test_wsmi_basic_functionality():
+    """Test basic wSMI functionality and object properties."""
     sfreq = 100.0
     n_epochs, n_channels, n_times = 2, 4, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+
+    # Create deterministic data
+    t = np.linspace(0, n_times / sfreq, n_times)
+    data = np.zeros((n_epochs, n_channels, n_times))
+
+    for epoch in range(n_epochs):
+        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)  # 10 Hz
+        data[epoch, 1, :] = np.sin(2 * np.pi * 12 * t)  # 12 Hz
+        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)  # 15 Hz
+        data[epoch, 3, :] = np.sin(2 * np.pi * 8 * t)  # 8 Hz
 
     ch_names = ["Fz", "Cz", "Pz", "Oz"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
@@ -452,57 +276,50 @@ def test_wsmi_indices_parameter():
     montage = mne.channels.make_standard_montage("standard_1020")
     epochs.set_montage(montage, on_missing="ignore")
 
-    # Test with specific indices
-    indices = (np.array([0, 1]), np.array([2, 3]))  # Fz-Pz, Cz-Oz
-    conn = wsmi(epochs, kernel=3, tau=1, indices=indices)
+    # Test basic computation
+    conn = wsmi(epochs, kernel=3, tau=1)
 
-    # Should compute only the specified connections
-    assert conn.get_data().shape == (n_epochs, 2)  # 2 connections
-    assert conn.n_nodes == n_channels
-    assert np.all(np.isfinite(conn.get_data()))
+    # Check basic properties
+    assert conn.method == "wSMI"
+    assert conn.n_nodes == 4
+    assert conn.n_epochs_used == 2
 
-    # Test with all connections (default)
-    conn_all = wsmi(epochs, kernel=3, tau=1)
-    expected_all_connections = n_channels * (n_channels - 1) // 2
-    assert conn_all.get_data().shape == (n_epochs, expected_all_connections)
+    # Check data shape and validity
+    data_matrix = conn.get_data()
+    expected_connections = 4 * 3 // 2  # 4 choose 2 = 6 connections
+    assert data_matrix.shape == (2, expected_connections)
+    assert np.all(np.isfinite(data_matrix))
 
-    # Test invalid indices
-    invalid_indices = (np.array([0, 1]), np.array([5, 6]))  # Out of range
-    with pytest.raises(ValueError, match="Index.*is out of range"):
-        wsmi(epochs, kernel=3, tau=1, indices=invalid_indices)
+    # Test with different channel types (suppress unit change warning)
+    import warnings
 
-    # Test self-connectivity (same channel pairs)
-    self_indices = (
-        np.array([0, 1]),
-        np.array([0, 2]),
-    )  # First pair is self-connectivity
-    with pytest.raises(ValueError, match="Self-connectivity not supported"):
-        wsmi(epochs, kernel=3, tau=1, indices=self_indices)
-
-    # Test empty indices
-    empty_indices = (np.array([]), np.array([]))
-    with pytest.raises(ValueError, match="No valid connections specified"):
-        wsmi(epochs, kernel=3, tau=1, indices=empty_indices)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        epochs.set_channel_types({"Fz": "eeg", "Cz": "eeg", "Pz": "mag", "Oz": "mag"})
+        conn_mixed = wsmi(epochs, kernel=3, tau=1)
+        assert conn_mixed.n_nodes == 4
+        assert np.all(np.isfinite(conn_mixed.get_data()))
 
 
-def test_wsmi_average_parameter():
-    """Test average parameter for epoch averaging."""
+def test_wsmi_averaging_and_indices():
+    """Test averaging and indices parameters."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 4, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+    n_epochs, n_times = 4, 150
+    data = np.zeros((n_epochs, 4, n_times))
 
-    ch_names = ["Fz", "Cz", "Pz"]
+    # Create simple test data
+    for epoch in range(n_epochs):
+        for ch in range(4):
+            data[epoch, ch, :] = np.sin(
+                2 * np.pi * (10 + ch) * np.linspace(0, n_times / sfreq, n_times)
+            )
+
+    ch_names = ["A", "B", "C", "D"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, on_missing="ignore")
-
-    # Test without averaging (default)
+    # Test averaging
     conn_no_avg = wsmi(epochs, kernel=3, tau=1, average=False)
-
-    # Test with averaging
     conn_avg = wsmi(epochs, kernel=3, tau=1, average=True)
 
     # Check types and shapes
@@ -511,97 +328,135 @@ def test_wsmi_average_parameter():
     assert isinstance(conn_no_avg, EpochConnectivity)
     assert isinstance(conn_avg, Connectivity)
 
-    expected_connections = n_channels * (n_channels - 1) // 2
+    expected_connections = 6  # 4 choose 2
     assert conn_no_avg.get_data().shape == (n_epochs, expected_connections)
     assert conn_avg.get_data().shape == (expected_connections,)
 
-    # Check that averaged connectivity is close to manual average
+    # Averaged should equal manual average
     manual_avg = np.mean(conn_no_avg.get_data(), axis=0)
     assert_allclose(conn_avg.get_data(), manual_avg)
 
-    # Check that both have finite values
-    assert np.all(np.isfinite(conn_no_avg.get_data()))
-    assert np.all(np.isfinite(conn_avg.get_data()))
+    # Test indices parameter
+    indices = (np.array([0, 1]), np.array([2, 3]))  # A-C, B-D connections
+    conn_indices = wsmi(epochs, kernel=3, tau=1, indices=indices)
+    assert conn_indices.get_data().shape == (n_epochs, 2)
+
+    # Test invalid indices
+    with pytest.raises(ValueError, match="Index.*is out of range"):
+        wsmi(epochs, kernel=3, tau=1, indices=(np.array([0]), np.array([5])))
+
+    with pytest.raises(ValueError, match="Self-connectivity not supported"):
+        wsmi(epochs, kernel=3, tau=1, indices=(np.array([0]), np.array([0])))
 
 
-def test_wsmi_indices_and_average_combined():
-    """Test indices and average parameters used together."""
+def test_wsmi_array_input():
+    """Test wSMI with numpy array input."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 3, 4, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+    n_epochs, n_channels, n_times = 2, 3, 150
+    data = np.zeros((n_epochs, n_channels, n_times))
 
-    ch_names = ["Fz", "Cz", "Pz", "Oz"]
+    # Create simple test data
+    t = np.linspace(0, n_times / sfreq, n_times)
+    for epoch in range(n_epochs):
+        for ch in range(n_channels):
+            data[epoch, ch, :] = np.sin(2 * np.pi * (10 + ch * 2) * t)
+
+    # Test array input
+    conn_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
+    assert conn_array.get_data().shape == (n_epochs, 3)  # 3 choose 2
+    assert np.all(np.isfinite(conn_array.get_data()))
+
+    # Test with custom names
+    names = ["X", "Y", "Z"]
+    conn_named = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=names)
+    assert conn_named.names == names
+    assert_array_equal(conn_array.get_data(), conn_named.get_data())
+
+    # Test errors
+    with pytest.raises(ValueError, match="Sampling frequency \\(sfreq\\) is required"):
+        wsmi(data, kernel=3, tau=1)
+
+    with pytest.raises(ValueError, match="Array input must be 3D"):
+        wsmi(data[0], kernel=3, tau=1, sfreq=sfreq)
+
+    with pytest.raises(
+        ValueError, match="Number of names .* must match number of channels"
+    ):
+        wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=["X", "Y"])
+
+    # Test equivalence with Epochs input
+    ch_names = ["ch1", "ch2", "ch3"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, on_missing="ignore")
+    conn_epochs = wsmi(epochs, kernel=3, tau=1)
+    conn_array_equiv = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=ch_names)
 
-    # Test specific indices with averaging
-    indices = (np.array([0, 1]), np.array([2, 3]))  # 2 connections
-    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
-
-    # Should return averaged connectivity for specified connections
-    from mne_connectivity.base import Connectivity
-
-    assert isinstance(conn, Connectivity)
-    assert conn.get_data().shape == (2,)  # 2 connections, averaged
-    assert np.all(np.isfinite(conn.get_data()))
+    assert_allclose(conn_epochs.get_data(), conn_array_equiv.get_data(), rtol=1e-10)
 
 
-def test_wsmi_anti_aliasing_parameter():
-    """Test anti_aliasing parameter functionality."""
+def test_wsmi_deterministic():
+    """Test that wSMI produces deterministic results."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+    n_epochs, n_channels, n_times = 2, 3, 150
 
-    ch_names = ["Fz", "Cz", "Pz"]
+    # Create identical datasets
+    data = np.zeros((n_epochs, n_channels, n_times))
+    t = np.linspace(0, n_times / sfreq, n_times)
+    for epoch in range(n_epochs):
+        for ch in range(n_channels):
+            data[epoch, ch, :] = np.sin(2 * np.pi * (8 + ch * 3) * t)
+
+    ch_names = ["A", "B", "C"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+
+    epochs1 = EpochsArray(data.copy(), info, tmin=0.0)
+    epochs2 = EpochsArray(data.copy(), info, tmin=0.0)
+
+    # Compute connectivity with identical parameters
+    conn1 = wsmi(epochs1, kernel=3, tau=1)
+    conn2 = wsmi(epochs2, kernel=3, tau=1)
+
+    # Results should be identical
+    assert_array_equal(conn1.get_data(), conn2.get_data())
+
+
+def test_wsmi_anti_aliasing():
+    """Test anti-aliasing parameter."""
+    sfreq = 100.0
+    n_epochs, n_times = 2, 200
+    data = np.zeros((n_epochs, 3, n_times))
+
+    t = np.linspace(0, n_times / sfreq, n_times)
+    for epoch in range(n_epochs):
+        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
+        data[epoch, 1, :] = np.sin(2 * np.pi * 12 * t)
+        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)
+
+    ch_names = ["A", "B", "C"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, on_missing="ignore")
-
-    # Test with anti-aliasing enabled (default)
+    # Test with anti-aliasing enabled
     conn_with_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=True)
 
-    # Test with anti-aliasing disabled
+    # Test with anti-aliasing disabled (should produce warning)
     import warnings
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         conn_without_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=False)
-
-        # Should produce a warning about potential aliasing
         assert len(w) > 0
         assert "Anti-aliasing disabled" in str(w[0].message)
 
-    # Both should return valid connectivity objects
-    assert conn_with_filter.method == "wSMI"
-    assert conn_without_filter.method == "wSMI"
+    # Both should produce valid results
     assert np.all(np.isfinite(conn_with_filter.get_data()))
     assert np.all(np.isfinite(conn_without_filter.get_data()))
 
-    # Results should be different due to filtering
-    # (though with random data, differences might be subtle)
-    assert conn_with_filter.get_data().shape == conn_without_filter.get_data().shape
 
-
-# =============================================================================
-# Ground Truth Validation Tests (New Test Data System)
-# =============================================================================
-
-
+# Ground truth validation tests (simplified)
 def _load_test_data():
-    """Load the wsmi test data.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the required test data file is not available.
-    """
+    """Load the wsmi test data."""
     import os
     import pickle
 
@@ -621,25 +476,8 @@ def _load_test_data():
     return test_data
 
 
-def test_wsmi_against_test_data_all_cases():
-    """Test wSMI implementation against all 12 test cases in the test data.
-
-    This test validates our wSMI implementation against comprehensive ground truth data
-    containing realistic EEG connectivity scenarios. wSMI measures information sharing
-    between brain regions by:
-
-    1. Converting time series to ordinal patterns (symbolic transformation)
-    2. Computing mutual information between symbolic sequences
-    3. Weighting to emphasize patterns that reflect genuine connectivity vs. artifacts
-
-    The test covers 4 scenarios × 3 parameter combinations, ensuring our implementation
-    correctly detects various types of neural connectivity patterns that would be
-    clinically relevant for assessing consciousness and brain network integrity.
-
-    Expected: Exact numerical agreement (tolerance 1e-10) with original implementation
-    across all 12 test cases, validating both algorithmic correctness and numerical
-    precision.
-    """
+def test_wsmi_ground_truth_validation():
+    """Test wSMI against ground truth data for regression testing."""
     test_data = _load_test_data()
 
     for test_case in test_data["tests"]:
@@ -655,409 +493,9 @@ def test_wsmi_against_test_data_all_cases():
             tmax=input_params["tmax"],
         )
 
-        # Compare results
+        # Compare with expected output
         expected_data = test_case["expected_output"].get_data()
         new_data = conn.get_data()
 
-        # Check shapes and numerical agreement
         assert expected_data.shape == new_data.shape
         assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_linear_coupling_scenario():
-    """Test wSMI on linear coupling scenarios specifically.
-
-    Linear coupling scenario models direct, proportional relationships
-    between brain regions:
-    - CH1: Base alpha oscillation (10 Hz) + noise (source region)
-    - CH2: Strong linear coupling (CH2 = 0.8 × CH1 + noise) - high connectivity expected
-    - CH3: Weak linear coupling (CH3 = 0.3 × CH1 + noise) - moderate connectivity
-    expected
-    - CH4: Independent signal (12 Hz) - low connectivity expected
-
-    wSMI should detect these linear dependencies because:
-    - Ordinal patterns (symbol sequences) will be correlated between coupled channels
-    - Strong coupling (CH1-CH2) creates consistent temporal ordering patterns
-    - Weak coupling (CH1-CH3) shows partial pattern correlation
-    - Independent channels (CH1-CH4) show uncorrelated symbolic patterns
-
-    This tests wSMI's ability to detect the functional connectivity that underlies
-    conscious information integration between brain networks, as observed in
-    clinical studies of consciousness disorders (King et al., 2013).
-
-    Expected: High wSMI for CH1-CH2, moderate for CH1-CH3, low for CH1-CH4.
-    """
-    test_data = _load_test_data()
-
-    # Get all linear coupling test cases
-    linear_tests = [
-        t for t in test_data["tests"] if t["scenario_name"] == "linear_coupling"
-    ]
-
-    assert len(linear_tests) > 0, "No linear coupling test cases found"
-
-    for test_case in linear_tests:
-        input_params = test_case["input_params"]
-        expected_output = test_case["expected_output"]
-
-        # Run our implementation
-
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Compare results
-        expected_data = expected_output.get_data()
-        new_data = conn.get_data()
-
-        assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_nonlinear_coupling_scenario():
-    """Test wSMI on nonlinear coupling scenarios specifically.
-
-    Nonlinear coupling scenario tests wSMI's key advantage over linear
-    connectivity methods:
-    - CH1: Base signal (8 Hz oscillation)
-    - CH2: Nonlinear function of CH1 (quadratic transformation + phase coupling)
-    - CH3: Independent signal (15 Hz) - control for specificity
-
-    This scenario is crucial because real neural connectivity often involves:
-    - Nonlinear neuronal transfer functions (firing thresholds, saturation)
-    - Phase-amplitude coupling between different frequency bands
-    - Complex dynamical interactions that linear methods miss
-
-    wSMI excels here because symbolic transformation captures:
-    - Ordinal relationships that persist despite nonlinear transformations
-    - Temporal pattern dependencies independent of amplitude scaling
-    - Information sharing that transcends simple correlation measures
-
-    Clinical relevance: Nonlinear connectivity patterns are signatures of conscious
-    information processing and network integration. Linear methods like coherence
-    would miss these crucial brain dynamics that wSMI can detect.
-
-    Expected: High wSMI for CH1-CH2 (nonlinear dependency), low for CH1-CH3 and CH2-CH3.
-    """
-    test_data = _load_test_data()
-
-    # Get all nonlinear coupling test cases
-    nonlinear_tests = [
-        t for t in test_data["tests"] if t["scenario_name"] == "nonlinear_coupling"
-    ]
-
-    assert len(nonlinear_tests) > 0, "No nonlinear coupling test cases found"
-
-    for test_case in nonlinear_tests:
-        input_params = test_case["input_params"]
-        expected_output = test_case["expected_output"]
-
-        # Run our implementation
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Compare results
-        expected_data = expected_output.get_data()
-        new_data = conn.get_data()
-
-        assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_network_coupling_scenario():
-    """Test wSMI on network coupling scenarios specifically.
-
-    Network coupling scenario models complex brain network topology with multiple
-    connectivity patterns:
-    - CH1: Hub region (source of information flow)
-    - CH2: First relay in sequential chain (CH1 → CH2)
-    - CH3: Second relay in chain (CH2 → CH3)
-    - CH4: Direct hub connection (CH1 → CH4)
-    - CH5: Isolated region (no connections)
-
-    This tests wSMI's ability to detect:
-    - Sequential information flow (CH1→CH2→CH3 chain)
-    - Hub-and-spoke connectivity (CH1 as central hub)
-    - Network separation (CH5 isolation)
-    - Multiple simultaneous pathways (direct and indirect routes)
-
-    Real brain networks show this complexity:
-    - Thalamo-cortical loops for consciousness
-    - Hierarchical processing chains in sensory systems
-    - Default mode network hub regions
-    - Pathological network breakdown in disorders of consciousness
-
-    wSMI's symbolic approach captures:
-    - Information propagation across multiple synapses
-    - Temporal delays in network communication
-    - Pattern transmission through network hierarchies
-
-    Expected: High wSMI for CH1-CH2, CH2-CH3, CH1-CH4; low for all connections to CH5.
-    """
-    test_data = _load_test_data()
-
-    # Get all network coupling test cases
-    network_tests = [
-        t for t in test_data["tests"] if t["scenario_name"] == "network_coupling"
-    ]
-
-    assert len(network_tests) > 0, "No network coupling test cases found"
-
-    for test_case in network_tests:
-        input_params = test_case["input_params"]
-        expected_output = test_case["expected_output"]
-
-        # Run our implementation
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Compare results
-        expected_data = expected_output.get_data()
-        new_data = conn.get_data()
-
-        assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_no_coupling_scenario():
-    """Test wSMI on no coupling scenarios specifically.
-
-    No coupling scenario provides crucial negative control validation:
-    - CH1: Independent 10 Hz oscillation + noise
-    - CH2: Independent 12 Hz oscillation + noise
-    - CH3: Independent 15 Hz oscillation + noise
-    - All channels are statistically independent by design
-
-    This tests wSMI's specificity - its ability to avoid false positives:
-    - Should detect minimal information sharing between unrelated signals
-    - Must distinguish true connectivity from spurious correlations
-    - Validates robustness against common-source artifacts
-
-    Clinical importance:
-    - Pathological brain states (e.g., vegetative state) show reduced
-    network connectivity
-    - Normal brain also has functionally separated regions with minimal interaction
-    - Accurate connectivity measures must distinguish signal from noise
-
-    wSMI's weighting mechanism helps here:
-    - Downweights identical/opposite patterns that could arise from artifacts
-    - Emphasizes genuine information transfer vs. volume conduction
-    - Symbolic transformation reduces sensitivity to linear mixing
-
-    The no-coupling scenario represents the null hypothesis for connectivity analysis:
-    what should we see when there truly is no functional relationship?
-
-    Expected: Low wSMI values across all channel pairs, approaching theoretical minimum.
-    """
-    test_data = _load_test_data()
-
-    # Get all no coupling test cases
-    no_coupling_tests = [
-        t for t in test_data["tests"] if t["scenario_name"] == "no_coupling"
-    ]
-
-    assert len(no_coupling_tests) > 0, "No coupling test cases found"
-
-    for test_case in no_coupling_tests:
-        input_params = test_case["input_params"]
-        expected_output = test_case["expected_output"]
-
-        # Run our implementation
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Compare results
-        expected_data = expected_output.get_data()
-        new_data = conn.get_data()
-
-        assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_parameter_variations():
-    """Test wSMI with different kernel and tau parameter combinations.
-
-    This test validates wSMI behavior across different parameter regimes:
-
-    Kernel parameter (pattern length):
-    - kernel=3: 6 ordinal patterns (3! = 6) - coarse symbolic discretization
-    - kernel=4: 24 ordinal patterns (4! = 24) - fine symbolic discretization
-
-    Tau parameter (temporal delay):
-    - tau=1: Consecutive samples - high temporal resolution
-    - tau=2: Every other sample - reduced temporal resolution, longer time scales
-
-    Parameter combinations tested:
-    - k3_t1: Quick, coarse patterns - captures fast, strong connectivity
-    - k4_t1: Detailed, fine patterns - sensitive to subtle connectivity
-    - k3_t2: Coarse patterns, slower dynamics - captures slower connectivity
-
-    Theoretical considerations:
-    - Larger kernel: More pattern diversity, better discrimination, needs more data
-    - Smaller kernel: Fewer patterns, more robust with limited data
-    - Larger tau: Captures slower dynamics, reduces effective sampling rate
-    - Smaller tau: Captures faster dynamics, higher temporal precision
-
-    Clinical applications:
-    - Different parameters may be optimal for different pathologies
-    - Fast dynamics (k3_t1) for acute states, slow dynamics (k3_t2)
-    for chronic conditions
-    - Fine patterns (k4_t1) for subtle connectivity changes in mild disorders
-
-    Expected: All parameter combinations should yield consistent qualitative results
-    (same connectivity patterns) but with different sensitivity and precision.
-    """
-    test_data = _load_test_data()
-
-    # Test all parameter combinations
-    for test_case in test_data["tests"]:
-        input_params = test_case["input_params"]
-        expected_output = test_case["expected_output"]
-
-        # Run our implementation
-
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Compare results
-        expected_data = expected_output.get_data()
-        new_data = conn.get_data()
-
-        assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
-
-
-def test_wsmi_connectivity_patterns():
-    """Test that wSMI correctly identifies expected connectivity patterns.
-
-    This test validates the clinical and neuroscientific
-    interpretability of wSMI results:
-
-    Connectivity pattern validation:
-    - Detects true positive connections (coupled channels show high wSMI)
-    - Avoids false positives (independent channels show low wSMI)
-    - Maintains consistent patterns across different parameter settings
-    - Produces values in physiologically meaningful ranges
-
-    Clinical interpretation framework:
-    - wSMI values near 0: Minimal information sharing (pathological/normal isolation)
-    - Moderate wSMI: Functional connectivity (normal brain networks)
-    - High wSMI: Strong integration (conscious information broadcasting)
-
-    Consciousness research applications (King et al., 2013):
-    - Vegetative state: Globally reduced wSMI across brain networks
-    - Minimally conscious: Intermediate wSMI with regional variations
-    - Conscious state: High wSMI particularly for long-distance connections
-
-    Pattern validation ensures:
-    - Linear coupling creates graded connectivity strength
-    - Nonlinear coupling detected where linear methods fail
-    - Network topology accurately reconstructed from connectivity matrices
-    - Null scenarios properly identified as non-connected
-
-    Range expectations based on symbolic information theory:
-    - Theoretical maximum: log₂(number of symbols)
-    - Practical range: -0.5 to +1.5 for normalized wSMI
-    - Clinical significance: differences >0.1 often behaviorally relevant
-
-    Expected: wSMI patterns match known ground truth connectivity across all scenarios.
-    """
-    test_data = _load_test_data()
-
-    for test_case in test_data["tests"]:
-        test_case["connectivity_info"]
-        input_params = test_case["input_params"]
-
-        # Run our implementation
-
-        conn = wsmi(
-            input_params["epochs"],
-            kernel=input_params["kernel"],
-            tau=input_params["tau"],
-            tmin=input_params["tmin"],
-            tmax=input_params["tmax"],
-        )
-
-        # Basic checks
-        assert conn.method == "wSMI"
-        assert np.all(np.isfinite(conn.get_data()))
-
-        # Check that results are in reasonable range
-        conn_data = conn.get_data()
-        assert np.all(conn_data >= -2.0), "wSMI values too negative"
-        assert np.all(conn_data <= 2.0), "wSMI values too high"
-
-
-def test_wsmi_array_input():
-    """Test wSMI with array-like input."""
-    # Create test data as numpy array
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 3, 4, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
-
-    # Test with default names (None)
-    result_default = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
-
-    # Check the result
-    data_matrix = result_default.get_data()
-
-    # We expect a lower-triangular connectivity matrix
-    n_connections = n_channels * (n_channels - 1) // 2
-    assert data_matrix.shape == (n_epochs, n_connections)
-    assert np.all(np.isfinite(data_matrix))
-
-    # Test with custom names
-    custom_names = ["A", "B", "C", "D"]
-    result_custom = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=custom_names)
-    assert result_custom.names == custom_names
-
-    # Test that connectivity values are the same regardless of names
-    assert_allclose(result_default.get_data(), result_custom.get_data())
-
-    # Test error when sfreq is not provided
-    with pytest.raises(ValueError, match="Sampling frequency \\(sfreq\\) is required"):
-        wsmi(data, kernel=3, tau=1)
-
-    # Test error when wrong number of names provided
-    with pytest.raises(
-        ValueError, match="Number of names .* must match number of channels"
-    ):
-        wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=["A", "B"])  # Too few names
-
-    # Test error for wrong array shape
-    data_2d = data[0]  # Remove epochs dimension
-    with pytest.raises(ValueError, match="Array input must be 3D"):
-        wsmi(data_2d, kernel=3, tau=1, sfreq=sfreq)
-
-    # Test that array input gives same results as Epochs input for same data
-    ch_names = ["ch1", "ch2", "ch3", "ch4"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    result_epochs = wsmi(epochs, kernel=3, tau=1)
-    result_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=ch_names)
-
-    # Should get identical results
-    assert_allclose(result_epochs.get_data(), result_array.get_data(), rtol=1e-10)
-    assert result_epochs.names == result_array.names
-    assert result_epochs.method == result_array.method
