@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.make_surrogate_data &#8212; MNE-Connectivity 0.8.0.dev97+g19e178ac1 documentation</title>
+    <title>mne_connectivity.make_surrogate_data &#8212; MNE-Connectivity 0.8.0.dev98+g446be5f6b documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=abeb5eb0"></script>
+    <script src="../_static/documentation_options.js?v=da701cee"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev97+g19e178ac1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev98+g446be5f6b documentation</p>
   
 </a></div>
     
@@ -471,9 +471,14 @@
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a></span></dt><dd><p>The Fourier coefficients to create the null hypothesis surrogate data for. Can
-be generated from <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="(in MNE v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne.Epochs.compute_psd()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">output='complex'</span></code>
-(requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>).</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The Fourier coefficients to create the null hypothesis surrogate data for. Can
+be generated from <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="(in MNE v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne.Epochs.compute_psd()</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_tfr" title="(in MNE v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne.Epochs.compute_tfr()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">output='complex'</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Storing Fourier coefficients in <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a>
+objects requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>.</p>
+</div>
 </dd>
 <dt><strong>n_shuffles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> (default 1000)</span></dt><dd><p>The number of surrogate datasets to create.</p>
 </dd>
@@ -488,7 +493,7 @@ in memory.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>surrogate_data</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a></span></dt><dd><p>The surrogate data for the null hypothesis with <code class="docutils literal notranslate"><span class="pre">n_shuffles</span></code> entries. Returned
+<dt><strong>surrogate_data</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The surrogate data for the null hypothesis with <code class="docutils literal notranslate"><span class="pre">n_shuffles</span></code> entries. Returned
 as a generator if <code class="docutils literal notranslate"><span class="pre">return_generator=True</span></code>.</p>
 </dd>
 </dl>
@@ -628,7 +633,7 @@ biases from noise (fewer epochs gives noisier estimates) or finite sample sizes
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-09-22.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-09-26.
       <br/>
     
   </p>
