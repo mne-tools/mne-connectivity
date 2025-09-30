@@ -9,6 +9,7 @@ import warnings
 from itertools import permutations
 
 import numpy as np
+from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
 from mne.fixes import jit
 from mne.utils import _time_mask, logger, verbose
@@ -310,6 +311,7 @@ def wsmi(
     _validate_type(anti_aliasing, bool, "anti_aliasing")
 
     # Handle both MNE Epochs and array inputs
+    picks = None
     if isinstance(epochs, BaseEpochs):
         # MNE Epochs object
         sfreq = epochs.info["sfreq"]
@@ -317,8 +319,20 @@ def wsmi(
         event_id = epochs.event_id
         metadata = epochs.metadata
         ch_names = epochs.ch_names
+
+        # Get data
         data_for_comp = epochs.get_data()
-        n_epochs, n_channels, n_times_epoch = data_for_comp.shape
+        n_epochs, n_nodes, n_times_epoch = data_for_comp.shape
+
+        # Only exclude bad channels when indices is None
+        if indices is None:
+            picks = _picks_to_idx(epochs.info, picks="all", exclude="bads")
+            # Apply picks to data for computation
+            data_for_comp = data_for_comp[:, picks, :]
+            n_epochs, n_channels, n_times_epoch = data_for_comp.shape
+        else:
+            # User provided explicit indices, use all channels
+            n_channels = n_nodes
     else:
         # Array-like input
         if sfreq is None:
@@ -331,6 +345,7 @@ def wsmi(
                 f"got shape {data_for_comp.shape}"
             )
         n_epochs, n_channels, n_times_epoch = data_for_comp.shape
+        n_nodes = n_channels
 
         # Set default values for array input
         events = None
@@ -364,9 +379,10 @@ def wsmi(
     # Handle indices parameter
     if indices is None:
         logger.info("using all connections for lower-triangular matrix")
-        # Only compute lower-triangular connections (excluding diagonal)
+        # Compute lower-triangular connections
         indices_use = np.tril_indices(n_channels, k=-1)
     else:
+        # User provided explicit indices
         indices_use = check_indices(indices)
 
         # Check that we have at least one valid connection
@@ -495,18 +511,49 @@ def wsmi(
     result_epoched = result.transpose(2, 0, 1)
 
     # --- Packaging results ---
-    # Extract connectivity for specified connections only
-    n_cons = len(indices_use[0])
-    result_conn_data = np.zeros((n_epochs, n_cons))
-    indices_list = list(zip(indices_use[0], indices_use[1]))
+    # Similar to envelope_correlation: create full matrix for all nodes
+    # when bad channels exist
+    if picks is not None and len(picks) < n_nodes:
+        # Bad channels were excluded, need to create full n_nodes x n_nodes matrix
+        # and fill only the good channel entries (like envelope_correlation)
+        result_conn_full = np.zeros((n_epochs, n_nodes, n_nodes))
 
-    for epoch_idx in range(n_epochs):
-        for conn_idx, (i, j) in enumerate(indices_list):
-            # wSMI computation only fills upper triangle, so swap indices if i > j
-            if i > j:
-                result_conn_data[epoch_idx, conn_idx] = result_epoched[epoch_idx, j, i]
-            else:
-                result_conn_data[epoch_idx, conn_idx] = result_epoched[epoch_idx, i, j]
+        # Fill the good channel entries
+        for epoch_idx in range(n_epochs):
+            for i in range(n_channels):
+                for j in range(n_channels):
+                    if i > j:
+                        result_conn_full[epoch_idx, picks[i], picks[j]] = (
+                            result_epoched[epoch_idx, j, i]
+                        )
+                    elif i < j:
+                        result_conn_full[epoch_idx, picks[i], picks[j]] = (
+                            result_epoched[epoch_idx, i, j]
+                        )
+
+        # Flatten and extract upper triangular (like envelope_correlation)
+        result_conn_data = np.array([conn.flatten() for conn in result_conn_full])
+        triu_inds = np.triu_indices(n_nodes, k=0)
+        raveled_triu_inds = np.ravel_multi_index(triu_inds, dims=(n_nodes, n_nodes))
+        result_conn_data = result_conn_data[:, raveled_triu_inds]
+        indices_list = "symmetric"
+    else:
+        # No bad channels: return only requested connections
+        n_cons = len(indices_use[0])
+        result_conn_data = np.zeros((n_epochs, n_cons))
+        indices_list = list(zip(indices_use[0], indices_use[1]))
+
+        for epoch_idx in range(n_epochs):
+            for conn_idx, (i, j) in enumerate(indices_list):
+                # wSMI computation only fills upper triangle, so swap indices if i > j
+                if i > j:
+                    result_conn_data[epoch_idx, conn_idx] = (
+                        result_epoched[epoch_idx, j, i]
+                    )
+                else:
+                    result_conn_data[epoch_idx, conn_idx] = (
+                        result_epoched[epoch_idx, i, j]
+                    )
 
     # Create connectivity object with prepared data
     if average:
@@ -516,9 +563,9 @@ def wsmi(
             data=result_conn_data_avg,
             names=ch_names,
             method="wSMI" if weighted else "SMI",
-            indices=indices_list,
+            indices=indices_list if isinstance(indices_list, str) else indices_list,
             n_epochs_used=n_epochs,
-            n_nodes=n_channels,
+            n_nodes=n_nodes,
             events=events,
             event_id=event_id,
             metadata=metadata,
@@ -529,9 +576,9 @@ def wsmi(
             data=result_conn_data,
             names=ch_names,
             method="wSMI" if weighted else "SMI",
-            indices=indices_list,
+            indices=indices_list if isinstance(indices_list, str) else indices_list,
             n_epochs_used=n_epochs,
-            n_nodes=n_channels,
+            n_nodes=n_nodes,
             events=events,
             event_id=event_id,
             metadata=metadata,
