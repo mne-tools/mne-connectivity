@@ -499,3 +499,84 @@ def test_wsmi_ground_truth_validation():
 
         assert expected_data.shape == new_data.shape
         assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
+
+
+def test_wsmi_bad_channels():
+    """Test bad channels are handled properly in wSMI."""
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 2, 4, 100
+    sfreq = 100.0
+
+    # Create synthetic data with known connectivity
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+
+    # Create info with one bad channel
+    ch_names = ["Ch1", "Ch2", "Ch3", "Ch4"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    info["bads"] = ["Ch2"]  # Mark Ch2 as bad
+
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    # Compute wSMI with indices=None (should exclude bad channels)
+    conn = wsmi(epochs, kernel=3, tau=1, average=True)
+
+    # After excluding Ch2, we have 3 good channels
+    # But the connectivity object maintains original channel space
+    assert conn.n_nodes == n_signals, "n_nodes should be original channel count"
+    assert conn.names == ch_names, "names should include all channels"
+
+    # With bad channels excluded, connectivity uses symmetric indices
+    # This returns all connections in the original channel space
+    assert conn.indices == "symmetric", "Should use symmetric indices"
+    # For symmetric connectivity, get_data() returns (n_nodes, n_nodes) by default
+    conn_data = conn.get_data()
+    assert conn_data.shape == (n_signals, n_signals), "Should have full matrix shape"
+
+    # Get dense representation
+    dense_data = conn.get_data(output="dense")
+    assert dense_data.shape == (n_signals, n_signals)
+
+    # Check that bad channel entries are zero in the dense representation
+    # Ch2 is index 1, so all connections involving index 1 should be 0
+    assert_array_equal(dense_data[1, :], 0)
+    assert_array_equal(dense_data[:, 1], 0)
+
+    # Check that good channel connections are non-zero
+    # Connections between good channels: (0,2), (0,3), (2,3)
+    assert (
+        dense_data[0, 2] != 0 or dense_data[2, 0] != 0
+    ), "Connection between Ch1-Ch3 should exist"
+    assert (
+        dense_data[0, 3] != 0 or dense_data[3, 0] != 0
+    ), "Connection between Ch1-Ch4 should exist"
+    assert (
+        dense_data[2, 3] != 0 or dense_data[3, 2] != 0
+    ), "Connection between Ch3-Ch4 should exist"
+
+
+def test_wsmi_bad_channels_with_explicit_indices():
+    """Test that bad channels are used when indices are explicit."""
+    rng = np.random.default_rng(42)
+    n_epochs, n_signals, n_times = 2, 4, 100
+    sfreq = 100.0
+
+    # Create synthetic data
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+
+    # Create info with one bad channel
+    ch_names = ["Ch1", "Ch2", "Ch3", "Ch4"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    info["bads"] = ["Ch2"]  # Mark Ch2 as bad
+
+    epochs = EpochsArray(data, info, tmin=0.0)
+
+    # Explicitly request connection involving bad channel
+    # Connection between Ch1 (index 0) and Ch2 (index 1, bad)
+    indices = (np.array([0]), np.array([1]))
+
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
+
+    # Should still compute the connection since indices were explicit
+    assert conn.get_data().shape[0] == 1, "Should compute 1 connection"
+    # The connection should have a value (not necessarily zero)
+    assert conn.get_data()[0] >= 0, "Connection should be computed"
