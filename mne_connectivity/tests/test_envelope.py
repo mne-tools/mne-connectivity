@@ -7,6 +7,7 @@
 
 import numpy as np
 import pytest
+from mne import EpochsArray, create_info
 from mne.utils import catch_logging, use_log_level
 from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 from scipy.signal import hilbert
@@ -151,6 +152,22 @@ def test_envelope_correlation():
     ft_vals[np.isnan(ft_vals)] = 0
     corr_log = envelope_correlation(data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output="dense").squeeze(), ft_vals)
+
+
+def test_envelope_correlation_bad_channels():
+    """Test bad channels are handled properly in envelope_correlation."""
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 1, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+    info = create_info(n_signals, sfreq=n_times, ch_types="eeg")
+    info["bads"] = ["1"]
+    data = EpochsArray(data, info)
+    corr = envelope_correlation(data)
+
+    assert corr.n_nodes == n_signals
+    assert corr.names == data.ch_names
+    assert_array_equal(corr.get_data()[:, [0, 1, 1, 2], [1, 0, 2, 1], :], 0)  # bads
+    assert corr.get_data().shape[1:3] == (n_signals, n_signals)
 
 
 @pytest.mark.parametrize(
