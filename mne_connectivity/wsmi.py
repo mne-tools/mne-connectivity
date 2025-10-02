@@ -92,7 +92,7 @@ def _get_weights_matrix(nsym):
 def _wsmi_jitted(  # pragma: no cover
     data_sym, counts, wts_matrix, weighted=True
 ):
-    """Compute raw wSMI or SMI from symbolic data (Numba-jitted).
+    """Compute raw wSMI or SMI from symbolic data (Numba-jitted, if installed).
 
     Parameters
     ----------
@@ -499,12 +499,9 @@ def wsmi(
     n_unique_symbols = count.shape[1]
     wts = _get_weights_matrix(n_unique_symbols)
 
-    # --- 4. wSMI/SMI Computation (Jitted) ---
+    # --- 4. wSMI/SMI Computation ---
     method_name = "wSMI" if weighted else "SMI"
-    logger.info(
-        f"""Computing {method_name} for {n_unique_symbols} unique symbols
-        (Numba-jitted)..."""
-    )
+    logger.info(f"""Computing {method_name} for {n_unique_symbols} unique symbols...""")
     result = _wsmi_jitted(sym, count, wts, weighted)
     # result is (n_channels, n_channels, n_epochs)
 
