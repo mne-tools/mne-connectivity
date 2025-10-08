@@ -205,7 +205,7 @@ def _validate_kernel(kernel, tau):
 @fill_doc
 @verbose
 def wsmi(
-    epochs,
+    data,
     kernel,
     tau,
     indices=None,
@@ -222,7 +222,7 @@ def wsmi(
 
     Parameters
     ----------
-    epochs : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs
+    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs
         The data from which to compute connectivity. Can be an :class:`mne.Epochs`
         object or array-like data.
     kernel : int
@@ -237,7 +237,7 @@ def wsmi(
         For example, to compute connectivity between channels 0 and 2, and between
         channels 1 and 3, use ``indices = (np.array([0, 1]), np.array([2, 3]))``.
     sfreq : float | None
-        The sampling frequency. Required if ``epochs`` is an array-like.
+        The sampling frequency. Required if ``data`` is an array-like.
     names : list | None
         Channel names. If None, default names will be used.
     tmin : float | None
@@ -312,21 +312,21 @@ def wsmi(
 
     # Handle both MNE Epochs and array inputs
     picks = None
-    if isinstance(epochs, BaseEpochs):
+    if isinstance(data, BaseEpochs):
         # MNE Epochs object
-        sfreq = epochs.info["sfreq"]
-        events = epochs.events
-        event_id = epochs.event_id
-        metadata = epochs.metadata
-        ch_names = epochs.ch_names
+        sfreq = data.info["sfreq"]
+        events = data.events
+        event_id = data.event_id
+        metadata = data.metadata
+        ch_names = data.ch_names
 
         # Get data
-        data_for_comp = epochs.get_data()
+        data_for_comp = data.get_data()
         n_epochs, n_nodes, n_times_epoch = data_for_comp.shape
 
         # Only exclude bad channels when indices is None
         if indices is None:
-            picks = _picks_to_idx(epochs.info, picks="all", exclude="bads")
+            picks = _picks_to_idx(data.info, picks="all", exclude="bads")
             # Apply picks to data for computation
             data_for_comp = data_for_comp[:, picks, :]
             n_epochs, n_channels, n_times_epoch = data_for_comp.shape
@@ -338,7 +338,7 @@ def wsmi(
         if sfreq is None:
             raise ValueError("Sampling frequency (sfreq) is required with array input.")
 
-        data_for_comp = np.asarray(epochs)
+        data_for_comp = np.asarray(data)
         if data_for_comp.ndim != 3:
             raise ValueError(
                 f"Array input must be 3D (n_epochs, n_channels, n_times), "
@@ -455,8 +455,8 @@ def wsmi(
         fdata = data_for_comp.transpose(1, 2, 0)
 
     # --- Time masking (handle both Epochs and array inputs) ---
-    if isinstance(epochs, BaseEpochs):
-        time_mask = _time_mask(epochs.times, tmin, tmax)
+    if isinstance(data, BaseEpochs):
+        time_mask = _time_mask(data.times, tmin, tmax)
         fdata_masked = fdata[:, time_mask, :]
     else:
         # For array inputs, create time vector and apply masking
