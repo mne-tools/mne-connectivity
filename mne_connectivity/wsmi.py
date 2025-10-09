@@ -367,8 +367,7 @@ def wsmi(
     if n_channels < 2:
         raise ValueError(
             f"At least 2 channels are required for connectivity computation, "
-            f"but only {n_channels} channels available after excluding "
-            f"bad channels."
+            f"but only {n_channels} channels are available."
         )
 
     logger.info(
@@ -544,13 +543,13 @@ def wsmi(
             for conn_idx, (i, j) in enumerate(indices_list):
                 # wSMI computation only fills upper triangle, so swap indices if i > j
                 if i > j:
-                    result_conn_data[epoch_idx, conn_idx] = (
-                        result_epoched[epoch_idx, j, i]
-                    )
+                    result_conn_data[epoch_idx, conn_idx] = result_epoched[
+                        epoch_idx, j, i
+                    ]
                 else:
-                    result_conn_data[epoch_idx, conn_idx] = (
-                        result_epoched[epoch_idx, i, j]
-                    )
+                    result_conn_data[epoch_idx, conn_idx] = result_epoched[
+                        epoch_idx, i, j
+                    ]
 
     # Create connectivity object with prepared data
     if average:
