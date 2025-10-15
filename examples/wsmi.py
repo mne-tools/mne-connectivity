@@ -45,14 +45,14 @@ from mne_connectivity import wsmi
 sfreq = 500
 n_epochs = 50
 epoch_length = 2.0
-
+n_channels = 4
 n_times = int(sfreq * epoch_length)
 
 # Create time vector
 times = np.arange(n_times) / sfreq
 
 # Initialize data array (n_epochs, n_channels, n_times)
-data = np.zeros((n_epochs, 4, n_times))
+data = np.zeros((n_epochs, n_channels, n_times))
 
 for epoch in range(n_epochs):
     # Set random seed for reproducibility within epoch variation
@@ -137,21 +137,23 @@ fig = epochs.plot(
 # Compute wSMI with default parameters (individual epoch connectivity)
 conn_default = wsmi(epochs, kernel=3, tau=1)
 
-print(f"wSMI connectivity shape: {conn_default.get_data().shape}")
+print(
+    f"wSMI connectivity shape: {conn_default.get_data('dense').shape} "
+    "(n_epochs, n_channels, n_channels)"
+)
 print(f"Method: {conn_default.method}")
-print(f"Number of connections: {len(conn_default.indices)}")
-print("Data type: Individual epoch connectivity (n_epochs, n_connections)")
+print(f"Number of unique connections: {n_channels * (n_channels - 1) // 2}")
 
 # Show connectivity for a few example pairs from first and second epochs
 print("\nExample connectivity values (showing epoch-to-epoch variability):")
-named_indices = np.array(conn_default.attrs["node_names"])[
-    np.array(conn_default.indices)
-]
-for i, node_names in enumerate(named_indices[:3]):  # First 3 pairs only
-    conn_val_ep1 = conn_default.get_data()[0, i]  # First epoch, i-th connection
-    conn_val_ep2 = conn_default.get_data()[1, i]  # Second epoch, i-th connection
+indices = np.tril_indices(n_channels, k=-1)  # lower-triangular indices
+names = conn_default.attrs["node_names"]
+conn_matrix = conn_default.get_data("dense")
+for i, j in zip(indices[0][:3], indices[1][:3]):  # First 3 pairs only
+    conn_val_ep1 = conn_matrix[0, i, j]  # First epoch, k-th connection
+    conn_val_ep2 = conn_matrix[1, i, j]  # Second epoch, k-th connection
     print(
-        f"{' ↔ '.join(node_names)}: "
+        f"{' ↔ '.join((names[i], names[j]))}: "
         f"Epoch 1: {conn_val_ep1:.4f}, Epoch 2: {conn_val_ep2:.4f}"
     )
 
@@ -162,15 +164,12 @@ for i, node_names in enumerate(named_indices[:3]):  # First 3 pairs only
 
 # Now compute averaged connectivity for visualization
 conn_ave = wsmi(epochs, kernel=3, tau=1, average=True)
-# Create connectivity matrix for visualization
-names = conn_ave.attrs["node_names"]
-n_ch = len(names)
-full_matrix = np.zeros((n_ch, n_ch))
-for conn_value, (i, j) in zip(conn_ave.get_data(), conn_ave.indices):
-    full_matrix[i, j] = full_matrix[j, i] = conn_value
+# Get connectivity matrix for visualization
+conn_matrix = conn_ave.get_data("dense")
+conn_matrix += conn_matrix.T  # make matrix symmetric
 
 # Use pandas and seaborn for cleaner visualization
-df = pd.DataFrame(data=full_matrix, index=names, columns=names)
+df = pd.DataFrame(data=conn_matrix, index=names, columns=names)
 ax = sns.heatmap(df, annot=True, fmt="0.4f", cmap="viridis", vmin=0)
 ax.set_title("wSMI Connectivity Matrix\n(Higher values = stronger connectivity)")
 ax.tick_params(axis="x", labelrotation=45)
@@ -200,7 +199,9 @@ results = {name: np.zeros((len(kernels), len(taus))) for name in channel_names}
 # Perform grid search
 for i, kernel in enumerate(kernels):
     for j, tau in enumerate(taus):
-        conn = wsmi(epochs, kernel=kernel, tau=tau, average=True, verbose=False)
+        conn = wsmi(
+            epochs, kernel=kernel, tau=tau, indices=indices, average=True, verbose=False
+        )
 
         # Extract Source connections (indices 0, 1, 2 are Source to other channels)
         for k, channel_name in enumerate(channel_names):
@@ -251,8 +252,24 @@ plt.tight_layout()
 # artifact reduction and genuine signal preservation in your specific data.
 
 # Compute both weighted and unweighted versions
-conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True, average=True, verbose=False)
-conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False, average=True, verbose=False)
+conn_wsmi = wsmi(
+    epochs,
+    kernel=3,
+    tau=1,
+    indices=indices,
+    weighted=True,
+    average=True,
+    verbose=False,
+)
+conn_smi = wsmi(
+    epochs,
+    kernel=3,
+    tau=1,
+    indices=indices,
+    weighted=False,
+    average=True,
+    verbose=False,
+)
 
 # Extract connectivity values (Source ↔ Linear Coupled)
 wsmi_values = conn_wsmi.get_data()[0]
@@ -308,6 +325,7 @@ events = mne.read_events(event_fname, verbose=False)
 # Pick 4 EEG channels - no additional filtering needed
 eeg_picks = ["EEG 001", "EEG 002", "EEG 003", "EEG 004"]
 raw.pick(eeg_picks)
+n_eeg = len(raw.ch_names)
 
 # Simple epoching around visual stimuli (event 3)
 epochs_real = mne.Epochs(
@@ -325,20 +343,14 @@ print(f"Real EEG data: {epochs_real}")
 print(f"Channels: {epochs_real.ch_names}")
 
 # Compute wSMI on real EEG data
-conn_real = wsmi(epochs_real, kernel=3, tau=1, verbose=False)
-
-# Create connectivity matrix for visualization
-real_conn_matrix = conn_real.get_data().mean(axis=0)
-n_eeg = len(epochs_real.ch_names)
-real_full_matrix = np.zeros((n_eeg, n_eeg))
-
-for idx, (i, j) in enumerate(conn_real.indices):
-    real_full_matrix[i, j] = real_conn_matrix[idx]
-    real_full_matrix[j, i] = real_conn_matrix[idx]
+conn_real = wsmi(epochs_real, kernel=3, tau=1, average=True, verbose=False)
+conn_real_matrix = conn_real.get_data(output="dense")
+conn_real_matrix += conn_real_matrix.T  # make matrix symmetric
+conn_real_names = conn_real.attrs["node_names"]
 
 # Plot connectivity matrix
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-im = ax.imshow(real_full_matrix, cmap="viridis", vmin=0)
+im = ax.imshow(conn_real_matrix, cmap="viridis", vmin=0)
 ax.set_xticks(range(n_eeg))
 ax.set_yticks(range(n_eeg))
 ax.set_xticklabels(epochs_real.ch_names)
@@ -350,11 +362,11 @@ for i in range(n_eeg):
         text = ax.text(
             j,
             i,
-            f"{real_full_matrix[i, j]:.3f}",
+            f"{conn_real_matrix[i, j]:.3f}",
             ha="center",
             va="center",
             color="black"
-            if real_full_matrix[i, j] > real_full_matrix.max() / 2
+            if conn_real_matrix[i, j] > conn_real_matrix.max() / 2
             else "white",
         )
 
@@ -363,17 +375,7 @@ plt.title("wSMI Connectivity: Real EEG Data\n(Visual stimulus epochs)")
 plt.tight_layout()
 plt.show()
 
-print(f"Strongest connections in real EEG data (>{np.mean(real_conn_matrix):.3f}):")
-for i, ch1 in enumerate(epochs_real.ch_names):
-    for j, ch2 in enumerate(epochs_real.ch_names[i + 1 :], i + 1):
-        print(f"{ch1} ↔ {ch2}: {real_full_matrix[i, j]:.3f}")
-
-# Brief interpretation of results
-#
-# The connectivity matrix shows wSMI values between electrode pairs during
-# visual stimulus processing. Higher values indicate stronger information
-# sharing between brain regions, which may reflect coordinated visual
-# processing networks and task-related functional connectivity.
+########################################################################################
 #
 # Note: Values depend on electrode placement, stimulus type, and individual
 # brain anatomy. Clinical interpretation requires comparison with controls.

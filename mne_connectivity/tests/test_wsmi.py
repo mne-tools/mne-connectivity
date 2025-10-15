@@ -6,9 +6,9 @@ import mne
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 
-from mne_connectivity import wsmi
+from mne_connectivity import Connectivity, EpochConnectivity, wsmi
 
 
 def test_wsmi_input_validation_and_errors():
@@ -75,13 +75,14 @@ def test_wsmi_known_coupling_patterns():
     ch_names = ["base", "identical", "coupled"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
+    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
 
     # Compute wSMI
-    conn = wsmi(epochs, kernel=3, tau=1)
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices)
     conn_data = conn.get_data()
 
     # Basic validation
-    assert conn_data.shape == (n_epochs, 3)  # 3 choose 2 = 3 connections
+    assert conn_data.shape == (n_epochs, len(indices[0]))
     assert np.all(np.isfinite(conn_data))
 
     # Average connectivity values
@@ -145,10 +146,11 @@ def test_wsmi_tau_nonlinear_detection():
     ch_names = ["base", "nonlinear", "independent"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
+    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
 
     # Test tau=1 vs tau=2
-    conn_tau1 = wsmi(epochs, kernel=3, tau=1)
-    conn_tau2 = wsmi(epochs, kernel=3, tau=2)
+    conn_tau1 = wsmi(epochs, kernel=3, tau=1, indices=indices)
+    conn_tau2 = wsmi(epochs, kernel=3, tau=2, indices=indices)
 
     data_tau1 = np.mean(conn_tau1.get_data(), axis=0)
     data_tau2 = np.mean(conn_tau2.get_data(), axis=0)
@@ -198,11 +200,12 @@ def test_wsmi_parameter_effects():
     ch_names = ["A", "B", "C"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
+    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
 
     # Test different parameter combinations
-    conn_k3_t1 = wsmi(epochs, kernel=3, tau=1)
-    conn_k4_t1 = wsmi(epochs, kernel=4, tau=1)
-    conn_k3_t2 = wsmi(epochs, kernel=3, tau=2)
+    conn_k3_t1 = wsmi(epochs, kernel=3, tau=1, indices=indices)
+    conn_k4_t1 = wsmi(epochs, kernel=4, tau=1, indices=indices)
+    conn_k3_t2 = wsmi(epochs, kernel=3, tau=2, indices=indices)
 
     # Results should be different for different parameters
     assert not np.array_equal(conn_k3_t1.get_data(), conn_k4_t1.get_data()), (
@@ -214,7 +217,7 @@ def test_wsmi_parameter_effects():
 
     # All should have same shape and finite values
     for conn in [conn_k3_t1, conn_k4_t1, conn_k3_t2]:
-        assert conn.get_data().shape == (n_epochs, 3)  # 3 choose 2 = 3 connections
+        assert conn.get_data().shape == (n_epochs, len(indices[0]))
         assert np.all(np.isfinite(conn.get_data()))
 
 
@@ -286,8 +289,7 @@ def test_wsmi_basic_functionality():
 
     # Check data shape and validity
     data_matrix = conn.get_data()
-    expected_connections = 4 * 3 // 2  # 4 choose 2 = 6 connections
-    assert data_matrix.shape == (2, expected_connections)
+    assert data_matrix.shape == (2, n_channels**2)
     assert np.all(np.isfinite(data_matrix))
 
     # Test with different channel types (suppress unit change warning)
@@ -304,8 +306,8 @@ def test_wsmi_basic_functionality():
 def test_wsmi_averaging_and_indices():
     """Test averaging and indices parameters."""
     sfreq = 100.0
-    n_epochs, n_times = 4, 150
-    data = np.zeros((n_epochs, 4, n_times))
+    n_epochs, n_channels, n_times = 4, 4, 150
+    data = np.zeros((n_epochs, n_channels, n_times))
 
     # Create simple test data
     for epoch in range(n_epochs):
@@ -323,12 +325,10 @@ def test_wsmi_averaging_and_indices():
     conn_avg = wsmi(epochs, kernel=3, tau=1, average=True)
 
     # Check types and shapes
-    from mne_connectivity.base import Connectivity, EpochConnectivity
-
     assert isinstance(conn_no_avg, EpochConnectivity)
     assert isinstance(conn_avg, Connectivity)
 
-    expected_connections = 6  # 4 choose 2
+    expected_connections = n_channels**2
     assert conn_no_avg.get_data().shape == (n_epochs, expected_connections)
     assert conn_avg.get_data().shape == (expected_connections,)
 
@@ -363,7 +363,7 @@ def test_wsmi_array_input():
 
     # Test array input
     conn_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
-    assert conn_array.get_data().shape == (n_epochs, 3)  # 3 choose 2
+    assert conn_array.get_data().shape == (n_epochs, n_channels**2)
     assert np.all(np.isfinite(conn_array.get_data()))
 
     # Test with custom names
@@ -491,6 +491,7 @@ def test_wsmi_ground_truth_validation():
             tau=input_params["tau"],
             tmin=input_params["tmin"],
             tmax=input_params["tmax"],
+            indices=(np.array([1, 2, 2]), np.array([0, 0, 1])),
         )
 
         # Compare with expected output
@@ -501,82 +502,51 @@ def test_wsmi_ground_truth_validation():
         assert_allclose(expected_data, new_data, rtol=1e-10, atol=1e-10)
 
 
-def test_wsmi_bad_channels():
-    """Test bad channels are handled properly in wSMI."""
+@pytest.mark.parametrize("picks", [None, "all", "goods"])
+def test_wsmi_bad_channels(picks):
+    """Test wsmi bad channels handling."""
+    # Simulate data
     rng = np.random.default_rng(0)
-    n_epochs, n_signals, n_times = 2, 4, 100
-    sfreq = 100.0
+    n_epochs = 2
+    n_channels = 3  # do not change!
+    sfreq = 50
+    data = rng.standard_normal((n_epochs, n_channels, sfreq))
+    info = create_info(n_channels, sfreq, "eeg")
+    data = EpochsArray(data, info)
 
-    # Create synthetic data with known connectivity
-    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+    # Mark a channel as bad
+    data.info["bads"] = [data.ch_names[1]]
 
-    # Create info with one bad channel
-    ch_names = ["Ch1", "Ch2", "Ch3", "Ch4"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    info["bads"] = ["Ch2"]  # Mark Ch2 as bad
+    # Create indices
+    if picks is not None:
+        if picks == "all":  # explicit bad inclusion
+            indices = (np.array([1, 2, 2]), np.array([0, 0, 1]))
+        else:  # ("goods") explicit bad exclusion
+            indices = (np.array([2]), np.array([0]))
+        n_cons = len(indices[0])
+    else:
+        indices = None  # implicit bad exclusion
+        n_cons = n_channels**2
 
-    epochs = EpochsArray(data, info, tmin=0.0)
+    # Compute connectivity
+    con = wsmi(data, kernel=3, tau=1, indices=indices, average=True)
 
-    # Compute wSMI with indices=None (should exclude bad channels)
-    conn = wsmi(epochs, kernel=3, tau=1, average=True)
+    # Check connectivity object properties
+    assert con.n_nodes == n_channels
+    assert con.names == data.ch_names
 
-    # After excluding Ch2, we have 3 good channels
-    # But the connectivity object maintains original channel space
-    assert conn.n_nodes == n_signals, "n_nodes should be original channel count"
-    assert conn.names == ch_names, "names should include all channels"
+    # Check dense shape same regardless of indices
+    assert con.get_data("dense").shape == (n_channels, n_channels)
 
-    # With bad channels excluded, connectivity uses symmetric indices
-    # This returns all connections in the original channel space
-    assert conn.indices == "symmetric", "Should use symmetric indices"
-    # For symmetric connectivity, get_data() returns (n_nodes, n_nodes) by default
-    conn_data = conn.get_data()
-    assert conn_data.shape == (n_signals, n_signals), "Should have full matrix shape"
-
-    # Get dense representation
-    dense_data = conn.get_data(output="dense")
-    assert dense_data.shape == (n_signals, n_signals)
-
-    # Check that bad channel entries are zero in the dense representation
-    # Ch2 is index 1, so all connections involving index 1 should be 0
-    assert_array_equal(dense_data[1, :], 0)
-    assert_array_equal(dense_data[:, 1], 0)
-
-    # Check that good channel connections are non-zero
-    # Connections between good channels: (0,2), (0,3), (2,3)
-    assert (
-        dense_data[0, 2] != 0 or dense_data[2, 0] != 0
-    ), "Connection between Ch1-Ch3 should exist"
-    assert (
-        dense_data[0, 3] != 0 or dense_data[3, 0] != 0
-    ), "Connection between Ch1-Ch4 should exist"
-    assert (
-        dense_data[2, 3] != 0 or dense_data[3, 2] != 0
-    ), "Connection between Ch3-Ch4 should exist"
-
-
-def test_wsmi_bad_channels_with_explicit_indices():
-    """Test that bad channels are used when indices are explicit."""
-    rng = np.random.default_rng(42)
-    n_epochs, n_signals, n_times = 2, 4, 100
-    sfreq = 100.0
-
-    # Create synthetic data
-    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
-
-    # Create info with one bad channel
-    ch_names = ["Ch1", "Ch2", "Ch3", "Ch4"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    info["bads"] = ["Ch2"]  # Mark Ch2 as bad
-
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Explicitly request connection involving bad channel
-    # Connection between Ch1 (index 0) and Ch2 (index 1, bad)
-    indices = (np.array([0]), np.array([1]))
-
-    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
-
-    # Should still compute the connection since indices were explicit
-    assert conn.get_data().shape[0] == 1, "Should compute 1 connection"
-    # The connection should have a value (not necessarily zero)
-    assert conn.get_data()[0] >= 0, "Connection should be computed"
+    # Check raveled shape and contents depends on indices
+    raveled_data = con.get_data("raveled")
+    assert raveled_data.shape == (n_cons,)  # n_cons depends on picks
+    if picks is not None:
+        # with "all" channels used, bads entries are present and are non-zero
+        # with "goods" channels used, bads entries are non-existent
+        # in both cases, all entries are non-zero
+        assert_array_less(0, raveled_data)
+    else:  # indices=None → all-to-all connectivity
+        # bads entries present, but filled with zeros
+        assert_array_equal(raveled_data[[3, 7]], 0)  # bads indices
+        # (use np.ravel_multi_index to find dense array indices in raveled array)
