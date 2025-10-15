@@ -3,11 +3,11 @@
 Compute connectivity using weighted symbolic mutual information (wSMI)
 =======================================================================
 
-This example demonstrates the weighted Symbolic Mutual Information (wSMI)
-connectivity measure :footcite:`KingEtAl2013` for detecting nonlinear
-dependencies between brain signals. wSMI is particularly useful for studying
-consciousness and information integration in neural networks as it can
-capture complex, nonlinear relationships that linear methods might miss.
+This example demonstrates the weighted Symbolic Mutual Information (wSMI) connectivity
+measure :footcite:`KingEtAl2013` for detecting nonlinear dependencies between brain
+signals. wSMI is particularly useful for studying consciousness and information
+integration in neural networks as it can capture complex, nonlinear relationships that
+linear methods might miss.
 
 The method works by:
 
@@ -15,8 +15,8 @@ The method works by:
 2. Computing mutual information between symbolic sequences
 3. Weighting patterns based on their temporal structure
 
-This makes wSMI sensitive to information flow and temporal dependencies
-that are characteristic of conscious brain states.
+This makes wSMI sensitive to information flow and temporal dependencies that are
+characteristic of conscious brain states.
 """
 
 # Authors: Giovanni Marraffini <giovanni.marraffini@gmail.com>
@@ -33,14 +33,14 @@ from mne.datasets import sample
 
 from mne_connectivity import wsmi
 
-# %%
+########################################################################################
 # Simulating Data with Different Connectivity Patterns
 # =====================================================
 #
-# To demonstrate wSMI's capabilities, we'll create synthetic EEG data with
-# different types of connectivity: linear coupling, nonlinear coupling, and
-# independent signals.
+# To demonstrate wSMI's capabilities, we'll create synthetic EEG data with different
+# types of connectivity: linear coupling, nonlinear coupling, and independent signals.
 
+# %%
 
 sfreq = 500
 n_epochs = 50
@@ -96,12 +96,14 @@ ch_names = ["Source", "Linear_Coupled", "Nonlinear_Coupled", "Independent"]
 info = mne.create_info(ch_names, sfreq=sfreq, ch_types="eeg")
 epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
 
-# %%
+########################################################################################
 # Visualizing the Synthetic Data
 # ===============================
 #
-# Let's examine our synthetic data to understand the different connectivity
-# patterns we've created.
+# Let's examine our synthetic data to understand the different connectivity patterns
+# we've created.
+
+# %%
 
 # Plot a sample of the data using MNE's built-in plotting
 fig = epochs.plot(
@@ -112,27 +114,31 @@ fig = epochs.plot(
     title="Synthetic EEG Data with Different Connectivity Patterns",
 )
 
-# %%
+########################################################################################
 # Computing wSMI with Default Parameters
 # ======================================
 #
-# First, let's compute wSMI with default parameters. The two key parameters are:
+# First, let's compute all-to-all wSMI with default parameters. The two key parameters
+# are:
 #
-# - ``kernel``: Number of time points in each symbolic pattern (here 3).
-#   This controls pattern complexity - larger values detect more complex patterns
-#   but require more data. Values of 3-5 are typical.
-# - ``tau``: Time delay between pattern elements in samples (here 1).
-#   This controls temporal resolution - tau=1 uses consecutive samples,
-#   larger values focus on slower dynamics but reduce effective sampling rate.
+# - ``kernel``: Number of time points in each symbolic pattern (here 3). This controls
+#   pattern complexity - larger values detect more complex patterns but require more
+#   data. Values of 3-5 are typical.
+# - ``tau``: Time delay between pattern elements in samples (here 1). This controls
+#   temporal resolution - tau=1 uses consecutive samples, larger values focus on slower
+#   dynamics but reduce effective sampling rate.
 #
-# **Important**: Poor parameter choices can miss nonlinear coupling! We'll explore
-# this systematically below.
+# **Important**: Poor parameter choices can miss nonlinear coupling! We'll explore this
+# systematically below.
 #
 # Other defaults:
+#
 # - Anti-aliasing filtering enabled (``anti_aliasing=True``)
 # - Weighted symbolic mutual information (``weighted=True``)
-# - All channel pairs (``indices=None``)
+# - All channel pairs as a lower-triangular array (``indices=None``)
 # - Individual epoch connectivity (``average=False``)
+
+# %%
 
 # Compute wSMI with default parameters (individual epoch connectivity)
 conn_default = wsmi(epochs, kernel=3, tau=1)
@@ -157,10 +163,11 @@ for i, j in zip(indices[0][:3], indices[1][:3]):  # First 3 pairs only
         f"Epoch 1: {conn_val_ep1:.4f}, Epoch 2: {conn_val_ep2:.4f}"
     )
 
-
-# %%
+########################################################################################
 # Visualizing wSMI Connectivity Results
 # =====================================
+
+# %%
 
 # Now compute averaged connectivity for visualization
 conn_ave = wsmi(epochs, kernel=3, tau=1, average=True)
@@ -175,7 +182,7 @@ ax.set_title("wSMI Connectivity Matrix\n(Higher values = stronger connectivity)"
 ax.tick_params(axis="x", labelrotation=45)
 ax.figure.tight_layout()
 
-# %%
+########################################################################################
 # Exploring Parameter Effects: kernel and tau
 # ============================================
 #
@@ -184,9 +191,11 @@ ax.figure.tight_layout()
 # - ``kernel``: Number of time points in each symbolic pattern (2-7 typical)
 # - ``tau``: Time delay between pattern elements (1 = consecutive samples)
 #
-# Let's explore how these parameters affect connectivity detection systematically
-# using a grid search approach to see which combinations recover the strongest
-# coupling for each channel pair.
+# Let's explore how these parameters affect connectivity detection systematically using
+# a grid search approach to see which combinations recover the strongest coupling for
+# each channel pair.
+
+# %%
 
 # Define parameter ranges for comprehensive exploration
 kernels = [3, 4, 5]
@@ -208,7 +217,7 @@ for i, kernel in enumerate(kernels):
             results[channel_name][i, j] = conn.get_data()[k]
 
 # Create heatmaps showing parameter effects for each coupling type
-fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+fig, axes = plt.subplots(3, 1, figsize=(7, 12))
 
 for idx, (channel_name, data) in enumerate(results.items()):
     im = axes[idx].imshow(data, cmap="plasma", aspect="auto")  # Different colormap
@@ -229,7 +238,7 @@ for idx, (channel_name, data) in enumerate(results.items()):
                 f"{data[ii, jj]:.3f}",
                 ha="center",
                 va="center",
-                color="white",
+                color="black" if data[ii, jj] > data.max() / 2 else "white",
                 fontsize=8,
             )
     plt.colorbar(im, ax=axes[idx], label="wSMI")
@@ -237,19 +246,23 @@ for idx, (channel_name, data) in enumerate(results.items()):
 plt.suptitle("Parameter Grid Search: wSMI Recovery for Different Coupling Types")
 plt.tight_layout()
 
-# %%
+########################################################################################
 # Comparing wSMI vs SMI (weighted vs unweighted)
 # ===============================================
 #
 # wSMI applies binary weights that set to zero the mutual information from:
+#
 # 1) Identical symbol pairs (which could arise from common sources)
 # 2) Opposed symbol pairs (which could reflect two sides of a single dipole)
-# This weighting scheme discards spurious correlations from common sources
-# while preserving genuine information sharing between distant brain regions.
 #
-# **Interpretation**: The weighting reduces artifacts but may also affect
-# genuine connectivity estimates. The net effect depends on the balance between
-# artifact reduction and genuine signal preservation in your specific data.
+# This weighting scheme discards spurious correlations from common sources while
+# preserving genuine information sharing between distant brain regions.
+#
+# **Interpretation**: The weighting reduces artifacts but may also affect genuine
+# connectivity estimates. The net effect depends on the balance between artifact
+# reduction and genuine signal preservation in your specific data.
+
+# %%
 
 # Compute both weighted and unweighted versions
 conn_wsmi = wsmi(
@@ -279,39 +292,42 @@ print("\nComparison of wSMI vs SMI:")
 print(f"wSMI (weighted):     {wsmi_values:.3f}")
 print(f"SMI (unweighted):    {smi_values:.3f}")
 print(f"Difference:          {smi_values - wsmi_values:.3f}")
-print("Note: The weighting scheme zeros out identical and opposed symbol")
-print("      pairs to reduce common source artifacts, which can affect")
-print("      the final connectivity estimates in either direction.")
+print("Note: The weighting scheme zeros out identical and opposed symbol pairs to")
+print("      reduce common source artifacts, which can affect the final connectivity")
+print("      estimates in either direction.")
 
-# %%
+########################################################################################
 # Anti-aliasing: Understanding the Preprocessing
 # ==============================================
 #
-# wSMI includes automatic anti-aliasing filtering to prevent artifacts when
-# ``tau > 1``. This filtering is crucial for accurate results:
+# wSMI includes automatic anti-aliasing filtering to prevent artifacts when ``tau > 1``.
+# This filtering is crucial for accurate results:
 #
 # **When to use anti_aliasing=True (default):**
+#
 # - Always recommended unless you've already filtered your data appropriately
 # - Essential when tau > 1 to prevent aliasing artifacts
 # - Automatically applies low-pass filtering at appropriate frequencies
 #
 # **When anti_aliasing=False might be acceptable:**
+#
 # - You've already applied appropriate low-pass filtering to your data
 # - You want to save computation time and are confident in your preprocessing
 # - **Warning**: Results may be inaccurate/unreliable without proper filtering
 #
-# The tau parameter affects your effective sampling frequency multiplicatively.
-# For example, tau=2 reduces your effective sampling rate by half, so
-# high-temporal-fidelity coupling (sample-to-sample) may not be detected
-# if you set tau to higher values. This affects the time-scale on which
-# signals are considered coupled.
+# The tau parameter affects your effective sampling frequency multiplicatively. For
+# example, tau=2 reduces your effective sampling rate by half, so high-temporal-fidelity
+# coupling (sample-to-sample) may not be detected if you set tau to higher values. This
+# affects the time-scale on which signals are considered coupled.
 
-# %%
+########################################################################################
 # Computing wSMI on real EEG data
 # ===============================
 #
-# Now let's apply wSMI to real EEG data from the MNE sample dataset.
-# We'll use the pre-filtered data and do minimal preprocessing.
+# Now let's apply wSMI to real EEG data from the MNE sample dataset. We'll use the
+# pre-filtered data and do minimal preprocessing.
+
+# %%
 
 # Load sample data (already filtered 0.1-40 Hz)
 data_path = sample.data_path()
@@ -376,25 +392,28 @@ plt.tight_layout()
 plt.show()
 
 ########################################################################################
+# The connectivity matrix shows wSMI values between electrode pairs during visual
+# stimulus processing. Higher values indicate stronger information sharing between brain
+# regions, which may reflect coordinated visual processing networks and task-related
+# functional connectivity.
 #
-# Note: Values depend on electrode placement, stimulus type, and individual
-# brain anatomy. Clinical interpretation requires comparison with controls.
+# Note: Values depend on electrode placement, stimulus type, and individual brain
+# anatomy. Clinical interpretation requires comparison with controls.
 
-# %%
+########################################################################################
 # Tips for Large Datasets and Group Analysis
 # ===========================================
 #
-# **Selective connectivity analysis**: For large datasets with many channels,
-# use the ``indices`` parameter to compute connectivity only between specific
-# channel pairs of interest, which can significantly reduce computation time.
+# **Selective connectivity analysis**: For large datasets with many channels, use the
+# ``indices`` parameter to compute connectivity only between specific channel pairs of
+# interest, which can significantly reduce computation time.
 #
-# **Cross-subject analysis**: For group-level or between-group analysis,
-# it's often easier to work with within-subject averages over epochs by
-# setting ``average=True``. This provides one connectivity value per connection
-# per subject, which can then be used for statistical comparisons across subjects.
+# **Cross-subject analysis**: For group-level or between-group analysis, it's often
+# easier to work with within-subject averages over epochs by setting ``average=True``.
+# This provides one connectivity value per connection per subject, which can then be
+# used for statistical comparisons across subjects.
 
-
-# %%
+########################################################################################
 # Summary and Best Practices
 # ===========================
 #
@@ -407,8 +426,8 @@ plt.show()
 #
 # **Parameter selection guidelines:**
 #
-# - ``kernel``: Start with 3, increase to 4-5 for more complex patterns
-#   (requires more data)
+# - ``kernel``: Start with 3, increase to 4-5 for more complex patterns (requires more
+#   data)
 # - ``tau``: Use 1 for high-resolution analysis, 2-3 for slower dynamics
 # - ``anti_aliasing``: Keep ``True`` unless you've already filtered appropriately
 # - ``weighted``: Keep ``True`` for most applications (wSMI vs SMI)
@@ -424,14 +443,13 @@ plt.show()
 # - Values near 0: Minimal information sharing
 # - Higher values: Stronger information integration
 # - Compare relative values rather than absolute thresholds
-# - Consider the temporal scale defined by your ``tau`` parameter: ``tau > 1``
-#   lowers your effective sampling frequency multiplicatively, affecting your
-#   interpretation of the time-scale on which signals are coupled. For example,
-#   high-temporal-fidelity coupling (sample-to-sample) may not be detected
-#   if you set ``tau`` to a higher value, as it focuses on slower dynamics.
+# - Consider the temporal scale defined by your ``tau`` parameter: ``tau > 1`` lowers
+#   your effective sampling frequency multiplicatively, affecting your interpretation of
+#   the time-scale on which signals are coupled. For example, high-temporal-fidelity
+#   coupling (sample-to-sample) may not be detected if you set ``tau`` to a higher
+#   value, as it focuses on slower dynamics.
 
-
-# %%
+########################################################################################
 # References
 # ----------
 # .. footbibliography::
