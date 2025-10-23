@@ -183,6 +183,10 @@ ax.tick_params(axis="x", labelrotation=45)
 ax.figure.tight_layout()
 
 ########################################################################################
+# **Note**: Small negative values can occur for wSMI, reflecting estimator noise or a
+# lack of information sharing above chance, rather than an anti-coupling of signals.
+
+########################################################################################
 # Exploring Parameter Effects: kernel and tau
 # ============================================
 #
