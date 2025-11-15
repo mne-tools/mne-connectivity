@@ -278,50 +278,50 @@ def phase_slope_index_time(data,
                            ):
     """Compute the Phase Slope Index (PSI) connectivity measure across time.
 
-    This function computes PSI over time from epoched data.
-    The data may consist of a single epoch.
-    
-    The PSI is an effective connectivity measure, i.e., a measure which can
-    give an indication of the direction of the information flow (causality).
-    For two time series, and one computes the PSI between the first and the
-    second time series as follows
+    This function computes PSI over time from epoched data. The data may consist of a
+    single epoch.
 
-    indices = (np.array([0]), np.array([1]))
-    psi = phase_slope_index(data, indices=indices, ...)
+    The PSI is an effective connectivity measure, i.e., a measure which can give an
+    indication of the direction of the information flow (causality). For two time
+    series, one computes the PSI between the first and the second time series as
+    follows: ::
 
-    A positive value means that time series 0 is ahead of time series 1 and
-    a negative value means the opposite.
+        indices = (np.array([0]), np.array([1]))
+        psi = phase_slope_index(data, indices=indices, ...)
 
-    The PSI is computed from the coherency (see spectral_connectivity_epochs),
+    A positive value means that time series 0 is ahead of time series 1 and a negative
+    value means the opposite.
+
+    The PSI is computed from the coherency (see :func:`spectral_connectivity_time`),
     details can be found in :footcite:`NolteEtAl2008`.
-
 
     Parameters
     ----------
-    data : Epochs, array-like, shape=(n_epochs, n_signals, n_times)
-        Can also be a list/generator of array, shape =(n_signals, n_times);
-        list/generator of SourceEstimate; or Epochs.
-        The data from which to compute connectivity. Note that it is also
-        possible to combine multiple signals by providing a list of tuples,
-        e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
-        corresponds to 3 epochs, and arr_* could be an array with the same
-        number of time points as stc_*.
+    data : array-like, shape (n_epochs, n_signals, n_times) | Epochs
+        The data from which to compute connectivity.
+    freqs : array-like
+        Array of frequencies of interest for time-frequency decomposition. Only the
+        frequencies within the range specified by ``fmin`` and ``fmax`` are used.
     indices : tuple of array | None
-        Two arrays with indices of connections for which to compute
-        connectivity. If None, all connections are computed.
+        Two arrays with indices of connections for which to compute connectivity. If
+        `None`, all connections are computed.
     sfreq : float
-        The sampling frequency.
+        The sampling frequency. Required if data is not :class:`~mne.Epochs`.
     mode : str
-        Spectrum estimation mode can be either: 'multitaper', 'fourier', or
-        'cwt_morlet'.
-    fmin : float | tuple of float
-        The lower frequency of interest. Multiple bands are defined using
-        a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-        If None the frequency corresponding to an epoch length of 5 cycles
-        is used.
-    fmax : float | tuple of float
-        The upper frequency of interest. Multiple bands are dedined using
-        a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.
+        Time-frequency decomposition method. Can be either: 'multitaper' or
+        'cwt_morlet'. See :func:`mne.time_frequency.tfr_array_multitaper` and
+        :func:`mne.time_frequency.tfr_array_morlet` for reference.
+    fmin : float | tuple of float | None
+        The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,
+        ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower bounds. If `None`, the
+        lowest frequency in ``freqs`` is used.
+    fmax : float | tuple of float | None
+        The upper frequency of interest. Multiple bands are defined using a tuple, e.g.
+        ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If `None`, the
+        highest frequency in ``freqs`` is used.
+    padding : float
+        Amount of time to consider as padding at the beginning and end of each epoch in
+        seconds. See Notes of :func:`spectral_connectivity_time` for more information.
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz.
         Only used in 'multitaper' mode.
@@ -346,7 +346,8 @@ def phase_slope_index_time(data,
     sm_kernel : {'square', 'hanning'}
         Smoothing kernel type. Choose either 'square' or 'hanning'.
     n_jobs : int
-        How many epochs to process in parallel.
+        Number of connections to compute in parallel. Memory mapping must be activated.
+        Please see the Notes section of :func:`spectral_connectivity_time` for details.
     %(verbose)s
 
     Returns
@@ -367,7 +368,7 @@ def phase_slope_index_time(data,
     --------
     mne_connectivity.SpectralConnectivity
     mne_connectivity.EpochSpectralConnectivity
-    mne_connectivity.spectral.time.spectral_connectivity_time
+    mne_connectivity.spectral_connectivity_time
 
     References
     ----------
@@ -414,12 +415,14 @@ def phase_slope_index_time(data,
     logger.info(f"Computing PSI from estimated Coherency: {cohy}")
     # compute PSI in the requested bands
     if fmin is None:
-        fmin = -np.inf  # set it to -inf, so we can adjust it later
+        fmin = -np.inf
+    if fmax is None:
+        fmax = np.inf
 
     bands = list(zip(np.asarray((fmin,)).ravel(), np.asarray((fmax,)).ravel()))
     n_bands = len(bands)
 
-    freq_dim = -1 
+    freq_dim = -1
 
     # allocate space for output
     out_shape = list(cohy.shape)
