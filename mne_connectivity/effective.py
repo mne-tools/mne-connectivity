@@ -260,6 +260,10 @@ def phase_slope_index_time(data,
                            freqs=None,
                            n_cycles=7,
                            padding=0,
+                           average=False,
+                           sm_times=0,
+                           sm_freqs=1,
+                           sm_kernel="hanning",
                            n_jobs=1,
                            verbose=None,
                            ):
@@ -317,22 +321,42 @@ def phase_slope_index_time(data,
     n_cycles : float | array of float
         Number of cycles. Fixed number or one per frequency. Only used in
         'cwt_morlet' mode.
+    padding : float
+        Amount of time to consider as padding at the beginning and end of each
+        epoch in seconds. See Notes for more information.
+    average : bool
+        Average connectivity scores over epochs. If ``True``, output will be
+        an instance of :class:`SpectralConnectivity`, otherwise
+        :class:`EpochSpectralConnectivity`.
+    sm_times : float
+        Amount of time to consider for the temporal smoothing in seconds.
+        If zero, no temporal smoothing is applied.
+    sm_freqs : int
+        Number of points for frequency smoothing. By default, 1 is used which
+        is equivalent to no smoothing.
+    sm_kernel : {'square', 'hanning'}
+        Smoothing kernel type. Choose either 'square' or 'hanning'.
     n_jobs : int
         How many epochs to process in parallel.
     %(verbose)s
 
     Returns
     -------
-    conn : instance of EpochSpectralConnectivity
-        Computed connectivity measure(s). ``EpochSpectralConnectivity``
-        container. The shape of each array is
-        (n_signals ** 2, n_bands, n_epochs)
+    conn : instance of Connectivity
+        Computed connectivity measure(s). Either a
+        :class:`SpectralConnectivity` or :class:`EpochSpectralConnectivity`
+        container depending on the ``average`` parameter.
+        The shape of each array is
+        (n_signals ** 2, n_bands, n_epochs) or (n_signals ** 2, n_bands)
         when "indices" is None, or
-        (n_con, n_bands, n_epochs) 
+        (n_con, n_bands, n_epochs) or (n_con, n_bands)
         when "indices" is specified and "n_con = len(indices[0])".
+        The epoch dimension is present when ``average=False`` and absent when
+        ``average=True``.
 
     See Also
     --------
+    mne_connectivity.SpectralConnectivity
     mne_connectivity.EpochSpectralConnectivity
     mne_connectivity.spectral.time.spectral_connectivity_time
 
@@ -344,6 +368,8 @@ def phase_slope_index_time(data,
 
     # estimate the coherency
 
+    # Always compute coherency without averaging first, so we can compute PSI
+    # for each epoch, then average PSI if requested (consistent with spec_conn_time)
     cohy = spectral_connectivity_time(
         data,
         freqs=freqs,
@@ -355,9 +381,9 @@ def phase_slope_index_time(data,
         fmax=fmax,
         fskip=0,
         faverage=False,
-        sm_times=0,
-        sm_freqs=1,
-        sm_kernel="hanning",
+        sm_times=sm_times,
+        sm_freqs=sm_freqs,
+        sm_kernel=sm_kernel,
         padding=padding,
         mode=mode,
         mt_bandwidth=mt_bandwidth,
@@ -371,6 +397,7 @@ def phase_slope_index_time(data,
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
     n_nodes = cohy.n_nodes
+    n_epochs_used = cohy.n_epochs
     metadata = cohy.metadata
     events = cohy.events
     event_id = cohy.event_id
@@ -419,19 +446,40 @@ def phase_slope_index_time(data,
     logger.info("[PSI Estimation Done]")
 
     # create a connectivity container
-    conn = EpochSpectralConnectivity(
-        data=psi,
-        names=names,
-        freqs=freq_bands,
-        n_nodes=n_nodes,
-        method="phase-slope-index",
-        spec_method=mode,
-        indices=indices,
-        freqs_computed=freqs,
-        n_tapers=n_tapers,
-        metadata=metadata,
-        events=events,
-        event_id=event_id,
-    )
+    # When average=True, average PSI over epochs (consistent with spec_conn_time behavior)
+    # When average=False, keep epoch dimension
+    if average:
+        # Average over epochs
+        psi = np.mean(psi, axis=0)
+        conn = SpectralConnectivity(
+            data=psi,
+            names=names,
+            freqs=freq_bands,
+            n_nodes=n_nodes,
+            method="phase-slope-index",
+            spec_method=mode,
+            indices=indices,
+            freqs_computed=freqs,
+            n_epochs_used=n_epochs_used,
+            n_tapers=n_tapers,
+            metadata=metadata,
+            events=events,
+            event_id=event_id,
+        )
+    else:
+        conn = EpochSpectralConnectivity(
+            data=psi,
+            names=names,
+            freqs=freq_bands,
+            n_nodes=n_nodes,
+            method="phase-slope-index",
+            spec_method=mode,
+            indices=indices,
+            freqs_computed=freqs,
+            n_tapers=n_tapers,
+            metadata=metadata,
+            events=events,
+            event_id=event_id,
+        )
 
     return conn
