@@ -1,13 +1,14 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
+from mne.channels import make_dig_montage, make_standard_montage
+from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 
 from mne_connectivity import (
+    CoherencyDecomposition,
     make_signals_in_freq_bands,
     seed_target_indices,
     spectral_connectivity_epochs,
 )
-from mne_connectivity.decoding import CoherencyDecomposition
 from mne_connectivity.utils import _check_multivariate_indices
 
 
@@ -24,6 +25,7 @@ def test_spectral_decomposition(method, mode):
     trans_bandwidth = 1
     fstart = 5  # start computing connectivity
     fend = 30  # stop computing connectivity
+    n_components = 2  # only 1 comp simulated, so >=2nd comp should just be noise
 
     # Get data with connectivity to optimise (~90° angle good for MIC & CaCoh)
     fmin_optimise = 11
@@ -62,14 +64,15 @@ def test_spectral_decomposition(method, mode):
     indices = (seeds, targets)
 
     if method == "cacoh":
-        bivariate_method = "coh"
+        bivariate_method = "cohy"
         multivariate_method = "cacoh"
     else:
         bivariate_method = "imcoh"
         multivariate_method = "mic"
 
     cwt_freq_res = 0.5
-    cwt_freqs = np.arange(fmin_optimise, fmax_optimise + cwt_freq_res, cwt_freq_res)
+    cwt_freqs_fit = np.arange(fmin_optimise, fmax_optimise + cwt_freq_res, cwt_freq_res)
+    cwt_freqs_con = np.arange(fstart, fend + cwt_freq_res, cwt_freq_res)
     cwt_n_cycles = 6
 
     # TEST FITTING AND TRANSFORMING SAME DATA EXTRACTS CONNECTIVITY
@@ -80,8 +83,9 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fmin_optimise,
         fmax=fmax_optimise,
-        cwt_freqs=cwt_freqs,
+        cwt_freqs=cwt_freqs_fit,
         cwt_n_cycles=cwt_n_cycles,
+        n_components=n_components,
     )
     epochs_transformed = decomp_class.fit_transform(
         X=epochs[: n_epochs // 2].get_data()
@@ -94,7 +98,7 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fstart,
         fmax=fend,
-        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
+        cwt_freqs=cwt_freqs_con,
         cwt_n_cycles=cwt_n_cycles,
     )
     con_mv_func = spectral_connectivity_epochs(
@@ -104,7 +108,7 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fstart,
         fmax=fend,
-        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
+        cwt_freqs=cwt_freqs_con,
         cwt_n_cycles=cwt_n_cycles,
     )
     con_bv_func = spectral_connectivity_epochs(
@@ -114,7 +118,7 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fstart,
         fmax=fend,
-        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
+        cwt_freqs=cwt_freqs_con,
         cwt_n_cycles=cwt_n_cycles,
     )
 
@@ -137,6 +141,11 @@ def test_spectral_decomposition(method, mode):
         np.abs(con_bv_func.get_data()[:, freqs_ignore]).mean(),
         atol=similarity_thresh,
     )  # check connectivity for ignored freq. band similar to no optimisation
+    assert_allclose(
+        np.abs(con_mv_class.get_data()[1, freqs_optimise]).mean(),
+        np.abs(con_mv_class.get_data()[1, freqs_ignore]).mean(),
+        atol=similarity_thresh,
+    )  # check 2nd component connectivity for optimised freq. band similar to ignored
 
     # Test band-wise optimisation similar to bin-wise optimisation
     assert_allclose(
@@ -157,16 +166,17 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fmin_optimise,
         fmax=fmax_optimise,
-        cwt_freqs=cwt_freqs,
+        cwt_freqs=cwt_freqs_fit,
         cwt_n_cycles=cwt_n_cycles,
+        n_components=n_components,
     )
     decomp_class_2.fit(X=epochs[: n_epochs // 2].get_data())
     epochs_transformed_2 = decomp_class_2.transform(
         X=epochs[: n_epochs // 2].get_data()
     )
-    assert_allclose(epochs_transformed, epochs_transformed_2, atol=1e-9)
-    assert_allclose(decomp_class.filters_, decomp_class_2.filters_, atol=1e-9)
-    assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_, atol=1e-9)
+    assert_allclose(epochs_transformed, epochs_transformed_2, atol=1e-8)
+    assert_allclose(decomp_class.filters_, decomp_class_2.filters_, atol=1e-8)
+    assert_allclose(decomp_class.patterns_, decomp_class_2.patterns_, atol=1e-8)
 
     # TEST FITTING ON ONE PIECE OF DATA AND TRANSFORMING ANOTHER
     con_mv_class_unseen_data = spectral_connectivity_epochs(
@@ -177,7 +187,7 @@ def test_spectral_decomposition(method, mode):
         mode=mode,
         fmin=fstart,
         fmax=fend,
-        cwt_freqs=np.arange(fstart, fend + cwt_freq_res, cwt_freq_res),
+        cwt_freqs=cwt_freqs_con,
         cwt_n_cycles=cwt_n_cycles,
     )
     assert_allclose(
@@ -191,34 +201,214 @@ def test_spectral_decomposition(method, mode):
         atol=similarity_thresh,
     )  # check connectivity for optimised freq. band similarly low for seen & unseen
 
-    # XXX: TEST FILTERS/PATTERNS HAS CORRECT SHAPE WHEN N_COMPONENTS > 1 SUPPORTED
-
     # TEST GETTERS & SETTERS
     # Test indices internal storage and returned format
-    assert np.all(np.array(decomp_class.indices) == np.array((seeds, targets)))
-    assert np.all(
-        decomp_class._indices
-        == _check_multivariate_indices(([seeds], [targets]), n_signals)
+    assert_array_equal(np.array(decomp_class.indices), np.array((seeds, targets)))
+    assert_array_equal(
+        decomp_class._indices,
+        _check_multivariate_indices(([seeds], [targets]), n_signals),
     )
     decomp_class.set_params(indices=(targets, seeds))
-    assert np.all(np.array(decomp_class.indices) == np.array((targets, seeds)))
-    assert np.all(
-        decomp_class._indices
-        == _check_multivariate_indices(([targets], [seeds]), n_signals)
+    assert_array_equal(np.array(decomp_class.indices), np.array((targets, seeds)))
+    assert_array_equal(
+        decomp_class._indices,
+        _check_multivariate_indices(([targets], [seeds]), n_signals),
     )
 
     # Test rank internal storage and returned format
-    assert np.all(decomp_class.rank == (n_signals, n_signals))
-    assert np.all(decomp_class._rank == ([n_signals], [n_signals]))
+    assert_array_equal(decomp_class.rank, (n_signals, n_signals))
+    assert_array_equal(decomp_class._rank, ([n_signals], [n_signals]))
     decomp_class.set_params(rank=(1, 2))
-    assert np.all(decomp_class.rank == (1, 2))
-    assert np.all(decomp_class._rank == ([1], [2]))
+    assert_array_equal(decomp_class.rank, (1, 2))
+    assert_array_equal(decomp_class._rank, ([1], [2]))
 
     # Test rank can be reset to default
     decomp_class.set_params(rank=None)
 
+    # TEST PLOTTING
+    # Test plot filters/patterns
+    # use standard montage to avoid errors around weird fiducial positions
+    standard_1020_pos = make_standard_montage("standard_1020").get_positions()
+    epochs.info.set_montage(
+        make_dig_montage(
+            ch_pos={
+                name: [idx, idx, idx]
+                for idx, name in enumerate(epochs.info["ch_names"])
+            },  # avoid overlapping positions for channels (raises error)
+            nasion=standard_1020_pos["nasion"],
+            lpa=standard_1020_pos["lpa"],
+            rpa=standard_1020_pos["rpa"],
+        )
+    )
+    for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
+        # required for this to be picked up by coverage
+        figs = plot(epochs.info, components=0, units="A.U.", show=False)
+        figs = plot(epochs.info, components=None, units=None, show=False)
+        assert len(figs) == 2
 
-test_spectral_decomposition("cacoh", "cwt_morlet")
+    # TEST FILTERS & PATTERNS HAVE CORRECT SHAPE
+    # (DOUBLES AS TEST FOR WHETHER COMBINATION OF RANK AND COMPONENT ARGS WORK)
+    # Test when n_components specified
+    for n_components in (None, 2, 1):
+        decomp_class.set_params(n_components=n_components)
+        decomp_class.set_params(rank=None)  # reset to default
+        decomp_class.fit(X=epochs[: n_epochs // 2].get_data())
+        n_comps = n_signals if n_components is None else n_components
+        assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
+        assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+        assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
+        assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
+
+    # Test when rank specified
+    for rank in (None, (3, 3), (3, 2), (2, 3)):
+        decomp_class.set_params(rank=rank)
+        decomp_class.set_params(n_components=None)  # reset to default
+        decomp_class.fit(X=epochs[: n_epochs // 2].get_data())
+        n_comps = n_signals if rank is None else np.min(rank)
+        assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
+        assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+        assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
+        assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
+
+    # Test when n_components and rank specified
+    for rank in (None, (3, 3), (3, 2), (2, 3)):
+        decomp_class.set_params(rank=rank)
+        for n_components in (None, 2, 1):
+            decomp_class.set_params(n_components=n_components)
+            if rank is not None and n_components is None:
+                continue  # error if n_components < rank
+            else:
+                decomp_class.fit(X=epochs[: n_epochs // 2].get_data())
+                if n_components is None:  # try to base shape on rank
+                    if rank is None:  # cannot base shape on rank
+                        n_comps = n_signals
+                    else:  # can base shape on rank
+                        n_comps = np.min(rank)
+                else:  # base shape on n_components (checked already that rank != None)
+                    n_comps = n_components
+                assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
+                assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+                assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
+                assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
+
+    # TEST CONNECTIVITY EXTRACTED FOR MULTIPLE COMPONENTS
+    # Simulate data with multiple components at given freq. bands
+    # (simulate at different freq. bands to aid in creating independent components)
+    # (last set of simulated data is just noise for comparisons)
+    fbands = ((11, 13), (18, 20), (0, 1))  # freq. bands to simulate interactions
+    if mode in ["multitaper", "fourier"]:  # SNRs of interactions
+        snrs = (0.6, 0.5, 0.0)
+    else:
+        # multiple components less stable for Morlet mode, so increase SNR
+        snrs = (0.75, 0.65, 0.0)
+    dominant_chans = (0, 1, None)  # channels contributing to con. of each component
+    delays = (1, 2, 0)  # connection delays of interactions
+    angles = (40, 135, None)  # interaction angles corresponding to above delays
+    seeds = (44, 43, 42)  # RNG seeds for simulations
+
+    data_sims = []
+    for fband, snr, delay, seed in zip(fbands, snrs, delays, seeds):
+        data_sims.append(
+            make_signals_in_freq_bands(
+                n_seeds=1,
+                n_targets=1,
+                freq_band=fband,
+                n_epochs=n_epochs,
+                trans_bandwidth=trans_bandwidth,
+                snr=snr,
+                connection_delay=delay,
+                rng_seed=seed,
+            )
+        )
+    data = data_sims[0].add_channels(data_sims[1:])
+    seeds = np.arange(0, len(data_sims) * 2, 2)
+    targets = seeds + 1
+
+    # Fit/transform data
+    decomp_class = CoherencyDecomposition(
+        info=data.info,
+        method=method,
+        indices=(seeds, targets),
+        mode=mode,
+        fmin=np.min(fbands[:-1]) - 1,
+        fmax=np.max(fbands[:-1]) + 1,
+        cwt_freqs=cwt_freqs_fit,
+        cwt_n_cycles=cwt_n_cycles,
+        rank=(len(data_sims), len(data_sims)),
+    )
+    epochs_transformed = decomp_class.fit_transform(X=data.get_data())
+
+    # Compute connectivity
+    con = spectral_connectivity_epochs(
+        epochs_transformed,
+        method=bivariate_method,
+        indices=decomp_class.get_transformed_indices(),
+        sfreq=data.info["sfreq"],
+        mode=mode,
+        fmin=fstart,
+        fmax=fend,
+        cwt_freqs=cwt_freqs_con,
+        cwt_n_cycles=cwt_n_cycles,
+    )
+
+    # Check results
+    comp_i = 0
+    conn_scores = np.zeros((len(data_sims),))
+    for fband, snr, angle, dominant_chan in zip(
+        fbands[:-1], snrs[:-1], angles[:-1], dominant_chans[:-1]
+    ):
+        # find freqs. of interest
+        freqs = np.array(con.freqs)
+        freqs_conn = (freqs >= fband[0]) & (freqs <= fband[1])
+        freqs_noise = (freqs > fband[1]) | (freqs < fband[0])
+
+        # determine what is > noise based on SNR of simulated interaction
+        con_diff = snr / 2
+        if method == "mic":
+            con_diff *= 0.5  # connectivity strength lost when projecting to imag. axis
+        if mode in ["fourier", "cwt_morlet"]:
+            con_diff *= 0.5  # noise floor higher for Fourier and Morlet modes
+
+        # Check connectivity of genuine interactions greater than noise
+        assert (
+            np.abs(con.get_data()[comp_i, freqs_conn]).mean()
+            > np.abs(con.get_data()[comp_i, freqs_noise]).mean() + con_diff
+        )  # check con. > noise in same component
+        assert (
+            np.abs(con.get_data()[comp_i, freqs_conn]).mean()
+            > np.abs(con.get_data()[-1, :]).mean() + con_diff
+        )  # check con. > noise in noise component
+
+        if method == "cacoh":
+            # Check filters extract components at correct angles
+            assert_allclose(
+                np.angle(con.get_data()[comp_i, freqs_conn], deg=True).mean(),
+                angle,
+                atol=10,
+            )
+
+        if mode in ["multitaper", "fourier"]:  # less stability for Morlet mode
+            # Check patterns reflect spatial distribution of activity
+            nondom_channs = np.ones(decomp_class.patterns_[0].shape[1], dtype=bool)
+            nondom_channs[dominant_chan] = False
+            assert_array_less(
+                np.abs(decomp_class.patterns_[0][comp_i, nondom_channs]),
+                np.abs(decomp_class.patterns_[0][comp_i, dominant_chan]),
+                err_msg="seeds",
+            )  # check for seeds
+            assert_array_less(
+                np.abs(decomp_class.patterns_[1][comp_i, nondom_channs]),
+                np.abs(decomp_class.patterns_[1][comp_i, dominant_chan]),
+                err_msg="targets",
+            )  # check for targets
+
+        # keep record of connectivity scores for this component
+        conn_scores[comp_i] = np.abs(con.get_data()[comp_i, freqs_conn]).mean()
+        comp_i += 1
+    conn_scores[comp_i] = np.abs(con.get_data()[-1, :]).mean()  # noise connectivity
+
+    # Check components are ordered by strength of interaction
+    assert_array_equal(conn_scores, np.flip(np.sort(conn_scores)))
 
 
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
@@ -497,6 +687,19 @@ def test_spectral_decomposition_error_catch(method, mode):
     ):
         decomp_class.transform(X=epochs.get_data())
 
+    # TEST PLOTTING BEFORE FITTING
+    with pytest.raises(
+        RuntimeError,
+        match="no filters are available, please call the `fit` method first",
+    ):
+        decomp_class.plot_filters(epochs.info)
+
+    with pytest.raises(
+        RuntimeError,
+        match="no patterns are available, please call the `fit` method first",
+    ):
+        decomp_class.plot_patterns(epochs.info)
+
     decomp_class.set_params(n_components=None)  # reset to default
     decomp_class.fit(X=epochs.get_data())
 
@@ -507,3 +710,12 @@ def test_spectral_decomposition_error_catch(method, mode):
         decomp_class.transform(X=epochs.get_data()[0, 0])
     with pytest.raises(ValueError, match="`X` does not match Info"):
         decomp_class.transform(X=epochs.get_data()[:, :-1])
+
+    # TEST BAD PLOTTING
+    for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
+        with pytest.raises(TypeError, match="`info` must be an instance of mne.Info"):
+            plot({"info": epochs.info})
+        with pytest.raises(ValueError, match="Invalid value for the 'axes' parameter"):
+            plot(epochs.info, axes=[None])
+        with pytest.raises(ValueError, match="Invalid value for the 'axes' parameter"):
+            plot(epochs.info, axes=[None, None, None])

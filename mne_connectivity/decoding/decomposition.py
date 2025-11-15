@@ -4,16 +4,23 @@
 #
 # License: BSD (3-clause)
 
-from typing import Optional
 
 import numpy as np
 from mne import Info
-from mne.decoding.mixin import TransformerMixin
-from mne.fixes import BaseEstimator
+from mne._fiff.pick import pick_info
+from mne.defaults import _BORDER_DEFAULT, _EXTRAPOLATE_DEFAULT, _INTERPOLATION_DEFAULT
+from mne.evoked import EvokedArray
 from mne.time_frequency import csd_array_fourier, csd_array_morlet, csd_array_multitaper
 from mne.utils import _check_option, _validate_type
+from mne.viz.utils import plt_show
+from sklearn.base import BaseEstimator, TransformerMixin
 
-from ..spectral.epochs_multivariate import _CaCohEst, _check_rank_input, _MICEst
+from ..spectral.epochs_multivariate import (
+    _CaCohEst,
+    _check_n_components_input,
+    _check_rank_input,
+    _MICEst,
+)
 from ..utils import _check_multivariate_indices, fill_doc
 
 
@@ -55,28 +62,29 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     Once fit, the filters can be used to transform data into the underlying connectivity
     components. Connectivity can be computed on this transformed data using the
     bivariate coherency-based methods of the
-    `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions. These bivariate methods
-    are:
+    :func:`~mne_connectivity.spectral_connectivity_epochs` and
+    :func:`~mne_connectivity.spectral_connectivity_time` functions. These bivariate
+    methods are:
 
     * ``"cohy"`` and ``"coh"`` for CaCoh :footcite:`VidaurreEtAl2019`
     * ``"imcoh"`` for MIC :footcite:`EwaldEtAl2012`
 
     The approach taken here is to optimise the connectivity in a given frequency band.
     Frequency bin-wise optimisation is offered in the multivariate coherency-based
-    methods of the `mne_connectivity.spectral_connectivity_epochs` and
-    `mne_connectivity.spectral_connectivity_time` functions.
+    methods of the :func:`~mne_connectivity.spectral_connectivity_epochs` and
+    :func:`~mne_connectivity.spectral_connectivity_time` functions.
 
     References
     ----------
     .. footbibliography::
     """
 
-    filters_: Optional[tuple] = None
-    patterns_: Optional[tuple] = None
+    filters_: tuple | None = None
+    patterns_: tuple | None = None
 
-    _indices: Optional[tuple] = None
-    _rank: Optional[tuple] = None
+    _conn_estimator: _CaCohEst | _MICEst | None = None
+    _indices: tuple | None = None
+    _rank: tuple | None = None
 
     @property
     def indices(self):
@@ -123,7 +131,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         mt_adaptive=False,
         mt_low_bias=True,
         cwt_freqs=None,
-        cwt_n_cycles=7,
+        cwt_n_cycles=7.0,
         n_components=None,
         rank=None,
         n_jobs=1,
@@ -135,9 +143,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         _check_option("method", method, ("cacoh", "mic"))
         if method == "cacoh":
-            _conn_estimator = _CaCohEst
+            _conn_estimator_class = _CaCohEst
         else:
-            _conn_estimator = _MICEst
+            _conn_estimator_class = _MICEst
 
         _validate_type(indices, tuple, "`indices`", "tuple of array-likes")
         if len(indices) != 2:
@@ -159,6 +167,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             _validate_type(fmax, "numeric", "`fmax`", "int or float")
             if fmin > fmax:
                 raise ValueError("`fmax` must be larger than `fmin`")
+            if fmin < 0:
+                raise ValueError("`fmin` cannot be less than 0")
             if fmax > info["sfreq"] / 2:
                 raise ValueError("`fmax` cannot be larger than the Nyquist frequency")
             if mode == "multitaper":
@@ -187,7 +197,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
                 "`cwt_n_cycles`",
                 "int, float, or array-like",
             )
-            if isinstance(cwt_n_cycles, (tuple, list, np.ndarray)) and len(
+            if isinstance(cwt_n_cycles, tuple | list | np.ndarray) and len(
                 cwt_n_cycles
             ) != len(cwt_freqs):
                 raise ValueError(
@@ -211,8 +221,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         # n_jobs and verbose will be checked downstream
 
         # Store inputs
+        self.method = method
         self.info = info
-        self._conn_estimator = _conn_estimator
+        self._conn_estimator_class = _conn_estimator_class
         self._indices = _indices  # uses getter/setter for public parameter
         self.mode = mode
         self.fmin = fmin
@@ -222,7 +233,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         self.mt_low_bias = mt_low_bias
         self.cwt_freqs = cwt_freqs
         self.cwt_n_cycles = cwt_n_cycles
-        self.n_components = 1  # XXX: fixed until n_comps > 1 supported
+        self.n_components = n_components
         self._rank = _rank  # uses getter/setter for public parameter
         self.n_jobs = n_jobs
         self.verbose = verbose
@@ -266,7 +277,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        X : array, shape=(n_epochs, n_signals, n_times)
+        X : array, shape (n_epochs, n_signals, n_times)
             The input data which the connectivity decomposition filters should be fit
             to.
         y : None
@@ -285,11 +296,13 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         csd = self._compute_csd(X)
 
         # instantiate connectivity estimator and add CSD information
-        self._conn_estimator = self._conn_estimator(
+        self._conn_estimator = self._conn_estimator_class(
             n_signals=X.shape[1],
             n_cons=1,
             n_freqs=1,
             n_times=0,
+            n_components=self.n_components,
+            store_con=False,
             store_filters=True,
             n_jobs=self.n_jobs,
         )
@@ -320,19 +333,10 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
     def _get_rank_and_ncomps_from_X(self, X):
         """Get/validate rank and n_components parameters using the data."""
         # compute rank from data if necessary / check it is valid for the indices
-        rank = _check_rank_input(self._rank, X, self._indices)
+        self._rank = _check_rank_input(self._rank, X, self._indices)
 
-        # set n_components if necessary / check it is valid for the rank
-        if self.n_components is None:
-            self.n_components = np.min(rank)
-        elif self.n_components > np.min(rank):
-            raise ValueError(
-                "`n_components` is greater than the minimum rank of the data"
-            )
-
-        # set rank if necessary
-        if self._rank is None:
-            self._rank = rank
+        # check n_components is valid for the rank
+        self.n_components = _check_n_components_input(self.n_components, self._rank)
 
     def _compute_csd(self, X):
         """Compute the cross-spectral density of the input data."""
@@ -375,38 +379,30 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
     def _extract_filters_and_patterns(self):
         """Extract filters and patterns from the connectivity estimator."""
-        # XXX: need to sort indices and transpose patterns when multiple comps supported
+        # shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs)
+        # i.e. (2, 1, n_components, n_signals, 1)
+
         self.filters_ = (
-            self._conn_estimator.filters[0, 0, : len(self.indices[0]), 0],
-            self._conn_estimator.filters[1, 0, : len(self.indices[1]), 0],
-        )
+            self._conn_estimator.filters[0, 0, :, : len(self.indices[0]), 0].T,
+            self._conn_estimator.filters[1, 0, :, : len(self.indices[1]), 0].T,
+        )  # shape=(seeds/targets, n_signals, n_components)
 
         self.patterns_ = (
-            self._conn_estimator.patterns[0, 0, : len(self.indices[0]), 0],
-            self._conn_estimator.patterns[1, 0, : len(self.indices[1]), 0],
-        )
-
-        # XXX: remove once support for multiple comps implemented
-        self.filters_ = (
-            np.expand_dims(self.filters_[0], 1),
-            np.expand_dims(self.filters_[1], 1),
-        )
-        self.patterns_ = (
-            np.expand_dims(self.patterns_[0], 0),
-            np.expand_dims(self.patterns_[1], 0),
-        )
+            self._conn_estimator.patterns[0, 0, :, : len(self.indices[0]), 0],
+            self._conn_estimator.patterns[1, 0, :, : len(self.indices[1]), 0],
+        )  # shape=(seeds/targets, n_components, n_signals)
 
     def transform(self, X):
         """Decompose data into connectivity sources using the fitted filters.
 
         Parameters
         ----------
-        X : array, shape=((n_epochs, ) n_signals, n_times)
+        X : array, shape ([n_epochs,] n_signals, n_times)
             The data to be transformed by the connectivity decomposition filters.
 
         Returns
         -------
-        X_transformed : array, shape=((n_epochs, ) n_components*2, n_times)
+        X_transformed : array, shape ([n_epochs,] n_components*2, n_times)
             The transformed data. The first ``n_components`` channels are the
             transformed seeds, and the last ``n_components`` channels are the
             transformed targets.
@@ -428,7 +424,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        X : array, shape=(n_epochs, n_signals, n_times)
+        X : array, shape (n_epochs, n_signals, n_times)
             The input data which the connectivity decomposition filters should be fit to
             and subsequently transformed.
         y : None
@@ -439,7 +435,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
 
         Returns
         -------
-        X_transformed : array, shape=(n_epochs, n_components*2, n_times)
+        X_transformed : array, shape (n_epochs, n_components*2, n_times)
             The transformed data. The first ``n_components`` channels are the
             transformed seeds, and the last ``n_components`` channels are the
             transformed targets.
@@ -453,11 +449,11 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         Returns
         -------
         indices_transformed : tuple of array
-            Indices of seeds and targets in the transformed data with the form (seeds,
-            targets) to be used when passing the data to
-            `~mne_connectivity.spectral_connectivity_epochs` and
-            `~mne_connectivity.spectral_connectivity_time`. Entries of the indices are
-            arranged such that connectivity would be computed between the first seed
+            Indices of seeds and targets in the transformed data with the form ``(seeds,
+            targets)`` to be used when passing the data to
+            :func:`~mne_connectivity.spectral_connectivity_epochs` and
+            :func:`~mne_connectivity.spectral_connectivity_time`. Entries of the indices
+            are arranged such that connectivity would be computed between the first seed
             component and first target component, second seed component and second
             target component, etc...
         """
@@ -465,3 +461,307 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             np.arange(self.n_components),
             np.arange(self.n_components) + self.n_components,
         )
+
+    @fill_doc
+    def plot_patterns(
+        self,
+        info,
+        components=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units="AU",
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot topographic patterns of components.
+
+        The patterns explain how the measured data was generated from the neural sources
+        (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.
+
+        Seed and target patterns are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_patterns_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.patterns_ is None:
+            raise RuntimeError(
+                "no patterns are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            (self.patterns_[0].T, self.patterns_[1].T),
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    @fill_doc
+    def plot_filters(
+        self,
+        info,
+        components=None,
+        ch_type=None,
+        scalings=None,
+        sensors=True,
+        show_names=False,
+        mask=None,
+        mask_params=None,
+        contours=6,
+        outlines="head",
+        sphere=None,
+        image_interp=_INTERPOLATION_DEFAULT,
+        extrapolate=_EXTRAPOLATE_DEFAULT,
+        border=_BORDER_DEFAULT,
+        res=64,
+        size=1,
+        cmap="RdBu_r",
+        vlim=(None, None),
+        cnorm=None,
+        colorbar=True,
+        cbar_fmt="%.1E",
+        units="AU",
+        axes=None,
+        name_format=None,
+        nrows=1,
+        ncols="auto",
+        show=True,
+    ):
+        """Plot topographic filters of components.
+
+        The filters are used to extract discriminant neural sources from the measured
+        data (a.k.a. the backward model) :footcite:`HaufeEtAl2014`.
+
+        Seed and target filters are plotted separately.
+
+        Parameters
+        ----------
+        %(info_decoding_plotting)s
+        %(components_topomap)s
+        %(ch_type_topomap)s
+        %(scalings_topomap)s
+        %(sensors_topomap)s
+        %(show_names_topomap)s
+        %(mask_filters_topomap)s
+        %(mask_params_topomap)s
+        %(contours_topomap)s
+        %(outlines_topomap)s
+        %(sphere_topomap)s
+        %(image_interp_topomap)s
+        %(extrapolate_topomap)s
+        %(border_topomap)s
+        %(res_topomap)s
+        %(size_topomap)s
+        %(cmap_topomap)s
+        %(vlim_topomap)s
+        %(cnorm_topomap)s
+        %(colorbar_topomap)s
+        %(colorbar_format_topomap)s
+        %(units_topomap)s
+        %(axes_topomap)s
+        %(name_format_topomap)s
+        %(nrows_topomap)s
+        %(ncols_topomap)s
+        %(show)s
+
+        Returns
+        -------
+        %(figs_topomap)s
+        """
+        if self.filters_ is None:
+            raise RuntimeError(
+                "no filters are available, please call the `fit` method first"
+            )
+
+        return self._plot_filters_patterns(
+            self.filters_,
+            info,
+            components,
+            ch_type,
+            scalings,
+            sensors,
+            show_names,
+            mask,
+            mask_params,
+            contours,
+            outlines,
+            sphere,
+            image_interp,
+            extrapolate,
+            border,
+            res,
+            size,
+            cmap,
+            vlim,
+            cnorm,
+            colorbar,
+            cbar_fmt,
+            units,
+            axes,
+            name_format,
+            nrows,
+            ncols,
+            show,
+        )
+
+    def _plot_filters_patterns(
+        self,
+        plot_data,
+        info,
+        components,
+        ch_type,
+        scalings,
+        sensors,
+        show_names,
+        mask,
+        mask_params,
+        contours,
+        outlines,
+        sphere,
+        image_interp,
+        extrapolate,
+        border,
+        res,
+        size,
+        cmap,
+        vlim,
+        cnorm,
+        colorbar,
+        cbar_fmt,
+        units,
+        axes,
+        name_format,
+        nrows,
+        ncols,
+        show,
+    ):
+        """Plot filters/targets for components."""
+        # Sort inputs
+        _validate_type(info, Info, "`info`", "mne.Info")
+        if components is None:
+            components = np.arange(self.n_components)
+        if axes is not None:
+            _check_option("axes", len(axes), [2], " length")
+
+        # plot seeds and targets
+        figs = []
+        for group_idx, group_name in zip([0, 1], ["seeds", "targets"]):
+            # create info for seeds/targets
+            group_info = pick_info(info, self.indices[group_idx])
+            with group_info._unlock():
+                group_info["sfreq"] = 1.0  # 1 component per time point
+            # create Evoked object
+            evoked = EvokedArray(plot_data[group_idx], group_info, tmin=0)
+            # then call plot_topomap
+            if name_format is None:
+                group_name_format = f"{self._conn_estimator.name}%01d ({group_name})"
+            else:
+                group_name_format = name_format + f" ({group_name})"
+            figs.append(
+                evoked.plot_topomap(
+                    times=components,
+                    average=None,  # do not average across independent components
+                    ch_type=ch_type,
+                    scalings=scalings,
+                    sensors=sensors,
+                    show_names=show_names,
+                    mask=mask,
+                    mask_params=mask_params,
+                    contours=contours,
+                    outlines=outlines,
+                    sphere=sphere,
+                    image_interp=image_interp,
+                    extrapolate=extrapolate,
+                    border=border,
+                    res=res,
+                    size=size,
+                    cmap=cmap,
+                    vlim=vlim,
+                    cnorm=cnorm,
+                    colorbar=colorbar,
+                    cbar_fmt=cbar_fmt,
+                    units=units,
+                    axes=axes[group_idx] if axes is not None else None,
+                    time_format=group_name_format,
+                    nrows=nrows,
+                    ncols=ncols,
+                    show=False,
+                )
+            )
+            plt_show(show=show, fig=figs[-1])
+
+        return figs

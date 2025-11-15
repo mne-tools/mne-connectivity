@@ -3,11 +3,17 @@ import inspect
 import numpy as np
 import scipy
 from mne import BaseEpochs
+from mne._fiff.pick import _picks_to_idx
 from mne.utils import logger, verbose
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 
-from ..base import Connectivity, EpochConnectivity, EpochTemporalConnectivity
+from ..base import (
+    Connectivity,
+    EpochConnectivity,
+    EpochTemporalConnectivity,
+    TemporalConnectivity,
+)
 from ..utils import fill_doc
 
 
@@ -28,80 +34,77 @@ def vector_auto_regression(
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | generator
-        The data from which to compute connectivity. The epochs dimension
-        is interpreted differently, depending on ``'output'`` argument.
-    times : array-like
-        (Optional) The time points used to construct the epoched ``data``. If
-        ``None``, then ``times_used`` in the Connectivity will not be
-        available.
+    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs | generator
+        The data from which to compute connectivity. The epochs dimension is interpreted
+        differently, depending on the ``'model'`` argument.
+    times : array_like | None
+        The time points used to construct the epoched ``data``. If ``None``, then
+        ``times_used`` in the returned ``conn`` will not be available.
     %(names)s
-    lags : int, optional
-        Autoregressive model order, by default 1.
-    l2_reg : float, optional
-        Ridge penalty (l2-regularization) parameter, by default 0.0.
+    lags : int | None
+        Autoregressive model order (default 1).
+    l2_reg : float | None
+        Ridge penalty (l2-regularization) parameter (default 0.0).
     compute_fb_operator : bool
-        Whether to compute the backwards operator and average with
-        the forward operator. Addresses bias in the least-square
-        estimation :footcite:`Dawson_2016`.
-    model : str
-        Whether to compute one VAR model using all epochs as multiple
-        samples of the same VAR model ('avg-epochs'), or to compute
-        a separate VAR model for each epoch ('dynamic'), which results
-        in a time-varying VAR model. See Notes.
+        Whether to compute the backwards operator and average with the forward operator.
+        Addresses bias in the least-square estimation :footcite:`Dawson_2016`.
+    model : ``'dynamic'`` | ``'avg-epochs'``
+        Whether to compute one VAR model using all epochs as multiple samples of the
+        same VAR model (``'avg-epochs'``), or to compute a separate VAR model for each
+        epoch (``'dynamic'``, default), which results in a time-varying VAR model. See
+        Notes.
     %(n_jobs)s
     %(verbose)s
 
     Returns
     -------
-    conn : Connectivity | TemporalConnectivity | EpochConnectivity
+    conn : Connectivity | TemporalConnectivity | EpochConnectivity | EpochTemporalConnectivity
         The connectivity data estimated.
 
     See Also
     --------
     mne_connectivity.Connectivity
+    mne_connectivity.TemporalConnectivity
     mne_connectivity.EpochConnectivity
+    mne_connectivity.EpochTemporalConnectivity
 
     Notes
     -----
-    Names can be passed in, which are then used to instantiate the nodes
-    of the connectivity class. For example, they can be the electrode names
-    of EEG.
+    Names can be passed in, which are then used to instantiate the nodes of the
+    connectivity class. For example, they can be the electrode names of EEG.
 
-    For higher-order VAR models, there are n_order ``A`` matrices,
-    representing the linear dynamics with respect to that lag. These
-    are represented by vertically concatenated matrices. For example, if
-    the input is data where n_signals is 3, then an order-1 VAR model will
-    result in a 3x3 connectivity matrix. An order-2 VAR model will result in a
-    6x3 connectivity matrix, with two 3x3 matrices representing the dynamics
-    at lag 1 and lag 2, respectively.
+    For higher-order VAR models, there are ``n_order`` ``A`` matrices, representing the
+    linear dynamics with respect to that lag. These are represented by vertically
+    concatenated matrices. For example, if the input is data where ``n_signals`` is 3,
+    then an order-1 VAR model will result in a 3x3 connectivity matrix. An order-2 VAR
+    model will result in a 6x3 connectivity matrix, with two 3x3 matrices representing
+    the dynamics at lag 1 and lag 2, respectively.
 
-    When computing a VAR model (i.e. linear dynamical system), we require
-    the input to be a ``(n_epochs, n_signals, n_times)`` 3D array. There
-    are two ways one can interpret the data in the model.
+    When computing a VAR model (i.e. linear dynamical system), we require the input to
+    be a ``(n_epochs, n_signals, n_times)`` 3D array. There are two ways one can
+    interpret the data in the model.
 
-    First, epochs can be treated as multiple samples observed for a single
-    VAR model. That is, we have $X_1, X_2, ..., X_n$, where each $X_i$
-    is a ``(n_signals, n_times)`` data array, with n epochs. We are
-    interested in estimating the parameters, $(A_1, A_2, ..., A_{order})$
-    from the following model over **all** epochs:
+    First, epochs can be treated as multiple samples observed for a single VAR model.
+    That is, we have :math:`X_1, X_2, ..., X_n`, where each :math:`X_i` is a
+    ``(n_signals, n_times)`` data array, with ``n_epochs``. We are interested in
+    estimating the parameters, :math:`(A_1, A_2, ..., A_{order})`, from the
+    following model over **all** epochs:
 
     .. math::
         X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
 
     This results in one VAR model over all the epochs.
 
-    The second approach treats each epoch as a different VAR model,
-    estimating a time-varying VAR model. Using the same
-    data as above,  we now are interested in estimating the
-    parameters, $(A_1, A_2, ..., A_{order})$ for **each** epoch. The model
-    would be the following for **each** epoch:
+    The second approach treats each epoch as a different VAR model, estimating a
+    time-varying VAR model. Using the same data as above,  we now are interested in
+    estimating the parameters, :math:`(A_1, A_2, ..., A_{order})` for **each** epoch.
+    The model would be the following for **each** epoch:
 
     .. math::
         X(t+1) = \sum_{i=0}^{order} A_i X(t-i)
 
-    This results in one VAR model for each epoch. This is done according
-    to the model in :footcite:`li_linear_2017`.
+    This results in one VAR model for each epoch. This is done according to the model in
+    :footcite:`li_linear_2017`.
 
     *b* is of shape [m, m*p], with sub matrices arranged as follows:
 
@@ -115,27 +118,30 @@ def vector_auto_regression(
     | b_m0 | b_m1 | ...  | b_mm |
     +------+------+------+------+
 
-    Each sub matrix b_ij is a column vector of length p that contains the
-    filter coefficients from channel j (source) to channel i (sink).
+    Each sub matrix b_ij is a column vector of length p that contains the filter
+    coefficients from channel j (source) to channel i (sink).
 
-    In order to optimize RAM usage, the estimating equations are set up
-    by iterating over sample points. This assumes that there are in general
-    more sample points then channels. You should not estimate a VAR model
-    using less sample points then channels, unless you have good reason.
+    In order to optimize RAM usage, the estimating equations are set up by iterating
+    over sample points. This assumes that there are in general more sample points than
+    channels. You should not estimate a VAR model using less sample points than
+    channels, unless you have good reason.
 
     References
     ----------
     .. footbibliography::
-    """  # noqa
+    """  # noqa: E501
     if model not in ["avg-epochs", "dynamic"]:
         raise ValueError(
-            f'"model" parameter must be one of ' f"(avg-epochs, dynamic), not {model}."
+            f'"model" parameter must be one of (avg-epochs, dynamic), not {model}.'
         )
 
+    picks = None
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
-        names = data.ch_names
+        # Find good channels
+        picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         events = data.events
         event_id = data.event_id
         times = data.times
@@ -155,7 +161,6 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        # get the actual data in numpy
         # XXX: remove logic once support for mne<1.6 is dropped
         kwargs = dict()
         if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
@@ -166,6 +171,10 @@ def vector_auto_regression(
 
     # 1. determine shape of the window of data
     n_epochs, n_nodes, _ = data.shape
+
+    # Get good channels
+    if picks is not None:
+        data = data[:, picks]
 
     model_params = {
         "lags": lags,
@@ -189,20 +198,44 @@ def vector_auto_regression(
         # get the coefficients
         coef = b.transpose()
 
+        # reshape coefficients to treat lags as times
+        coef = coef.reshape((coef.shape[0], coef.shape[0], lags))
+
+        # store coeffs in matrix consistent with n_nodes
+        if coef.shape[0] != n_nodes:
+            coef_holder = np.zeros((n_nodes, n_nodes, lags))
+            coef_holder[np.ix_(picks, picks, np.arange(lags))] = coef
+            coef = coef_holder
+
         # create connectivity
-        coef = coef.flatten()
-        conn = Connectivity(
-            data=coef,
-            n_nodes=n_nodes,
-            names=names,
-            n_epochs_used=n_epochs,
-            times_used=times,
-            method="VAR",
-            metadata=metadata,
-            events=events,
-            event_id=event_id,
-            **model_params,
-        )
+        coef = coef.reshape((-1, lags))
+        if lags > 1:
+            conn = TemporalConnectivity(
+                data=coef,
+                times=list(range(lags)),
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(p)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
+        else:
+            conn = Connectivity(
+                data=coef[:, 0],  # take first and only lag
+                n_nodes=n_nodes,
+                names=names,
+                n_epochs_used=n_epochs,
+                times_used=times,
+                method="VAR(1)",
+                metadata=metadata,
+                events=events,
+                event_id=event_id,
+                **model_params,
+            )
     else:
         assert model == "dynamic"
         # compute time-varying VAR model where each epoch
@@ -215,7 +248,15 @@ def vector_auto_regression(
             n_jobs=n_jobs,
             compute_fb_operator=compute_fb_operator,
         )
+        # store coeffs in matrix consistent with n_nodes
+        if A_mats.shape[1] != n_nodes:
+            A_mats_holder = np.zeros((n_epochs, n_nodes, n_nodes, lags))
+            A_mats_holder[
+                np.ix_(np.arange(n_epochs), picks, picks, np.arange(lags))
+            ] = A_mats
+            A_mats = A_mats_holder
         # create connectivity
+        A_mats = A_mats.reshape((n_epochs, -1, lags))
         if lags > 1:
             conn = EpochTemporalConnectivity(
                 data=A_mats,
@@ -232,7 +273,7 @@ def vector_auto_regression(
             )
         else:
             conn = EpochConnectivity(
-                data=A_mats,
+                data=A_mats[..., 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
                 n_epochs_used=n_epochs,
@@ -253,24 +294,22 @@ def _construct_var_eqns(data, lags, l2_reg=None):
 
     Parameters
     ----------
-    data : np.ndarray (n_epochs, n_signals, n_times)
+    data : array (n_epochs, n_signals, n_times)
         The multivariate data.
     lags : int
         The order of the VAR model.
     l2_reg : float, optional
-        The l2 penalty term for ridge regression, by default None, which
-        will result in ordinary VAR equation.
+        The l2 penalty term for ridge regression (default ``None``) which will result in
+        an ordinary VAR equation.
 
     Returns
     -------
-    X : np.ndarray
+    X : array
         The predictor multivariate time-series. This will have shape
-        ``(model_order * (n_times - model_order),
-        n_signals * model_order)``. See Notes.
-    Y : np.ndarray
+        ``(model_order * (n_times - model_order), n_signals * model_order)``. See Notes.
+    Y : array
         The predicted multivariate time-series. This will have shape
-        ``(model_order * (n_times - model_order),
-        n_signals * model_order)``. See Notes.
+        ``(model_order * (n_times - model_order), n_signals * model_order)``. See Notes.
 
     Notes
     -----
@@ -278,8 +317,7 @@ def _construct_var_eqns(data, lags, l2_reg=None):
 
         Y = A X
 
-    where Y is time-shifted data copy of X and ``A`` defines
-    how X linearly maps to Y.
+    where Y is time-shifted data copy of X and ``A`` defines how X linearly maps to Y.
     """
     # n_epochs, n_signals, n_times
     n_epochs, n_signals, n_times = np.shape(data)
@@ -313,8 +351,8 @@ def _system_identification(data, lags, l2_reg=0, n_jobs=-1, compute_fb_operator=
     .. math::
         X(t+1) = \sum_{i=0}^{order} A_i X(t - i)
 
-    where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are
-    the data snapshots.
+    where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are the data
+    snapshots.
     """
     # 1. determine shape of the window of data
     n_epochs, n_nodes, n_times = data.shape
@@ -367,11 +405,6 @@ def _system_identification(data, lags, l2_reg=0, n_jobs=-1, compute_fb_operator=
                     jdx * n_nodes : n_nodes * (jdx + 1), :
                 ].T
 
-    # ravel the matrix
-    if lags == 1:
-        A_mats = A_mats.reshape((n_epochs, -1))
-    else:
-        A_mats = A_mats.reshape((n_epochs, -1, lags))
     return A_mats
 
 
@@ -382,8 +415,8 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):
 
     Note
     ----
-    The ``_estimate_var`` function returns a set of A matrices that represent
-    the system:
+    The ``_estimate_var`` function returns a set of A matrices that represent the
+    system:
 
         X(t+1) = X(t) A
 
@@ -391,8 +424,8 @@ def _compute_lds_func(data, lags, l2_reg, compute_fb_operator):
 
         X(t+1) = A X(t)
 
-    Therefore, a transpose is needed. If there are additional lags, then each
-    of these matrices need to be transposed.
+    Therefore, a transpose is needed. If there are additional lags, then each of these
+    matrices need to be transposed.
     """
     # make sure data is T x K (samples, coefficients) to make use of underlying
     # functions
@@ -419,29 +452,29 @@ def _estimate_var(X, lags, offset=0, l2_reg=0):
 
     Parameters
     ----------
-    X : np.ndarray (n_times, n_channels)
+    X : array (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
     lags : int
         Lags of the endogenous variable.
-    offset : int, optional
-        Periods to drop from the beginning of the time-series, by default 0.
-        Used for order selection, so it's an apples-to-apples comparison
+    offset : int
+        Periods to drop from the beginning of the time-series (default 0). Used for
+        order selection, so it's an apples-to-apples comparison
     l2_reg : int
-        The amount of l2-regularization to use. Default of 0.
+        The amount of l2-regularization to use (default 0).
 
     Returns
     -------
-    params : np.ndarray (lags, n_channels, n_channels)
+    params : array (lags, n_channels, n_channels)
         The coefficient state matrix that governs the linear system (VAR).
-    resid : np.ndarray
+    resid : array
         The residuals.
-    omega : np.ndarray (n_channels, n_channels)
+    omega : array (n_channels, n_channels)
         Estimate of white noise process variance
 
     Notes
     -----
-    This function was originally copied from statsmodels VAR model computation
-    and modified for MNE-connectivity usage.
+    This function was originally copied from statsmodels VAR model computation and
+    modified for MNE-connectivity usage.
     """
     # get the number of equations we want
     n_equations = X.shape[1]
@@ -570,16 +603,16 @@ def _get_var_predictor_matrix(y, lags):
 
     Parameters
     ----------
-    y : np.ndarray (n_samples, n_channels)
+    y : array (n_samples, n_channels)
         The passed in data array.
     lags : int
         The number of lags.
 
     Returns
     -------
-    Z : np.ndarray (n_samples, n_channels * lag_order)
-        Z is a (T x Kp) matrix, with K the number of channels,
-        p the lag order, and T the number of samples.
+    Z : array (n_samples, n_channels * lag_order)
+        Z is a (T x Kp) matrix, with K the number of channels, p the lag order, and T
+        the number of samples.
         Z := (Z_0, ..., Z_T).T (T x Kp)
         Z_t = [1 y_t y_{t-1} ... y_{t - p + 1}] (Kp x 1)
 

@@ -15,7 +15,6 @@ classifiers = [
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
   'Programming Language :: Python :: 3.12',
-  'Programming Language :: Python :: 3.9',
   'Topic :: Scientific/Engineering',
   'Topic :: Software Development',
 ]
@@ -24,6 +23,7 @@ dependencies = [
   'netCDF4 >= 1.6.5',
   'numpy >= 1.21',
   'pandas >= 1.3.2',
+  'scikit-learn >= 1.2',
   'scipy >= 1.4.0',
   'tqdm',
   'xarray >= 2023.11.0',
@@ -43,7 +43,7 @@ maintainers = [
 ]
 name = 'mne-connectivity'
 readme = {content-type = "text/x-rst", file = 'README.rst'}
-requires-python = '>=3.9'
+requires-python = '>=3.10'
 
 [project.optional-dependencies]
 all = [
@@ -52,6 +52,7 @@ all = [
   'mne-connectivity[gui]',
   'mne-connectivity[style]',
   'mne-connectivity[test]',
+  'PyQt6',
 ]
 build = [
   'build',
@@ -65,12 +66,12 @@ doc = [
   'nilearn',
   'numpydoc',
   'pooch',
-  'pydata-sphinx-theme==0.14.1',
+  'pydata-sphinx-theme>=0.14.1',
   'PyQt6',
-  'sphinx',
+  'sphinx!=8.1.0',
   'sphinx-copybutton',
   'sphinx-design',
-  'sphinx-gallery',
+  'sphinx-gallery>=0.18.0',
   'sphinx-issues',
   'sphinx_autodoc_typehints',
   'sphinxcontrib-bibtex',
@@ -82,7 +83,6 @@ gui = [
   'h5netcdf',
   'matplotlib',
   'mne-qt-browser>=0.6.0',
-  'PyQt6',
   'pyvista',
   'pyvistaqt',
   'qtpy',
@@ -107,9 +107,8 @@ test = [
   'mne-connectivity[gui]',
   'pandas',
   'pymatreader',
-  'PyQt6',
+  'pytest',
   'pytest-cov',
-  'pytest<8.0.0',
   'statsmodels',
 ]
 
@@ -221,6 +220,7 @@ line-length = 88
 
 [tool.ruff.lint]
 ignore = [
+  "A005", # Module name matches name in standard library
   "D100", # Missing docstring in public module
   "D104", # Missing docstring in public package
   "D413", # Missing blank line after last section

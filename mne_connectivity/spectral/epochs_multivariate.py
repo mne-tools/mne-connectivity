@@ -9,13 +9,15 @@
 #
 # License: BSD (3-clause)
 
+import copy
 import inspect
-from typing import Optional
 
 import numpy as np
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
-from mne.utils import ProgressBar, logger
+from mne.time_frequency import EpochsSpectrum, EpochsTFR
+from mne.time_frequency.multitaper import _psd_from_mt
+from mne.utils import ProgressBar, _validate_type, logger
 
 
 def _check_rank_input(rank, data, indices):
@@ -30,6 +32,25 @@ def _check_rank_input(rank, data, indices):
             if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
                 kwargs["copy"] = False
             data_arr = data.get_data(**kwargs)
+        elif isinstance(data, EpochsSpectrum):
+            # Spectrum objs will drop bad channels, so specify picking all channels
+            data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
+            # Convert to power (and aggregate over tapers) before computing rank
+            if "taper" in data._dims:
+                data_arr = _psd_from_mt(data_arr, data.weights)
+            else:
+                data_arr = (data_arr * data_arr.conj()).real
+        elif isinstance(data, EpochsTFR):
+            # TFR objs will drop bad channels, so specify picking all channels
+            data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
+            # Convert to power and aggregate over time before computing rank
+            if "taper" in data._dims:
+                # XXX: Move import to top when support for mne<1.10 is dropped
+                from mne.time_frequency.tfr import _tfr_from_mt
+
+                data_arr = np.sum(_tfr_from_mt(data_arr, data.weights), axis=-1)
+            else:
+                data_arr = np.sum((data_arr * data_arr.conj()).real, axis=-1)
         else:
             data_arr = data
 
@@ -74,6 +95,20 @@ def _check_rank_input(rank, data, indices):
     return rank
 
 
+def _check_n_components_input(n_components, rank):
+    """Check the n_components argument is appropriate based on the rank of the data."""
+    if n_components is None:
+        return np.min(rank)
+
+    _validate_type(n_components, "int-like", "`n_components`", "int")
+    if n_components > np.min(rank):
+        raise ValueError("`n_components` is greater than the minimum rank of the data")
+    if n_components < 1:
+        raise ValueError("`n_components` must be >= 1")
+
+    return n_components
+
+
 ########################################################################
 # Multivariate connectivity estimators
 
@@ -99,34 +134,50 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
 
     name = None
     n_steps = None
+    con_scores = None
     patterns = None
     filters = None
     con_scores_dtype = np.float64
 
     def __init__(
-        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
+        self,
+        n_signals,
+        n_cons,
+        n_freqs,
+        n_times,
+        *,
+        n_components=0,
+        store_con=True,
+        store_filters=False,
+        n_jobs=1,
     ):
         self.n_signals = n_signals
         self.n_cons = n_cons
         self.n_freqs = n_freqs
         self.n_times = n_times
-        self.n_jobs = n_jobs
+        self.n_components = n_components
+        self.store_con = store_con
         self.store_filters = store_filters
-
-        # include time dimension, even when unused for indexing flexibility
-        if n_times == 0:
-            self.csd_shape = (n_signals**2, n_freqs)
-            self.con_scores = np.zeros(
-                (n_cons, n_freqs, 1), dtype=self.con_scores_dtype
-            )
-        else:
-            self.csd_shape = (n_signals**2, n_freqs, n_times)
-            self.con_scores = np.zeros(
-                (n_cons, n_freqs, n_times), dtype=self.con_scores_dtype
-            )
+        self.n_jobs = n_jobs
 
         # allocate space for accumulation of CSD
-        self._acc = np.zeros(self.csd_shape, dtype=np.complex128)
+        csd_shape = (n_signals**2, n_freqs, 1 if n_times == 0 else n_times)
+        self._acc = np.zeros(csd_shape, dtype=np.complex128)
+        if n_times == 0:
+            self._acc = np.squeeze(self._acc, axis=-1)
+
+        # allocate space for storing results
+        # include time & components dimensions for indexing flexibility, even if unused
+        if store_con:
+            self.con_scores = np.zeros(
+                (
+                    n_cons,
+                    1 if n_components == 0 else n_components,
+                    n_freqs,
+                    1 if n_times == 0 else n_times,
+                ),
+                dtype=self.con_scores_dtype,
+            )
 
         self._compute_n_progress_bar_steps()
 
@@ -170,37 +221,58 @@ class _EpochMeanMultivariateConEstBase(_AbstractConEstBase):
         ).transpose(3, 2, 0, 1)
 
     def reshape_results(self):
-        """Remove time dimension from results, if necessary."""
-        if self.n_times == 0:
-            self.con_scores = np.squeeze(self.con_scores, axis=-1)
+        """Remove time & component dimensions from results, if necessary."""
+        # results have shape (n_cons, n_components, n_freqs, n_times)
+        if self.con_scores is not None:
+            squeeze_dims = []
+            squeeze_dims.append(1) if self.n_components == 0 else None
+            squeeze_dims.append(3) if self.n_times == 0 else None
+            self.con_scores = np.squeeze(self.con_scores, axis=tuple(squeeze_dims))
+
+        # filters and patterns (2, n_cons, n_components, n_signals, n_freqs, n_times)
+        if self.patterns is not None or self.filters is not None:
+            squeeze_dims = []
+            squeeze_dims.append(2) if self.n_components == 0 else None
+            squeeze_dims.append(5) if self.n_times == 0 else None
             if self.patterns is not None:
-                self.patterns = np.squeeze(self.patterns, axis=-1)
+                self.patterns = np.squeeze(self.patterns, axis=tuple(squeeze_dims))
             if self.filters is not None:
-                self.filters = np.squeeze(self.filters, axis=-1)
+                self.filters = np.squeeze(self.filters, axis=tuple(squeeze_dims))
 
 
 class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
     """Base estimator for multivariate coherency methods.
 
     See:
-    - Imaginary part of coherency, i.e. multivariate imaginary part of
+    - Imaginary part of coherency, i.e. maximised imaginary part of
     coherency (MIC) and multivariate interaction measure (MIM): Ewald et al.
     (2012). NeuroImage. DOI: 10.1016/j.neuroimage.2011.11.084
     - Coherency/coherence, i.e. canonical coherency (CaCoh): Vidaurre et al.
     (2019). NeuroImage. DOI: 10.1016/j.neuroimage.2019.116009
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     accumulate_psd = False
 
     def __init__(
-        self, n_signals, n_cons, n_freqs, n_times, *, store_filters=False, n_jobs=1
+        self,
+        n_signals,
+        n_cons,
+        n_freqs,
+        n_times,
+        *,
+        n_components=0,
+        store_con=True,
+        store_filters=False,
+        n_jobs=1,
     ):
         super().__init__(
             n_signals,
             n_cons,
             n_freqs,
             n_times,
+            n_components=n_components,
+            store_con=store_con,
             store_filters=store_filters,
             n_jobs=n_jobs,
         )
@@ -214,16 +286,18 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         csd = self.reshape_csd() / n_epochs
         n_times = csd.shape[0]
+        n_components = 1 if self.n_components == 0 else self.n_components
         times = np.arange(n_times)
         freqs = np.arange(self.n_freqs)
 
         if self.name in ["CaCoh", "MIC"]:
             patterns_filters_shape = (
-                2,
-                self.n_cons,
-                indices[0].shape[1],
-                self.n_freqs,
-                n_times,
+                2,  # seeds/targets
+                self.n_cons,  # connections
+                n_components,  # components
+                indices[0].shape[1],  # channels
+                self.n_freqs,  # freqs
+                n_times,  # times
             )
             self.patterns = np.full(patterns_filters_shape, np.nan)
             if self.store_filters:
@@ -323,14 +397,14 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         Parameters
         ----------
-        C_r : np.ndarray, shape=(n_freqs, n_times, n_channels, n_channels)
+        C_r : array, shape (n_freqs, n_times, n_channels, n_channels)
             Real part of the CSD. Expected to be symmetric and non-singular.
         n_seeds : int
             Number of seed channels for the connection.
 
         Returns
         -------
-        T : np.ndarray, shape=(n_freqs, n_times, n_channels, n_channels)
+        T : array, shape (n_freqs, n_times, n_channels, n_channels)
             Inverse square root of the real-valued CSD. Name comes from Ewald
             et al. (2012).
 
@@ -351,30 +425,22 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
         10.1016/j.neuroimage.2011.11.084.
         """
         T = np.zeros_like(C_r, dtype=np.float64)
+        times = np.arange(C_r.shape[0])
+        freqs = np.arange(C_r.shape[1])
+        seeds = np.arange(n_seeds)
+        targets = np.arange(n_seeds, C_r.shape[2])
 
-        # seeds
-        eigvals, eigvects = np.linalg.eigh(C_r[:, :, :n_seeds, :n_seeds])
-        n_zero = (eigvals == 0).sum()
-        if n_zero:  # sign of non-full rank data
-            raise np.linalg.LinAlgError(
-                "Cannot compute inverse square root of rank-deficient matrix with "
-                f"{n_zero}/{len(eigvals)} zero eigenvalue(s)"
-            )
-        T[:, :, :n_seeds, :n_seeds] = (
-            eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
-        ) @ eigvects.transpose(0, 1, 3, 2)
-
-        # targets
-        eigvals, eigvects = np.linalg.eigh(C_r[:, :, n_seeds:, n_seeds:])
-        n_zero = (eigvals == 0).sum()
-        if n_zero:  # sign of non-full rank data
-            raise np.linalg.LinAlgError(
-                "Cannot compute inverse square root of rank-deficient matrix with "
-                f"{n_zero}/{len(eigvals)} zero eigenvalue(s)"
-            )
-        T[:, :, n_seeds:, n_seeds:] = (
-            eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), (2))
-        ) @ eigvects.transpose(0, 1, 3, 2)
+        for chans in (seeds, targets):
+            eigvals, eigvects = np.linalg.eigh(C_r[np.ix_(times, freqs, chans, chans)])
+            n_zero = (eigvals == 0).sum()
+            if n_zero:  # sign of non-full rank data
+                raise np.linalg.LinAlgError(
+                    "Cannot compute inverse square root of rank-deficient matrix with "
+                    f"{n_zero}/{len(eigvals)} zero eigenvalue(s)"
+                )
+            T[np.ix_(times, freqs, chans, chans)] = (
+                eigvects * np.expand_dims(1.0 / np.sqrt(eigvals), axis=2)
+            ) @ eigvects.transpose(0, 1, 3, 2)
 
         return T
 
@@ -420,67 +486,56 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
         """Compute MIC & spatial patterns for one connection."""
         n_seeds = len(seed_idcs)
         n_targets = len(target_idcs)
-        n_times = C.shape[0]
-        times = np.arange(n_times)
-        freqs = np.arange(self.n_freqs)
+        n_components = 1 if self.n_components == 0 else self.n_components
 
         # Eigendecomp. to find spatial filters for seeds and targets
-        w_seeds, V_seeds = np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))
-        w_targets, V_targets = np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)
+        # (flip to get components in descending eigvals. order)
+        alpha = np.flip(
+            np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))[1][..., -n_components:],
+            axis=-1,
+        )
+        beta = np.flip(
+            np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)[1][..., -n_components:],
+            axis=-1,
+        )
         if len(seed_idcs) == len(target_idcs) and np.all(
             np.sort(seed_idcs) == np.sort(target_idcs)
         ):
-            # strange edge-case where the eigenvectors returned should be a set
-            # of identity matrices with one rotated by 90 degrees, but are
-            # instead identical (i.e. are not rotated versions of one another).
-            # This leads to the case where the spatial filters are incorrectly
-            # applied, resulting in connectivity estimates of ~0 when they
-            # should be perfectly correlated ~1. Accordingly, we manually
-            # create a set of rotated identity matrices to use as the filters.
-            create_filter = False
-            stop = False
-            while not create_filter and not stop:
-                for time_i in range(n_times):
-                    for freq_i in range(self.n_freqs):
-                        if np.all(V_seeds[time_i, freq_i] == V_targets[time_i, freq_i]):
-                            create_filter = True
-                            break
-                stop = True
-            if create_filter:
-                n_chans = E.shape[2]
-                eye_4d = np.zeros_like(V_seeds)
-                eye_4d[:, :, np.arange(n_chans), np.arange(n_chans)] = 1
-                V_seeds = eye_4d
-                V_targets = np.rot90(eye_4d, axes=(2, 3))
-
-        # Spatial filters with largest eigval. for seeds and targets
-        alpha = V_seeds[times[:, None], freqs, :, w_seeds.argmax(axis=2)]
-        beta = V_targets[times[:, None], freqs, :, w_targets.argmax(axis=2)]
+            # strange edge-case where the eigenvectors returned should be a set of
+            # identity matrices with one rotated by 90 degrees, but are instead
+            # identical (i.e. are not rotated versions of one another). This leads to
+            # the case where the spatial filters are incorrectly applied, resulting in
+            # connectivity estimates of ~0 when they should be perfectly correlated ~1.
+            # Accordingly, we manually create a set of rotated identity matrices to use
+            # as the filters.
+            identical_mask = np.all(alpha == beta, axis=(2, 3))
+            beta[identical_mask] = np.flip(beta[identical_mask], axis=(-2, -1))
 
         # Part of Eqs. 46 & 47; i.e. transform filters to channel space
-        alpha_Ubar = U_bar_aa @ np.expand_dims(alpha, axis=3)
-        beta_Ubar = U_bar_bb @ np.expand_dims(beta, axis=3)
+        alpha_Ubar = U_bar_aa @ alpha
+        beta_Ubar = U_bar_bb @ beta
 
         # Eq. 46 (seed spatial patterns)
-        self.patterns[0, con_i, :n_seeds] = (
+        self.patterns[0, con_i, :, :n_seeds] = (
             np.real(C[..., :n_seeds, :n_seeds]) @ alpha_Ubar
-        )[..., 0].T
-
-        # Eq. 47 (target spatial patterns)
-        self.patterns[1, con_i, :n_targets] = (
-            np.real(C[..., n_seeds:, n_seeds:]) @ beta_Ubar
-        )[..., 0].T
-
-        # Eq. 7
-        self.con_scores[con_i] = (
-            np.einsum("ijk,ijk->ij", alpha, (E @ np.expand_dims(beta, axis=3))[..., 0])
-            / np.linalg.norm(alpha, axis=2)
-            * np.linalg.norm(beta, axis=2)
         ).T
 
+        # Eq. 47 (target spatial patterns)
+        self.patterns[1, con_i, :, :n_targets] = (
+            np.real(C[..., n_seeds:, n_seeds:]) @ beta_Ubar
+        ).T
+
+        if self.store_con:
+            # Eq. 7
+            self.con_scores[con_i] = (
+                np.einsum("ijkl,ijkl->ijl", alpha, E @ beta)
+                / np.linalg.norm(alpha, axis=2)
+                * np.linalg.norm(beta, axis=2)
+            ).T
+
         if self.store_filters:
-            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
-            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
+            self.filters[0, con_i, :, :n_seeds] = alpha_Ubar.T
+            self.filters[1, con_i, :, :n_targets] = beta_Ubar.T
 
     def _compute_mim(self, E, seed_idcs, target_idcs, con_i):
         """Compute MIM (a.k.a. GIM if seeds == targets) for one connection."""
@@ -528,35 +583,73 @@ class _CaCohEst(_MultivariateCohEstBase):
         n_targets = len(target_idcs)
 
         rank_seeds = U_bar_aa.shape[3]  # n_seeds after SVD
+        n_components = 1 if self.n_components == 0 else self.n_components
 
-        C_bar_ab = C_bar[..., :rank_seeds, rank_seeds:]
+        if n_components > 1:  # don't need if only 1 component being fit
+            # create copy of CSD that will not be deflated
+            C_bar_og = C_bar.copy()
 
-        # Same as Eq. 3 of Ewald et al. (2012)
-        T = self._compute_t(np.real(C_bar), n_seeds=rank_seeds)
-        T_aa = T[..., :rank_seeds, :rank_seeds]  # left term in Eq. 9
-        T_bb = T[..., rank_seeds:, rank_seeds:]  # right term in Eq. 9
-
-        max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
-
-        max_coh, max_phis = self._final_optimise_phi(
-            C_bar_ab, T_aa, T_bb, max_coh, max_phis
+        # get starting basis of space for seeds and targets
+        # (used for CSD deflation if multiple components are being fit)
+        B_a = np.broadcast_to(
+            np.identity(U_bar_aa.shape[3]),
+            [U_bar_aa.shape[dim_i] for dim_i in (0, 1, 3, 3)],
+        )
+        B_b = np.broadcast_to(
+            np.identity(U_bar_bb.shape[3]),
+            [U_bar_bb.shape[dim_i] for dim_i in (0, 1, 3, 3)],
         )
 
-        # Store connectivity score as complex value
-        self.con_scores[con_i] = (max_coh * np.exp(-1j * max_phis)).T
+        # loop over components to fit
+        n_seeds_redux = copy.copy(rank_seeds)  # n_seeds after each component is fit
+        for comp_i in range(n_components):
+            C_bar_ab = C_bar[..., :n_seeds_redux, n_seeds_redux:]
 
-        self._compute_patterns(
-            max_phis,
-            C,
-            C_bar_ab,
-            T_aa,
-            T_bb,
-            U_bar_aa,
-            U_bar_bb,
-            n_seeds,
-            n_targets,
-            con_i,
-        )
+            # Same as Eq. 3 of Ewald et al. (2012)
+            T = self._compute_t(np.real(C_bar), n_seeds=n_seeds_redux)
+            T_aa = T[..., :n_seeds_redux, :n_seeds_redux]  # left term in Eq. 9
+            T_bb = T[..., n_seeds_redux:, n_seeds_redux:]  # right term in Eq. 9
+
+            # optimise phi for given component
+            max_coh, max_phis = self._first_optimise_phi(C_bar_ab, T_aa, T_bb)
+            max_coh, max_phis = self._final_optimise_phi(
+                C_bar_ab, T_aa, T_bb, max_coh, max_phis
+            )
+
+            # Store connectivity scores as complex values
+            if self.store_con:
+                self.con_scores[con_i, comp_i] = (max_coh * np.exp(-1j * max_phis)).T
+
+            # compute final filters and patterns for connectivity maximisation
+            alpha, beta = self._compute_filters_patterns(
+                max_phis,
+                C,
+                C_bar_ab,
+                T_aa,
+                T_bb,
+                U_bar_aa,
+                U_bar_bb,
+                B_a,
+                B_b,
+                n_seeds,
+                n_targets,
+                con_i,
+                comp_i,
+            )  # filters returned in pre-deflation space
+
+            # prepare to fit next largest component
+            if comp_i + 1 < n_components:  # don't do on last component
+                # update filters for already fitted components
+                if comp_i == 0:
+                    W_a = alpha
+                    W_b = beta
+                else:
+                    W_a = np.concatenate((W_a, alpha), axis=3)
+                    W_b = np.concatenate((W_b, beta), axis=3)
+
+                # deflate original CSD to fit next component
+                C_bar, B_a, B_b = self._deflate_csd(C_bar_og, W_a, W_b, rank_seeds)
+                n_seeds_redux -= 1
 
     def _first_optimise_phi(self, C_ab, T_aa, T_bb):
         """Find the rough angle, phi, at which coherence is maximised."""
@@ -574,13 +667,12 @@ class _CaCohEst(_MultivariateCohEstBase):
     def _final_optimise_phi(self, C_ab, T_aa, T_bb, max_coh, max_phis):
         """Fine-tune the angle at which coherence is maximised.
 
-        Uses a 2nd order Taylor expansion to approximate change in coherence
-        w.r.t. phi, and determining the next phi to evaluate coherence on (over
-        a total of 10 iterations).
+        Uses a 2nd order Taylor expansion to approximate change in coherence w.r.t. phi,
+        and determining the next phi to evaluate coherence on (over a total of 10
+        iterations).
 
-        Depending on how the new phi affects coherence, the step size for the
-        subsequent iteration is adjusted, like that in the Levenberg-Marquardt
-        algorithm.
+        Depending on how the new phi affects coherence, the step size for the subsequent
+        iteration is adjusted, like that in the Levenberg-Marquardt algorithm.
 
         Each time-freq. entry of coherence has its own corresponding phi.
         """
@@ -588,7 +680,7 @@ class _CaCohEst(_MultivariateCohEstBase):
         delta_phi = 1e-6
         mus = np.ones_like(max_phis)  # optimisation step size
 
-        for _ in range(n_iters):
+        for iter_i in range(n_iters):
             # 2nd order Taylor expansion around phi
             coh_plus = self._compute_cacoh(max_phis + delta_phi, C_ab, T_aa, T_bb)
             coh_minus = self._compute_cacoh(max_phis - delta_phi, C_ab, T_aa, T_bb)
@@ -608,8 +700,9 @@ class _CaCohEst(_MultivariateCohEstBase):
             max_phis[greater_coh] = phis[greater_coh]
 
             # update step size
-            mus[greater_coh] /= 2
-            mus[~greater_coh] *= 2
+            if iter_i + 1 < n_iters:  # don't bother updating on last cycle
+                mus[greater_coh] /= 2
+                mus[~greater_coh] *= 2
 
         return max_coh, phis
 
@@ -635,7 +728,7 @@ class _CaCohEst(_MultivariateCohEstBase):
 
         return np.abs(numerator / denominator)
 
-    def _compute_patterns(
+    def _compute_filters_patterns(
         self,
         phis,
         C,
@@ -644,37 +737,83 @@ class _CaCohEst(_MultivariateCohEstBase):
         T_bb,
         U_bar_aa,
         U_bar_bb,
+        B_a,
+        B_b,
         n_seeds,
         n_targets,
         con_i,
+        comp_i,
     ):
-        """Compute CaCoh spatial patterns for the optimised phi."""
+        """Compute CaCoh spatial filters and patterns for the optimised phi."""
         C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_bar_ab)
         D = T_aa @ (C_bar_ab @ T_bb)
         a = np.linalg.eigh(D @ D.transpose(0, 1, 3, 2))[1][..., -1]
         b = np.linalg.eigh(D.transpose(0, 1, 3, 2) @ D)[1][..., -1]
 
         # Eq. 7 rearranged - multiply both sides by sqrt(inv(real(C_aa/bb)))
+        # (project filters back to pre-whitening space)
         alpha = T_aa @ np.expand_dims(a, axis=3)  # filter for seeds
         beta = T_bb @ np.expand_dims(b, axis=3)  # filter for targets
 
-        # Eqs. 46 & 47 of Ewald et al. (2012); i.e. transform filters to channel space
+        # Project filters back to pre-deflation space (if n_components > 1)
+        alpha = B_a @ alpha
+        beta = B_b @ beta
+
+        # Eqs. 46 & 47 of Ewald et al. (2012)
+        # (project filters back to channel space)
         alpha_Ubar = U_bar_aa @ alpha
         beta_Ubar = U_bar_bb @ beta
 
         # Eq. 14
         # seed spatial patterns
-        self.patterns[0, con_i, :n_seeds] = (
+        self.patterns[0, con_i, comp_i, :n_seeds] = (
             np.real(C[..., :n_seeds, :n_seeds]) @ alpha_Ubar
         )[..., 0].T
         # target spatial patterns
-        self.patterns[1, con_i, :n_targets] = (
+        self.patterns[1, con_i, comp_i, :n_targets] = (
             np.real(C[..., n_seeds:, n_seeds:]) @ beta_Ubar
         )[..., 0].T
 
         if self.store_filters:
-            self.filters[0, con_i, :n_seeds] = alpha_Ubar[..., 0].T
-            self.filters[1, con_i, :n_targets] = beta_Ubar[..., 0].T
+            self.filters[0, con_i, comp_i, :n_seeds] = alpha_Ubar[..., 0].T
+            self.filters[1, con_i, comp_i, :n_targets] = beta_Ubar[..., 0].T
+
+        # if multiple components will be fit, need to retain filters in pre-deflation
+        # space without projecting back to channel space (i.e. if CSD dimensionality
+        # reduction has been performed), so are returned here
+        return alpha, beta
+
+    def _deflate_csd(self, C, W_a, W_b, n_seeds):
+        """Deflate CSD by projecting to space orthogonal to fitted filters.
+
+        Removes information about the components that have already been fitted from the
+        CSD, preventing them from interfering with the fitting of subsequent components.
+
+        See "Methods - Extracting further source pairs" of Dähne et al. (2014),
+        NeuroImage, DOI: 10.1016/j.neuroimage.2014.03.075, for an example of applying
+        this approach to time series data.
+        """
+        # get orthogonal basis space for filters
+        # (streamlined version of scipy.linalg.null_space() suited for our purposes)
+        B_a = np.linalg.svd(W_a)[0][..., W_a.shape[3] :]
+        B_b = np.linalg.svd(W_b)[0][..., W_b.shape[3] :]
+
+        # apply orthogonal basis to CSD
+        C_redux = np.append(
+            np.append(
+                B_a.transpose(0, 1, 3, 2) @ (C[..., :n_seeds, :n_seeds] @ B_a),  # aa
+                B_a.transpose(0, 1, 3, 2) @ (C[..., :n_seeds, n_seeds:] @ B_b),  # ab
+                axis=3,
+            ),
+            np.append(
+                B_b.transpose(0, 1, 3, 2) @ (C[..., n_seeds:, :n_seeds] @ B_a),  # ba
+                B_b.transpose(0, 1, 3, 2) @ (C[..., n_seeds:, n_seeds:] @ B_b),  # bb
+                axis=3,
+            ),
+            axis=2,
+        )
+
+        return C_redux, B_a, B_b
 
 
 class _GCEstBase(_EpochMeanMultivariateConEstBase):
@@ -925,8 +1064,8 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """Compute innovations-form parameters for a state-space model.
 
         Parameters computed from a full VAR model using Aoki's method. For a
-        non-moving-average full VAR model, the state-space parameter C
-        (observation matrix) is identical to AF of the VAR model.
+        non-moving-average full VAR model, the state-space parameter C (observation
+        matrix) is identical to AF of the VAR model.
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
@@ -936,8 +1075,7 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         p = A_f.shape[2] // m  # number of autoregressive lags
 
         I_p = np.dstack(t * [np.eye(m * p)]).transpose(2, 0, 1)
-        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition
-        # matrix
+        A = np.hstack((A_f, I_p[:, : (m * p - m), :]))  # state transition matrix
         K = np.hstack(
             (
                 np.dstack(t * [np.eye(m)]).transpose(2, 0, 1),
@@ -955,8 +1093,9 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         """
         times = np.arange(A.shape[0])
         freqs = np.arange(self.n_freqs)
-        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))  # points
-        # on a unit circle in the complex plane, one for each frequency
+
+        # points on a unit circle in the complex plane, one for each frequency
+        z = np.exp(-1j * np.pi * np.linspace(0, 1, self.n_freqs))
 
         H = self._iss_to_tf(A, C, K, z)  # spectral transfer function
         V_22_1 = np.linalg.cholesky(self._partial_covar(V, seeds, targets))
@@ -972,14 +1111,13 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     def _iss_to_tf(self, A, C, K, z):
         """Compute transfer function for innovations-form state-space params.
 
-        In the frequency domain, the back-shift operator, z, is a vector of
-        points on a unit circle in the complex plane. z = e^-iw, where -pi < w
-        <= pi.
+        In the frequency domain, the back-shift operator, z, is a vector of points on a
+        unit circle in the complex plane. z = e^-iw, where -pi < w <= pi.
 
-        A note on efficiency: solving over the 4D time-freq. tensor is slower
-        than looping over times and freqs when n_times and n_freqs high, and
-        when n_times and n_freqs low, looping over times and freqs very fast
-        anyway (plus tensor solving doesn't allow for parallelisation).
+        A note on efficiency: solving over the 4D time-freq. tensor is slower than
+        looping over times and freqs when n_times and n_freqs high, and when n_times and
+        n_freqs low, looping over times and freqs very fast anyway (plus tensor solving
+        doesn't allow for parallelisation).
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
@@ -1007,9 +1145,9 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
     def _partial_covar(self, V, seeds, targets):
         """Compute partial covariance of a matrix.
 
-        Given a covariance matrix V, the partial covariance matrix of V between
-        indices i and j, given k (V_ij|k), is equivalent to V_ij - V_ik *
-        V_kk^-1 * V_kj. In this case, i and j are seeds, and k are targets.
+        Given a covariance matrix V, the partial covariance matrix of V between indices
+        i and j, given k (V_ij|k), is equivalent to V_ij - V_ik * V_kk^-1 * V_kj. In
+        this case, i and j are seeds, and k are targets.
 
         See: Barnett, L. & Seth, A.K., 2015, Physical Review, DOI:
         10.1103/PhysRevE.91.040101.
@@ -1063,3 +1201,4 @@ _CON_METHOD_MAP_MULTIVARIATE = {
 _multivariate_methods = ["cacoh", "mic", "mim", "gc", "gc_tr"]
 _gc_methods = ["gc", "gc_tr"]
 _patterns_methods = ["cacoh", "mic"]  # methods with spatial patterns
+_multicomp_methods = ["cacoh", "mic"]  # methods that support multiple components

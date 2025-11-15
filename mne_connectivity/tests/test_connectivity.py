@@ -56,7 +56,7 @@ def _make_test_epochs():
 
 
 def _prep_correct_connectivity_input(
-    conn_cls, n_nodes=3, symmetric=False, n_epochs=4, indices=None
+    conn_cls, n_nodes=3, symmetric=False, n_epochs=4, indices=None, n_components=0
 ):
     correct_numpy_shape = []
 
@@ -71,6 +71,10 @@ def _prep_correct_connectivity_input(
             correct_numpy_shape.append(n_nodes**2)
     else:
         correct_numpy_shape.append(len(indices[0]))
+
+    if n_components:
+        correct_numpy_shape.append(n_components)
+        extra_kwargs["components"] = np.arange(n_components) + 1
 
     if conn_cls in (
         SpectralConnectivity,
@@ -105,7 +109,8 @@ def _prep_correct_connectivity_input(
         EpochSpectroTemporalConnectivity,
     ],
 )
-def test_connectivity_containers(conn_cls):
+@pytest.mark.parametrize("n_components", [0, 2])
+def test_connectivity_containers(conn_cls, n_components):
     """Test connectivity classes."""
     n_epochs = 4
     n_nodes = 3
@@ -114,14 +119,18 @@ def test_connectivity_containers(conn_cls):
         [3, 4, 5],
         [0, 1, 2],
     ]
-    bad_numpy_input = np.zeros((3, 3, 4, 5))
+    bad_numpy_input = np.zeros((3, 3, 4, 5, 6))
     bad_indices = ([1, 0], [2])
 
     if conn_cls.is_epoched:
-        bad_numpy_input = np.zeros((3, 3, 3, 4, 5))
+        bad_numpy_input = np.zeros((3, 3, 3, 4, 5, 6))
 
     correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
-        conn_cls, n_nodes=n_nodes, symmetric=False, n_epochs=n_epochs
+        conn_cls,
+        n_nodes=n_nodes,
+        symmetric=False,
+        n_epochs=n_epochs,
+        n_components=n_components,
     )
 
     correct_numpy_input = np.ones(correct_numpy_shape)
@@ -146,6 +155,19 @@ def test_connectivity_containers(conn_cls):
     # test that get_data works as intended
     with pytest.raises(ValueError, match="Invalid value for the 'output' parameter"):
         conn.get_data(output="blah")
+    with pytest.raises(
+        ValueError, match="cannot return multivariate connectivity data in a dense form"
+    ):
+        multivar_conn = conn_cls(
+            data=correct_numpy_input,
+            n_nodes=n_nodes,
+            indices=(
+                [[ind] for ind in range(n_nodes**2)],
+                [[ind] for ind in range(n_nodes**2)],
+            ),
+            **extra_kwargs,
+        )
+        multivar_conn.get_data(output="dense")
 
     assert conn.shape == tuple(correct_numpy_shape)
     assert conn.get_data(output="raveled").shape == tuple(correct_numpy_shape)
@@ -370,7 +392,10 @@ def test_metadata_handling(func, tmpdir, epochs):
     an ``mne.Epochs`` object input.
     """
     kwargs = dict()
-    if isinstance(epochs, np.ndarray) and func == spectral_connectivity_epochs:
+    if isinstance(epochs, np.ndarray) and func in (
+        spectral_connectivity_epochs,
+        phase_slope_index,
+    ):
         kwargs["sfreq"] = 5
 
     # for each function, check that Annotations were added to the metadata

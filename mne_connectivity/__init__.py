@@ -9,7 +9,7 @@
 try:
     from importlib.metadata import version
 
-    __version__ = version("mne")
+    __version__ = version("mne_connectivity")
 except Exception:
     __version__ = "0.0.0"
 
@@ -23,7 +23,8 @@ from .base import (
     SpectroTemporalConnectivity,
     TemporalConnectivity,
 )
-from .datasets import make_signals_in_freq_bands
+from .datasets import make_signals_in_freq_bands, make_surrogate_data
+from .decoding import CoherencyDecomposition
 from .effective import phase_slope_index
 from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity

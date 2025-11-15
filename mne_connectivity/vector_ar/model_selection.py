@@ -9,22 +9,21 @@ from .var import _estimate_var
 def select_order(X, maxlags=None):
     """Compute lag order selections based on information criterion.
 
-    Selects a lag order based on each of the available information
-    criteria.
+    Selects a lag order based on each of the available information criteria.
 
     Parameters
     ----------
-    X : np.ndarray, shape (n_times, n_channels)
+    X : array, shape (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
     maxlags : int
-        The maximum number of lags to check. Will then check from
-        ``1`` to ``maxlags``. If None, defaults to
-        ``12 * (n_times / 100.)**(1./4)``.
+        The maximum number of lags to check. Will then check from ``1`` to ``maxlags``.
+        If ``None``, defaults to ``12 * (n_times / 100.)**(1./4)``.
 
     Returns
     -------
     selected_orders : dict
-        The selected orders based on the following information criterion.
+        The selected orders based on the following information criterion:
+
         * aic : Akaike
         * fpe : Final prediction error
         * hqic : Hannan-Quinn
@@ -75,7 +74,7 @@ def _logdet_symm(m):
 
     Parameters
     ----------
-    m : np.ndarray, shape (N, N)
+    m : array, shape (N, N)
         2d array that is positive-definite (and symmetric)
 
     Returns
@@ -96,7 +95,7 @@ def _sigma_u_mle(df_resid, nobs, sigma_u):
         Number of observations minus number of estimated parameters.
     nobs : int
         Number of observations/samples in the dataset.
-    sigma_u : np.ndarray, shape (n_channels, n_channels)
+    sigma_u : array, shape (n_channels, n_channels)
         Estimate of white noise process variance
 
     Returns
@@ -112,11 +111,11 @@ def _info_criteria(params, X, sigma_u, lags):
 
     Parameters
     ----------
-    params : np.ndarray, shape (lags, n_channels, n_channels)
+    params : array, shape (lags, n_channels, n_channels)
         The coefficient state matrix that governs the linear system (VAR).
-    X : np.ndarray (n_times, n_channels)
+    X : array (n_times, n_channels)
         Endogenous variable, that predicts the exogenous.
-    sigma_u : np.ndarray, shape (n_channels, n_channels)
+    sigma_u : array, shape (n_channels, n_channels)
         Estimate of white noise process variance
     lags : int
         Lags of the endogenous variable.

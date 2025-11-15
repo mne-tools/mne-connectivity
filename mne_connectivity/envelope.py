@@ -9,6 +9,7 @@ import inspect
 
 import numpy as np
 from mne import BaseEpochs
+from mne._fiff.pick import _picks_to_idx
 from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _ensure_int, _validate_type, logger, verbose, warn
@@ -24,66 +25,66 @@ def envelope_correlation(
 
     Parameters
     ----------
-    data : array-like, shape=(n_epochs, n_signals, n_times) | Epochs | generator
-        The data from which to compute connectivity.
-        The array-like object can also be a list/generator of array,
-        each with shape (n_signals, n_times), or a :class:`~mne.SourceEstimate`
-        object (and ``stc.data`` will be used). If it's float data,
-        the Hilbert transform will be applied; if it's complex data,
-        it's assumed the Hilbert has already been applied.
-    names : list | array-like | None
-        A list of names associated with the signals in ``data``.
-        If None, will be a list of indices of the number of nodes.
-    orthogonalize : 'pairwise' | False
-        Whether to orthogonalize with the pairwise method or not.
-        Defaults to 'pairwise'. Note that when False,
-        the correlation matrix will not be returned with
-        absolute values.
+    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs | generator
+        The data from which to compute connectivity. The array-like object can also be a
+        list/generator of arrays, each with shape ``(n_signals, n_times)``, or a
+        :class:`mne.SourceEstimate` object (and ``stc.data`` will be used). If float
+        data, the Hilbert transform will be applied; if complex data, it is assumed the
+        Hilbert has already been applied.
+    names : array_like | None
+        A list of names associated with the signals in ``data``. If ``None``, will be a
+        list of indices of the number of nodes.
+    orthogonalize : ``'pairwise'`` | False
+        Whether to orthogonalize with the pairwise method or not. Defaults to
+        ``'pairwise'``. Note that when ``False``, the correlation matrix will not be
+        returned with absolute values.
     log : bool
-        If True (default False), square and take the log before orthonalizing
+        If ``True`` (default ``False``), square and take the log before orthogonalizing
         envelopes or computing correlations.
     absolute : bool
-        If True (default), then take the absolute value of correlation
-        coefficients before making each epoch's correlation matrix
-        symmetric (and thus before combining matrices across epochs).
-        Only used when ``orthogonalize='pairwise'``.
+        If ``True`` (default), then take the absolute value of correlation coefficients
+        before making each epoch's correlation matrix symmetric (and thus before
+        combining matrices across epochs). Only used when ``orthogonalize='pairwise'``.
     %(verbose)s
 
     Returns
     -------
-    corr : instance of EpochConnectivity
-        The pairwise orthogonal envelope correlations.
-        This matrix is symmetric. The array
-        will have three dimensions, the first of which is ``n_epochs``.
-        The data shape would be ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
+    corr : instance of EpochTemporalConnectivity
+        The pairwise orthogonal envelope correlations. This matrix is symmetric. The
+        array will have three dimensions, the first of which is ``n_epochs``. The data
+        shape is ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
 
     See Also
     --------
-    mne_connectivity.EpochConnectivity
+    mne_connectivity.EpochTemporalConnectivity
 
     Notes
     -----
-    This function computes the power envelope correlation between
-    orthogonalized signals :footcite:`HippEtAl2012,KhanEtAl2018`.
+    This function computes the power envelope correlation between orthogonalized signals
+    :footcite:`HippEtAl2012,KhanEtAl2018`.
 
-    If you would like to combine Epochs after the fact using some
-    function over the Epochs axis, see the ``combine`` function from
-    `EpochConnectivity` classes.
+    If you would like to combine epochs after the fact using some function over the
+    epochs axis, see the :meth:`~mne_connectivity.EpochTemporalConnectivity.combine`
+    method of the :class:`~mne_connectivity.EpochTemporalConnectivity` class.
 
     References
     ----------
     .. footbibliography::
-    """  # noqa
+    """
     _check_option("orthogonalize", orthogonalize, (False, "pairwise"))
     from scipy.signal import hilbert
 
     corrs = list()
 
+    picks = None
     n_nodes = None
 
     events = None
     event_id = None
     if isinstance(data, BaseEpochs):
+        # Find good channels
+        picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+
         names = data.ch_names
         events = data.events
         event_id = data.event_id
@@ -127,6 +128,10 @@ def envelope_correlation(
                 f"n_nodes mismatch between data[0] and data[{ei}], got {n_nodes} and "
                 f"{corrs[0].shape[0]}"
             )
+        # pick only good channels
+        if picks is None:
+            picks = np.arange(n_nodes)
+        epoch_data = epoch_data[picks]
 
         # Get the complex envelope (allowing complex inputs allows people
         # to do raw.apply_hilbert if they want)
@@ -173,9 +178,9 @@ def envelope_correlation(
                 label_data_orth_std[label_data_orth_std == 0] = 1
 
             # correlation is dot product divided by variances
-            corr[li] = np.sum(label_data_orth * data_mag_nomean, axis=1)
-            corr[li] /= data_mag_std
-            corr[li] /= label_data_orth_std
+            corr[picks[li], picks] = np.sum(label_data_orth * data_mag_nomean, axis=1)
+            corr[picks[li], picks] /= data_mag_std
+            corr[picks[li], picks] /= label_data_orth_std
         if orthogonalize:
             # Make it symmetric (it isn't at this point)
             if absolute:
@@ -225,14 +230,13 @@ def envelope_correlation(
 def symmetric_orth(data, *, n_iter=50, tol=1e-6, verbose=None):
     """Perform symmetric orthogonalization.
 
-    Uses the method from :footcite:`ColcloughEtAl2015` to jointly
-    orthogonalize the time series.
+    Uses the method from :footcite:`ColcloughEtAl2015` to jointly orthogonalize the time
+    series.
 
     Parameters
     ----------
-    data : ndarray, shape ([n_epochs, ]n_signals, n_times) or generator
-        The data to process. If a generator, it must return 2D arrays to
-        process.
+    data : array, shape ([n_epochs,] n_signals, n_times) | generator
+        The data to process. If a generator, it must return 2D arrays to process.
     n_iter : int
         The maximum number of iterations to perform.
     tol : float
@@ -241,9 +245,8 @@ def symmetric_orth(data, *, n_iter=50, tol=1e-6, verbose=None):
 
     Returns
     -------
-    data_orth : ndarray, shape (n_epochs, n_signals, n_times) | generator
-        The orthogonalized data. If ``data`` is a generator, a generator
-        is returned.
+    data_orth : array, shape ([n_epochs,] n_signals, n_times) | generator
+        The orthogonalized data. If ``data`` is a generator, a generator is returned.
 
     References
     ----------
