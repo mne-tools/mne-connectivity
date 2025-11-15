@@ -25,7 +25,7 @@ from .base import (
 )
 from .datasets import make_signals_in_freq_bands, make_surrogate_data
 from .decoding import CoherencyDecomposition
-from .effective import phase_slope_index
+from .effective import phase_slope_index, phase_slope_index_time
 from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
