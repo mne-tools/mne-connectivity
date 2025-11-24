@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.8.0.dev106+g68b9de114 documentation</title>
+    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.8.0.dev110+g61ced64f0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8116b4c7"></script>
+    <script src="../_static/documentation_options.js?v=965411b2"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev106+g68b9de114 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev110+g61ced64f0 documentation</p>
   
 </a></div>
     
@@ -483,8 +483,8 @@ details can be found in <a class="footnote-reference brackets" href="#footcite-n
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.14)"><span>generator</span></a></span></dt><dd><p>Can also be a list/generator of arrays, shape <code class="docutils literal notranslate"><span class="pre">(n_signals,</span> <span class="pre">n_times)</span></code>;
-list/generator of <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.SourceEstimate</span></code></a>; or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>. The
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.4.dev0)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.14)"><span>generator</span></a></span></dt><dd><p>Can also be a list/generator of arrays, shape <code class="docutils literal notranslate"><span class="pre">(n_signals,</span> <span class="pre">n_times)</span></code>;
+list/generator of <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.SourceEstimate</span></code></a>; or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>. The
 data from which to compute connectivity. Note that it is also possible to
 combine multiple signals by providing a list of tuples, e.g., <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">[(arr_0,</span>
 <span class="pre">stc_0),</span> <span class="pre">(arr_1,</span> <span class="pre">stc_1),</span> <span class="pre">(arr_2,</span> <span class="pre">stc_2)]</span></code>, corresponds to 3 epochs, and
@@ -534,7 +534,7 @@ more memory).</p>
 </dd>
 <dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many epochs to process in parallel.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for more
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for more
 info). If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
@@ -574,10 +574,10 @@ info). If used, it should be passed as a keyword-argument only.</p>
 <section id="examples-using-mne-connectivity-phase-slope-index">
 <span id="sphx-glr-backreferences-mne-connectivity-phase-slope-index"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code><a class="headerlink" href="#examples-using-mne-connectivity-phase-slope-index" title="Link to this heading">#</a></h2>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the distinct forms of information captured by coherency-based connectivity methods, and highlights the scenarios in which these different methods should be applied."><img alt="" src="../_images/sphx_glr_compare_coherency_methods_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a></p>
+<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a></p>
   <div class="sphx-glr-thumbnail-title">Comparison of coherency-based methods</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in source space based on single trial dSPM source estimates. In addition, the example shows advanced usage of the connectivity estimation routines by first extracting a label time course for each epoch and then combining the label time course with the single trial source estimates to compute the connectivity."><img alt="" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></p>
+<p><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html"><span class="doc">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute Phase Slope Index (PSI) in source space for a visual stimulus</div>
 </div></div></section>
 </section>
@@ -659,7 +659,7 @@ info). If used, it should be passed as a keyword-argument only.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2025, MNE Developers. Last updated on 2025-10-27.
+      © Copyright 2021-2025, MNE Developers. Last updated on 2025-11-24.
       <br/>
     
   </p>
