@@ -1,7 +1,7 @@
 """
-=======================================================================
+======================================================================
 Compute connectivity using weighted symbolic mutual information (wSMI)
-=======================================================================
+======================================================================
 
 This example demonstrates the weighted Symbolic Mutual Information (wSMI) connectivity
 measure :footcite:`KingEtAl2013` for detecting nonlinear dependencies between brain
@@ -35,7 +35,7 @@ from mne_connectivity import wsmi
 
 ########################################################################################
 # Simulating Data with Different Connectivity Patterns
-# =====================================================
+# ====================================================
 #
 # To demonstrate wSMI's capabilities, we'll create synthetic EEG data with different
 # types of connectivity: linear coupling, nonlinear coupling, and independent signals.
@@ -54,10 +54,9 @@ times = np.arange(n_times) / sfreq
 # Initialize data array (n_epochs, n_channels, n_times)
 data = np.zeros((n_epochs, n_channels, n_times))
 
+# Set random seed for reproducibility
+rng = np.random.default_rng(42)
 for epoch in range(n_epochs):
-    # Set random seed for reproducibility within epoch variation
-    rng = np.random.default_rng(42 + epoch)
-
     # Channel 1: Source signal (alpha rhythm + noise)
     # Scale to realistic EEG values (hundreds of microvolts)
     alpha_freq = 10 + rng.normal(0, 0.5)  # Variable alpha frequency
@@ -91,26 +90,25 @@ for epoch in range(n_epochs):
     data[epoch, 3, :] = ch4
 
 
-# Create MNE Epochs object
+# Create Epochs object
 ch_names = ["Source", "Linear_Coupled", "Nonlinear_Coupled", "Independent"]
 info = mne.create_info(ch_names, sfreq=sfreq, ch_types="eeg")
 epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
 
 ########################################################################################
 # Visualizing the Synthetic Data
-# ===============================
+# ==============================
 #
 # Let's examine our synthetic data to understand the different connectivity patterns
 # we've created.
 
 # %%
 
-# Plot a sample of the data using MNE's built-in plotting
+# Plot a sample of the data
 fig = epochs.plot(
     n_epochs=1,
     scalings="auto",
     show_scrollbars=False,
-    block=False,
     title="Synthetic EEG Data with Different Connectivity Patterns",
 )
 
@@ -125,8 +123,8 @@ fig = epochs.plot(
 #   pattern complexity - larger values detect more complex patterns but require more
 #   data. Values of 3-5 are typical.
 # - ``tau``: Time delay between pattern elements in samples (here 1). This controls
-#   temporal resolution - tau=1 uses consecutive samples, larger values focus on slower
-#   dynamics but reduce effective sampling rate.
+#   temporal resolution - ``tau = 1`` uses consecutive samples, larger values focus on
+#   slower dynamics but reduce effective sampling rate.
 #
 # **Important**: Poor parameter choices can miss nonlinear coupling! We'll explore this
 # systematically below.
@@ -187,8 +185,8 @@ ax.figure.tight_layout()
 # lack of information sharing above chance, rather than an anti-coupling of signals.
 
 ########################################################################################
-# Exploring Parameter Effects: kernel and tau
-# ============================================
+# Exploring Parameter Effects: Kernel and Tau
+# ===========================================
 #
 # The kernel and tau parameters control the temporal scale of the analysis:
 #
@@ -251,8 +249,8 @@ plt.suptitle("Parameter Grid Search: wSMI Recovery for Different Coupling Types"
 plt.tight_layout()
 
 ########################################################################################
-# Comparing wSMI vs SMI (weighted vs unweighted)
-# ===============================================
+# Comparing wSMI vs SMI (Weighted vs Unweighted)
+# ==============================================
 #
 # wSMI applies binary weights that set to zero the mutual information from:
 #
@@ -296,9 +294,6 @@ print("\nComparison of wSMI vs SMI:")
 print(f"wSMI (weighted):     {wsmi_values:.3f}")
 print(f"SMI (unweighted):    {smi_values:.3f}")
 print(f"Difference:          {smi_values - wsmi_values:.3f}")
-print("Note: The weighting scheme zeros out identical and opposed symbol pairs to")
-print("      reduce common source artifacts, which can affect the final connectivity")
-print("      estimates in either direction.")
 
 ########################################################################################
 # Anti-aliasing: Understanding the Preprocessing
@@ -320,12 +315,12 @@ print("      estimates in either direction.")
 # - **Warning**: Results may be inaccurate/unreliable without proper filtering
 #
 # The tau parameter affects your effective sampling frequency multiplicatively. For
-# example, tau=2 reduces your effective sampling rate by half, so high-temporal-fidelity
-# coupling (sample-to-sample) may not be detected if you set tau to higher values. This
-# affects the time-scale on which signals are considered coupled.
+# example, ``tau = 2`` reduces your effective sampling rate by half, so
+# high-temporal-fidelity coupling (sample-to-sample) may not be detected if you set tau
+# to higher values. This affects the time-scale on which signals are considered coupled.
 
 ########################################################################################
-# Computing wSMI on real EEG data
+# Computing wSMI on Real EEG Data
 # ===============================
 #
 # Now let's apply wSMI to real EEG data from the MNE sample dataset. We'll use the
@@ -400,13 +395,10 @@ plt.show()
 # stimulus processing. Higher values indicate stronger information sharing between brain
 # regions, which may reflect coordinated visual processing networks and task-related
 # functional connectivity.
-#
-# Note: Values depend on electrode placement, stimulus type, and individual brain
-# anatomy. Clinical interpretation requires comparison with controls.
 
 ########################################################################################
 # Tips for Large Datasets and Group Analysis
-# ===========================================
+# ==========================================
 #
 # **Selective connectivity analysis**: For large datasets with many channels, use the
 # ``indices`` parameter to compute connectivity only between specific channel pairs of
@@ -419,7 +411,7 @@ plt.show()
 
 ########################################################################################
 # Summary and Best Practices
-# ===========================
+# ==========================
 #
 # **When to use wSMI:**
 #
