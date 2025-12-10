@@ -266,14 +266,10 @@ def wsmi(
     Returns
     -------
     conn : instance of Connectivity or EpochConnectivity
-        Computed connectivity measures. If ``average=True``, returns a
+        Computed connectivity measure. If ``average=True``, returns a
         :class:`Connectivity` instance with connectivity averaged across epochs. If
         ``average=False``, returns an :class:`EpochConnectivity` instance with
-        connectivity
-        for each epoch. The connectivity object contains the weighted
-        symbolic mutual information values (if ``weighted=True``) or the
-        standard symbolic mutual information values (if ``weighted=False``)
-        between the specified channel pairs.
+        connectivity for each epoch.
 
     Notes
     -----
@@ -310,12 +306,12 @@ def wsmi(
     # Handle both MNE Epochs and array inputs
     picks = None
     if isinstance(data, BaseEpochs):
-        # MNE Epochs object
         sfreq = data.info["sfreq"]
         events = data.events
         event_id = data.event_id
         metadata = data.metadata
         ch_names = data.ch_names
+        times = data.times
 
         # Get data
         data_for_comp = data.get_data()
@@ -344,6 +340,7 @@ def wsmi(
         n_epochs, n_channels, n_times_epoch = data_for_comp.shape
         n_nodes = n_channels
         picks = np.arange(n_channels)
+        times = np.arange(n_times_epoch) / sfreq
 
         # Set default values for array input
         events = None
@@ -458,15 +455,9 @@ def wsmi(
         # Transpose to match filtered data format: (n_channels, n_times, n_epochs)
         fdata = data_for_comp.transpose(1, 2, 0)
 
-    # --- Time masking (handle both Epochs and array inputs) ---
-    if isinstance(data, BaseEpochs):
-        time_mask = _time_mask(data.times, tmin, tmax)
-        fdata_masked = fdata[:, time_mask, :]
-    else:
-        # For array inputs, create time vector and apply masking
-        times = np.arange(n_times_epoch) / sfreq
-        time_mask = _time_mask(times, tmin, tmax)
-        fdata_masked = fdata[:, time_mask, :]
+    # --- Time masking ---
+    time_mask = _time_mask(times, tmin, tmax)
+    fdata_masked = fdata[:, time_mask, :]
 
     # Check if time masking resulted in too few samples for symbolization
     min_samples_needed_for_one_symbol = tau * (kernel - 1) + 1
@@ -486,14 +477,14 @@ def wsmi(
     logger.info("Performing symbolic transformation...")
     try:
         sym, count = _symb(fdata_for_symb, kernel, tau)
-    except MemoryError:
+    except MemoryError as error:
         n_symbols = math.factorial(kernel)
         memory_gb = (n_symbols**2 * 8) / (1024**3)
         raise MemoryError(
             f"Insufficient memory for kernel={kernel} (requires ~{memory_gb:.1f} GB). "
             f"Try reducing kernel size (e.g., kernel <= 7) or use fewer "
             f"channels/epochs."
-        )
+        ) from error
     except Exception as e:
         raise RuntimeError(
             "Error during symbolic transformation. Please contact the "
@@ -528,40 +519,21 @@ def wsmi(
         con = result[:, idx_map[0], idx_map[1]]
 
     # Create connectivity object with prepared data
+    con_kwargs = dict(
+        names=ch_names,
+        method=method_name,
+        indices=indices,
+        n_epochs_used=n_epochs,
+        n_nodes=n_nodes,
+        events=events,
+        event_id=event_id,
+        metadata=metadata,
+    )
     if average:
-        # Average across epochs to get shape (n_cons,)
-        result_connectivity = Connectivity(
-            data=np.mean(con, axis=0),
-            names=ch_names,
-            method="wSMI" if weighted else "SMI",
-            indices=indices,
-            n_epochs_used=n_epochs,
-            n_nodes=n_nodes,
-            events=events,
-            event_id=event_id,
-            metadata=metadata,
-        )
+        result_connectivity = Connectivity(data=np.mean(con, axis=0), **con_kwargs)
     else:
-        # Return epoch-wise connectivity
-        result_connectivity = EpochConnectivity(
-            data=con,
-            names=ch_names,
-            method="wSMI" if weighted else "SMI",
-            indices=indices,
-            n_epochs_used=n_epochs,
-            n_nodes=n_nodes,
-            events=events,
-            event_id=event_id,
-            metadata=metadata,
-        )
+        result_connectivity = EpochConnectivity(data=con, **con_kwargs)
 
     logger.info(f"{method_name} computation finished.")
 
     return result_connectivity
-
-
-# User's original footbibliography comment can remain here or at the end of the file.
-# .. [1] King, J. R., Sitt, J. D., Faugeras, F., Rohaut, B., El Karoui, I.,
-#        Cohen, L., ... & Dehaene, S. (2013). Information sharing in the
-#        brain indexes consciousness in noncommunicative patients. Current
-#        biology, 23(19), 1914-1919.

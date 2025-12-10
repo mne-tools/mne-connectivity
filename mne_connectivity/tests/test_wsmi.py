@@ -2,7 +2,9 @@
 #
 # License: BSD (3-clause)
 
-import mne
+import os
+import pickle
+
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
@@ -11,20 +13,16 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 from mne_connectivity import wsmi
 
 
-def test_wsmi_input_validation_and_errors():
-    """Test input validation and error handling."""
+def test_wsmi_input_output_validation():
+    """Test input/output validation and error handling."""
     sfreq = 100.0
     n_epochs, n_channels, n_times = 2, 3, 200
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_channels, n_times)
+    rng = np.random.default_rng(42)
+    data = rng.standard_normal((n_epochs, n_channels, n_times))
+    indices = np.tril_indices(n_channels, -1)
 
-    ch_names = ["Fz", "Cz", "Pz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    info = create_info(n_channels, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
-
-    # Set a standard montage
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, match_case=False)
 
     # Test invalid parameters
     with pytest.raises(ValueError, match="kernel.*must be > 1"):
@@ -58,33 +56,50 @@ def test_wsmi_input_validation_and_errors():
     with pytest.raises(ValueError, match="Self-connectivity not supported"):
         wsmi(epochs, kernel=3, tau=1, indices=(np.array([0]), np.array([0])))
 
-    # Test with different channel types using pytest.warns
+    # Test with different channel types
     with pytest.warns(RuntimeWarning, match="The unit for channel"):
-        epochs.set_channel_types({"Fz": "eeg", "Cz": "mag", "Pz": "grad"})
+        epochs.set_channel_types({"0": "eeg", "1": "mag", "2": "grad"})
         conn_mixed = wsmi(epochs, kernel=3, tau=1)
         assert conn_mixed.n_nodes == 3
         assert np.all(np.isfinite(conn_mixed.get_data()))
+
+    # Test with array data input
+    with pytest.raises(ValueError, match="Sampling frequency \\(sfreq\\) is required"):
+        wsmi(data, kernel=3, tau=1)
+    with pytest.raises(ValueError, match="Array input must be 3D"):
+        wsmi(data[0], kernel=3, tau=1, sfreq=sfreq)
+    with pytest.raises(
+        ValueError, match="Number of names .* must match number of channels"
+    ):
+        wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=["X", "Y"])
+
+    # Check output properties
+    # Check averaging works
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=False)
+    assert conn.get_data().shape == (n_epochs, len(indices[0]))
+    conn_avg = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
+    assert conn_avg.get_data().shape == (len(indices[0]),)
+
+    # Check equivalence of array and Epochs data inputs
+    conn_epochs = wsmi(epochs, kernel=3, tau=1)
+    conn_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
+    assert_array_equal(conn_epochs.get_data(), conn_array.get_data())
 
 
 def test_wsmi_known_coupling_patterns():
     """Test wSMI with known coupling patterns to validate core properties."""
     sfreq = 100.0
-    n_epochs, n_times = 3, 250
+    n_epochs, n_channels, n_times = 3, 3, 250
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Create test data focusing on fundamental wSMI properties
-    data = np.zeros((n_epochs, 3, n_times))
-    for epoch in range(n_epochs):
-        # Channel 0: deterministic base signal
-        base = np.sin(2 * np.pi * 10 * t)
-        data[epoch, 0, :] = base
-
-        # Channel 1: identical copy (must give wSMI = 0)
-        data[epoch, 1, :] = base
-
-        # Channel 2: strongly nonlinear transformation
-        # Use a clear nonlinear relationship that wSMI should detect
-        data[epoch, 2, :] = np.tanh(2 * base) + 0.5 * np.sin(2 * np.pi * 15 * t)
+    data = np.zeros((1, n_channels, n_times))
+    base_signal = np.sin(2 * np.pi * 10 * t)
+    nonlinear_signal = np.tanh(2 * base_signal) + 0.5 * np.sin(2 * np.pi * 15 * t)
+    data[:, 0] = base_signal  # Channel 0: base signal
+    data[:, 1] = base_signal  # Channel 1: identical copy
+    data[:, 2] = nonlinear_signal  # Channel 2: nonlinear transformation
+    data = np.repeat(data, n_epochs, axis=0)
 
     ch_names = ["base", "identical", "coupled"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
@@ -94,10 +109,6 @@ def test_wsmi_known_coupling_patterns():
     # Compute wSMI
     conn = wsmi(epochs, kernel=3, tau=1, indices=indices)
     conn_data = conn.get_data()
-
-    # Basic validation
-    assert conn_data.shape == (n_epochs, len(indices[0]))
-    assert np.all(np.isfinite(conn_data))
 
     # Average connectivity values
     avg_conn = np.mean(conn_data, axis=0)
@@ -122,8 +133,10 @@ def test_wsmi_known_coupling_patterns():
 
     # 4. Since channel 1 is identical to channel 0, its coupling to channel 2
     #    should be exactly the same as channel 0's coupling to channel 2
-    assert coupled_wsmi == identical_coupled_wsmi, (
-        "wSMI should be identical for identical source channels"
+    assert_array_equal(
+        coupled_wsmi,
+        identical_coupled_wsmi,
+        "wSMI should be identical for identical source channels",
     )
 
     # 5. Reasonable bounds (wSMI should not exceed theoretical maximum)
@@ -149,32 +162,31 @@ def test_wsmi_tau_nonlinear_detection():
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Create test data with clear nonlinear coupling
-    rng_base = np.random.RandomState(42)
-    rng_indep = np.random.RandomState(100)
+    rng_base = np.random.default_rng(42)
+    rng_indep = np.random.default_rng(100)
 
     data = np.zeros((n_epochs, 3, n_times))
     # Base signal with different noise per epoch
-    data[:, 0, :] = np.sin(2 * np.pi * 8 * t) + 0.1 * rng_base.randn(n_epochs, n_times)
+    data[:, 0, :] = np.sin(2 * np.pi * 8 * t) + 0.1 * rng_base.standard_normal(
+        (n_epochs, n_times)
+    )
     # Strong nonlinear coupling (quadratic relationship)
     data[:, 1, :] = data[:, 0, :] ** 2 + 0.3 * np.sin(2 * np.pi * 12 * t)
     # Independent signal
-    data[:, 2, :] = np.sin(2 * np.pi * 20 * t) + 0.2 * rng_indep.randn(
-        n_epochs, n_times
+    data[:, 2, :] = np.sin(2 * np.pi * 20 * t) + 0.2 * rng_indep.standard_normal(
+        (n_epochs, n_times)
     )
 
     ch_names = ["base", "nonlinear", "independent"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
-    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
+    indices = (np.array([0, 0]), np.array([1, 2]))
 
     # Test tau=1 vs tau=2
-    conn_tau1 = wsmi(epochs, kernel=3, tau=1, indices=indices)
-    conn_tau2 = wsmi(epochs, kernel=3, tau=2, indices=indices)
+    data_tau1 = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True).get_data()
+    data_tau2 = wsmi(epochs, kernel=3, tau=2, indices=indices, average=True).get_data()
 
-    data_tau1 = np.mean(conn_tau1.get_data(), axis=0)
-    data_tau2 = np.mean(conn_tau2.get_data(), axis=0)
-
-    # Connection indices: (0,1)=0, (0,2)=1, (1,2)=2
+    # Connection indices: (0,1)=0, (0,2)=1
     nonlinear_tau1 = data_tau1[0]  # base-nonlinear
     independent_tau1 = data_tau1[1]  # base-independent
     nonlinear_tau2 = data_tau2[0]  # base-nonlinear
@@ -198,27 +210,23 @@ def test_wsmi_tau_nonlinear_detection():
 def test_wsmi_parameter_effects():
     """Test kernel and tau parameter effects on wSMI values."""
     sfreq = 100.0
-    n_epochs, n_times = 2, 200
+    n_epochs, n_channels, n_times = 2, 3, 200
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Create structured data with phase-shifted coupling
-    data = np.zeros((n_epochs, 3, n_times))
-    for epoch in range(n_epochs):
-        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
-        data[epoch, 1, :] = np.sin(2 * np.pi * 10 * t + np.pi / 4)  # Phase shifted
-        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)  # Different frequency
+    data = np.zeros((1, n_channels, n_times))
+    data[:, 0] = np.sin(2 * np.pi * 10 * t)  # Base signal
+    data[:, 1] = np.sin(2 * np.pi * 10 * t + np.pi / 4)  # Phase shifted
+    data[:, 2] = np.sin(2 * np.pi * 15 * t)  # Different frequency
+    data = np.repeat(data, n_epochs, axis=0)
 
-    ch_names = ["A", "B", "C"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    info = create_info(n_channels, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
     indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
 
     # Test different kernel sizes
-    conn_k3 = wsmi(epochs, kernel=3, tau=1, indices=indices)
-    conn_k5 = wsmi(epochs, kernel=5, tau=1, indices=indices)
-
-    data_k3 = np.mean(conn_k3.get_data(), axis=0)
-    data_k5 = np.mean(conn_k5.get_data(), axis=0)
+    data_k3 = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True).get_data()
+    data_k5 = wsmi(epochs, kernel=5, tau=1, indices=indices, average=True).get_data()
 
     # Larger kernel should detect stronger coupling for phase-shifted signals
     # Connection 0: A-B (phase-shifted, same frequency)
@@ -228,47 +236,46 @@ def test_wsmi_parameter_effects():
         f"k=5 ({data_k5[0]:.3f}) > k=3 ({data_k3[0]:.3f})"
     )
 
-    # Both should produce finite values
-    assert np.all(np.isfinite(conn_k3.get_data()))
-    assert np.all(np.isfinite(conn_k5.get_data()))
-
 
 def test_wsmi_weighted_vs_unweighted():
     """Test wSMI filters identical patterns while SMI does not."""
     sfreq = 100.0
-    n_epochs, n_times = 2, 200
+    n_epochs, n_channels, n_times = 2, 3, 200
 
     # Create test data with identical and different channels
-    data = np.zeros((n_epochs, 3, n_times))
+    data = np.zeros((1, n_channels, n_times))
     t = np.linspace(0, n_times / sfreq, n_times)
+    data[:, 0] = np.sin(2 * np.pi * 10 * t)  # 10 Hz signal
+    data[:, 1] = data[:, 0]  # Identical 10 Hz signal
+    data[:, 2] = np.sin(2 * np.pi * 12 * t)  # 12 Hz signal
+    data = np.repeat(data, n_epochs, axis=0)
 
-    for epoch in range(n_epochs):
-        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
-        data[epoch, 1, :] = np.sin(2 * np.pi * 10 * t)  # Identical to A
-        data[epoch, 2, :] = np.sin(2 * np.pi * 12 * t)  # Different frequency
-
-    ch_names = ["A", "B", "C"]
+    ch_names = ["10Hz_1", "10Hz_2", "12Hz"]
     info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
-    indices = (np.array([0, 0]), np.array([1, 2]))  # A-B, A-C
+    indices = (np.array([0, 0]), np.array([1, 2]))
 
     # Test wSMI vs SMI
-    conn_wsmi = wsmi(epochs, kernel=3, tau=1, weighted=True, indices=indices)
-    conn_smi = wsmi(epochs, kernel=3, tau=1, weighted=False, indices=indices)
-
-    # Should have different method names
+    conn_wsmi = wsmi(
+        epochs, kernel=3, tau=1, weighted=True, average=True, indices=indices
+    )
+    conn_smi = wsmi(
+        epochs, kernel=3, tau=1, weighted=False, average=True, indices=indices
+    )
     assert conn_wsmi.method == "wSMI"
     assert conn_smi.method == "SMI"
 
-    wsmi_data = np.mean(conn_wsmi.get_data(), axis=0)
-    smi_data = np.mean(conn_smi.get_data(), axis=0)
+    wsmi_data = conn_wsmi.get_data()
+    smi_data = conn_smi.get_data()
+    assert np.all(np.isfinite(wsmi_data))
+    assert np.all(np.isfinite(smi_data))
 
-    # For identical channels (A-B), wSMI should be exactly 0
+    # For identical channels (10Hz-10Hz), wSMI should be exactly 0
     assert wsmi_data[0] == 0, "wSMI must be 0 for identical channels"
     # SMI should detect coupling for identical channels
     assert smi_data[0] > 0, "SMI should detect coupling for identical channels"
 
-    # For different channels (A-C), wSMI should be smaller than SMI
+    # For different channels (10Hz-12Hz), wSMI should be smaller than SMI
     # (wSMI filters out some patterns that SMI includes)
     assert wsmi_data[1] < smi_data[1], (
         f"wSMI ({wsmi_data[1]:.3f}) should be < SMI ({smi_data[1]:.3f}) "
@@ -276,95 +283,19 @@ def test_wsmi_weighted_vs_unweighted():
     )
 
 
-def test_wsmi_basic_functionality():
-    """Test basic wSMI functionality."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 4, 200
-
-    # Create deterministic data
-    t = np.linspace(0, n_times / sfreq, n_times)
-    data = np.zeros((n_epochs, n_channels, n_times))
-
-    for epoch in range(n_epochs):
-        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)  # 10 Hz
-        data[epoch, 1, :] = np.sin(2 * np.pi * 12 * t)  # 12 Hz
-        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)  # 15 Hz
-        data[epoch, 3, :] = np.sin(2 * np.pi * 8 * t)  # 8 Hz
-
-    ch_names = ["Fz", "Cz", "Pz", "Oz"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    montage = mne.channels.make_standard_montage("standard_1020")
-    epochs.set_montage(montage, on_missing="ignore")
-
-    # Test basic computation
-    conn = wsmi(epochs, kernel=3, tau=1)
-
-    # Check data validity
-    assert np.all(np.isfinite(conn.get_data()))
-
-
-def test_wsmi_array_input():
-    """Test wSMI with numpy array input."""
-    sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 150
-    data = np.zeros((n_epochs, n_channels, n_times))
-
-    # Create simple test data
-    t = np.linspace(0, n_times / sfreq, n_times)
-    for epoch in range(n_epochs):
-        for ch in range(n_channels):
-            data[epoch, ch, :] = np.sin(2 * np.pi * (10 + ch * 2) * t)
-
-    # Test array input
-    conn_array = wsmi(data, kernel=3, tau=1, sfreq=sfreq)
-    assert conn_array.get_data().shape == (n_epochs, n_channels**2)
-    assert np.all(np.isfinite(conn_array.get_data()))
-
-    # Test with custom names
-    names = ["X", "Y", "Z"]
-    conn_named = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=names)
-    assert conn_named.names == names
-    assert_array_equal(conn_array.get_data(), conn_named.get_data())
-
-    # Test errors
-    with pytest.raises(ValueError, match="Sampling frequency \\(sfreq\\) is required"):
-        wsmi(data, kernel=3, tau=1)
-
-    with pytest.raises(ValueError, match="Array input must be 3D"):
-        wsmi(data[0], kernel=3, tau=1, sfreq=sfreq)
-
-    with pytest.raises(
-        ValueError, match="Number of names .* must match number of channels"
-    ):
-        wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=["X", "Y"])
-
-    # Test equivalence with Epochs input
-    ch_names = ["ch1", "ch2", "ch3"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data, info, tmin=0.0)
-
-    conn_epochs = wsmi(epochs, kernel=3, tau=1)
-    conn_array_equiv = wsmi(data, kernel=3, tau=1, sfreq=sfreq, names=ch_names)
-
-    assert_allclose(conn_epochs.get_data(), conn_array_equiv.get_data(), rtol=1e-10)
-
-
 def test_wsmi_anti_aliasing():
     """Test anti-aliasing parameter."""
     sfreq = 100.0
-    n_epochs, n_times = 2, 200
-    data = np.zeros((n_epochs, 3, n_times))
+    signal_freqs = [10, 12, 15]  # Hz
+    n_epochs, n_channels, n_times = 2, len(signal_freqs), 200
 
     t = np.linspace(0, n_times / sfreq, n_times)
-    for epoch in range(n_epochs):
-        data[epoch, 0, :] = np.sin(2 * np.pi * 10 * t)
-        data[epoch, 1, :] = np.sin(2 * np.pi * 12 * t)
-        data[epoch, 2, :] = np.sin(2 * np.pi * 15 * t)
+    data = np.zeros((1, n_channels, n_times))
+    for ch_idx, freq in enumerate(signal_freqs):
+        data[0, ch_idx, :] = np.sin(2 * np.pi * freq * t)  # Sine wave at `freq` Hz
+    data = np.repeat(data, n_epochs, axis=0)
 
-    ch_names = ["A", "B", "C"]
-    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    info = create_info(n_channels, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
     # Test with anti-aliasing enabled
@@ -379,16 +310,11 @@ def test_wsmi_anti_aliasing():
     assert np.all(np.isfinite(conn_without_filter.get_data()))
 
 
-# Ground truth validation tests
-def _load_test_data():
-    """Load the wsmi test data."""
-    import os
-    import pickle
-
+def test_wsmi_ground_truth_validation():
+    """Test wSMI against ground truth data for regression testing."""
     test_data_path = os.path.join(
         os.path.dirname(__file__), "data", "wsmi_test_data.pkl"
     )
-
     if not os.path.exists(test_data_path):
         raise FileNotFoundError(
             f"Required wSMI test data not found at {test_data_path}. "
@@ -397,13 +323,6 @@ def _load_test_data():
 
     with open(test_data_path, "rb") as f:
         test_data = pickle.load(f)
-
-    return test_data
-
-
-def test_wsmi_ground_truth_validation():
-    """Test wSMI against ground truth data for regression testing."""
-    test_data = _load_test_data()
 
     for test_case in test_data["tests"]:
         # Extract input parameters
