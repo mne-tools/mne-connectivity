@@ -383,9 +383,9 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
         # i.e. (2, 1, n_components, n_signals, 1)
 
         self.filters_ = (
-            self._conn_estimator.filters[0, 0, :, : len(self.indices[0]), 0].T,
-            self._conn_estimator.filters[1, 0, :, : len(self.indices[1]), 0].T,
-        )  # shape=(seeds/targets, n_signals, n_components)
+            self._conn_estimator.filters[0, 0, :, : len(self.indices[0]), 0],
+            self._conn_estimator.filters[1, 0, :, : len(self.indices[1]), 0],
+        )  # shape=(seeds/targets, n_components, n_signals)
 
         self.patterns_ = (
             self._conn_estimator.patterns[0, 0, :, : len(self.indices[0]), 0],
@@ -414,8 +414,8 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             )
 
         # transform seed and target data
-        X_seeds = self.filters_[0].T @ X[..., self.indices[0], :]
-        X_targets = self.filters_[1].T @ X[..., self.indices[1], :]
+        X_seeds = self.filters_[0] @ X[..., self.indices[0], :]
+        X_targets = self.filters_[1] @ X[..., self.indices[1], :]
 
         return np.concatenate((X_seeds, X_targets), axis=-2)
 
@@ -648,7 +648,7 @@ class CoherencyDecomposition(BaseEstimator, TransformerMixin):
             )
 
         return self._plot_filters_patterns(
-            self.filters_,
+            (self.filters_[0].T, self.filters_[1].T),
             info,
             components,
             ch_type,
