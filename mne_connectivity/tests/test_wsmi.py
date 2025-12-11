@@ -158,14 +158,14 @@ def test_wsmi_known_coupling_patterns():
 def test_wsmi_tau_nonlinear_detection():
     """Test that higher tau values better detect nonlinear coupling."""
     sfreq = 100.0
-    n_epochs, n_times = 5, 400
+    n_epochs, n_channels, n_times = 5, 3, 400
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Create test data with clear nonlinear coupling
     rng_base = np.random.default_rng(42)
     rng_indep = np.random.default_rng(100)
 
-    data = np.zeros((n_epochs, 3, n_times))
+    data = np.zeros((n_epochs, n_channels, n_times))
     # Base signal with different noise per epoch
     data[:, 0, :] = np.sin(2 * np.pi * 8 * t) + 0.1 * rng_base.standard_normal(
         (n_epochs, n_times)
@@ -186,17 +186,14 @@ def test_wsmi_tau_nonlinear_detection():
     data_tau1 = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True).get_data()
     data_tau2 = wsmi(epochs, kernel=3, tau=2, indices=indices, average=True).get_data()
 
+    # Both tau values should detect coupling
+    assert_array_less(0, [data_tau1, data_tau2])
+
     # Connection indices: (0,1)=0, (0,2)=1
     nonlinear_tau1 = data_tau1[0]  # base-nonlinear
     independent_tau1 = data_tau1[1]  # base-independent
     nonlinear_tau2 = data_tau2[0]  # base-nonlinear
     independent_tau2 = data_tau2[1]  # base-independent
-
-    # Both tau values should detect coupling
-    assert nonlinear_tau1 > 0
-    assert nonlinear_tau2 > 0
-    assert independent_tau1 > 0
-    assert independent_tau2 > 0
 
     # tau=2 should show better discrimination (at least 2x better ratio)
     ratio_tau1 = nonlinear_tau1 / independent_tau1
@@ -207,22 +204,21 @@ def test_wsmi_tau_nonlinear_detection():
     )
 
 
-def test_wsmi_parameter_effects():
-    """Test kernel and tau parameter effects on wSMI values."""
+def test_wsmi_kernel_phaseshift_detection():
+    """Test larger kernel detects stronger coupling for phase-shifted signals."""
     sfreq = 100.0
-    n_epochs, n_channels, n_times = 2, 3, 200
+    n_epochs, n_channels, n_times = 2, 2, 200
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Create structured data with phase-shifted coupling
     data = np.zeros((1, n_channels, n_times))
     data[:, 0] = np.sin(2 * np.pi * 10 * t)  # Base signal
     data[:, 1] = np.sin(2 * np.pi * 10 * t + np.pi / 4)  # Phase shifted
-    data[:, 2] = np.sin(2 * np.pi * 15 * t)  # Different frequency
     data = np.repeat(data, n_epochs, axis=0)
 
     info = create_info(n_channels, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
-    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
+    indices = (np.array([0]), np.array([1]))
 
     # Test different kernel sizes
     data_k3 = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True).get_data()
