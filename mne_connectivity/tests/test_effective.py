@@ -74,13 +74,6 @@ def test_psi_time_properties():
 
     # Compute PSI between signals in each frequency band
     freqs = np.arange(3, 33, 1)
-    n_cycles = freqs / 1.25
-    # TODO: Remove masking when gh#356 is merged
-    fmask = ((freqs >= fmin[0]) & (freqs <= fmax[0])) | (
-        (freqs >= fmin[1]) & (freqs <= fmax[1])
-    )
-    freqs = freqs[fmask]
-    n_cycles = n_cycles[fmask]
     indices = (np.array([0, 1, 2, 3]), np.array([1, 0, 3, 2]))
     conn = phase_slope_index_time(
         data,
@@ -88,7 +81,7 @@ def test_psi_time_properties():
         indices=indices,
         fmin=fmin,
         fmax=fmax,
-        n_cycles=n_cycles,
+        n_cycles=freqs / 1.25,
         average=True,
     )
     conn_data = conn.get_data()
