@@ -366,16 +366,16 @@ def phase_slope_index_time(
         - When ``indices`` is specified, ``n_con = len(indices[0])``
         - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``
 
-    Notes
-    -----
-    .. versionadded:: 0.8
-
     See Also
     --------
     mne_connectivity.spectral_connectivity_time
     mne_connectivity.phase_slope_index
     mne_connectivity.SpectralConnectivity
     mne_connectivity.EpochSpectralConnectivity
+
+    Notes
+    -----
+    .. versionadded:: 0.8
 
     References
     ----------
