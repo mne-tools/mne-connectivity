@@ -1,8 +1,16 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_array_almost_equal, assert_array_equal
+from numpy.testing import (
+    assert_array_almost_equal,
+    assert_array_equal,
+    assert_array_less,
+)
 
-from mne_connectivity import EpochSpectralConnectivity, SpectralConnectivity
+from mne_connectivity import (
+    EpochSpectralConnectivity,
+    SpectralConnectivity,
+    make_signals_in_freq_bands,
+)
 from mne_connectivity.effective import phase_slope_index, phase_slope_index_time
 
 
@@ -44,29 +52,60 @@ def test_psi():
 
 
 def test_psi_time_properties():
-    """Test Phase Slope Index (PSI) estimation over time result properties."""
-    sfreq = 50.0
-    n_epochs, n_signals, n_times = 10, 3, 500
-    rng = np.random.default_rng(42)
-    data = rng.standard_normal((n_epochs, n_signals, n_times))
-
-    # simulate time shifts
-    for i in range(n_epochs):
-        data[i, 1, 10:] = data[i, 0, :-10]  # signal 0 is ahead
-        data[i, 2, :-10] = data[i, 0, 10:]  # signal 2 is ahead
-
-    freqs = np.arange(5.0, 20, 0.5)
-    indices = (np.array([0, 0, 1, 2]), np.array([1, 2, 0, 0]))
-    conn = phase_slope_index_time(
-        data, sfreq=sfreq, freqs=freqs, indices=indices, average=True
+    """Test result properties of Phase Slope Index (PSI) estimation over time."""
+    # Simulate signals interacting in two distinct frequency bands
+    fmin = (10, 25)
+    fmax = (15, 30)
+    data_10_15 = make_signals_in_freq_bands(
+        n_seeds=1,
+        n_targets=1,
+        freq_band=(fmin[0], fmax[0]),
+        connection_delay=5,
+        rng_seed=42,
     )
+    data_25_30 = make_signals_in_freq_bands(
+        n_seeds=1,
+        n_targets=1,
+        freq_band=(fmin[1], fmax[1]),
+        connection_delay=10,
+        rng_seed=44,
+    )
+    data = data_10_15.add_channels([data_25_30])
+
+    # Compute PSI between signals in each frequency band
+    freqs = np.arange(3, 33, 1)
+    n_cycles = freqs / 1.25
+    # TODO: Remove masking when gh#356 is merged
+    fmask = ((freqs >= fmin[0]) & (freqs <= fmax[0])) | (
+        (freqs >= fmin[1]) & (freqs <= fmax[1])
+    )
+    freqs = freqs[fmask]
+    n_cycles = n_cycles[fmask]
+    indices = (np.array([0, 1, 2, 3]), np.array([1, 0, 3, 2]))
+    conn = phase_slope_index_time(
+        data,
+        freqs=freqs,
+        indices=indices,
+        fmin=fmin,
+        fmax=fmax,
+        n_cycles=n_cycles,
+        average=True,
+    )
+    conn_data = conn.get_data()
 
     # Check directionality captured
-    assert conn.get_data()[0] > 0  # signal 0 leads signal 1
-    assert conn.get_data()[1] < 0  # signal 0 follows signal 2
-
+    CON_THRESH = 0.4
+    NOISE_THRESH = 0.1
+    # signals interacting at 10-15 Hz
+    assert conn_data[0, 0] > CON_THRESH  # 10-15 Hz; seed leads target
+    assert conn_data[1, 0] < -CON_THRESH  # 10-15 Hz; target follows seed
+    assert_array_less(np.abs(conn_data[:2, 1]), NOISE_THRESH)  # no 25-30 Hz interaction
+    # signals interacting at 25-30 Hz
+    assert conn_data[2, 1] > CON_THRESH  # 25-30 Hz; seed leads target
+    assert conn_data[3, 1] < -CON_THRESH  # 25-30 Hz; target follows seed
+    assert_array_less(np.abs(conn_data[2:, 0]), NOISE_THRESH)  # no 10-15 Hz interaction
     # Check measure is symmetric (sign flip)
-    assert_array_almost_equal(conn.get_data()[:2], -conn.get_data()[2:])
+    assert_array_almost_equal(conn_data[(0, 2), :], -conn_data[(1, 3), :])
 
 
 @pytest.mark.parametrize("average", [True, False])
