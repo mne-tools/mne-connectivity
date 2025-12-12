@@ -17,3 +17,4 @@
 .. _Mohammad Orabe: https://github.com/orabe
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Marijn van Vliet: https://github.com/wmvanvliet
+.. _Salman Qasim: https://github.com/seqasim
