@@ -1914,10 +1914,12 @@ def test_spectral_connectivity_time_n_cycles():
         data, freqs, sfreq=sfreq, fmin=fmin, fmax=fmax, n_cycles=n_cycles
     )
 
+    # Test n_cycles as float works
+    spectral_connectivity_time(data, freqs, sfreq=sfreq, n_cycles=n_cycles[0])
+
     # Test n_cycles with wrong size caught
     with pytest.raises(
-        ValueError,
-        match="n_cycles must be float or an array with the same size as freqs",
+        ValueError, match="n_cycles must be float or an array of length"
     ):
         spectral_connectivity_time(data, freqs, sfreq=sfreq, n_cycles=n_cycles[:-1])
 
