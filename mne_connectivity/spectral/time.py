@@ -601,6 +601,11 @@ def spectral_connectivity_time(
         assert increase, "Frequencies should be in increasing order"
 
     # check that freqs corresponds to at least n_cycles cycles
+    n_cycles = np.array((n_cycles,), dtype=float).ravel()
+    if len(n_cycles) > 1 and len(n_cycles) != len(freqs):
+        raise ValueError(
+            "n_cycles must be float or an array with the same size as freqs"
+        )
     dur = float(n_times) / sfreq
     cycle_freq = n_cycles / dur
     if np.any(freqs < cycle_freq):
@@ -620,6 +625,7 @@ def spectral_connectivity_time(
 
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
+    n_cycles = n_cycles[freq_mask] if n_cycles.size > 1 else n_cycles
 
     # compute central frequencies
     _f = xr.DataArray(np.arange(len(freqs)), dims=("freqs",), coords=(freqs,))
