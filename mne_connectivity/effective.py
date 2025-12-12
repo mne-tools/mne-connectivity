@@ -107,9 +107,10 @@ def phase_slope_index(
 
     Returns
     -------
-    conn : instance of SpectralConnectivity or SpectroTemporalConnectivity
+    psi : instance of SpectralConnectivity or SpectroTemporalConnectivity
         Computed connectivity measure. Either a :class:`SpectralConnectivity`, or
-        :class:`SpectroTemporalConnectivity` container. The shape of each array is:
+        :class:`SpectroTemporalConnectivity` container. The shape of the connectivity
+        dataset is:
 
         - ``(n_cons, n_bands)`` for ``'multitaper'`` or ``'fourier'`` modes
         - ``(n_cons, n_bands, n_times)`` for ``'cwt_morlet'`` mode
@@ -194,7 +195,7 @@ def phase_slope_index(
     # create a connectivity container
     if mode in ["multitaper", "fourier"]:
         # spectral only
-        conn = SpectralConnectivity(
+        psi = SpectralConnectivity(
             data=psi,
             names=names,
             freqs=freq_bands,
@@ -211,7 +212,7 @@ def phase_slope_index(
         )
     elif mode == "cwt_morlet":
         # spectrotemporal
-        conn = SpectroTemporalConnectivity(
+        psi = SpectroTemporalConnectivity(
             data=psi,
             names=names,
             freqs=freq_bands,
@@ -228,7 +229,7 @@ def phase_slope_index(
             event_id=event_id,
         )
 
-    return conn
+    return psi
 
 
 @verbose
@@ -354,11 +355,11 @@ def phase_slope_index_time(
 
     Returns
     -------
-    conn : instance of EpochSpectralConnectivity or SpectralConnectivity
+    psi : instance of EpochSpectralConnectivity or SpectralConnectivity
         Computed connectivity measure. Either a
         :class:`EpochSpectralConnectivity` or :class:`SpectralConnectivity` container
-        depending on the ``average`` parameter. The shape of each connectivity dataset
-        is ``([n_epochs,] n_cons, n_bands)``:
+        depending on the ``average`` parameter. The shape of the connectivity dataset is
+        ``([n_epochs,] n_cons, n_bands)``:
 
         - The epoch dimension is present when ``average=False``, and absent when
           ``average=True``.
@@ -447,13 +448,13 @@ def phase_slope_index_time(
     )
     if average:
         # average over epochs
-        conn = SpectralConnectivity(
+        psi = SpectralConnectivity(
             data=psi.mean(axis=0), n_epochs_used=n_epochs_used, **conn_kwargs
         )
     else:
-        conn = EpochSpectralConnectivity(data=psi, **conn_kwargs)
+        psi = EpochSpectralConnectivity(data=psi, **conn_kwargs)
 
-    return conn
+    return psi
 
 
 def _compute_psi(cohy, freqs, bands, freq_dim):
