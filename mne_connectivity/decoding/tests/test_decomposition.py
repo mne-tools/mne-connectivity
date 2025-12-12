@@ -254,8 +254,8 @@ def test_spectral_decomposition(method, mode):
         decomp_class.set_params(rank=None)  # reset to default
         decomp_class.fit(X=epochs[: n_epochs // 2].get_data())
         n_comps = n_signals if n_components is None else n_components
-        assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
-        assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+        assert decomp_class.filters_[0].shape == (n_comps, n_seeds * 2)
+        assert decomp_class.filters_[1].shape == (n_comps, n_targets * 2)
         assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
         assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
 
@@ -265,8 +265,8 @@ def test_spectral_decomposition(method, mode):
         decomp_class.set_params(n_components=None)  # reset to default
         decomp_class.fit(X=epochs[: n_epochs // 2].get_data())
         n_comps = n_signals if rank is None else np.min(rank)
-        assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
-        assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+        assert decomp_class.filters_[0].shape == (n_comps, n_seeds * 2)
+        assert decomp_class.filters_[1].shape == (n_comps, n_targets * 2)
         assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
         assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
 
@@ -286,8 +286,8 @@ def test_spectral_decomposition(method, mode):
                         n_comps = np.min(rank)
                 else:  # base shape on n_components (checked already that rank != None)
                     n_comps = n_components
-                assert decomp_class.filters_[0].shape == (n_seeds * 2, n_comps)
-                assert decomp_class.filters_[1].shape == (n_targets * 2, n_comps)
+                assert decomp_class.filters_[0].shape == (n_comps, n_seeds * 2)
+                assert decomp_class.filters_[1].shape == (n_comps, n_targets * 2)
                 assert decomp_class.patterns_[0].shape == (n_comps, n_seeds * 2)
                 assert decomp_class.patterns_[1].shape == (n_comps, n_targets * 2)
 

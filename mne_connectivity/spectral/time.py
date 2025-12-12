@@ -135,7 +135,7 @@ def spectral_connectivity_time(
         Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.
     faverage : bool
         Average connectivity scores for each frequency band. If ``True``, the output
-        ``freqs`` will be an array of the median frequencies of each band.
+        ``freqs`` will be an array of the average frequencies of each band.
     sm_times : float
         Amount of time to consider for the temporal smoothing in seconds. If 0, no
         temporal smoothing is applied.
