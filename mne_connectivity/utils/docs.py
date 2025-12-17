@@ -232,8 +232,8 @@ rank : tuple of int | None (default None)
 docdict["filters_"] = """
 filters_ : tuple of length 2
     A tuple of two arrays containing the spatial filters for transforming the seed and
-    target data, respectively. The arrays have shape ``(n_seeds, n_components)`` and
-    ``(n_targets, n_components)``.
+    target data, respectively. The arrays have shape ``(n_components, n_seeds)`` and
+    ``(n_components, n_targets)``.
 """
 
 docdict["patterns_"] = """

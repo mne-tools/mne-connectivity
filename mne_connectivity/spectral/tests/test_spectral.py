@@ -1897,6 +1897,40 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
     assert_array_less(np.abs(con.get_data()[:, freqs_noise].mean()), 0.3)
 
 
+def test_spectral_connectivity_time_n_cycles():
+    """Test spec_conn_time masks n_cycles correctly and detects bad n_cycles."""
+    n_epochs, n_signals, n_times = 1, 2, 200
+    sfreq = 100.0
+    rng = np.random.default_rng(0)
+    data = rng.standard_normal((n_epochs, n_signals, n_times))
+
+    freqs = np.arange(10, 20)
+    fmin = 12
+    fmax = 18
+    n_cycles = freqs * 0.5
+
+    # Test spec_conn_time runs when number of used freqs != len(freqs)
+    spectral_connectivity_time(
+        data, freqs, sfreq=sfreq, fmin=fmin, fmax=fmax, n_cycles=n_cycles
+    )
+
+    # Test n_cycles as float works
+    spectral_connectivity_time(data, freqs, sfreq=sfreq, n_cycles=n_cycles[0])
+
+    # Test n_cycles with wrong size caught
+    with pytest.raises(
+        ValueError, match="n_cycles must be float or an array of length"
+    ):
+        spectral_connectivity_time(data, freqs, sfreq=sfreq, n_cycles=n_cycles[:-1])
+
+    # Test too many cycles caught
+    with pytest.raises(
+        ValueError,
+        match="At least one value in n_cycles corresponds to a wavelet longer than",
+    ):
+        spectral_connectivity_time(data, freqs, sfreq=sfreq, n_cycles=100)
+
+
 # TODO: Add general test for error catching for spec_conn_time
 @pytest.mark.parametrize("method", ["cacoh", "mic", "mim", _gc, _gc_tr])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])

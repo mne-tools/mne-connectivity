@@ -135,7 +135,7 @@ def spectral_connectivity_time(
         Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.
     faverage : bool
         Average connectivity scores for each frequency band. If ``True``, the output
-        ``freqs`` will be an array of the median frequencies of each band.
+        ``freqs`` will be an array of the average frequencies of each band.
     sm_times : float
         Amount of time to consider for the temporal smoothing in seconds. If 0, no
         temporal smoothing is applied.
@@ -601,6 +601,15 @@ def spectral_connectivity_time(
         assert increase, "Frequencies should be in increasing order"
 
     # check that freqs corresponds to at least n_cycles cycles
+    n_cycles = np.array((n_cycles,), dtype=float).ravel()
+    if len(n_cycles) > 1:
+        if len(n_cycles) != len(freqs):
+            raise ValueError(
+                f"n_cycles must be float or an array of length {len(freqs)} "
+                f"frequencies, got {len(n_cycles)} cycles instead."
+            )
+    else:
+        n_cycles = np.repeat(n_cycles, len(freqs))
     dur = float(n_times) / sfreq
     cycle_freq = n_cycles / dur
     if np.any(freqs < cycle_freq):
@@ -620,6 +629,7 @@ def spectral_connectivity_time(
 
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
+    n_cycles = n_cycles[freq_mask]
 
     # compute central frequencies
     _f = xr.DataArray(np.arange(len(freqs)), dims=("freqs",), coords=(freqs,))
