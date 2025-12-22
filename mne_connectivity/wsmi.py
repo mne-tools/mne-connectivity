@@ -163,6 +163,136 @@ def _wsmi_jitted(  # pragma: no cover
     return result + result.transpose(1, 0, 2)  # make symmetric
 
 
+def _apply_anti_aliasing(data, sfreq, kernel, tau, anti_aliasing, is_epochs, info=None):
+    """Apply anti-aliasing filtering based on parameters and data type.
+
+    Parameters
+    ----------
+    data : ndarray
+        Data array of shape (n_epochs, n_channels, n_times).
+    sfreq : float
+        Sampling frequency in Hz.
+    kernel : int
+        Pattern length for symbolic analysis.
+    tau : int
+        Time delay between pattern elements.
+    anti_aliasing : bool | str
+        Anti-aliasing mode: True (always), False (never), or "auto" (smart detection).
+    is_epochs : bool
+        Whether the original data was an MNE Epochs object.
+    info : mne.Info | None
+        MNE Info object (only available if is_epochs=True).
+
+    Returns
+    -------
+    filtered_data : ndarray
+        Data array of shape (n_channels, n_times, n_epochs) ready for symbolic
+        transformation, with anti-aliasing applied if needed.
+    """
+    n_epochs = data.shape[0]
+    anti_alias_freq = np.double(sfreq) / kernel / tau
+    nyquist_freq = sfreq / 2.0
+
+    # Determine if filtering is needed based on anti_aliasing mode
+    should_filter = False
+    skip_reason = None
+
+    if anti_aliasing is False:
+        # Never filter - warn about potential issues
+        effective_sfreq = sfreq / tau
+        warnings.warn(
+            f"Anti-aliasing disabled. Effective sampling rate for symbolic "
+            f"transformation is {effective_sfreq:.1f} Hz (sfreq/tau={sfreq}/{tau}). "
+            f"Ensure your data is appropriately filtered to prevent aliasing.",
+            UserWarning,
+        )
+        should_filter = False
+
+    elif anti_aliasing is True:
+        # Always filter (unless frequency is too close to Nyquist)
+        if anti_alias_freq >= nyquist_freq * 0.99:
+            skip_reason = (
+                f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
+                f"Nyquist frequency ({nyquist_freq:.2f} Hz)"
+            )
+            should_filter = False
+        else:
+            should_filter = True
+
+    else:
+        # Auto mode: smart detection based on data type and preprocessing
+        if anti_alias_freq >= nyquist_freq * 0.99:
+            # Frequency too close to Nyquist - no filtering needed
+            skip_reason = (
+                f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
+                f"Nyquist frequency ({nyquist_freq:.2f} Hz)"
+            )
+            should_filter = False
+        elif not is_epochs:
+            # Array input: always filter in auto mode (we don't know preprocessing)
+            logger.info(
+                "Auto anti-aliasing: Array input detected, applying filter "
+                "(preprocessing history unknown)."
+            )
+            should_filter = True
+        else:
+            # MNE Epochs: check if already appropriately filtered
+            existing_lowpass = info.get("lowpass", None) if info else None
+
+            if existing_lowpass is not None and existing_lowpass <= anti_alias_freq:
+                # Data already filtered at or below required frequency
+                logger.info(
+                    f"Auto anti-aliasing: Data already low-pass filtered at "
+                    f"{existing_lowpass:.2f} Hz (<= {anti_alias_freq:.2f} Hz). "
+                    f"Skipping additional filtering."
+                )
+                should_filter = False
+            else:
+                # Need to apply filtering
+                if existing_lowpass is not None:
+                    logger.info(
+                        f"Auto anti-aliasing: Existing lowpass "
+                        f"({existing_lowpass:.2f} Hz) > required "
+                        f"({anti_alias_freq:.2f} Hz). Applying filter."
+                    )
+                else:
+                    logger.info(
+                        f"Auto anti-aliasing: No lowpass filter info found. "
+                        f"Applying filter at {anti_alias_freq:.2f} Hz."
+                    )
+                should_filter = True
+
+    # Apply filtering if needed
+    if should_filter:
+        logger.info(f"Applying anti-aliasing filter at {anti_alias_freq:.2f} Hz")
+
+        # Make a copy to avoid modifying original data
+        data = data.copy()
+
+        # Design and apply low-pass filter
+        normalized_freq = 2.0 * anti_alias_freq / np.double(sfreq)
+        b, a = butter(6, normalized_freq, "lowpass")
+
+        # Concatenate epochs horizontally for filtering
+        data_concatenated = np.hstack(data)
+
+        # Filter the concatenated data
+        fdata_concatenated = filtfilt(b, a, data_concatenated)
+
+        # Split back into epochs and transpose to match expected format
+        # Output shape: (n_channels, n_times, n_epochs)
+        filtered_data = np.transpose(
+            np.array(np.split(fdata_concatenated, n_epochs, axis=1)), [1, 2, 0]
+        )
+    else:
+        if skip_reason:
+            logger.info(f"{skip_reason}. Skipping anti-aliasing filter.")
+        # Transpose to match expected format: (n_channels, n_times, n_epochs)
+        filtered_data = data.transpose(1, 2, 0)
+
+    return filtered_data
+
+
 def _validate_kernel(kernel, tau):
     """Validate kernel and tau parameters for wSMI computation.
 
@@ -210,7 +340,7 @@ def wsmi(
     names=None,
     tmin=None,
     tmax=None,
-    anti_aliasing=True,
+    anti_aliasing="auto",
     weighted=True,
     average=False,
     verbose=None,
@@ -242,12 +372,16 @@ def wsmi(
         of epoch.
     tmax : float | None
         Time to end connectivity estimation. If ``None``, uses end of epoch.
-    anti_aliasing : bool
-        Whether to apply anti-aliasing low-pass filtering before symbolic
-        transformation. If ``True`` (default), applies automatic low-pass filtering
-        at ``sfreq / (kernel * tau)`` Hz to prevent aliasing artifacts in ordinal
-        patterns. If ``False``, no filtering is applied and the symbolic
-        transformation is computed on the raw (possibly preprocessed) data.
+    anti_aliasing : bool | str
+        Controls anti-aliasing low-pass filtering before symbolic transformation.
+
+        - ``"auto"`` (default): Smart detection based on data type and preprocessing.
+          For array inputs, always applies filtering. For MNE Epochs, checks
+          ``info['lowpass']`` to determine if data is already appropriately filtered.
+          Only applies filtering if existing lowpass > required frequency.
+        - ``True``: Always apply anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz.
+        - ``False``: Never apply filtering. Use only if you have already applied
+          appropriate low-pass filtering to your data.
 
         .. warning::
             Setting to ``False`` may produce unreliable results if the
@@ -301,12 +435,20 @@ def wsmi(
     # Input validation and data handling for both Epochs and arrays
     _validate_type(weighted, bool, "weighted")
     _validate_type(average, bool, "average")
-    _validate_type(anti_aliasing, bool, "anti_aliasing")
+    # Validate anti_aliasing parameter
+    if anti_aliasing not in (True, False, "auto"):
+        raise ValueError(
+            f"anti_aliasing must be True, False, or 'auto', got {anti_aliasing!r}"
+        )
 
     # Handle both MNE Epochs and array inputs
     picks = None
-    if isinstance(data, BaseEpochs):
-        sfreq = data.info["sfreq"]
+    is_epochs = isinstance(data, BaseEpochs)
+    info = None
+
+    if is_epochs:
+        info = data.info
+        sfreq = info["sfreq"]
         events = data.events
         event_id = data.event_id
         metadata = data.metadata
@@ -319,7 +461,7 @@ def wsmi(
 
         # Only exclude bad channels when indices is None
         if indices is None:
-            picks = _picks_to_idx(data.info, picks="all", exclude="bads")
+            picks = _picks_to_idx(info, picks="all", exclude="bads")
             # Apply picks to data for computation
             data_for_comp = data_for_comp[:, picks, :]
             n_epochs, n_channels, n_times_epoch = data_for_comp.shape
@@ -411,49 +553,10 @@ def wsmi(
     # select only needed signals
     data_for_comp = data_for_comp[:, sig_idx]
 
-    # --- 2. Anti-aliasing filtering (if enabled) ---
-    if anti_aliasing:
-        # Apply automatic anti-aliasing filter based on effective sampling rate
-        anti_alias_freq = np.double(sfreq) / kernel / tau
-        nyquist_freq = sfreq / 2.0
-
-        # Check if anti-aliasing frequency is reasonable
-        if anti_alias_freq >= nyquist_freq * 0.99:
-            # Anti-aliasing frequency too close to Nyquist - skip filtering
-            logger.info(
-                f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
-                f"Nyquist frequency ({nyquist_freq:.2f} Hz). "
-                f"Skipping anti-aliasing filter."
-            )
-            fdata = data_for_comp.transpose(1, 2, 0)
-        else:
-            logger.info(f"Applying anti-aliasing filter at {anti_alias_freq:.2f} Hz")
-
-            # Design and apply low-pass filter
-            normalized_freq = 2.0 * anti_alias_freq / np.double(sfreq)
-            b, a = butter(6, normalized_freq, "lowpass")
-            data_concatenated = np.hstack(
-                data_for_comp
-            )  # Concatenate epochs horizontally
-
-            # Filter the concatenated data
-            fdata_concatenated = filtfilt(b, a, data_concatenated)
-
-            # Split back into epochs and transpose to match original format
-            fdata = np.transpose(
-                np.array(np.split(fdata_concatenated, n_epochs, axis=1)), [1, 2, 0]
-            )
-    else:
-        # Skip filtering - use data as-is but warn about potential issues
-        effective_sfreq = sfreq / tau
-        warnings.warn(
-            f"Anti-aliasing disabled. Effective sampling rate for symbolic "
-            f"transformation is {effective_sfreq:.1f} Hz (sfreq/tau = {sfreq}/{tau}). "
-            f"Ensure your data is appropriately filtered to prevent aliasing artifacts",
-            UserWarning,
-        )
-        # Transpose to match filtered data format: (n_channels, n_times, n_epochs)
-        fdata = data_for_comp.transpose(1, 2, 0)
+    # --- 2. Anti-aliasing filtering ---
+    fdata = _apply_anti_aliasing(
+        data_for_comp, sfreq, kernel, tau, anti_aliasing, is_epochs, info
+    )
 
     # --- Time masking ---
     time_mask = _time_mask(times, tmin, tmax)

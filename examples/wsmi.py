@@ -131,7 +131,7 @@ fig = epochs.plot(
 #
 # Other defaults:
 #
-# - Anti-aliasing filtering enabled (``anti_aliasing=True``)
+# - Smart anti-aliasing (``anti_aliasing="auto"``) - applies filtering only if needed
 # - Weighted symbolic mutual information (``weighted=True``)
 # - All channel pairs as a lower-triangular array (``indices=None``)
 # - Individual epoch connectivity (``average=False``)
@@ -300,19 +300,25 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 # ==============================================
 #
 # wSMI includes automatic anti-aliasing filtering to prevent artifacts when ``tau > 1``.
-# This filtering is crucial for accurate results:
+# This filtering is crucial for accurate results. The ``anti_aliasing`` parameter
+# accepts three values:
 #
-# **When to use anti_aliasing=True (default):**
+# **``anti_aliasing="auto"`` (default):**
 #
-# - Always recommended unless you've already filtered your data appropriately
-# - Essential when tau > 1 to prevent aliasing artifacts
-# - Automatically applies low-pass filtering at appropriate frequencies
+# - Smart detection based on data type and preprocessing history
+# - For MNE Epochs: checks ``info['lowpass']`` to see if data is already filtered
+# - For array inputs: always applies filtering (preprocessing unknown)
+# - Skips filtering if data is already filtered at or below the required frequency
 #
-# **When anti_aliasing=False might be acceptable:**
+# **``anti_aliasing=True``:**
 #
-# - You've already applied appropriate low-pass filtering to your data
-# - You want to save computation time and are confident in your preprocessing
-# - **Warning**: Results may be inaccurate/unreliable without proper filtering
+# - Always applies anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz
+# - Use when you want to ensure filtering regardless of preprocessing history
+#
+# **``anti_aliasing=False``:**
+#
+# - Never applies filtering - use only if you've already filtered appropriately
+# - **Warning**: Results may be inaccurate without proper filtering
 #
 # The tau parameter affects your effective sampling frequency multiplicatively. For
 # example, ``tau = 2`` reduces your effective sampling rate by half, so

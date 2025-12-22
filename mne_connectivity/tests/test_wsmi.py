@@ -31,7 +31,9 @@ def test_wsmi_input_output_validation():
     with pytest.raises(ValueError, match="tau.*must be > 0"):
         wsmi(epochs, kernel=3, tau=0)
 
-    with pytest.raises(TypeError, match="anti_aliasing must be an instance of bool"):
+    with pytest.raises(
+        ValueError, match="anti_aliasing must be True, False, or 'auto'"
+    ):
         wsmi(epochs, kernel=3, tau=1, anti_aliasing="yes")
 
     with pytest.raises(TypeError, match="weighted must be an instance of bool"):
@@ -279,31 +281,165 @@ def test_wsmi_weighted_vs_unweighted():
     )
 
 
-def test_wsmi_anti_aliasing():
-    """Test anti-aliasing parameter."""
-    sfreq = 100.0
-    signal_freqs = [10, 12, 15]  # Hz
-    n_epochs, n_channels, n_times = 2, len(signal_freqs), 200
+def test_wsmi_strong_vs_weak_coupling():
+    """Test that wSMI clearly discriminates strong coupling from independence.
 
+    Creates signals with:
+    - Strong nonlinear coupling (should have high wSMI)
+    - Truly independent signals (should have low/near-zero wSMI)
+
+    Verifies that coupled signals have significantly higher wSMI than independent.
+    """
+    sfreq = 200.0
+    n_epochs, n_times = 10, 500
     t = np.linspace(0, n_times / sfreq, n_times)
-    data = np.zeros((1, n_channels, n_times))
-    for ch_idx, freq in enumerate(signal_freqs):
-        data[0, ch_idx, :] = np.sin(2 * np.pi * freq * t)  # Sine wave at `freq` Hz
-    data = np.repeat(data, n_epochs, axis=0)
 
-    info = create_info(n_channels, sfreq=sfreq, ch_types="eeg")
+    # Use different random seeds for truly independent signals
+    rng_coupled = np.random.RandomState(42)
+    rng_independent = np.random.RandomState(999)
+
+    data = np.zeros((n_epochs, 4, n_times))
+    for epoch in range(n_epochs):
+        # Channel 0: Base signal (slow oscillation)
+        base = np.sin(2 * np.pi * 5 * t) + 0.1 * rng_coupled.randn(n_times)
+
+        # Channel 1: STRONGLY coupled - nonlinear transform + related harmonic
+        # The added harmonic creates pattern diversity while maintaining coupling
+        strongly_coupled = (
+            np.tanh(2 * base) + 0.4 * np.sin(2 * np.pi * 10 * t)  # 2nd harmonic
+        )
+
+        # Channel 2: Weakly coupled - much more noise dilutes the relationship
+        weakly_coupled = 0.3 * base + 0.7 * rng_coupled.randn(n_times)
+
+        # Channel 3: Truly independent - unrelated frequency + independent noise
+        independent = np.sin(2 * np.pi * 17 * t) + 0.3 * rng_independent.randn(n_times)
+
+        data[epoch, 0, :] = base
+        data[epoch, 1, :] = strongly_coupled
+        data[epoch, 2, :] = weakly_coupled
+        data[epoch, 3, :] = independent
+
+    ch_names = ["base", "strong", "weak", "independent"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
     epochs = EpochsArray(data, info, tmin=0.0)
 
-    # Test with anti-aliasing enabled
-    conn_with_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=True)
+    # Compute wSMI: base-strong, base-weak, base-independent
+    indices = (np.array([0, 0, 0]), np.array([1, 2, 3]))
+    conn = wsmi(epochs, kernel=3, tau=1, indices=indices, average=True)
+    conn_data = conn.get_data()
 
-    # Test with anti-aliasing disabled (should produce warning)
+    strong_wsmi = conn_data[0]  # base-strongly_coupled
+    weak_wsmi = conn_data[1]  # base-weakly_coupled
+    independent_wsmi = conn_data[2]  # base-independent
+
+    # Key assertions:
+    # 1. Strongly coupled > weakly coupled > independent
+    assert strong_wsmi > weak_wsmi, (
+        f"Strong coupling ({strong_wsmi:.4f}) should exceed weak ({weak_wsmi:.4f})"
+    )
+    assert weak_wsmi > independent_wsmi, (
+        f"Weak coupling ({weak_wsmi:.4f}) should exceed "
+        f"independent ({independent_wsmi:.4f})"
+    )
+
+    # 2. Strong coupling should be notably higher than independent (at least 2x)
+    ratio = strong_wsmi / (independent_wsmi + 1e-10)
+    assert ratio > 2.0, (
+        f"Strong/independent ratio ({ratio:.1f}) should be > 2.0 for clear "
+        f"discrimination. strong={strong_wsmi:.4f}, indep={independent_wsmi:.4f}"
+    )
+
+
+def test_wsmi_anti_aliasing_effectiveness():
+    """Test that anti-aliasing prevents artifacts with high tau values.
+
+    When tau > 1, the effective sampling rate is reduced. Without anti-aliasing,
+    high-frequency components can alias into lower frequencies, distorting results.
+
+    This test creates:
+    - Two coupled low-frequency signals (should show consistent wSMI)
+    - High-frequency noise that will alias without filtering
+
+    With anti-aliasing: coupling is detected correctly
+    Without anti-aliasing: aliasing artifacts distort the wSMI values
+    """
+    sfreq = 200.0
+    n_epochs, n_times = 5, 600
+    t = np.linspace(0, n_times / sfreq, n_times)
+    tau = 4  # High tau = effective sfreq of 50 Hz, Nyquist at 25 Hz
+
+    # Anti-aliasing cutoff for kernel=3, tau=4: 200/(3*4) = 16.67 Hz
+    # Any signal above ~17 Hz will alias without filtering
+
+    rng = np.random.RandomState(42)
+    data = np.zeros((n_epochs, 3, n_times))
+
+    for epoch in range(n_epochs):
+        # Low-frequency coupled pair (5 Hz - well below anti-alias cutoff)
+        base_low = np.sin(2 * np.pi * 5 * t)
+        coupled_low = np.tanh(2 * base_low)  # Nonlinear coupling
+
+        # Add HIGH frequency noise (40 Hz - above Nyquist for tau=4)
+        # This will alias and corrupt results without anti-aliasing
+        high_freq_noise = 0.8 * np.sin(2 * np.pi * 40 * t + rng.rand() * 2 * np.pi)
+
+        data[epoch, 0, :] = base_low + high_freq_noise
+        data[epoch, 1, :] = coupled_low + high_freq_noise
+        # Channel 2: Independent signal with same high-freq noise
+        data[epoch, 2, :] = (
+            np.sin(2 * np.pi * 7 * t + rng.rand() * 2 * np.pi) + high_freq_noise
+        )
+
+    ch_names = ["base", "coupled", "independent"]
+    info = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data, info, tmin=0.0)
+    indices = (np.array([0, 0]), np.array([1, 2]))  # base-coupled, base-independent
+
+    # With anti-aliasing: high-freq noise is filtered out, true coupling detected
+    conn_filtered = wsmi(
+        epochs,
+        kernel=3,
+        tau=tau,
+        indices=indices,
+        average=True,
+        anti_aliasing=True,
+    )
+    filtered_data = conn_filtered.get_data()
+    coupled_filtered = filtered_data[0]
+    independent_filtered = filtered_data[1]
+
+    # Without anti-aliasing: high-freq noise aliases, corrupts results
     with pytest.warns(UserWarning, match="Anti-aliasing disabled"):
-        conn_without_filter = wsmi(epochs, kernel=3, tau=1, anti_aliasing=False)
+        conn_unfiltered = wsmi(
+            epochs,
+            kernel=3,
+            tau=tau,
+            indices=indices,
+            average=True,
+            anti_aliasing=False,
+        )
+    unfiltered_data = conn_unfiltered.get_data()
+    coupled_unfiltered = unfiltered_data[0]
+    independent_unfiltered = unfiltered_data[1]
 
-    # Both should produce valid results
-    assert np.all(np.isfinite(conn_with_filter.get_data()))
-    assert np.all(np.isfinite(conn_without_filter.get_data()))
+    # Key assertion: With filtering, we correctly detect that base-coupled
+    # has HIGHER wSMI than base-independent (true relationship)
+    assert coupled_filtered > independent_filtered, (
+        f"With anti-aliasing: coupled ({coupled_filtered:.4f}) should exceed "
+        f"independent ({independent_filtered:.4f})"
+    )
+
+    # The aliased high-freq noise creates spurious correlations that mask
+    # the true coupling. Without filtering, the discrimination is worse.
+    # Measure: ratio of coupled/independent should be higher with filtering
+    ratio_filtered = coupled_filtered / (independent_filtered + 1e-10)
+    ratio_unfiltered = coupled_unfiltered / (independent_unfiltered + 1e-10)
+
+    assert ratio_filtered > ratio_unfiltered, (
+        f"Anti-aliasing should improve discrimination. "
+        f"Filtered ratio: {ratio_filtered:.2f}, Unfiltered ratio: {ratio_unfiltered:.2f}"
+    )
 
 
 def test_wsmi_ground_truth_validation():
