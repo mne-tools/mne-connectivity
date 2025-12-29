@@ -438,7 +438,8 @@ def test_wsmi_anti_aliasing_effectiveness():
 
     assert ratio_filtered > ratio_unfiltered, (
         f"Anti-aliasing should improve discrimination. "
-        f"Filtered ratio: {ratio_filtered:.2f}, Unfiltered ratio: {ratio_unfiltered:.2f}"
+        f"Filtered ratio: {ratio_filtered:.2f}"
+        f"Unfiltered ratio: {ratio_unfiltered:.2f}"
     )
 
 
