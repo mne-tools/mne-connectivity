@@ -299,20 +299,22 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 # Anti-aliasing: Understanding the Preprocessing
 # ==============================================
 #
-# wSMI includes automatic anti-aliasing filtering to prevent artifacts when ``tau > 1``.
-# This filtering is crucial for accurate results. The ``anti_aliasing`` parameter
-# accepts three values:
+# The :func:`~mne_connectivity.wsmi` function includes anti-aliasing filtering to
+# prevent artifacts when ``tau > 1``. This filtering is crucial for accurate results, as
+# otherwise high-frequency components can alias into lower frequencies. The
+# ``anti_aliasing`` parameter accepts three values:
 #
 # **``anti_aliasing="auto"`` (default):**
 #
 # - Smart detection based on data type and preprocessing history
-# - For MNE Epochs: checks ``info['lowpass']`` to see if data is already filtered
-# - For array inputs: always applies filtering (preprocessing unknown)
-# - Skips filtering if data is already filtered at or below the required frequency
+# - For :class:`mne.Epochs` inputs: checks ``info['lowpass']`` to see if data has been
+#   lowpass filtered, skipping the anti-aliasing filter if data is already filtered at
+#   or below the required frequency
+# - For array inputs: always applies an anti-aliasing filter (preprocessing unknown)
 #
 # **``anti_aliasing=True``:**
 #
-# - Always applies anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz
+# - Always applies an anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz
 # - Use when you want to ensure filtering regardless of preprocessing history
 #
 # **``anti_aliasing=False``:**

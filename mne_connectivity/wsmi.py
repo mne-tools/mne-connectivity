@@ -369,18 +369,20 @@ def wsmi(
     anti_aliasing : bool | str
         Controls anti-aliasing low-pass filtering before symbolic transformation.
 
-        - ``"auto"`` (default): Smart detection based on data type and preprocessing.
-          For array inputs, always applies filtering. For MNE Epochs, checks
-          ``info['lowpass']`` to determine if data is already appropriately filtered.
-          Only applies filtering if existing lowpass > required frequency.
-        - ``True``: Always apply anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz.
+        - ``"auto"`` (default): Smart detection based on ``data`` type and
+          preprocessing. For array inputs, always applies filtering. For
+          :class:`~mne.Epochs`, checks ``info['lowpass']`` to determine if data is
+          already appropriately filtered. Only applies filtering if existing lowpass >
+          required frequency.
+        - ``True``: Always apply an anti-aliasing filter at ``sfreq / (kernel * tau)``
+          Hz.
         - ``False``: Never apply filtering. Use only if you have already applied
           appropriate low-pass filtering to your data.
 
         .. warning::
-            Setting to ``False`` may produce unreliable results if the
-            effective sampling rate (``sfreq / tau``) violates the Nyquist criterion
-            for the spectral content of your data.
+            Setting to ``False`` may produce unreliable results if the effective
+            sampling rate (``sfreq / tau``) violates the Nyquist criterion for the
+            spectral content of your data.
     weighted : bool
         Whether to compute weighted SMI (wSMI) or standard SMI.
         If ``True`` (default), computes wSMI with distance-based weights.
