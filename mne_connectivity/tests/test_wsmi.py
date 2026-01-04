@@ -32,7 +32,7 @@ def test_wsmi_input_output_validation():
         wsmi(epochs, kernel=3, tau=0)
 
     with pytest.raises(
-        ValueError, match="anti_aliasing must be True, False, or 'auto'"
+        ValueError, match="Invalid value for the 'anti_aliasing' parameter"
     ):
         wsmi(epochs, kernel=3, tau=1, anti_aliasing="yes")
 

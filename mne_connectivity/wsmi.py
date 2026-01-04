@@ -13,7 +13,7 @@ from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
 from mne.fixes import jit
 from mne.utils import _time_mask, logger, verbose
-from mne.utils.check import _validate_type
+from mne.utils.check import _check_option, _validate_type
 from mne.utils.docs import fill_doc
 from scipy.signal import butter, filtfilt
 
@@ -435,11 +435,7 @@ def wsmi(
     # Input validation and data handling for both Epochs and arrays
     _validate_type(weighted, bool, "weighted")
     _validate_type(average, bool, "average")
-    # Validate anti_aliasing parameter
-    if anti_aliasing not in (True, False, "auto"):
-        raise ValueError(
-            f"anti_aliasing must be True, False, or 'auto', got {anti_aliasing!r}"
-        )
+    _check_option("anti_aliasing", anti_aliasing, (True, False, "auto"))
 
     # Handle both MNE Epochs and array inputs
     picks = None
