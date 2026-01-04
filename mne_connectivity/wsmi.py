@@ -207,9 +207,8 @@ def _apply_anti_aliasing(data, sfreq, kernel, tau, anti_aliasing, is_epochs, inf
             UserWarning,
         )
         should_filter = False
-
-    elif anti_aliasing is True:
-        # Always filter (unless frequency is too close to Nyquist)
+    else:  # True or "auto"
+        # Check if anti-aliasing frequency is too close to Nyquist
         if anti_alias_freq >= nyquist_freq * 0.99:
             skip_reason = (
                 f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
@@ -217,50 +216,45 @@ def _apply_anti_aliasing(data, sfreq, kernel, tau, anti_aliasing, is_epochs, inf
             )
             should_filter = False
         else:
-            should_filter = True
-
-    else:
-        # Auto mode: smart detection based on data type and preprocessing
-        if anti_alias_freq >= nyquist_freq * 0.99:
-            # Frequency too close to Nyquist - no filtering needed
-            skip_reason = (
-                f"Anti-aliasing frequency ({anti_alias_freq:.2f} Hz) too close to "
-                f"Nyquist frequency ({nyquist_freq:.2f} Hz)"
-            )
-            should_filter = False
-        elif not is_epochs:
-            # Array input: always filter in auto mode (we don't know preprocessing)
-            logger.info(
-                "Auto anti-aliasing: Array input detected, applying filter "
-                "(preprocessing history unknown)."
-            )
-            should_filter = True
-        else:
-            # MNE Epochs: check if already appropriately filtered
-            existing_lowpass = info.get("lowpass", None) if info else None
-
-            if existing_lowpass is not None and existing_lowpass <= anti_alias_freq:
-                # Data already filtered at or below required frequency
-                logger.info(
-                    f"Auto anti-aliasing: Data already low-pass filtered at "
-                    f"{existing_lowpass:.2f} Hz (<= {anti_alias_freq:.2f} Hz). "
-                    f"Skipping additional filtering."
-                )
-                should_filter = False
-            else:
-                # Need to apply filtering
-                if existing_lowpass is not None:
-                    logger.info(
-                        f"Auto anti-aliasing: Existing lowpass "
-                        f"({existing_lowpass:.2f} Hz) > required "
-                        f"({anti_alias_freq:.2f} Hz). Applying filter."
-                    )
-                else:
-                    logger.info(
-                        f"Auto anti-aliasing: No lowpass filter info found. "
-                        f"Applying filter at {anti_alias_freq:.2f} Hz."
-                    )
+            if anti_aliasing is True:
                 should_filter = True
+            else:  # Auto mode: smart detection based on data type and preprocessing
+                if not is_epochs:
+                    # Array input: always filter since we don't know preprocessing
+                    logger.info(
+                        "Auto anti-aliasing: Array input detected, applying filter "
+                        "(preprocessing history unknown)."
+                    )
+                    should_filter = True
+                else:
+                    # MNE Epochs: check if already appropriately filtered
+                    existing_lowpass = info.get("lowpass", None)
+
+                    if (
+                        existing_lowpass is not None
+                        and existing_lowpass <= anti_alias_freq
+                    ):
+                        # Data already filtered at or below required frequency
+                        logger.info(
+                            f"Auto anti-aliasing: Data already low-pass filtered at "
+                            f"{existing_lowpass:.2f} Hz (<= {anti_alias_freq:.2f} Hz). "
+                            f"Skipping additional filtering."
+                        )
+                        should_filter = False
+                    else:
+                        # Need to apply filtering
+                        if existing_lowpass is not None:
+                            logger.info(
+                                f"Auto anti-aliasing: Existing lowpass "
+                                f"({existing_lowpass:.2f} Hz) > required "
+                                f"({anti_alias_freq:.2f} Hz). Applying filter."
+                            )
+                        else:
+                            logger.info(
+                                f"Auto anti-aliasing: No lowpass filter info found. "
+                                f"Applying filter at {anti_alias_freq:.2f} Hz."
+                            )
+                        should_filter = True
 
     # Apply filtering if needed
     if should_filter:
