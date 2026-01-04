@@ -295,13 +295,13 @@ def test_wsmi_strong_vs_weak_coupling():
     t = np.linspace(0, n_times / sfreq, n_times)
 
     # Use different random seeds for truly independent signals
-    rng_coupled = np.random.RandomState(42)
-    rng_independent = np.random.RandomState(999)
+    rng_coupled = np.random.default_rng(42)
+    rng_independent = np.random.default_rng(999)
 
     data = np.zeros((n_epochs, 4, n_times))
     for epoch in range(n_epochs):
         # Channel 0: Base signal (slow oscillation)
-        base = np.sin(2 * np.pi * 5 * t) + 0.1 * rng_coupled.randn(n_times)
+        base = np.sin(2 * np.pi * 5 * t) + 0.1 * rng_coupled.standard_normal(n_times)
 
         # Channel 1: STRONGLY coupled - nonlinear transform + related harmonic
         # The added harmonic creates pattern diversity while maintaining coupling
@@ -310,10 +310,12 @@ def test_wsmi_strong_vs_weak_coupling():
         )
 
         # Channel 2: Weakly coupled - much more noise dilutes the relationship
-        weakly_coupled = 0.3 * base + 0.7 * rng_coupled.randn(n_times)
+        weakly_coupled = 0.3 * base + 0.7 * rng_coupled.standard_normal(n_times)
 
         # Channel 3: Truly independent - unrelated frequency + independent noise
-        independent = np.sin(2 * np.pi * 17 * t) + 0.3 * rng_independent.randn(n_times)
+        independent = np.sin(
+            2 * np.pi * 17 * t
+        ) + 0.3 * rng_independent.standard_normal(n_times)
 
         data[epoch, 0, :] = base
         data[epoch, 1, :] = strongly_coupled
@@ -372,7 +374,7 @@ def test_wsmi_anti_aliasing_effectiveness():
     # Anti-aliasing cutoff for kernel=3, tau=4: 200/(3*4) = 16.67 Hz
     # Any signal above ~17 Hz will alias without filtering
 
-    rng = np.random.RandomState(42)
+    rng = np.random.default_rng(42)
     data = np.zeros((n_epochs, 3, n_times))
 
     for epoch in range(n_epochs):
@@ -382,13 +384,16 @@ def test_wsmi_anti_aliasing_effectiveness():
 
         # Add HIGH frequency noise (40 Hz - above Nyquist for tau=4)
         # This will alias and corrupt results without anti-aliasing
-        high_freq_noise = 0.8 * np.sin(2 * np.pi * 40 * t + rng.rand() * 2 * np.pi)
+        high_freq_noise = 0.8 * np.sin(
+            2 * np.pi * 40 * t + rng.standard_normal() * 2 * np.pi
+        )
 
         data[epoch, 0, :] = base_low + high_freq_noise
         data[epoch, 1, :] = coupled_low + high_freq_noise
         # Channel 2: Independent signal with same high-freq noise
         data[epoch, 2, :] = (
-            np.sin(2 * np.pi * 7 * t + rng.rand() * 2 * np.pi) + high_freq_noise
+            np.sin(2 * np.pi * 7 * t + rng.standard_normal() * 2 * np.pi)
+            + high_freq_noise
         )
 
     ch_names = ["base", "coupled", "independent"]
