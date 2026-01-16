@@ -28,6 +28,7 @@ Enhancements
 - Add support for :class:`mne.time_frequency.EpochsSpectrum` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`220`).
 - Add support for :class:`mne.time_frequency.EpochsTFR` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions, by `Thomas Binns`_ and `Daniel McCloy`_ (:pr:`232`).
 - Update the cross-references for relevant functions and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
+- Add support for :class:`mne.time_frequency.EpochsSpectrum` and  :class:`mne.time_frequency.EpochsTFR` objects to be passed as data to the :func:`~mne_connectivity.phase_slope_index` function, by `Thomas Binns`_ (:pr:`327`).
 
 Bug
 ~~~

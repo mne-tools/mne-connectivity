@@ -51,13 +51,33 @@ def phase_slope_index(
 
     Parameters
     ----------
-    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | generator
-        Can also be a list/generator of arrays, shape ``(n_signals, n_times)``;
-        list/generator of :class:`mne.SourceEstimate`; or :class:`mne.Epochs`. The
-        data from which to compute connectivity. Note that it is also possible to
-        combine multiple signals by providing a list of tuples, e.g., ``data = [(arr_0,
-        stc_0), (arr_1, stc_1), (arr_2, stc_2)]``, corresponds to 3 epochs, and
-        ``arr_*`` could be an array with the same number of time points as ``stc_*``.
+    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | generator | ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR
+        The data from which to compute connectivity. Can be epoched time series data as
+        an array-like or :class:`mne.Epochs` object, or Fourier coefficients for each
+        epoch as an :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object. If time series data, the spectral
+        information will be computed according to the spectral estimation mode (see the
+        ``mode`` parameter). If an :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object, existing spectral information
+        will be used and the ``mode`` parameter will be ignored.
+
+        Note that it is also possible to combine multiple time series signals by
+        providing a list of tuples, e.g.: ::
+
+            data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)]
+
+        which corresponds to 3 epochs where ``arr_*`` is an array with the same number
+        of time points as ``stc_*``. Data can also be a list/generator of arrays, shape
+        ``(n_signals, n_times)``, or a list/generator of :class:`mne.SourceEstimate` or
+        :class:`mne.VolSourceEstimate` objects.
+
+        .. versionchanged:: 0.8
+           Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
+           or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
+           data. Storing Fourier coefficients in
+           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
+           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
+           requires ``mne >= 1.10``.
     %(names)s
     indices : tuple of array_like | None
         Two array-likes with indices of connections for which to compute connectivity.
@@ -68,7 +88,9 @@ def phase_slope_index(
         will change to ``None`` in 0.9. Set it explicitly when ``data`` is an array-like
         to avoid a warning.
     mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``
-        Spectrum estimation mode.
+        Spectrum estimation mode. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     fmin : float | tuple of float
         The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,
         (8., 20.) for two bands with 8 Hz and 20 Hz lower freq. If ``None`` the
@@ -77,23 +99,35 @@ def phase_slope_index(
         The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,
         (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.
     tmin : float | None
-        Time to start connectivity estimation.
+        Time to start connectivity estimation. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` object.
     tmax : float | None
-        Time to end connectivity estimation.
+        Time to end connectivity estimation. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` object.
     mt_bandwidth : float | None
         The bandwidth of the multitaper windowing function in Hz. Only used in
-        ``'multitaper'`` mode.
+        ``'multitaper'`` mode. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     mt_adaptive : bool
         Use adaptive weights to combine the tapered spectra into PSD. Only used in
-        ``'multitaper'`` mode.
+        ``'multitaper'`` mode. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     mt_low_bias : bool
         Only use tapers with more than 90 percent spectral concentration within
-        bandwidth. Only used in ``'multitaper'`` mode.
+        bandwidth. Only used in ``'multitaper'`` mode. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     cwt_freqs : array_like
         Array-like of frequencies of interest. Only used in ``'cwt_morlet'`` mode.
+        Ignored if ``data`` is an :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     cwt_n_cycles : float | array_like
         Number of cycles. Fixed number or one per frequency. Only used in
-        ``'cwt_morlet'`` mode.
+        ``'cwt_morlet'`` mode. Ignored if ``data`` is an
+        :class:`mne.time_frequency.EpochsSpectrum` or
+        :class:`mne.time_frequency.EpochsTFR` object.
     block_size : int
         How many connections to compute at once (higher numbers are faster but require
         more memory).
@@ -120,7 +154,7 @@ def phase_slope_index(
     References
     ----------
     .. footbibliography::
-    """
+    """  # noqa: E501
     logger.info("Estimating phase slope index (PSI)")
 
     if sfreq == "":
@@ -158,10 +192,7 @@ def phase_slope_index(
     )
 
     # extract class properties from the spectral connectivity structure
-    if isinstance(cohy, SpectroTemporalConnectivity):
-        times = cohy.times
-    else:
-        times = None
+    times = cohy.attrs.get("times")
     freqs_ = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
@@ -179,7 +210,7 @@ def phase_slope_index(
     bands = list(zip(np.asarray((fmin,)).ravel(), np.asarray((fmax,)).ravel()))
     n_bands = len(bands)
 
-    freq_dim = -2 if mode == "cwt_morlet" else -1
+    freq_dim = -2 if isinstance(cohy, SpectroTemporalConnectivity) else -1
 
     # allocate space for output
     out_shape = list(cohy.shape)
@@ -215,7 +246,7 @@ def phase_slope_index(
     logger.info("[PSI Estimation Done]")
 
     # create a connectivity container
-    if mode in ["multitaper", "fourier"]:
+    if isinstance(cohy, SpectralConnectivity):
         # spectral only
         conn = SpectralConnectivity(
             data=psi,
@@ -232,7 +263,7 @@ def phase_slope_index(
             events=events,
             event_id=event_id,
         )
-    elif mode == "cwt_morlet":
+    else:
         # spectrotemporal
         conn = SpectroTemporalConnectivity(
             data=psi,
