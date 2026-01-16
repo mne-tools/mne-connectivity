@@ -648,8 +648,8 @@ def spectral_connectivity_time(
     conn = dict()
     conn_patterns = dict()
     for m in method:
-        # CaCoh complex-valued, all other methods real-valued
-        if m == "cacoh":
+        # Cohy and CaCoh complex-valued, all other methods real-valued
+        if m in ["cacoh", "cohy"]:
             con_scores_dtype = np.complex128
         else:
             con_scores_dtype = np.float64
@@ -1045,7 +1045,7 @@ def _parallel_con(
         output is a tuple of lists containing arrays for the connectivity scores and
         patterns, respectively.
     """
-    if "coh" in method:
+    if ("coh" in method) or ("cohy" in method):
         # psd
         if weights is not None:
             psd = weights * w
@@ -1137,9 +1137,16 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         s_xy = np.squeeze(s_xy, axis=0)
     s_xy = _smooth_spectra(s_xy, kernel)
     out = []
-    conn_func = {"plv": _plv, "ciplv": _ciplv, "pli": _pli, "wpli": _wpli, "coh": _coh}
+    conn_func = {
+        "plv": _plv,
+        "ciplv": _ciplv,
+        "pli": _pli,
+        "wpli": _wpli,
+        "coh": _coh,
+        "cohy": _cohy,
+    }
     for m in method:
-        if m == "coh":
+        if m in ["coh", "cohy"]:
             s_xx = psd[x]
             s_yy = psd[y]
             out.append(conn_func[m](s_xx, s_yy, s_xy))
@@ -1380,6 +1387,32 @@ def _coh(s_xx, s_yy, s_xy):
     )
     coh = con_num / con_den
     return coh
+
+
+def _cohy(s_xx, s_yy, s_xy):
+    """Compute coherencey given the cross spectral density and PSD.
+
+    Parameters
+    ----------
+    s_xx : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'x'.
+    s_yy : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'y'.
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    cohy : array-like, shape (n_freqs, n_times)
+        The estimated COHY.
+    """
+    con_num = s_xy.mean(axis=-1, keepdims=True)
+    con_den = np.sqrt(
+        s_xx.mean(axis=-1, keepdims=True) * s_yy.mean(axis=-1, keepdims=True)
+    )
+    cohy = con_num / con_den
+    return cohy
 
 
 def _compute_csd(x, y, weights):
