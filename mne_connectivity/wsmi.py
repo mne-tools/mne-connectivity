@@ -350,7 +350,7 @@ def wsmi(
         Pattern length (symbol dimension) for symbolic analysis.
         Must be > 1. Values > 7 may require significant memory.
     tau : int
-        Time delay (lag) between consecutive pattern elements.
+        Time delay (lag; in samples) between consecutive pattern elements.
         Must be > 0.
     indices : tuple of array_like | None
         Two array-likes with indices of connections for which to compute connectivity.
@@ -359,17 +359,25 @@ def wsmi(
         channels 1 and 3, use ``indices = (np.array([0, 1]), np.array([2, 3]))``.
     sfreq : float | None
         The sampling frequency. Required if ``data`` is an array-like.
-    names : list | None
-        Channel names. If None, default names will be used.
+    names : array_like | None
+        A list of names associated with the signals in ``data``. If ``None`` and
+        ``data`` is an :class:`mne.Epochs` object, the names in ``data`` will be used.
+        If ``data`` is an array-like, the names will be a list of indices of the number
+        of nodes.
     tmin : float | None
-        Time to start connectivity estimation. If ``None``, uses beginning
-        of epoch.
+        Time to start connectivity estimation. Note: when ``data`` is an array-like, the
+        first sample is assumed to be at time 0. For :class:`mne.Epochs`, the time
+        information contained in the object is used to compute the time indices. If
+        ``None``, uses the first sample.
     tmax : float | None
-        Time to end connectivity estimation. If ``None``, uses end of epoch.
-    anti_aliasing : bool | str
+        Time to end connectivity estimation. Note: when ``data`` is an array-like, the
+        first sample is assumed to be at time 0. For :class:`mne.Epochs`, the time
+        information contained in the object is used to compute the time indices. If
+        ``None``, uses the last sample.
+    anti_aliasing : ``'auto'`` | bool
         Controls anti-aliasing low-pass filtering before symbolic transformation.
 
-        - ``"auto"`` (default): Smart detection based on ``data`` type and
+        - ``'auto'`` (default): Smart detection based on ``data`` type and
           preprocessing. For array inputs, always applies filtering. For
           :class:`~mne.Epochs`, checks ``info['lowpass']`` to determine if data is
           already appropriately filtered. Only applies filtering if existing lowpass >
