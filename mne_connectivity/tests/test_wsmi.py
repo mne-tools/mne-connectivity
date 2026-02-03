@@ -449,7 +449,35 @@ def test_wsmi_anti_aliasing_effectiveness():
 
 
 def test_wsmi_ground_truth_validation():
-    """Test wSMI against ground truth data for regression testing."""
+    """Regression test of wSMI connectivity against ground-truth data.
+
+    This test validates the current implementation of weighted Symbolic Mutual
+    Information (wSMI) by comparing its output to reference values obtained from
+    the original wSMI code used within the PICNIC Lab.
+
+    Notes
+    -----
+    The ground-truth data were generated using the original implementation of the
+    wSMI algorithm developed by Denis A. Engemann and Federico Raimondo in the
+    PICNIC Lab. This implementation was introduced and validated in prior studies
+    on EEG markers of consciousness and has been used in subsequent publications
+    by the PICNIC team whenever wSMI was computed.
+
+    The present regression test ensures numerical consistency with those
+    reference results and guards against unintended changes in future updates.
+
+    References
+    ----------
+    [1] King, J. R., Sitt, J. D., Faugeras, F., Rohaut, B., El Karoui, I.,
+        Cohen, L., et al. (2013). Information sharing in the brain indexes
+        consciousness in noncommunicative patients. *Current Biology*, 23(19),
+        1914–1919.
+
+    [2] Engemann, D. A., Raimondo, F., King, J. R., Rohaut, B., Louppe, G.,
+        Faugeras, F., et al. (2018). Robust EEG-based cross-site and
+        cross-protocol classification of states of consciousness.
+        *Brain*, 141(11), 3179–3192.
+    """
     test_data_path = os.path.join(
         os.path.dirname(__file__), "data", "wsmi_test_data.pkl"
     )
