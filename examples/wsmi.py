@@ -322,10 +322,22 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 # - Never applies filtering - use only if you've already filtered appropriately
 # - **Warning**: Results may be inaccurate without proper filtering
 #
-# The tau parameter affects your effective sampling frequency multiplicatively. For
-# example, ``tau = 2`` reduces your effective sampling rate by half, so
-# high-temporal-fidelity coupling (sample-to-sample) may not be detected if you set tau
-# to higher values. This affects the time-scale on which signals are considered coupled.
+# **Why tau affects anti-aliasing:**
+#
+# The ``tau`` parameter determines the time delay between pattern elements, effectively
+# reducing your sampling rate for symbolic analysis. For example, with ``sfreq=200`` Hz
+# and ``tau=4``, the effective sampling rate becomes 50 Hz (Nyquist at 25 Hz). Any
+# signal components above this Nyquist frequency will alias and corrupt the ordinal
+# patterns.
+#
+# The anti-aliasing filter frequency is calculated as ``sfreq / kernel / tau``. For
+# instance, with ``sfreq=200``, ``kernel=3``, and ``tau=4``, the cutoff is
+# ``200/3/4 ≈ 16.7`` Hz. This ensures all spectral content above the effective Nyquist
+# is removed before symbolic transformation.
+#
+# Keep in mind that higher ``tau`` values focus the analysis on slower dynamics. For
+# example, ``tau=1`` captures sample-to-sample coupling, while ``tau=4`` captures
+# coupling at 4x coarser temporal resolution.
 
 ########################################################################################
 # Computing wSMI on Real EEG Data
@@ -447,11 +459,9 @@ plt.show()
 # - Values near 0: Minimal information sharing
 # - Higher values: Stronger information integration
 # - Compare relative values rather than absolute thresholds
-# - Consider the temporal scale defined by your ``tau`` parameter: ``tau > 1`` lowers
-#   your effective sampling frequency multiplicatively, affecting your interpretation of
-#   the time-scale on which signals are coupled. For example, high-temporal-fidelity
-#   coupling (sample-to-sample) may not be detected if you set ``tau`` to a higher
-#   value, as it focuses on slower dynamics.
+# - Consider the temporal scale defined by your ``tau`` parameter: higher ``tau`` values
+#   focus the analysis on slower dynamics (e.g., ``tau=1`` captures sample-to-sample
+#   coupling, while ``tau=4`` captures coupling at 4x coarser resolution)
 
 ########################################################################################
 # References

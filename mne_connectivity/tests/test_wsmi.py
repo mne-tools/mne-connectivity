@@ -448,6 +448,155 @@ def test_wsmi_anti_aliasing_effectiveness():
     )
 
 
+def test_auto_anti_aliasing():
+    """Test that auto anti-aliasing mode behaves correctly for different scenarios.
+
+    Tests:
+    1. Epochs with default/high lowpass (should filter)
+    2. Epochs that have been pre-filtered to low enough lowpass (should skip filtering)
+    3. Array input where no lowpass info is known (should filter)
+
+    Compares wSMI results from auto mode to results where anti-aliasing has been
+    explicitly set to True/False depending on expected auto behavior.
+
+    Note: MNE manages info["lowpass"] internally - it's set to sfreq/2 by default
+    and can only be changed by actually filtering the data.
+    """
+    sfreq = 200.0
+    n_epochs, n_channels, n_times = 3, 3, 400
+    kernel, tau = 3, 2
+    # Anti-alias cutoff frequency: sfreq / kernel / tau = 200 / 3 / 2 = 33.33 Hz
+    anti_alias_freq = sfreq / kernel / tau
+
+    rng = np.random.default_rng(42)
+    t = np.linspace(0, n_times / sfreq, n_times)
+
+    # Create deterministic test data with known coupling
+    data = np.zeros((n_epochs, n_channels, n_times))
+    for epoch in range(n_epochs):
+        base = np.sin(2 * np.pi * 10 * t) + 0.1 * rng.standard_normal(n_times)
+        coupled = np.tanh(2 * base)
+        independent = np.sin(2 * np.pi * 15 * t) + 0.1 * rng.standard_normal(n_times)
+        data[epoch, 0, :] = base
+        data[epoch, 1, :] = coupled
+        data[epoch, 2, :] = independent
+
+    ch_names = ["base", "coupled", "independent"]
+    indices = (np.array([0, 0]), np.array([1, 2]))
+
+    # --- Test 1: Epochs with default lowpass (sfreq/2 = 100 Hz > 33.33 Hz) ---
+    # Default lowpass is Nyquist (sfreq/2), which is > anti_alias_freq
+    # So auto mode should apply filtering (same as True)
+    info_default = create_info(ch_names, sfreq=sfreq, ch_types="eeg")
+    epochs_default = EpochsArray(data, info_default, tmin=0.0)
+
+    # Verify the default lowpass is set to Nyquist
+    assert epochs_default.info["lowpass"] == sfreq / 2, "Expected lowpass=Nyquist"
+
+    conn_auto_default = wsmi(
+        epochs_default,
+        kernel=kernel,
+        tau=tau,
+        indices=indices,
+        anti_aliasing="auto",
+        average=True,
+    )
+    conn_true_default = wsmi(
+        epochs_default,
+        kernel=kernel,
+        tau=tau,
+        indices=indices,
+        anti_aliasing=True,
+        average=True,
+    )
+    # When lowpass > anti_alias_freq, auto mode should filter (same as True)
+    assert_allclose(
+        conn_auto_default.get_data(),
+        conn_true_default.get_data(),
+        err_msg=(
+            f"Auto mode with default lowpass ({sfreq / 2} Hz) > anti-alias freq "
+            f"({anti_alias_freq:.2f} Hz) should behave like anti_aliasing=True"
+        ),
+    )
+
+    # --- Test 2: Epochs pre-filtered to low lowpass (should skip filtering) ---
+    # Actually filter the data using MNE to set lowpass <= anti_alias_freq
+    # Filter to 30 Hz which is <= 33.33 Hz anti-alias cutoff
+    epochs_filtered = epochs_default.copy().filter(
+        l_freq=None, h_freq=30.0, verbose=False
+    )
+    assert epochs_filtered.info["lowpass"] == 30.0, "Expected lowpass=30"
+
+    conn_auto_filtered = wsmi(
+        epochs_filtered,
+        kernel=kernel,
+        tau=tau,
+        indices=indices,
+        anti_aliasing="auto",
+        average=True,
+    )
+    with pytest.warns(UserWarning, match="Anti-aliasing disabled"):
+        conn_false_filtered = wsmi(
+            epochs_filtered,
+            kernel=kernel,
+            tau=tau,
+            indices=indices,
+            anti_aliasing=False,
+            average=True,
+        )
+    # When lowpass <= anti_alias_freq, auto mode should skip filtering (same as False)
+    assert_allclose(
+        conn_auto_filtered.get_data(),
+        conn_false_filtered.get_data(),
+        err_msg=(
+            f"Auto mode with lowpass ({30.0} Hz) <= anti-alias freq "
+            f"({anti_alias_freq:.2f} Hz) should behave like anti_aliasing=False"
+        ),
+    )
+
+    # --- Test 3: Array input (should always filter) ---
+    # For arrays, we don't have info about preprocessing, so auto always filters
+    conn_auto_array = wsmi(
+        data,
+        kernel=kernel,
+        tau=tau,
+        indices=indices,
+        sfreq=sfreq,
+        anti_aliasing="auto",
+        average=True,
+    )
+    conn_true_array = wsmi(
+        data,
+        kernel=kernel,
+        tau=tau,
+        indices=indices,
+        sfreq=sfreq,
+        anti_aliasing=True,
+        average=True,
+    )
+    # For array input, auto mode should always filter (same as True)
+    assert_allclose(
+        conn_auto_array.get_data(),
+        conn_true_array.get_data(),
+        err_msg="Auto mode with array input should behave like anti_aliasing=True",
+    )
+
+    # --- Additional verification: filtered vs unfiltered produce different results ---
+    # This ensures the test is meaningful (filtering actually changes the output)
+    with pytest.warns(UserWarning, match="Anti-aliasing disabled"):
+        conn_false_default = wsmi(
+            epochs_default,
+            kernel=kernel,
+            tau=tau,
+            indices=indices,
+            anti_aliasing=False,
+            average=True,
+        )
+    # Filtered and unfiltered should give different results (test is meaningful)
+    # Filtered and unfiltered should give different results (test is meaningful)
+    assert not np.allclose(conn_true_default.get_data(), conn_false_default.get_data())
+
+
 def test_wsmi_ground_truth_validation():
     """Regression test of wSMI connectivity against ground-truth data.
 

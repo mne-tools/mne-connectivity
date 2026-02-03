@@ -374,7 +374,7 @@ def wsmi(
           :class:`~mne.Epochs`, checks ``info['lowpass']`` to determine if data is
           already appropriately filtered. Only applies filtering if existing lowpass >
           required frequency.
-        - ``True``: Always apply an anti-aliasing filter at ``sfreq / (kernel * tau)``
+        - ``True``: Always apply an anti-aliasing filter at ``sfreq / kernel / tau``
           Hz.
         - ``False``: Never apply filtering. Use only if you have already applied
           appropriate low-pass filtering to your data.
@@ -419,7 +419,7 @@ def wsmi(
     **Anti-aliasing filtering**:
     By default, the function applies automatic low-pass filtering to prevent aliasing
     artifacts that can corrupt ordinal patterns when ``tau > 1``. The filter frequency
-    is set to ``sfreq / (kernel * tau)`` Hz, which ensures the spectral content matches
+    is set to ``sfreq / kernel / tau`` Hz, which ensures the spectral content matches
     the effective temporal sampling rate of the symbolic transformation. Users who have
     already applied appropriate preprocessing can disable this by setting
     ``anti_aliasing=False``.
