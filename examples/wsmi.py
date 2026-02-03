@@ -304,7 +304,7 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 # otherwise high-frequency components can alias into lower frequencies. The
 # ``anti_aliasing`` parameter accepts three values:
 #
-# **``anti_aliasing="auto"`` (default):**
+# **"auto" (default):**
 #
 # - Smart detection based on data type and preprocessing history
 # - For :class:`mne.Epochs` inputs: checks ``info['lowpass']`` to see if data has been
@@ -312,12 +312,12 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 #   or below the required frequency
 # - For array inputs: always applies an anti-aliasing filter (preprocessing unknown)
 #
-# **``anti_aliasing=True``:**
+# **True:**
 #
 # - Always applies an anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz
 # - Use when you want to ensure filtering regardless of preprocessing history
 #
-# **``anti_aliasing=False``:**
+# **False:**
 #
 # - Never applies filtering - use only if you've already filtered appropriately
 # - **Warning**: Results may be inaccurate without proper filtering
