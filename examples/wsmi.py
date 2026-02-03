@@ -107,7 +107,7 @@ epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
 # Plot a sample of the data
 fig = epochs.plot(
     n_epochs=1,
-    scalings="auto",
+    scalings={"eeg": 2e-4},
     show_scrollbars=False,
     title="Synthetic EEG Data with Different Connectivity Patterns",
 )
