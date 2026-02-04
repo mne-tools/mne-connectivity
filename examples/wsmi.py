@@ -308,7 +308,7 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 #
 # **True:**
 #
-# - Always applies an anti-aliasing filter at ``sfreq / (kernel * tau)`` Hz
+# - Always applies an anti-aliasing filter at ``sfreq / kernel / tau`` Hz
 # - Use when you want to ensure filtering regardless of preprocessing history
 #
 # **False:**
