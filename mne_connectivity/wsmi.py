@@ -379,7 +379,7 @@ def wsmi(
 
         - ``'auto'`` (default): Smart detection based on ``data`` type and
           preprocessing. For array inputs, always applies filtering. For
-          :class:`~mne.Epochs`, checks ``info['lowpass']`` to determine if data is
+          :class:`mne.Epochs`, checks ``info['lowpass']`` to determine if data is
           already appropriately filtered. Only applies filtering if existing lowpass >
           required frequency.
         - ``True``: Always apply an anti-aliasing filter at ``sfreq / kernel / tau``
