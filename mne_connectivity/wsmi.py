@@ -421,17 +421,6 @@ def wsmi(
     2. Computation of mutual information between symbolic sequences
     3. Weighting based on pattern distance for enhanced sensitivity
 
-    When ``weighted=False``, the function computes standard Symbolic Mutual Information
-    (SMI) without distance-based weighting.
-
-    **Anti-aliasing filtering**:
-    By default, the function applies automatic low-pass filtering to prevent aliasing
-    artifacts that can corrupt ordinal patterns when ``tau > 1``. The filter frequency
-    is set to ``sfreq / kernel / tau`` Hz, which ensures the spectral content matches
-    the effective temporal sampling rate of the symbolic transformation. Users who have
-    already applied appropriate preprocessing can disable this by setting
-    ``anti_aliasing=False``.
-
     References
     ----------
     .. footbibliography::
