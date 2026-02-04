@@ -29,6 +29,7 @@ import mne
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib import colors
 from mne.datasets import sample
 
 from mne_connectivity import wsmi
@@ -199,9 +200,10 @@ ax.figure.tight_layout()
 kernels = [3, 4, 5]
 taus = [1, 2, 3]
 
-# Store results for each Source connection
-channel_names = ["Linear_Coupled", "Nonlinear_Coupled", "Independent"]
-results = {name: np.zeros((len(kernels), len(taus))) for name in channel_names}
+# Define connection indices and get target channel names
+indices = ([0, 0, 0], [1, 2, 3])  # Source channel to all others
+target_names = [ch_names[idx] for idx in indices[1]]
+results = np.zeros((len(indices[0]), len(kernels), len(taus)))
 
 # Perform grid search
 for i, kernel in enumerate(kernels):
@@ -209,25 +211,21 @@ for i, kernel in enumerate(kernels):
         conn = wsmi(
             epochs, kernel=kernel, tau=tau, indices=indices, average=True, verbose=False
         )
-
-        # Extract Source connections (indices 0, 1, 2 are Source to other channels)
-        for k, channel_name in enumerate(channel_names):
-            results[channel_name][i, j] = conn.get_data()[k]
+        # Extract connections from source channel to each target channel
+        results[:, i, j] = conn.get_data()
 
 # Create heatmaps showing parameter effects for each coupling type
 fig, axes = plt.subplots(3, 1, figsize=(7, 12))
-
-for idx, (channel_name, data) in enumerate(results.items()):
-    im = axes[idx].imshow(data, cmap="plasma", aspect="auto")  # Different colormap
-    axes[idx].set_title(f"Source ↔ {channel_name}")
+norm = colors.Normalize(vmin=results.min(), vmax=results.max())
+for idx, data in enumerate(results):
+    im = axes[idx].imshow(data, cmap="plasma", aspect="auto", norm=norm)
+    axes[idx].set_title(f"Source ↔ {target_names[idx]}")
     axes[idx].set_xlabel("tau")
     axes[idx].set_ylabel("kernel")
     axes[idx].set_xticks(range(len(taus)))
     axes[idx].set_xticklabels(taus)
     axes[idx].set_yticks(range(len(kernels)))
     axes[idx].set_yticklabels(kernels)
-
-    # Add text annotations
     for ii in range(len(kernels)):
         for jj in range(len(taus)):
             text = axes[idx].text(
