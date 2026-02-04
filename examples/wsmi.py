@@ -65,13 +65,13 @@ for epoch in range(n_epochs):
         np.sin(2 * np.pi * alpha_freq * times) + 0.3 * rng.standard_normal(n_times)
     )
 
-    # Channel 2: Linear coupling to ch1 (strong connectivity expected)
+    # Channel 2: Linear coupling to channel 1 (strong connectivity expected)
     coupling_strength = 0.7 + rng.normal(0, 0.1)
     delay_samples = int(0.05 * sfreq)  # 50ms delay
     ch2_base = coupling_strength * np.roll(ch1, delay_samples)
     ch2 = ch2_base + 20e-6 * rng.standard_normal(n_times)
 
-    # Channel 3: Nonlinear coupling to ch1 (wSMI should detect this)
+    # Channel 3: Nonlinear coupling to channel 1 (wSMI should detect this)
     # Phase-amplitude coupling + quadratic transformation
     ch3_phase = np.angle(np.sin(2 * np.pi * alpha_freq * times))
     ch3_amp = 0.5 * (1 + np.tanh(2 * ch1 / 50e-6))  # Nonlinear transformation
@@ -92,7 +92,7 @@ for epoch in range(n_epochs):
 
 
 # Create Epochs object
-ch_names = ["Source", "Linear_Coupled", "Nonlinear_Coupled", "Independent"]
+ch_names = ["Source", "Linear Coupled", "Nonlinear Coupled", "Independent"]
 info = mne.create_info(ch_names, sfreq=sfreq, ch_types="eeg")
 epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
 
@@ -107,7 +107,6 @@ epochs = mne.EpochsArray(data, info, tmin=0.0, verbose=False)
 
 # Plot a sample of the data
 fig = epochs.plot(n_epochs=1, scalings={"eeg": 2e-4}, show_scrollbars=False)
-print("Channels (from top to bottom):\n\t" + "\n\t".join(epochs.ch_names))
 
 ########################################################################################
 # Computing wSMI with Default Parameters
@@ -331,7 +330,7 @@ print(f"Difference:          {smi_values - wsmi_values:.3f}")
 #
 # Keep in mind that higher ``tau`` values focus the analysis on slower dynamics. For
 # example, ``tau=1`` captures sample-to-sample coupling, while ``tau=4`` captures
-# coupling at 4x coarser temporal resolution.
+# coupling at a 4x coarser temporal resolution.
 
 ########################################################################################
 # Computing wSMI on Real EEG Data
@@ -436,11 +435,10 @@ plt.show()
 #
 # **Parameter selection guidelines:**
 #
-# - ``kernel``: Start with 3, increase to 4-5 for more complex patterns (requires more
-#   data)
+# - ``kernel``: Start with 3, increase to 4-5 for more complex patterns
 # - ``tau``: Use 1 for high-resolution analysis, 2-3 for slower dynamics
-# - ``anti_aliasing``: Keep ``True`` unless you've already filtered appropriately
-# - ``weighted``: Keep ``True`` for most applications (wSMI vs SMI)
+# - ``anti_aliasing``: Keep ``"auto"`` for smart determination of appropriate filtering
+# - ``weighted``: Keep ``True`` when spurious correlations are a concern
 #
 # **Data requirements:**
 #
@@ -454,8 +452,7 @@ plt.show()
 # - Higher values: Stronger information integration
 # - Compare relative values rather than absolute thresholds
 # - Consider the temporal scale defined by your ``tau`` parameter: higher ``tau`` values
-#   focus the analysis on slower dynamics (e.g., ``tau=1`` captures sample-to-sample
-#   coupling, while ``tau=4`` captures coupling at 4x coarser resolution)
+#   focus the analysis on slower dynamics
 
 ########################################################################################
 # References
