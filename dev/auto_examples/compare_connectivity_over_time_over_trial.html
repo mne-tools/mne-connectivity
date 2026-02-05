@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.8.0.dev126+g2ba9a1613 documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.8.0.dev127+g23e972149 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=006ed4f8"></script>
+    <script src="../_static/documentation_options.js?v=90825cdd"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev126+g2ba9a1613 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev127+g23e972149 documentation</p>
   
 </a></div>
     
@@ -369,6 +369,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wsmi.html">Compute connectivity using weighted symbolic mutual information (wSMI)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="granger_causality.html">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
@@ -552,13 +553,13 @@ connectivity structure is the same over each event.</p>
 <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray.plot" title="mne.EpochsArray.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">data_epoch</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><span class="n">scalings</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>  <span class="c1"># Visualize the data</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_001.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_001.png" alt="Raw plot" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
 5 matching events found
 No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x785d577fddb0&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x73c46823d950&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -666,7 +667,7 @@ single timepoint resolution.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_001.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_001.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity method: coh
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_002.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_002.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity method: coh
 [[0. 0. 0.]
  [1. 0. 0.]
  [1. 1. 0.]]
@@ -727,7 +728,7 @@ before, but it could also be done in the function itself by setting
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_002.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_002.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity method: coh
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Connectivity method: coh
 [[0.         0.         0.        ]
  [0.12731767 0.         0.        ]
  [0.10982631 0.10808101 0.        ]]
@@ -766,12 +767,12 @@ over trials.</p>
 <a href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray.plot" title="mne.EpochsArray.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">data_epoch</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><span class="n">scalings</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_epochs</span></a><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="Raw plot" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
 5 matching events found
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x785d5737b610&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x73c4682c0eb0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -804,7 +805,7 @@ No baseline correction applied
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_003.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1194: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1194: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -866,7 +867,7 @@ between two channels are not the same over trials.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_004.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:420: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:420: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 only using indices for lower-triangular matrix
@@ -1078,9 +1079,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-540cd8e3-46bc-47ca-b810-878285c54854"
+<tr class="mne-repr-section-header general-9ba45bda-17bf-409b-b09c-61374ab70585"
      title="Hide section"
-    onclick="toggleVisibility('general-540cd8e3-46bc-47ca-b810-878285c54854')">
+    onclick="toggleVisibility('general-9ba45bda-17bf-409b-b09c-61374ab70585')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1092,26 +1093,26 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-540cd8e3-46bc-47ca-b810-878285c54854 ">
+<tr class="repr-element general-9ba45bda-17bf-409b-b09c-61374ab70585 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-540cd8e3-46bc-47ca-b810-878285c54854 ">
+<tr class="repr-element general-9ba45bda-17bf-409b-b09c-61374ab70585 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-540cd8e3-46bc-47ca-b810-878285c54854 ">
+<tr class="repr-element general-9ba45bda-17bf-409b-b09c-61374ab70585 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-540cd8e3-46bc-47ca-b810-878285c54854 ">
+<tr class="repr-element general-9ba45bda-17bf-409b-b09c-61374ab70585 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1126,9 +1127,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-f829f858-6fbb-45f3-b44f-28013d76df57"
+<tr class="mne-repr-section-header acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-f829f858-6fbb-45f3-b44f-28013d76df57')">
+    onclick="toggleVisibility('acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1143,14 +1144,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -1164,35 +1165,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f829f858-6fbb-45f3-b44f-28013d76df57 ">
+<tr class="repr-element acquisition-2cbd7bc4-b0d3-4915-9ea1-3dbb7b7e230c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1206,9 +1207,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-13feb9e8-c0df-4dd2-8bee-bf4cbf26c0f8"
+<tr class="mne-repr-section-header channels-f7d81321-d642-40f0-86fa-f4397cc14e12"
      title="Hide section"
-    onclick="toggleVisibility('channels-13feb9e8-c0df-4dd2-8bee-bf4cbf26c0f8')">
+    onclick="toggleVisibility('channels-f7d81321-d642-40f0-86fa-f4397cc14e12')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1221,7 +1222,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-13feb9e8-c0df-4dd2-8bee-bf4cbf26c0f8 ">
+<tr class="repr-element channels-f7d81321-d642-40f0-86fa-f4397cc14e12 ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1234,7 +1235,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-13feb9e8-c0df-4dd2-8bee-bf4cbf26c0f8 ">
+<tr class="repr-element channels-f7d81321-d642-40f0-86fa-f4397cc14e12 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1249,9 +1250,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-9f95c0e3-75c8-40ce-87b3-d776a36bbe31"
+<tr class="mne-repr-section-header filters-79479021-a25c-488f-bd1a-d56eedb69d92"
      title="Hide section"
-    onclick="toggleVisibility('filters-9f95c0e3-75c8-40ce-87b3-d776a36bbe31')">
+    onclick="toggleVisibility('filters-79479021-a25c-488f-bd1a-d56eedb69d92')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1263,21 +1264,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-9f95c0e3-75c8-40ce-87b3-d776a36bbe31 ">
+<tr class="repr-element filters-79479021-a25c-488f-bd1a-d56eedb69d92 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-9f95c0e3-75c8-40ce-87b3-d776a36bbe31 ">
+<tr class="repr-element filters-79479021-a25c-488f-bd1a-d56eedb69d92 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-9f95c0e3-75c8-40ce-87b3-d776a36bbe31 ">
+<tr class="repr-element filters-79479021-a25c-488f-bd1a-d56eedb69d92 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1443,7 +1444,7 @@ measurements more sensitive to noise.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Global theta wPLI peaks </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">times</span></a><span class="p">[</span><a href="https://numpy.org/devdocs/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">t_con_max</span></a><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s after stimulus&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Global theta wPLI peaks 0.080s after stimulus
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Global theta wPLI peaks 0.080s after stimulus
 </pre></div>
 </div>
 <p>We see that around the timing of the P1 evoked response, there is high theta
@@ -1465,9 +1466,9 @@ and plot the sensor connectivity of the 20 highest connections</p>
 <a href="../generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity" title="mne_connectivity.viz.plot_sensors_connectivity" class="sphx-glr-backref-module-mne_connectivity-viz sphx-glr-backref-type-py-function"><span class="n">plot_sensors_connectivity</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_matrix</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x785d5741c8f0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x73c41f645220&gt;
 </pre></div>
 </div>
 </section>
@@ -1498,7 +1499,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.798 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.111 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1593,7 +1594,7 @@ at this timepoint were between occipital and frontal areas.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-01-26.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-02-05.
       <br/>
     
   </p>
