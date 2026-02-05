@@ -319,7 +319,9 @@ else:
     filepath_prefix = "v{}".format(version)
 
 os.environ["_MNE_BUILDING_DOC"] = "true"
-scrapers = ("matplotlib",)
+scrapers = ["matplotlib"]
+scrapers.append(mne.viz._scraper._MNEQtBrowserScraper())
+scrapers = tuple(scrapers)
 try:
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)

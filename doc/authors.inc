@@ -17,3 +17,5 @@
 .. _Mohammad Orabe: https://github.com/orabe
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Marijn van Vliet: https://github.com/wmvanvliet
+.. _Giovanni Marraffini: https://github.com/GioMarraffini
+.. _Laouen Belloli: https://github.com/Laouen
