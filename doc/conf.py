@@ -156,10 +156,6 @@ numpydoc_xref_aliases = {
     "estimator": "sklearn.base.BaseEstimator",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
-    # nibabel
-    "Nifti1Image": "nibabel.nifti1.Nifti1Image",
-    "Nifti2Image": "nibabel.nifti2.Nifti2Image",
-    "SpatialImage": "nibabel.spatialimages.SpatialImage",
     # MNE
     "Label": "mne.Label",
     "Forward": "mne.Forward",
@@ -177,9 +173,6 @@ numpydoc_xref_aliases = {
     "ICA": "mne.preprocessing.ICA",
     # MNE-Connectivity
     "Connectivity": "mne_connectivity.Connectivity",
-    # dipy
-    "dipy.align.AffineMap": "dipy.align.imaffine.AffineMap",
-    "dipy.align.DiffeomorphicMap": "dipy.align.imwarp.DiffeomorphicMap",
 }
 numpydoc_validate = True
 numpydoc_validation_checks = {"all"} | set(error_ignores)
@@ -299,11 +292,7 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/stable", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "pyvista": ("https://docs.pyvista.org", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
-    "nibabel": ("https://nipy.org/nibabel", None),
-    "nilearn": ("http://nilearn.github.io/stable", None),
-    "dipy": ("https://docs.dipy.org/stable", None),
 }
 intersphinx_timeout = 5
 

@@ -27,10 +27,7 @@ def parallel_loop(func, n_jobs=1, verbose=1):
         try:
             from joblib import Parallel, delayed
         except ImportError:
-            try:
-                from sklearn.externals.joblib import Parallel, delayed
-            except ImportError:
-                n_jobs = None
+            n_jobs = None
 
     if not n_jobs:
         if verbose:
