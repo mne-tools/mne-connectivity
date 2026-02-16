@@ -6,6 +6,7 @@ import warnings
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
+from intersphinx_registry import get_intersphinx_mapping
 
 import mne
 
@@ -282,18 +283,18 @@ html_theme_options = {
     },
     "back_to_top_button": False,
 }
-# Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "mne": ("https://mne.tools/dev", None),
-    "mne-bids": ("https://mne.tools/mne-bids/dev/", None),
-    "numpy": ("https://numpy.org/devdocs", None),
-    "scipy": ("https://scipy.github.io/devdocs", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
-    "sklearn": ("https://scikit-learn.org/stable", None),
-    "joblib": ("https://joblib.readthedocs.io/en/latest", None),
+    # Put any niche mappings not part of intersphinx_registry here:
 }
+intersphinx_mapping.update(
+    get_intersphinx_mapping(
+        packages=set(
+            """
+matplotlib numpy pandas python scipy sklearn joblib nilearn pyqtgraph
+""".strip().split()
+        ),
+    )
+)
 intersphinx_timeout = 5
 
 # Resolve binder filepath_prefix. From the docs:
