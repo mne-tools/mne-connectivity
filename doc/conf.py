@@ -284,7 +284,7 @@ html_theme_options = {
     "back_to_top_button": False,
 }
 intersphinx_mapping = {
-    # Put any niche mappings not part of intersphinx_registry here:
+    "mne": ("https://mne.tools/dev", None),
 }
 intersphinx_mapping.update(
     get_intersphinx_mapping(
