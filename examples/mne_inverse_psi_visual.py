@@ -63,24 +63,26 @@ epochs = mne.Epochs(
     reject=dict(mag=4e-12, grad=4000e-13, eog=150e-6),
 )
 
-# Compute inverse solution for each epoch. Note that since we are passing the output to
-# both extract_label_time_course and the phase_slope_index functions, we have to use
-# "return_generator=False", since it is only possible to iterate over generators once.
+# Compute inverse solution for each epoch. Note that since we are passing
+# the output to both `extract_label_time_course` and the `phase_slope_index`
+# functions, we have to use `return_generator=False`, since it is only possible
+# to iterate over generators once.
 snr = 1.0  # use lower SNR for single epochs
 lambda2 = 1.0 / snr**2
 stcs = apply_inverse_epochs(
     epochs, inverse_operator, lambda2, method, pick_ori="normal", return_generator=True
 )
 
-# Now, we generate seed time series by averaging the activity in the left visual cortex.
+# Now, we generate seed time series by averaging the activity in the left
+# visual cortex.
 label = mne.read_label(fname_label)
 src = inverse_operator["src"]  # the source space used
 seed_ts = mne.extract_label_time_course(
     stcs, label, src, mode="mean_flip", verbose="error"
 )
 
-# Combine the seed time course with the source estimates. There will be a total of 7500
-# signals:
+# Combine the seed time course with the source estimates. There will be a total
+# of 7500 signals:
 # index 0: time course extracted from label
 # index 1..7499: dSPM source space time courses
 stcs = apply_inverse_epochs(
@@ -88,15 +90,15 @@ stcs = apply_inverse_epochs(
 )
 comb_ts = list(zip(seed_ts, stcs))
 
-# Construct indices to estimate connectivity between the label time course and all
-# source space time courses.
+# Construct indices to estimate connectivity between the label time course
+# and all source space time courses.
 vertices = [src[i]["vertno"] for i in range(2)]
 n_signals_tot = 1 + len(vertices[0]) + len(vertices[1])
 
 indices = seed_target_indices([0], np.arange(1, n_signals_tot))
 
-# Compute the PSI in the frequency range 10Hz-20Hz. We exclude the baseline period from
-# the connectivity estimation.
+# Compute the PSI in the frequency range 10Hz-20Hz. We exclude the baseline
+# period from the connectivity estimation.
 fmin = 10.0
 fmax = 20.0
 tmin_con = 0.0
@@ -112,13 +114,14 @@ psi = phase_slope_index(
     tmin=tmin_con,
 )
 
-# Generate a SourceEstimate with the PSI. This is simple since we used a single seed
-# (inspect the indices variable to see how the PSI scores are arranged in the output).
+# Generate a `SourceEstimate` with the PSI. This is simple since we used a single
+# seed (inspect the indices variable to see how the PSI scores are arranged in
+# the output).
 psi_stc = mne.SourceEstimate(
     psi.get_data(), vertices=vertices, tmin=0, tstep=1, subject="sample"
 )
 
-# Now we can visualize the PSI using the SourceEstimate.plot() method. We use a custom
+# Now we can visualize the PSI using the `plot` method. We use a custom
 # colormap to show signed values
 v_max = np.max(np.abs(psi.get_data()))
 brain = psi_stc.plot(
