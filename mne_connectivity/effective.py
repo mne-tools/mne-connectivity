@@ -346,8 +346,9 @@ def phase_slope_index_time(
         :func:`mne.time_frequency.tfr_array_morlet` documentation. Ignored if ``data``
         is an :class:`mne.time_frequency.EpochsTFR` object.
     decim : int
-        To reduce memory usage, decimation factor after time-frequency decomposition.
-        Returns ``tfr[…, ::decim]``. If 1 (default), no decimation occurs.
+        To reduce memory usage, time-domain decimation factor after time-frequency
+        decomposition. Returns ``tfr[…, ::decim]``. If 1 (default), no decimation
+        occurs.
     n_jobs : int
         Number of connections to compute in parallel. Memory mapping must be activated.
         Please see the Notes section of :func:`spectral_connectivity_time` for details.

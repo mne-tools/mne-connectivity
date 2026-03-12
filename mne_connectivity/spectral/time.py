@@ -1390,7 +1390,7 @@ def _coh(s_xx, s_yy, s_xy):
 
 
 def _cohy(s_xx, s_yy, s_xy):
-    """Compute coherencey given the cross spectral density and PSD.
+    """Compute coherency given the cross spectral density and PSD.
 
     Parameters
     ----------
@@ -1405,7 +1405,7 @@ def _cohy(s_xx, s_yy, s_xy):
     Returns
     -------
     cohy : array-like, shape (n_freqs, n_times)
-        The estimated COHY.
+        The estimated coherency.
     """
     con_num = s_xy.mean(axis=-1, keepdims=True)
     con_den = np.sqrt(

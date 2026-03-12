@@ -7,7 +7,7 @@ This example demonstrates how the phase slope index (PSI) :footcite:`NolteEtAl20
 be computed in source space based on single trial dSPM source estimates.
 
 The :func:`~mne_connectivity.phase_slope_index` function for computing PSI shown here
-gives connectivity estimates over epochs. However, the
+gives connectivity estimates over epochs. The
 :func:`~mne_connectivity.phase_slope_index_time` function is also available to compute
 PSI over time, allowing for per-epoch connectivity estimation.
 
@@ -63,18 +63,21 @@ epochs = mne.Epochs(
     reject=dict(mag=4e-12, grad=4000e-13, eog=150e-6),
 )
 
-# Compute inverse solution for each epoch. Note that since we are passing
-# the output to both `extract_label_time_course` and the `phase_slope_index`
-# functions, we have to use `return_generator=False`, since it is only possible
-# to iterate over generators once.
+# %%
+# Compute inverse solution for each epoch. Note that since we are passing the output to
+# both :func:`~mne.extract_label_time_course` and the
+# :func:`~mne_connectivity.phase_slope_index` functions, we have to use
+# ``return_generator=False``, since it is only possible to iterate over generators once.
+
 snr = 1.0  # use lower SNR for single epochs
 lambda2 = 1.0 / snr**2
 stcs = apply_inverse_epochs(
     epochs, inverse_operator, lambda2, method, pick_ori="normal", return_generator=True
 )
 
-# Now, we generate seed time series by averaging the activity in the left
-# visual cortex.
+# %%
+# Now, we generate seed time series by averaging the activity in the left visual cortex.
+
 label = mne.read_label(fname_label)
 src = inverse_operator["src"]  # the source space used
 seed_ts = mne.extract_label_time_course(
@@ -90,8 +93,10 @@ stcs = apply_inverse_epochs(
 )
 comb_ts = list(zip(seed_ts, stcs))
 
-# Construct indices to estimate connectivity between the label time course
-# and all source space time courses.
+# %%
+# Construct indices to estimate connectivity between the label time course and all
+# source space time courses.
+
 vertices = [src[i]["vertno"] for i in range(2)]
 n_signals_tot = 1 + len(vertices[0]) + len(vertices[1])
 
@@ -114,15 +119,19 @@ psi = phase_slope_index(
     tmin=tmin_con,
 )
 
-# Generate a `SourceEstimate` with the PSI. This is simple since we used a single
-# seed (inspect the indices variable to see how the PSI scores are arranged in
-# the output).
+# %%
+# Generate a :class:`~mne.SourceEstimate` with the PSI. This is simple since we used a
+# single seed (inspect the ``indices`` variable to see how the PSI scores are arranged
+# in the output).
+
 psi_stc = mne.SourceEstimate(
     psi.get_data(), vertices=vertices, tmin=0, tstep=1, subject="sample"
 )
 
-# Now we can visualize the PSI using the `plot` method. We use a custom
-# colormap to show signed values
+# %%
+# Now we can visualize the PSI using the :meth:`~mne.SourceEstimate.plot` method. We use
+# a custom colormap to show signed values.
+
 v_max = np.max(np.abs(psi.get_data()))
 brain = psi_stc.plot(
     surface="inflated",
