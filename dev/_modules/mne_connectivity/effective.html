@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.8.0.dev134+gc513d4448 documentation</title>
+    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.8.0.dev135+g91f5536f2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5b4fdaf2"></script>
+    <script src="../../_static/documentation_options.js?v=910a1ba3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev134+gc513d4448 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev135+g91f5536f2 documentation</p>
   
 </a></div>
     
@@ -418,8 +418,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral_connectivity_epochs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EpochSpectralConnectivity</span><span class="p">,</span>
+    <span class="n">SpectralConnectivity</span><span class="p">,</span>
+    <span class="n">SpectroTemporalConnectivity</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral_connectivity_epochs</span><span class="p">,</span> <span class="n">spectral_connectivity_time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fill_doc</span>
 
 
@@ -516,17 +520,21 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    conn : instance of SpectralConnectivity or SpectroTemporalConnectivity</span>
-<span class="sd">        Computed connectivity measure(s). Either a :class:`SpectralConnectivity`, or</span>
-<span class="sd">        :class:`SpectroTemporalConnectivity` container. The shape of each array is:</span>
+<span class="sd">    psi : instance of SpectralConnectivity or SpectroTemporalConnectivity</span>
+<span class="sd">        Computed connectivity measure. Either a :class:`SpectralConnectivity`, or</span>
+<span class="sd">        :class:`SpectroTemporalConnectivity` container. The shape of the connectivity</span>
+<span class="sd">        dataset is:</span>
 
 <span class="sd">        - ``(n_cons, n_bands)`` for ``&#39;multitaper&#39;`` or ``&#39;fourier&#39;`` modes</span>
 <span class="sd">        - ``(n_cons, n_bands, n_times)`` for ``&#39;cwt_morlet&#39;`` mode</span>
 <span class="sd">        - ``n_cons = n_signals ** 2`` when ``indices=None``</span>
 <span class="sd">        - ``n_cons = len(indices[0])`` when ``indices`` is supplied</span>
+<span class="sd">        - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.spectral_connectivity_epochs</span>
+<span class="sd">    mne_connectivity.phase_slope_index_time</span>
 <span class="sd">    mne_connectivity.SpectralConnectivity</span>
 <span class="sd">    mne_connectivity.SpectroTemporalConnectivity</span>
 
@@ -575,7 +583,7 @@
         <span class="n">times</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">times</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">times</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">freqs_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
     <span class="n">names</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">names</span>
     <span class="n">n_tapers</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_tapers&quot;</span><span class="p">)</span>
     <span class="n">n_epochs_used</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_epochs</span>
@@ -588,32 +596,306 @@
     <span class="c1"># compute PSI in the requested bands</span>
     <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># set it to -inf, so we can adjust it later</span>
-
     <span class="n">bands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmin</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmax</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
-    <span class="n">n_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
+    <span class="n">psi</span><span class="p">,</span> <span class="n">freq_bands</span><span class="p">,</span> <span class="n">freqs_computed</span> <span class="o">=</span> <span class="n">_compute_psi</span><span class="p">(</span>
+        <span class="n">cohy</span><span class="o">=</span><span class="n">cohy</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+        <span class="n">bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
+        <span class="n">freq_dim</span><span class="o">=-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[PSI Estimation Done]&quot;</span><span class="p">)</span>
 
-    <span class="n">freq_dim</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1"># create a connectivity container</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
+        <span class="c1"># spectral only</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
+            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+            <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs_computed</span><span class="p">,</span>
+            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
+            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
+        <span class="c1"># spectrotemporal</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
+            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+            <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs_computed</span><span class="p">,</span>
+            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
+            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="c1"># allocate space for output</span>
+    <span class="k">return</span> <span class="n">psi</span></div>
+
+
+
+<div class="viewcode-block" id="phase_slope_index_time">
+<a class="viewcode-back" href="../../generated/mne_connectivity.phase_slope_index_time.html#mne_connectivity.phase_slope_index_time">[docs]</a>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">phase_slope_index_time</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;cwt_morlet&quot;</span><span class="p">,</span>
+    <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">sm_times</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">sm_freqs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">sm_kernel</span><span class="o">=</span><span class="s2">&quot;hanning&quot;</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">mt_bandwidth</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">n_cycles</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span>
+    <span class="n">decim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the Phase Slope Index (PSI) connectivity measure over time.</span>
+
+<span class="sd">    This function computes PSI over time from epoched data. The data may consist of a</span>
+<span class="sd">    single epoch.</span>
+
+<span class="sd">    The PSI is an effective connectivity measure, i.e., a measure which can give an</span>
+<span class="sd">    indication of the direction of the information flow (causality). For two time</span>
+<span class="sd">    series, one computes the PSI between the first and the second time series as</span>
+<span class="sd">    follows::</span>
+
+<span class="sd">        indices = (np.array([0]), np.array([1]))</span>
+<span class="sd">        psi = phase_slope_index_time(data, indices=indices, ...)</span>
+
+<span class="sd">    A positive value means that time series 0 is ahead of time series 1 and a negative</span>
+<span class="sd">    value means the opposite.</span>
+
+<span class="sd">    The PSI is computed from the coherency (see :func:`spectral_connectivity_time`),</span>
+<span class="sd">    details can be found in :footcite:`NolteEtAl2008`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array-like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | ~mne.time_frequency.EpochsTFR</span>
+<span class="sd">        The data from which to compute connectivity. Can be epoched time series data as</span>
+<span class="sd">        an array-like or :class:`mne.Epochs` object, or Fourier coefficients for each</span>
+<span class="sd">        epoch as an :class:`mne.time_frequency.EpochsTFR` object. If time series data,</span>
+<span class="sd">        the spectral information will be computed according to the spectral estimation</span>
+<span class="sd">        mode (see the ``mode`` parameter). If an :class:`mne.time_frequency.EpochsTFR`</span>
+<span class="sd">        object, existing spectral information will be used and the ``mode`` parameter</span>
+<span class="sd">        will be ignored.</span>
+
+<span class="sd">        .. versionchanged:: 0.8</span>
+<span class="sd">           Fourier coefficients stored in an :class:`mne.time_frequency.EpochsTFR`</span>
+<span class="sd">           object can also be passed in as data. Storing multitaper weights in</span>
+<span class="sd">           :class:`mne.time_frequency.EpochsTFR` objects requires ``mne &gt;= 1.10``.</span>
+<span class="sd">    freqs : array_like | None</span>
+<span class="sd">        Array-like of frequencies of interest for time-frequency decomposition. Only the</span>
+<span class="sd">        frequencies within the range specified by ``fmin`` and ``fmax`` are used. If</span>
+<span class="sd">        ``data`` is an array-like or :class:`mne.Epochs` object, the frequencies must</span>
+<span class="sd">        be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,</span>
+<span class="sd">        ``data.freqs`` is used and this parameter is ignored.</span>
+<span class="sd">    indices : tuple of array_like | None</span>
+<span class="sd">        Two array-likes with indices of connections for which to compute connectivity.</span>
+<span class="sd">        If ``None`` (default), all connections are computed.</span>
+<span class="sd">    sfreq : float | None</span>
+<span class="sd">        The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
+<span class="sd">    mode : ``&#39;multitaper&#39;`` | ``&#39;cwt_morlet&#39;``</span>
+<span class="sd">        Time-frequency decomposition method (``&#39;cwt_morlet&#39;`` default). See</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_multitaper` and</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_morlet` for reference. Ignored if ``data``</span>
+<span class="sd">        is an :class:`mne.time_frequency.EpochsTFR` object.</span>
+<span class="sd">    average : bool</span>
+<span class="sd">        Average connectivity scores over epochs. If ``True``, output will be an instance</span>
+<span class="sd">        of :class:`SpectralConnectivity`, or :class:`EpochSpectralConnectivity` if</span>
+<span class="sd">        ``False`` (default).</span>
+<span class="sd">    fmin : float | tuple of float | None</span>
+<span class="sd">        The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,</span>
+<span class="sd">        ``(8., 20.)`` for two bands with 8 Hz and 20 Hz lower bounds. If ``None``</span>
+<span class="sd">        (default), the lowest frequency in ``freqs`` is used.</span>
+<span class="sd">    fmax : float | tuple of float | None</span>
+<span class="sd">        The upper frequency of interest. Multiple bands are defined using a tuple, e.g.</span>
+<span class="sd">        ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``</span>
+<span class="sd">        (default), the highest frequency in ``freqs`` is used.</span>
+<span class="sd">    fskip : int</span>
+<span class="sd">        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.</span>
+<span class="sd">        Default is 0 (no skipping).</span>
+<span class="sd">    sm_times : float</span>
+<span class="sd">        Amount of time to consider for the temporal smoothing, in seconds. If 0.0</span>
+<span class="sd">        (default), no temporal smoothing is applied.</span>
+<span class="sd">    sm_freqs : int</span>
+<span class="sd">        Number of points for frequency smoothing. If 1 (default), no spectral smoothing</span>
+<span class="sd">        is applied.</span>
+<span class="sd">    sm_kernel : ``&#39;square&#39;`` | ``&#39;hanning&#39;``</span>
+<span class="sd">        Smoothing kernel type. For ``&#39;hanning&#39;``, see :func:`numpy.hanning`.</span>
+<span class="sd">    padding : float</span>
+<span class="sd">        Amount of time to consider as padding at the beginning and end of each epoch in</span>
+<span class="sd">        seconds (0.0 default for no padding). See Notes of</span>
+<span class="sd">        :func:`spectral_connectivity_time` for more information.</span>
+<span class="sd">    mt_bandwidth : float</span>
+<span class="sd">        Product between the temporal window length (in seconds) and the full frequency</span>
+<span class="sd">        bandwidth (in Hz; default 4.0). This product can be seen as the surface of the</span>
+<span class="sd">        window on the time/frequency plane and controls the frequency bandwidth (thus</span>
+<span class="sd">        the frequency resolution) and the number of good tapers. See</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_multitaper` documentation. Ignored if</span>
+<span class="sd">        ``data`` is an :class:`mne.time_frequency.EpochsTFR` object.</span>
+<span class="sd">    n_cycles : float | array_like</span>
+<span class="sd">        Number of cycles in the wavelet, either a fixed number or one per frequency (7.0</span>
+<span class="sd">        default). The number of cycles ``n_cycles`` and the frequencies of interest</span>
+<span class="sd">        ``freqs`` define the temporal window length. For details, see</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_multitaper` and</span>
+<span class="sd">        :func:`mne.time_frequency.tfr_array_morlet` documentation. Ignored if ``data``</span>
+<span class="sd">        is an :class:`mne.time_frequency.EpochsTFR` object.</span>
+<span class="sd">    decim : int</span>
+<span class="sd">        To reduce memory usage, time-domain decimation factor after time-frequency</span>
+<span class="sd">        decomposition. Returns ``tfr[…, ::decim]``. If 1 (default), no decimation</span>
+<span class="sd">        occurs.</span>
+<span class="sd">    n_jobs : int</span>
+<span class="sd">        Number of connections to compute in parallel. Memory mapping must be activated.</span>
+<span class="sd">        Please see the Notes section of :func:`spectral_connectivity_time` for details.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    psi : instance of EpochSpectralConnectivity or SpectralConnectivity</span>
+<span class="sd">        Computed connectivity measure. Either a</span>
+<span class="sd">        :class:`EpochSpectralConnectivity` or :class:`SpectralConnectivity` container</span>
+<span class="sd">        depending on the ``average`` parameter. The shape of the connectivity dataset is</span>
+<span class="sd">        ``([n_epochs,] n_cons, n_bands)``:</span>
+
+<span class="sd">        - The epoch dimension is present when ``average=False``, and absent when</span>
+<span class="sd">          ``average=True``.</span>
+<span class="sd">        - When ``indices`` is ``None``, ``n_cons = n_signals ** 2``</span>
+<span class="sd">        - When ``indices`` is specified, ``n_con = len(indices[0])``</span>
+<span class="sd">        - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.spectral_connectivity_time</span>
+<span class="sd">    mne_connectivity.phase_slope_index</span>
+<span class="sd">    mne_connectivity.SpectralConnectivity</span>
+<span class="sd">    mne_connectivity.EpochSpectralConnectivity</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.8</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. footbibliography::</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Estimating phase slope index (PSI) over time&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Estimate the coherency</span>
+    <span class="c1"># Always compute coherency without averaging first, so we can compute PSI for each</span>
+    <span class="c1"># epoch, then average PSI if requested</span>
+    <span class="n">cohy</span> <span class="o">=</span> <span class="n">spectral_connectivity_time</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cohy&quot;</span><span class="p">,</span>
+        <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+        <span class="n">fskip</span><span class="o">=</span><span class="n">fskip</span><span class="p">,</span>
+        <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">sm_times</span><span class="o">=</span><span class="n">sm_times</span><span class="p">,</span>
+        <span class="n">sm_freqs</span><span class="o">=</span><span class="n">sm_freqs</span><span class="p">,</span>
+        <span class="n">sm_kernel</span><span class="o">=</span><span class="n">sm_kernel</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">mt_bandwidth</span><span class="o">=</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+        <span class="n">n_cycles</span><span class="o">=</span><span class="n">n_cycles</span><span class="p">,</span>
+        <span class="n">decim</span><span class="o">=</span><span class="n">decim</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># extract class properties from the spectral connectivity structure</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">names</span>
+    <span class="n">n_tapers</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_tapers&quot;</span><span class="p">)</span>
+    <span class="n">n_epochs_used</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_epochs</span>
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">n_nodes</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">events</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">event_id</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing PSI over time from estimated Coherency: </span><span class="si">{</span><span class="n">cohy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># compute PSI in the requested bands</span>
+    <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">bands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmin</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">fmax</span><span class="p">,))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+    <span class="n">psi</span><span class="p">,</span> <span class="n">freq_bands</span><span class="p">,</span> <span class="n">freqs_computed</span> <span class="o">=</span> <span class="n">_compute_psi</span><span class="p">(</span>
+        <span class="n">cohy</span><span class="o">=</span><span class="n">cohy</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span> <span class="n">freq_dim</span><span class="o">=-</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[PSI Estimation Done]&quot;</span><span class="p">)</span>
+
+    <span class="c1"># create a connectivity container</span>
+    <span class="n">conn_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
+        <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+        <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs_computed</span><span class="p">,</span>
+        <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+        <span class="c1"># average over epochs</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span> <span class="o">**</span><span class="n">conn_kwargs</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span> <span class="o">**</span><span class="n">conn_kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">psi</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_psi</span><span class="p">(</span><span class="n">cohy</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">freq_dim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute Phase Slope Index (PSI) from coherency data.&quot;&quot;&quot;</span>
+    <span class="c1"># Allocate space for output</span>
     <span class="n">out_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">out_shape</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_bands</span>
+    <span class="n">out_shape</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
     <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
-    <span class="c1"># allocate accumulator</span>
+    <span class="c1"># Allocate accumulator</span>
     <span class="n">acc_shape</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">out_shape</span><span class="p">)</span>
     <span class="n">acc_shape</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">freq_dim</span><span class="p">)</span>
     <span class="n">acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">acc_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
 
-    <span class="c1"># create list for frequencies used and frequency bands</span>
-    <span class="c1"># of resulting connectivity data</span>
-    <span class="n">freqs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># Create list for frequencies used and frequency bands of results</span>
+    <span class="n">freqs_computed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">freq_bands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">idx_fi</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_shape</span><span class="p">)</span>
     <span class="n">idx_fj</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_shape</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">band_idx</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bands</span><span class="p">):</span>
-        <span class="n">freq_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs_</span> <span class="o">&gt;</span> <span class="n">band</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_</span> <span class="o">&lt;</span> <span class="n">band</span><span class="p">[</span><span class="mi">1</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">freqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freqs_</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">])</span>
-        <span class="n">freq_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">freqs_</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">]))</span>
+        <span class="n">freq_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freqs</span> <span class="o">&gt;</span> <span class="n">band</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;</span> <span class="n">band</span><span class="p">[</span><span class="mi">1</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">freqs_computed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">])</span>
+        <span class="n">freq_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">]))</span>
 
         <span class="n">acc</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">fj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freq_idx</span><span class="p">,</span> <span class="n">freq_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
@@ -625,47 +907,8 @@
 
         <span class="n">idx_fi</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">band_idx</span>
         <span class="n">psi</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[PSI Estimation Done]&quot;</span><span class="p">)</span>
 
-    <span class="c1"># create a connectivity container</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
-        <span class="c1"># spectral only</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-            <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
-            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
-            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
-            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
-            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
-        <span class="c1"># spectrotemporal</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-            <span class="n">freqs</span><span class="o">=</span><span class="n">freq_bands</span><span class="p">,</span>
-            <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;phase-slope-index&quot;</span><span class="p">,</span>
-            <span class="n">spec_method</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">freqs_computed</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
-            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
-            <span class="n">n_tapers</span><span class="o">=</span><span class="n">n_tapers</span><span class="p">,</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">conn</span></div>
-
+    <span class="k">return</span> <span class="n">psi</span><span class="p">,</span> <span class="n">freq_bands</span><span class="p">,</span> <span class="n">freqs_computed</span>
 </pre></div>
 
                 </article>
@@ -707,7 +950,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-10.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-12.
       <br/>
     
   </p>
