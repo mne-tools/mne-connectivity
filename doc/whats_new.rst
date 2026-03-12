@@ -29,6 +29,7 @@ Enhancements
 - Add support for :class:`mne.time_frequency.EpochsTFR` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions, by `Thomas Binns`_ and `Daniel McCloy`_ (:pr:`232`).
 - Update the cross-references for relevant functions and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
 - Add a new :func:`~mne_connectivity.wsmi` function for computing weighted symbolic mutual information (wSMI), by `Giovanni Marraffini`_ and `Laouen Belloli`_ (:pr:`307`).
+- Add a new function :func:`~mne_connectivity.phase_slope_index_time` for computing the Phase Slope Index with the functionality of :func:`~mne_connectivity.spectral_connectivity_time`, by `Salman Qasim`_ and `Thomas Binns`_ (:pr:`210`).
 
 Bug
 ~~~
@@ -49,6 +50,7 @@ Authors
 * `Thomas Binns`_
 * `Giovanni Marraffini`_
 * `Laouen Belloli`_
+* `Salman Qasim`_
 * `Richard Köhler`_
 * `Adam Li`_
 * `Marijn van Vliet`_
