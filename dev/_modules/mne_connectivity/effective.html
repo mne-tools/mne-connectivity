@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.8.0.dev135+g91f5536f2 documentation</title>
+    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.8.0.dev136+gfa80a6c7c documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=910a1ba3"></script>
+    <script src="../../_static/documentation_options.js?v=c9bd0d69"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev135+g91f5536f2 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev136+gfa80a6c7c documentation</p>
   
 </a></div>
     
@@ -468,13 +468,33 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | generator</span>
-<span class="sd">        Can also be a list/generator of arrays, shape ``(n_signals, n_times)``;</span>
-<span class="sd">        list/generator of :class:`mne.SourceEstimate`; or :class:`mne.Epochs`. The</span>
-<span class="sd">        data from which to compute connectivity. Note that it is also possible to</span>
-<span class="sd">        combine multiple signals by providing a list of tuples, e.g., ``data = [(arr_0,</span>
-<span class="sd">        stc_0), (arr_1, stc_1), (arr_2, stc_2)]``, corresponds to 3 epochs, and</span>
-<span class="sd">        ``arr_*`` could be an array with the same number of time points as ``stc_*``.</span>
+<span class="sd">    data : array_like, shape (n_epochs, n_signals, n_times) | ~mne.Epochs | generator | ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR</span>
+<span class="sd">        The data from which to compute connectivity. Can be epoched time series data as</span>
+<span class="sd">        an array-like or :class:`mne.Epochs` object, or Fourier coefficients for each</span>
+<span class="sd">        epoch as an :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object. If time series data, the spectral</span>
+<span class="sd">        information will be computed according to the spectral estimation mode (see the</span>
+<span class="sd">        ``mode`` parameter). If an :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object, existing spectral information</span>
+<span class="sd">        will be used and the ``mode`` parameter will be ignored.</span>
+
+<span class="sd">        Note that it is also possible to combine multiple time series signals by</span>
+<span class="sd">        providing a list of tuples, e.g.: ::</span>
+
+<span class="sd">            data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)]</span>
+
+<span class="sd">        which corresponds to 3 epochs where ``arr_*`` is an array with the same number</span>
+<span class="sd">        of time points as ``stc_*``. Data can also be a list/generator of arrays, shape</span>
+<span class="sd">        ``(n_signals, n_times)``, or a list/generator of :class:`mne.SourceEstimate` or</span>
+<span class="sd">        :class:`mne.VolSourceEstimate` objects.</span>
+
+<span class="sd">        .. versionchanged:: 0.8</span>
+<span class="sd">           Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`</span>
+<span class="sd">           or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as</span>
+<span class="sd">           data. Storing Fourier coefficients in</span>
+<span class="sd">           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne &gt;= 1.8``.</span>
+<span class="sd">           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects</span>
+<span class="sd">           requires ``mne &gt;= 1.10``.</span>
 <span class="sd">    %(names)s</span>
 <span class="sd">    indices : tuple of array_like | None</span>
 <span class="sd">        Two array-likes with indices of connections for which to compute connectivity.</span>
@@ -485,7 +505,9 @@
 <span class="sd">        will change to ``None`` in 0.9. Set it explicitly when ``data`` is an array-like</span>
 <span class="sd">        to avoid a warning.</span>
 <span class="sd">    mode : ``&#39;multitaper&#39;`` | ``&#39;fourier&#39;`` | ``&#39;cwt_morlet&#39;``</span>
-<span class="sd">        Spectrum estimation mode.</span>
+<span class="sd">        Spectrum estimation mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    fmin : float | tuple of float</span>
 <span class="sd">        The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,</span>
 <span class="sd">        (8., 20.) for two bands with 8 Hz and 20 Hz lower freq. If ``None`` the</span>
@@ -494,23 +516,35 @@
 <span class="sd">        The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,</span>
 <span class="sd">        (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.</span>
 <span class="sd">    tmin : float | None</span>
-<span class="sd">        Time to start connectivity estimation.</span>
+<span class="sd">        Time to start connectivity estimation. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    tmax : float | None</span>
-<span class="sd">        Time to end connectivity estimation.</span>
+<span class="sd">        Time to end connectivity estimation. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` object.</span>
 <span class="sd">    mt_bandwidth : float | None</span>
 <span class="sd">        The bandwidth of the multitaper windowing function in Hz. Only used in</span>
-<span class="sd">        ``&#39;multitaper&#39;`` mode.</span>
+<span class="sd">        ``&#39;multitaper&#39;`` mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    mt_adaptive : bool</span>
 <span class="sd">        Use adaptive weights to combine the tapered spectra into PSD. Only used in</span>
-<span class="sd">        ``&#39;multitaper&#39;`` mode.</span>
+<span class="sd">        ``&#39;multitaper&#39;`` mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    mt_low_bias : bool</span>
 <span class="sd">        Only use tapers with more than 90 percent spectral concentration within</span>
-<span class="sd">        bandwidth. Only used in ``&#39;multitaper&#39;`` mode.</span>
+<span class="sd">        bandwidth. Only used in ``&#39;multitaper&#39;`` mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    cwt_freqs : array_like</span>
 <span class="sd">        Array-like of frequencies of interest. Only used in ``&#39;cwt_morlet&#39;`` mode.</span>
+<span class="sd">        Ignored if ``data`` is an :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    cwt_n_cycles : float | array_like</span>
 <span class="sd">        Number of cycles. Fixed number or one per frequency. Only used in</span>
-<span class="sd">        ``&#39;cwt_morlet&#39;`` mode.</span>
+<span class="sd">        ``&#39;cwt_morlet&#39;`` mode. Ignored if ``data`` is an</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    block_size : int</span>
 <span class="sd">        How many connections to compute at once (higher numbers are faster but require</span>
 <span class="sd">        more memory).</span>
@@ -541,7 +575,7 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Estimating phase slope index (PSI)&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sfreq</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
@@ -601,12 +635,12 @@
         <span class="n">cohy</span><span class="o">=</span><span class="n">cohy</span><span class="p">,</span>
         <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
         <span class="n">bands</span><span class="o">=</span><span class="n">bands</span><span class="p">,</span>
-        <span class="n">freq_dim</span><span class="o">=-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">freq_dim</span><span class="o">=-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[PSI Estimation Done]&quot;</span><span class="p">)</span>
 
     <span class="c1"># create a connectivity container</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cohy</span><span class="p">,</span> <span class="n">SpectralConnectivity</span><span class="p">):</span>
         <span class="c1"># spectral only</span>
         <span class="n">psi</span> <span class="o">=</span> <span class="n">SpectralConnectivity</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
@@ -623,7 +657,7 @@
             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
             <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">:</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="c1"># spectrotemporal</span>
         <span class="n">psi</span> <span class="o">=</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">psi</span><span class="p">,</span>
@@ -950,7 +984,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-12.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-13.
       <br/>
     
   </p>
