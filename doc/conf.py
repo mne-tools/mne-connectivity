@@ -6,6 +6,7 @@ import warnings
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
+from intersphinx_registry import get_intersphinx_mapping
 
 import mne
 
@@ -156,10 +157,6 @@ numpydoc_xref_aliases = {
     "estimator": "sklearn.base.BaseEstimator",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
-    # nibabel
-    "Nifti1Image": "nibabel.nifti1.Nifti1Image",
-    "Nifti2Image": "nibabel.nifti2.Nifti2Image",
-    "SpatialImage": "nibabel.spatialimages.SpatialImage",
     # MNE
     "Label": "mne.Label",
     "Forward": "mne.Forward",
@@ -177,9 +174,6 @@ numpydoc_xref_aliases = {
     "ICA": "mne.preprocessing.ICA",
     # MNE-Connectivity
     "Connectivity": "mne_connectivity.Connectivity",
-    # dipy
-    "dipy.align.AffineMap": "dipy.align.imaffine.AffineMap",
-    "dipy.align.DiffeomorphicMap": "dipy.align.imwarp.DiffeomorphicMap",
 }
 numpydoc_validate = True
 numpydoc_validation_checks = {"all"} | set(error_ignores)
@@ -289,22 +283,18 @@ html_theme_options = {
     },
     "back_to_top_button": False,
 }
-# Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
     "mne": ("https://mne.tools/dev", None),
-    "mne-bids": ("https://mne.tools/mne-bids/dev/", None),
-    "numpy": ("https://numpy.org/devdocs", None),
-    "scipy": ("https://scipy.github.io/devdocs", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
-    "sklearn": ("https://scikit-learn.org/stable", None),
-    "pyvista": ("https://docs.pyvista.org", None),
-    "joblib": ("https://joblib.readthedocs.io/en/latest", None),
-    "nibabel": ("https://nipy.org/nibabel", None),
-    "nilearn": ("http://nilearn.github.io/stable", None),
-    "dipy": ("https://docs.dipy.org/stable", None),
 }
+intersphinx_mapping.update(
+    get_intersphinx_mapping(
+        packages=set(
+            """
+matplotlib numpy pandas python scipy sklearn joblib nilearn pyqtgraph
+""".strip().split()
+        ),
+    )
+)
 intersphinx_timeout = 5
 
 # Resolve binder filepath_prefix. From the docs:
@@ -319,7 +309,9 @@ else:
     filepath_prefix = "v{}".format(version)
 
 os.environ["_MNE_BUILDING_DOC"] = "true"
-scrapers = ("matplotlib",)
+scrapers = ["matplotlib"]
+scrapers.append(mne.viz._scraper._MNEQtBrowserScraper())
+scrapers = tuple(scrapers)
 try:
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)

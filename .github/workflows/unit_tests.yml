@@ -17,6 +17,7 @@ jobs:
     defaults:
       run:
         shell: bash -e {0}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -71,5 +72,6 @@ jobs:
           which python
       - run: pip install -e .
       - run: mne sys_info
+        timeout-minutes: 3
       - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v5
