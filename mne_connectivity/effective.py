@@ -26,6 +26,7 @@ def phase_slope_index(
     mode="multitaper",
     fmin=None,
     fmax=np.inf,
+    fdecim=1,
     tmin=None,
     tmax=None,
     mt_bandwidth=None,
@@ -102,6 +103,12 @@ def phase_slope_index(
     fmax : float | tuple of float
         The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,
         (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.
+    fdecim : int
+        Decimation factor in the frequency domain. Selects every Nth frequency bin from
+        the (time-)frequency decomposition (where N is the value of ``fdecim``). If 1
+        (default), no decimation occurs.
+
+        .. versionadded:: 0.8
     tmin : float | None
         Time to start connectivity estimation. Ignored if ``data`` is an
         :class:`mne.time_frequency.EpochsSpectrum` object.
@@ -185,7 +192,7 @@ def phase_slope_index(
         mode=mode,
         fmin=fmin,
         fmax=fmax,
-        fskip=0,
+        fdecim=fdecim,
         faverage=False,
         tmin=tmin,
         tmax=tmax,
@@ -277,6 +284,7 @@ def phase_slope_index_time(
     fmin=None,
     fmax=None,
     fskip=0,
+    fdecim=1,
     sm_times=0.0,
     sm_freqs=1,
     sm_kernel="hanning",
@@ -351,8 +359,18 @@ def phase_slope_index_time(
         ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``
         (default), the highest frequency in ``freqs`` is used.
     fskip : int
-        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.
-        Default is 0 (no skipping).
+        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain.
+
+        .. version-deprecated:: 0.8
+            ``fskip`` is deprecated and will be removed in 0.9. Use ``fdecim`` instead.
+            E.g., if you had 20 frequency bins and set ``fskip=1`` to get 10 frequency
+            bins, you can achieve the same result with ``fdecim=2``.
+    fdecim : int
+        Decimation factor in the frequency domain. Selects every Nth frequency bin from
+        the time-frequency decomposition (where N is the value of ``fdecim``). If 1
+        (default), no decimation occurs.
+
+        .. versionadded:: 0.8
     sm_times : float
         Amount of time to consider for the temporal smoothing, in seconds. If 0.0
         (default), no temporal smoothing is applied.
@@ -380,9 +398,9 @@ def phase_slope_index_time(
         :func:`mne.time_frequency.tfr_array_morlet` documentation. Ignored if ``data``
         is an :class:`mne.time_frequency.EpochsTFR` object.
     decim : int
-        To reduce memory usage, time-domain decimation factor after time-frequency
-        decomposition. Returns ``tfr[…, ::decim]``. If 1 (default), no decimation
-        occurs.
+        Decimation factor in the time domain. Selects every Nth time bin from the
+        time-frequency decomposition (where N is the value of ``decim``). If 1
+        (default), no decimation occurs.
     n_jobs : int
         Number of connections to compute in parallel. Memory mapping must be activated.
         Please see the Notes section of :func:`spectral_connectivity_time` for details.
@@ -432,6 +450,7 @@ def phase_slope_index_time(
         fmin=fmin,
         fmax=fmax,
         fskip=fskip,
+        fdecim=fdecim,
         faverage=False,
         sm_times=sm_times,
         sm_freqs=sm_freqs,

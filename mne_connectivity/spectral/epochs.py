@@ -130,15 +130,20 @@ def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
     return freqs_all
 
 
-def _compute_freq_mask(freqs_all, fmin, fmax, fskip):
+def _compute_freq_mask(freqs_all, fmin, fmax, fskip, fdecim):
     # create a frequency mask for all bands
     freq_mask = np.zeros(len(freqs_all), dtype=bool)
     for f_lower, f_upper in zip(fmin, fmax):
         freq_mask |= (freqs_all >= f_lower) & (freqs_all <= f_upper)
 
+    assert fdecim == 1 or fskip == 0, "`fdecim` and `fskip` cannot be used together"
+
     # possibly skip frequency points
     for pos in range(fskip):
         freq_mask[pos + 1 :: fskip + 1] = False
+    # possibly decimate frequency points
+    if fdecim != 1:
+        freq_mask[::fdecim] = False
     return freq_mask
 
 
@@ -156,6 +161,7 @@ def _prepare_connectivity(
     method,
     mode,
     fskip,
+    fdecim,
     n_bands,
     cwt_freqs,
     faverage,
@@ -208,7 +214,7 @@ def _prepare_connectivity(
         freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
     # compute the mask based on specified min/max and decimation factor
-    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip, fdecim)
 
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
@@ -335,7 +341,7 @@ def _assemble_spectral_params(
         logger.info("    using CWT with Morlet wavelets to estimate spectra")
 
         # reformat cwt_n_cycles if we have removed some frequencies
-        # using fmin, fmax, fskip
+        # using fmin, fmax, fskip/fdecim
         cwt_n_cycles = np.array((cwt_n_cycles,), dtype=float).ravel()
         if len(cwt_n_cycles) > 1:
             if len(cwt_n_cycles) != len(cwt_freqs):
@@ -766,6 +772,7 @@ def spectral_connectivity_epochs(
     fmin=None,
     fmax=np.inf,
     fskip=0,
+    fdecim=1,
     faverage=False,
     tmin=None,
     tmax=None,
@@ -866,6 +873,17 @@ def spectral_connectivity_epochs(
         (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.
     fskip : int
         Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain.
+
+        .. version-deprecated:: 0.8
+            ``fskip`` is deprecated and will be removed in 0.9. Use ``fdecim`` instead.
+            E.g., if you had 20 frequency bins and set ``fskip=1`` to get 10 frequency
+            bins, you can achieve the same result with ``fdecim=2``.
+    fdecim : int
+        Decimation factor in the frequency domain. Selects every Nth frequency bin from
+        the (time-)frequency decomposition (where N is the value of ``fdecim``). If 1
+        (default), no decimation occurs.
+
+        .. versionadded:: 0.8
     faverage : bool
         Average connectivity scores for each frequency band. If ``True``, the output
         freqs will be a list with arrays of the frequencies that were averaged.
@@ -1119,6 +1137,19 @@ def spectral_connectivity_epochs(
     ----------
     .. footbibliography::
     """  # noqa: E501
+    if fskip != 0:
+        warn(
+            "The `fskip` parameter is deprecated and will be removed in 0.9. Use "
+            "`fdecim` instead.",
+            FutureWarning,
+        )
+        if fdecim != 1:
+            warn(
+                "Both `fskip` and `fdecim` are set. Only `fdecim` will be used.",
+                RuntimeWarning,
+            )
+            fskip = 0
+
     if n_jobs != 1:
         parallel, my_epoch_spectral_connectivity, n_jobs = parallel_func(
             _epoch_spectral_connectivity, n_jobs, verbose=verbose
@@ -1136,6 +1167,11 @@ def spectral_connectivity_epochs(
         raise ValueError("fmax must be larger than fmin")
 
     n_bands = len(fmin)
+
+    if not isinstance(fdecim, int):
+        raise TypeError("`fdecim` must be an integer")
+    if fdecim < 1:
+        raise ValueError("`fdecim` must be >= 1")
 
     # assign names to connectivity methods
     if not isinstance(method, list | tuple):
@@ -1282,6 +1318,7 @@ def spectral_connectivity_epochs(
                 method=method,
                 mode=mode,
                 fskip=fskip,
+                fdecim=fdecim,
                 n_bands=n_bands,
                 cwt_freqs=cwt_freqs,
                 faverage=faverage,

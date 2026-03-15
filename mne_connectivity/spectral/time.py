@@ -18,7 +18,7 @@ from mne.time_frequency import (
     tfr_array_morlet,
     tfr_array_multitaper,
 )
-from mne.utils import _check_option, _validate_type, logger, verbose
+from mne.utils import _check_option, _validate_type, logger, verbose, warn
 
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -47,6 +47,7 @@ def spectral_connectivity_time(
     fmin=None,
     fmax=None,
     fskip=0,
+    fdecim=1,
     faverage=False,
     sm_times=0.0,
     sm_freqs=1,
@@ -132,7 +133,18 @@ def spectral_connectivity_time(
         ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``, the
         highest frequency in ``freqs`` is used.
     fskip : int
-        Omit every ``(fskip + 1)``-th frequency bin to decimate in frequency domain.
+        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain.
+
+        .. version-deprecated:: 0.8
+            ``fskip`` is deprecated and will be removed in 0.9. Use ``fdecim`` instead.
+            E.g., if you had 20 frequency bins and set ``fskip=1`` to get 10 frequency
+            bins, you can achieve the same result with ``fdecim=2``.
+    fdecim : int
+        Decimation factor in the frequency domain. Selects every Nth frequency bin from
+        the time-frequency decomposition (where N is the value of ``fdecim``). If 1
+        (default), no decimation occurs.
+
+        .. versionadded:: 0.8
     faverage : bool
         Average connectivity scores for each frequency band. If ``True``, the output
         ``freqs`` will be an array of the average frequencies of each band.
@@ -186,8 +198,9 @@ def spectral_connectivity_time(
 
         .. versionadded:: 0.8
     decim : int
-        To reduce memory usage, decimation factor after time-frequency decomposition.
-        Returns ``tfr[…, ::decim]``.
+        Decimation factor in the time domain. Selects every Nth time bin from the
+        time-frequency decomposition (where N is the value of ``decim``). If 1
+        (default), no decimation occurs.
     n_jobs : int
         Number of connections to compute in parallel. Memory mapping must be activated.
         Please see the Notes section for details.
@@ -381,6 +394,19 @@ def spectral_connectivity_time(
     ----------
     .. footbibliography::
     """  # noqa: E501
+    if fskip != 0:
+        warn(
+            "The `fskip` parameter is deprecated and will be removed in 0.9. Use "
+            "`fdecim` instead.",
+            FutureWarning,
+        )
+        if fdecim != 1:
+            warn(
+                "Both `fskip` and `fdecim` are set. Only `fdecim` will be used.",
+                RuntimeWarning,
+            )
+            fskip = 0
+
     events = None
     event_id = None
     picks = None
@@ -625,7 +651,7 @@ def spectral_connectivity_time(
         )
 
     # compute frequency mask based on specified min/max and decimation factor
-    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip)
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip, fdecim)
 
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
