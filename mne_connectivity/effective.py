@@ -283,7 +283,6 @@ def phase_slope_index_time(
     average=False,
     fmin=None,
     fmax=None,
-    fskip=0,
     fdecim=1,
     sm_times=0.0,
     sm_freqs=1,
@@ -358,19 +357,10 @@ def phase_slope_index_time(
         The upper frequency of interest. Multiple bands are defined using a tuple, e.g.
         ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``
         (default), the highest frequency in ``freqs`` is used.
-    fskip : int
-        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain.
-
-        .. version-deprecated:: 0.8
-            ``fskip`` is deprecated and will be removed in 0.9. Use ``fdecim`` instead.
-            E.g., if you had 20 frequency bins and set ``fskip=1`` to get 10 frequency
-            bins, you can achieve the same result with ``fdecim=2``.
     fdecim : int
         Decimation factor in the frequency domain. Selects every Nth frequency bin from
         the time-frequency decomposition (where N is the value of ``fdecim``). If 1
         (default), no decimation occurs.
-
-        .. versionadded:: 0.8
     sm_times : float
         Amount of time to consider for the temporal smoothing, in seconds. If 0.0
         (default), no temporal smoothing is applied.
@@ -449,7 +439,6 @@ def phase_slope_index_time(
         sfreq=sfreq,
         fmin=fmin,
         fmax=fmax,
-        fskip=fskip,
         fdecim=fdecim,
         faverage=False,
         sm_times=sm_times,
