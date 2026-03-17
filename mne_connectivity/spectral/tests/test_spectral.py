@@ -394,7 +394,7 @@ def test_spectral_connectivity(method, mode):
                 assert_array_almost_equal(times_data, times2)
 
         # Test with faverage
-        # compute same connections for two bands, fskip=1, and f. avg.
+        # compute same connections for two bands, fdecim=2, and f. avg.
         fmin = (5.0, 15.0)
         fmax = (15.0, 30.0)
         con3 = spectral_connectivity_epochs(
@@ -405,7 +405,7 @@ def test_spectral_connectivity(method, mode):
             sfreq=sfreq,
             fmin=fmin,
             fmax=fmax,
-            fskip=1,
+            fdecim=2,
             faverage=True,
             mt_adaptive=adaptive,
             mt_low_bias=True,
@@ -428,7 +428,7 @@ def test_spectral_connectivity(method, mode):
             assert_allclose(freqs3[i][1], _fmax, atol=1)
 
         # average con2 "manually" and we get the same result
-        fskip = 1
+        fdecim = 2
         if not isinstance(method, list):
             for i in range(len(freqs3)):
                 # now we want to get the frequency indices
@@ -440,7 +440,7 @@ def test_spectral_connectivity(method, mode):
                 freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
                 # compute the mask based on specified min/max and decim factor
-                freq_mask = _compute_freq_mask(freqs, [fmin[i]], [fmax[i]], fskip)
+                freq_mask = _compute_freq_mask(freqs, [fmin[i]], [fmax[i]], 0, fdecim)
                 freqs = freqs[freq_mask]
                 freqs_idx = np.searchsorted(freqs2, freqs)
                 con2_avg = np.mean(con2.get_data()[:, freqs_idx], axis=1)
@@ -457,9 +457,10 @@ def test_spectral_connectivity(method, mode):
                     # and mode
                     freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
 
-                    # compute the mask based on specified min/max and
-                    # decim factor
-                    freq_mask = _compute_freq_mask(freqs, [fmin[i]], [fmax[i]], fskip)
+                    # compute the mask based on specified min/max and decim factor
+                    freq_mask = _compute_freq_mask(
+                        freqs, [fmin[i]], [fmax[i]], 0, fdecim
+                    )
                     freqs = freqs[freq_mask]
                     freqs_idx = np.searchsorted(freqs2, freqs)
 
@@ -897,7 +898,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         indices=([[0, 1]], [[2, 3]]),
         mode="multitaper",
         sfreq=100,
-        fskip=0,
+        fdecim=1,
         faverage=False,
         tmin=0,
         tmax=None,
