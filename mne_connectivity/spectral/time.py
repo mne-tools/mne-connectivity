@@ -521,6 +521,11 @@ def spectral_connectivity_time(
             "supported"
         )
 
+    if not isinstance(fdecim, int):
+        raise TypeError("`fdecim` must be an integer")
+    if fdecim < 1:
+        raise ValueError("`fdecim` must be >= 1")
+
     if any(this_method in _multivariate_methods for this_method in method):
         if not all(this_method in _multivariate_methods for this_method in method):
             raise ValueError(
