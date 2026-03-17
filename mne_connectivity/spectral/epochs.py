@@ -143,7 +143,7 @@ def _compute_freq_mask(freqs_all, fmin, fmax, fskip, fdecim):
         freq_mask[pos + 1 :: fskip + 1] = False
     # possibly decimate frequency points
     if fdecim != 1:
-        freq_mask[::fdecim] = False
+        freq_mask[np.arange(freq_mask.size) % fdecim != 0] = False
     return freq_mask
 
 
