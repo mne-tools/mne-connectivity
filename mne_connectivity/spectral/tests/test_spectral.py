@@ -1275,6 +1275,31 @@ def test_spectral_connectivity_bad_channels(conn_func, method, picks, data_as_sp
             assert_array_equal(0, np.array(con.attrs["patterns"])[:, :, 1, :])
 
 
+def test_spectral_connectivity_freq_decim():
+    """Test spectral_connectivity_epochs/time frequency decimation."""
+    # Simulate data
+    rng = np.random.default_rng(0)
+    n_epochs, n_chs, n_times = 5, 2, 200
+    sfreq = 50.0
+    data = rng.standard_normal((n_epochs, n_chs, n_times))
+    info = create_info(n_chs, sfreq, "eeg")
+    data = EpochsArray(data, info)
+
+    # Check decimation
+    con_original = spectral_connectivity_epochs(data, fdecim=1)
+    for fdecim in (2, 4):
+        con_decim = spectral_connectivity_epochs(data, fdecim=fdecim)
+        assert (
+            len(con_decim.freqs)
+            == len(con_decim.get_data("raveled")[1])
+            == len(con_original.freqs) // fdecim
+        )
+
+    # Check fskip deprecation warning
+    with pytest.warns(FutureWarning, match="The `fskip` parameter is deprecated"):
+        spectral_connectivity_epochs(data, fskip=1)
+
+
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))
 def test_epochs_tmin_tmax(kind):
     """Test spectral.spectral_connectivity_epochs with epochs and arrays."""
