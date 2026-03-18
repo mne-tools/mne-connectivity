@@ -27,7 +27,15 @@ from mne.time_frequency.multitaper import (
     _psd_from_mt_adaptive,
 )
 from mne.time_frequency.tfr import cwt, morlet
-from mne.utils import _arange_div, _check_option, _time_mask, logger, verbose, warn
+from mne.utils import (
+    _arange_div,
+    _check_option,
+    _time_mask,
+    _validate_type,
+    logger,
+    verbose,
+    warn,
+)
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -136,14 +144,15 @@ def _compute_freq_mask(freqs_all, fmin, fmax, fskip, fdecim):
     for f_lower, f_upper in zip(fmin, fmax):
         freq_mask |= (freqs_all >= f_lower) & (freqs_all <= f_upper)
 
-    assert fdecim == 1 or fskip == 0, "`fdecim` and `fskip` cannot be used together"
-
     # possibly skip frequency points
     for pos in range(fskip):
         freq_mask[pos + 1 :: fskip + 1] = False
-    # possibly decimate frequency points
+    # possibly decimate frequency points (start from fmin)
     if fdecim != 1:
-        freq_mask[np.arange(freq_mask.size) % fdecim != 0] = False
+        first_used_freq = np.where(freq_mask)[0][0]
+        used_freq_mask = freq_mask[first_used_freq:]
+        used_freq_mask[np.arange(used_freq_mask.size) % fdecim != 0] = False
+        freq_mask[first_used_freq:] = used_freq_mask
     return freq_mask
 
 
@@ -768,11 +777,12 @@ def spectral_connectivity_epochs(
     method="coh",
     indices=None,
     sfreq=None,
+    *,
     mode="multitaper",
     fmin=None,
     fmax=np.inf,
-    fskip=0,
-    fdecim=1,
+    fskip=None,
+    fdecim=None,
     faverage=False,
     tmin=None,
     tmax=None,
@@ -871,17 +881,19 @@ def spectral_connectivity_epochs(
     fmax : float | tuple of float
         The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,
         (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.
-    fskip : int
-        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain.
+    fskip : int | None
+        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain. If
+        ``None`` (default) or 0, no frequency bins are skipped.
 
         .. version-deprecated:: 0.8
-            ``fskip`` is deprecated and will be removed in 0.9. Use ``fdecim`` instead.
-            E.g., if you had 20 frequency bins and set ``fskip=1`` to get 10 frequency
-            bins, you can achieve the same result with ``fdecim=2``.
-    fdecim : int
+            ``fskip`` is deprecated and will be removed in 0.9. To reduce the number of
+            frequency bins, use ``fdecim`` instead, which offers more standard
+            decimation behaviour.
+    fdecim : int | None
         Decimation factor in the frequency domain. Selects every Nth frequency bin from
-        the (time-)frequency decomposition (where N is the value of ``fdecim``). If 1
-        (default), no decimation occurs.
+        the (time-)frequency decomposition (where N is the value of ``fdecim``). If
+        ``None`` (default) or 1, no decimation occurs. The default value will change to
+        1 in version 0.9.
 
         .. versionadded:: 0.8
     faverage : bool
@@ -1137,18 +1149,18 @@ def spectral_connectivity_epochs(
     ----------
     .. footbibliography::
     """  # noqa: E501
-    if fskip != 0:
+    if fskip is not None:
         warn(
             "The `fskip` parameter is deprecated and will be removed in 0.9. Use "
             "`fdecim` instead.",
             FutureWarning,
         )
-        if fdecim != 1:
-            warn(
-                "Both `fskip` and `fdecim` are set. Only `fdecim` will be used.",
-                RuntimeWarning,
-            )
-            fskip = 0
+        if fdecim is not None:
+            raise ValueError("`fskip` and `fdecim` cannot be used together.")
+    else:
+        fskip = 0
+    if fdecim is None:
+        fdecim = 1
 
     if n_jobs != 1:
         parallel, my_epoch_spectral_connectivity, n_jobs = parallel_func(
@@ -1168,8 +1180,7 @@ def spectral_connectivity_epochs(
 
     n_bands = len(fmin)
 
-    if not isinstance(fdecim, int):
-        raise TypeError("`fdecim` must be an integer")
+    _validate_type(fdecim, int, "fdecim", "int")
     if fdecim < 1:
         raise ValueError("`fdecim` must be >= 1")
 
