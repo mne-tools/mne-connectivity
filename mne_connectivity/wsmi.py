@@ -421,6 +421,8 @@ def wsmi(
     2. Computation of mutual information between symbolic sequences
     3. Weighting based on pattern distance for enhanced sensitivity
 
+    .. versionadded:: 0.8
+
     References
     ----------
     .. footbibliography::
