@@ -140,7 +140,7 @@ def _compute_freqs(n_times, sfreq, cwt_freqs, mode):
 
 def _compute_freq_mask(freqs_all, fmin, fmax, fskip, fdecim):
     # create a frequency mask for all bands
-    freq_mask = np.zeros(len(freqs_all), dtype=bool)
+    freq_mask = np.zeros_like(freqs_all, dtype=bool)
     for f_lower, f_upper in zip(fmin, fmax):
         freq_mask |= (freqs_all >= f_lower) & (freqs_all <= f_upper)
 
