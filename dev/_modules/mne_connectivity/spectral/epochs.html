@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.8.0.dev138+gf8ca0ed0b documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.8.0.dev139+g8e192ac76 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=5b88170d"></script>
+    <script src="../../../_static/documentation_options.js?v=b7b6175a"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.0.dev138+gf8ca0ed0b documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev139+g8e192ac76 documentation</p>
   
 </a></div>
     
@@ -438,7 +438,15 @@
     <span class="n">_psd_from_mt_adaptive</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.time_frequency.tfr</span><span class="w"> </span><span class="kn">import</span> <span class="n">cwt</span><span class="p">,</span> <span class="n">morlet</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_arange_div</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_arange_div</span><span class="p">,</span>
+    <span class="n">_check_option</span><span class="p">,</span>
+    <span class="n">_time_mask</span><span class="p">,</span>
+    <span class="n">_validate_type</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">,</span>
+    <span class="n">warn</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
@@ -541,15 +549,21 @@
     <span class="k">return</span> <span class="n">freqs_all</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">,</span> <span class="n">fdecim</span><span class="p">):</span>
     <span class="c1"># create a frequency mask for all bands</span>
-    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">freqs_all</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">f_lower</span><span class="p">,</span> <span class="n">f_upper</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">):</span>
         <span class="n">freq_mask</span> <span class="o">|=</span> <span class="p">(</span><span class="n">freqs_all</span> <span class="o">&gt;=</span> <span class="n">f_lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_all</span> <span class="o">&lt;=</span> <span class="n">f_upper</span><span class="p">)</span>
 
     <span class="c1"># possibly skip frequency points</span>
     <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fskip</span><span class="p">):</span>
         <span class="n">freq_mask</span><span class="p">[</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">::</span> <span class="n">fskip</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># possibly decimate frequency points (start from fmin)</span>
+    <span class="k">if</span> <span class="n">fdecim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">first_used_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freq_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">used_freq_mask</span> <span class="o">=</span> <span class="n">freq_mask</span><span class="p">[</span><span class="n">first_used_freq</span><span class="p">:]</span>
+        <span class="n">used_freq_mask</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">used_freq_mask</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">%</span> <span class="n">fdecim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">freq_mask</span><span class="p">[</span><span class="n">first_used_freq</span><span class="p">:]</span> <span class="o">=</span> <span class="n">used_freq_mask</span>
     <span class="k">return</span> <span class="n">freq_mask</span>
 
 
@@ -567,6 +581,7 @@
     <span class="n">method</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">,</span>
     <span class="n">fskip</span><span class="p">,</span>
+    <span class="n">fdecim</span><span class="p">,</span>
     <span class="n">n_bands</span><span class="p">,</span>
     <span class="n">cwt_freqs</span><span class="p">,</span>
     <span class="n">faverage</span><span class="p">,</span>
@@ -619,7 +634,7 @@
         <span class="n">freqs</span> <span class="o">=</span> <span class="n">_compute_freqs</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">cwt_freqs</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
     <span class="c1"># compute the mask based on specified min/max and decimation factor</span>
-    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">)</span>
+    <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">_compute_freq_mask</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fskip</span><span class="p">,</span> <span class="n">fdecim</span><span class="p">)</span>
 
     <span class="c1"># the frequency points where we compute connectivity</span>
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">]</span>
@@ -746,7 +761,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    using CWT with Morlet wavelets to estimate spectra&quot;</span><span class="p">)</span>
 
         <span class="c1"># reformat cwt_n_cycles if we have removed some frequencies</span>
-        <span class="c1"># using fmin, fmax, fskip</span>
+        <span class="c1"># using fmin, fmax, fskip/fdecim</span>
         <span class="n">cwt_n_cycles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">cwt_n_cycles</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_n_cycles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_n_cycles</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_freqs</span><span class="p">):</span>
@@ -1175,10 +1190,12 @@
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span>
     <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
-    <span class="n">fskip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">fskip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fdecim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">faverage</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1277,8 +1294,21 @@
 <span class="sd">    fmax : float | tuple of float</span>
 <span class="sd">        The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,</span>
 <span class="sd">        (13., 30.) for two bands with 13 Hz and 30 Hz upper freq.</span>
-<span class="sd">    fskip : int</span>
-<span class="sd">        Omit every &quot;(fskip + 1)-th&quot; frequency bin to decimate in frequency domain.</span>
+<span class="sd">    fskip : int | None</span>
+<span class="sd">        Omit every &quot;(fskip + 1)-th&quot; frequency bin to decimate in frequency domain. If</span>
+<span class="sd">        ``None`` (default) or 0, no frequency bins are skipped.</span>
+
+<span class="sd">        .. version-deprecated:: 0.8</span>
+<span class="sd">            ``fskip`` is deprecated and will be removed in 0.9. To reduce the number of</span>
+<span class="sd">            frequency bins, use ``fdecim`` instead, which offers more standard</span>
+<span class="sd">            decimation behaviour.</span>
+<span class="sd">    fdecim : int | None</span>
+<span class="sd">        Decimation factor in the frequency domain. Selects every Nth frequency bin from</span>
+<span class="sd">        the (time-)frequency decomposition (where N is the value of ``fdecim``). If</span>
+<span class="sd">        ``None`` (default) or 1, no decimation occurs. The default value will change to</span>
+<span class="sd">        1 in version 0.9.</span>
+
+<span class="sd">        .. versionadded:: 0.8</span>
 <span class="sd">    faverage : bool</span>
 <span class="sd">        Average connectivity scores for each frequency band. If ``True``, the output</span>
 <span class="sd">        freqs will be a list with arrays of the frequencies that were averaged.</span>
@@ -1532,6 +1562,19 @@
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+    <span class="k">if</span> <span class="n">fskip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The `fskip` parameter is deprecated and will be removed in 0.9. Use &quot;</span>
+            <span class="s2">&quot;`fdecim` instead.&quot;</span><span class="p">,</span>
+            <span class="ne">FutureWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fdecim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fskip` and `fdecim` cannot be used together.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fskip</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">fdecim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fdecim</span> <span class="o">=</span> <span class="mi">1</span>
+
     <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">parallel</span><span class="p">,</span> <span class="n">my_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">parallel_func</span><span class="p">(</span>
             <span class="n">_epoch_spectral_connectivity</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
@@ -1549,6 +1592,10 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fmax must be larger than fmin&quot;</span><span class="p">)</span>
 
     <span class="n">n_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span>
+
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">fdecim</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;fdecim&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fdecim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fdecim` must be &gt;= 1&quot;</span><span class="p">)</span>
 
     <span class="c1"># assign names to connectivity methods</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
@@ -1695,6 +1742,7 @@
                 <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
                 <span class="n">fskip</span><span class="o">=</span><span class="n">fskip</span><span class="p">,</span>
+                <span class="n">fdecim</span><span class="o">=</span><span class="n">fdecim</span><span class="p">,</span>
                 <span class="n">n_bands</span><span class="o">=</span><span class="n">n_bands</span><span class="p">,</span>
                 <span class="n">cwt_freqs</span><span class="o">=</span><span class="n">cwt_freqs</span><span class="p">,</span>
                 <span class="n">faverage</span><span class="o">=</span><span class="n">faverage</span><span class="p">,</span>
@@ -2064,7 +2112,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-18.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-20.
       <br/>
     
   </p>
