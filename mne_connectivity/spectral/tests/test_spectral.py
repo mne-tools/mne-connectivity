@@ -265,6 +265,7 @@ def test_spectral_connectivity(method, mode):
             mode=mode,
             indices=None,
             sfreq=sfreq,
+            fmin=5.0,
             mt_adaptive=adaptive,
             mt_low_bias=True,
             mt_bandwidth=mt_bandwidth,
@@ -348,6 +349,7 @@ def test_spectral_connectivity(method, mode):
             mode=mode,
             indices=indices,
             sfreq=sfreq,
+            fmin=5.0,
             mt_adaptive=adaptive,
             mt_low_bias=True,
             mt_bandwidth=mt_bandwidth,
@@ -394,7 +396,7 @@ def test_spectral_connectivity(method, mode):
                 assert_array_almost_equal(times_data, times2)
 
         # Test with faverage
-        # compute same connections for two bands, fskip=1, and f. avg.
+        # compute same connections for two bands, fdecim=2, and f. avg.
         fmin = (5.0, 15.0)
         fmax = (15.0, 30.0)
         con3 = spectral_connectivity_epochs(
@@ -405,7 +407,7 @@ def test_spectral_connectivity(method, mode):
             sfreq=sfreq,
             fmin=fmin,
             fmax=fmax,
-            fskip=1,
+            fdecim=2,
             faverage=True,
             mt_adaptive=adaptive,
             mt_low_bias=True,
@@ -413,12 +415,10 @@ def test_spectral_connectivity(method, mode):
             cwt_freqs=cwt_freqs,
             cwt_n_cycles=cwt_n_cycles,
         )
+        if not isinstance(method, list):
+            con3 = [con3]
 
-        if isinstance(method, list):
-            freqs3 = con3[0].attrs.get("freqs_used")
-        else:
-            freqs3 = con3.attrs.get("freqs_used")
-
+        freqs3 = con3[0].attrs.get("freqs_used")
         assert isinstance(freqs3, list)
         assert len(freqs3) == len(fmin)
         for i in range(len(freqs3)):
@@ -428,43 +428,22 @@ def test_spectral_connectivity(method, mode):
             assert_allclose(freqs3[i][1], _fmax, atol=1)
 
         # average con2 "manually" and we get the same result
-        fskip = 1
+        fdecim = 2
+        # compute the frequency mask based on specified min/max and decim factor
         if not isinstance(method, list):
+            con2 = [con2]
+        for j in range(len(con2)):
+            n_times = len(con2[j].attrs.get("times_used"))
+            freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
+            freq_mask = _compute_freq_mask(freqs, fmin, fmax, 0, fdecim)
             for i in range(len(freqs3)):
-                # now we want to get the frequency indices
-                # create a frequency mask for all bands
-                n_times = len(con2.attrs.get("times_used"))
+                # compute the mask for this band
+                use_freqs = freqs[freq_mask]
+                use_freqs = use_freqs[(use_freqs >= fmin[i]) & (use_freqs <= fmax[i])]
+                freqs_idx = np.searchsorted(freqs2, use_freqs)
 
-                # compute frequencies to analyze based on number of samples,
-                # sampling rate, specified wavelet frequencies and mode
-                freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
-
-                # compute the mask based on specified min/max and decim factor
-                freq_mask = _compute_freq_mask(freqs, [fmin[i]], [fmax[i]], fskip)
-                freqs = freqs[freq_mask]
-                freqs_idx = np.searchsorted(freqs2, freqs)
-                con2_avg = np.mean(con2.get_data()[:, freqs_idx], axis=1)
-                assert_array_almost_equal(con2_avg, con3.get_data()[:, i])
-        else:
-            for j in range(len(con2)):
-                for i in range(len(freqs3)):
-                    # now we want to get the frequency indices
-                    # create a frequency mask for all bands
-                    n_times = len(con2[0].attrs.get("times_used"))
-
-                    # compute frequencies to analyze based on number of
-                    # samples, sampling rate, specified wavelet frequencies
-                    # and mode
-                    freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
-
-                    # compute the mask based on specified min/max and
-                    # decim factor
-                    freq_mask = _compute_freq_mask(freqs, [fmin[i]], [fmax[i]], fskip)
-                    freqs = freqs[freq_mask]
-                    freqs_idx = np.searchsorted(freqs2, freqs)
-
-                    con2_avg = np.mean(con2[j].get_data()[:, freqs_idx], axis=1)
-                    assert_array_almost_equal(con2_avg, con3[j].get_data()[:, i])
+                con2_avg = np.mean(con2[j].get_data()[:, freqs_idx], axis=1)
+                assert_array_almost_equal(con2_avg, con3[j].get_data()[:, i])
 
     # test _get_n_epochs
     full_list = list(range(10))
@@ -897,7 +876,7 @@ def test_multivariate_spectral_connectivity_epochs_regression():
         indices=([[0, 1]], [[2, 3]]),
         mode="multitaper",
         sfreq=100,
-        fskip=0,
+        fdecim=1,
         faverage=False,
         tmin=0,
         tmax=None,
@@ -1272,6 +1251,35 @@ def test_spectral_connectivity_bad_channels(conn_func, method, picks, data_as_sp
             # but we can check shape (all chans) and entries (bads=zeros) of patterns
             assert np.shape(con.attrs["patterns"]) == (2, n_cons, n_channels, n_freqs)
             assert_array_equal(0, np.array(con.attrs["patterns"])[:, :, 1, :])
+
+
+def test_spectral_connectivity_freq_decim():
+    """Test spectral_connectivity_epochs frequency decimation.
+
+    NB: spectral_connectivity_time(..., fdecim) uses the same code path, so no need to
+    test it separately.
+    """
+    # Simulate data
+    rng = np.random.default_rng(0)
+    n_epochs, n_chs, n_times = 5, 2, 200
+    sfreq = 50.0
+    data = rng.standard_normal((n_epochs, n_chs, n_times))
+    info = create_info(n_chs, sfreq, "eeg")
+    data = EpochsArray(data, info)
+
+    # Check decimation
+    con_original = spectral_connectivity_epochs(data, fdecim=1)
+    for fdecim in (2, 4):
+        con_decim = spectral_connectivity_epochs(data, fdecim=fdecim)
+        assert (
+            len(con_decim.freqs)
+            == len(con_decim.get_data("raveled")[1])  # freqs dim
+            == len(con_original.freqs) // fdecim
+        )
+
+    # Check fskip deprecation warning
+    with pytest.warns(FutureWarning, match="The `fskip` parameter is deprecated"):
+        spectral_connectivity_epochs(data, fskip=0)
 
 
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))

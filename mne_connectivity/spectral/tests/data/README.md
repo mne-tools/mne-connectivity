@@ -18,7 +18,7 @@ As the MNE code for computing the cross-spectral density matrix is not
 available in MATLAB, the CSD matrix was computed using MNE and then loaded into
 MATLAB to compute the connectivity from the original implementations using the
 same processing settings in MATLAB and Python. That is: a sampling frequency of
-100 Hz; method='multitaper'; fskip=0; faverage=False; tmin=0; tmax=None;
+100 Hz; method='multitaper'; fdecim=1; faverage=False; tmin=0; tmax=None;
 mt_bandwidth=4; mt_low_bias=True; mt_adaptive=False; gc_n_lags=20;
 rank=([2], [2]) - i.e. no rank subspace projection; indices=([0, 1], [2, 3]) -
 i.e. connection from first two channels to last two channels. It is 

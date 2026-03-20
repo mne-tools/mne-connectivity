@@ -44,6 +44,8 @@ API
 
 - Add a new ``min_distance`` parameter to the :func:`~mne_connectivity.viz.plot_sensors_connectivity` function which offers greater control over the minimum distance required between sensors to plot a connection between them, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`221`).
 - Begin deprecation of ``2*np.pi`` as the default value of ``sfreq`` in favour of ``None`` in :func:`~mne_connectivity.phase_slope_index`, by `Thomas Binns`_ (:pr:`326`).
+- Add a new ``fdecim`` parameter to the :func:`~mne_connectivity.spectral_connectivity_epochs`, :func:`~mne_connectivity.spectral_connectivity_time`, :func:`~mne_connectivity.phase_slope_index`, and :func:`~mne_connectivity.phase_slope_index_time` functions for more standard decimation behaviour in the frequency domain, by `Thomas Binns`_ (:pr:`377`).
+- Begin deprecation of the ``fskip`` parameter in :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_ (:pr:`377`).
 
 Authors
 ~~~~~~~
