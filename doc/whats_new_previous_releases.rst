@@ -7,6 +7,53 @@
 What was new in previous releases?
 ==================================
 
+Version 0.8 (2026-03-23)
+------------------------
+
+Minimum supported Python version is now 3.10.
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add a new :class:`~mne_connectivity.decoding.CoherencyDecomposition` class for decomposing connectivity sources using multivariate coherency-based methods, by `Thomas Binns`_ (:pr:`193`).
+- Add new plotting methods :meth:`CoherencyDecomposition.plot_filters() <mne_connectivity.decoding.CoherencyDecomposition.plot_filters>` and :meth:`CoherencyDecomposition.plot_patterns() <mne_connectivity.decoding.CoherencyDecomposition.plot_patterns>` for visualising the decomposed connectivity sources, by `Thomas Binns`_ (:pr:`208` and :pr:`280`).
+- Add support for computing multiple components of multivariate connectivity in the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions and :class:`~mne_connectivity.decoding.CoherencyDecomposition` class, and add support for storing data with a components dimension in all :class:`~mne_connectivity.Connectivity` classes, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`213`).
+- Add support for :class:`mne.time_frequency.EpochsSpectrum` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`220`).
+- Add support for :class:`mne.time_frequency.EpochsTFR` objects to be passed as data to the :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` functions, by `Thomas Binns`_ and `Daniel McCloy`_ (:pr:`232`).
+- Update the cross-references for relevant functions and classes and make data types more explicit throughout the documentation, by `Thomas Binns`_ (:pr:`214`).
+- Add support for :class:`mne.time_frequency.EpochsSpectrum` and  :class:`mne.time_frequency.EpochsTFR` objects to be passed as data to the :func:`~mne_connectivity.phase_slope_index` function, by `Thomas Binns`_ (:pr:`327`).
+- Add a new :func:`~mne_connectivity.wsmi` function for computing weighted symbolic mutual information (wSMI), by `Giovanni Marraffini`_ and `Laouen Belloli`_ (:pr:`307`).
+- Add a new function :func:`~mne_connectivity.phase_slope_index_time` for computing the Phase Slope Index with the functionality of :func:`~mne_connectivity.spectral_connectivity_time`, by `Salman Qasim`_ and `Thomas Binns`_ (:pr:`210`).
+
+Bug
+~~~
+
+- Improve the documentation of the ``fmin`` and ``cwt_freqs`` parameters in the :func:`~mne_connectivity.spectral_connectivity_epochs` function, by `Richard Köhler`_ and `Daniel McCloy`_ (:pr:`242`).
+- Ignore bad channels in computations in :func:`~mne_connectivity.envelope_correlation` and :func:`~mne_connectivity.vector_auto_regression`, and in :func:`~mne_connectivity.spectral_connectivity_epochs`, :func:`~mne_connectivity.spectral_connectivity_time`, and :func:`~mne_connectivity.phase_slope_index` when indices are not specified, by `Thomas Binns`_ (:pr:`334`).
+- Fix ``fmin`` and ``fmax`` frequency band masking for ``n_cycles`` arrays in :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_ (:pr:`356`).
+
+API
+~~~
+
+- Add a new ``min_distance`` parameter to the :func:`~mne_connectivity.viz.plot_sensors_connectivity` function which offers greater control over the minimum distance required between sensors to plot a connection between them, by `Thomas Binns`_ and `Eric Larson`_ (:pr:`221`).
+- Begin deprecation of ``2*np.pi`` as the default value of ``sfreq`` in favour of ``None`` in :func:`~mne_connectivity.phase_slope_index`, by `Thomas Binns`_ (:pr:`326`).
+- Add a new ``fdecim`` parameter to the :func:`~mne_connectivity.spectral_connectivity_epochs`, :func:`~mne_connectivity.spectral_connectivity_time`, :func:`~mne_connectivity.phase_slope_index`, and :func:`~mne_connectivity.phase_slope_index_time` functions for more standard decimation behaviour in the frequency domain, by `Thomas Binns`_ (:pr:`377`).
+- Begin deprecation of the ``fskip`` parameter in :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_ (:pr:`377`).
+
+Authors
+~~~~~~~
+
+* `Thomas Binns`_
+* `Giovanni Marraffini`_
+* `Laouen Belloli`_
+* `Salman Qasim`_
+* `Richard Köhler`_
+* `Adam Li`_
+* `Marijn van Vliet`_
+* `Eric Larson`_
+* `Daniel McCloy`_
+
+
 Version 0.7 (2024-06-03)
 ------------------------
 
