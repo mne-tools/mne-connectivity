@@ -71,34 +71,18 @@ Then one could plot the memory usage:
 
 # Making a Release
 
-1. Ctrl+f and replace all version indicators with the new version. For example,
+1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the version number of the current version (e.g., `0.7/`).
 
-`0.5.0dev0` -> `0.5.0`
+2. Create a pull request to the `main` branch with the following changes:
 
-2. Write release notes in `whats_new.rst`
+    a. Update the version information for the online documentation in `doc/_static/versions.json`
 
-3. Build package locally and test
+    b. Move the changelog from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
 
+    c. Update the version and release date information in `CITATION.cff`
 
-    python -m build
+3. With the pull request merged, create a new maintenance branch named with the version number of the new version (e.g., `maint/0.8`).
 
-4. Upload to Test PyPi
+4. Create a release tag for the new version (e.g., `v0.8`) on the `main` branch and publish the release on GitHub.
 
-
-    twine upload dist/* --repository-url https://test.pypi.org/legacy/ --repository mne-connectivity
-
-
-5. Build docs locally
-
-    make -C build-doc
-
-6. Push docs under `doc/_build/html/` to the `stable/` folder in `gh-pages` branch
-
-
-7. Make release to PyPi
-
-    twine upload dist/*
-
-or if you have two-factor authentication enabled: <https://pypi.org/help/#apitoken>
-
-    twine upload dist/* --repository mne-connectivity
+5. Trusted publishing will automatically add the new release to PyPI.
