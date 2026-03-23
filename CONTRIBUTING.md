@@ -79,7 +79,7 @@ Then one could plot the memory usage:
 
     b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
 
-    c. Update the version and release date information in `CITATION.cff`
+    c. Update the version, release date, and author information in `CITATION.cff`
 
 3. With the pull request merged, create a new maintenance branch named with the version number of the new version (e.g., `maint/0.8`).
 
