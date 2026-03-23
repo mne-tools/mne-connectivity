@@ -77,7 +77,7 @@ Then one could plot the memory usage:
 
     a. Update the version information for the online documentation in `doc/_static/versions.json`
 
-    b. Move the changelog from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
+    b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
 
     c. Update the version and release date information in `CITATION.cff`
 
@@ -85,4 +85,4 @@ Then one could plot the memory usage:
 
 4. Create a release tag for the new version (e.g., `v0.8`) on the `main` branch and publish the release on GitHub.
 
-5. Trusted publishing will automatically add the new release to PyPI.
+5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI.
