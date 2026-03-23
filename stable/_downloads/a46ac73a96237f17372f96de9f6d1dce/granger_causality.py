@@ -12,6 +12,7 @@ data is discussed :footcite:`WinklerEtAl2016`.
 
 # Author: Thomas S. Binns <t.s.binns@outlook.com>
 # License: BSD (3-clause)
+# sphinx_gallery_failing_thumbnail = False
 # sphinx_gallery_thumbnail_number = 3
 
 # %%
@@ -411,20 +412,16 @@ rank = np.count_nonzero(s >= s[0] * 1e-4)  # 1e-4 is the 'closeness' criteria
 
 # %%
 
-try:
-    spectral_connectivity_epochs(
-        epochs,
-        method=["gc"],
-        indices=indices_ab,
-        fmin=5,
-        fmax=30,
-        rank=None,
-        gc_n_lags=20,
-        verbose=False,
-    )  # A => B
-    print("Success!")
-except RuntimeError as error:
-    print("\nCaught the following error:\n" + repr(error))
+spectral_connectivity_epochs(
+    epochs,
+    method=["gc"],
+    indices=indices_ab,
+    fmin=5,
+    fmax=30,
+    rank=None,
+    gc_n_lags=20,
+    verbose=False,
+)  # A => B
 
 ###############################################################################
 # Rigorous checks are implemented to identify any such instances which would

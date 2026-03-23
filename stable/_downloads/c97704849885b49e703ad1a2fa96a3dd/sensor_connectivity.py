@@ -12,6 +12,8 @@ are used which produces strong connectvitiy in the right occipital sensors.
 #
 # License: BSD (3-clause)
 
+# %%
+
 import os.path as op
 
 import mne
@@ -22,7 +24,8 @@ from mne_connectivity.viz import plot_sensors_connectivity
 
 print(__doc__)
 
-###############################################################################
+# %%
+
 # Set parameters
 data_path = sample.data_path()
 raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif")
@@ -41,7 +44,7 @@ picks = mne.pick_types(
 )
 
 # Create epochs for the visual condition
-event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
+event_id, tmin, tmax = 3, -0.2, 1.5  # want a long enough epoch for 5 cycles
 epochs = mne.Epochs(
     raw,
     events,
@@ -52,24 +55,18 @@ epochs = mne.Epochs(
     baseline=(None, 0),
     reject=dict(grad=4000e-13, eog=150e-6),
 )
+epochs.load_data().pick("grad")  # just keep MEG and no EOG now
 
-# Compute connectivity for band containing the evoked response.
-# We exclude the baseline period:
-fmin, fmax = 4.0, 9.0
-sfreq = raw.info["sfreq"]  # the sampling frequency
+# Compute Fourier coefficients for the epochs (returns an EpochsSpectrum object)
+# (storing Fourier coefficients in EpochsSpectrum objects requires MNE >= 1.8)
 tmin = 0.0  # exclude the baseline period
-epochs.load_data().pick_types(meg="grad")  # just keep MEG and no EOG now
+spectrum = epochs.compute_psd(method="multitaper", tmin=tmin, output="complex")
+
+# Compute connectivity for the frequency band containing the evoked response
+# (passing EpochsSpectrum objects as data requires MNE-Connectivity >= 0.8)
+fmin, fmax = 4.0, 9.0
 con = spectral_connectivity_epochs(
-    epochs,
-    method="pli",
-    mode="multitaper",
-    sfreq=sfreq,
-    fmin=fmin,
-    fmax=fmax,
-    faverage=True,
-    tmin=tmin,
-    mt_adaptive=False,
-    n_jobs=1,
+    data=spectrum, method="pli", fmin=fmin, fmax=fmax, faverage=True, n_jobs=1
 )
 
 # Now, visualize the connectivity in 3D:

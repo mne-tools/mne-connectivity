@@ -2,64 +2,70 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 0.7.0 documentation</title>
+    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 0.8.0.dev140+gda90d79bf documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=71d00d13" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=423e15eb"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=896979d9"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/granger_causality';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compute envelope correlations in source space" href="mne_inverse_envelope_correlation.html" />
-    <link rel="prev" title="Compute coherence in source space using a MNE inverse solution" href="mne_inverse_coherence_epochs.html" />
+    <link rel="prev" title="Compute connectivity using weighted symbolic mutual information (wSMI)" href="wsmi.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
   </head>
   
   
@@ -67,32 +73,13 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
 
   
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
-
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -100,7 +87,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -108,19 +94,27 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
+  
+    
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -129,7 +123,8 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
+  
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev140+gda90d79bf documentation</p>
   
 </a></div>
     
@@ -139,42 +134,37 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -185,45 +175,44 @@
       
         <div class="navbar-item navbar-persistent--container">
           
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -234,7 +223,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -245,31 +234,32 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -278,44 +268,42 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -324,32 +312,34 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -360,7 +350,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -370,7 +360,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -380,6 +371,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_psi_visual.html">Compute Phase Slope Index (PSI) in source space for a visual stimulus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensor_connectivity.html">Compute all-to-all connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_coherence_epochs.html">Compute coherence in source space using a MNE inverse solution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wsmi.html">Compute connectivity using weighted symbolic mutual information (wSMI)</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compute directionality of connectivity with multivariate Granger causality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation.html">Compute envelope correlations in source space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html">Compute envelope correlations in volume source space</a></li>
@@ -389,14 +381,20 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="mic_mim.html">Compute multivariate measures of the imaginary part of coherency</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cwt_sensor_connectivity.html">Compute seed-based time-frequency connectivity in sensor space</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_inverse_label_connectivity.html">Compute source space connectivity and visualize it using a circular graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="surrogate_connectivity.html">Determine the significance of connectivity estimates against baseline connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connectivity_classes.html">Using the connectivity classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_ragged_arrays.html">Working with ragged indices for multivariate connectivity</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="dynamic/index.html">Dynamic Connectivity Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="decoding/index.html">Decoding &amp; Decomposition Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="decoding/cohy_decomposition.html">Multivariate decomposition for efficient connectivity analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decoding/cohy_decomposition_plotting.html">Visualising spatial contributions to multivariate connectivity</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dynamic/index.html">Dynamic Connectivity Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="dynamic/mne_var_connectivity.html">Compute vector autoregressive model (linear system)</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -404,29 +402,32 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -437,7 +438,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Compute...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Compute directionality of connectivity with multivariate Granger causality</span></li>
   </ul>
 </nav>
 </div>
@@ -452,7 +453,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -468,15 +469,16 @@ for improving the robustness of directed connectivity estimates to noise in the
 data is discussed <a class="footnote-reference brackets" href="#footcite-winkleretal2016" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Thomas S. Binns &lt;t.s.binns@outlook.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_failing_thumbnail = False</span>
 <span class="c1"># sphinx_gallery_thumbnail_number = 3</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">mne.datasets.fieldtrip_cmc</span> <span class="kn">import</span> <span class="n">data_path</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.datasets.fieldtrip_cmc</span><span class="w"> </span><span class="kn">import</span> <span class="n">data_path</span>
 
-<span class="kn">from</span> <span class="nn">mne_connectivity</span> <span class="kn">import</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
 </pre></div>
 </div>
 <section id="background">
@@ -582,370 +584,42 @@ by loading some example MEG data and dividing it into two-second-long epochs.</p
 <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-  0%|                                       | 561k/329M [00:00&lt;01:12, 4.52MB/s]
-  0%|▏                                     | 1.33M/329M [00:00&lt;00:53, 6.14MB/s]
-  1%|▎                                     | 2.38M/329M [00:00&lt;00:40, 8.00MB/s]
-  1%|▎                                     | 3.20M/329M [00:00&lt;00:40, 8.08MB/s]
-  1%|▍                                     | 4.21M/329M [00:00&lt;00:37, 8.62MB/s]
-  2%|▌                                     | 5.25M/329M [00:00&lt;00:36, 8.89MB/s]
-  2%|▋                                     | 6.30M/329M [00:00&lt;00:35, 9.06MB/s]
-  2%|▊                                     | 7.21M/329M [00:00&lt;00:36, 8.93MB/s]
-  2%|▉                                     | 8.10M/329M [00:00&lt;00:38, 8.30MB/s]
-  3%|█                                     | 8.94M/329M [00:01&lt;00:48, 6.60MB/s]
-  3%|█                                     | 9.70M/329M [00:01&lt;00:48, 6.55MB/s]
-  3%|█▏                                    | 10.5M/329M [00:01&lt;00:47, 6.70MB/s]
-  4%|█▎                                    | 11.5M/329M [00:01&lt;00:42, 7.40MB/s]
-  4%|█▍                                    | 12.6M/329M [00:01&lt;00:39, 8.03MB/s]
-  4%|█▌                                    | 13.6M/329M [00:01&lt;00:36, 8.57MB/s]
-  4%|█▋                                    | 14.5M/329M [00:01&lt;00:37, 8.31MB/s]
-  5%|█▊                                    | 15.5M/329M [00:01&lt;00:38, 8.25MB/s]
-  5%|█▉                                    | 16.3M/329M [00:02&lt;00:40, 7.80MB/s]
-  5%|█▉                                    | 17.1M/329M [00:02&lt;00:42, 7.42MB/s]
-  5%|██                                    | 17.8M/329M [00:02&lt;00:42, 7.40MB/s]
-  6%|██▏                                   | 18.8M/329M [00:02&lt;00:38, 8.00MB/s]
-  6%|██▎                                   | 19.6M/329M [00:02&lt;00:39, 7.76MB/s]
-  6%|██▍                                   | 20.7M/329M [00:02&lt;00:38, 7.95MB/s]
-  7%|██▍                                   | 21.5M/329M [00:02&lt;00:40, 7.66MB/s]
-  7%|██▌                                   | 22.5M/329M [00:02&lt;00:39, 7.80MB/s]
-  7%|██▋                                   | 23.3M/329M [00:02&lt;00:39, 7.78MB/s]
-  7%|██▊                                   | 24.3M/329M [00:03&lt;00:37, 8.13MB/s]
-  8%|██▉                                   | 25.4M/329M [00:03&lt;00:35, 8.48MB/s]
-  8%|███                                   | 26.4M/329M [00:03&lt;00:34, 8.66MB/s]
-  8%|███▏                                  | 27.5M/329M [00:03&lt;00:33, 9.00MB/s]
-  9%|███▎                                  | 28.4M/329M [00:03&lt;00:33, 8.91MB/s]
-  9%|███▍                                  | 29.3M/329M [00:03&lt;00:34, 8.63MB/s]
-  9%|███▍                                  | 30.1M/329M [00:03&lt;00:42, 7.03MB/s]
-  9%|███▌                                  | 30.9M/329M [00:03&lt;00:46, 6.40MB/s]
- 10%|███▋                                  | 31.9M/329M [00:04&lt;00:43, 6.83MB/s]
- 10%|███▊                                  | 32.6M/329M [00:04&lt;00:45, 6.46MB/s]
- 10%|███▊                                  | 33.3M/329M [00:04&lt;00:45, 6.49MB/s]
- 10%|███▉                                  | 34.3M/329M [00:04&lt;00:43, 6.78MB/s]
- 11%|████                                  | 35.0M/329M [00:04&lt;00:43, 6.71MB/s]
- 11%|████                                  | 35.6M/329M [00:04&lt;00:44, 6.62MB/s]
- 11%|████▏                                 | 36.4M/329M [00:04&lt;00:44, 6.57MB/s]
- 11%|████▎                                 | 37.4M/329M [00:04&lt;00:39, 7.36MB/s]
- 12%|████▍                                 | 38.4M/329M [00:05&lt;00:36, 7.96MB/s]
- 12%|████▌                                 | 39.2M/329M [00:05&lt;00:36, 7.86MB/s]
- 12%|████▌                                 | 40.0M/329M [00:05&lt;00:39, 7.36MB/s]
- 12%|████▋                                 | 40.8M/329M [00:05&lt;00:40, 7.11MB/s]
- 13%|████▊                                 | 41.5M/329M [00:05&lt;00:43, 6.63MB/s]
- 13%|████▊                                 | 42.2M/329M [00:05&lt;00:43, 6.58MB/s]
- 13%|████▉                                 | 42.9M/329M [00:05&lt;00:43, 6.52MB/s]
- 13%|█████                                 | 43.7M/329M [00:05&lt;00:42, 6.75MB/s]
- 14%|█████▏                                | 44.5M/329M [00:05&lt;00:42, 6.76MB/s]
- 14%|█████▎                                | 45.5M/329M [00:06&lt;00:37, 7.52MB/s]
- 14%|█████▎                                | 46.3M/329M [00:06&lt;00:39, 7.17MB/s]
- 14%|█████▍                                | 47.1M/329M [00:06&lt;00:39, 7.09MB/s]
- 15%|█████▌                                | 47.9M/329M [00:06&lt;00:38, 7.24MB/s]
- 15%|█████▌                                | 48.7M/329M [00:06&lt;00:38, 7.35MB/s]
- 15%|█████▊                                | 50.0M/329M [00:06&lt;00:34, 8.17MB/s]
- 15%|█████▉                                | 51.0M/329M [00:06&lt;00:32, 8.64MB/s]
- 16%|█████▉                                | 51.9M/329M [00:06&lt;00:32, 8.65MB/s]
- 16%|██████                                | 52.8M/329M [00:06&lt;00:32, 8.64MB/s]
- 16%|██████▏                               | 53.9M/329M [00:07&lt;00:29, 9.31MB/s]
- 17%|██████▎                               | 55.0M/329M [00:07&lt;00:28, 9.62MB/s]
- 17%|██████▍                               | 56.2M/329M [00:07&lt;00:27, 9.83MB/s]
- 17%|██████▌                               | 57.3M/329M [00:07&lt;00:27, 9.84MB/s]
- 18%|██████▋                               | 58.3M/329M [00:07&lt;00:27, 9.99MB/s]
- 18%|██████▉                               | 59.6M/329M [00:07&lt;00:28, 9.62MB/s]
- 18%|███████                               | 60.7M/329M [00:07&lt;00:27, 9.71MB/s]
- 19%|███████                               | 61.7M/329M [00:07&lt;00:28, 9.24MB/s]
- 19%|███████▏                              | 62.6M/329M [00:07&lt;00:30, 8.88MB/s]
- 19%|███████▎                              | 63.7M/329M [00:08&lt;00:28, 9.44MB/s]
- 20%|███████▍                              | 64.6M/329M [00:08&lt;00:29, 9.04MB/s]
- 20%|███████▌                              | 65.6M/329M [00:08&lt;00:30, 8.75MB/s]
- 20%|███████▋                              | 67.0M/329M [00:08&lt;00:28, 9.29MB/s]
- 21%|███████▊                              | 68.0M/329M [00:08&lt;00:27, 9.63MB/s]
- 21%|███████▉                              | 69.0M/329M [00:08&lt;00:28, 9.29MB/s]
- 21%|████████                              | 70.1M/329M [00:08&lt;00:27, 9.57MB/s]
- 22%|████████▏                             | 71.1M/329M [00:08&lt;00:27, 9.51MB/s]
- 22%|████████▎                             | 72.2M/329M [00:08&lt;00:26, 9.66MB/s]
- 22%|████████▍                             | 73.2M/329M [00:09&lt;00:26, 9.77MB/s]
- 23%|████████▌                             | 74.3M/329M [00:09&lt;00:26, 9.53MB/s]
- 23%|████████▋                             | 75.2M/329M [00:09&lt;00:27, 9.30MB/s]
- 23%|████████▊                             | 76.2M/329M [00:09&lt;00:27, 9.15MB/s]
- 23%|████████▉                             | 77.2M/329M [00:09&lt;00:26, 9.42MB/s]
- 24%|█████████                             | 78.5M/329M [00:09&lt;00:25, 9.71MB/s]
- 24%|█████████▏                            | 79.4M/329M [00:09&lt;00:26, 9.32MB/s]
- 24%|█████████▎                            | 80.4M/329M [00:09&lt;00:27, 8.98MB/s]
- 25%|█████████▍                            | 81.3M/329M [00:09&lt;00:29, 8.36MB/s]
- 25%|█████████▌                            | 82.4M/329M [00:10&lt;00:27, 8.90MB/s]
- 25%|█████████▋                            | 83.4M/329M [00:10&lt;00:26, 9.17MB/s]
- 26%|█████████▊                            | 84.7M/329M [00:10&lt;00:24, 10.2MB/s]
- 26%|█████████▉                            | 85.9M/329M [00:10&lt;00:23, 10.5MB/s]
- 26%|██████████                            | 86.9M/329M [00:10&lt;00:22, 10.5MB/s]
- 27%|██████████▏                           | 88.0M/329M [00:10&lt;00:22, 10.5MB/s]
- 27%|██████████▎                           | 89.1M/329M [00:10&lt;00:22, 10.8MB/s]
- 27%|██████████▍                           | 90.2M/329M [00:10&lt;00:23, 10.4MB/s]
- 28%|██████████▌                           | 91.3M/329M [00:10&lt;00:24, 9.68MB/s]
- 28%|██████████▋                           | 92.3M/329M [00:11&lt;00:24, 9.52MB/s]
- 28%|██████████▊                           | 93.4M/329M [00:11&lt;00:24, 9.62MB/s]
- 29%|██████████▉                           | 94.4M/329M [00:11&lt;00:24, 9.77MB/s]
- 29%|███████████                           | 95.4M/329M [00:11&lt;00:24, 9.60MB/s]
- 29%|███████████                           | 96.4M/329M [00:11&lt;00:25, 9.19MB/s]
- 30%|███████████▏                          | 97.4M/329M [00:11&lt;00:24, 9.49MB/s]
- 30%|███████████▎                          | 98.3M/329M [00:11&lt;00:25, 9.07MB/s]
- 30%|███████████▍                          | 99.2M/329M [00:11&lt;00:26, 8.71MB/s]
- 30%|███████████▊                           | 100M/329M [00:11&lt;00:27, 8.35MB/s]
- 31%|███████████▉                           | 101M/329M [00:12&lt;00:27, 8.25MB/s]
- 31%|████████████                           | 102M/329M [00:12&lt;00:26, 8.60MB/s]
- 31%|████████████▏                          | 103M/329M [00:12&lt;00:30, 7.38MB/s]
- 31%|████████████▎                          | 104M/329M [00:12&lt;00:34, 6.50MB/s]
- 32%|████████████▎                          | 104M/329M [00:12&lt;00:33, 6.68MB/s]
- 32%|████████████▍                          | 105M/329M [00:12&lt;00:33, 6.77MB/s]
- 32%|████████████▌                          | 106M/329M [00:12&lt;00:28, 7.71MB/s]
- 32%|████████████▋                          | 107M/329M [00:12&lt;00:29, 7.45MB/s]
- 33%|████████████▊                          | 108M/329M [00:13&lt;00:28, 7.81MB/s]
- 33%|████████████▉                          | 109M/329M [00:13&lt;00:26, 8.31MB/s]
- 33%|█████████████                          | 110M/329M [00:13&lt;00:27, 8.07MB/s]
- 34%|█████████████                          | 111M/329M [00:13&lt;00:27, 8.06MB/s]
- 34%|█████████████▏                         | 112M/329M [00:13&lt;00:24, 8.82MB/s]
- 34%|█████████████▎                         | 113M/329M [00:13&lt;00:25, 8.44MB/s]
- 34%|█████████████▍                         | 113M/329M [00:13&lt;00:27, 7.84MB/s]
- 35%|█████████████▌                         | 114M/329M [00:13&lt;00:32, 6.61MB/s]
- 35%|█████████████▌                         | 115M/329M [00:14&lt;00:37, 5.67MB/s]
- 35%|█████████████▋                         | 116M/329M [00:14&lt;00:39, 5.46MB/s]
- 35%|█████████████▊                         | 116M/329M [00:14&lt;00:38, 5.51MB/s]
- 36%|█████████████▉                         | 117M/329M [00:14&lt;00:37, 5.58MB/s]
- 36%|█████████████▉                         | 118M/329M [00:14&lt;00:35, 6.00MB/s]
- 36%|██████████████                         | 119M/329M [00:14&lt;00:35, 5.99MB/s]
- 36%|██████████████▏                        | 119M/329M [00:14&lt;00:33, 6.25MB/s]
- 37%|██████████████▎                        | 121M/329M [00:14&lt;00:30, 6.77MB/s]
- 37%|██████████████▎                        | 121M/329M [00:15&lt;00:30, 6.74MB/s]
- 37%|██████████████▍                        | 122M/329M [00:15&lt;00:31, 6.67MB/s]
- 37%|██████████████▌                        | 123M/329M [00:15&lt;00:29, 6.97MB/s]
- 38%|██████████████▋                        | 124M/329M [00:15&lt;00:26, 7.71MB/s]
- 38%|██████████████▊                        | 125M/329M [00:15&lt;00:25, 8.11MB/s]
- 38%|██████████████▉                        | 126M/329M [00:15&lt;00:22, 9.09MB/s]
- 39%|███████████████                        | 127M/329M [00:15&lt;00:21, 9.24MB/s]
- 39%|███████████████▏                       | 128M/329M [00:15&lt;00:21, 9.22MB/s]
- 39%|███████████████▎                       | 129M/329M [00:15&lt;00:22, 8.89MB/s]
- 40%|███████████████▍                       | 130M/329M [00:16&lt;00:25, 7.90MB/s]
- 40%|███████████████▌                       | 131M/329M [00:16&lt;00:29, 6.77MB/s]
- 40%|███████████████▌                       | 132M/329M [00:16&lt;00:29, 6.80MB/s]
- 40%|███████████████▋                       | 132M/329M [00:16&lt;00:30, 6.46MB/s]
- 40%|███████████████▊                       | 133M/329M [00:16&lt;00:34, 5.72MB/s]
- 41%|███████████████▊                       | 134M/329M [00:16&lt;00:33, 5.92MB/s]
- 41%|███████████████▉                       | 134M/329M [00:16&lt;00:34, 5.61MB/s]
- 41%|███████████████▉                       | 135M/329M [00:17&lt;00:37, 5.18MB/s]
- 41%|████████████████                       | 136M/329M [00:17&lt;00:38, 4.97MB/s]
- 41%|████████████████▏                      | 136M/329M [00:17&lt;00:37, 5.10MB/s]
- 42%|████████████████▏                      | 137M/329M [00:17&lt;00:34, 5.51MB/s]
- 42%|████████████████▎                      | 138M/329M [00:17&lt;00:33, 5.76MB/s]
- 42%|████████████████▍                      | 139M/329M [00:17&lt;00:27, 6.93MB/s]
- 42%|████████████████▌                      | 140M/329M [00:17&lt;00:24, 7.58MB/s]
- 43%|████████████████▋                      | 141M/329M [00:17&lt;00:23, 7.89MB/s]
- 43%|████████████████▊                      | 141M/329M [00:17&lt;00:24, 7.71MB/s]
- 43%|████████████████▉                      | 143M/329M [00:18&lt;00:23, 8.03MB/s]
- 44%|█████████████████                      | 144M/329M [00:18&lt;00:21, 8.62MB/s]
- 44%|█████████████████                      | 144M/329M [00:18&lt;00:23, 7.72MB/s]
- 44%|█████████████████▏                     | 145M/329M [00:18&lt;00:23, 7.91MB/s]
- 44%|█████████████████▎                     | 146M/329M [00:18&lt;00:23, 7.82MB/s]
- 45%|█████████████████▍                     | 147M/329M [00:18&lt;00:25, 7.25MB/s]
- 45%|█████████████████▍                     | 148M/329M [00:18&lt;00:25, 7.19MB/s]
- 45%|█████████████████▌                     | 148M/329M [00:18&lt;00:27, 6.67MB/s]
- 45%|█████████████████▋                     | 149M/329M [00:18&lt;00:27, 6.43MB/s]
- 46%|█████████████████▊                     | 150M/329M [00:19&lt;00:26, 6.71MB/s]
- 46%|█████████████████▊                     | 151M/329M [00:19&lt;00:27, 6.48MB/s]
- 46%|█████████████████▉                     | 151M/329M [00:19&lt;00:30, 5.79MB/s]
- 46%|██████████████████                     | 152M/329M [00:19&lt;00:31, 5.69MB/s]
- 46%|██████████████████                     | 153M/329M [00:19&lt;00:28, 6.11MB/s]
- 47%|██████████████████▏                    | 154M/329M [00:19&lt;00:24, 7.15MB/s]
- 47%|██████████████████▎                    | 155M/329M [00:19&lt;00:23, 7.27MB/s]
- 47%|██████████████████▍                    | 156M/329M [00:19&lt;00:21, 8.04MB/s]
- 48%|██████████████████▌                    | 157M/329M [00:20&lt;00:21, 8.06MB/s]
- 48%|██████████████████▋                    | 157M/329M [00:20&lt;00:23, 7.24MB/s]
- 48%|██████████████████▋                    | 158M/329M [00:20&lt;00:24, 6.99MB/s]
- 48%|██████████████████▊                    | 159M/329M [00:20&lt;00:25, 6.78MB/s]
- 49%|██████████████████▉                    | 160M/329M [00:20&lt;00:24, 6.85MB/s]
- 49%|███████████████████                    | 161M/329M [00:20&lt;00:22, 7.38MB/s]
- 49%|███████████████████▏                   | 162M/329M [00:20&lt;00:22, 7.48MB/s]
- 49%|███████████████████▏                   | 162M/329M [00:20&lt;00:22, 7.54MB/s]
- 50%|███████████████████▎                   | 163M/329M [00:20&lt;00:21, 7.88MB/s]
- 50%|███████████████████▍                   | 164M/329M [00:21&lt;00:20, 8.19MB/s]
- 50%|███████████████████▌                   | 166M/329M [00:21&lt;00:19, 8.52MB/s]
- 51%|███████████████████▋                   | 167M/329M [00:21&lt;00:18, 8.63MB/s]
- 51%|███████████████████▊                   | 168M/329M [00:21&lt;00:19, 8.36MB/s]
- 51%|███████████████████▉                   | 168M/329M [00:21&lt;00:19, 8.13MB/s]
- 51%|████████████████████                   | 169M/329M [00:21&lt;00:19, 8.19MB/s]
- 52%|████████████████████▏                  | 170M/329M [00:21&lt;00:21, 7.45MB/s]
- 52%|████████████████████▎                  | 171M/329M [00:21&lt;00:21, 7.43MB/s]
- 52%|████████████████████▍                  | 172M/329M [00:22&lt;00:20, 7.56MB/s]
- 52%|████████████████████▍                  | 173M/329M [00:22&lt;00:21, 7.21MB/s]
- 53%|████████████████████▌                  | 174M/329M [00:22&lt;00:21, 7.32MB/s]
- 53%|████████████████████▋                  | 174M/329M [00:22&lt;00:20, 7.45MB/s]
- 53%|████████████████████▊                  | 175M/329M [00:22&lt;00:19, 8.07MB/s]
- 54%|████████████████████▉                  | 176M/329M [00:22&lt;00:19, 7.92MB/s]
- 54%|████████████████████▉                  | 177M/329M [00:22&lt;00:19, 7.91MB/s]
- 54%|█████████████████████                  | 178M/329M [00:22&lt;00:22, 6.88MB/s]
- 54%|█████████████████████▏                 | 179M/329M [00:22&lt;00:20, 7.32MB/s]
- 55%|█████████████████████▎                 | 179M/329M [00:23&lt;00:20, 7.30MB/s]
- 55%|█████████████████████▎                 | 180M/329M [00:23&lt;00:19, 7.52MB/s]
- 55%|█████████████████████▍                 | 181M/329M [00:23&lt;00:21, 6.92MB/s]
- 55%|█████████████████████▌                 | 182M/329M [00:23&lt;00:22, 6.43MB/s]
- 55%|█████████████████████▌                 | 182M/329M [00:23&lt;00:25, 5.84MB/s]
- 56%|█████████████████████▋                 | 183M/329M [00:23&lt;00:25, 5.78MB/s]
- 56%|█████████████████████▋                 | 184M/329M [00:23&lt;00:30, 4.81MB/s]
- 56%|█████████████████████▊                 | 184M/329M [00:23&lt;00:30, 4.81MB/s]
- 56%|█████████████████████▉                 | 185M/329M [00:24&lt;00:26, 5.45MB/s]
- 56%|█████████████████████▉                 | 185M/329M [00:24&lt;00:28, 5.10MB/s]
- 56%|██████████████████████                 | 186M/329M [00:24&lt;00:28, 5.02MB/s]
- 57%|██████████████████████                 | 186M/329M [00:24&lt;00:29, 4.76MB/s]
- 57%|██████████████████████▏                | 187M/329M [00:24&lt;00:27, 5.25MB/s]
- 57%|██████████████████████▎                | 188M/329M [00:24&lt;00:24, 5.82MB/s]
- 57%|██████████████████████▎                | 189M/329M [00:24&lt;00:22, 6.15MB/s]
- 58%|██████████████████████▍                | 190M/329M [00:24&lt;00:19, 7.14MB/s]
- 58%|██████████████████████▌                | 191M/329M [00:24&lt;00:17, 8.01MB/s]
- 58%|██████████████████████▋                | 192M/329M [00:25&lt;00:16, 8.27MB/s]
- 59%|██████████████████████▊                | 193M/329M [00:25&lt;00:17, 7.94MB/s]
- 59%|██████████████████████▉                | 194M/329M [00:25&lt;00:16, 8.14MB/s]
- 59%|███████████████████████                | 195M/329M [00:25&lt;00:16, 8.33MB/s]
- 59%|███████████████████████▏               | 196M/329M [00:25&lt;00:15, 8.78MB/s]
- 60%|███████████████████████▎               | 197M/329M [00:25&lt;00:14, 9.05MB/s]
- 60%|███████████████████████▍               | 198M/329M [00:25&lt;00:15, 8.55MB/s]
- 60%|███████████████████████▌               | 199M/329M [00:25&lt;00:15, 8.51MB/s]
- 61%|███████████████████████▋               | 199M/329M [00:25&lt;00:15, 8.30MB/s]
- 61%|███████████████████████▋               | 200M/329M [00:26&lt;00:16, 7.81MB/s]
- 61%|███████████████████████▊               | 201M/329M [00:26&lt;00:17, 7.53MB/s]
- 61%|███████████████████████▉               | 202M/329M [00:26&lt;00:15, 8.30MB/s]
- 62%|████████████████████████               | 203M/329M [00:26&lt;00:17, 7.20MB/s]
- 62%|████████████████████████▏              | 204M/329M [00:26&lt;00:17, 7.26MB/s]
- 62%|████████████████████████▎              | 205M/329M [00:26&lt;00:16, 7.67MB/s]
- 62%|████████████████████████▎              | 206M/329M [00:26&lt;00:16, 7.61MB/s]
- 63%|████████████████████████▍              | 206M/329M [00:26&lt;00:15, 7.88MB/s]
- 63%|████████████████████████▌              | 207M/329M [00:27&lt;00:16, 7.30MB/s]
- 63%|████████████████████████▋              | 208M/329M [00:27&lt;00:15, 7.71MB/s]
- 63%|████████████████████████▊              | 209M/329M [00:27&lt;00:14, 8.11MB/s]
- 64%|████████████████████████▊              | 210M/329M [00:27&lt;00:14, 7.96MB/s]
- 64%|████████████████████████▉              | 211M/329M [00:27&lt;00:14, 8.14MB/s]
- 64%|█████████████████████████              | 212M/329M [00:27&lt;00:16, 7.06MB/s]
- 65%|█████████████████████████▏             | 213M/329M [00:27&lt;00:17, 6.74MB/s]
- 65%|█████████████████████████▎             | 213M/329M [00:27&lt;00:16, 7.21MB/s]
- 65%|█████████████████████████▍             | 214M/329M [00:27&lt;00:14, 7.81MB/s]
- 65%|█████████████████████████▌             | 215M/329M [00:28&lt;00:13, 8.44MB/s]
- 66%|█████████████████████████▋             | 216M/329M [00:28&lt;00:12, 8.70MB/s]
- 66%|█████████████████████████▊             | 218M/329M [00:28&lt;00:11, 9.48MB/s]
- 66%|█████████████████████████▉             | 219M/329M [00:28&lt;00:11, 9.31MB/s]
- 67%|██████████████████████████             | 220M/329M [00:28&lt;00:11, 9.19MB/s]
- 67%|██████████████████████████▏            | 221M/329M [00:28&lt;00:11, 9.53MB/s]
- 67%|██████████████████████████▎            | 222M/329M [00:28&lt;00:11, 9.37MB/s]
- 68%|██████████████████████████▍            | 223M/329M [00:28&lt;00:11, 9.65MB/s]
- 68%|██████████████████████████▌            | 224M/329M [00:28&lt;00:10, 10.1MB/s]
- 68%|██████████████████████████▋            | 225M/329M [00:29&lt;00:10, 9.89MB/s]
- 69%|██████████████████████████▊            | 226M/329M [00:29&lt;00:10, 9.94MB/s]
- 69%|██████████████████████████▉            | 227M/329M [00:29&lt;00:10, 10.1MB/s]
- 69%|███████████████████████████            | 228M/329M [00:29&lt;00:09, 10.1MB/s]
- 70%|███████████████████████████▏           | 230M/329M [00:29&lt;00:09, 10.1MB/s]
- 70%|███████████████████████████▎           | 231M/329M [00:29&lt;00:09, 9.87MB/s]
- 70%|███████████████████████████▍           | 232M/329M [00:29&lt;00:10, 9.52MB/s]
- 71%|███████████████████████████▌           | 233M/329M [00:29&lt;00:10, 9.14MB/s]
- 71%|███████████████████████████▋           | 233M/329M [00:29&lt;00:10, 8.99MB/s]
- 71%|███████████████████████████▊           | 235M/329M [00:30&lt;00:10, 9.42MB/s]
- 72%|███████████████████████████▉           | 236M/329M [00:30&lt;00:10, 9.21MB/s]
- 72%|████████████████████████████           | 236M/329M [00:30&lt;00:10, 8.56MB/s]
- 72%|████████████████████████████           | 237M/329M [00:30&lt;00:11, 8.26MB/s]
- 72%|████████████████████████████▏          | 238M/329M [00:30&lt;00:11, 8.00MB/s]
- 73%|████████████████████████████▎          | 239M/329M [00:30&lt;00:10, 8.43MB/s]
- 73%|████████████████████████████▍          | 240M/329M [00:30&lt;00:11, 8.08MB/s]
- 73%|████████████████████████████▌          | 241M/329M [00:30&lt;00:10, 8.45MB/s]
- 74%|████████████████████████████▋          | 242M/329M [00:30&lt;00:09, 8.94MB/s]
- 74%|████████████████████████████▊          | 243M/329M [00:31&lt;00:09, 8.93MB/s]
- 74%|████████████████████████████▉          | 244M/329M [00:31&lt;00:09, 9.20MB/s]
- 74%|█████████████████████████████          | 245M/329M [00:31&lt;00:09, 9.02MB/s]
- 75%|█████████████████████████████▏         | 246M/329M [00:31&lt;00:09, 8.95MB/s]
- 75%|█████████████████████████████▎         | 247M/329M [00:31&lt;00:09, 8.51MB/s]
- 75%|█████████████████████████████▎         | 248M/329M [00:31&lt;00:09, 8.20MB/s]
- 76%|█████████████████████████████▍         | 249M/329M [00:31&lt;00:09, 8.36MB/s]
- 76%|█████████████████████████████▌         | 250M/329M [00:31&lt;00:09, 8.52MB/s]
- 76%|█████████████████████████████▋         | 251M/329M [00:31&lt;00:08, 8.80MB/s]
- 77%|█████████████████████████████▊         | 252M/329M [00:32&lt;00:08, 8.87MB/s]
- 77%|█████████████████████████████▉         | 253M/329M [00:32&lt;00:08, 9.04MB/s]
- 77%|██████████████████████████████         | 254M/329M [00:32&lt;00:08, 8.74MB/s]
- 77%|██████████████████████████████▏        | 255M/329M [00:32&lt;00:09, 8.16MB/s]
- 78%|██████████████████████████████▎        | 256M/329M [00:32&lt;00:09, 7.96MB/s]
- 78%|██████████████████████████████▍        | 256M/329M [00:32&lt;00:11, 6.51MB/s]
- 78%|██████████████████████████████▍        | 257M/329M [00:32&lt;00:11, 6.33MB/s]
- 78%|██████████████████████████████▌        | 258M/329M [00:33&lt;00:12, 5.64MB/s]
- 79%|██████████████████████████████▋        | 259M/329M [00:33&lt;00:11, 5.89MB/s]
- 79%|██████████████████████████████▊        | 260M/329M [00:33&lt;00:10, 6.54MB/s]
- 79%|██████████████████████████████▉        | 261M/329M [00:33&lt;00:10, 6.83MB/s]
- 79%|██████████████████████████████▉        | 261M/329M [00:33&lt;00:09, 6.97MB/s]
- 80%|███████████████████████████████        | 262M/329M [00:33&lt;00:10, 6.33MB/s]
- 80%|███████████████████████████████▏       | 263M/329M [00:33&lt;00:11, 5.86MB/s]
- 80%|███████████████████████████████▏       | 263M/329M [00:33&lt;00:11, 5.88MB/s]
- 80%|███████████████████████████████▎       | 264M/329M [00:33&lt;00:11, 5.89MB/s]
- 80%|███████████████████████████████▎       | 265M/329M [00:34&lt;00:10, 5.91MB/s]
- 81%|███████████████████████████████▍       | 265M/329M [00:34&lt;00:10, 6.10MB/s]
- 81%|███████████████████████████████▌       | 266M/329M [00:34&lt;00:09, 6.58MB/s]
- 81%|███████████████████████████████▌       | 267M/329M [00:34&lt;00:09, 6.89MB/s]
- 81%|███████████████████████████████▋       | 268M/329M [00:34&lt;00:08, 6.95MB/s]
- 82%|███████████████████████████████▊       | 269M/329M [00:34&lt;00:08, 7.46MB/s]
- 82%|███████████████████████████████▉       | 270M/329M [00:34&lt;00:07, 7.66MB/s]
- 82%|████████████████████████████████       | 271M/329M [00:34&lt;00:07, 7.70MB/s]
- 83%|████████████████████████████████▏      | 272M/329M [00:34&lt;00:07, 8.07MB/s]
- 83%|████████████████████████████████▎      | 273M/329M [00:35&lt;00:06, 9.37MB/s]
- 83%|████████████████████████████████▍      | 274M/329M [00:35&lt;00:05, 9.34MB/s]
- 83%|████████████████████████████████▌      | 275M/329M [00:35&lt;00:05, 9.34MB/s]
- 84%|████████████████████████████████▋      | 276M/329M [00:35&lt;00:05, 9.82MB/s]
- 84%|████████████████████████████████▊      | 277M/329M [00:35&lt;00:04, 10.6MB/s]
- 85%|████████████████████████████████▉      | 278M/329M [00:35&lt;00:05, 9.75MB/s]
- 85%|█████████████████████████████████      | 279M/329M [00:35&lt;00:05, 9.25MB/s]
- 85%|█████████████████████████████████▏     | 280M/329M [00:35&lt;00:05, 8.47MB/s]
- 85%|█████████████████████████████████▎     | 281M/329M [00:35&lt;00:05, 8.67MB/s]
- 86%|█████████████████████████████████▍     | 282M/329M [00:36&lt;00:05, 8.69MB/s]
- 86%|█████████████████████████████████▌     | 283M/329M [00:36&lt;00:05, 8.77MB/s]
- 86%|█████████████████████████████████▋     | 284M/329M [00:36&lt;00:04, 9.12MB/s]
- 87%|█████████████████████████████████▊     | 285M/329M [00:36&lt;00:04, 8.93MB/s]
- 87%|█████████████████████████████████▉     | 286M/329M [00:36&lt;00:05, 8.48MB/s]
- 87%|██████████████████████████████████     | 287M/329M [00:36&lt;00:05, 7.39MB/s]
- 87%|██████████████████████████████████     | 288M/329M [00:36&lt;00:05, 7.19MB/s]
- 88%|██████████████████████████████████▏    | 289M/329M [00:36&lt;00:05, 7.03MB/s]
- 88%|██████████████████████████████████▎    | 290M/329M [00:37&lt;00:05, 7.86MB/s]
- 88%|██████████████████████████████████▍    | 290M/329M [00:37&lt;00:05, 7.72MB/s]
- 89%|██████████████████████████████████▌    | 292M/329M [00:37&lt;00:04, 8.00MB/s]
- 89%|██████████████████████████████████▋    | 293M/329M [00:37&lt;00:04, 8.27MB/s]
- 89%|██████████████████████████████████▊    | 293M/329M [00:37&lt;00:04, 7.60MB/s]
- 89%|██████████████████████████████████▊    | 294M/329M [00:37&lt;00:04, 8.11MB/s]
- 90%|██████████████████████████████████▉    | 295M/329M [00:37&lt;00:03, 8.61MB/s]
- 90%|███████████████████████████████████    | 296M/329M [00:37&lt;00:03, 8.68MB/s]
- 90%|███████████████████████████████████▏   | 297M/329M [00:37&lt;00:04, 7.64MB/s]
- 91%|███████████████████████████████████▎   | 298M/329M [00:38&lt;00:04, 6.87MB/s]
- 91%|███████████████████████████████████▍   | 299M/329M [00:38&lt;00:04, 7.28MB/s]
- 91%|███████████████████████████████████▌   | 300M/329M [00:38&lt;00:04, 7.24MB/s]
- 91%|███████████████████████████████████▌   | 301M/329M [00:38&lt;00:04, 6.97MB/s]
- 92%|███████████████████████████████████▋   | 302M/329M [00:38&lt;00:03, 7.71MB/s]
- 92%|███████████████████████████████████▊   | 302M/329M [00:38&lt;00:03, 7.66MB/s]
- 92%|███████████████████████████████████▉   | 303M/329M [00:38&lt;00:03, 8.02MB/s]
- 92%|████████████████████████████████████   | 304M/329M [00:38&lt;00:03, 8.03MB/s]
- 93%|████████████████████████████████████▏  | 305M/329M [00:38&lt;00:03, 7.93MB/s]
- 93%|████████████████████████████████████▏  | 306M/329M [00:39&lt;00:02, 8.06MB/s]
- 93%|████████████████████████████████████▎  | 307M/329M [00:39&lt;00:02, 8.66MB/s]
- 93%|████████████████████████████████████▍  | 308M/329M [00:39&lt;00:02, 8.19MB/s]
- 94%|████████████████████████████████████▌  | 309M/329M [00:39&lt;00:02, 8.59MB/s]
- 94%|████████████████████████████████████▋  | 310M/329M [00:39&lt;00:02, 8.61MB/s]
- 94%|████████████████████████████████████▊  | 311M/329M [00:39&lt;00:02, 8.72MB/s]
- 95%|████████████████████████████████████▉  | 312M/329M [00:39&lt;00:02, 8.76MB/s]
- 95%|█████████████████████████████████████  | 313M/329M [00:39&lt;00:01, 8.89MB/s]
- 95%|█████████████████████████████████████▏ | 314M/329M [00:39&lt;00:01, 9.50MB/s]
- 96%|█████████████████████████████████████▎ | 315M/329M [00:40&lt;00:01, 9.65MB/s]
- 96%|█████████████████████████████████████▍ | 316M/329M [00:40&lt;00:01, 9.16MB/s]
- 96%|█████████████████████████████████████▌ | 317M/329M [00:40&lt;00:01, 9.13MB/s]
- 97%|█████████████████████████████████████▋ | 318M/329M [00:40&lt;00:01, 9.82MB/s]
- 97%|█████████████████████████████████████▊ | 319M/329M [00:40&lt;00:01, 9.53MB/s]
- 97%|█████████████████████████████████████▉ | 320M/329M [00:40&lt;00:00, 9.46MB/s]
- 98%|██████████████████████████████████████ | 321M/329M [00:40&lt;00:00, 9.73MB/s]
- 98%|██████████████████████████████████████▏| 322M/329M [00:40&lt;00:00, 9.42MB/s]
- 98%|██████████████████████████████████████▎| 323M/329M [00:41&lt;00:00, 8.57MB/s]
- 98%|██████████████████████████████████████▍| 324M/329M [00:41&lt;00:00, 8.26MB/s]
- 99%|██████████████████████████████████████▌| 325M/329M [00:41&lt;00:00, 8.62MB/s]
- 99%|██████████████████████████████████████▌| 326M/329M [00:41&lt;00:00, 7.94MB/s]
- 99%|██████████████████████████████████████▋| 327M/329M [00:41&lt;00:00, 8.47MB/s]
-100%|██████████████████████████████████████▊| 328M/329M [00:41&lt;00:00, 8.10MB/s]
-100%|██████████████████████████████████████▉| 329M/329M [00:41&lt;00:00, 8.21MB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for fieldtrip_cmc...
+Fetching 1 file for the fieldtrip_cmc dataset ...
+
   0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
-100%|████████████████████████████████████████| 329M/329M [00:00&lt;00:00, 753GB/s]
-Download complete in 50s (314.0 MB)
+  2%|▉                                     | 7.99M/329M [00:00&lt;00:04, 79.9MB/s]
+  6%|██▎                                    | 19.4M/329M [00:00&lt;00:03, 100MB/s]
+  9%|███▋                                   | 30.8M/329M [00:00&lt;00:02, 107MB/s]
+ 13%|█████                                  | 42.2M/329M [00:00&lt;00:02, 109MB/s]
+ 16%|██████▎                                | 53.7M/329M [00:00&lt;00:02, 111MB/s]
+ 20%|███████▋                               | 65.1M/329M [00:00&lt;00:02, 112MB/s]
+ 23%|█████████                              | 76.6M/329M [00:00&lt;00:02, 113MB/s]
+ 27%|██████████▍                            | 88.1M/329M [00:00&lt;00:02, 114MB/s]
+ 30%|███████████▊                           | 99.6M/329M [00:00&lt;00:02, 114MB/s]
+ 34%|█████████████▍                          | 111M/329M [00:01&lt;00:01, 114MB/s]
+ 37%|██████████████▉                         | 123M/329M [00:01&lt;00:01, 114MB/s]
+ 41%|████████████████▎                       | 134M/329M [00:01&lt;00:01, 115MB/s]
+ 44%|█████████████████▋                      | 145M/329M [00:01&lt;00:01, 114MB/s]
+ 48%|███████████████████                     | 157M/329M [00:01&lt;00:01, 114MB/s]
+ 51%|████████████████████▍                   | 168M/329M [00:01&lt;00:01, 114MB/s]
+ 55%|█████████████████████▊                  | 180M/329M [00:01&lt;00:01, 114MB/s]
+ 58%|███████████████████████▏                | 191M/329M [00:01&lt;00:01, 114MB/s]
+ 62%|████████████████████████▌               | 203M/329M [00:01&lt;00:01, 114MB/s]
+ 65%|██████████████████████████              | 214M/329M [00:01&lt;00:01, 114MB/s]
+ 68%|███████████████████████████▍            | 225M/329M [00:02&lt;00:00, 114MB/s]
+ 72%|████████████████████████████▊           | 237M/329M [00:02&lt;00:00, 114MB/s]
+ 75%|██████████████████████████████▏         | 248M/329M [00:02&lt;00:00, 113MB/s]
+ 79%|███████████████████████████████▌        | 260M/329M [00:02&lt;00:00, 113MB/s]
+ 82%|████████████████████████████████▉       | 271M/329M [00:02&lt;00:00, 114MB/s]
+ 86%|██████████████████████████████████▎     | 283M/329M [00:02&lt;00:00, 114MB/s]
+ 89%|███████████████████████████████████▋    | 294M/329M [00:02&lt;00:00, 114MB/s]
+ 93%|█████████████████████████████████████   | 305M/329M [00:02&lt;00:00, 114MB/s]
+ 96%|██████████████████████████████████████▌ | 317M/329M [00:02&lt;00:00, 114MB/s]
+100%|███████████████████████████████████████▉| 328M/329M [00:02&lt;00:00, 114MB/s]
+  0%|                                               | 0.00/329M [00:00&lt;?, ?B/s]
+100%|███████████████████████████████████████| 329M/329M [00:00&lt;00:00, 1.31TB/s]
+Download complete in 09s (314.0 MB)
 ds directory : /home/circleci/mne_data/MNE-fieldtrip_cmc-data/SubjectCMC.ds
     res4 data read.
     hc data read.
@@ -981,8 +655,6 @@ Designing a one-pass, zero-phase, non-causal bandstop filter:
 - Upper transition bandwidth: 0.50 Hz (-6 dB cutoff frequency: 50.88 Hz)
 - Filter length: 7921 samples (6.601 s)
 
-[Parallel(n_jobs=1)]: Done  17 tasks      | elapsed:    0.1s
-[Parallel(n_jobs=1)]: Done  71 tasks      | elapsed:    0.3s
 Not setting metadata
 30 matching events found
 No baseline correction applied
@@ -1007,8 +679,8 @@ sensors designated as group B.</p>
     <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;ch_name&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span>
 <span class="p">]</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_a</span></a><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_b</span></a><span class="p">]))</span>  <span class="c1"># A =&gt; B</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ba</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_b</span></a><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_a</span></a><span class="p">]))</span>  <span class="c1"># B =&gt; A</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_a</span></a><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_b</span></a><span class="p">]))</span>  <span class="c1"># A =&gt; B</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ba</span></a> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_b</span></a><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">signals_a</span></a><span class="p">]))</span>  <span class="c1"># B =&gt; A</span>
 
 <span class="c1"># compute Granger causality</span>
 <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_ab</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
@@ -1017,7 +689,7 @@ sensors designated as group B.</p>
     <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># A =&gt; B</span>
 <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_ba</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
@@ -1026,7 +698,7 @@ sensors designated as group B.</p>
     <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ba</span></a><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># B =&gt; A</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.freqs" title="mne_connectivity.SpectralConnectivity.freqs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property"><span class="n">gc_ab</span><span class="o">.</span><span class="n">freqs</span></a>
@@ -1034,9 +706,9 @@ sensors designated as group B.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Adding metadata with 3 columns
 Connectivity computation...
-    computing connectivity for 1 connections
     using t=0.000s..1.990s for estimation (200 points)
     frequencies: 5.0Hz..30.0Hz (51 points)
+    computing connectivity for 1 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: GC
     computing cross-spectral density for epoch 1
@@ -1072,18 +744,18 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  676.14it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,  671.07it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,  550.99it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,  497.22it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,  503.89it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  516.56it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,  533.45it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,  547.02it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  557.43it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,  564.72it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  570.67it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  565.94it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
-    computing connectivity for 1 connections
     using t=0.000s..1.990s for estimation (200 points)
     frequencies: 5.0Hz..30.0Hz (51 points)
+    computing connectivity for 1 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: GC
     computing cross-spectral density for epoch 1
@@ -1119,11 +791,12 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  584.59it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,  493.68it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,  491.34it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,  558.07it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  557.89it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  565.26it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,  537.78it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,  545.41it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,  553.13it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  559.11it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  555.89it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1153,11 +826,11 @@ F_{B \rightarrow A}\)</span>.</p>
 <p>Doing so, we see that the flow of information across the spectrum remains
 dominant from parietal to occipital sensors (indicated by the positive-valued
 Granger scores), with similar peaks around 10, 18, and 26 Hz.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>  <span class="c1"># [A =&gt; B] - [B =&gt; A]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>  <span class="c1"># [A =&gt; B] - [B =&gt; A]</span>
 
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;Net GC: [A =&gt; B] - [B =&gt; A]&quot;</span><span class="p">)</span>
@@ -1212,7 +885,7 @@ original signals to produce the final TRGC scores.</p>
     <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># TR[A =&gt; B]</span>
 <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gc_tr_ba</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
@@ -1221,22 +894,22 @@ original signals to produce the final TRGC scores.</p>
     <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ba</span></a><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># TR[B =&gt; A]</span>
 
 <span class="c1"># compute net GC on time-reversed signals (TR[A =&gt; B] - TR[B =&gt; A])</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc_tr</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_tr_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_tr_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc_tr</span></a> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_tr_ab</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span> <span class="o">-</span> <a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">gc_tr_ba</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>
 
 <span class="c1"># compute TRGC</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trgc</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">-</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc_tr</span></a>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trgc</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc</span></a> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">net_gc_tr</span></a>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Replacing existing metadata with 3 columns
 Connectivity computation...
-    computing connectivity for 1 connections
     using t=0.000s..1.990s for estimation (200 points)
     frequencies: 5.0Hz..30.0Hz (51 points)
+    computing connectivity for 1 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: GC time-reversed
     computing cross-spectral density for epoch 1
@@ -1272,17 +945,18 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,  903.24it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,  881.76it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  634.71it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,  641.88it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  671.70it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,  555.82it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,  565.44it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,  573.39it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,  580.29it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,  584.29it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  580.85it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
-    computing connectivity for 1 connections
     using t=0.000s..1.990s for estimation (200 points)
     frequencies: 5.0Hz..30.0Hz (51 points)
+    computing connectivity for 1 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: GC time-reversed
     computing cross-spectral density for epoch 1
@@ -1318,12 +992,12 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  623.65it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,  615.48it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,  512.10it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,  536.79it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,  603.65it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  599.85it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  566.06it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,  566.67it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,  562.53it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,  566.31it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,  570.57it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  560.86it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1338,7 +1012,7 @@ from source mixing or correlated noise in the recordings. Altogether, the use
 of TRGC instead of net GC is generally advised.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axis</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">((</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trgc</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trgc</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlabel.html#matplotlib.axes.Axes.set_xlabel" title="matplotlib.axes.Axes.set_xlabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span></a><span class="p">(</span><span class="s2">&quot;Frequency (Hz)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Connectivity (A.U.)&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="matplotlib.figure.Figure.suptitle" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span></a><span class="p">(</span><span class="s2">&quot;TRGC: net[A =&gt; B] - net time-reversed[A =&gt; B]&quot;</span><span class="p">)</span>
@@ -1368,7 +1042,7 @@ overall pattern.</p>
     <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5</span><span class="p">])),</span>
     <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
 <span class="p">)</span>  <span class="c1"># A =&gt; B</span>
 
@@ -1383,9 +1057,9 @@ overall pattern.</p>
 </div>
 <img src="../_images/sphx_glr_granger_causality_004.png" srcset="../_images/sphx_glr_granger_causality_004.png" alt="GC: [A => B]" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Replacing existing metadata with 3 columns
 Connectivity computation...
-    computing connectivity for 1 connections
     using t=0.000s..1.990s for estimation (200 points)
     frequencies: 5.0Hz..30.0Hz (51 points)
+    computing connectivity for 1 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: GC
     computing cross-spectral density for epoch 1
@@ -1421,35 +1095,58 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:00,   53.12it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,   68.12it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:00,   76.57it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:00,   80.78it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,   69.58it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,   71.45it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,   74.07it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   75.88it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   73.57it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   73.75it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   75.32it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   78.11it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   80.32it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   77.14it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   78.95it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   81.17it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   83.16it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   85.06it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   80.80it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   82.64it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   84.36it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,   85.96it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   87.57it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,   84.08it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   85.22it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   86.59it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   87.89it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   88.22it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,   84.76it/s]
+  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:01,   48.35it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   48.71it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,   48.35it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:00,   48.59it/s]
+ 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:00,   48.61it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:00,   48.63it/s]
+ 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:00,   48.69it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,   48.66it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:00,   48.76it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,   48.82it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,   48.90it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   49.06it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,   49.16it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   49.18it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   48.98it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   48.83it/s]
+ 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   48.75it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   48.60it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   48.56it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   48.63it/s]
+ 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   48.72it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   48.82it/s]
+ 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   48.87it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   48.84it/s]
+ 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   48.90it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   48.86it/s]
+ 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   48.94it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   49.01it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   49.04it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   49.13it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   49.18it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   49.21it/s]
+ 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   49.26it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   49.24it/s]
+ 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,   49.26it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   49.34it/s]
+ 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,   49.36it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   49.29it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   49.12it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,   49.08it/s]
+ 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,   49.05it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,   49.10it/s]
+ 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,   49.13it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:00&lt;00:00,   49.18it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:00&lt;00:00,   49.28it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:00&lt;00:00,   49.33it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:00&lt;00:00,   49.39it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,   49.43it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,   49.45it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   49.53it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   49.43it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   49.18it/s]
 [Connectivity computation done]
 
 Text(0.5, 0.98, &#39;GC: [A =&gt; B]&#39;)
@@ -1474,9 +1171,9 @@ which you can then specify manually using the <code class="docutils literal notr
 below shows one possible approach for finding an appropriate rank of
 close-to-singular data with a more conservative threshold.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gets the singular values of the data</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="numpy.linalg.svd" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># finds how many singular values are &#39;close&#39; to the largest singular value</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria</span>
+<a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="numpy.count_nonzero" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a> <span class="o">&gt;=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">s</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># 1e-4 is the &#39;closeness&#39; criteria</span>
 </pre></div>
 </div>
 <p>Nonethless, even in situations where you specify an appropriate rank, it is
@@ -1489,24 +1186,30 @@ non-singular.</p>
 20 channels in the seeds and targets. Attempting to compute GC on the
 original data would not succeed, given that the resulting autocovariance
 sequence is singular, as the example below shows.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
-        <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span>
-        <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gc&quot;</span><span class="p">],</span>
-        <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span>
-        <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-        <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-        <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rank</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span>  <span class="c1"># A =&gt; B</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success!&quot;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Caught the following error:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gc&quot;</span><span class="p">],</span>
+    <span class="n">indices</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">indices_ab</span></a><span class="p">,</span>
+    <span class="n">fmin</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gc_n_lags</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># A =&gt; B</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Caught the following error:
-RuntimeError(&#39;the autocovariance matrix is singular; check if your data is rank deficient and specify an appropriate rank argument &lt;= the rank of the seeds and targets&#39;)
+<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/home/circleci/project/examples/granger_causality.py&quot;</span>, line <span class="m">415</span>, in <span class="n">&lt;module&gt;</span>
+<span class="w">    </span><a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a><span class="p">(</span>
+  File <span class="nb">&quot;&lt;decorator-gen-317&gt;&quot;</span>, line <span class="m">10</span>, in <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
+  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs.py&quot;</span>, line <span class="m">1519</span>, in <a href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function"><span class="n">spectral_connectivity_epochs</span></a>
+<span class="w">    </span><span class="n">conn_method</span><span class="o">.</span><span class="n">compute_con</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">rank</span></a><span class="p">,</span> <span class="n">n_epochs</span><span class="p">)</span>
+  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">869</span>, in <span class="n">compute_con</span>
+<span class="w">    </span><span class="n">A_f</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocov_to_full_var</span><span class="p">(</span><span class="n">autocov</span><span class="p">)</span>
+<span class="w">             </span><span class="pm">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+  File <span class="nb">&quot;/home/circleci/project/mne_connectivity/spectral/epochs_multivariate.py&quot;</span>, line <span class="m">964</span>, in <span class="n">_autocov_to_full_var</span>
+<span class="w">    </span><span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+<span class="gr">RuntimeError</span>: <span class="n">the autocovariance matrix is singular; check if your data is rank deficient and specify an appropriate rank argument &lt;= the rank of the seeds and targets</span>
 </pre></div>
 </div>
 <p>Rigorous checks are implemented to identify any such instances which would
@@ -1555,7 +1258,7 @@ and targets <em>across</em> connections.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 57.924 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.357 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-granger-causality-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bc4fcabe78bb61cbb3c5dd027303b4da/granger_causality.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">granger_causality.ipynb</span></code></a></p>
@@ -1567,7 +1270,6 @@ and targets <em>across</em> connections.</p>
 <p><a class="reference download internal" download="" href="../_downloads/1f1893579bb597251e98a3bde46e316f/granger_causality.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">granger_causality.zip</span></code></a></p>
 </div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </section>
 </section>
 
@@ -1578,16 +1280,16 @@ and targets <em>across</em> connections.</p>
               
               
               
-                <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                <footer class="prev-next-footer d-print-none">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_inverse_coherence_epochs.html"
+       href="wsmi.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Compute coherence in source space using a MNE inverse solution</p>
+        <p class="prev-next-title">Compute connectivity using weighted symbolic mutual information (wSMI)</p>
       </div>
     </a>
     <a class="right-next"
@@ -1606,13 +1308,17 @@ and targets <em>across</em> connections.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#drivers-and-receivers-analysing-the-net-direction-of-information-flow">Drivers and receivers: analysing the net direction of information flow</a></li>
@@ -1636,8 +1342,8 @@ and targets <em>across</em> connections.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1645,17 +1351,19 @@ and targets <em>across</em> connections.</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-23.
       <br/>
     
   </p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -1666,8 +1374,10 @@ and targets <em>across</em> connections.</p>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

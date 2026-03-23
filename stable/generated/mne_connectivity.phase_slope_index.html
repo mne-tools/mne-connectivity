@@ -2,63 +2,69 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.7.0 documentation</title>
+    <title>mne_connectivity.phase_slope_index &#8212; MNE-Connectivity 0.8.0.dev140+gda90d79bf documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=02819aa8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=71d00d13" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=423e15eb"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=896979d9"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.phase_slope_index';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.vector_auto_regression" href="mne_connectivity.vector_auto_regression.html" />
+    <link rel="next" title="mne_connectivity.phase_slope_index_time" href="mne_connectivity.phase_slope_index_time.html" />
     <link rel="prev" title="mne_connectivity.envelope_correlation" href="mne_connectivity.envelope_correlation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.8" />
   </head>
   
   
@@ -66,32 +72,13 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
 
   
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
-
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -99,7 +86,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -107,19 +93,27 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
+  
+    
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -128,7 +122,8 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.7.0 documentation</p>
+  
+    <p class="title logo__title">MNE-Connectivity 0.8.0.dev140+gda90d79bf documentation</p>
   
 </a></div>
     
@@ -138,42 +133,37 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -184,45 +174,44 @@
       
         <div class="navbar-item navbar-persistent--container">
           
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -233,7 +222,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -244,31 +233,32 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -277,44 +267,42 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        What’s new?
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new?
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Installation
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -323,32 +311,34 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
     <!-- dropdown will be populated by javascript on page load -->
-    </div>
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
           
@@ -359,7 +349,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -369,7 +359,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
@@ -385,9 +376,14 @@ document.write(`
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.envelope_correlation.html">mne_connectivity.envelope_correlation</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_connectivity.phase_slope_index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.phase_slope_index_time.html">mne_connectivity.phase_slope_index_time</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.vector_auto_regression.html">mne_connectivity.vector_auto_regression</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html">mne_connectivity.spectral_connectivity_epochs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.spectral_connectivity_time.html">mne_connectivity.spectral_connectivity_time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.wsmi.html">mne_connectivity.wsmi</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.decoding.CoherencyDecomposition.html">mne_connectivity.decoding.CoherencyDecomposition</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.read_connectivity.html">mne_connectivity.read_connectivity</a></li>
@@ -408,6 +404,7 @@ document.write(`
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_signals_in_freq_bands.html">mne_connectivity.make_signals_in_freq_bands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_surrogate_data.html">mne_connectivity.make_surrogate_data</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,29 +412,32 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -448,7 +448,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">mne_connecti...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_connectivity.phase_slope_index</span></li>
   </ul>
 </nav>
 </div>
@@ -463,96 +463,137 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="mne-connectivity-phase-slope-index">
 <h1>mne_connectivity.phase_slope_index<a class="headerlink" href="#mne-connectivity-phase-slope-index" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_connectivity.phase_slope_index">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">phase_slope_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multitaper'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdecim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mt_low_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwt_n_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/effective.html#phase_slope_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.phase_slope_index" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Phase Slope Index (PSI) connectivity measure.</p>
-<p>The PSI is an effective connectivity measure, i.e., a measure which can
-give an indication of the direction of the information flow (causality).
-For two time series, and one computes the PSI between the first and the
-second time series as follows</p>
-<p>indices = (np.array([0]), np.array([1]))
-psi = phase_slope_index(data, indices=indices, …)</p>
-<p>A positive value means that time series 0 is ahead of time series 1 and
-a negative value means the opposite.</p>
-<p>The PSI is computed from the coherency (see spectral_connectivity_epochs),
+<p>The PSI is an effective connectivity measure, i.e., a measure which can give an
+indication of the direction of the information flow (causality). For two time
+series, and one computes the PSI between the first and the second time series as
+follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">psi</span> <span class="o">=</span> <span class="n">phase_slope_index</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A positive value means that time series 0 is ahead of time series 1 and a negative
+value means the opposite.</p>
+<p>The PSI is computed from the coherency (see <a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a>),
 details can be found in <a class="footnote-reference brackets" href="#footcite-nolteetal2008" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v2.1.dev0)"><span>array_like</span></a>, shape=(n_epochs, n_signals, n_times)</span></dt><dd><p>Can also be a list/generator of array, shape =(n_signals, n_times);
-list/generator of SourceEstimate; or Epochs.
-The data from which to compute connectivity. Note that it is also
-possible to combine multiple signals by providing a list of tuples,
-e.g., data = [(arr_0, stc_0), (arr_1, stc_1), (arr_2, stc_2)],
-corresponds to 3 epochs, and arr_* could be an array with the same
-number of time points as stc_*.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.4)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator" title="(in Python v3.14)"><span>generator</span></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsSpectrum</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be epoched time series data as
+an array-like or <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object, or Fourier coefficients for each
+epoch as an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object. If time series data, the spectral
+information will be computed according to the spectral estimation mode (see the
+<code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter). If an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object, existing spectral information
+will be used and the <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter will be ignored.</p>
+<p>Note that it is also possible to combine multiple time series signals by
+providing a list of tuples, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">arr_0</span><span class="p">,</span> <span class="n">stc_0</span><span class="p">),</span> <span class="p">(</span><span class="n">arr_1</span><span class="p">,</span> <span class="n">stc_1</span><span class="p">),</span> <span class="p">(</span><span class="n">arr_2</span><span class="p">,</span> <span class="n">stc_2</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>which corresponds to 3 epochs where <code class="docutils literal notranslate"><span class="pre">arr_*</span></code> is an array with the same number
+of time points as <code class="docutils literal notranslate"><span class="pre">stc_*</span></code>. Data can also be a list/generator of arrays, shape
+<code class="docutils literal notranslate"><span class="pre">(n_signals,</span> <span class="pre">n_times)</span></code>, or a list/generator of <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.SourceEstimate</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.VolSourceEstimate.html#mne.VolSourceEstimate" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.VolSourceEstimate</span></code></a> objects.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.8: </span>Fourier coefficients stored in an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a>
+or <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object can also be passed in as
+data. Storing Fourier coefficients in
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> objects requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>.
+Storing multitaper weights in <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> objects
+requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.10</span></code>.</p>
+</div>
 </dd>
-<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute
-connectivity. If ‘None’ (default), then names will be
-a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
+<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.4)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The names of the nodes of the dataset used to compute connectivity. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(default), then names will be a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two arrays with indices of connections for which to compute
-connectivity. If None, all connections are computed.</p>
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.4)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with indices of connections for which to compute connectivity.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all connections are computed. See Notes of
+<a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> for details.</p>
 </dd>
-<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The sampling frequency.</p>
+<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The sampling frequency. Default is an empty string for <code class="docutils literal notranslate"><span class="pre">2*np.pi</span></code> in 0.8, but
+will change to <code class="docutils literal notranslate"><span class="pre">None</span></code> in 0.9. Set it explicitly when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like
+to avoid a warning.</p>
 </dd>
-<dt><strong>mode</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Spectrum estimation mode can be either: ‘multitaper’, ‘fourier’, or
-‘cwt_morlet’.</p>
+<dt><strong>mode</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'multitaper'</span></code> | <code class="docutils literal notranslate"><span class="pre">'fourier'</span></code> | <code class="docutils literal notranslate"><span class="pre">'cwt_morlet'</span></code></span></dt><dd><p>Spectrum estimation mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>fmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The lower frequency of interest. Multiple bands are defined using
-a tuple, e.g., (8., 20.) for two bands with 8Hz and 20Hz lower freq.
-If None the frequency corresponding to an epoch length of 5 cycles
-is used.</p>
+<dt><strong>fmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The lower frequency of interest. Multiple bands are defined using a tuple, e.g.,
+(8., 20.) for two bands with 8 Hz and 20 Hz lower freq. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the
+frequency corresponding to an epoch length of 5 cycles is used.</p>
 </dd>
-<dt><strong>fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The upper frequency of interest. Multiple bands are dedined using
-a tuple, e.g. (13., 30.) for two band with 13Hz and 30Hz upper freq.</p>
+<dt><strong>fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The upper frequency of interest. Multiple bands are defined using a tuple, e.g.,
+(13., 30.) for two bands with 13 Hz and 30 Hz upper freq.</p>
 </dd>
-<dt><strong>tmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to start connectivity estimation.</p>
+<dt><strong>fdecim</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Decimation factor in the frequency domain. Selects every Nth frequency bin from
+the (time-)frequency decomposition (where N is the value of <code class="docutils literal notranslate"><span class="pre">fdecim</span></code>). If 1
+(default), no decimation occurs.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.8.</span></p>
+</div>
 </dd>
-<dt><strong>tmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to end connectivity estimation.</p>
+<dt><strong>tmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to start connectivity estimation. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> object.</p>
 </dd>
-<dt><strong>mt_bandwidth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The bandwidth of the multitaper windowing function in Hz.
-Only used in ‘multitaper’ mode.</p>
+<dt><strong>tmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to end connectivity estimation. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> object.</p>
 </dd>
-<dt><strong>mt_adaptive</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Use adaptive weights to combine the tapered spectra into PSD.
-Only used in ‘multitaper’ mode.</p>
+<dt><strong>mt_bandwidth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The bandwidth of the multitaper windowing function in Hz. Only used in
+<code class="docutils literal notranslate"><span class="pre">'multitaper'</span></code> mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>mt_low_bias</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Only use tapers with more than 90 percent spectral concentration within
-bandwidth. Only used in ‘multitaper’ mode.</p>
+<dt><strong>mt_adaptive</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Use adaptive weights to combine the tapered spectra into PSD. Only used in
+<code class="docutils literal notranslate"><span class="pre">'multitaper'</span></code> mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>cwt_freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a></span></dt><dd><p>Array of frequencies of interest. Only used in ‘cwt_morlet’ mode.</p>
+<dt><strong>mt_low_bias</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Only use tapers with more than 90 percent spectral concentration within
+bandwidth. Only used in <code class="docutils literal notranslate"><span class="pre">'multitaper'</span></code> mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>cwt_n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Number of cycles. Fixed number or one per frequency. Only used in
-‘cwt_morlet’ mode.</p>
+<dt><strong>cwt_freqs</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.4)"><span>array_like</span></a></span></dt><dd><p>Array-like of frequencies of interest. Only used in <code class="docutils literal notranslate"><span class="pre">'cwt_morlet'</span></code> mode.
+Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>block_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many connections to compute at once (higher numbers are faster
-but require more memory).</p>
+<dt><strong>cwt_n_cycles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.4)"><span>array_like</span></a></span></dt><dd><p>Number of cycles. Fixed number or one per frequency. Only used in
+<code class="docutils literal notranslate"><span class="pre">'cwt_morlet'</span></code> mode. Ignored if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsSpectrum.html#mne.time_frequency.EpochsSpectrum" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsSpectrum</span></code></a> or
+<a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.time_frequency.EpochsTFR</span></code></a> object.</p>
 </dd>
-<dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many epochs to process in parallel.</p>
+<dt><strong>block_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many connections to compute at once (higher numbers are faster but require
+more memory).</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.12)"><span class="xref std std-ref">bool</span></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-for more info). If used, it should be passed as a
-keyword-argument only.</p>
+<dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>How many epochs to process in parallel.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for more
+info). If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>conn</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></span></dt><dd><p>Computed connectivity measure(s). Either a
-<code class="docutils literal notranslate"><span class="pre">SpectralConnnectivity</span></code>, or <code class="docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code>
-container. The shape of each array is either
-(n_signals ** 2, n_bands) mode: ‘multitaper’ or ‘fourier’
-(n_signals ** 2, n_bands, n_times) mode: ‘cwt_morlet’
-when “indices” is None, or
-(n_con, n_bands) mode: ‘multitaper’ or ‘fourier’
-(n_con, n_bands, n_times) mode: ‘cwt_morlet’
-when “indices” is specified and “n_con = len(indices[0])”.</p>
+<dt><strong>psi</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a> or <a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code></a></span></dt><dd><p>Computed connectivity measure. Either a <a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a>, or
+<a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code></a> container. The shape of the connectivity
+dataset is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">(n_cons,</span> <span class="pre">n_bands)</span></code> for <code class="docutils literal notranslate"><span class="pre">'multitaper'</span></code> or <code class="docutils literal notranslate"><span class="pre">'fourier'</span></code> modes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(n_cons,</span> <span class="pre">n_bands,</span> <span class="pre">n_times)</span></code> for <code class="docutils literal notranslate"><span class="pre">'cwt_morlet'</span></code> mode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">n_signals</span> <span class="pre">**</span> <span class="pre">2</span></code> when <code class="docutils literal notranslate"><span class="pre">indices=None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_cons</span> <span class="pre">=</span> <span class="pre">len(indices[0])</span></code> when <code class="docutils literal notranslate"><span class="pre">indices</span></code> is supplied</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_bands</span></code> is the number of frequency bands defined by <code class="docutils literal notranslate"><span class="pre">fmin</span></code> and <code class="docutils literal notranslate"><span class="pre">fmax</span></code></p></li>
+</ul>
 </dd>
 </dl>
 </dd>
@@ -560,6 +601,8 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference internal" href="mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_connectivity.phase_slope_index_time.html#mne_connectivity.phase_slope_index_time" title="mne_connectivity.phase_slope_index_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index_time</span></code></a></dt><dd></dd>
 <dt><a class="reference internal" href="mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectralConnectivity</span></code></a></dt><dd></dd>
 <dt><a class="reference internal" href="mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_connectivity.SpectroTemporalConnectivity</span></code></a></dt><dd></dd>
 </dl>
@@ -577,11 +620,11 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
 
 <section id="examples-using-mne-connectivity-phase-slope-index">
 <span id="sphx-glr-backreferences-mne-connectivity-phase-slope-index"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code><a class="headerlink" href="#examples-using-mne-connectivity-phase-slope-index" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the distinct forms of information captured by coherency-based connect..."><img alt="" src="../_images/sphx_glr_compare_coherency_methods_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a></p>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the distinct forms of information captured by coherency-based connectivity methods, and highlights the scenarios in which these different methods should be applied."><img alt="" src="../_images/sphx_glr_compare_coherency_methods_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a></p>
   <div class="sphx-glr-thumbnail-title">Comparison of coherency-based methods</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in sour..."><img alt="" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how the phase slope index (PSI) NolteEtAl2008 can be computed in source space based on single trial dSPM source estimates."><img alt="" src="../_images/sphx_glr_mne_inverse_psi_visual_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/mne_inverse_psi_visual.html"><span class="doc">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a></p>
   <div class="sphx-glr-thumbnail-title">Compute Phase Slope Index (PSI) in source space for a visual stimulus</div>
 </div></div></section>
 </section>
@@ -593,8 +636,8 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
               
               
               
-                <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                <footer class="prev-next-footer d-print-none">
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="mne_connectivity.envelope_correlation.html"
@@ -606,11 +649,11 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_connectivity.vector_auto_regression.html"
+       href="mne_connectivity.phase_slope_index_time.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.vector_auto_regression</p>
+        <p class="prev-next-title">mne_connectivity.phase_slope_index_time</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -621,13 +664,17 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.phase_slope_index"><code class="docutils literal notranslate"><span class="pre">phase_slope_index()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-connectivity-phase-slope-index">Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.phase_slope_index</span></code></a></li>
@@ -647,8 +694,8 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -656,17 +703,19 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2021-2024, MNE Developers. Last updated on 2024-06-21.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-03-23.
       <br/>
     
   </p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -677,8 +726,10 @@ when “indices” is specified and “n_con = len(indices[0])”.</p>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
