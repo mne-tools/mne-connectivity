@@ -23,6 +23,7 @@ This workflow can be applied to other connectivity metrics supported by
 # License: BSD (3-clause)
 
 import os
+
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
