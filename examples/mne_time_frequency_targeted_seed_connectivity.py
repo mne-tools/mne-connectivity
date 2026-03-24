@@ -22,6 +22,7 @@ This workflow can be applied to other connectivity metrics supported by
 #
 # License: BSD (3-clause)
 
+import os
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
@@ -35,7 +36,9 @@ print(__doc__)
 
 data_path = sample.data_path()
 raw_fname = os.path.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif")
-event_fname = os.path.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw-eve.fif")
+event_fname = os.path.join(
+    data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw-eve.fif"
+)
 
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
@@ -62,7 +65,9 @@ info = raw.info
 print(info)
 
 
-# Channels were chosen to target the visual cortex (V1: MEG 2141, 2131) and anterior frontal regions (MEG 0123) for comparing connectivity and assessing visual attentional modulation.
+# Channels were chosen to target the visual cortex (V1: MEG 2141, 2131)
+# and anterior frontal regions (MEG 0123) for comparing connectivity and
+# assessing visual attentional modulation.
 
 info_picked = mne.pick_info(info, picks)
 
@@ -80,9 +85,9 @@ seed2_ch = "MEG 0123"
 picks_ch_names = [raw.ch_names[i] for i in picks]
 
 seed_idx = picks_ch_names.index(seed_ch)
-seed2_idx = picks_ch_names.index(seed2_idx)
+seed2_idx = picks_ch_names.index(seed2_ch)
 
-indices = seed_target_indices(seed_idx, seed2_ch)
+indices = seed_target_indices(seed_idx, seed2_idx)
 
 
 # Wpli2 debiased Connectvity
