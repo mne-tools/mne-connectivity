@@ -33,7 +33,7 @@ jobs:
           addToPath: true
       - bash: |
           set -e
-          pip install --upgrade --pre numpy scipy matplotlib "h5py<3.7"
+          pip install --upgrade --pre numpy scipy matplotlib h5py
           pip install git+https://github.com/mne-tools/mne-python
           pip install --upgrade .[test] codecov pytest-error-for-skips
         displayName: "Install dependencies with pip"
