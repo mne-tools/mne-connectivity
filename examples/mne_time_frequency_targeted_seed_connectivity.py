@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 #!/usr/bin/env python
 # coding: utf-8
@@ -30,7 +29,7 @@ import matplotlib.pyplot as plt
 import mne
 import numpy as np
 from mne.datasets import sample
-from mne_connectivity import spectral_connectivity_epochs
+
 from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
 
 print(__doc__)
@@ -46,7 +45,7 @@ events = mne.read_events(event_fname)
 # gradiometers selection
 picks = mne.pick_types(raw.info, meg='grad', ref_meg=False)
 
-# epochs creation 
+# epochs creation
 event_id, tmin, tmax = 3, -0.2, 1.5  # need a long enough epoch for 5 cycles
 epochs = mne.Epochs(
     raw,
@@ -61,8 +60,8 @@ epochs = mne.Epochs(
 
 epochs.load_data()
 
-info = raw.info  
-print(info)     
+info = raw.info
+print(info)
 
 
 # Channels were chosen to target the visual cortex (V1: MEG 2141, 2131) and anterior frontal regions (MEG 0123) for comparing connectivity and assessing visual attentional modulation.
@@ -71,14 +70,14 @@ info_picked = mne.pick_info(info, picks)
 
 mne.viz.plot_sensors(
     info_picked,
-    kind='topomap',    
+    kind='topomap',
     show_names=True
 )
 
 
 # Set seeds
 seed_ch = "MEG 2343"
-seed2_ch = "MEG 0123"  
+seed2_ch = "MEG 0123"
 
 picks_ch_names = [raw.ch_names[i] for i in picks]
 
@@ -131,11 +130,11 @@ plt.imshow(
 plt.axvline(0, color='black', linestyle='--', linewidth=1)
 plt.colorbar(label='Connectivity')
 plt.xlabel("Time (s)")
-plt.ylabel("Frequency (Hz)") 
+plt.ylabel("Frequency (Hz)")
 
 plt.show()
 
 
 ### References
 # .. footbibliography::
-# 
+#
