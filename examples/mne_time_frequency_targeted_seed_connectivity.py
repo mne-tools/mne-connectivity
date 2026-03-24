@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-#!/usr/bin/env python
-# coding: utf-8
-
 """
 =====================================================================
 Time-Frequency Seed Connectivity Using Debiased wPLI
@@ -37,8 +34,9 @@ print(__doc__)
 # Demo will be conducted on the sample MEG data recorded during visual stimulation.
 
 data_path = sample.data_path()
-raw_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
-event_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw-eve.fif"
+raw_fname = os.path.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif")
+event_fname = os.path.join(data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw-eve.fif")
+
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
 
@@ -82,7 +80,7 @@ seed2_ch = "MEG 0123"
 picks_ch_names = [raw.ch_names[i] for i in picks]
 
 seed_idx = picks_ch_names.index(seed_ch)
-seed2_ch = picks_ch_names.index(seed2_ch)
+seed2_idx = picks_ch_names.index(seed2_idx)
 
 indices = seed_target_indices(seed_idx, seed2_ch)
 
