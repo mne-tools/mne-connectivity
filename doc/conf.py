@@ -372,6 +372,11 @@ suppress_warnings = [
     "config.cache",  # our rebuild is okay
 ]
 
+rst_prolog = """
+.. include:: /changes/names.inc
+.. currentmodule:: mne_connectivity
+"""
+
 
 def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
     """Fix sklearn docstrings because they use autolink and we do not."""
