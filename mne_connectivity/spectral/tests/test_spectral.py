@@ -1277,10 +1277,6 @@ def test_spectral_connectivity_freq_decim():
             == len(con_original.freqs) // fdecim
         )
 
-    # Check fskip deprecation warning
-    with pytest.warns(FutureWarning, match="The `fskip` parameter is deprecated"):
-        spectral_connectivity_epochs(data, fskip=0)
-
 
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))
 def test_epochs_tmin_tmax(kind):
