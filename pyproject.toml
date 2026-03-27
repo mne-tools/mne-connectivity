@@ -119,6 +119,13 @@ documentation = 'https://mne.tools/mne-connectivity'
 source = 'https://github.com/mne-tools/mne-connectivity'
 tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
 
+[tool.changelog-bot]
+
+[tool.changelog-bot.towncrier_changelog]
+changelog_skip_label = "no-changelog-entry-needed"
+enabled = true
+verify_pr_number = true
+
 [tool.codespell]
 builtin = "clear,rare,informal,names,usage"
 ignore-words = ".codespellignore"
@@ -261,3 +268,40 @@ version_scheme = "release-branch-semver"
 all = true
 ignore_case = true
 trailing_comma_inline_array = true
+
+[tool.towncrier]
+directory = "doc/changes/dev/"
+filename = "doc/changes/dev.rst"
+issue_format = "`#{issue} <https://github.com/mne-tools/mne-connectivity/pull/{issue}>`__"
+package = "mne-connectivity"
+title_format = "{version} ({project_date})"
+
+[[tool.towncrier.type]]
+directory = "notable"
+name = "Notable changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dependency"
+name = "Dependencies"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "apichange"
+name = "API changes by deprecation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "newfeature"
+name = "New features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "other"
+name = "Other changes"
+showcontent = true
