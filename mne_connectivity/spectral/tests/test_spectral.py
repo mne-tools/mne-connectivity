@@ -1583,7 +1583,7 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
     assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1), atol=0.01)
 
 
-@pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 def test_spectral_connectivity_time_resolved(method, mode):
     """Test time-resolved spectral connectivity."""
@@ -1631,7 +1631,10 @@ def test_spectral_connectivity_time_resolved(method, mode):
     triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
 
     # average over frequencies
-    conn_data = con.get_data(output="dense").mean(axis=-1)
+    conn_data = con.get_data(output="dense")
+    if method == "imcoh":
+        conn_data = np.abs(conn_data)
+    conn_data = conn_data.mean(axis=-1)
 
     # the indices at which there is a correlation should be greater
     # then the rest of the components
@@ -1642,7 +1645,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
         )
 
 
-@pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("padding", [0, 1, 5])
 def test_spectral_connectivity_time_padding(method, mode, padding):
@@ -1690,16 +1693,15 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
                 padding=padding,
             )
         return
-    else:
-        con = spectral_connectivity_time(
-            data,
-            freqs,
-            sfreq=sfreq,
-            method=method,
-            mode=mode,
-            n_cycles=5,
-            padding=padding,
-        )
+    con = spectral_connectivity_time(
+        data,
+        freqs,
+        sfreq=sfreq,
+        method=method,
+        mode=mode,
+        n_cycles=5,
+        padding=padding,
+    )
 
     assert con.shape == (n_epochs, n_signals**2, len(con.freqs))
     assert con.get_data(output="dense").shape == (
@@ -1713,7 +1715,10 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
     triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
 
     # average over frequencies
-    conn_data = con.get_data(output="dense").mean(axis=-1)
+    conn_data = con.get_data(output="dense")
+    if method == "imcoh":
+        conn_data = np.abs(conn_data)
+    conn_data = conn_data.mean(axis=-1)
 
     # the indices at which there is a correlation should be greater
     # then the rest of the components
@@ -2170,7 +2175,7 @@ def test_multivar_save_load(tmp_path):
             assert a == b
 
 
-@pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli", "ciplv"])
 @pytest.mark.parametrize("indices", [None, ([0, 1], [2, 3])])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
