@@ -435,7 +435,7 @@ def test_spectral_connectivity(method, mode):
         for j in range(len(con2)):
             n_times = len(con2[j].attrs.get("times_used"))
             freqs = _compute_freqs(n_times, sfreq, cwt_freqs, mode)
-            freq_mask = _compute_freq_mask(freqs, fmin, fmax, 0, fdecim)
+            freq_mask = _compute_freq_mask(freqs, fmin, fmax, fdecim)
             for i in range(len(freqs3)):
                 # compute the mask for this band
                 use_freqs = freqs[freq_mask]
