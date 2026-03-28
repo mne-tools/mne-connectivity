@@ -77,7 +77,13 @@ Then one could plot the memory usage:
 
     a. Update the version information for the online documentation in `doc/_static/versions.json`
 
-    b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
+    b. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
+    
+       towncrier --version X.X
+    
+    where `X.X` is the new version number (e.g., `0.8`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
+    
+    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.X.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
 
     c. Update the version, release date, and author information in `CITATION.cff`
 
