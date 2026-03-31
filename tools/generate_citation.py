@@ -32,44 +32,29 @@ keywords = (
     "electrocorticography",
     "DBS",
     "deep brain stimulation",
+    "connectivity",
+    "functional connectivity",
+    "effective connectivity",
+    "coherence",
+    "PLV",
+    "phase-locking value",
+    "PLI",
+    "phase lag index",
+    "PSI",
+    "phase slope index",
+    "Granger causality",
+    "VAR",
+    "vector autoregressive models",
 )
 
 # add to these as necessary
 compound_surnames = ("van Vliet",)
 
-# DUPLICATE AUTHORS TO COMBINE INFO FOR
-duplicate_authors = (
-    dict(
-        main=("Thomas S", "Binns", "t.s.binns@outlook.com"),
-        copies=[("Thomas Samuel", "Binns", "t.s.binns@outlook.com")],
-    ),
-    dict(
-        main=("Adam", "Li", "adam2392@gmail.com"),
-        copies=[
-            ("Adam", "Li", "adam2392@Adams-MacBook-Pro-2.local"),
-            ("Adam", "Li", "adam2392@adams-mbp-2.lan"),
-            ("Adam", "Li", "adam2392@new-host-2.home"),
-            ("Adam", "Li", "adam2392@Adams-MBP-2.home"),
-        ],
-    ),
-    dict(
-        main=("Alex", "Rockhill", "aprockhill@mailbox.org"),
-        copies=[("", "Alex", "aprockhill@mailbox.org")],
-    ),
-)
-
-# AUTHORS TO FIX MISSING/MANGLED INFO FOR
-fix_authors = (
-    [("", "Mohammad", ""), ("Mohammad", "Orabe", "")],
-    [("", "SezanMert", ""), ("Sezan", "Mert", "")],
-)
-
 
 def parse_name(name):
-    """Split name blobs from `git shortlog -nse` into n_commits/first/last/email."""
+    """Split name blobs from `git shortlog -nse` into first/last/email."""
     # remove commit count
-    n_commits, name_and_email = name.strip().split("\t")
-    n_commits = int(n_commits)
+    _, name_and_email = name.strip().split("\t")
     name, email = name_and_email.split(" <")
     email = email.strip(">")
     email = "" if "noreply" in email else email  # ignore "noreply" emails
@@ -80,7 +65,7 @@ def parse_name(name):
             ix = name.index(compound_surname)
             first = name[:ix].strip()
             last = compound_surname
-            return (first, last, email), n_commits
+            return (first, last, email)
     # handle non-compound surnames
     name_elements = name.split()
     if len(name_elements) == 1:  # mononyms / usernames
@@ -89,33 +74,7 @@ def parse_name(name):
     else:
         first = " ".join(name_elements[:-1])
         last = name_elements[-1]
-    return (first, last, email), n_commits
-
-
-def combine_duplicates(names, n_commits, duplicate_authors):
-    """Combine duplicate authors into a single author and re-sort by commits."""
-    new_names = []
-    new_n_commits = []
-    for entry in duplicate_authors:
-        main = entry["main"]
-        copies = entry["copies"]
-        main_name_idx = names.index(main)
-        tot_n_commits = n_commits[main_name_idx]
-        drop_idcs = [main_name_idx]
-        for copy in copies:
-            copy_name_idx = names.index(copy)
-            tot_n_commits += n_commits[copy_name_idx]
-            drop_idcs.append(copy_name_idx)
-        # drop the duplicate (and original) entries
-        for idx in sorted(drop_idcs, reverse=True):
-            names.pop(idx)
-            n_commits.pop(idx)
-        new_names.append(main)
-        new_n_commits.append(tot_n_commits)
-    new_names.extend(names)
-    new_n_commits.extend(n_commits)
-
-    return new_names, new_n_commits
+    return (first, last, email)
 
 
 # MAKE SURE THE RELEASE STRING IS PROPERLY FORMATTED
@@ -134,22 +93,7 @@ assert len(split_version) == 3, msg
 args = ["git", "shortlog", "-nse"]
 result = subprocess.run(args, capture_output=True, text=True)
 lines = result.stdout.strip().split("\n")
-all_names = []
-all_n_commits = []
-for line in lines:
-    if "[bot]" not in line:
-        name, n_commits = parse_name(line)
-        all_names.append(name)
-        all_n_commits.append(n_commits)
-all_names, all_n_commits = combine_duplicates(
-    all_names, all_n_commits, duplicate_authors
-)
-all_names = sorted(
-    all_names, key=lambda x: all_n_commits[all_names.index(x)], reverse=True
-)
-for old, new in fix_authors:
-    idx = all_names.index(old)
-    all_names[idx] = new
+all_names = [parse_name(line) for line in lines if "[bot]" not in line]
 
 
 # GENERATE CITATION.CFF
