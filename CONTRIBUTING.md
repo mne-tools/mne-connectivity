@@ -79,7 +79,7 @@ Then one could plot the memory usage:
 
     b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
 
-    c. Update the version, release date, and author information in `CITATION.cff`
+    c. Run the `tools/generate_citation.py` script with the new version number as an argument (including micro version information, e.g., `0.8.0`) to update the information in `CITATION.cff`. Note, this will use the current date for the release date field.
 
 3. With the pull request merged, create a new maintenance branch named with the version number of the new version (e.g., `maint/0.8`).
 
