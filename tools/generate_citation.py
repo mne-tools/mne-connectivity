@@ -1,7 +1,10 @@
+import re
 import subprocess
 from argparse import ArgumentParser
 from datetime import date
 from pathlib import Path
+
+from cffconvert.citation import Citation
 
 parser = ArgumentParser(description="Generate CITATION.cff")
 parser.add_argument("release_version", type=str)
@@ -134,3 +137,17 @@ authors:
 # WRITE TO FILE
 with open(out_dir / "CITATION.cff", "w") as cff_file:
     cff_file.write(cff_boilerplate)
+
+# UPDATE PACKAGE CITATION IN REFERENCES
+citation = Citation(cffstr=cff_boilerplate)
+bibtex_citation = citation.as_bibtex(reference="MNE-Connectivity").strip()
+bibtex_citation = re.sub("@misc", "@software", bibtex_citation)
+bibtex_citation = re.sub(
+    "title = {MNE-Connectivity}", "title = {{MNE-Connectivity}}", bibtex_citation
+)
+references_path = out_dir / "doc" / "references.bib"
+references = references_path.read_text()
+references = re.sub(
+    r"@software{MNE-Connectivity.*?}\n\}", bibtex_citation, references, flags=re.DOTALL
+)
+references_path.write_text(references)
