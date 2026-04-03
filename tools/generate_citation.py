@@ -4,8 +4,6 @@ from argparse import ArgumentParser
 from datetime import date
 from pathlib import Path
 
-from cffconvert.citation import Citation
-
 parser = ArgumentParser(description="Generate CITATION.cff")
 parser.add_argument("release_version", type=str)
 release_version = parser.parse_args().release_version
@@ -139,15 +137,26 @@ with open(out_dir / "CITATION.cff", "w") as cff_file:
     cff_file.write(cff_boilerplate)
 
 # UPDATE PACKAGE CITATION IN REFERENCES
-citation = Citation(cffstr=cff_boilerplate)
-bibtex_citation = citation.as_bibtex(reference="MNE-Connectivity").strip()
-bibtex_citation = re.sub("@misc", "@software", bibtex_citation)
-bibtex_citation = re.sub(
-    "title = {MNE-Connectivity}", "title = {{MNE-Connectivity}}", bibtex_citation
-)
+bibtex_authors = []
+for first, last, _ in all_names:
+    if re.match(r".*\s.$", first):
+        first += "."  # add period to initials
+    bibtex_authors.append(first + ", " + last)
+bibtex_authors = " and ".join(bibtex_authors)
+bibtex_boilerplate = f"""\
+@software{{MNE-Connectivity,
+ author = {{{bibtex_authors}}},
+ doi = {{{zenodo_doi}}},
+ title = {{{{{package_name}}}}},
+ year = {{{release_date[:4]}}}
+}}
+"""
 references_path = out_dir / "doc" / "references.bib"
 references = references_path.read_text()
 references = re.sub(
-    r"@software{MNE-Connectivity.*?}\n\}", bibtex_citation, references, flags=re.DOTALL
+    r"@software{MNE-Connectivity,.*?}\n\}\n",
+    bibtex_boilerplate,
+    references,
+    flags=re.DOTALL,
 )
 references_path.write_text(references)
