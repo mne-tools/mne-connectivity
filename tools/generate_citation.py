@@ -148,6 +148,7 @@ bibtex_boilerplate = f"""\
  author = {{{bibtex_authors}}},
  doi = {{{zenodo_doi}}},
  title = {{{{{package_name}}}}},
+ version = {{{release_version}}},
  year = {{{release_date[:4]}}}
 }}
 """
