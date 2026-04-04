@@ -85,4 +85,4 @@ Then one could plot the memory usage:
 
 4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`).
 
-5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI.
+5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
