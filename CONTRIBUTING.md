@@ -71,7 +71,7 @@ Then one could plot the memory usage:
 
 # Making a Release
 
-1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the version number of the current version (e.g., `0.7/`).
+1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the major-minor version number of the current version (e.g., `0.7/`).
 
 2. Create a pull request to the `main` branch with the following changes:
 
@@ -79,10 +79,10 @@ Then one could plot the memory usage:
 
     b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
 
-    c. Run the `tools/generate_citation.py` script with the new version number as an argument (including micro version information, e.g., `0.8.0`) to update the information in `CITATION.cff`. Note, this will use the current date for the release date field.
+    c. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff`. Note, this will use the current date for the release date field.
 
-3. With the pull request merged, create a new maintenance branch named with the version number of the new version (e.g., `maint/0.8`).
+3. With the pull request merged, create a release tag for the new major-minor-micro version number (e.g., `v0.8.0`) on the `main` branch, and publish the release on GitHub.
 
-4. Create a release tag for the new version (e.g., `v0.8`) on the `main` branch and publish the release on GitHub.
+4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`).
 
-5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI.
+5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
