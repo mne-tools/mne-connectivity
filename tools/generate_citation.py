@@ -141,7 +141,7 @@ bibtex_authors = []
 for first, last, _ in all_names:
     if re.match(r".*\s.$", first):
         first += "."  # add period to initials
-    bibtex_authors.append(first + ", " + last)
+    bibtex_authors.append(last + ", " + first)
 bibtex_authors = " and ".join(bibtex_authors)
 bibtex_boilerplate = f"""\
 @software{{MNE-Connectivity,
