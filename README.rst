@@ -84,6 +84,12 @@ Alternatively, you can also download a
 `zip file of the latest development version <https://github.com/mne-tools/mne-connectivity/archive/main.zip>`__.
 
 
+Citing MNE-Connectivity
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you use MNE-Connectivity in your work, please cite the package using either the general project DOI `10.5281/zenodo.10278399 <https://doi.org/10.5281/zenodo.10278399>`__, or the DOI for specific versions provided by `Zenodo <https://doi.org/10.5281/zenodo.10278399>`__.
+
+
 Contributing to MNE-Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
