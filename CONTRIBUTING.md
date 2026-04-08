@@ -71,18 +71,24 @@ Then one could plot the memory usage:
 
 # Making a Release
 
-1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the version number of the current version (e.g., `0.7/`).
+1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the major-minor version number of the current version (e.g., `0.7/`).
 
 2. Create a pull request to the `main` branch with the following changes:
 
     a. Update the version information for the online documentation in `doc/_static/versions.json`
 
-    b. Cut/paste the `dev` version's changelog entries from `doc/whats_new.rst` to `doc/whats_new_previous_releases.rst`
+    b. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
+    
+       towncrier --version X.X
+    
+    where `X.X` is the new version number (e.g., `0.8`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
+    
+    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.X.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
 
-    c. Update the version, release date, and author information in `CITATION.cff`
+    c. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
 
-3. With the pull request merged, create a new maintenance branch named with the version number of the new version (e.g., `maint/0.8`).
+3. With the pull request merged, create a release tag for the new major-minor-micro version number (e.g., `v0.8.0`) on the `main` branch, and publish the release on GitHub.
 
-4. Create a release tag for the new version (e.g., `v0.8`) on the `main` branch and publish the release on GitHub.
+4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`).
 
-5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI.
+5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
