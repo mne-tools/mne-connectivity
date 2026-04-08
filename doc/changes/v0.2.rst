@@ -1,0 +1,31 @@
+Version 0.2 (2021-09-07)
+------------------------
+
+In this version, we return the relevant Connectivity class from each of the
+connectivity estimation functions. These internally use ``xarray`` to represent
+the connectivity data. One can easily get the v0.1 numpy array by doing
+``conn.get_data()``, which will get exactly the same output as one got in v0.1
+running any of the connectivity functions.
+
+Changelog
+~~~~~~~~~
+
+- Adding :class:`mne_connectivity.Connectivity`, :class:`mne_connectivity.TemporalConnectivity`, :class:`mne_connectivity.SpectralConnectivity` and :class:`mne_connectivity.SpectroTemporalConnectivity` as a data structure to hold connectivity data, by `Adam Li`_ (:pr:`6`)
+- Adding :class:`mne_connectivity.EpochConnectivity`, :class:`mne_connectivity.EpochTemporalConnectivity`, :class:`mne_connectivity.EpochSpectralConnectivity` and :class:`mne_connectivity.EpochSpectroTemporalConnectivity` as a data structure to hold connectivity data over Epochs, by `Adam Li`_ (:pr:`6`)
+- ``indices`` argument in Connectivity classes can now be ``symmetric``, allowing for memory-efficient storage of symmetric connectivity, by `Adam Li`_ (:pr:`20`)
+- New method ``save`` in Connectivity classes along with :func:`mne_connectivity.read_connectivity` can now be used to write and read Connectivity data as netCDF files, by `Adam Li`_ (:pr:`20`)
+- New function :func:`mne_connectivity.vector_auto_regression` to compute dynamic connectivity vector auto-regressive (VAR) model, by `Adam Li`_ (:pr:`23`)
+
+API
+~~~
+
+- :func:`mne_connectivity.envelope_correlation`, ``spectral_connectivity``, and :func:`mne_connectivity.phase_slope_index` all return Connectivity containers now, by `Adam Li`_ (:pr:`6`)
+- Added ``xarray`` as a dependency where all connectivity containers are now underlying xarrays, by `Adam Li`_ (:pr:`6`)
+- The ``combine`` argument in :func:`mne_connectivity.envelope_correlation` was removed, and now all Epoch Connectivity classes have a ``combine`` class method, by `Adam Li`_ (:pr:`20`)
+
+Authors
+~~~~~~~
+
+* `Adam Li`_
+* `Eric Larson`_
+* `Britta Westner`_
