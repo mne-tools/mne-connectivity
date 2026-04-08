@@ -45,6 +45,14 @@ repos:
           - tomli
         files: ^doc/.*\.(rst|inc)$
 
+  # file-contents-sorter
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: file-contents-sorter
+        files: ^doc/changes/names.inc
+        args: ["--ignore-case"]
+
   # toml-sort
   - repo: https://github.com/pappasam/toml-sort.git
     rev: v0.24.4

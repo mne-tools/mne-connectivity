@@ -3,6 +3,7 @@ from datetime import date
 import os
 import sys
 import warnings
+from pathlib import Path
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
@@ -16,10 +17,8 @@ import mne_connectivity  # noqa: E402
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-curdir = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(os.path.join(curdir, "..")))
-sys.path.append(os.path.abspath(os.path.join(curdir, "..", "mne_connectivity")))
-sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
+curpath = Path(__file__).parent.resolve(strict=True)
+sys.path.append(str(curpath / "sphinxext"))
 
 # -- General configuration ------------------------------------------------
 
@@ -40,6 +39,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "sphinxcontrib.bibtex",
+    "sphinxcontrib.towncrier.ext",
     "sphinx_issues",
     "numpydoc",
     "sphinx_copybutton",
@@ -242,7 +242,7 @@ version = ".".join(release.split(".")[:2])
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
+exclude_patterns = ["_build", "changes/dev"]
 
 # HTML options (e.g., theme)
 # see: https://sphinx-bootstrap-theme.readthedocs.io/en/latest/README.html
@@ -354,6 +354,8 @@ bibtex_bibfiles = ["./references.bib"]
 bibtex_style = "unsrt"
 bibtex_footbibliography_header = ""
 
+# sphinxcontrib-towncrier
+towncrier_draft_working_directory = str(curpath.parent)
 
 # Enable nitpicky mode - which ensures that all references in the docs
 # resolve.
@@ -364,6 +366,11 @@ nitpick_ignore = []
 suppress_warnings = [
     "config.cache",  # our rebuild is okay
 ]
+
+rst_prolog = """
+.. include:: /changes/names.inc
+.. currentmodule:: mne_connectivity
+"""
 
 
 def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
