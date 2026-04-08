@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute Phase Slope Index (PSI) in source space for a visual stimulus &#8212; MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</title>
+    <title>Compute Phase Slope Index (PSI) in source space for a visual stimulus &#8212; MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</title>
   
   
   
@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
@@ -44,12 +45,13 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=288120b5"></script>
+    <script src="../_static/documentation_options.js?v=56828df0"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mne_inverse_psi_visual';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
@@ -128,7 +130,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</p>
   
 </a></div>
     
@@ -584,7 +586,7 @@ Created an SSP operator (subspace dimension = 3)
 </pre></div>
 </div>
 <p>Compute inverse solution for each epoch. Note that since we are passing the output to
-both <a class="reference external" href="https://mne.tools/dev/generated/mne.extract_label_time_course.html#mne.extract_label_time_course" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_label_time_course()</span></code></a> and the
+both <a class="reference external" href="https://mne.tools/dev/generated/mne.extract_label_time_course.html#mne.extract_label_time_course" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_label_time_course()</span></code></a> and the
 <a class="reference internal" href="../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index" title="mne_connectivity.phase_slope_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">phase_slope_index()</span></code></a> functions, we have to use
 <code class="docutils literal notranslate"><span class="pre">return_generator=False</span></code>, since it is only possible to iterate over generators once.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snr</span></a> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># use lower SNR for single epochs</span>
@@ -786,7 +788,7 @@ Computing PSI from estimated Coherency: &lt;SpectralConnectivity | freq : [11.85
 [PSI Estimation Done]
 </pre></div>
 </div>
-<p>Generate a <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceEstimate</span></code></a> with the PSI. This is simple since we used a
+<p>Generate a <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceEstimate</span></code></a> with the PSI. This is simple since we used a
 single seed (inspect the <code class="docutils literal notranslate"><span class="pre">indices</span></code> variable to see how the PSI scores are arranged
 in the output).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">psi_stc</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate" title="mne.SourceEstimate" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">SourceEstimate</span></a><span class="p">(</span>
@@ -794,7 +796,7 @@ in the output).</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Now we can visualize the PSI using the <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.plot" title="(in MNE v1.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> method. We use
+<p>Now we can visualize the PSI using the <a class="reference external" href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.plot" title="(in MNE v1.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a> method. We use
 a custom colormap to show signed values.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">v_max</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.max.html#numpy.max" title="numpy.max" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">max</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method"><span class="n">psi</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()))</span>
 <a href="https://mne.tools/dev/generated/mne.viz.Brain.html#mne.viz.Brain" title="mne.viz.Brain" class="sphx-glr-backref-module-mne-viz sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">brain</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.SourceEstimate.html#mne.SourceEstimate.plot" title="mne.SourceEstimate.plot" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method"><span class="n">psi_stc</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span>
@@ -821,7 +823,7 @@ a custom colormap to show signed values.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.504 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.502 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mne-inverse-psi-visual-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/f55fefeb5e4e60039c11634685c75ff2/mne_inverse_psi_visual.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_inverse_psi_visual.ipynb</span></code></a></p>
@@ -912,7 +914,7 @@ a custom colormap to show signed values.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-06.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-08.
       <br/>
     
   </p>

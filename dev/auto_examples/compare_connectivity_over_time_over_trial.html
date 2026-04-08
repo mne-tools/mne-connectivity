@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</title>
   
   
   
@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
@@ -44,12 +45,13 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=288120b5"></script>
+    <script src="../_static/documentation_options.js?v=56828df0"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/compare_connectivity_over_time_over_trial';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
@@ -128,7 +130,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</p>
   
 </a></div>
     
@@ -487,7 +489,7 @@ imaginary part of coherence, phase locking value, and envelope correlations.
 Additionally, there are also multiple methods to estimate the frequency
 content, e.g. Fourier transforms, Morlet wavelets and multitapers.</p>
 <p>In this example, we focus on the two functions, which both computes
-connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
+connectivity from epoched data <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>:
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_epochs()</span></code></a> and
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>.</p>
 <p>Both functions contain the options to choose the connectivity measurements
@@ -517,7 +519,7 @@ result in errorful values when computed on one epoch.</p>
 time for single-trials or from experiments that do not involve exactly
 repeated trials, then <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_connectivity.spectral_connectivity_time()</span></code></a>
 should be employed. This function also takes data in the form of
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, but it may consist of a single epoch.
 If there are multiple epochs, the connectivity over time is computed for
 epoch separately, with the option to average over epochs.</p>
 <p>To better illustrate the differences and usages for the two functions,
@@ -544,7 +546,7 @@ visual task dataset.</p>
 <section id="simulated-examples">
 <h2>Simulated examples<a class="headerlink" href="#simulated-examples" title="Link to this heading">#</a></h2>
 <p><strong>Case 1: Repetitions of the same trial.</strong></p>
-<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
+<p>Let’s generate some simulated data in the format of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.EpochsArray</span></code></a>.
 In this case, we will use random data for 3 channels over 5 epochs, but
 all the epochs are just exact replicates of the first epoch. This simulates
 when data is collected over an event of interest where we <strong>assume</strong> the
@@ -572,7 +574,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x71543aeb8190&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x777a65cef390&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -785,7 +787,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x71543af33390&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x777a88570050&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -1092,9 +1094,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-0f72e61b-2ff7-4558-b4c4-67108f66c70a"
+<tr class="mne-repr-section-header general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc"
      title="Hide section"
-    onclick="toggleVisibility('general-0f72e61b-2ff7-4558-b4c4-67108f66c70a')">
+    onclick="toggleVisibility('general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1106,26 +1108,26 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-0f72e61b-2ff7-4558-b4c4-67108f66c70a ">
+<tr class="repr-element general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-0f72e61b-2ff7-4558-b4c4-67108f66c70a ">
+<tr class="repr-element general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-0f72e61b-2ff7-4558-b4c4-67108f66c70a ">
+<tr class="repr-element general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-0f72e61b-2ff7-4558-b4c4-67108f66c70a ">
+<tr class="repr-element general-ca73ebd9-7b3d-4f8b-9876-fcfd87b5bddc ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1140,9 +1142,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4"
+<tr class="mne-repr-section-header acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4')">
+    onclick="toggleVisibility('acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1157,14 +1159,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -1178,35 +1180,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-1529fbd7-f4a9-4032-8b13-b75c4395cee4 ">
+<tr class="repr-element acquisition-ce334ae6-0908-4ceb-a827-fd9603200f59 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1220,9 +1222,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-8db0650d-4090-4476-95a8-de2effc775a7"
+<tr class="mne-repr-section-header channels-48fc75f6-9f93-40cc-8a47-22290f44bc09"
      title="Hide section"
-    onclick="toggleVisibility('channels-8db0650d-4090-4476-95a8-de2effc775a7')">
+    onclick="toggleVisibility('channels-48fc75f6-9f93-40cc-8a47-22290f44bc09')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1235,7 +1237,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-8db0650d-4090-4476-95a8-de2effc775a7 ">
+<tr class="repr-element channels-48fc75f6-9f93-40cc-8a47-22290f44bc09 ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1248,7 +1250,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-8db0650d-4090-4476-95a8-de2effc775a7 ">
+<tr class="repr-element channels-48fc75f6-9f93-40cc-8a47-22290f44bc09 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1263,9 +1265,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-021b7544-17bc-47eb-8164-d29f5a7d909f"
+<tr class="mne-repr-section-header filters-bbbb54b2-7a42-48c9-9d79-9303f0d4dd19"
      title="Hide section"
-    onclick="toggleVisibility('filters-021b7544-17bc-47eb-8164-d29f5a7d909f')">
+    onclick="toggleVisibility('filters-bbbb54b2-7a42-48c9-9d79-9303f0d4dd19')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1277,21 +1279,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-021b7544-17bc-47eb-8164-d29f5a7d909f ">
+<tr class="repr-element filters-bbbb54b2-7a42-48c9-9d79-9303f0d4dd19 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-021b7544-17bc-47eb-8164-d29f5a7d909f ">
+<tr class="repr-element filters-bbbb54b2-7a42-48c9-9d79-9303f0d4dd19 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-021b7544-17bc-47eb-8164-d29f5a7d909f ">
+<tr class="repr-element filters-bbbb54b2-7a42-48c9-9d79-9303f0d4dd19 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1481,7 +1483,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x71543a94c170&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x777a659bae70&gt;
 </pre></div>
 </div>
 </section>
@@ -1512,7 +1514,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.378 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.865 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1607,7 +1609,7 @@ at this timepoint were between occipital and frontal areas.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-06.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-08.
       <br/>
     
   </p>

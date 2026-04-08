@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Determine the significance of connectivity estimates against baseline connectivity &#8212; MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</title>
+    <title>Determine the significance of connectivity estimates against baseline connectivity &#8212; MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</title>
   
   
   
@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
@@ -44,12 +45,13 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=288120b5"></script>
+    <script src="../_static/documentation_options.js?v=56828df0"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/surrogate_connectivity';</script>
     <script>
@@ -129,7 +131,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev9+gc701b6e8a documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev10+g83b8257c6 documentation</p>
   
 </a></div>
     
@@ -511,7 +513,7 @@ of your connectivity estimates.</p>
 </section>
 <section id="loading-the-data">
 <h2>Loading the data<a class="headerlink" href="#loading-the-data" title="Link to this heading">#</a></h2>
-<p>We start by loading from the <a class="reference external" href="https://mne.tools/dev/documentation/datasets.html#somato-dataset" title="(in MNE v1.12)"><span>Somatosensory</span></a> dataset, MEG data showing
+<p>We start by loading from the <a class="reference external" href="https://mne.tools/dev/documentation/datasets.html#somato-dataset" title="(in MNE v1.13)"><span>Somatosensory</span></a> dataset, MEG data showing
 event-related activity in response to somatosensory stimuli. We construct epochs
 around these events in the time window [-1.5, 1.0] seconds.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data</span>
@@ -535,62 +537,63 @@ around these events in the time window [-1.5, 1.0] seconds.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fetching 1 file for the somato dataset ...
 
   0%|                                               | 0.00/610M [00:00&lt;?, ?B/s]
-  0%|▏                                     | 2.63M/610M [00:00&lt;00:23, 26.3MB/s]
-  1%|▌                                     | 9.06M/610M [00:00&lt;00:12, 48.5MB/s]
-  3%|█▎                                    | 20.1M/610M [00:00&lt;00:07, 76.8MB/s]
-  5%|█▉                                    | 31.8M/610M [00:00&lt;00:06, 92.4MB/s]
-  7%|██▊                                    | 43.5M/610M [00:00&lt;00:05, 101MB/s]
-  9%|███▌                                   | 55.2M/610M [00:00&lt;00:05, 107MB/s]
- 11%|████▎                                  | 67.0M/610M [00:00&lt;00:04, 110MB/s]
- 13%|█████                                  | 78.7M/610M [00:00&lt;00:04, 113MB/s]
- 15%|█████▊                                 | 90.5M/610M [00:00&lt;00:04, 114MB/s]
- 17%|██████▋                                 | 102M/610M [00:01&lt;00:04, 115MB/s]
- 19%|███████▍                                | 114M/610M [00:01&lt;00:04, 116MB/s]
- 21%|████████▎                               | 126M/610M [00:01&lt;00:04, 117MB/s]
- 23%|█████████                               | 138M/610M [00:01&lt;00:04, 117MB/s]
- 24%|█████████▊                              | 149M/610M [00:01&lt;00:03, 117MB/s]
- 26%|██████████▌                             | 161M/610M [00:01&lt;00:03, 117MB/s]
- 28%|███████████▎                            | 173M/610M [00:01&lt;00:03, 117MB/s]
- 30%|████████████                            | 184M/610M [00:01&lt;00:03, 117MB/s]
- 32%|████████████▊                           | 196M/610M [00:01&lt;00:03, 117MB/s]
- 34%|█████████████▌                          | 208M/610M [00:01&lt;00:03, 117MB/s]
- 36%|██████████████▍                         | 219M/610M [00:02&lt;00:03, 117MB/s]
- 38%|███████████████▏                        | 231M/610M [00:02&lt;00:03, 117MB/s]
- 40%|███████████████▉                        | 243M/610M [00:02&lt;00:03, 117MB/s]
- 42%|████████████████▋                       | 255M/610M [00:02&lt;00:03, 117MB/s]
- 44%|█████████████████▍                      | 266M/610M [00:02&lt;00:02, 117MB/s]
- 46%|██████████████████▏                     | 278M/610M [00:02&lt;00:02, 114MB/s]
- 47%|██████████████████▉                     | 290M/610M [00:02&lt;00:02, 115MB/s]
- 49%|███████████████████▋                    | 301M/610M [00:02&lt;00:02, 115MB/s]
- 51%|████████████████████▌                   | 313M/610M [00:02&lt;00:02, 115MB/s]
- 53%|█████████████████████▎                  | 324M/610M [00:02&lt;00:02, 115MB/s]
- 55%|██████████████████████                  | 336M/610M [00:03&lt;00:02, 115MB/s]
- 57%|██████████████████████▊                 | 348M/610M [00:03&lt;00:02, 116MB/s]
- 59%|███████████████████████▌                | 359M/610M [00:03&lt;00:02, 116MB/s]
- 61%|████████████████████████▎               | 371M/610M [00:03&lt;00:02, 116MB/s]
- 63%|█████████████████████████               | 383M/610M [00:03&lt;00:01, 117MB/s]
- 65%|█████████████████████████▊              | 395M/610M [00:03&lt;00:01, 117MB/s]
- 67%|██████████████████████████▋             | 406M/610M [00:03&lt;00:01, 117MB/s]
- 68%|███████████████████████████▍            | 418M/610M [00:03&lt;00:01, 117MB/s]
- 70%|████████████████████████████▏           | 430M/610M [00:03&lt;00:01, 117MB/s]
- 72%|████████████████████████████▉           | 441M/610M [00:03&lt;00:01, 117MB/s]
- 74%|█████████████████████████████▋          | 453M/610M [00:04&lt;00:01, 117MB/s]
- 76%|██████████████████████████████▍         | 465M/610M [00:04&lt;00:01, 117MB/s]
- 78%|███████████████████████████████▏        | 476M/610M [00:04&lt;00:01, 117MB/s]
- 80%|███████████████████████████████▉        | 488M/610M [00:04&lt;00:01, 117MB/s]
- 82%|████████████████████████████████▊       | 500M/610M [00:04&lt;00:00, 117MB/s]
- 84%|█████████████████████████████████▌      | 511M/610M [00:04&lt;00:00, 117MB/s]
- 86%|██████████████████████████████████▎     | 523M/610M [00:04&lt;00:00, 117MB/s]
- 88%|███████████████████████████████████     | 535M/610M [00:04&lt;00:00, 117MB/s]
- 90%|███████████████████████████████████▊    | 546M/610M [00:04&lt;00:00, 117MB/s]
- 91%|████████████████████████████████████▌   | 558M/610M [00:04&lt;00:00, 115MB/s]
- 93%|█████████████████████████████████████▎  | 570M/610M [00:05&lt;00:00, 113MB/s]
- 95%|██████████████████████████████████████  | 581M/610M [00:05&lt;00:00, 111MB/s]
- 97%|█████████████████████████████████████▊ | 592M/610M [00:05&lt;00:00, 95.7MB/s]
- 99%|███████████████████████████████████████▌| 603M/610M [00:05&lt;00:00, 101MB/s]
+  1%|▏                                     | 3.36M/610M [00:00&lt;00:18, 33.6MB/s]
+  2%|▉                                     | 14.7M/610M [00:00&lt;00:08, 69.8MB/s]
+  4%|█▋                                    | 26.3M/610M [00:00&lt;00:06, 89.4MB/s]
+  6%|██▏                                   | 35.7M/610M [00:00&lt;00:06, 88.9MB/s]
+  8%|██▉                                   | 46.8M/610M [00:00&lt;00:05, 96.5MB/s]
+ 10%|███▋                                   | 58.5M/610M [00:00&lt;00:05, 104MB/s]
+ 11%|████▎                                 | 68.9M/610M [00:00&lt;00:05, 96.3MB/s]
+ 13%|█████▏                                 | 80.7M/610M [00:00&lt;00:05, 103MB/s]
+ 15%|█████▊                                 | 91.1M/610M [00:00&lt;00:05, 102MB/s]
+ 17%|██████▊                                 | 103M/610M [00:01&lt;00:04, 107MB/s]
+ 19%|███████▍                                | 114M/610M [00:01&lt;00:04, 104MB/s]
+ 21%|████████▏                               | 126M/610M [00:01&lt;00:04, 108MB/s]
+ 23%|█████████                               | 137M/610M [00:01&lt;00:04, 111MB/s]
+ 24%|█████████▊                              | 149M/610M [00:01&lt;00:04, 112MB/s]
+ 26%|██████████▌                             | 160M/610M [00:01&lt;00:03, 113MB/s]
+ 28%|███████████▎                            | 172M/610M [00:01&lt;00:03, 115MB/s]
+ 30%|████████████                            | 184M/610M [00:01&lt;00:03, 115MB/s]
+ 32%|████████████▊                           | 196M/610M [00:01&lt;00:03, 111MB/s]
+ 34%|█████████████▌                          | 207M/610M [00:01&lt;00:03, 113MB/s]
+ 36%|██████████████▎                         | 219M/610M [00:02&lt;00:03, 104MB/s]
+ 38%|███████████████                         | 231M/610M [00:02&lt;00:03, 108MB/s]
+ 40%|███████████████▍                       | 241M/610M [00:02&lt;00:03, 96.8MB/s]
+ 41%|████████████████                       | 251M/610M [00:02&lt;00:04, 89.2MB/s]
+ 43%|████████████████▊                      | 263M/610M [00:02&lt;00:03, 95.0MB/s]
+ 45%|█████████████████▍                     | 272M/610M [00:02&lt;00:04, 77.6MB/s]
+ 47%|██████████████████▏                    | 284M/610M [00:02&lt;00:03, 87.2MB/s]
+ 49%|██████████████████▉                    | 296M/610M [00:02&lt;00:03, 95.1MB/s]
+ 50%|████████████████████▏                   | 308M/610M [00:03&lt;00:02, 101MB/s]
+ 52%|████████████████████▉                   | 319M/610M [00:03&lt;00:02, 106MB/s]
+ 54%|█████████████████████▋                  | 331M/610M [00:03&lt;00:02, 108MB/s]
+ 56%|██████████████████████▍                 | 342M/610M [00:03&lt;00:02, 110MB/s]
+ 58%|███████████████████████▏                | 354M/610M [00:03&lt;00:02, 111MB/s]
+ 60%|███████████████████████▉                | 365M/610M [00:03&lt;00:02, 112MB/s]
+ 62%|████████████████████████▋               | 376M/610M [00:03&lt;00:02, 112MB/s]
+ 64%|█████████████████████████▍              | 388M/610M [00:03&lt;00:01, 113MB/s]
+ 65%|██████████████████████████▏             | 399M/610M [00:03&lt;00:01, 113MB/s]
+ 67%|██████████████████████████▉             | 411M/610M [00:03&lt;00:01, 113MB/s]
+ 69%|███████████████████████████▋            | 422M/610M [00:04&lt;00:01, 113MB/s]
+ 71%|████████████████████████████▍           | 434M/610M [00:04&lt;00:01, 115MB/s]
+ 73%|█████████████████████████████▏          | 445M/610M [00:04&lt;00:01, 116MB/s]
+ 75%|█████████████████████████████▉          | 457M/610M [00:04&lt;00:01, 116MB/s]
+ 77%|██████████████████████████████▊         | 469M/610M [00:04&lt;00:01, 117MB/s]
+ 79%|███████████████████████████████▌        | 481M/610M [00:04&lt;00:01, 117MB/s]
+ 81%|████████████████████████████████▎       | 493M/610M [00:04&lt;00:00, 117MB/s]
+ 83%|█████████████████████████████████       | 504M/610M [00:04&lt;00:00, 118MB/s]
+ 85%|█████████████████████████████████▊      | 516M/610M [00:04&lt;00:00, 118MB/s]
+ 87%|██████████████████████████████████▌     | 528M/610M [00:04&lt;00:00, 118MB/s]
+ 88%|███████████████████████████████████▍    | 540M/610M [00:05&lt;00:00, 101MB/s]
+ 90%|████████████████████████████████████    | 550M/610M [00:05&lt;00:00, 102MB/s]
+ 92%|████████████████████████████████████▊   | 562M/610M [00:05&lt;00:00, 106MB/s]
+ 94%|█████████████████████████████████████▌  | 573M/610M [00:05&lt;00:00, 109MB/s]
+ 96%|██████████████████████████████████████▎ | 585M/610M [00:05&lt;00:00, 111MB/s]
+ 98%|███████████████████████████████████████▏| 597M/610M [00:05&lt;00:00, 113MB/s]
+100%|███████████████████████████████████████▉| 609M/610M [00:05&lt;00:00, 115MB/s]
   0%|                                               | 0.00/610M [00:00&lt;?, ?B/s]
-100%|███████████████████████████████████████| 610M/610M [00:00&lt;00:00, 2.75TB/s]
-Download complete in 14s (581.8 MB)
+100%|███████████████████████████████████████| 610M/610M [00:00&lt;00:00, 2.69TB/s]
+Download complete in 20s (581.8 MB)
 Opening raw data file /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif...
     Range : 237600 ... 506999 =    791.189 ...  1688.266 secs
 Ready.
@@ -625,7 +628,7 @@ Using data from preloaded Raw for 111 events and 251 original time points ...
 <h2>Assessing connectivity in non-evoked data<a class="headerlink" href="#assessing-connectivity-in-non-evoked-data" title="Link to this heading">#</a></h2>
 <p>We will first demonstrate how connectivity can be assessed from non-evoked data. In
 this example, we use data from the pre-trial period of [-1.5, -0.5] seconds. We
-compute Fourier coefficients of the data using the <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="(in MNE v1.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_psd()</span></code></a>
+compute Fourier coefficients of the data using the <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_psd" title="(in MNE v1.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_psd()</span></code></a>
 method with <code class="docutils literal notranslate"><span class="pre">output=&quot;complex&quot;</span></code> (note that this requires <code class="docutils literal notranslate"><span class="pre">mne</span> <span class="pre">&gt;=</span> <span class="pre">1.8</span></code>).</p>
 <p>Next, we pass these coefficients to
 <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> to compute connectivity using
@@ -829,7 +832,7 @@ we need to confirm this statistically.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_surrogate_connectivity_001.png" srcset="../_images/sphx_glr_surrogate_connectivity_001.png" alt="All-to-all connectivity | Pre-trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x715419e1b9b0&gt;
+<img src="../_images/sphx_glr_surrogate_connectivity_001.png" srcset="../_images/sphx_glr_surrogate_connectivity_001.png" alt="All-to-all connectivity | Pre-trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x777a54412120&gt;
 </pre></div>
 </div>
 <p>Assessing the statistical significance of our connectivity estimates can be done with
@@ -954,7 +957,7 @@ Connectivity computation...
     computing cross-spectral density for epoch 30
 [Connectivity computation done]
 
-&lt;matplotlib.legend.Legend object at 0x71542ba51f10&gt;
+&lt;matplotlib.legend.Legend object at 0x777a544009b0&gt;
 </pre></div>
 </div>
 <p>This is also confirmed by statistical testing, with connectivity in the lower beta
@@ -1127,7 +1130,7 @@ baseline.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_surrogate_connectivity_003.png" srcset="../_images/sphx_glr_surrogate_connectivity_003.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x71542bdbc0b0&gt;
+<img src="../_images/sphx_glr_surrogate_connectivity_003.png" srcset="../_images/sphx_glr_surrogate_connectivity_003.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x777a45a06ff0&gt;
 </pre></div>
 </div>
 </section>
@@ -1144,9 +1147,9 @@ the nested data (e.g., across recordings, subjects, etc…) using Stouffer’s m
 <a class="footnote-reference brackets" href="#footcite-dowdinghaufe2018" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 <p>Alternatively, we could take the average of the surrogate connectivity estimates
 across all shuffles for each piece of data and compare them to the original
-connectivity estimates in a paired test. The <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.17.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a> and <a class="reference external" href="https://mne.tools/dev/api/statistics.html#module-mne.stats" title="(in MNE v1.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.stats</span></code></a>
+connectivity estimates in a paired test. The <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats" title="(in SciPy v1.17.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.stats</span></code></a> and <a class="reference external" href="https://mne.tools/dev/api/statistics.html#module-mne.stats" title="(in MNE v1.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.stats</span></code></a>
 modules have many such tools for testing this, e.g., <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_1samp.html#scipy.stats.ttest_1samp" title="(in SciPy v1.17.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.ttest_1samp()</span></code></a>,
-<a class="reference external" href="https://mne.tools/dev/generated/mne.stats.permutation_t_test.html#mne.stats.permutation_t_test" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.stats.permutation_t_test()</span></code></a>, etc…</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.stats.permutation_t_test.html#mne.stats.permutation_t_test" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.stats.permutation_t_test()</span></code></a>, etc…</p>
 <p>Altogether, surrogate connectivity estimates are a powerful tool for assessing the
 significance of connectivity estimates, both on a single recording- and group-level.</p>
 </section>
@@ -1169,7 +1172,7 @@ significance of connectivity estimates, both on a single recording- and group-le
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 31.564 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 59.572 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-surrogate-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/7ec8e983400b5cb9d1a8f9b7626d69bd/surrogate_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">surrogate_connectivity.ipynb</span></code></a></p>
@@ -1266,7 +1269,7 @@ significance of connectivity estimates, both on a single recording- and group-le
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-06.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-08.
       <br/>
     
   </p>
