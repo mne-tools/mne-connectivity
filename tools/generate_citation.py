@@ -1,3 +1,4 @@
+import re
 import subprocess
 from argparse import ArgumentParser
 from datetime import date
@@ -134,3 +135,29 @@ authors:
 # WRITE TO FILE
 with open(out_dir / "CITATION.cff", "w") as cff_file:
     cff_file.write(cff_boilerplate)
+
+# UPDATE PACKAGE CITATION IN REFERENCES
+bibtex_authors = []
+for first, last, _ in all_names:
+    if re.match(r".*\s.$", first):
+        first += "."  # add period to initials
+    bibtex_authors.append(last + ", " + first)
+bibtex_authors = " and ".join(bibtex_authors)
+bibtex_boilerplate = f"""\
+@software{{MNE-Connectivity,
+ author = {{{bibtex_authors}}},
+ doi = {{{zenodo_doi}}},
+ title = {{{{{package_name}}}}},
+ version = {{{release_version}}},
+ year = {{{release_date[:4]}}}
+}}
+"""
+references_path = out_dir / "doc" / "references.bib"
+references = references_path.read_text()
+references = re.sub(
+    r"@software{MNE-Connectivity,.*?}\n\}\n",
+    bibtex_boilerplate,
+    references,
+    flags=re.DOTALL,
+)
+references_path.write_text(references)

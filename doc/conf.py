@@ -43,6 +43,7 @@ extensions = [
     "sphinx_issues",
     "numpydoc",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 # configure sphinx-issues
