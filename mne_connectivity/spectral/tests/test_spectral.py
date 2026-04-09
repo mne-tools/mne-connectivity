@@ -1358,7 +1358,7 @@ def test_epochs_tmin_tmax(kind):
 
 
 @pytest.mark.parametrize(
-    "method", ["coh", "cacoh", "mic", "mim", "plv", "pli", "wpli", "ciplv"]
+    "method", ["coh", "cohy", "cacoh", "mic", "mim", "plv", "pli", "wpli", "ciplv"]
 )
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("data_option", ["sync", "random"])
@@ -1413,12 +1413,12 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
         fmax=freq_band_high_limit,
         n_jobs=1,
         faverage=method not in ["cacoh", "mic"],
-        average=method not in ["cacoh", "mic"],
+        average=method not in ["cohy", "cacoh", "mic"],
         sm_times=0,
     )
     con_matrix = con.get_data()
 
-    # CaCoh/MIC values can be pos. and neg., so must be averaged after taking
+    # Cohy/CaCoh/MIC values can be pos. and neg., so must be averaged after taking
     # the absolute values for the test to work
     if method in multivar_methods:
         if method in ["cacoh", "mic"]:
@@ -1426,8 +1426,12 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
             assert con.shape == (1, len(con.freqs))
-    else:
-        assert con.shape == (n_channels**2, len(con.freqs))
+    else: #  Cohy values are complex, so take abs before validation of properties
+        if method == "cohy":
+            con_matrix = np.abs(con_matrix).mean(axis=0)
+            assert con.shape == (n_epochs, n_channels**2, len(con.freqs))
+        else:
+            assert con.shape == (n_channels**2, len(con.freqs))
         con_matrix = np.reshape(con_matrix, (n_channels, n_channels))[
             np.tril_indices(n_channels, -1)
         ]
@@ -1535,7 +1539,7 @@ def test_spectral_connectivity_time_delayed():
     assert np.allclose(trgc[0, bidx[1] :].mean(), 0, atol=0.1)
 
 
-@pytest.mark.parametrize("method", ["coh", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli", "ciplv"])
 @pytest.mark.parametrize("freqs", [[8.0, 10.0], [8, 10], 10.0, 10])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 def test_spectral_connectivity_time_freqs(method, freqs, mode):
@@ -1572,18 +1576,21 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
         fmax=np.max(freqs),
         n_jobs=1,
         faverage=True,
-        average=True,
+        average=method != "cohy",  # don't average complex values of cohy
         sm_times=0,
     )
-    assert con.shape == (n_channels**2, len(con.freqs))
+    assert con.shape[-2:] == (n_channels**2, len(con.freqs))
     con_matrix = con.get_data("dense")[..., 0]
+    if method == "cohy":  # complex-valued → real, then average epochs
+        con_matrix = np.abs(con_matrix)
+        con_matrix = con_matrix.mean(axis=0)
 
     # signals are perfectly phase-locked, connectivity matrix should be
     # a lower triangular matrix of ones
     assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1), atol=0.01)
 
 
-@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 def test_spectral_connectivity_time_resolved(method, mode):
     """Test time-resolved spectral connectivity."""
@@ -1632,7 +1639,9 @@ def test_spectral_connectivity_time_resolved(method, mode):
 
     # average over frequencies
     conn_data = con.get_data(output="dense")
-    if method == "imcoh":
+    if method in ["imcoh", "cohy"]:
+        # for imcoh: positive/negative real → positive real
+        # for cohy: complex-valued → positive real
         conn_data = np.abs(conn_data)
     conn_data = conn_data.mean(axis=-1)
 
@@ -1645,7 +1654,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
         )
 
 
-@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("padding", [0, 1, 5])
 def test_spectral_connectivity_time_padding(method, mode, padding):
@@ -1716,7 +1725,9 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
 
     # average over frequencies
     conn_data = con.get_data(output="dense")
-    if method == "imcoh":
+    if method in ["imcoh", "cohy"]:
+        # for imcoh: positive/negative real → positive real
+        # for cohy: complex-valued → positive real
         conn_data = np.abs(conn_data)
     conn_data = conn_data.mean(axis=-1)
 
@@ -2175,7 +2186,7 @@ def test_multivar_save_load(tmp_path):
             assert a == b
 
 
-@pytest.mark.parametrize("method", ["coh", "imcoh", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli", "ciplv"])
 @pytest.mark.parametrize("indices", [None, ([0, 1], [2, 3])])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.

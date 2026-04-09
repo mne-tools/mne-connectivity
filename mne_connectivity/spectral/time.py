@@ -95,10 +95,12 @@ def spectral_connectivity_time(
         be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,
         ``data.freqs`` is used and this parameter is ignored.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'imcoh', 'cacoh',
-        'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These are:
+        Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
+        'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
+        are:
 
         * %(coh)s
+        * %(cohy)s
         * %(imcoh)s
         * %(cacoh)s
         * %(mic)s
@@ -300,6 +302,12 @@ def spectral_connectivity_time(
         'coh' : Coherence given by::
 
                      | E[Sxy] |
+            C = ---------------------
+                sqrt(E[Sxx] * E[Syy])
+
+        'cohy' : Coherency given by::
+
+                       E[Sxy]
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
