@@ -2186,7 +2186,9 @@ def test_multivar_save_load(tmp_path):
             assert a == b
 
 
-@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize(
+    "method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli", "ciplv"]
+)
 @pytest.mark.parametrize("indices", [None, ([0, 1], [2, 3])])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
