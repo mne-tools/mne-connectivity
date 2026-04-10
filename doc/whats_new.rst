@@ -15,7 +15,7 @@ Here we list a changelog of MNE-connectivity.
 .. _current:
 
 Version 0.8.1 (2026-04-10)
---------------------
+--------------------------
 
 
 Enhancements
