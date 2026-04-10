@@ -95,11 +95,13 @@ def spectral_connectivity_time(
         be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,
         ``data.freqs`` is used and this parameter is ignored.
     method : str | list of str
-        Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'cacoh',
-        'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These are:
+        Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
+        'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
+        are:
 
         * %(coh)s
         * %(cohy)s
+        * %(imcoh)s
         * %(cacoh)s
         * %(mic)s
         * %(mim)s
@@ -309,6 +311,12 @@ def spectral_connectivity_time(
             C = ---------------------
                 sqrt(E[Sxx] * E[Syy])
 
+        'imcoh' : Imaginary coherence :footcite:`NolteEtAl2004` given by::
+
+                      Im(E[Sxy])
+            C = ----------------------
+                sqrt(E[Sxx] * E[Syy])
+
         'cacoh' : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019` given by:
 
             :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}
@@ -509,6 +517,13 @@ def spectral_connectivity_time(
     # check that method is a list
     if isinstance(method, str):
         method = [method]
+    # validate methods
+    bad_methods = [meth for meth in method if meth not in _CON_METHOD_MAP_TIME]
+    if len(bad_methods) > 0:
+        raise ValueError(
+            f"Connectivity method(s) not recognized: {bad_methods}. Valid methods are "
+            f"{list(_CON_METHOD_MAP_TIME.keys())}"
+        )
 
     # defaults for fmin and fmax
     if fmin is None:
@@ -1085,7 +1100,7 @@ def _parallel_con(
         output is a tuple of lists containing arrays for the connectivity scores and
         patterns, respectively.
     """
-    if ("coh" in method) or ("cohy" in method):
+    if any(m in ["coh", "cohy", "imcoh"] for m in method):
         # psd
         if weights is not None:
             psd = weights * w
@@ -1177,21 +1192,13 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         s_xy = np.squeeze(s_xy, axis=0)
     s_xy = _smooth_spectra(s_xy, kernel)
     out = []
-    conn_func = {
-        "plv": _plv,
-        "ciplv": _ciplv,
-        "pli": _pli,
-        "wpli": _wpli,
-        "coh": _coh,
-        "cohy": _cohy,
-    }
     for m in method:
-        if m in ["coh", "cohy"]:
+        if m in ["coh", "cohy", "imcoh"]:
             s_xx = psd[x]
             s_yy = psd[y]
-            out.append(conn_func[m](s_xx, s_yy, s_xy))
+            out.append(_CON_METHOD_MAP_BIVARIATE_TIME[m](s_xx, s_yy, s_xy))
         else:
-            out.append(conn_func[m](s_xy))
+            out.append(_CON_METHOD_MAP_BIVARIATE_TIME[m](s_xy))
 
     for i, _ in enumerate(out):
         # mean inside frequency sliding window (if needed)
@@ -1453,6 +1460,48 @@ def _cohy(s_xx, s_yy, s_xy):
     )
     cohy = con_num / con_den
     return cohy
+
+
+def _imcoh(s_xx, s_yy, s_xy):
+    """Compute imaginary coherency given the cross spectral density and PSD.
+
+    Parameters
+    ----------
+    s_xx : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'x'.
+    s_yy : array-like, shape (n_freqs, n_times)
+        The PSD of channel 'y'.
+    s_xy : array-like, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across
+        frequency and time points.
+
+    Returns
+    -------
+    imcoh : array-like, shape (n_freqs, n_times)
+        The estimated imaginary coherency.
+    """
+    con_num = np.imag(s_xy.mean(axis=-1, keepdims=True))
+    con_den = np.sqrt(
+        s_xx.mean(axis=-1, keepdims=True) * s_yy.mean(axis=-1, keepdims=True)
+    )
+    imcoh = con_num / con_den
+    return imcoh
+
+
+# map names to estimator types
+_CON_METHOD_MAP_BIVARIATE_TIME = {
+    "plv": _plv,
+    "ciplv": _ciplv,
+    "pli": _pli,
+    "wpli": _wpli,
+    "coh": _coh,
+    "cohy": _cohy,
+    "imcoh": _imcoh,
+}
+_CON_METHOD_MAP_TIME = {
+    **_CON_METHOD_MAP_BIVARIATE_TIME,
+    **_CON_METHOD_MAP_MULTIVARIATE,
+}
 
 
 def _compute_csd(x, y, weights):

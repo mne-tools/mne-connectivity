@@ -1590,7 +1590,7 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
     assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1), atol=0.01)
 
 
-@pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 def test_spectral_connectivity_time_resolved(method, mode):
     """Test time-resolved spectral connectivity."""
@@ -1639,7 +1639,9 @@ def test_spectral_connectivity_time_resolved(method, mode):
 
     # average over frequencies
     conn_data = con.get_data(output="dense")
-    if method == "cohy":  # complex-valued → real
+    if method in ["imcoh", "cohy"]:
+        # for imcoh: positive/negative real → positive real
+        # for cohy: complex-valued → positive real
         conn_data = np.abs(conn_data)
     conn_data = conn_data.mean(axis=-1)
 
@@ -1652,7 +1654,7 @@ def test_spectral_connectivity_time_resolved(method, mode):
         )
 
 
-@pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli"])
+@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("padding", [0, 1, 5])
 def test_spectral_connectivity_time_padding(method, mode, padding):
@@ -1723,7 +1725,9 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
 
     # average over frequencies
     conn_data = con.get_data(output="dense")
-    if method == "cohy":  # complex-valued → real
+    if method in ["imcoh", "cohy"]:
+        # for imcoh: positive/negative real → positive real
+        # for cohy: complex-valued → positive real
         conn_data = np.abs(conn_data)
     conn_data = conn_data.mean(axis=-1)
 
@@ -2182,7 +2186,9 @@ def test_multivar_save_load(tmp_path):
             assert a == b
 
 
-@pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli", "ciplv"])
+@pytest.mark.parametrize(
+    "method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli", "ciplv"]
+)
 @pytest.mark.parametrize("indices", [None, ([0, 1], [2, 3])])
 def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     """Test that indices values and type is maintained after saving.
