@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.9.0.dev12+g713cb6319 documentation</title>
+    <title>mne_connectivity.spectral.time &#8212; MNE-Connectivity 0.9.0.dev13+g3542bbca5 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../../_static/documentation_options.js?v=58b57eab"></script>
+    <script src="../../../_static/documentation_options.js?v=c085d8c0"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev12+g713cb6319 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev13+g3542bbca5 documentation</p>
   
 </a></div>
     
@@ -515,11 +515,13 @@
 <span class="sd">        be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,</span>
 <span class="sd">        ``data.freqs`` is used and this parameter is ignored.</span>
 <span class="sd">    method : str | list of str</span>
-<span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cohy&#39;, &#39;cacoh&#39;,</span>
-<span class="sd">        &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``. These are:</span>
+<span class="sd">        Connectivity measure(s) to compute. These can be ``[&#39;coh&#39;, &#39;cohy&#39;, &#39;imcoh&#39;,</span>
+<span class="sd">        &#39;cacoh&#39;, &#39;mic&#39;, &#39;mim&#39;, &#39;plv&#39;, &#39;ciplv&#39;, &#39;pli&#39;, &#39;wpli&#39;, &#39;gc&#39;, &#39;gc_tr&#39;]``. These</span>
+<span class="sd">        are:</span>
 
 <span class="sd">        * %(coh)s</span>
 <span class="sd">        * %(cohy)s</span>
+<span class="sd">        * %(imcoh)s</span>
 <span class="sd">        * %(cacoh)s</span>
 <span class="sd">        * %(mic)s</span>
 <span class="sd">        * %(mim)s</span>
@@ -729,6 +731,12 @@
 <span class="sd">            C = ---------------------</span>
 <span class="sd">                sqrt(E[Sxx] * E[Syy])</span>
 
+<span class="sd">        &#39;imcoh&#39; : Imaginary coherence :footcite:`NolteEtAl2004` given by::</span>
+
+<span class="sd">                      Im(E[Sxy])</span>
+<span class="sd">            C = ----------------------</span>
+<span class="sd">                sqrt(E[Sxx] * E[Syy])</span>
+
 <span class="sd">        &#39;cacoh&#39; : Canonical Coherency (CaCoh) :footcite:`VidaurreEtAl2019` given by:</span>
 
 <span class="sd">            :math:`\textrm{CaCoh}=\Large{\frac{\boldsymbol{a}^T\boldsymbol{D}</span>
@@ -929,6 +937,13 @@
     <span class="c1"># check that method is a list</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">method</span> <span class="o">=</span> <span class="p">[</span><span class="n">method</span><span class="p">]</span>
+    <span class="c1"># validate methods</span>
+    <span class="n">bad_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">meth</span> <span class="k">for</span> <span class="n">meth</span> <span class="ow">in</span> <span class="n">method</span> <span class="k">if</span> <span class="n">meth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_CON_METHOD_MAP_TIME</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad_methods</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Connectivity method(s) not recognized: </span><span class="si">{</span><span class="n">bad_methods</span><span class="si">}</span><span class="s2">. Valid methods are &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_CON_METHOD_MAP_TIME</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># defaults for fmin and fmax</span>
     <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1506,7 +1521,7 @@
 <span class="sd">        output is a tuple of lists containing arrays for the connectivity scores and</span>
 <span class="sd">        patterns, respectively.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;coh&quot;</span> <span class="ow">in</span> <span class="n">method</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;cohy&quot;</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span> <span class="s2">&quot;cohy&quot;</span><span class="p">,</span> <span class="s2">&quot;imcoh&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
         <span class="c1"># psd</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">psd</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">w</span>
@@ -1598,21 +1613,13 @@
         <span class="n">s_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">s_xy</span> <span class="o">=</span> <span class="n">_smooth_spectra</span><span class="p">(</span><span class="n">s_xy</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">conn_func</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;plv&quot;</span><span class="p">:</span> <span class="n">_plv</span><span class="p">,</span>
-        <span class="s2">&quot;ciplv&quot;</span><span class="p">:</span> <span class="n">_ciplv</span><span class="p">,</span>
-        <span class="s2">&quot;pli&quot;</span><span class="p">:</span> <span class="n">_pli</span><span class="p">,</span>
-        <span class="s2">&quot;wpli&quot;</span><span class="p">:</span> <span class="n">_wpli</span><span class="p">,</span>
-        <span class="s2">&quot;coh&quot;</span><span class="p">:</span> <span class="n">_coh</span><span class="p">,</span>
-        <span class="s2">&quot;cohy&quot;</span><span class="p">:</span> <span class="n">_cohy</span><span class="p">,</span>
-    <span class="p">}</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span> <span class="s2">&quot;cohy&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;coh&quot;</span><span class="p">,</span> <span class="s2">&quot;cohy&quot;</span><span class="p">,</span> <span class="s2">&quot;imcoh&quot;</span><span class="p">]:</span>
             <span class="n">s_xx</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
             <span class="n">s_yy</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conn_func</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">))</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_CON_METHOD_MAP_BIVARIATE_TIME</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conn_func</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xy</span><span class="p">))</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_CON_METHOD_MAP_BIVARIATE_TIME</span><span class="p">[</span><span class="n">m</span><span class="p">](</span><span class="n">s_xy</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">out</span><span class="p">):</span>
         <span class="c1"># mean inside frequency sliding window (if needed)</span>
@@ -1876,6 +1883,48 @@
     <span class="k">return</span> <span class="n">cohy</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_imcoh</span><span class="p">(</span><span class="n">s_xx</span><span class="p">,</span> <span class="n">s_yy</span><span class="p">,</span> <span class="n">s_xy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute imaginary coherency given the cross spectral density and PSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    s_xx : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;x&#39;.</span>
+<span class="sd">    s_yy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The PSD of channel &#39;y&#39;.</span>
+<span class="sd">    s_xy : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The cross PSD between channel &#39;x&#39; and channel &#39;y&#39; across</span>
+<span class="sd">        frequency and time points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    imcoh : array-like, shape (n_freqs, n_times)</span>
+<span class="sd">        The estimated imaginary coherency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">con_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">s_xy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">con_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="n">s_xx</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="n">s_yy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">imcoh</span> <span class="o">=</span> <span class="n">con_num</span> <span class="o">/</span> <span class="n">con_den</span>
+    <span class="k">return</span> <span class="n">imcoh</span>
+
+
+<span class="c1"># map names to estimator types</span>
+<span class="n">_CON_METHOD_MAP_BIVARIATE_TIME</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;plv&quot;</span><span class="p">:</span> <span class="n">_plv</span><span class="p">,</span>
+    <span class="s2">&quot;ciplv&quot;</span><span class="p">:</span> <span class="n">_ciplv</span><span class="p">,</span>
+    <span class="s2">&quot;pli&quot;</span><span class="p">:</span> <span class="n">_pli</span><span class="p">,</span>
+    <span class="s2">&quot;wpli&quot;</span><span class="p">:</span> <span class="n">_wpli</span><span class="p">,</span>
+    <span class="s2">&quot;coh&quot;</span><span class="p">:</span> <span class="n">_coh</span><span class="p">,</span>
+    <span class="s2">&quot;cohy&quot;</span><span class="p">:</span> <span class="n">_cohy</span><span class="p">,</span>
+    <span class="s2">&quot;imcoh&quot;</span><span class="p">:</span> <span class="n">_imcoh</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_CON_METHOD_MAP_TIME</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">_CON_METHOD_MAP_BIVARIATE_TIME</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">,</span>
+<span class="p">}</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_csd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute cross spectral density between signals x and y.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1958,7 +2007,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-09.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-10.
       <br/>
     
   </p>
