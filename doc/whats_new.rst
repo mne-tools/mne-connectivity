@@ -14,24 +14,18 @@ Here we list a changelog of MNE-connectivity.
 
 .. _current:
 
-Version 0.9 (in dev)
---------------------
+Version 0.8.1 (in dev)
+----------------------
 
 
 Enhancements
 ~~~~~~~~~~~~
-
-
-Bug
-~~~
-
-
-API
-~~~
+- List ``cohy`` as a supported method in :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_ (:pr:`403`).
 
 
 Authors
 ~~~~~~~
+* `Thomas Binns`_
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
