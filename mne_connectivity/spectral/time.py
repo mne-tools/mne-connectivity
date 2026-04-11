@@ -18,7 +18,7 @@ from mne.time_frequency import (
     tfr_array_morlet,
     tfr_array_multitaper,
 )
-from mne.utils import _check_option, _validate_type, logger, verbose, warn
+from mne.utils import _check_option, _validate_type, logger, verbose
 
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import _check_multivariate_indices, check_indices, fill_doc
@@ -47,8 +47,7 @@ def spectral_connectivity_time(
     *,
     fmin=None,
     fmax=None,
-    fskip=None,
-    fdecim=None,
+    fdecim=1,
     faverage=False,
     sm_times=0.0,
     sm_freqs=1,
@@ -136,19 +135,10 @@ def spectral_connectivity_time(
         The upper frequency of interest. Multiple bands are defined using a tuple, e.g.
         ``(13., 30.)`` for two band with 13 Hz and 30 Hz upper bounds. If ``None``, the
         highest frequency in ``freqs`` is used.
-    fskip : int | None
-        Omit every "(fskip + 1)-th" frequency bin to decimate in frequency domain. If
-        ``None`` (default) or 0, no frequency bins are skipped.
-
-        .. version-deprecated:: 0.8
-            ``fskip`` is deprecated and will be removed in 0.9. To reduce the number of
-            frequency bins, use ``fdecim`` instead, which offers more standard
-            decimation behaviour.
     fdecim : int | None
         Decimation factor in the frequency domain. Selects every Nth frequency bin from
-        the (time-)frequency decomposition (where N is the value of ``fdecim``). If
-        ``None`` (default) or 1, no decimation occurs. The default value will change to
-        1 in version 0.9.
+        the (time-)frequency decomposition (where N is the value of ``fdecim``). If 1
+        (default), no decimation occurs.
 
         .. versionadded:: 0.8
     faverage : bool
@@ -412,19 +402,6 @@ def spectral_connectivity_time(
     ----------
     .. footbibliography::
     """  # noqa: E501
-    if fskip is not None:
-        warn(
-            "The `fskip` parameter is deprecated and will be removed in 0.9. Use "
-            "`fdecim` instead.",
-            FutureWarning,
-        )
-        if fdecim is not None:
-            raise ValueError("`fskip` and `fdecim` cannot be used together.")
-    else:
-        fskip = 0
-    if fdecim is None:
-        fdecim = 1
-
     events = None
     event_id = None
     picks = None
@@ -680,7 +657,7 @@ def spectral_connectivity_time(
         )
 
     # compute frequency mask based on specified min/max and decimation factor
-    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fskip, fdecim)
+    freq_mask = _compute_freq_mask(freqs, fmin, fmax, fdecim)
 
     # the frequency points where we compute connectivity
     freqs = freqs[freq_mask]
