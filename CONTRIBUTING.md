@@ -96,3 +96,16 @@ If the procedure is followed correctly, there is no need to set any version info
 4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`). Creating the maintenance branch **after** the release tag is important in ensuring that the documentation built from the maintenance branch will have the correct version number set by `setuptools_scm`.
 
 5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
+
+
+## Releasing a micro version
+
+For new releases that only bump the micro version, a slightly different workflow should be followed:
+
+- In step 1, there is no need to create a new folder in the `gh-pages` branch, as the new version's documentation will just overwrite the old documentation in the `stable/` folder.
+
+- In step 2, the same steps should be followed, except that that pull request should be made to the maintenance branch (e.g., `maint/0.8`) instead of the `main` branch. Also, the contents of the `towncrier`-generated changelog file should be added to the top of the existing changelog file for the current major-minor version (e.g., for minor version `0.8.1`, the contents should be added to the top of `doc/changes/v0.8.rst`).
+
+- In step 3, the release tag should be created on the maintenance branch (e.g., `maint/0.8`) instead of the `main` branch.
+
+- In step 4, we do not create a new maintenance branch. However, building the documentation from the updated maintenance branch will already have started when the pull request was merged in step 2, but before the release tag was created in step 3. This means that the documentation will have the wrong version number set by `setuptools_scm`. To fix this, we re-trigger the [documentation build job on CircleCI](https://app.circleci.com/pipelines/github/mne-tools/mne-connectivity) for the maintenance branch (e.g., `maint/0.8`) after step 3 is completed.
