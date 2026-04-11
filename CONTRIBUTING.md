@@ -69,6 +69,28 @@ Then one could plot the memory usage:
 
     mprof plot
 
+
+# Online documentation
+
+MNE-Connectivity's online documentation is deployed from the `gh-pages` branch. Here, the documentation for different versions is stored in different folders:
+
+- `stable/`: documentation for the latest stable release.
+
+- `dev/`: documentation for the latest development version (i.e., the `main` branch).
+
+- `X.Y/`: documentation for the latest micro release of each major-minor version (e.g.: `v0.8/` for `v0.8.1`; `v0.7/` for `v0.7.0`).
+
+When changes are made to the `main` or `maint/X.Y` branches, the documentation is automatically built and transferred to the `gh-pages` branch by [CircleCI](https://app.circleci.com/pipelines/github/mne-tools/mne-connectivity) (`.circleci/config.yml`). The `build_docs` job generates the documentation, and the `deploy_docs` job transfers it to the `gh-pages` branch. The `deploy_docs` job determines which `gh-pages` folder to transfer the documentation to based on the branch that the changes were made to:
+
+- If the changes were made to the `main` branch, the documentation is transferred to the `dev/` folder.
+
+- If the changes were made to a `maint/X.Y` branch, the documentation is transferred to the `stable/` folder.
+
+This means that changes should not be pushed to `maint/X.Y` branches which **are not** the current stable version.
+
+The actual deployment of the documentation from `gh-pages` to the online documentation site is performed by the [`pages-build-deployment` action on GitHub](https://github.com/mne-tools/mne-connectivity/actions/workflows/pages/pages-build-deployment).
+
+
 # Making a Release
 
 If the procedure is followed correctly, there is no need to set any version information manually. Rather, [`setuptools_scm`](https://setuptools-scm.readthedocs.io/en/latest/) will dynamically determine the version number based on the git tags.
