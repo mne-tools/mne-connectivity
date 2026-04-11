@@ -75,15 +75,15 @@ Then one could plot the memory usage:
 
 2. Create a pull request to the `main` branch with the following changes:
 
-    a. Update the version information for the online documentation in `doc/_static/versions.json`
+    a. Update the version information for the online documentation in `doc/_static/versions.json`.
 
     b. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
     
-       towncrier --version X.X
+       towncrier --version X.Y.Z
     
-    where `X.X` is the new version number (e.g., `0.8`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
+    where `X.Y.Z` is the new major-minor-micro version number (e.g., `0.8.0`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
     
-    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.X.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
+    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.Y.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
 
     c. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
 
