@@ -739,21 +739,21 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             if "times" in self.dims:
                 new_shape.append(len(self.coords["times"]))
 
-            # handle things differently if indices is defined
-            if isinstance(self.indices, tuple):
-                # TODO: improve this to be more memory efficient
-                # from all-to-all connectivity structure
-                data = np.zeros(new_shape)
-                data[:] = np.nan
+            if isinstance(self.indices, tuple) or self.indices == "symmetric":
+                if np.iscomplexobj(self._data):
+                    fill_value = np.nan + 1j * np.nan
+                else:
+                    fill_value = np.nan
+                data = np.full(new_shape, fill_value=fill_value, dtype=self._data.dtype)
 
+            if isinstance(self.indices, tuple):
+                # handle things differently if indices is defined
                 row_idx, col_idx = self.indices
                 if self.is_epoched:
                     data[:, row_idx, col_idx, ...] = self._data
                 else:
                     data[row_idx, col_idx, ...] = self._data
             elif self.indices == "symmetric":
-                data = np.zeros(new_shape)
-
                 # get the upper/lower triangular indices
                 row_triu_inds, col_triu_inds = np.triu_indices(self.n_nodes, k=0)
                 if self.is_epoched:

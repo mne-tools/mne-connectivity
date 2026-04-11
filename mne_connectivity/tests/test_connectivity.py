@@ -427,3 +427,21 @@ def test_metadata_handling(func, tmpdir, epochs):
     else:
         assert isinstance(new_conn.metadata, pd.DataFrame)
         assert metadata.empty
+
+
+@pytest.mark.parametrize("indices", ["all", "symmetric", "tril"])
+def test_get_data_complex(indices):
+    """Test that get_data works properly with complex data."""
+    n_nodes = 3
+    data = np.ones((n_nodes * n_nodes), dtype=np.complex128)
+    if indices == "symmetric":
+        triu_inds = np.triu_indices(n_nodes, k=0)
+        data = data[np.ravel_multi_index(triu_inds, (n_nodes, n_nodes))]
+    if indices == "tril":
+        indices = np.tril_indices(n_nodes, k=-1)
+        data = data[np.ravel_multi_index(indices, (n_nodes, n_nodes))]
+
+    conn = Connectivity(data=data, indices=indices, n_nodes=n_nodes)
+    for output in ["raveled", "dense"]:
+        out_data = conn.get_data(output=output)
+        assert np.iscomplexobj(out_data)
