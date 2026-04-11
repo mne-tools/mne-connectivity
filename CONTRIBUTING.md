@@ -71,6 +71,10 @@ Then one could plot the memory usage:
 
 # Making a Release
 
+If the procedure is followed correctly, there is no need to set any version information manually. Rather, [`setuptools_scm`](https://setuptools-scm.readthedocs.io/en/latest/) will dynamically determine the version number based on the git tags.
+
+## Releasing a major-minor version
+
 1. In the `gh-pages` branch, create a commit with the documentation from `stable/` copied to a new folder named with the major-minor version number of the current version (e.g., `0.7/`).
 
 2. Create a pull request to the `main` branch with the following changes:
@@ -89,6 +93,6 @@ Then one could plot the memory usage:
 
 3. With the pull request merged, create a release tag for the new major-minor-micro version number (e.g., `v0.8.0`) on the `main` branch, and publish the release on GitHub.
 
-4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`).
+4. Create a new maintenance branch named with the major-minor version number of the new version (e.g., `maint/0.8`). Creating the maintenance branch **after** the release tag is important in ensuring that the documentation built from the maintenance branch will have the correct version number set by `setuptools_scm`.
 
 5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
