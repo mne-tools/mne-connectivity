@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.9.0.dev18+ge637ae9ec documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.9.0.dev19+g1dbd00dee documentation</title>
   
   
   
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=c662501c"></script>
+    <script src="../_static/documentation_options.js?v=489927c4"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -130,7 +130,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev18+ge637ae9ec documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev19+g1dbd00dee documentation</p>
   
 </a></div>
     
@@ -574,7 +574,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7374fb231590&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7761e1cb71b0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -618,7 +618,7 @@ Using qt as 2D backend.
     <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity" class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1241: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1214: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -720,7 +720,7 @@ between the three electrodes over trials are exactly 1.</p>
     <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">c</span></a><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:464: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:441: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 only using indices for lower-triangular matrix
@@ -787,7 +787,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7374f80947d0&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7761dc0663f0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -820,7 +820,7 @@ No baseline correction applied
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_epochs_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1241: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_005.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1214: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -882,7 +882,7 @@ between two channels are not the same over trials.</p>
 <span class="n">plot_con_matrix</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">con_time_array</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">n_con_methods</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:464: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
+<img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_006.png" alt="coh, plv" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:441: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 7.996 s (baseline off), ~241 KiB, data loaded,
  &#39;1&#39;: 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 only using indices for lower-triangular matrix
@@ -1094,9 +1094,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-21387bd8-6a74-4536-a039-781bcc67061a"
+<tr class="mne-repr-section-header general-db7d8971-e920-4d04-a79f-0b8ea1459feb"
      title="Hide section"
-    onclick="toggleVisibility('general-21387bd8-6a74-4536-a039-781bcc67061a')">
+    onclick="toggleVisibility('general-db7d8971-e920-4d04-a79f-0b8ea1459feb')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1108,26 +1108,26 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-21387bd8-6a74-4536-a039-781bcc67061a ">
+<tr class="repr-element general-db7d8971-e920-4d04-a79f-0b8ea1459feb ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-21387bd8-6a74-4536-a039-781bcc67061a ">
+<tr class="repr-element general-db7d8971-e920-4d04-a79f-0b8ea1459feb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-21387bd8-6a74-4536-a039-781bcc67061a ">
+<tr class="repr-element general-db7d8971-e920-4d04-a79f-0b8ea1459feb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-21387bd8-6a74-4536-a039-781bcc67061a ">
+<tr class="repr-element general-db7d8971-e920-4d04-a79f-0b8ea1459feb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1142,9 +1142,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8"
+<tr class="mne-repr-section-header acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8')">
+    onclick="toggleVisibility('acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1159,14 +1159,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -1180,35 +1180,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f3998c8a-3a8f-4aa2-83d2-a231ab435eb8 ">
+<tr class="repr-element acquisition-7649c9c2-8d20-4d5b-8f95-6f2ad389a685 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1222,9 +1222,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-56aa508d-a481-465d-b046-4f12dd0e47a9"
+<tr class="mne-repr-section-header channels-f1840eeb-5d08-41c2-9f91-ff7678d8e980"
      title="Hide section"
-    onclick="toggleVisibility('channels-56aa508d-a481-465d-b046-4f12dd0e47a9')">
+    onclick="toggleVisibility('channels-f1840eeb-5d08-41c2-9f91-ff7678d8e980')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1237,7 +1237,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-56aa508d-a481-465d-b046-4f12dd0e47a9 ">
+<tr class="repr-element channels-f1840eeb-5d08-41c2-9f91-ff7678d8e980 ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1250,7 +1250,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-56aa508d-a481-465d-b046-4f12dd0e47a9 ">
+<tr class="repr-element channels-f1840eeb-5d08-41c2-9f91-ff7678d8e980 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1265,9 +1265,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-58443054-86fc-4623-98db-881aa0f6c42e"
+<tr class="mne-repr-section-header filters-53bdbe73-4dce-4679-856f-8254b927a93f"
      title="Hide section"
-    onclick="toggleVisibility('filters-58443054-86fc-4623-98db-881aa0f6c42e')">
+    onclick="toggleVisibility('filters-53bdbe73-4dce-4679-856f-8254b927a93f')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1279,21 +1279,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-58443054-86fc-4623-98db-881aa0f6c42e ">
+<tr class="repr-element filters-53bdbe73-4dce-4679-856f-8254b927a93f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-58443054-86fc-4623-98db-881aa0f6c42e ">
+<tr class="repr-element filters-53bdbe73-4dce-4679-856f-8254b927a93f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-58443054-86fc-4623-98db-881aa0f6c42e ">
+<tr class="repr-element filters-53bdbe73-4dce-4679-856f-8254b927a93f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1483,7 +1483,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7374eef892e0&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7761dbced6d0&gt;
 </pre></div>
 </div>
 </section>
@@ -1514,7 +1514,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.667 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.741 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1609,7 +1609,7 @@ at this timepoint were between occipital and frontal areas.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-13.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-15.
       <br/>
     
   </p>
