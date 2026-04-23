@@ -81,8 +81,8 @@ epochs = epochs[:30]  # select a subset of epochs to speed up computation
 #
 # We will first demonstrate how connectivity can be assessed from non-evoked data. In
 # this example, we use data from the pre-trial period of [-1.5, -0.5] seconds. We
-# compute Fourier coefficients of the data using the :meth:`~mne.Epochs.compute_psd`
-# method with ``output="complex"`` (note that this requires ``mne >= 1.8``).
+# compute time-resolved Fourier coefficients of the data using the
+# :meth:`~mne.Epochs.compute_tfr` method with ``output="complex"``.
 #
 # Next, we pass these coefficients to
 # :func:`~mne_connectivity.spectral_connectivity_epochs` to compute connectivity using
@@ -91,21 +91,24 @@ epochs = epochs[:30]  # select a subset of epochs to speed up computation
 
 # %%
 
-# Compute Fourier coefficients for pre-trial data
-fmin, fmax = 5, 23
-pretrial_coeffs = epochs.compute_psd(
-    fmin=fmin, fmax=fmax, tmin=None, tmax=-0.5, output="complex"
+# Compute time-resolved Fourier coefficients for pre-trial data
+freqs = np.arange(4, 23, 2)
+tfr_kwargs = dict(
+    freqs=freqs, n_cycles=freqs / 2.0, method="morlet", decim=3, output="complex"
 )
-freqs = pretrial_coeffs.freqs
+pretrial_coeffs = epochs.compute_tfr(tmin=None, tmax=-0.5, **tfr_kwargs)
 
 # Compute connectivity for pre-trial data
 indices = np.tril_indices(epochs.info["nchan"], k=-1)  # all unique connections
 pretrial_con = spectral_connectivity_epochs(
     pretrial_coeffs, method="imcoh", indices=indices
 )
+pretrial_con = np.abs(pretrial_con.get_data()).mean(
+    axis=(0, 2)  # average connections and timepoints
+)
 
 ########################################################################################
-# Next, we generate the surrogate data by passing the Fourier coefficients into the
+# Next, we generate the surrogate data by passing the coefficients into the
 # :func:`~mne_connectivity.make_surrogate_resting_data` function. This approach
 # destroys the data's covariance structure by randomly shuffling the order of epochs,
 # independently for each channel. To get a reliable estimate of the baseline
@@ -125,33 +128,28 @@ pretrial_surrogates = make_surrogate_resting_data(
 pretrial_surrogate_con = []
 for shuffle_i, surrogate in enumerate(pretrial_surrogates, 1):
     print(f"Computing connectivity for shuffle {shuffle_i} of {n_shuffles}")
-    pretrial_surrogate_con.append(
-        spectral_connectivity_epochs(
-            surrogate, method="imcoh", indices=indices, verbose=False
-        )
+    surrogate_con = spectral_connectivity_epochs(
+        surrogate, method="imcoh", indices=indices, verbose=False
     )
+    pretrial_surrogate_con.append(
+        np.abs(surrogate_con.get_data()).mean(axis=(0, 2))
+    )  # average connections and timepoints
+pretrial_surrogate_con = np.array(pretrial_surrogate_con)
 
 ########################################################################################
 # We can plot the connectivity of the pre-trial data against the surrogate data,
 # averaged over all shuffles. This shows a strong degree of coupling in the alpha band
-# (~8-12 Hz), with weaker coupling in the lower range of the beta band (~13-20 Hz).
-# A simple visual inspection shows that connectivity in the alpha and beta bands are
-# above the baseline level of connectivity estimated from the surrogate data. However,
-# we need to confirm this statistically.
+# (~8-12 Hz), with weaker coupling in the lower range of the beta band (~13-20 Hz). A
+# simple visual inspection shows that connectivity in the alpha and beta bands are above
+# the baseline level of connectivity estimated from the surrogate data. However, we need
+# to confirm this statistically.
 
 # %%
 
 # Plot pre-trial actual vs. surrogate connectivity
 fig, ax = plt.subplots(1, 1)
-ax.plot(
-    freqs,
-    np.abs([surrogate.get_data() for surrogate in pretrial_surrogate_con]).mean(
-        axis=(0, 1)
-    ),
-    linestyle="--",
-    label="Surrogate",
-)
-ax.plot(freqs, np.abs(pretrial_con.get_data()).mean(axis=0), label="Original")
+ax.plot(freqs, pretrial_surrogate_con.mean(axis=0), linestyle="--", label="Surrogate")
+ax.plot(freqs, pretrial_con, label="Original")
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Connectivity (A.U.)")
 ax.set_title("All-to-all connectivity | Pre-trial ")
@@ -192,16 +190,14 @@ ax.legend()
 # Find indices of lower beta frequencies
 beta_freqs = np.where((freqs >= 13) & (freqs <= 20))[0]
 
-# Compute lower beta connectivity for pre-trial data (average connections and freqs)
-beta_con_pretrial = np.abs(pretrial_con.get_data()[:, beta_freqs]).mean(axis=(0, 1))
+# Compute lower beta connectivity for pre-trial data
+beta_con_pretrial = pretrial_con[beta_freqs].mean()
 
-# Compute lower beta connectivity for surrogate data (average connections and freqs)
-beta_con_surrogate = np.abs(
-    [surrogate.get_data()[:, beta_freqs] for surrogate in pretrial_surrogate_con]
-).mean(axis=(1, 2))
+# Compute lower beta connectivity for surrogate data
+beta_con_pretrial_surrogate = pretrial_surrogate_con[:, beta_freqs].mean(axis=1)
 
 # Compute p-value for pre-trial lower beta coupling
-p_val = np.sum(beta_con_pretrial <= beta_con_surrogate) / n_shuffles
+p_val = np.sum(beta_con_pretrial <= beta_con_pretrial_surrogate) / n_shuffles
 print(f"P = {p_val:.2f}")
 
 ########################################################################################
@@ -232,51 +228,38 @@ print(f"P = {p_val:.2f}")
 
 # %%
 
+# Compute time-resolved Fourier coefficients for post-stimulus data
+poststim_coeffs = epochs.compute_tfr(tmin=0.0, tmax=None, **tfr_kwargs)
+
 # Compute connectivity for post-stimulus data
 poststim_con = spectral_connectivity_epochs(
-    epochs,
-    method="imcoh",
-    indices=indices,
-    tmin=0.0,
-    tmax=None,
-    fmin=fmin,
-    fmax=fmax,
-    verbose=False,
+    poststim_coeffs, method="imcoh", indices=indices, verbose=False
+)
+poststim_con = np.abs(poststim_con.get_data()).mean(
+    axis=(0, 2)  # average connections and timepoints
 )
 
 # Generate post-stimulus surrogate data
 poststim_surrogates = make_surrogate_evoked_data(
-    epochs, n_shuffles=n_shuffles, rng_seed=42
+    poststim_coeffs, n_shuffles=n_shuffles, rng_seed=42
 )
 
 # Compute connectivity for post-stimulus surrogate data
 poststim_surrogate_con = []
 for shuffle_i, surrogate in enumerate(poststim_surrogates, 1):
     print(f"Computing connectivity for shuffle {shuffle_i} of {n_shuffles}")
-    poststim_surrogate_con.append(
-        spectral_connectivity_epochs(
-            surrogate,
-            method="imcoh",
-            indices=indices,
-            tmin=0.0,
-            tmax=None,
-            fmin=fmin,
-            fmax=fmax,
-            verbose=False,
-        )
+    surrogate_con = spectral_connectivity_epochs(
+        surrogate, method="imcoh", indices=indices, verbose=False
     )
+    poststim_surrogate_con.append(
+        np.abs(surrogate_con.get_data()).mean(axis=(0, 2))
+    )  # average connections and timepoints
+poststim_surrogate_con = np.array(poststim_surrogate_con)
 
 # Plot post-stimulus actual vs. surrogate connectivity
 fig, ax = plt.subplots(1, 1)
-ax.plot(
-    freqs,
-    np.abs([surrogate.get_data() for surrogate in poststim_surrogate_con]).mean(
-        axis=(0, 1)
-    ),
-    linestyle="--",
-    label="Surrogate",
-)
-ax.plot(freqs, np.abs(poststim_con.get_data()).mean(axis=0), label="Original")
+ax.plot(freqs, poststim_surrogate_con.mean(axis=0), linestyle="--", label="Surrogate")
+ax.plot(freqs, poststim_con, label="Original")
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Connectivity (A.U.)")
 ax.set_title("All-to-all connectivity | Post-stimulus")
@@ -288,11 +271,14 @@ ax.legend()
 
 # %%
 
-# Compute lower beta connectivity for post-stimulus data (average connections and freqs)
-beta_con_poststim = np.abs(poststim_con.get_data()[:, beta_freqs]).mean(axis=(0, 1))
+# Compute lower beta connectivity for post-stimulus data
+beta_con_poststim = poststim_con[beta_freqs].mean()
+
+# Compute lower beta connectivity for surrogate data
+beta_con_poststim_surrogate = poststim_surrogate_con[:, beta_freqs].mean(axis=0)
 
 # Compute p-value for post-stimulus lower beta coupling
-p_val = np.sum(beta_con_poststim <= beta_con_surrogate) / n_shuffles
+p_val = np.sum(beta_con_poststim <= beta_con_poststim_surrogate) / n_shuffles
 print(f"P = {p_val:.2f}")
 
 ########################################################################################
@@ -309,25 +295,20 @@ print(f"P = {p_val:.2f}")
 
 # Generate surrogates from evoked data using wrong function
 bad_poststim_surrogates = make_surrogate_resting_data(
-    epochs, n_shuffles=n_shuffles, rng_seed=44
+    poststim_coeffs, n_shuffles=n_shuffles, rng_seed=44
 )
 
 # Compute connectivity for bad evoked surrogate data
 bad_surrogate_con = []
 for shuffle_i, surrogate in enumerate(bad_poststim_surrogates, 1):
     print(f"Computing connectivity for shuffle {shuffle_i} of {n_shuffles}")
-    bad_surrogate_con.append(
-        spectral_connectivity_epochs(
-            surrogate,
-            method="imcoh",
-            indices=indices,
-            tmin=0.0,
-            tmax=None,
-            fmin=fmin,
-            fmax=fmax,
-            verbose=False,
-        )
+    surrogate_con = spectral_connectivity_epochs(
+        surrogate, method="imcoh", indices=indices, verbose=False
     )
+    bad_surrogate_con.append(
+        np.abs(surrogate_con.get_data()).mean(axis=(0, 2))
+    )  # average connections and timepoints
+bad_surrogate_con = np.array(bad_surrogate_con)
 
 ########################################################################################
 # Plotting the post-stimulus connectivity against the estimates from both sets of
@@ -347,22 +328,18 @@ for shuffle_i, surrogate in enumerate(bad_poststim_surrogates, 1):
 fig, ax = plt.subplots(1, 1)
 ax.plot(
     freqs,
-    np.abs([surrogate.get_data() for surrogate in poststim_surrogate_con]).mean(
-        axis=(0, 1)
-    ),
+    poststim_surrogate_con.mean(axis=0),
     linestyle="--",
     label="Surrogate\n(make_surrogate_evoked_data)",
 )
 ax.plot(
     freqs,
-    np.abs([surrogate.get_data() for surrogate in bad_surrogate_con]).mean(axis=(0, 1)),
+    bad_surrogate_con.mean(axis=0),
     color="C3",
     linestyle="--",
     label="Surrogate\n(make_surrogate_resting_data)",
 )
-ax.plot(
-    freqs, np.abs(poststim_con.get_data()).mean(axis=0), color="C1", label="Original"
-)
+ax.plot(freqs, poststim_con, color="C1", label="Original")
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("Connectivity (A.U.)")
 ax.set_title("All-to-all connectivity | Post-stimulus")
