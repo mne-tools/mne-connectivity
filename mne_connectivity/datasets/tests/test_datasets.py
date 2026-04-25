@@ -2,12 +2,14 @@ from collections.abc import Generator
 
 import numpy as np
 import pytest
-from mne import create_info
+from mne import EpochsArray, create_info
 from mne.time_frequency import EpochsSpectrumArray
 
 from mne_connectivity import (
     make_signals_in_freq_bands,
     make_surrogate_data,
+    make_surrogate_evoked_data,
+    make_surrogate_resting_data,
     seed_target_indices,
     spectral_connectivity_epochs,
 )
@@ -255,23 +257,74 @@ def test_make_surrogate_data(snr, should_be_significant, method):
     assert pval_noise_freqs > alpha, f"pval_noise_freqs: {pval_noise_freqs}"
 
 
-def test_make_surrogate_data_generator():
-    """Test `return_generator` parameter works in `make_surrogate_data`."""
-    # Generate random data for packaging into EpochsSpectrum
+def test_make_surrogate_resting_data_kind_consistency():
+    """Test `make_surrogate_resting_data` is consistent for epochs, PSD, & TFR data.
+
+    N.B. This test does not work for `make_surrogate_evoked_data`, because the cutting
+    of timepoints changes the temporal structure, and there is a smearing of information
+    across times when computiong TFRs. So, the results of epochs → surrogate epochs →
+    TFRs vs. epochs → TFRs → surrogate TFRs will have differences in the time domain.
+
+    This is not the case for `make_surrogate_resting_data`, because the shuffling is
+    performed for whole epochs (i.e., temporal structure within epochs is preserved).
+    """
+    # Generate random data for packaging into Epochs
     n_epochs = 5
     n_chans = 6
-    n_freqs = 50
-    sfreq = n_freqs * 2
+    n_times = 200
+    sfreq = 50
     rng = np.random.default_rng(44)
-    data = rng.random((n_epochs, n_chans, n_freqs)).astype(np.complex128)
-    data += data * 1j  # complex dtypes not supported for simulation, so make complex
+    data = rng.random((n_epochs, n_chans, n_times))
     info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
-    spectrum = EpochsSpectrumArray(data=data, info=info, freqs=np.arange(n_freqs))
+    data = EpochsArray(data=data, info=info)
+
+    # Get info for calls to spectral compute & surrogate generation functions
+    coeff_funcs_kwargs = [
+        ("compute_psd", dict(output="complex")),
+        (
+            "compute_tfr",
+            dict(method="morlet", freqs=np.arange(5, sfreq // 2), output="complex"),
+        ),
+    ]
+    surrogate_kwargs = dict(n_shuffles=5, rng_seed=44)
+
+    # Check surrogates from different data kinds matches, i.e.:
+    # epochs → surrogate epochs → coeffs == epochs → coeffs → surrogate coeffs
+    epochs_surrogates = make_surrogate_resting_data(data=data, **surrogate_kwargs)
+    for func_name, func_kwargs in coeff_funcs_kwargs:
+        # Compute coefficients from Epochs, then get surrogates from those coefficients
+        coeff_func = getattr(data, func_name)
+        coeffs = coeff_func(**func_kwargs)
+        coeffs_surrogates = make_surrogate_resting_data(data=coeffs, **surrogate_kwargs)
+        # Compare surrogates from both flows
+        for epochs_surrogate, coeffs_surrogate in zip(
+            epochs_surrogates, coeffs_surrogates
+        ):
+            coeff_func = getattr(epochs_surrogate, func_name)
+            assert np.allclose(
+                coeff_func(**func_kwargs).get_data(), coeffs_surrogate.get_data()
+            ), "Surrogate data not consistent across epochs and PSD coeffs."
+
+
+@pytest.mark.parametrize(
+    "func", [make_surrogate_resting_data, make_surrogate_evoked_data]
+)
+def test_make_surrogate_data_generator(func):
+    """Test `return_generator` parameter works in `make_surrogate_xxx_data`."""
+    # Generate random data for packaging into Epochs
+    n_epochs = 5
+    n_chans = 6
+    n_times = 200
+    sfreq = 50
+    rng = np.random.default_rng(44)
+    data = rng.random((n_epochs, n_chans, n_times))
+    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
+    data = EpochsArray(data=data, info=info)
 
     # Test generator (not) returned when requested
-    surrogate_data = make_surrogate_data(data=spectrum, return_generator=True)
+    surrogate_data = func(data=data, n_shuffles=5, return_generator=True)
     assert isinstance(surrogate_data, Generator), type(surrogate_data)
-    surrogate_data = make_surrogate_data(data=spectrum, return_generator=False)
+    surrogate_data = func(data=data, n_shuffles=5, return_generator=False)
     assert isinstance(surrogate_data, list), type(surrogate_data)
 
 
