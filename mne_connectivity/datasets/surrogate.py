@@ -44,8 +44,8 @@ def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=T
         :func:`~mne_connectivity.make_surrogate_resting_data`.
     """  # noqa: E501
     warn(
-        "The `make_surrogate_data` function is deprecated and will be removed in 0.10. "
-        "Use `make_surrogate_resting_data` instead.",
+        "`make_surrogate_data` is deprecated and will be removed in 0.10. Use "
+        "`make_surrogate_resting_data` instead.",
         FutureWarning,
     )
 
@@ -268,7 +268,7 @@ def make_surrogate_evoked_data(
     if n_chans == 1:
         raise ValueError("Data must contain more than one channel for shuffling.")
     if n_times == 1:
-        raise ValueError("Data must contain more than one time point for shuffling.")
+        raise ValueError("Data must contain more than one timepoint for shuffling.")
 
     _validate_type(n_shuffles, "int-like", "n_shuffles", "int")
     if n_shuffles < 1:
