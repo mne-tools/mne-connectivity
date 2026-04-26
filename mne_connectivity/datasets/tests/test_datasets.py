@@ -176,10 +176,33 @@ def test_make_signals_in_freq_bands_error_catch():
         )
 
 
+# TODO Version: remove in 0.10
+def test_make_surrogate_data_deprecation():
+    """Test `make_surrogate_data` warning about deprecation."""
+    n_epochs = 5
+    n_chans = 6
+    n_freqs = 50
+    sfreq = n_freqs * 2
+    rng = np.random.default_rng(44)
+    data = rng.random((n_epochs, n_chans, n_freqs)).astype(np.complex128)
+    data += data * 1j  # complex dtypes not supported for simulation, so make complex
+    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
+    data = EpochsSpectrumArray(data=data, info=info, freqs=np.arange(n_freqs))
+
+    with pytest.warns(
+        FutureWarning,
+        match="`make_surrogate_data` is deprecated and will be removed in 0.10.",
+    ):
+        make_surrogate_data(data, n_shuffles=5)
+
+
+# TODO: Add approach validation for `make_surrogate_evoked_data`
+
+
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.3, True], [0.1, False]))
 @pytest.mark.parametrize("method", ["multitaper", "welch", "morlet"])
-def test_make_surrogate_data(snr, should_be_significant, method):
-    """Test `make_surrogate_data` creates data for null hypothesis testing."""
+def test_make_surrogate_resting_data(snr, should_be_significant, method):
+    """Test `make_surrogate_resting_data` creates data for null hypothesis testing."""
     # Generate data
     n_seeds = 2
     n_targets = 2
@@ -211,7 +234,7 @@ def test_make_surrogate_data(snr, should_be_significant, method):
         )
     else:
         coeffs = data.compute_psd(method=method, fmin=fmin, fmax=fmax, output="complex")
-    surrogate_coeffs = make_surrogate_data(
+    surrogate_coeffs = make_surrogate_resting_data(
         data=coeffs, n_shuffles=1000, rng_seed=rng_seed
     )
 
@@ -307,9 +330,9 @@ def test_make_surrogate_resting_data_kind_consistency():
 
 
 @pytest.mark.parametrize(
-    "func", [make_surrogate_resting_data, make_surrogate_evoked_data]
+    "surrogate_func", [make_surrogate_resting_data, make_surrogate_evoked_data]
 )
-def test_make_surrogate_data_generator(func):
+def test_make_surrogate_data_generator(surrogate_func):
     """Test `return_generator` parameter works in `make_surrogate_xxx_data`."""
     # Generate random data for packaging into Epochs
     n_epochs = 5
@@ -319,59 +342,75 @@ def test_make_surrogate_data_generator(func):
     rng = np.random.default_rng(44)
     data = rng.random((n_epochs, n_chans, n_times))
     info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
-    data = EpochsArray(data=data, info=info)
+    epochs = EpochsArray(data=data, info=info)
+    coeffs = epochs.compute_tfr(
+        method="morlet", freqs=np.arange(5, sfreq // 2), output="complex"
+    )
 
     # Test generator (not) returned when requested
-    surrogate_data = func(data=data, n_shuffles=5, return_generator=True)
-    assert isinstance(surrogate_data, Generator), type(surrogate_data)
-    surrogate_data = func(data=data, n_shuffles=5, return_generator=False)
-    assert isinstance(surrogate_data, list), type(surrogate_data)
+    for input_data in (epochs, coeffs):
+        for return_generator, expects in zip([True, False], [Generator, list]):
+            surrogate_data = surrogate_func(
+                data=input_data, n_shuffles=5, return_generator=return_generator
+            )
+            assert isinstance(surrogate_data, expects), type(surrogate_data)
 
 
-def test_make_surrogate_data_error_catch():
-    """Test error catching for `make_surrogate_data`."""
-    # Generate random data for packaging into EpochsSpectrum
+@pytest.mark.parametrize(
+    "surrogate_func", [make_surrogate_resting_data, make_surrogate_evoked_data]
+)
+def test_make_surrogate_data_error_catch(surrogate_func):
+    """Test error catching for `make_surrogate_xxx_data`."""
+    # Generate random data for packaging into EpochsTFR
     n_epochs = 5
     n_chans = 6
-    n_freqs = 50
-    sfreq = n_freqs * 2
+    n_times = 200
+    sfreq = 50
     rng = np.random.default_rng(44)
-    data = rng.random((n_epochs, n_chans, n_freqs)).astype(np.complex128)
-    data += data * 1j  # complex dtypes not supported for simulation, so make complex
+    data = rng.random((n_epochs, n_chans, n_times))
     info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
-    spectrum = EpochsSpectrumArray(data=data, info=info, freqs=np.arange(n_freqs))
+    epochs = EpochsArray(data=data, info=info)
 
-    # check bad data
-    with pytest.raises(
-        TypeError, match=r"data must be an instance of.*EpochsSpectrum.*EpochsTFR"
-    ):
-        make_surrogate_data(data=data)
-    with pytest.raises(TypeError, match="values in `data` must be complex-valued"):
-        bad_dtype_data = EpochsSpectrumArray(
-            data=np.abs(data), info=info, freqs=np.arange(n_freqs)
+    # check bad data container type
+    bad_type_message = r"data must be an instance of.*Epochs"
+    if surrogate_func is make_surrogate_resting_data:
+        bad_type_message += r".*EpochsSpectrum"
+    bad_type_message += r".*EpochsTFR"
+    with pytest.raises(TypeError, match=bad_type_message):
+        surrogate_func(data=data)
+
+    # check bad coeffs dtype
+    with pytest.raises(TypeError, match="Values in `data` must be complex-valued"):
+        bad_dtype_data = epochs.compute_tfr(
+            method="morlet", freqs=np.arange(5, sfreq // 2), output="power"
         )
-        make_surrogate_data(data=bad_dtype_data)
-    with pytest.raises(ValueError, match="data must contain more than one epoch"):
-        bad_nepochs_data = EpochsSpectrumArray(
-            data=data[[0]], info=info, freqs=np.arange(n_freqs)
+        surrogate_func(data=bad_dtype_data)
+
+    # check bad data shape
+    if surrogate_func is make_surrogate_resting_data:
+        with pytest.raises(ValueError, match="Data must contain more than one epoch"):
+            bad_nepochs_data = epochs[0]
+            surrogate_func(data=bad_nepochs_data)
+    else:
+        with pytest.raises(
+            ValueError, match="Data must contain more than one timepoint"
+        ):
+            bad_ntimes_data = EpochsArray(data=data[..., [0]], info=info)
+            surrogate_func(data=bad_ntimes_data)
+    with pytest.raises(ValueError, match="Data must contain more than one channel"):
+        bad_nchans_data = EpochsArray(
+            data=data[:, [0]], info=create_info(ch_names=1, sfreq=sfreq, ch_types="eeg")
         )
-        make_surrogate_data(data=bad_nepochs_data)
-    with pytest.raises(ValueError, match="data must contain more than one channel"):
-        bad_nchans_data = EpochsSpectrumArray(
-            data=data[:, [0]],
-            info=create_info(ch_names=1, sfreq=sfreq, ch_types="eeg"),
-            freqs=np.arange(n_freqs),
-        )
-        make_surrogate_data(data=bad_nchans_data)
+        surrogate_func(data=bad_nchans_data)
 
     # check bad n_shuffles
     with pytest.raises(TypeError, match="n_shuffles must be an instance of int"):
-        make_surrogate_data(data=spectrum, n_shuffles="all")
-    with pytest.raises(ValueError, match="number of shuffles must be >= 1"):
-        make_surrogate_data(data=spectrum, n_shuffles=0)
-    with pytest.raises(ValueError, match="number of shuffles must be >= 1"):
-        make_surrogate_data(data=spectrum, n_shuffles=-1)
+        surrogate_func(data=epochs, n_shuffles="all")
+    with pytest.raises(ValueError, match="Number of shuffles must be >= 1"):
+        surrogate_func(data=epochs, n_shuffles=0)
+    with pytest.raises(ValueError, match="Number of shuffles must be >= 1"):
+        surrogate_func(data=epochs, n_shuffles=-1)
 
     # check bad return_generator
     with pytest.raises(TypeError, match="return_generator must be an instance of bool"):
-        make_surrogate_data(data=spectrum, return_generator="yes")
+        surrogate_func(data=epochs, return_generator="yes")
