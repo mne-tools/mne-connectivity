@@ -276,9 +276,10 @@ class DynamicMixin:
             for idx in range(1, lags + 1):
                 for jdx in range(n_epochs):
                     if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1) :: lags]
+                        bp = var_model[jdx, ..., (idx - 1) :: lags]
+                        bp = np.squeeze(bp, axis=-1)
                     else:
-                        bp = var_model[:, (idx - 1) :: lags]
+                        bp = var_model[..., (idx - 1) :: lags]
                     predicted_data[jdx, :, lags:] += np.dot(
                         bp, data[jdx, :, (lags - idx) : (n_times - idx)]
                     )
