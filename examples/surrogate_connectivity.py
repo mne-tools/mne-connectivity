@@ -44,9 +44,9 @@ from mne_connectivity import (
 # Such surrogate data can be easily generated in MNE using the
 # :func:`~mne_connectivity.make_surrogate_resting_data` :footcite:`PellegriniEtAl2023`
 # and :func:`~mne_connectivity.make_surrogate_evoked_data` :footcite:`AruEtAl2015`
-# functions (see the Notes sections of the functions for information). In this example,
-# we will demonstrate how surrogate data can be created, and how you can use this to
-# assess the statistical significance of your connectivity estimates.
+# functions. In this example, we will demonstrate how surrogate data can be created, and
+# how you can use this to assess the statistical significance of your connectivity
+# estimates.
 
 ########################################################################################
 # Loading the data
@@ -221,6 +221,20 @@ print(f"P = {p_val:.2f}")
 # alternative :func:`~mne_connectivity.make_surrogate_evoked_data` function. This
 # approach involves cutting the time series at a random point and reversing the cut
 # portion, independently for each epoch and channel.
+#
+# .. admonition:: Supported data types
+#
+#    While :func:`~mne_connectivity.make_surrogate_resting_data` supports
+#    :class:`~mne.Epochs`, :class:`~mne.time_frequency.EpochsSpectrum`, and
+#    :class:`~mne.time_frequency.EpochsTFR` objects,
+#    :func:`~mne_connectivity.make_surrogate_evoked_data` data does not support
+#    :class:`~mne.time_frequency.EpochsSpectrum` objects, as there is no time dimension
+#    to manipulate.
+#
+#    If you want to compare the significance of connectivity estimates for evoked data
+#    derived from an :class:`~mne.time_frequency.EpochsSpectrum` object, you can first
+#    generate surrogates from the :class:`~mne.Epochs` data, and then compute the
+#    :class:`~mne.time_frequency.EpochsSpectrum` representations from these.
 #
 # Again, there is pronounced alpha coupling (stronger than in the pre-trial data) and
 # weaker beta coupling, both of which appear to be above the baseline level of
