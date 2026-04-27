@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.9.0.dev20+g5d3abe96d documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.9.0.dev21+g8b8c6da17 documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -40,12 +40,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=0f110b78"></script>
+    <script src="../../_static/documentation_options.js?v=9015058d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -54,7 +54,7 @@
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/dynamic/mne_var_connectivity';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -81,7 +81,9 @@
 
   
   <div id="pst-scroll-pixel-helper"></div>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -129,7 +131,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev20+g5d3abe96d documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev21+g8b8c6da17 documentation</p>
   
 </a></div>
     
@@ -536,16 +538,17 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fetching 1 file for the epilepsy_ecog dataset ...
 
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-  6%|██▎                                  | 5.50M/88.2M [00:00&lt;00:01, 55.0MB/s]
- 19%|███████                              | 17.0M/88.2M [00:00&lt;00:00, 90.0MB/s]
- 32%|████████████▏                         | 28.2M/88.2M [00:00&lt;00:00, 100MB/s]
- 43%|████████████████                     | 38.3M/88.2M [00:00&lt;00:00, 89.3MB/s]
- 56%|████████████████████▋                | 49.3M/88.2M [00:00&lt;00:00, 73.3MB/s]
- 68%|█████████████████████████▏           | 60.1M/88.2M [00:00&lt;00:00, 82.6MB/s]
- 81%|██████████████████████████████       | 71.5M/88.2M [00:00&lt;00:00, 91.2MB/s]
- 94%|██████████████████████████████████▊  | 83.0M/88.2M [00:00&lt;00:00, 97.9MB/s]
+  4%|█▌                                   | 3.86M/88.2M [00:00&lt;00:02, 38.6MB/s]
+ 12%|████▍                                | 10.7M/88.2M [00:00&lt;00:01, 56.2MB/s]
+ 25%|█████████▏                           | 22.0M/88.2M [00:00&lt;00:01, 65.2MB/s]
+ 37%|█████████████▋                       | 32.6M/88.2M [00:00&lt;00:00, 79.2MB/s]
+ 46%|█████████████████                    | 40.7M/88.2M [00:00&lt;00:00, 56.4MB/s]
+ 57%|█████████████████████                | 50.3M/88.2M [00:00&lt;00:00, 56.4MB/s]
+ 70%|█████████████████████████▊           | 61.6M/88.2M [00:00&lt;00:00, 69.4MB/s]
+ 79%|█████████████████████████████        | 69.4M/88.2M [00:01&lt;00:00, 62.0MB/s]
+ 91%|█████████████████████████████████▊   | 80.4M/88.2M [00:01&lt;00:00, 73.5MB/s]
   0%|                                              | 0.00/88.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 366GB/s]
+100%|██████████████████████████████████████| 88.2M/88.2M [00:00&lt;00:00, 371GB/s]
 Download complete in 03s (84.1 MB)
 /home/circleci/python_env/lib/python3.12/site-packages/mne_bids/dig.py:790: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
 
@@ -729,9 +732,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-83c9dada-0c80-4637-afaa-e0a3681ef1c0"
+<tr class="mne-repr-section-header general-6584ebe4-79a4-4bc4-b080-491e87034796"
      title="Hide section"
-    onclick="toggleVisibility('general-83c9dada-0c80-4637-afaa-e0a3681ef1c0')">
+    onclick="toggleVisibility('general-6584ebe4-79a4-4bc4-b080-491e87034796')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -743,7 +746,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-83c9dada-0c80-4637-afaa-e0a3681ef1c0 ">
+<tr class="repr-element general-6584ebe4-79a4-4bc4-b080-491e87034796 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -754,19 +757,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-83c9dada-0c80-4637-afaa-e0a3681ef1c0 ">
+<tr class="repr-element general-6584ebe4-79a4-4bc4-b080-491e87034796 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-83c9dada-0c80-4637-afaa-e0a3681ef1c0 ">
+<tr class="repr-element general-6584ebe4-79a4-4bc4-b080-491e87034796 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-83c9dada-0c80-4637-afaa-e0a3681ef1c0 ">
+<tr class="repr-element general-6584ebe4-79a4-4bc4-b080-491e87034796 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -775,7 +778,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-83c9dada-0c80-4637-afaa-e0a3681ef1c0 ">
+<tr class="repr-element general-6584ebe4-79a4-4bc4-b080-491e87034796 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -790,9 +793,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-f7d4fb33-1d1b-457e-9437-26547448f6e7"
+<tr class="mne-repr-section-header acquisition-5253c4dc-0171-47b2-82ec-392476be2bcb"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-f7d4fb33-1d1b-457e-9437-26547448f6e7')">
+    onclick="toggleVisibility('acquisition-5253c4dc-0171-47b2-82ec-392476be2bcb')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -804,7 +807,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-f7d4fb33-1d1b-457e-9437-26547448f6e7 ">
+<tr class="repr-element acquisition-5253c4dc-0171-47b2-82ec-392476be2bcb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -817,14 +820,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-f7d4fb33-1d1b-457e-9437-26547448f6e7 ">
+<tr class="repr-element acquisition-5253c4dc-0171-47b2-82ec-392476be2bcb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-f7d4fb33-1d1b-457e-9437-26547448f6e7 ">
+<tr class="repr-element acquisition-5253c4dc-0171-47b2-82ec-392476be2bcb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -839,9 +842,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-974dc4cf-d2e5-42b0-a656-3f394c6c523a"
+<tr class="mne-repr-section-header channels-a3d2921d-edcf-4b8f-85fd-4e56aabec078"
      title="Hide section"
-    onclick="toggleVisibility('channels-974dc4cf-d2e5-42b0-a656-3f394c6c523a')">
+    onclick="toggleVisibility('channels-a3d2921d-edcf-4b8f-85fd-4e56aabec078')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -854,7 +857,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-974dc4cf-d2e5-42b0-a656-3f394c6c523a ">
+<tr class="repr-element channels-a3d2921d-edcf-4b8f-85fd-4e56aabec078 ">
     <td class="mne-repr-section-toggle"></td>
     <td>ECoG</td>
     <td>
@@ -867,7 +870,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-974dc4cf-d2e5-42b0-a656-3f394c6c523a ">
+<tr class="repr-element channels-a3d2921d-edcf-4b8f-85fd-4e56aabec078 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -882,9 +885,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-ed9b8559-8fe4-48c6-a3a4-3b99af5885ad"
+<tr class="mne-repr-section-header filters-b687f8fc-fa7f-4110-aae6-bb52d661ad8b"
      title="Hide section"
-    onclick="toggleVisibility('filters-ed9b8559-8fe4-48c6-a3a4-3b99af5885ad')">
+    onclick="toggleVisibility('filters-b687f8fc-fa7f-4110-aae6-bb52d661ad8b')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -896,14 +899,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-ed9b8559-8fe4-48c6-a3a4-3b99af5885ad ">
+<tr class="repr-element filters-b687f8fc-fa7f-4110-aae6-bb52d661ad8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-ed9b8559-8fe4-48c6-a3a4-3b99af5885ad ">
+<tr class="repr-element filters-b687f8fc-fa7f-4110-aae6-bb52d661ad8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1325,23 +1328,23 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  6%|▌         | 18/302 [00:00&lt;00:01, 170.28it/s]
- 12%|█▏        | 36/302 [00:00&lt;00:01, 169.49it/s]
- 18%|█▊        | 54/302 [00:00&lt;00:01, 170.88it/s]
- 24%|██▍       | 72/302 [00:00&lt;00:01, 171.00it/s]
- 30%|██▉       | 90/302 [00:00&lt;00:01, 172.13it/s]
- 36%|███▌      | 108/302 [00:00&lt;00:01, 170.46it/s]
- 42%|████▏     | 126/302 [00:00&lt;00:01, 171.41it/s]
- 48%|████▊     | 144/302 [00:00&lt;00:00, 171.72it/s]
- 54%|█████▎    | 162/302 [00:00&lt;00:00, 172.31it/s]
- 60%|█████▉    | 180/302 [00:01&lt;00:00, 172.17it/s]
- 66%|██████▌   | 198/302 [00:01&lt;00:00, 172.87it/s]
- 72%|███████▏  | 216/302 [00:01&lt;00:00, 173.68it/s]
- 77%|███████▋  | 234/302 [00:01&lt;00:00, 173.64it/s]
- 83%|████████▎ | 252/302 [00:01&lt;00:00, 174.19it/s]
- 89%|████████▉ | 270/302 [00:01&lt;00:00, 170.03it/s]
- 95%|█████████▌| 288/302 [00:01&lt;00:00, 171.09it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 171.72it/s]
+  6%|▌         | 17/302 [00:00&lt;00:01, 168.07it/s]
+ 12%|█▏        | 35/302 [00:00&lt;00:01, 169.61it/s]
+ 18%|█▊        | 53/302 [00:00&lt;00:01, 169.99it/s]
+ 24%|██▎       | 71/302 [00:00&lt;00:01, 171.06it/s]
+ 29%|██▉       | 89/302 [00:00&lt;00:01, 171.55it/s]
+ 35%|███▌      | 107/302 [00:00&lt;00:01, 171.23it/s]
+ 41%|████▏     | 125/302 [00:00&lt;00:01, 170.96it/s]
+ 47%|████▋     | 143/302 [00:00&lt;00:00, 171.72it/s]
+ 53%|█████▎    | 161/302 [00:00&lt;00:00, 170.91it/s]
+ 59%|█████▉    | 179/302 [00:01&lt;00:00, 170.56it/s]
+ 65%|██████▌   | 197/302 [00:01&lt;00:00, 170.50it/s]
+ 71%|███████   | 215/302 [00:01&lt;00:00, 171.16it/s]
+ 77%|███████▋  | 233/302 [00:01&lt;00:00, 171.70it/s]
+ 83%|████████▎ | 251/302 [00:01&lt;00:00, 171.69it/s]
+ 89%|████████▉ | 269/302 [00:01&lt;00:00, 171.75it/s]
+ 95%|█████████▌| 287/302 [00:01&lt;00:00, 171.24it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 171.08it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MiB&gt;
 </pre></div>
 </div>
@@ -1387,7 +1390,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x75cf116c31a0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7da17bb7e180&gt;
 </pre></div>
 </div>
 </section>
@@ -1450,10 +1453,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x75cf117f3bc0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7da1693d22a0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 36.005 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 35.305 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1529,8 +1532,8 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1541,7 +1544,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-20.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-27.
       <br/>
     
   </p>
@@ -1564,7 +1567,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
 </p></div>
       
     </div>
