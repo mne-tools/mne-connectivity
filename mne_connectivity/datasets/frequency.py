@@ -166,7 +166,6 @@ def make_signals_in_freq_bands(
         h_trans_bandwidth=trans_bandwidth,
         fir_design="firwin2",
     )
-    signal /= np.std(signal)  # re-scale to stdev=1
 
     # create window for timing of interaction
     if latency is not None:
