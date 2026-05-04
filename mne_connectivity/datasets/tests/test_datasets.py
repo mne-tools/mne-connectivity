@@ -196,29 +196,42 @@ def test_make_surrogate_data_deprecation():
         make_surrogate_data(data, n_shuffles=5)
 
 
-# TODO: Add approach validation for `make_surrogate_evoked_data`
-
-
-@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.3, True], [0.1, False]))
-@pytest.mark.parametrize("method", ["multitaper", "welch", "morlet"])
-def test_make_surrogate_resting_data(snr, should_be_significant, method):
-    """Test `make_surrogate_resting_data` creates data for null hypothesis testing."""
+@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.2, True], [0.1, False]))
+@pytest.mark.parametrize(
+    ("state", "method"),
+    (
+        ["resting", "multitaper"],
+        ["resting", "welch"],
+        ["resting", "morlet"],
+        ["evoked", "morlet"],
+    ),
+)
+def test_make_surrogate_data(snr, should_be_significant, state, method):
+    """Test `make_surrogate_xxx_data` creates data for null hypothesis testing."""
     # Generate data
     n_seeds = 2
     n_targets = 2
-    freq_band = (10, 15)
+    freq_band = (15, 20)
+    if state == "evoked":
+        latency, width = 0.5, 0.2  # seconds
+    else:
+        latency, width = None, None
     n_epochs = 30
     sfreq = 100
-    n_times = sfreq * 2
+    n_times = sfreq
+    trans_bw = 1
     n_shuffles = 1000
-    rng_seed = 1
+    rng_seed = 0
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
         freq_band=freq_band,
+        latency=latency,
+        width=width,
         n_epochs=n_epochs,
         n_times=n_times,
         sfreq=sfreq,
+        trans_bandwidth=trans_bw,
         snr=snr,  # using very high SNR seems to alter properties of data beyond fband
         rng_seed=rng_seed,
     )
@@ -227,16 +240,19 @@ def test_make_surrogate_resting_data(snr, should_be_significant, method):
     )
 
     # Compute Fourier coefficients and generate surrogates
-    fmin, fmax = 6, 50
+    fmin, fmax = 5, 30
     if method == "morlet":
+        freqs = np.arange(fmin, fmax + 1, 1)
         coeffs = data.compute_tfr(
-            method=method, freqs=np.arange(fmin, fmax + 1, 1), output="complex"
+            method=method, freqs=freqs, n_cycles=freqs / 2, output="complex"
         )
     else:
         coeffs = data.compute_psd(method=method, fmin=fmin, fmax=fmax, output="complex")
-    surrogate_coeffs = make_surrogate_resting_data(
-        data=coeffs, n_shuffles=1000, rng_seed=rng_seed
+
+    surrogate_func = (
+        make_surrogate_evoked_data if state == "evoked" else make_surrogate_resting_data
     )
+    surrogate_coeffs = surrogate_func(data=coeffs, n_shuffles=1000, rng_seed=rng_seed)
 
     # Compute connectivity
     con = spectral_connectivity_epochs(data=coeffs, method="coh", indices=indices)
@@ -247,37 +263,43 @@ def test_make_surrogate_resting_data(snr, should_be_significant, method):
         connectivity[shuffle_i + 1] = spectral_connectivity_epochs(
             data=shuffle_data, method="coh", indices=indices, verbose=False
         ).get_data()
-    if method == "morlet":
+    if method == "morlet" and state == "resting":
         connectivity = np.mean(connectivity, axis=-1)  # average over time
 
     # Determine if connectivity significant
     alpha = 0.05
-    con_freqs = (freqs >= freq_band[0]) & (freqs <= freq_band[1])
-    noise_freqs = np.invert(con_freqs)
+    con_freqs = (freqs >= freq_band[0] - trans_bw) & (freqs <= freq_band[1] + trans_bw)
+    if state == "evoked":
+        times = np.array(con.times)
+        con_times = (times >= latency - width / 2) & (times <= latency + width / 2)
+        con_points = con_freqs[:, np.newaxis] & con_times[np.newaxis, :]
+    else:
+        con_points = con_freqs
+    noise_points = np.invert(con_points)
 
-    pval_con_freqs = (
+    pval_con = (
         np.sum(
-            np.mean(connectivity[0, :, con_freqs])  # aggregate cons and freqs
-            <= np.mean(connectivity[1:, :, con_freqs], axis=(1, 2))  # same aggr. here
+            np.mean(connectivity[0, :, con_points])  # aggregate cons & freqs (& times)
+            <= np.mean(connectivity[1:, :, con_points], axis=(1, 2))  # same aggr. here
         )
         / n_shuffles
     )
 
-    pval_noise_freqs = (
+    pval_noise = (
         np.sum(
-            np.mean(connectivity[0, :, noise_freqs])
-            <= np.mean(connectivity[1:, :, noise_freqs], axis=(1, 2))
+            np.mean(connectivity[0, :, noise_points])
+            <= np.mean(connectivity[1:, :, noise_points], axis=(1, 2))
         )
         / n_shuffles
     )
 
     if should_be_significant:
-        assert pval_con_freqs < alpha, f"pval_con_freqs: {pval_con_freqs}"
+        assert pval_con < alpha, f"pval_con: {pval_con}"
     else:
-        assert pval_con_freqs >= alpha, f"pval_con_freqs: {pval_con_freqs}"
+        assert pval_con >= alpha, f"pval_con: {pval_con}"
 
     # Freqs where nothing simulated should never be significant
-    assert pval_noise_freqs > alpha, f"pval_noise_freqs: {pval_noise_freqs}"
+    assert pval_noise >= alpha, f"pval_noise: {pval_noise}"
 
 
 def test_make_surrogate_resting_data_kind_consistency():
