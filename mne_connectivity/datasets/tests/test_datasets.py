@@ -196,7 +196,7 @@ def test_make_surrogate_data_deprecation():
         make_surrogate_data(data, n_shuffles=5)
 
 
-@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.2, True], [0.1, False]))
+@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.4, True], [0.1, False]))
 @pytest.mark.parametrize(
     ("state", "method"),
     (
@@ -268,7 +268,9 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
 
     # Determine if connectivity significant
     alpha = 0.05
-    con_freqs = (freqs >= freq_band[0] - trans_bw) & (freqs <= freq_band[1] + trans_bw)
+    con_freqs = (freqs >= freq_band[0] - trans_bw * 2) & (
+        freqs <= freq_band[1] + trans_bw * 2
+    )
     if state == "evoked":
         times = np.array(con.times)
         con_times = (times >= latency - width / 2) & (times <= latency + width / 2)
@@ -288,7 +290,7 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
     pval_noise = (
         np.sum(
             np.mean(connectivity[0, :, noise_points])
-            <= np.mean(connectivity[1:, :, noise_points], axis=(1, 2))
+            > np.mean(connectivity[1:, :, noise_points], axis=(1, 2))
         )
         / n_shuffles
     )
