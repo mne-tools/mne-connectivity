@@ -6,18 +6,23 @@
 import numpy as np
 from mne import EpochsArray, create_info
 from mne.filter import filter_data
+from mne.utils import _validate_type, warn
 
 
 def make_signals_in_freq_bands(
     n_seeds,
     n_targets,
     freq_band,
+    *,
     n_epochs=10,
     n_times=200,
     sfreq=100.0,
     trans_bandwidth=1.0,
     snr=0.7,
     connection_delay=5,
+    connection_time=None,
+    connection_width=None,
+    window_alpha=0.5,
     tmin=0.0,
     ch_names=None,
     ch_types="eeg",
@@ -51,6 +56,25 @@ def make_signals_in_freq_bands(
         Number of timepoints for the delay of connectivity between the seeds and
         targets. If > 0, the target data is a delayed form of the seed data. If < 0, the
         seed data is a delayed form of the target data.
+    connection_time : float | None (default None)
+        Time at which the interaction occurs in each epoch, in seconds. Must be greater
+        than ``tmin`` and less than ``n_times / sfreq``. If ``None``, the connectivity
+        is simulated throughout the whole epoch.
+
+        ..versionadded:: 0.9
+    connection_width : float | None (default None)
+        Duration of the interaction around ``connection_time``, in seconds. Must be
+        specified if ``connection_time`` is not ``None``. Ignored if ``connection_time``
+        is ``None``.
+
+        ..versionadded:: 0.9
+    window_alpha : float (default 0.5)
+        Fraction of the Tukey window in the cosine tapered region, used to isolate the
+        interaction to a given time in the epochs. Must be between 0 and 1. 0 is
+        equivalent to a rectangular window. 1 is equivalent to a Hann window. Ignored if
+        ``connection_time`` is ``None``.
+
+        ..versionadded:: 0.9
     tmin : float (default 0.0)
         Earliest time of each epoch.
     ch_names : list of str | None (default None)
@@ -73,16 +97,17 @@ def make_signals_in_freq_bands(
     Notes
     -----
     Signals are simulated as a single source of activity in the given frequency band and
-    projected into ``n_seeds + n_targets`` noise channels.
+    projected into ``n_seeds + n_targets`` white noise channels.
     """
+    from scipy.signal.windows import tukey
+
     n_channels = n_seeds + n_targets
 
     # check inputs
     if n_seeds < 1 or n_targets < 1:
         raise ValueError("Number of seeds and targets must each be at least 1.")
 
-    if not isinstance(freq_band, tuple):
-        raise TypeError("Frequency band must be a tuple.")
+    _validate_type(freq_band, tuple, "freq_band")
     if len(freq_band) != 2:
         raise ValueError("Frequency band must contain two numbers.")
 
@@ -103,6 +128,33 @@ def make_signals_in_freq_bands(
             "Connection delay must be less than the total number of timepoints."
         )
 
+    _validate_type(connection_time, ("numeric", None), "connection_time")
+    _validate_type(connection_width, ("numeric", None), "connection_width")
+    epoch_dur = n_times / sfreq
+    tmax = tmin + epoch_dur
+    if connection_time is not None:
+        if connection_width is None:
+            raise ValueError(
+                "`connection_width` must be specified when `connection_time` is not "
+                "None."
+            )
+        if connection_time < tmin or connection_time > tmax:
+            raise ValueError(
+                f"Connection time {connection_time} must be within the epoch time "
+                f"range [{tmin}, {tmax}]."
+            )
+        connection_time -= tmin  # convert time to be relative to time of first sample
+    elif connection_width is not None:
+        warn(
+            "`connection_width` is not None, but `connection_time` is None. "
+            "`connection_width` will be ignored.",
+            UserWarning,
+        )
+
+    _validate_type(window_alpha, float, "window_alpha")
+    if window_alpha < 0 or window_alpha > 1:
+        raise ValueError("`window_alpha` must be between 0 and 1.")
+
     # simulate data
     rng = np.random.default_rng(rng_seed)
 
@@ -120,10 +172,29 @@ def make_signals_in_freq_bands(
         fir_design="firwin2",
     )
 
+    # isolate interaction to a given time range per epoch
+    if connection_time is not None:
+        time_samples = int(connection_time * sfreq)
+        width_samples = int(connection_width * sfreq)
+        full_window = np.zeros((n_times,))  # create empty filter the shape of one epoch
+
+        # add Tukey window for burst of connectivity to temporal filter
+        burst_window = tukey(width_samples, window_alpha, sym=False)
+        full_window[
+            time_samples - (width_samples // 2) : time_samples
+            + int(np.ceil(width_samples / 2))
+        ] = burst_window
+
+        # apply temporal filter to each epoch to create bursts of connectivity
+        for epoch_i in range(n_epochs):
+            signal[:, epoch_i * n_times : (epoch_i + 1) * n_times] *= full_window
+            if epoch_i == n_epochs - 1 and connection_delay != 0:
+                signal[:, (epoch_i + 1) * n_times :] *= full_window[
+                    : np.abs(connection_delay)
+                ]
+
     # simulate noise for each channel
-    noise = rng.standard_normal(
-        size=(n_channels, n_epochs * n_times + np.abs(connection_delay))
-    )
+    noise = rng.standard_normal(size=(n_channels, signal.shape[1]))
 
     # create data by projecting signal into each channel of noise
     data = (signal * snr) + (noise * (1 - snr))
