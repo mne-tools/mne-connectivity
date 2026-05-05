@@ -130,7 +130,7 @@ def test_make_signals_in_freq_bands_error_catch():
         make_signals_in_freq_bands(n_seeds=1, n_targets=0, freq_band=freq_band)
 
     # check bad freq_band caught
-    with pytest.raises(TypeError, match="Frequency band must be a tuple."):
+    with pytest.raises(TypeError, match="freq_band must be an instance of tuple."):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=1)
     with pytest.raises(ValueError, match="Frequency band must contain two numbers."):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=(1, 2, 3))
@@ -213,9 +213,9 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
     n_targets = 2
     freq_band = (15, 20)
     if state == "evoked":
-        latency, width = 0.5, 0.2  # seconds
+        connection_time, connection_width = 0.5, 0.2  # seconds
     else:
-        latency, width = None, None
+        connection_time, connection_width = None, None
     n_epochs = 30
     sfreq = 100
     n_times = sfreq
@@ -226,13 +226,13 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
         n_seeds=n_seeds,
         n_targets=n_targets,
         freq_band=freq_band,
-        latency=latency,
-        width=width,
         n_epochs=n_epochs,
         n_times=n_times,
         sfreq=sfreq,
         trans_bandwidth=trans_bw,
         snr=snr,  # using very high SNR seems to alter properties of data beyond fband
+        connection_time=connection_time,
+        connection_width=connection_width,
         rng_seed=rng_seed,
     )
     indices = seed_target_indices(
@@ -273,7 +273,9 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
     )
     if state == "evoked":
         times = np.array(con.times)
-        con_times = (times >= latency - width / 2) & (times <= latency + width / 2)
+        con_times = (times >= connection_time - connection_width / 2) & (
+            times <= connection_time + connection_width / 2
+        )
         con_points = con_freqs[:, np.newaxis] & con_times[np.newaxis, :]
     else:
         con_points = con_freqs
