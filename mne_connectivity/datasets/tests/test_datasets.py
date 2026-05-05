@@ -370,8 +370,8 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
         duration=duration,
         sfreq=sfreq,
         trans_bandwidth=trans_bw,
-        connection_time=connection_time,
         snr=snr,  # using very high SNR seems to alter properties of data beyond fband
+        connection_time=connection_time,
         rng_seed=rng_seed,
     )
     indices = seed_target_indices(
