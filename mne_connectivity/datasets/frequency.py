@@ -61,20 +61,20 @@ def make_signals_in_freq_bands(
         than ``tmin`` and less than ``n_times / sfreq``. If ``None``, the connectivity
         is simulated throughout the whole epoch.
 
-        ..versionadded:: 0.9
+        .. versionadded:: 0.9
     connection_width : float | None (default None)
         Duration of the interaction around ``connection_time``, in seconds. Must be
         specified if ``connection_time`` is not ``None``. Ignored if ``connection_time``
         is ``None``.
 
-        ..versionadded:: 0.9
+        .. versionadded:: 0.9
     window_alpha : float (default 0.5)
         Fraction of the Tukey window in the cosine tapered region, used to isolate the
         interaction to a given time in the epochs. Must be between 0 and 1. 0 is
         equivalent to a rectangular window. 1 is equivalent to a Hann window. Ignored if
         ``connection_time`` is ``None``.
 
-        ..versionadded:: 0.9
+        .. versionadded:: 0.9
     tmin : float (default 0.0)
         Earliest time of each epoch.
     ch_names : list of str | None (default None)
