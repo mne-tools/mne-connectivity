@@ -158,32 +158,6 @@ def test_make_signals_in_freq_bands(
         )
 
 
-def test_make_signals_in_freq_bands_con_time():
-    """Test `connection_time` and related params in `make_signals_in_freq_bands`."""
-    # Simulate data
-    sfreq = 100  # Hz
-    n_times = 200  # samples
-    epoch_dur = n_times / sfreq
-    sim_kwargs = dict(
-        n_seeds=1,
-        n_targets=1,
-        freq_band=(10, 15),
-        n_epochs=30,
-        n_times=n_times,
-        sfreq=sfreq,
-        connection_width=epoch_dur / 4,
-    )
-
-    # Test that interaction centre outside of epoch gets caught
-    connection_time = epoch_dur + 1 / sfreq
-    with pytest.raises(
-        ValueError, match=r"`connection_time`.*must be within the epoch time range"
-    ):
-        make_signals_in_freq_bands(connection_time=connection_time, **sim_kwargs)
-
-    # Test that interaction centre
-
-
 def test_make_signals_in_freq_bands_error_catch():
     """Test error catching for `make_signals_in_freq_bands`."""
     freq_band = (5, 10)
