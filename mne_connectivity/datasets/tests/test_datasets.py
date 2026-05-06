@@ -321,18 +321,24 @@ def test_make_surrogate_data_deprecation():
         make_surrogate_data(data, n_shuffles=5)
 
 
-@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.4, True], [0.1, False]))
+@pytest.mark.parametrize(("snr", "should_be_significant"), ([0.7, True], [0.2, False]))
 @pytest.mark.parametrize(
-    ("state", "method"),
+    ("use_coeffs", "state", "method"),
     (
-        ["resting", "multitaper"],
-        ["resting", "welch"],
-        ["resting", "morlet"],
-        ["evoked", "morlet"],
+        [True, "resting", "multitaper"],
+        [True, "resting", "welch"],
+        [True, "resting", "morlet"],
+        [True, "evoked", "morlet"],
+        [False, "evoked", "morlet"],
     ),
 )
-def test_make_surrogate_data(snr, should_be_significant, state, method):
-    """Test `make_surrogate_xxx_data` creates data for null hypothesis testing."""
+def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, method):
+    """Test `make_surrogate_xxx_data` creates data for null hypothesis testing.
+
+    We only test evoked data with both time series and coeffs because the consistency of
+    epochs vs. PSD vs. TFR data as input is tested for resting-state data in
+    `test_make_surrogate_resting_data_kind_consistency`.
+    """
     # Generate data
     n_seeds = 2
     n_targets = 2
@@ -355,7 +361,7 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
         n_times=n_times,
         sfreq=sfreq,
         trans_bandwidth=trans_bw,
-        snr=snr,  # using very high SNR seems to alter properties of data beyond fband
+        snr=snr,
         connection_time=connection_time,
         connection_width=connection_width,
         rng_seed=rng_seed,
@@ -364,29 +370,47 @@ def test_make_surrogate_data(snr, should_be_significant, state, method):
         seeds=np.arange(n_seeds), targets=np.arange(n_targets) + n_seeds
     )
 
-    # Compute Fourier coefficients and generate surrogates
+    # Compute Fourier coefficients (or prepare for this in connectivity func call)
     fmin, fmax = 5, 30
     if method == "morlet":
         freqs = np.arange(fmin, fmax + 1, 1)
-        coeffs = data.compute_tfr(
-            method=method, freqs=freqs, n_cycles=freqs / 2, output="complex"
-        )
-    else:
-        coeffs = data.compute_psd(method=method, fmin=fmin, fmax=fmax, output="complex")
+        n_cycles = freqs / 2
+    if use_coeffs:  # compute coeffs now
+        con_kwargs = dict()
+        if method == "morlet":
+            data = data.compute_tfr(
+                method=method, freqs=freqs, n_cycles=n_cycles, output="complex"
+            )
+        else:
+            data = data.compute_psd(
+                method=method, fmin=fmin, fmax=fmax, output="complex"
+            )
+    else:  # prepare for coeff computation in connectivity func call
+        if method == "morlet":
+            con_kwargs = dict(mode="cwt_morlet", cwt_freqs=freqs, cwt_n_cycles=n_cycles)
+        else:
+            con_kwargs = dict(mode=method, fmin=fmin, fmax=fmax)
 
+    # Compute surrogate data
     surrogate_func = (
         make_surrogate_evoked_data if state == "evoked" else make_surrogate_resting_data
     )
-    surrogate_coeffs = surrogate_func(data=coeffs, n_shuffles=1000, rng_seed=rng_seed)
+    surrogate_data = surrogate_func(data=data, n_shuffles=1000, rng_seed=rng_seed)
 
     # Compute connectivity
-    con = spectral_connectivity_epochs(data=coeffs, method="coh", indices=indices)
+    con = spectral_connectivity_epochs(
+        data=data, method="coh", indices=indices, **con_kwargs
+    )
     freqs = np.array(con.freqs)
     connectivity = np.zeros((n_shuffles + 1, *con.shape))
     connectivity[0] = con.get_data()  # first entry is original data
-    for shuffle_i, shuffle_data in enumerate(surrogate_coeffs):
+    for shuffle_i, shuffle_data in enumerate(surrogate_data):
         connectivity[shuffle_i + 1] = spectral_connectivity_epochs(
-            data=shuffle_data, method="coh", indices=indices, verbose=False
+            data=shuffle_data,
+            method="coh",
+            indices=indices,
+            verbose=False,
+            **con_kwargs,
         ).get_data()
     if method == "morlet" and state == "resting":
         connectivity = np.mean(connectivity, axis=-1)  # average over time
@@ -463,7 +487,7 @@ def test_make_surrogate_resting_data_kind_consistency():
     surrogate_kwargs = dict(n_shuffles=5, rng_seed=44)
 
     # Check surrogates from different data kinds matches, i.e.:
-    # epochs → surrogate epochs → coeffs == epochs → coeffs → surrogate coeffs
+    # epochs → surrogate epochs → surrogate coeffs == epochs → coeffs → surrogate coeffs
     epochs_surrogates = make_surrogate_resting_data(data=data, **surrogate_kwargs)
     for func_name, func_kwargs in coeff_funcs_kwargs:
         # Compute coefficients from Epochs, then get surrogates from those coefficients
