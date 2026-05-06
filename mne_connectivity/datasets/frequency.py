@@ -140,9 +140,11 @@ def make_signals_in_freq_bands(
             )
         if connection_time < tmin or connection_time > tmax:
             raise ValueError(
-                f"Connection time {connection_time} must be within the epoch time "
+                f"`connection_time` {connection_time} must be within the epoch time "
                 f"range [{tmin}, {tmax}]."
             )
+        if connection_width <= 0:
+            raise ValueError("`connection_width` must be > 0.")
         connection_time -= tmin  # convert time to be relative to time of first sample
     elif connection_width is not None:
         warn(
@@ -180,10 +182,13 @@ def make_signals_in_freq_bands(
 
         # add Tukey window for burst of connectivity to temporal filter
         burst_window = tukey(width_samples, window_alpha, sym=False)
-        full_window[
-            time_samples - (width_samples // 2) : time_samples
-            + int(np.ceil(width_samples / 2))
-        ] = burst_window
+        burst_start = time_samples - (width_samples // 2)
+        burst_end = time_samples + int(np.ceil(width_samples / 2))
+        window_start = max(burst_start, 0)  # clip to start of epoch
+        window_end = min(burst_end, n_times)  # clip to end of epoch
+        burst_start = window_start - burst_start  # apply clip to filter start
+        burst_end = burst_start + (window_end - window_start)  # apply to filter end
+        full_window[window_start:window_end] = burst_window[burst_start:burst_end]
 
         # apply temporal filter to each epoch to create bursts of connectivity
         for epoch_i in range(n_epochs):
