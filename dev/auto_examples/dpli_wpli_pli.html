@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing PLI, wPLI, and dPLI &#8212; MNE-Connectivity 0.9.0.dev21+g8b8c6da17 documentation</title>
+    <title>Comparing PLI, wPLI, and dPLI &#8212; MNE-Connectivity 0.9.0.dev22+gb3a04c332 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=9015058d"></script>
+    <script src="../_static/documentation_options.js?v=8dc5a192"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev21+g8b8c6da17 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev22+gb3a04c332 documentation</p>
   
 </a></div>
     
@@ -487,7 +487,6 @@ the phase lag index (PLI) <a class="footnote-reference brackets" href="#footcite
 <span class="c1">#          Stefanie Blain-Moraes &lt;stefanie.blain-moraes@mcgill.ca&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
-
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
@@ -1591,11 +1590,11 @@ wherein signals emanating from the same neural source will be picked up by
 multiple sensors on the scalp. This can effect connectivity estimations,
 bringing the relative phase differences between two signals close to
 <span class="math notranslate nohighlight">\(0\)</span>. wPLI minimizes the contribution of phase relationships that are
-small but non-zero (and may thus be attributed to volume conduciton), while
+small but non-zero (and may thus be attributed to volume conduction), while
 PLI weighs these in the same way as phase relationships of
 <span class="math notranslate nohighlight">\(\pm\frac{\pi}{2}\)</span>.</p>
-<p>To demonstrate this, we recreate a result from (Vinck et al, 2011)
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>. Two sinusoids are simulated, where the phase
+<p>To demonstrate this, we recreate a result from Vinck <em>et al.</em><a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+Two sinusoids are simulated, where the phase
 difference for half of the epochs is <span class="math notranslate nohighlight">\(\frac{\pi}{2}\)</span>, and is
 <span class="math notranslate nohighlight">\(-\frac{\pi}{100}\)</span> for the others. We also explore the effect of
 applying uniform noise to this phase difference.</p>
@@ -2287,8 +2286,7 @@ relationships are made negative. However, wPLI maintains an advantage in
 its ability to distinguish the underlying structure. Beyond a certain point,
 the noise dominates any pre-defined structure, and both methods behave
 similarly, tending toward <span class="math notranslate nohighlight">\(0\)</span>. For a more detailed analysis of this
-result and the properties of wPLI, please refer to (Vinck et al, 2011)
-<a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+result and the properties of wPLI, please refer to Vinck <em>et al.</em><a class="footnote-reference brackets" href="#footcite-vincketal2011" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">A_list</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;o-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;PLI&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">A_list</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">conn</span></a><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;o-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;wPLI&quot;</span><span class="p">)</span>
@@ -2661,7 +2659,7 @@ estimate of phase-based connectivity.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.748 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.761 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dpli-wpli-pli-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c0e8d2c9253a079b7687e8664830e542/dpli_wpli_pli.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">dpli_wpli_pli.ipynb</span></code></a></p>
@@ -2757,7 +2755,7 @@ estimate of phase-based connectivity.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-27.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-05-07.
       <br/>
     
   </p>
