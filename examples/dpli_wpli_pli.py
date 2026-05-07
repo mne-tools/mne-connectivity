@@ -15,7 +15,6 @@ the phase lag index (PLI) :footcite:`StamEtAl2007`, weighted phase lag index
 #
 # License: BSD (3-clause)
 
-
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
@@ -211,12 +210,12 @@ plt.show()
 # multiple sensors on the scalp. This can effect connectivity estimations,
 # bringing the relative phase differences between two signals close to
 # :math:`0`. wPLI minimizes the contribution of phase relationships that are
-# small but non-zero (and may thus be attributed to volume conduciton), while
+# small but non-zero (and may thus be attributed to volume conduction), while
 # PLI weighs these in the same way as phase relationships of
 # :math:`\pm\frac{\pi}{2}`.
 #
-# To demonstrate this, we recreate a result from (Vinck et al, 2011)
-# :footcite:`VinckEtAl2011`. Two sinusoids are simulated, where the phase
+# To demonstrate this, we recreate a result from :footcite:t:`VinckEtAl2011`.
+# Two sinusoids are simulated, where the phase
 # difference for half of the epochs is :math:`\frac{\pi}{2}`, and is
 # :math:`-\frac{\pi}{100}` for the others. We also explore the effect of
 # applying uniform noise to this phase difference.
@@ -294,8 +293,7 @@ conn = np.array(conn)
 # its ability to distinguish the underlying structure. Beyond a certain point,
 # the noise dominates any pre-defined structure, and both methods behave
 # similarly, tending toward :math:`0`. For a more detailed analysis of this
-# result and the properties of wPLI, please refer to (Vinck et al, 2011)
-# :footcite:`VinckEtAl2011`.
+# result and the properties of wPLI, please refer to :footcite:t:`VinckEtAl2011`.
 
 plt.figure()
 plt.plot(A_list, conn[0], "o-", label="PLI")
