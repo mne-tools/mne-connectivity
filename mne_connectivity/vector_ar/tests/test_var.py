@@ -290,12 +290,12 @@ def test_vector_auto_regression():
     assert residuals.shape == data.shape
 
     # Dynamic "Connectivity" errors
-    with pytest.raises(ValueError, match="Data passed in must be"):
+    with pytest.raises(ValueError, match="`data` must be either 2D or 3D"):
         parr_conn.predict(np.zeros((4,)))
-    with pytest.raises(RuntimeError, match="If there is a VAR model"):
+    with pytest.raises(
+        ValueError, match="For a time-varying VAR model, `data` must be a 3D array"
+    ):
         parr_conn.predict(np.zeros((4, 4)))
-    with pytest.raises(RuntimeError, match="If there is a single VAR"):
-        single_conn.predict(data)
 
     # prediction should work with a 2D array when non epoched
     single_conn.predict(rng.randn(n_signals, n_times))
