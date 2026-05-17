@@ -198,25 +198,35 @@ class DynamicMixin:
         from .vector_ar.utils import _block_companion
 
         lags = self.attrs.get("lags")
-        data = self.get_data()
+        data = self.get_data("dense")
         if lags == 1:
             return data
 
+        if self.is_epoched:
+            n_epochs = self.n_epochs
+        else:
+            n_epochs = 1
+            data = data[np.newaxis, ...]
         arrs = []
-        for idx in range(self.n_epochs):
+        for idx in range(n_epochs):
             blocks = _block_companion([data[idx, ..., jdx] for jdx in range(lags)])
             arrs.append(blocks)
+        if not self.is_epoched:
+            arrs = arrs[0]
+
         return arrs
 
     def predict(self, data):
-        """Predict samples on actual data.
+        """Predict samples on data using the vector autoregressive (VAR) model.
 
-        The result of this function is used for calculating the residuals.
+        The result of this method is used for calculating the residuals.
 
         Parameters
         ----------
         data : array, shape ([n_epochs,] n_signals, n_times)
-            Epoched or continuous data set.
+            Epoched or continuous data set. If the VAR model is time-varying (i.e.,
+            there are different models per epoch), then the data should be epoched with
+            one epoch per VAR model.
 
         Returns
         -------
@@ -225,79 +235,89 @@ class DynamicMixin:
 
         Notes
         -----
-        Residuals are obtained by ``r = x - var.predict(x)``.
+        Residuals are obtained by ``residuals = x - var.predict(x)``.
 
-        To compute residual covariances::
+        To compute residual covariances from epoched data::
 
             # compute the covariance of the residuals
             # row are observations, columns are variables
-            t = residuals.shape[0]
+            t = residuals.shape[0]  # n_epochs
             sampled_residuals = np.concatenate(
                 np.split(residuals[:, :, lags:], t, 0), axis=2
             ).squeeze(0)
-            rescov = np.cov(sampled_residuals)
+            residuals_cov = np.cov(sampled_residuals)
         """
+        if not issubclass(type(self), Connectivity) and not issubclass(
+            type(self), TemporalConnectivity
+        ):
+            raise TypeError(
+                "`predict` method should only be callable on "
+                "(Epoch)(Temporal)Connectivity objects, but it is being called on an "
+                f"object of type {type(self)}. Please contact the MNE-Connectivity "
+                "developers."
+            )
+
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(
-                "Data passed in must be either 2D or 3D. The data you passed in has "
+                "`data` must be either 2D or 3D. The data you passed in has "
                 f"{data.ndim} dims."
             )
+
         if data.ndim == 2 and self.is_epoched:
-            raise RuntimeError(
-                "If there is a VAR model over epochs, one must pass in a 3D array."
-            )
-        if data.ndim == 3 and not self.is_epoched:
-            raise RuntimeError(
-                "If there is a single VAR model, one must pass in a 2D array."
+            raise ValueError("For a time-varying VAR model, `data` must be a 3D array.")
+
+        n_var = self.n_epochs if self.is_epoched else 1
+        if self.is_epoched and data.shape[0] != n_var:
+            raise ValueError(
+                f"The number of epochs in `data` ({data.shape[0]}) does not match the "
+                f"number of VAR models ({n_var})."
             )
 
-        # make the data 3D
         if data.ndim == 2:
+            data_ndim = data.ndim
             data = data[np.newaxis, ...]
+        else:
+            data_ndim = data.ndim
+        if data.shape[1] != self.n_nodes:
+            raise ValueError(
+                f"The number of signals in `data` ({data.shape[1]}) does not match the "
+                f"number of signals in the VAR model ({self.n_nodes})."
+            )
 
+        # prepare VAR model
         n_epochs, _, n_times = data.shape
         var_model = self.get_data(output="dense")
-
-        # get the model order
         lags = self.attrs.get("lags")
+
+        # reshape the coeffs for prediction (and add epochs dim if not present)
+        var_model = np.reshape(var_model, (n_var, self.n_nodes, self.n_nodes * lags))
 
         # predict the data by applying forward model
         predicted_data = np.zeros(data.shape)
-        # which takes less loop iterations
-        if n_epochs > n_times - lags:
-            for idx in range(1, lags + 1):
-                for jdx in range(lags, n_times):
-                    if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1) :: lags]
-                    else:
-                        bp = var_model[:, (idx - 1) :: lags]
-                    predicted_data[:, :, jdx] += np.dot(data[:, :, jdx - idx], bp.T)
-        else:
-            for idx in range(1, lags + 1):
-                for jdx in range(n_epochs):
-                    if self.is_epoched:
-                        bp = var_model[jdx, ..., (idx - 1) :: lags]
-                        bp = np.squeeze(bp, axis=-1)
-                    else:
-                        bp = var_model[..., (idx - 1) :: lags]
-                    predicted_data[jdx, :, lags:] += np.dot(
-                        bp, data[jdx, :, (lags - idx) : (n_times - idx)]
-                    )
+        for lag_idx in range(1, lags + 1):
+            for epo_idx in range(n_epochs):
+                var_idx = epo_idx if self.is_epoched else 0
+                bp = var_model[var_idx, :, (lag_idx - 1) :: lags]
+                predicted_data[epo_idx, :, lags:] += np.dot(
+                    bp, data[epo_idx, :, (lags - lag_idx) : (n_times - lag_idx)]
+                )
+        if data_ndim == 2:  # remove unwanted epochs dim
+            predicted_data = predicted_data[0]
 
         return predicted_data
 
     @fill_doc
     def simulate(self, n_samples, noise_func=None, random_state=None):
-        """Simulate vector autoregressive (VAR) model.
+        """Simulate data from the vector autoregressive (VAR) model.
 
-        This function generates data from the VAR model.
+        This method generates data from the VAR model.
 
         Parameters
         ----------
         n_samples : int
             Number of samples to generate.
         noise_func : callable | None
-            This function is used to create the generating noise process. If ``None``,
+            The function used to create the generating noise process. If ``None``,
             Gaussian white noise with zero mean and unit variance is used.
         %(random_state)s
 
@@ -326,10 +346,6 @@ class DynamicMixin:
         data = np.zeros((n, n_nodes))
         res = np.zeros((n, n_nodes))
 
-        for jdx in range(lags):
-            e = noise_func()
-            res[jdx, :] = e
-            data[jdx, :] = e
         for jdx in range(lags, n):
             e = noise_func()
             res[jdx, :] = e
@@ -337,13 +353,11 @@ class DynamicMixin:
             for idx in range(1, lags + 1):
                 data[jdx, :] += var_model[:, (idx - 1) :: lags].dot(data[jdx - idx, :])
 
-        # self.residuals = res[10 * lags:, :, :].T
-        # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
         return data[10 * lags :, :].transpose()
 
 
 @fill_doc
-class BaseConnectivity(DynamicMixin, EpochMixin):
+class BaseConnectivity(EpochMixin):
     """Base class for connectivity data.
 
     This class should not be instantiated directly, but should be used to do
@@ -930,7 +944,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
 
 @fill_doc
-class TemporalConnectivity(BaseConnectivity, TimeMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
     """Temporal connectivity class.
 
     This is an array of shape ``(n_connections, [n_components,] n_times)``, or
@@ -1191,7 +1205,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
 
 
 @fill_doc
-class Connectivity(BaseConnectivity):
+class Connectivity(BaseConnectivity, DynamicMixin):
     """Connectivity class without frequency or time component.
 
     This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
@@ -1236,7 +1250,7 @@ class Connectivity(BaseConnectivity):
 
 
 @fill_doc
-class EpochConnectivity(BaseConnectivity):
+class EpochConnectivity(Connectivity):
     """Epoch connectivity class.
 
     This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
