@@ -98,6 +98,18 @@ def make_signals_in_freq_bands(
     -----
     Signals are simulated as a single source of activity in the given frequency band and
     projected into ``n_seeds + n_targets`` white noise channels.
+
+    By default, connectivity is simulated throughout the whole epoch. However, the
+    interaction can be isolated to a given time range using the ``connection_time`` and
+    ``connection_width`` parameters, mimicking an evoked potential. E.g., to simulate a
+    burst of activity with a 200 ms duration beginning at the start of each epoch::
+
+        epochs = make_signals_in_freq_bands(
+            ...,
+            tmin=-0.5,  # include a pre-trial period
+            connection_time=0.1,  # burst centered at 100 ms
+            connection_width=0.2,  # 200 ms burst duration, i.e., from 0 to 200 ms
+        )
     """
     from scipy.signal.windows import tukey
 
