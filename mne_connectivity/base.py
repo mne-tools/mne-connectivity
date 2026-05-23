@@ -1,3 +1,4 @@
+import re
 from copy import copy, deepcopy
 
 import numpy as np
@@ -182,6 +183,15 @@ class EpochMixin:
 
 
 class DynamicMixin:
+    def _check_is_var(self):
+        if not re.match(r"(Time-varying\s+)?VAR\([1p]\)", self.method):
+            warn(
+                f"The connectivity data comes from a method ({self.method}) that is "
+                "not a recognised vector autoregressive (VAR) model. The output of "
+                "this may not be valid or interpretable.",
+                UserWarning,
+            )
+
     def is_stable(self):
         companion_mat = self.companion
         return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.0
@@ -191,11 +201,19 @@ class DynamicMixin:
 
     @property
     def companion(self):
-        """Generate block companion matrix.
+        """Generate block companion matrix for a vector autoregressive (VAR) model.
 
-        Returns the data matrix if the model is VAR(1).
+        Returns the data matrix if the VAR model order (i.e., the number of lags) is 1.
         """
         from .vector_ar.utils import _block_companion
+
+        self._check_is_var()
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Companion matrix generation is not currently supported for VAR "
+                "models with multiple components."
+            )
 
         lags = self.attrs.get("lags")
         data = self.get_data("dense")
@@ -214,7 +232,7 @@ class DynamicMixin:
         if not self.is_epoched:
             arrs = arrs[0]
 
-        return arrs
+        return np.asarray(arrs)
 
     def predict(self, data):
         """Predict samples on data using the vector autoregressive (VAR) model.
@@ -224,14 +242,15 @@ class DynamicMixin:
         Parameters
         ----------
         data : array, shape ([n_epochs,] n_signals, n_times)
-            Epoched or continuous data set. If the VAR model is time-varying (i.e.,
-            there are different models per epoch), then the data should be epoched with
-            one epoch per VAR model.
+            Epoched or continuous data. If the VAR model is time-varying (i.e., there
+            are different models per epoch), then the data should also be epoched, with
+            one epoch per VAR model. ``n_signals`` should match the number of signals in
+            the VAR model.
 
         Returns
         -------
         predicted : array, shape ([n_epochs,] n_signals, n_times)
-            Data as predicted by the VAR model of shape same as ``data``.
+            Data as predicted by the VAR model, of the same shape as ``data``.
 
         Notes
         -----
@@ -240,22 +259,14 @@ class DynamicMixin:
         To compute residual covariances from epoched data::
 
             # compute the covariance of the residuals
-            # row are observations, columns are variables
+            # rows are observations, columns are variables
             t = residuals.shape[0]  # n_epochs
             sampled_residuals = np.concatenate(
                 np.split(residuals[:, :, lags:], t, 0), axis=2
             ).squeeze(0)
             residuals_cov = np.cov(sampled_residuals)
         """
-        if not issubclass(type(self), Connectivity) and not issubclass(
-            type(self), TemporalConnectivity
-        ):
-            raise TypeError(
-                "`predict` method should only be callable on "
-                "(Epoch)(Temporal)Connectivity objects, but it is being called on an "
-                f"object of type {type(self)}. Please contact the MNE-Connectivity "
-                "developers."
-            )
+        self._check_is_var()
 
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(
@@ -265,6 +276,12 @@ class DynamicMixin:
 
         if data.ndim == 2 and self.is_epoched:
             raise ValueError("For a time-varying VAR model, `data` must be a 3D array.")
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Prediction is not currently supported from VAR models with multiple "
+                "components."
+            )
 
         n_var = self.n_epochs if self.is_epoched else 1
         if self.is_epoched and data.shape[0] != n_var:
@@ -308,30 +325,44 @@ class DynamicMixin:
 
     @fill_doc
     def simulate(self, n_samples, noise_func=None, random_state=None):
-        """Simulate data from the vector autoregressive (VAR) model.
-
-        This method generates data from the VAR model.
+        """Simulate data using the vector autoregressive (VAR) model.
 
         Parameters
         ----------
         n_samples : int
             Number of samples to generate.
         noise_func : callable | None
-            The function used to create the generating noise process. If ``None``,
+            The function used to create the generating noise process. Each call to this
+            function should return an array of shape ``(n_nodes,)``. If ``None``,
             Gaussian white noise with zero mean and unit variance is used.
         %(random_state)s
 
         Returns
         -------
-        data : array, shape (n_samples, n_channels)
+        data : array, shape (n_nodes, n_samples)
             Generated data.
+
+        Notes
+        -----
+        If the VAR model is time-varying (i.e., there are different models per epoch),
+        the data is simulated from the average of these models.
         """
+        self._check_is_var()
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Simulation is not currently supported from VAR models with multiple "
+                "components."
+            )
+
         var_model = self.get_data(output="dense")
         if self.is_epoched:
             var_model = var_model.mean(axis=0)
 
+        # reshape the coeffs for prediction
         n_nodes = self.n_nodes
         lags = self.attrs.get("lags")
+        var_model = np.reshape(var_model, (n_nodes, n_nodes * lags))
 
         # set noise function
         if noise_func is None:
