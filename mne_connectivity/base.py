@@ -359,7 +359,7 @@ class DynamicMixin:
         if self.is_epoched:
             var_model = var_model.mean(axis=0)
 
-        # reshape the coeffs for prediction
+        # reshape the coeffs for simulation
         n_nodes = self.n_nodes
         lags = self.attrs.get("lags")
         var_model = np.reshape(var_model, (n_nodes, n_nodes * lags))
