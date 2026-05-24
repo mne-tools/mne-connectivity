@@ -6,6 +6,7 @@ from numpy.testing import (
     assert_almost_equal,
     assert_array_almost_equal,
     assert_array_equal,
+    assert_array_less,
 )
 
 from mne_connectivity import Connectivity, select_order, vector_auto_regression
@@ -289,6 +290,28 @@ def test_vector_auto_regression():
     residuals = data - parr_conn.predict(data)
     assert residuals.shape == data.shape
     # TODO: Add checks about properties of residuals
+
+
+@pytest.mark.parametrize("lags", [1, 2])
+def test_vector_auto_regression_residuals(lags):
+    """Test the residuals of a fitted VAR model."""
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 5, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+
+    # Compute VAR models
+    var_dyn = vector_auto_regression(data, model="dynamic", lags=lags)
+    var_avg = vector_auto_regression(data, model="avg-epochs", lags=lags)
+
+    # Compute residuals
+    res_dyn = data - var_dyn.predict(data)
+    res_avg = data - var_avg.predict(data)
+
+    # Check residuals for each channel are smaller for the dynamic model
+    assert_array_less(
+        np.abs(res_dyn[:, :, lags:]).mean((0, -1)),
+        np.abs(res_avg[:, :, lags:]).mean((0, -1)),
+    )
 
 
 @pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
