@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 0.9.0.dev23+g3cf8aacc9 documentation</title>
+    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 0.9.0.dev24+g5c3ccb02b documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -40,12 +40,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=02ec7c47" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../../_static/documentation_options.js?v=a308f9dd"></script>
+    <script src="../../_static/documentation_options.js?v=b677eba9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -55,7 +55,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/decoding/cohy_decomposition_plotting';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev23+g3cf8aacc9 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev24+g5c3ccb02b documentation</p>
   
 </a></div>
     
@@ -195,11 +195,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -232,8 +239,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -322,11 +328,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -359,8 +372,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -641,37 +653,37 @@ our connectivity frequency band of interest to be 20-30 Hz. See
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
-  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:01,   26.63it/s]
-  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:01,   26.72it/s]
- 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:01,   26.73it/s]
- 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:00,   26.69it/s]
- 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:00,   26.65it/s]
- 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:00,   26.57it/s]
- 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:00,   26.65it/s]
- 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,   26.69it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,   26.70it/s]
- 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:00,   26.73it/s]
- 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,   26.77it/s]
- 40%|████      | CSD epoch blocks : 12/30 [00:00&lt;00:00,   26.79it/s]
- 43%|████▎     | CSD epoch blocks : 13/30 [00:00&lt;00:00,   26.72it/s]
- 47%|████▋     | CSD epoch blocks : 14/30 [00:00&lt;00:00,   26.74it/s]
- 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,   26.75it/s]
- 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,   26.75it/s]
- 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,   26.76it/s]
- 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,   26.72it/s]
- 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,   26.74it/s]
- 67%|██████▋   | CSD epoch blocks : 20/30 [00:00&lt;00:00,   26.77it/s]
- 70%|███████   | CSD epoch blocks : 21/30 [00:00&lt;00:00,   26.77it/s]
- 73%|███████▎  | CSD epoch blocks : 22/30 [00:00&lt;00:00,   26.80it/s]
- 77%|███████▋  | CSD epoch blocks : 23/30 [00:00&lt;00:00,   26.82it/s]
- 80%|████████  | CSD epoch blocks : 24/30 [00:00&lt;00:00,   26.81it/s]
- 83%|████████▎ | CSD epoch blocks : 25/30 [00:00&lt;00:00,   26.81it/s]
- 87%|████████▋ | CSD epoch blocks : 26/30 [00:00&lt;00:00,   26.81it/s]
- 90%|█████████ | CSD epoch blocks : 27/30 [00:01&lt;00:00,   26.81it/s]
- 93%|█████████▎| CSD epoch blocks : 28/30 [00:01&lt;00:00,   26.80it/s]
- 97%|█████████▋| CSD epoch blocks : 29/30 [00:01&lt;00:00,   26.80it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   26.79it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   26.77it/s]
+  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:01,   27.54it/s]
+  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:01,   27.55it/s]
+ 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:00,   27.60it/s]
+ 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:00,   27.58it/s]
+ 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:00,   27.60it/s]
+ 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:00,   27.62it/s]
+ 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:00,   27.62it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:00,   27.63it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,   27.65it/s]
+ 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:00,   27.63it/s]
+ 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,   27.64it/s]
+ 40%|████      | CSD epoch blocks : 12/30 [00:00&lt;00:00,   27.64it/s]
+ 43%|████▎     | CSD epoch blocks : 13/30 [00:00&lt;00:00,   27.65it/s]
+ 47%|████▋     | CSD epoch blocks : 14/30 [00:00&lt;00:00,   27.65it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,   27.65it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,   27.64it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,   27.64it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,   27.62it/s]
+ 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,   27.57it/s]
+ 67%|██████▋   | CSD epoch blocks : 20/30 [00:00&lt;00:00,   27.46it/s]
+ 70%|███████   | CSD epoch blocks : 21/30 [00:00&lt;00:00,   27.37it/s]
+ 73%|███████▎  | CSD epoch blocks : 22/30 [00:00&lt;00:00,   27.30it/s]
+ 77%|███████▋  | CSD epoch blocks : 23/30 [00:00&lt;00:00,   27.23it/s]
+ 80%|████████  | CSD epoch blocks : 24/30 [00:00&lt;00:00,   27.18it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:00&lt;00:00,   27.13it/s]
+ 87%|████████▋ | CSD epoch blocks : 26/30 [00:00&lt;00:00,   27.08it/s]
+ 90%|█████████ | CSD epoch blocks : 27/30 [00:00&lt;00:00,   27.04it/s]
+ 93%|█████████▎| CSD epoch blocks : 28/30 [00:01&lt;00:00,   27.07it/s]
+ 97%|█████████▋| CSD epoch blocks : 29/30 [00:01&lt;00:00,   27.10it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   27.14it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   27.26it/s]
 [done]
 Computing MIC for connection 1 of 1
 </pre></div>
@@ -1595,7 +1607,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.550 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.508 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-plotting-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/819c147b4978939946b15bdfb484fb24/cohy_decomposition_plotting.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition_plotting.ipynb</span></code></a></p>
@@ -1678,8 +1690,8 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1690,7 +1702,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-05-18.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-05-24.
       <br/>
     
   </p>
@@ -1713,7 +1725,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>
