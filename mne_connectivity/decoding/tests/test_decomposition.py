@@ -229,6 +229,7 @@ def test_spectral_decomposition(method, mode):
     # TEST PLOTTING
     # Test plot filters/patterns
     # use standard montage to avoid errors around weird fiducial positions
+    # TODO Version: Remove when MNE 1.13 is minimum required version
     if check_version("mne", "1.13"):
         montage_name = "colin27_1020"
     else:
