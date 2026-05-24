@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from mne.channels import make_dig_montage, make_standard_montage
+from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_equal, assert_array_less
 
 from mne_connectivity import (
@@ -228,16 +229,21 @@ def test_spectral_decomposition(method, mode):
     # TEST PLOTTING
     # Test plot filters/patterns
     # use standard montage to avoid errors around weird fiducial positions
-    standard_1020_pos = make_standard_montage("standard_1020").get_positions()
+    # TODO Version: Remove when MNE 1.13 is minimum required version
+    if check_version("mne", "1.13"):
+        montage_name = "colin27_1020"
+    else:
+        montage_name = "standard_1020"
+    montage_pos = make_standard_montage(montage_name).get_positions()
     epochs.info.set_montage(
         make_dig_montage(
             ch_pos={
                 name: [idx, idx, idx]
                 for idx, name in enumerate(epochs.info["ch_names"])
             },  # avoid overlapping positions for channels (raises error)
-            nasion=standard_1020_pos["nasion"],
-            lpa=standard_1020_pos["lpa"],
-            rpa=standard_1020_pos["rpa"],
+            nasion=montage_pos["nasion"],
+            lpa=montage_pos["lpa"],
+            rpa=montage_pos["rpa"],
         )
     )
     for plot in (decomp_class.plot_filters, decomp_class.plot_patterns):
