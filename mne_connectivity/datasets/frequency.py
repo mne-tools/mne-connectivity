@@ -6,7 +6,7 @@
 import numpy as np
 from mne import EpochsArray, create_info
 from mne.filter import filter_data
-from mne.utils import _validate_type, warn
+from mne.utils import _validate_type
 
 
 def make_signals_in_freq_bands(
@@ -21,7 +21,6 @@ def make_signals_in_freq_bands(
     snr=0.7,
     connection_delay=5,
     connection_time=None,
-    connection_width=None,
     window_alpha=0.5,
     tmin=0.0,
     ch_names=None,
@@ -56,16 +55,12 @@ def make_signals_in_freq_bands(
         Number of timepoints for the delay of connectivity between the seeds and
         targets. If > 0, the target data is a delayed form of the seed data. If < 0, the
         seed data is a delayed form of the target data.
-    connection_time : float | None (default None)
-        Time at which the interaction occurs in each epoch, in seconds. Must be greater
-        than ``tmin`` and less than ``n_times / sfreq``. If ``None``, the connectivity
+    connection_time : tuple of float | None (default None)
+        Start and end times at which the interaction occurs in each epoch, in seconds.
+        First entry must be greater than ``tmin``, last entry must be less than
+        ``n_times / sfreq``. If a given entry is ``None``, it will be substituted for
+        ``tmin`` or ``n_times / sfreq``, as appropriate. If ``None``, the connectivity
         is simulated throughout the whole epoch.
-
-        .. versionadded:: 0.9
-    connection_width : float | None (default None)
-        Duration of the interaction around ``connection_time``, in seconds. Must be
-        specified if ``connection_time`` is not ``None``. Ignored if ``connection_time``
-        is ``None``.
 
         .. versionadded:: 0.9
     window_alpha : float (default 0.5)
@@ -101,14 +96,14 @@ def make_signals_in_freq_bands(
 
     By default, connectivity is simulated throughout the whole epoch. However, the
     interaction can be isolated to a given time range using the ``connection_time`` and
-    ``connection_width`` parameters, mimicking an evoked potential. E.g., to simulate a
+    ``window_alpha`` parameters, mimicking an evoked potential. E.g., to simulate a
     burst of activity with a 200 ms duration beginning at the start of each epoch::
 
         epochs = make_signals_in_freq_bands(
             ...,
-            tmin=-0.5,  # include a pre-trial period
-            connection_time=0.1,  # burst centered at 100 ms
-            connection_width=0.2,  # 200 ms burst duration, i.e., from 0 to 200 ms
+            tmin=-0.5,  # include a pre-trial period (optional)
+            connection_time=(0.0, 0.2),  # burst from 0 to 200 ms
+            window_alpha=0.5,  # isolate burst with 50% cosine-tapered Tukey window
         )
     """
     from scipy.signal.windows import tukey
@@ -140,30 +135,27 @@ def make_signals_in_freq_bands(
             "Connection delay must be less than the total number of timepoints."
         )
 
-    _validate_type(connection_time, ("numeric", None), "connection_time")
-    _validate_type(connection_width, ("numeric", None), "connection_width")
+    _validate_type(connection_time, (tuple, None), "`connection_time`")
     epoch_dur = n_times / sfreq
     tmax = tmin + epoch_dur
     if connection_time is not None:
-        if connection_width is None:
-            raise ValueError(
-                "`connection_width` must be specified when `connection_time` is not "
-                "None."
-            )
-        if connection_time < tmin or connection_time > tmax:
+        connection_time = list(connection_time)  # convert to list to allow modification
+        if len(connection_time) != 2:
+            raise ValueError("`connection_time` must be a tuple with length 2.")
+        for time_idx, time in enumerate(connection_time):
+            _validate_type(time, ("numeric", None), "`connection_time` entries")
+            if time is None:
+                connection_time[time_idx] = tmin if time_idx == 0 else tmax
+        if connection_time[0] < tmin or connection_time[1] > tmax:
             raise ValueError(
                 f"`connection_time` {connection_time} must be within the epoch time "
                 f"range [{tmin}, {tmax}]."
             )
-        if connection_width <= 0:
-            raise ValueError("`connection_width` must be > 0.")
-        connection_time -= tmin  # convert time to be relative to time of first sample
-    elif connection_width is not None:
-        warn(
-            "`connection_width` is not None, but `connection_time` is None. "
-            "`connection_width` will be ignored.",
-            UserWarning,
-        )
+        if connection_time[0] >= connection_time[1]:
+            raise ValueError(
+                "Start time of `connection_time` must be less than the end time."
+            )
+        connection_time = np.array(connection_time)
 
     _validate_type(window_alpha, float, "window_alpha")
     if window_alpha < 0 or window_alpha > 1:
@@ -188,19 +180,13 @@ def make_signals_in_freq_bands(
 
     # isolate interaction to a given time range per epoch
     if connection_time is not None:
-        time_samples = int(connection_time * sfreq)
-        width_samples = int(connection_width * sfreq)
+        connection_time -= tmin  # convert time to be relative to time of first sample
+        time_samples = (connection_time * sfreq).astype(int)  # convert time to samples
         full_window = np.zeros((n_times,))  # create empty filter the shape of one epoch
 
         # add Tukey window for burst of connectivity to temporal filter
-        burst_window = tukey(width_samples, window_alpha, sym=False)
-        burst_start = time_samples - (width_samples // 2)
-        burst_end = time_samples + int(np.ceil(width_samples / 2))
-        window_start = max(burst_start, 0)  # clip to start of epoch
-        window_end = min(burst_end, n_times)  # clip to end of epoch
-        burst_start = window_start - burst_start  # apply clip to filter start
-        burst_end = burst_start + (window_end - window_start)  # apply to filter end
-        full_window[window_start:window_end] = burst_window[burst_start:burst_end]
+        burst_window = tukey(np.squeeze(np.diff(time_samples)), window_alpha, sym=False)
+        full_window[time_samples[0] : time_samples[1]] = burst_window
 
         # apply temporal filter to each epoch to create bursts of connectivity
         for epoch_i in range(n_epochs):

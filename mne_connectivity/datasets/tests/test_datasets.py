@@ -40,10 +40,14 @@ def test_make_signals_in_freq_bands(
     trans_bandwidth = 1  # Hz
     if state == "evoked":
         epoch_dur = n_times / sfreq
-        connection_time = epoch_dur / 2  # connectivity occurs in middle of epoch
-        connection_width = epoch_dur / 4
+        connection_midtime = epoch_dur / 2
+        connection_hwidth = epoch_dur / 8
+        connection_time = (
+            connection_midtime - connection_hwidth,
+            connection_midtime + connection_hwidth,
+        )
     else:
-        connection_time, connection_width = None, None
+        connection_time = None
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
@@ -55,7 +59,6 @@ def test_make_signals_in_freq_bands(
         snr=0.75 if snr == "high" else 0.25,
         connection_delay=connection_delay,
         connection_time=connection_time,
-        connection_width=connection_width,
         rng_seed=rng_seed,
     )
 
@@ -110,8 +113,7 @@ def test_make_signals_in_freq_bands(
     ).flatten()
     if state == "evoked":  # connectivity only in certain time range
         con_times = np.argwhere(
-            (times >= connection_time - connection_width / 2)
-            & (times <= connection_time + connection_width / 2)
+            (times >= connection_time[0]) & (times <= connection_time[1])
         ).flatten()
         noise_times = np.setdiff1d(np.arange(times.size), con_times)
         con_points = np.ix_(np.arange(n_cons), con_freqs, con_times)
@@ -218,12 +220,28 @@ def test_make_signals_in_freq_bands_error_catch():
             connection_delay=1,
         )
 
-    # check bad connection_time/width
+    # check bad connection_time
     with pytest.raises(
-        TypeError, match="connection_time must be an instance of numeric or None."
+        TypeError, match="`connection_time` must be an instance of tuple or None."
     ):
         make_signals_in_freq_bands(
-            n_seeds=1, n_targets=1, freq_band=freq_band, connection_time="middle"
+            n_seeds=1, n_targets=1, freq_band=freq_band, connection_time=0.5
+        )
+    with pytest.raises(
+        ValueError, match="`connection_time` must be a tuple with length 2."
+    ):
+        make_signals_in_freq_bands(
+            n_seeds=1, n_targets=1, freq_band=freq_band, connection_time=(0, 0.5, 1)
+        )
+    with pytest.raises(
+        TypeError,
+        match=("`connection_time` entries must be an instance of numeric or None."),
+    ):
+        make_signals_in_freq_bands(
+            n_seeds=1,
+            n_targets=1,
+            freq_band=freq_band,
+            connection_time=(0, "end"),
         )
     n_times = 100
     sfreq = 50
@@ -238,14 +256,11 @@ def test_make_signals_in_freq_bands_error_catch():
             freq_band=freq_band,
             n_times=n_times,
             sfreq=sfreq,
-            connection_time=epoch_dur + 1 / sfreq,
-            connection_width=epoch_dur / 4,
+            connection_time=(None, epoch_dur + 1),
         )
     with pytest.raises(
         ValueError,
-        match=(
-            "`connection_width` must be specified when `connection_time` is not None."
-        ),
+        match="Start time of `connection_time` must be less than the end time.",
     ):
         make_signals_in_freq_bands(
             n_seeds=1,
@@ -253,40 +268,8 @@ def test_make_signals_in_freq_bands_error_catch():
             freq_band=freq_band,
             n_times=n_times,
             sfreq=sfreq,
-            connection_time=epoch_dur / 2,
+            connection_time=(0.3, 0.2),
         )
-    with pytest.warns(
-        UserWarning, match="`connection_width` is not None, but `connection_time` is"
-    ):
-        make_signals_in_freq_bands(
-            n_seeds=1,
-            n_targets=1,
-            freq_band=freq_band,
-            n_times=n_times,
-            sfreq=sfreq,
-            connection_width=epoch_dur / 4,
-        )
-    with pytest.raises(ValueError, match="`connection_width` must be > 0."):
-        make_signals_in_freq_bands(
-            n_seeds=1,
-            n_targets=1,
-            freq_band=freq_band,
-            n_times=n_times,
-            sfreq=sfreq,
-            connection_time=epoch_dur / 2,
-            connection_width=-1,
-        )
-    # not an error catch, but check that connection_width overlapping with end of epochs
-    # is allowed
-    make_signals_in_freq_bands(
-        n_seeds=1,
-        n_targets=1,
-        freq_band=freq_band,
-        n_times=n_times,
-        sfreq=sfreq,
-        connection_time=0,
-        connection_width=epoch_dur / 4,
-    )
 
     # check bad window_alpha
     with pytest.raises(TypeError, match="window_alpha must be an instance of float."):
