@@ -6,7 +6,7 @@
 import numpy as np
 from mne import EpochsArray, create_info
 from mne.filter import filter_data
-from mne.utils import _validate_type
+from mne.utils import _validate_type, warn
 
 
 def make_signals_in_freq_bands(
@@ -15,11 +15,12 @@ def make_signals_in_freq_bands(
     freq_band,
     *,
     n_epochs=10,
-    n_times=200,
+    duration=None,
+    n_times=None,
     sfreq=100.0,
     trans_bandwidth=1.0,
     snr=0.7,
-    connection_delay=5,
+    connection_delay=None,
     connection_time=None,
     window_alpha=0.5,
     tmin=0.0,
@@ -41,8 +42,18 @@ def make_signals_in_freq_bands(
         frequency.
     n_epochs : int (default 10)
         Number of epochs in the simulated data.
-    n_times : int (default 200)
-        Number of timepoints each epoch of the simulated data.
+    duration : float (default None)
+        Duration of each epoch, in seconds.
+    n_times : int (default None)
+        Number of timepoints in each epoch of the simulated data. If ``n_times=None``
+        and ``duration=None``, 200 samples are used, and the unit of
+        ``connection_delay`` is samples. If ``n_times=None`` and ``duration!=None``,
+        epoch length is determined by ``duration`` and the unit of ``connection_delay``
+        is seconds.
+
+        ..version-deprecated:: 0.9
+            ``n_times`` is deprecated and will be removed in 1.0. Use ``duration``
+            instead to specify epoch length in seconds.
     sfreq : float (default 100.0)
         Sampling frequency of the simulated data, in Hz.
     trans_bandwidth : float (default 1.0)
@@ -51,10 +62,12 @@ def make_signals_in_freq_bands(
         ``h_bandwidth`` keyword arguments in :func:`mne.filter.create_filter`.
     snr : float (default 0.7)
         Signal-to-noise ratio of the simulated data in the range [0, 1].
-    connection_delay : int (default 5)
-        Number of timepoints for the delay of connectivity between the seeds and
-        targets. If > 0, the target data is a delayed form of the seed data. If < 0, the
-        seed data is a delayed form of the target data.
+    connection_delay : int | float (default None)
+        Connectivity delay between the seeds and targets. If ``n_times`` is specified,
+        the unit is samples, and the default (``None``) is 5 samples. If ``duration`` is
+        specified, the unit is seconds, and the default (``None``) is 0.05 seconds. If >
+        0, the target data is a delayed form of the seed data. If < 0, the seed data is
+        a delayed form of the target data.
     connection_time : tuple of float | None (default None)
         Start and end times at which the interaction occurs in each epoch, in seconds.
         First entry must be greater than ``tmin``, last entry must be less than
@@ -101,38 +114,73 @@ def make_signals_in_freq_bands(
 
         epochs = make_signals_in_freq_bands(
             ...,
-            tmin=-0.5,  # include a pre-trial period (optional)
+            duration=2.0,  # 2 second epochs
+            tmin=-0.5,  # make first 500 ms a pre-trial period (optional)
             connection_time=(0.0, 0.2),  # burst from 0 to 200 ms
             window_alpha=0.5,  # isolate burst with 50% cosine-tapered Tukey window
         )
     """
     from scipy.signal.windows import tukey
 
+    if n_times is None and duration is None:
+        n_times = 200
+        convert_to_seconds = True
+    elif n_times is not None and duration is None:
+        convert_to_seconds = True
+    elif n_times is None and duration is not None:
+        convert_to_seconds = False
+    else:
+        raise ValueError("Only one of `n_times` and `duration` can be specified.")
+
+    if convert_to_seconds:  # n_times has been specified (or defaulted to)
+        if connection_delay is None:
+            connection_delay = 5  # samples
+        connection_delay = connection_delay / sfreq  # seconds
+        duration = n_times / sfreq  # seconds
+        warn(
+            "The `n_times` parameter as a way to specify epoch length is deprecated "
+            "and will be removed in 1.0, in favour of `duration`. To avoid this "
+            "warning, set `duration` explicitly to specify epoch length, in seconds. "
+            "Note that when `duration` is not specified, the unit of "
+            "`connection_delay` is samples. When `duration` is specified, the unit of "
+            "`connection_delay` will be seconds."
+        )
+    else:  # duration has been specified
+        if connection_delay is None:
+            connection_delay = 0.05  # seconds
+
     n_channels = n_seeds + n_targets
 
     # check inputs
     if n_seeds < 1 or n_targets < 1:
-        raise ValueError("Number of seeds and targets must each be at least 1.")
+        raise ValueError(
+            f"Number of seeds and targets must each be at least 1 (got {n_seeds} and "
+            f"{n_targets}, respectively)."
+        )
 
     _validate_type(freq_band, tuple, "freq_band")
     if len(freq_band) != 2:
-        raise ValueError("Frequency band must contain two numbers.")
+        raise ValueError(
+            f"Frequency band must contain two numbers (got length {len(freq_band)})."
+        )
 
-    if n_times < 1:
-        raise ValueError("Number of timepoints must be at least 1.")
+    if duration <= 0:
+        raise ValueError(f"Duration of epochs must be > 0 seconds (got {duration} s).")
+    n_times = int(duration * sfreq)  # convert duration to samples
 
     if n_epochs < 1:
-        raise ValueError("Number of epochs must be at least 1.")
+        raise ValueError(f"Number of epochs must be at least 1 (got {n_epochs}).")
 
     if sfreq <= 0:
-        raise ValueError("Sampling frequency must be > 0.")
+        raise ValueError(f"Sampling frequency must be > 0 Hz (got {sfreq} Hz).")
 
     if snr < 0 or snr > 1:
-        raise ValueError("Signal-to-noise ratio must be between 0 and 1.")
+        raise ValueError(f"Signal-to-noise ratio must be between 0 and 1 (got {snr}).")
 
-    if np.abs(connection_delay) >= n_epochs * n_times:
+    if np.abs(connection_delay) >= n_epochs * duration:
         raise ValueError(
-            "Connection delay must be less than the total number of timepoints."
+            f"The absolute connection delay ({np.abs(connection_delay)} s) must be "
+            f"less than the total duration of the signal ({n_epochs * duration} s)."
         )
 
     _validate_type(connection_time, (tuple, None), "`connection_time`")
