@@ -364,7 +364,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
         connection_time = None
     n_epochs = 30
     sfreq = 100
-    duration = 2.0
+    duration = 1.0
     trans_bw = 1.0
     n_shuffles = 1000
     rng_seed = 0
