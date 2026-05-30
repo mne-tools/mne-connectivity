@@ -44,6 +44,8 @@ def make_signals_in_freq_bands(
         Number of epochs in the simulated data.
     duration : float (default None)
         Duration of each epoch, in seconds.
+
+        .. versionadded:: 0.9
     n_times : int (default None)
         Number of timepoints in each epoch of the simulated data. If ``n_times=None``
         and ``duration=None``, 200 samples are used, and the unit of
