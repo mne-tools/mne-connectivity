@@ -132,6 +132,24 @@ def make_signals_in_freq_bands(
     else:
         raise ValueError("Only one of `n_times` and `duration` can be specified.")
 
+    n_channels = n_seeds + n_targets
+
+    # check inputs
+    if n_seeds < 1 or n_targets < 1:
+        raise ValueError(
+            f"`n_seeds` and `n_targets` must each be at least 1 (got {n_seeds} and "
+            f"{n_targets}, respectively)."
+        )
+
+    _validate_type(freq_band, tuple, "`freq_band`")
+    if len(freq_band) != 2:
+        raise ValueError(
+            f"`freq_band` must contain two numbers (got length {len(freq_band)})."
+        )
+
+    if sfreq <= 0:
+        raise ValueError(f"`sfreq` must be > 0 Hz (got {sfreq} Hz).")
+
     if convert_to_seconds:  # n_times has been specified (or defaulted to)
         if connection_delay is None:
             connection_delay = 5  # samples
@@ -150,73 +168,59 @@ def make_signals_in_freq_bands(
         if connection_delay is None:
             connection_delay = 0.05  # seconds
 
-    n_channels = n_seeds + n_targets
-
-    # check inputs
-    if n_seeds < 1 or n_targets < 1:
-        raise ValueError(
-            f"Number of seeds and targets must each be at least 1 (got {n_seeds} and "
-            f"{n_targets}, respectively)."
-        )
-
-    _validate_type(freq_band, tuple, "freq_band")
-    if len(freq_band) != 2:
-        raise ValueError(
-            f"Frequency band must contain two numbers (got length {len(freq_band)})."
-        )
-
     if duration <= 0:
         raise ValueError(f"Duration of epochs must be > 0 seconds (got {duration} s).")
     n_times = int(duration * sfreq)  # convert duration to samples
 
     if n_epochs < 1:
-        raise ValueError(f"Number of epochs must be at least 1 (got {n_epochs}).")
-
-    if sfreq <= 0:
-        raise ValueError(f"Sampling frequency must be > 0 Hz (got {sfreq} Hz).")
+        raise ValueError(f"`n_epochs` must be at least 1 (got {n_epochs}).")
 
     if snr < 0 or snr > 1:
-        raise ValueError(f"Signal-to-noise ratio must be between 0 and 1 (got {snr}).")
+        raise ValueError(f"`snr` must be between 0 and 1 (got {snr}).")
 
-    if np.abs(connection_delay) >= n_epochs * duration:
+    if np.abs(connection_delay) >= duration:
         raise ValueError(
-            f"The absolute connection delay ({np.abs(connection_delay)} s) must be "
-            f"less than the total duration of the signal ({n_epochs * duration} s)."
+            f"The absolute `connection_delay` ({np.abs(connection_delay)} s) must be "
+            f"less than the duration of each epoch ({duration} s)."
         )
+    n_delay_times = int(connection_delay * sfreq)  # convert delay to samples
 
     _validate_type(connection_time, (tuple, None), "`connection_time`")
-    epoch_dur = n_times / sfreq
-    tmax = tmin + epoch_dur
+    tmax = tmin + duration
     if connection_time is not None:
         connection_time = list(connection_time)  # convert to list to allow modification
         if len(connection_time) != 2:
-            raise ValueError("`connection_time` must be a tuple with length 2.")
+            raise ValueError(
+                "`connection_time` must contain two entries (got length "
+                f"{len(connection_time)})."
+            )
         for time_idx, time in enumerate(connection_time):
             _validate_type(time, ("numeric", None), "`connection_time` entries")
             if time is None:
                 connection_time[time_idx] = tmin if time_idx == 0 else tmax
         if connection_time[0] < tmin or connection_time[1] > tmax:
             raise ValueError(
-                f"`connection_time` {connection_time} must be within the epoch time "
+                f"`connection_time` ({connection_time}) must be within the epoch time "
                 f"range [{tmin}, {tmax}]."
             )
         if connection_time[0] >= connection_time[1]:
             raise ValueError(
-                "Start time of `connection_time` must be less than the end time."
+                f"Start time of `connection_time` ({connection_time[0]}) must be less "
+                f"than the end time ({connection_time[1]})."
             )
         connection_time = np.array(connection_time)
 
-    _validate_type(window_alpha, float, "window_alpha")
+    _validate_type(window_alpha, float, "`window_alpha`")
     if window_alpha < 0 or window_alpha > 1:
-        raise ValueError("`window_alpha` must be between 0 and 1.")
+        raise ValueError(
+            f"`window_alpha` must be between 0 and 1 (got {window_alpha})."
+        )
 
     # simulate data
     rng = np.random.default_rng(rng_seed)
 
     # simulate signal source at desired frequency band
-    signal = rng.standard_normal(
-        size=(1, n_epochs * n_times + np.abs(connection_delay))
-    )
+    signal = rng.standard_normal(size=(1, n_epochs * n_times + np.abs(n_delay_times)))
     signal = filter_data(
         data=signal,
         sfreq=sfreq,
@@ -240,9 +244,11 @@ def make_signals_in_freq_bands(
         # apply temporal filter to each epoch to create bursts of connectivity
         for epoch_i in range(n_epochs):
             signal[:, epoch_i * n_times : (epoch_i + 1) * n_times] *= full_window
-            if epoch_i == n_epochs - 1 and connection_delay != 0:
+            if epoch_i == n_epochs - 1 and n_delay_times != 0:
+                # should still filter remaining data after last full epoch (coming from
+                # connection delay)
                 signal[:, (epoch_i + 1) * n_times :] *= full_window[
-                    : np.abs(connection_delay)
+                    : np.abs(n_delay_times)
                 ]
 
     # simulate noise for each channel
@@ -252,12 +258,12 @@ def make_signals_in_freq_bands(
     data = (signal * snr) + (noise * (1 - snr))
 
     # shift data by desired delay and remove extra time
-    if connection_delay != 0:
-        if connection_delay > 0:
+    if n_delay_times != 0:
+        if n_delay_times > 0:
             delay_chans = np.arange(n_seeds, n_channels)  # delay targets
         else:
             delay_chans = np.arange(0, n_seeds)  # delay seeds
-        data[delay_chans, np.abs(connection_delay) :] = data[
+        data[delay_chans, np.abs(n_delay_times) :] = data[
             delay_chans, : n_epochs * n_times
         ]
         data = data[:, : n_epochs * n_times]
