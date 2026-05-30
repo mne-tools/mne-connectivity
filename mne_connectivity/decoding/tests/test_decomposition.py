@@ -22,6 +22,7 @@ def test_spectral_decomposition(method, mode):
     n_seeds = 3
     n_targets = 3
     n_signals = n_seeds + n_targets
+    duration = 2.0
     n_epochs = 60
     trans_bandwidth = 1
     fstart = 5  # start computing connectivity
@@ -35,10 +36,11 @@ def test_spectral_decomposition(method, mode):
         n_seeds=n_seeds,
         n_targets=n_targets,
         freq_band=(fmin_optimise, fmax_optimise),
+        duration=duration,
         n_epochs=n_epochs,
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
-        connection_delay=10,  # ~90° interaction angle for this freq. band
+        connection_delay=0.1,  # ~90° interaction angle for this freq. band
         rng_seed=44,
     )
 
@@ -49,10 +51,11 @@ def test_spectral_decomposition(method, mode):
         n_seeds=n_seeds,
         n_targets=n_targets,
         freq_band=(fmin_ignore, fmax_ignore),
+        duration=duration,
         n_epochs=n_epochs,
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
-        connection_delay=6,  # ~90° interaction angle for this freq. band
+        connection_delay=0.06,  # ~90° interaction angle for this freq. band
         rng_seed=42,
     )
 
@@ -308,7 +311,7 @@ def test_spectral_decomposition(method, mode):
         # multiple components less stable for Morlet mode, so increase SNR
         snrs = (0.75, 0.65, 0.0)
     dominant_chans = (0, 1, None)  # channels contributing to con. of each component
-    delays = (1, 2, 0)  # connection delays of interactions
+    delays = (0.01, 0.02, 0.0)  # connection delays of interactions
     angles = (40, 135, None)  # interaction angles corresponding to above delays
     seeds = (44, 43, 42)  # RNG seeds for simulations
 
@@ -319,6 +322,7 @@ def test_spectral_decomposition(method, mode):
                 n_seeds=1,
                 n_targets=1,
                 freq_band=fband,
+                duration=duration,
                 n_epochs=n_epochs,
                 trans_bandwidth=trans_bandwidth,
                 snr=snr,
@@ -417,6 +421,9 @@ def test_spectral_decomposition(method, mode):
     assert_array_equal(conn_scores, np.flip(np.sort(conn_scores)))
 
 
+@pytest.mark.filterwarnings(
+    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
+)  # TODO: Remove when `n_times` deprecation warning removed
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_spectral_decomposition_parallel(method, mode):
@@ -449,6 +456,9 @@ def test_spectral_decomposition_parallel(method, mode):
     decomp_class.fit_transform(X=epochs.get_data())
 
 
+@pytest.mark.filterwarnings(
+    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
+)  # TODO: Remove when `n_times` deprecation warning removed
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_spectral_decomposition_error_catch(method, mode):

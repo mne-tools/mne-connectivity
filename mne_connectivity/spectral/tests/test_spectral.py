@@ -122,7 +122,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
         n_targets=1,
         freq_band=(5, 15),
         n_epochs=8,
-        n_times=256,
+        duration=5.12,
         sfreq=50,
         trans_bandwidth=2.0,
         rng_seed=0,  # case with no spurious correlations (avoid tests randomly failing)
@@ -483,16 +483,16 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input(method, mode, spectra_a
     n_targets = 2
     fband = (15, 20)  # Hz
     n_epochs = 30
-    n_times = 200  # samples
+    duration = 2.0  # seconds
     trans_bandwidth = 1.0  # Hz
-    delay = 5  # samples
+    delay = 0.05  # seconds
 
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
         freq_band=fband,
         n_epochs=n_epochs,
-        n_times=n_times,
+        duration=duration,
         sfreq=sfreq,
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
@@ -639,9 +639,9 @@ def test_spectral_connectivity_epochs_multivariate(method, n_components):
     fstart = 15  # Hz
     fend = 20  # Hz
     n_epochs = 60
-    n_times = 200  # samples
+    duration = 2.0  # seconds
     trans_bandwidth = 1.0  # Hz
-    delay = 10  # samples (non-zero delay needed for ImCoh and GC to be >> 0)
+    delay = 0.1  # seconds (non-zero delay needed for ImCoh and GC to be >> 0)
 
     indices = (
         np.arange(n_seeds)[np.newaxis, :],
@@ -654,7 +654,7 @@ def test_spectral_connectivity_epochs_multivariate(method, n_components):
         n_targets=n_targets,
         freq_band=(fstart, fend),
         n_epochs=n_epochs,
-        n_times=n_times,
+        duration=duration,
         sfreq=sfreq,
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
@@ -918,7 +918,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         n_targets=2,  # do not change!
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=8,
-        n_times=256,
+        duration=2.0,
         sfreq=sfreq,
         rng_seed=0,
     )
@@ -1098,7 +1098,7 @@ def test_multivar_spectral_connectivity_parallel(method):
         n_targets=2,  # do not change!
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=8,
-        n_times=256,
+        duration=2.0,
         sfreq=50,
         rng_seed=0,
     )
@@ -1126,7 +1126,7 @@ def test_multivar_spectral_connectivity_flipped_indices():
         n_targets=2,  # do not change!
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=8,
-        n_times=256,
+        duration=2.0,
         sfreq=50,
         rng_seed=0,
     )
@@ -1422,7 +1422,7 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
             assert con.shape == (n_epochs, 1, len(con.freqs))
         else:
             assert con.shape == (1, len(con.freqs))
-    else: #  Cohy values are complex, so take abs before validation of properties
+    else:  #  Cohy values are complex, so take abs before validation of properties
         if method == "cohy":
             con_matrix = np.abs(con_matrix).mean(axis=0)
             assert con.shape == (n_epochs, n_channels**2, len(con.freqs))
@@ -1753,7 +1753,7 @@ def test_multivar_spectral_connectivity_time_shapes(
         n_targets=3,  # do not change!
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=n_epochs,
-        n_times=256,
+        duration=2.0,
         sfreq=50,
         rng_seed=0,
     )
@@ -1857,11 +1857,11 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
         n_targets=n_targets,
         freq_band=fband,
         n_epochs=30,
-        n_times=200,
+        duration=2.0,
         sfreq=100,
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
-        connection_delay=5,
+        connection_delay=0.05,
         rng_seed=44,
     )
 
@@ -1964,7 +1964,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         n_targets=n_targets,
         freq_band=(10, 20),  # arbitrary for this test
         n_epochs=8,
-        n_times=256,
+        duration=2.0,
         sfreq=50,
         rng_seed=0,
     )
@@ -2131,7 +2131,7 @@ def test_save(tmp_path):
         n_targets=1,
         freq_band=(18, 22),  # arbitrary for this test
         n_epochs=10,
-        n_times=2000,
+        duration=2.0,
         sfreq=1000,
         rng_seed=0,
     )
@@ -2150,7 +2150,7 @@ def test_multivar_save_load(tmp_path):
         n_targets=2,
         freq_band=(18, 22),  # arbitrary for this test
         n_epochs=5,
-        n_times=2000,
+        duration=2.0,
         sfreq=1000,
         rng_seed=0,
     )
@@ -2198,7 +2198,7 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
         n_targets=2,
         freq_band=(18, 22),  # arbitrary for this test
         n_epochs=10,
-        n_times=200,
+        duration=2.0,
         sfreq=100,
         rng_seed=0,
     )
@@ -2241,7 +2241,7 @@ def test_multivar_spectral_connectivity_indices_roundtrip_io(tmp_path, method, i
         n_targets=2,
         freq_band=(18, 22),  # arbitrary for this test
         n_epochs=10,
-        n_times=200,
+        duration=2.0,
         sfreq=100,
         rng_seed=0,
     )

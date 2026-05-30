@@ -16,7 +16,7 @@ from mne_connectivity import (
 @pytest.mark.parametrize("n_seeds", [1, 3])
 @pytest.mark.parametrize("n_targets", [1, 3])
 @pytest.mark.parametrize("snr", ["high", "low"])
-@pytest.mark.parametrize("connection_delay", [0, 3, -3])
+@pytest.mark.parametrize("connection_delay", [0, 0.03, -0.03])
 @pytest.mark.parametrize(
     ("mode", "state"),
     (
@@ -36,12 +36,11 @@ def test_make_signals_in_freq_bands(
     # Simulate data
     freq_band = (10, 15)  # fmin, fmax (Hz)
     sfreq = 100  # Hz
-    n_times = 200  # samples
+    duration = 2.0  # seconds
     trans_bandwidth = 1  # Hz
     if state == "evoked":
-        epoch_dur = n_times / sfreq
-        connection_midtime = epoch_dur / 2
-        connection_hwidth = epoch_dur / 8
+        connection_midtime = duration / 2
+        connection_hwidth = duration / 8
         connection_time = (
             connection_midtime - connection_hwidth,
             connection_midtime + connection_hwidth,
@@ -53,7 +52,7 @@ def test_make_signals_in_freq_bands(
         n_targets=n_targets,
         freq_band=freq_band,
         n_epochs=30,
-        n_times=n_times,
+        duration=duration,
         sfreq=sfreq,
         trans_bandwidth=trans_bandwidth,
         snr=0.75 if snr == "high" else 0.25,
@@ -160,82 +159,89 @@ def test_make_signals_in_freq_bands(
         )
 
 
+@pytest.mark.filterwarnings(
+    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
+)  # TODO: Remove when `n_times` deprecation warning removed
 def test_make_signals_in_freq_bands_error_catch():
     """Test error catching for `make_signals_in_freq_bands`."""
     freq_band = (5, 10)
 
     # check bad n_seeds/targets caught
     with pytest.raises(
-        ValueError, match="Number of seeds and targets must each be at least 1."
+        ValueError, match="`n_seeds` and `n_targets` must each be at least 1"
     ):
         make_signals_in_freq_bands(n_seeds=0, n_targets=1, freq_band=freq_band)
     with pytest.raises(
-        ValueError, match="Number of seeds and targets must each be at least 1."
+        ValueError, match="`n_seeds` and `n_targets` must each be at least 1"
     ):
         make_signals_in_freq_bands(n_seeds=1, n_targets=0, freq_band=freq_band)
 
     # check bad freq_band caught
-    with pytest.raises(TypeError, match="freq_band must be an instance of tuple."):
+    with pytest.raises(TypeError, match="`freq_band` must be an instance of tuple"):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=1)
-    with pytest.raises(ValueError, match="Frequency band must contain two numbers."):
+    with pytest.raises(ValueError, match="`freq_band` must contain two numbers"):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=(1, 2, 3))
 
-    # check bad n_times
-    with pytest.raises(ValueError, match="Number of timepoints must be at least 1."):
+    # check bad duration
+    with pytest.raises(ValueError, match="Duration of epochs must be > 0 seconds"):
         make_signals_in_freq_bands(
-            n_seeds=1, n_targets=1, freq_band=freq_band, n_times=0
+            n_seeds=1, n_targets=1, freq_band=freq_band, duration=0
         )
 
     # check bad n_epochs
-    with pytest.raises(ValueError, match="Number of epochs must be at least 1."):
+    with pytest.raises(ValueError, match="`n_epochs` must be at least 1"):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, n_epochs=0
         )
 
     # check bad sfreq
-    with pytest.raises(ValueError, match="Sampling frequency must be > 0."):
+    with pytest.raises(ValueError, match="`sfreq` must be > 0 Hz"):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=freq_band, sfreq=0)
 
     # check bad snr
-    with pytest.raises(
-        ValueError, match="Signal-to-noise ratio must be between 0 and 1."
-    ):
+    with pytest.raises(ValueError, match="`snr` must be between 0 and 1"):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=freq_band, snr=-1)
-    with pytest.raises(
-        ValueError, match="Signal-to-noise ratio must be between 0 and 1."
-    ):
+    with pytest.raises(ValueError, match="`snr` must be between 0 and 1"):
         make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=freq_band, snr=2)
 
     # check bad connection_delay
     with pytest.raises(
         ValueError,
-        match="Connection delay must be less than the total number of timepoints.",
+        match=r".*`connection_delay`.*must be less than the duration of each epoch",
     ):
         make_signals_in_freq_bands(
             n_seeds=1,
             n_targets=1,
             freq_band=freq_band,
-            n_epochs=1,
-            n_times=1,
-            connection_delay=1,
+            duration=2.0,
+            connection_delay=2.0,
+        )
+    with pytest.raises(
+        ValueError,
+        match=r".*`connection_delay`.*must be less than the duration of each epoch",
+    ):
+        make_signals_in_freq_bands(
+            n_seeds=1,
+            n_targets=1,
+            freq_band=freq_band,
+            duration=2.0,
+            connection_delay=2.5,
         )
 
     # check bad connection_time
     with pytest.raises(
-        TypeError, match="`connection_time` must be an instance of tuple or None."
+        TypeError, match="`connection_time` must be an instance of tuple or None"
     ):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, connection_time=0.5
         )
-    with pytest.raises(
-        ValueError, match="`connection_time` must be a tuple with length 2."
-    ):
+    with pytest.raises(ValueError, match="`connection_time` must contain two entries"):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, connection_time=(0, 0.5, 1)
         )
     with pytest.raises(
         TypeError,
-        match=("`connection_time` entries must be an instance of numeric or None."),
+        match="`connection_time` entries must be an instance of numeric or None",
     ):
         make_signals_in_freq_bands(
             n_seeds=1,
@@ -243,9 +249,8 @@ def test_make_signals_in_freq_bands_error_catch():
             freq_band=freq_band,
             connection_time=(0, "end"),
         )
-    n_times = 100
+    duration = 2.0  # seconds
     sfreq = 50
-    epoch_dur = n_times / sfreq
     with pytest.raises(
         ValueError,
         match=r"`connection_time`.*must be within the epoch time range",
@@ -254,31 +259,58 @@ def test_make_signals_in_freq_bands_error_catch():
             n_seeds=1,
             n_targets=1,
             freq_band=freq_band,
-            n_times=n_times,
+            duration=duration,
             sfreq=sfreq,
-            connection_time=(None, epoch_dur + 1),
+            connection_time=(None, duration + 1),
         )
     with pytest.raises(
         ValueError,
-        match="Start time of `connection_time` must be less than the end time.",
+        match=r"Start time of `connection_time`.*must be less than the end time",
     ):
         make_signals_in_freq_bands(
             n_seeds=1,
             n_targets=1,
             freq_band=freq_band,
-            n_times=n_times,
+            duration=duration,
             sfreq=sfreq,
             connection_time=(0.3, 0.2),
         )
 
     # check bad window_alpha
-    with pytest.raises(TypeError, match="window_alpha must be an instance of float."):
+    with pytest.raises(TypeError, match="`window_alpha` must be an instance of float"):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, window_alpha="tukey"
         )
-    with pytest.raises(ValueError, match="`window_alpha` must be between 0 and 1."):
+    with pytest.raises(ValueError, match="`window_alpha` must be between 0 and 1"):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, window_alpha=-0.5
+        )
+
+
+def test_make_signals_in_freq_bands_n_times_depr():
+    """Test `n_times` deprecation warning in `make_signals_in_freq_bands`."""
+    with pytest.warns(
+        FutureWarning,
+        match="The `n_times` parameter as a way to specify epoch length is deprecated",
+    ):
+        make_signals_in_freq_bands(
+            n_seeds=1, n_targets=1, freq_band=(5, 10), n_times=200
+        )
+    with pytest.warns(
+        FutureWarning,
+        match="The `n_times` parameter as a way to specify epoch length is deprecated",
+    ):
+        make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=(5, 10))
+
+    with pytest.raises(
+        ValueError, match="Only one of `n_times` and `duration` can be specified"
+    ):
+        make_signals_in_freq_bands(
+            n_seeds=1,
+            n_targets=1,
+            freq_band=(5, 10),
+            n_times=200,
+            duration=2.0,
         )
 
 
@@ -292,7 +324,7 @@ def test_make_surrogate_data(snr, should_be_significant, method):
     freq_band = (10, 15)
     n_epochs = 30
     sfreq = 100
-    n_times = sfreq * 2
+    duration = 2.0
     n_shuffles = 1000
     rng_seed = 1
     data = make_signals_in_freq_bands(
@@ -300,7 +332,7 @@ def test_make_surrogate_data(snr, should_be_significant, method):
         n_targets=n_targets,
         freq_band=freq_band,
         n_epochs=n_epochs,
-        n_times=n_times,
+        duration=duration,
         sfreq=sfreq,
         snr=snr,  # using very high SNR seems to alter properties of data beyond fband
         rng_seed=rng_seed,
