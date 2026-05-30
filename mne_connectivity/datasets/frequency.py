@@ -139,11 +139,12 @@ def make_signals_in_freq_bands(
         duration = n_times / sfreq  # seconds
         warn(
             "The `n_times` parameter as a way to specify epoch length is deprecated "
-            "and will be removed in 1.0, in favour of `duration`. To avoid this "
-            "warning, set `duration` explicitly to specify epoch length, in seconds. "
-            "Note that when `duration` is not specified, the unit of "
-            "`connection_delay` is samples. When `duration` is specified, the unit of "
-            "`connection_delay` will be seconds."
+            "and will be removed in 1.0. To avoid this warning, set the new `duration` "
+            "parameter explicitly to specify epoch length, in seconds. Note that when "
+            "`duration` is not specified, the unit of `connection_delay` is samples. "
+            "When `duration` is specified, the unit of `connection_delay` will be "
+            "seconds.",
+            FutureWarning,
         )
     else:  # duration has been specified
         if connection_delay is None:
