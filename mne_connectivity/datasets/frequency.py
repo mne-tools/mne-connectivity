@@ -51,7 +51,7 @@ def make_signals_in_freq_bands(
         epoch length is determined by ``duration`` and the unit of ``connection_delay``
         is seconds.
 
-        ..version-deprecated:: 0.9
+        .. version-deprecated:: 0.9
             ``n_times`` is deprecated and will be removed in 1.0. Use ``duration``
             instead to specify epoch length in seconds.
     sfreq : float (default 100.0)
@@ -67,12 +67,13 @@ def make_signals_in_freq_bands(
         the unit is samples, and the default (``None``) is 5 samples. If ``duration`` is
         specified, the unit is seconds, and the default (``None``) is 0.05 seconds. If >
         0, the target data is a delayed form of the seed data. If < 0, the seed data is
-        a delayed form of the target data.
-    connection_time : tuple of float | None (default None)
+        a delayed form of the target data. The absolute value must be less than
+        ``duration``.
+    connection_time : tuple of float or None | None (default None)
         Start and end times at which the interaction occurs in each epoch, in seconds.
         First entry must be greater than ``tmin``, last entry must be less than
-        ``n_times / sfreq``. If a given entry is ``None``, it will be substituted for
-        ``tmin`` or ``n_times / sfreq``, as appropriate. If ``None``, the connectivity
+        ``duration + tmin``. If a given entry is ``None``, it will be substituted for
+        ``tmin`` or ``duration + tmin``, as appropriate. If ``None``, the connectivity
         is simulated throughout the whole epoch.
 
         .. versionadded:: 0.9
@@ -84,7 +85,9 @@ def make_signals_in_freq_bands(
 
         .. versionadded:: 0.9
     tmin : float (default 0.0)
-        Earliest time of each epoch.
+        Earliest time of each epoch, in seconds. Does not affect the total duration of
+        each epoch. E.g., if ``duration=2.0`` and ``tmin=-0.5``, epochs will have
+        timepoints in the range [-0.5, 1.5] seconds.
     ch_names : list of str | None (default None)
         Names of the channels in the simulated data. If ``None``, the channels are named
         according to their index and the frequency band of interaction. If specified,
@@ -119,6 +122,8 @@ def make_signals_in_freq_bands(
             connection_time=(0.0, 0.2),  # burst from 0 to 200 ms
             window_alpha=0.5,  # isolate burst with 50% cosine-tapered Tukey window
         )
+
+    .. versionadded:: 0.7
     """
     from scipy.signal.windows import tukey
 
