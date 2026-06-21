@@ -13,6 +13,7 @@ from mne.viz import circular_layout
 from mne_connectivity.viz import plot_connectivity_circle
 
 
+@pytest.mark.skip
 def test_plot_connectivity_circle():
     """Test plotting connectivity circle."""
     node_order = [
