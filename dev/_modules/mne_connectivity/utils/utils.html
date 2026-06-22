@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.9.0.dev30+gaa9f5cec5 documentation</title>
+    <title>mne_connectivity.utils.utils &#8212; MNE-Connectivity 0.9.0.dev31+g661a8ffa0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=20d747ef"></script>
+    <script src="../../../_static/documentation_options.js?v=3c1caf35"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev30+gaa9f5cec5 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev31+g661a8ffa0 documentation</p>
   
 </a></div>
     
@@ -796,7 +796,7 @@
     <span class="n">degree</span><span class="p">[::</span> <span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">n_keep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">degree</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">connectivity</span><span class="p">))</span> <span class="o">*</span> <span class="n">threshold_prop</span> <span class="o">/</span> <span class="n">split</span><span class="p">))</span>
     <span class="n">degree</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">degree</span><span class="p">)[:</span><span class="o">-</span><span class="n">n_keep</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">degree</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">degree</span> <span class="o">+=</span> <span class="n">degree</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># normally unsafe, but we know where our zeros are</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">degree</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -861,7 +861,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-06-19.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-06-22.
       <br/>
     
   </p>
