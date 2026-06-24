@@ -96,6 +96,9 @@ jobs:
             mkdir -p ~/mne_data
             python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
             python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.somato.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.fieldtrip_cmc.age.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.epilepsy_ecog.data_path(update_path=True))";
 
       # Build docs
       - run:
