@@ -102,7 +102,7 @@ epochs = make_signals_in_freq_bands(
     n_targets=N_TARGETS,
     freq_band=(FMIN, FMAX),
     n_epochs=N_EPOCHS,
-    n_times=200,
+    duration=2.0,
     sfreq=100,
     snr=0.2,
     rng_seed=44,
@@ -407,7 +407,7 @@ print(f"Total time: {fit_duration + transform_duration:.0f} ms")
 
 print(
     "\nTime to transform data and compute connectivity per epoch (window): ",
-    f"{transform_duration/(N_EPOCHS//2):.0f} ms",
+    f"{transform_duration / (N_EPOCHS // 2):.0f} ms",
 )
 
 ########################################################################################
@@ -443,7 +443,7 @@ print(
 
 print(
     "\nTime to fit, transform, and compute connectivity per epoch (window): ",
-    f"{fit_transform_duration/(N_EPOCHS//2):.0f} ms",
+    f"{fit_transform_duration / (N_EPOCHS // 2):.0f} ms",
 )
 
 ########################################################################################
@@ -482,7 +482,7 @@ print(f"Time to compute connectivity: {duration:.0f} ms")
 
 print(
     "\nTime to compute connectivity per epoch (window): ",
-    f"{duration/(N_EPOCHS//2):.0f} ms",
+    f"{duration / (N_EPOCHS // 2):.0f} ms",
 )
 
 ########################################################################################
