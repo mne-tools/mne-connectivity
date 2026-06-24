@@ -241,7 +241,7 @@ def make_signals_in_freq_bands(
     # isolate interaction to a given time range per epoch
     if connection_time is not None:
         connection_time -= tmin  # convert time to be relative to time of first sample
-        time_samples = (connection_time * sfreq).astype(int)  # convert time to samples
+        time_samples = np.rint(connection_time * sfreq).astype(int)  # secs to samples
         full_window = np.zeros((n_times,))  # create empty filter the shape of one epoch
 
         # add Tukey window for burst of connectivity to temporal filter

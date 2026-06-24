@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pyvista/setup-headless-display-action@main
         with:
           qt: true
@@ -74,4 +74,4 @@ jobs:
       - run: mne sys_info
         timeout-minutes: 3
       - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
-      - uses: codecov/codecov-action@v6
+      - uses: codecov/codecov-action@v7
