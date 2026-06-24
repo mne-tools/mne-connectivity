@@ -68,11 +68,10 @@ jobs:
       - restore_cache:
           keys:
             - data-cache-sample
-
-      # Load our data
-      - restore_cache:
-          keys:
             - data-cache-bst-resting
+            - data-cache-somato
+            - data-cache-fieldtrip-cmc
+            - data-cache-epilepsy-ecog
 
       - run:
           name: Check PyQt6
@@ -129,12 +128,26 @@ jobs:
           paths:
             - ~/.mne
             - ~/mne_data/MNE-sample-data
-
       - save_cache:
           key: data-cache-bst-resting
           paths:
             - ~/.mne
             - ~/mne_data/MNE-brainstorm-data/bst_resting
+      - save_cache:
+          key: data-cache-somato
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-somato-data
+      - save_cache:
+          key: data-cache-fieldtrip-cmc
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-fieldtrip_cmc-data
+      - save_cache:
+          key: data-cache-epilepsy-ecog
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-epilepsy-ecog-data
 
   docs-deploy:
     docker:
