@@ -40,7 +40,7 @@ def test_spectral_decomposition(method, mode):
         n_epochs=n_epochs,
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
-        connection_delay=0.1,  # ~90° interaction angle for this freq. band
+        connection_delay=0.1,  # ~90° interaction angle for 11-14 Hz band
         rng_seed=44,
     )
 
@@ -55,7 +55,7 @@ def test_spectral_decomposition(method, mode):
         n_epochs=n_epochs,
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
-        connection_delay=0.06,  # ~90° interaction angle for this freq. band
+        connection_delay=0.06,  # ~90° interaction angle for 21-24 Hz band
         rng_seed=42,
     )
 
