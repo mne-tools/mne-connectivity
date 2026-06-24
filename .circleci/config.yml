@@ -68,9 +68,17 @@ jobs:
       - restore_cache:
           keys:
             - data-cache-sample
+      - restore_cache:
+          keys:
             - data-cache-bst-resting
+      - restore_cache:
+          keys:
             - data-cache-somato
+      - restore_cache:
+          keys:
             - data-cache-fieldtrip-cmc
+      - restore_cache:
+          keys:
             - data-cache-epilepsy-ecog
 
       - run:
