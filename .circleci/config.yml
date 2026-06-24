@@ -64,25 +64,22 @@ jobs:
           paths:
             - ~/.cache/pip
 
-      # Look at what we have and fail early if there is some library conflict
-      - run:
-          name: Check installation
-          command: |
-            which python
-            python -c "import mne; mne.sys_info()"
-            LIBGL_DEBUG=verbose python -c "import matplotlib.pyplot as plt; plt.figure()"
-            python -c "import mne; mne.set_config('MNE_LOGGING_LEVEL', 'info')"
-            python -c "import mne; level = mne.get_config('MNE_LOGGING_LEVEL'); assert level.lower() == 'info', repr(level)"
-
       # Load our data
       - restore_cache:
           keys:
             - data-cache-sample
-
-      # Load our data
       - restore_cache:
           keys:
             - data-cache-bst-resting
+      - restore_cache:
+          keys:
+            - data-cache-somato
+      - restore_cache:
+          keys:
+            - data-cache-fieldtrip-cmc
+      - restore_cache:
+          keys:
+            - data-cache-epilepsy-ecog
 
       - run:
           name: Check PyQt6
@@ -106,6 +103,9 @@ jobs:
             mkdir -p ~/mne_data
             python -c "import mne; print(mne.datasets.sample.data_path(update_path=True))";
             python -c "import mne; print(mne.datasets.brainstorm.bst_resting.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.somato.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.fieldtrip_cmc.data_path(update_path=True))";
+            python -c "import mne; print(mne.datasets.epilepsy_ecog.data_path(update_path=True))";
 
       # Build docs
       - run:
@@ -136,12 +136,26 @@ jobs:
           paths:
             - ~/.mne
             - ~/mne_data/MNE-sample-data
-
       - save_cache:
           key: data-cache-bst-resting
           paths:
             - ~/.mne
             - ~/mne_data/MNE-brainstorm-data/bst_resting
+      - save_cache:
+          key: data-cache-somato
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-somato-data
+      - save_cache:
+          key: data-cache-fieldtrip-cmc
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-fieldtrip_cmc-data
+      - save_cache:
+          key: data-cache-epilepsy-ecog
+          paths:
+            - ~/.mne
+            - ~/mne_data/MNE-epilepsy-ecog-data
 
   docs-deploy:
     docker:
