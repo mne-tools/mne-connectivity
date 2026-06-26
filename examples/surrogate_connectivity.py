@@ -94,7 +94,12 @@ epochs = epochs[:30]  # select a subset of epochs to speed up computation
 # Compute time-resolved Fourier coefficients for pre-trial data
 freqs = np.arange(4, 23, 2)
 tfr_kwargs = dict(
-    freqs=freqs, n_cycles=freqs / 2.0, method="morlet", decim=3, output="complex"
+    freqs=freqs,
+    n_cycles=freqs / 2.0,
+    method="morlet",
+    decim=3,
+    output="complex",
+    n_jobs=1,
 )
 pretrial_coeffs = epochs.compute_tfr(tmin=None, tmax=-0.5, **tfr_kwargs)
 
