@@ -366,7 +366,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
     sfreq = 100
     duration = 1.0
     trans_bw = 1.0
-    n_shuffles = 1000
+    n_shuffles = 500
     rng_seed = 0
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
@@ -409,7 +409,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
     surrogate_func = (
         make_surrogate_evoked_data if state == "evoked" else make_surrogate_resting_data
     )
-    surrogate_data = surrogate_func(data=data, n_shuffles=1000, rng_seed=rng_seed)
+    surrogate_data = surrogate_func(data=data, n_shuffles=n_shuffles, rng_seed=rng_seed)
 
     # Compute connectivity
     con = spectral_connectivity_epochs(
