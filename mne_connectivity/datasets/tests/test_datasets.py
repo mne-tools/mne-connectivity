@@ -316,7 +316,7 @@ def test_make_signals_in_freq_bands_n_times_depr():
         )
 
 
-# TODO Version: remove in 0.10
+# TODO Version: remove in 1.0
 def test_make_surrogate_data_deprecation():
     """Test `make_surrogate_data` warning about deprecation."""
     n_epochs = 5
@@ -331,7 +331,7 @@ def test_make_surrogate_data_deprecation():
 
     with pytest.warns(
         FutureWarning,
-        match="`make_surrogate_data` is deprecated and will be removed in 0.10.",
+        match="`make_surrogate_data` is deprecated and will be removed in 1.0.",
     ):
         make_surrogate_data(data, n_shuffles=5)
 
