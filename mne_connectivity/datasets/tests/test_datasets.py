@@ -448,7 +448,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
             <= np.mean(connectivity[1:, :, con_points], axis=(1, 2))  # same aggr. here
         )
         / n_shuffles
-    )
+    )  # see surrogate connectivity example for explanation of p-value calculation
 
     pval_noise = (
         np.sum(
@@ -472,7 +472,7 @@ def test_make_surrogate_resting_data_kind_consistency():
 
     N.B. This test does not work for `make_surrogate_evoked_data`, because the cutting
     of timepoints changes the temporal structure, and there is a smearing of information
-    across times when computiong TFRs. So, the results of epochs → surrogate epochs →
+    across times when computing TFRs. So, the results of epochs → surrogate epochs →
     TFRs vs. epochs → TFRs → surrogate TFRs will have differences in the time domain.
 
     This is not the case for `make_surrogate_resting_data`, because the shuffling is
@@ -513,7 +513,7 @@ def test_make_surrogate_resting_data_kind_consistency():
             coeff_func = getattr(epochs_surrogate, func_name)
             assert np.allclose(
                 coeff_func(**func_kwargs).get_data(), coeffs_surrogate.get_data()
-            ), "Surrogate data not consistent across epochs and PSD coeffs."
+            ), "Surrogate data not consistent across epochs and spectral coeffs."
 
 
 @pytest.mark.parametrize(

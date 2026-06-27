@@ -284,7 +284,7 @@ def make_surrogate_evoked_data(
 def _shuffle_coefficients(data, n_shuffles, rng_seed, data_form):
     """Shuffle coefficients to create surrogate data.
 
-    Surrogate data for each shuffle packaged into an Epochs/EpochsSpectrum/EpochsTFR
+    Surrogate data for each shuffle is packaged into an Epochs/EpochsSpectrum/EpochsTFR
     object, which are together returned as a generator to minimise memory demand.
     """
     # Extract data array and Epochs/Spectrum/TFR information
@@ -341,10 +341,8 @@ def _shuffle_coefficients_over_epochs(
 ):
     """Shuffle coefficients over epochs to create surrogate data.
 
-    Intended for use with non-evoked (e.g., resting-state) data.
-
-    Surrogate data for each shuffle packaged into an Epochs/EpochsSpectrum/EpochsTFR
-    object, which are together returned as a generator to minimise memory demand.
+    Intended for use with non-evoked (e.g., resting-state) data, as in Pellegrini et al.
+    (2023), DOI: 10.1016/j.neuroimage.2023.120218.
     """
     for _ in range(n_shuffles):
         # Shuffle epochs for each channel independently
@@ -365,10 +363,8 @@ def _shuffle_coefficients_within_epochs(
 ):
     """Shuffle coefficients within epochs to create surrogate data.
 
-    Intended for use with (non-)evoked data.
-
-    Surrogate data for each shuffle packaged into an Epochs/EpochsTFR object, which are
-    together returned as a generator to minimise memory demand.
+    Intended for use with (non-)evoked data, as in Aru et al. (2015), DOI:
+    10.1016/j.conb.2014.08.002.
     """
     for _ in range(n_shuffles):
         # Shuffle timepoints for each epoch and channel independently
