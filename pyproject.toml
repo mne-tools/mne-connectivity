@@ -30,17 +30,9 @@ dependencies = [
 ]
 description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
 dynamic = ["version"]
-keywords = [
-  'connectivity',
-  'eeg',
-  'ieeg',
-  'meg',
-  'neuroscience',
-]
+keywords = ['connectivity', 'eeg', 'ieeg', 'meg', 'neuroscience']
 license = {file = 'LICENSE'}
-maintainers = [
-  {email = 'adam.li@columbia.edu', name = 'Adam Li'},
-]
+maintainers = [{email = 'adam.li@columbia.edu', name = 'Adam Li'}]
 name = 'mne-connectivity'
 readme = {content-type = "text/x-rst", file = 'README.rst'}
 requires-python = '>=3.10'
@@ -54,10 +46,7 @@ all = [
   'mne-connectivity[test]',
   'PyQt6',
 ]
-build = [
-  'build',
-  'twine',
-]
+build = ['build', 'twine']
 doc = [
   'intersphinx-registry',
   'memory-profiler',
@@ -78,9 +67,7 @@ doc = [
   'sphinxcontrib-bibtex',
   'sphinxcontrib-towncrier',
 ]
-full = [
-  'mne-connectivity[all]',
-]
+full = ['mne-connectivity[all]']
 gui = [
   'h5netcdf',
   'matplotlib',
@@ -109,7 +96,7 @@ test = [
   'mne-connectivity[gui]',
   'pandas',
   'pymatreader',
-  'pytest!=9.1.0,!=9.1.1',
+  'pytest',
   'pytest-cov',
   'statsmodels',
 ]
@@ -142,18 +129,10 @@ precision = 2
 [tool.coverage.run]
 branch = true
 cover_pylib = false
-omit = [
-  '**/__init__.py',
-  '**/mne_connectivity/conftest.py',
-  '**/tests/**',
-]
+omit = ['**/__init__.py', '**/mne_connectivity/conftest.py', '**/tests/**']
 
 [tool.isort]
-extend_skip_glob = [
-  'doc/*',
-  'examples/*',
-  'setup.py',
-]
+extend_skip_glob = ['doc/*', 'examples/*', 'setup.py']
 line_length = 88
 multi_line_output = 3
 py_version = 39
@@ -173,6 +152,7 @@ match-dir = '^mne_connectivity.*'
 addopts = '--durations 20 --junit-xml=junit-results.xml -v -rfEXs --tb=short --color=yes'
 junit_family = 'xunit2'
 minversion = '6.0'
+testpaths = ['mne_connectivity']
 
 [tool.rstcheck]
 ignore_directives = [
@@ -221,11 +201,7 @@ ignore_roles = [
 report_level = "WARNING"
 
 [tool.ruff]
-extend-exclude = [
-  'benchmarks',
-  'doc',
-  'setup.py',
-]
+extend-exclude = ['benchmarks', 'doc', 'setup.py']
 line-length = 88
 
 [tool.ruff.lint]
