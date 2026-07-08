@@ -117,9 +117,9 @@ pretrial_con = np.abs(pretrial_con.get_data()).mean(
 # :func:`~mne_connectivity.make_surrogate_resting_data` function. This approach
 # destroys the data's covariance structure by randomly shuffling the order of epochs,
 # independently for each channel. To get a reliable estimate of the baseline
-# connectivity, we perform this shuffling procedure :math:`\text{n}_{\text{shuffle}}`
-# times, producing :math:`\text{n}_{\text{shuffle}}` surrogate datasets. We can then
-# iterate over these shuffles and compute the connectivity for each one.
+# connectivity, we perform this shuffling procedure ``n_shuffle`` times, producing
+# ``n_shuffle`` surrogate datasets. We can then iterate over these shuffles and compute
+# the connectivity for each one.
 
 # %%
 
@@ -166,8 +166,17 @@ ax.legend()
 #
 # :math:`p=\LARGE{\frac{\Sigma_{s=1}^Sc_s}{S}}` ,
 #
-# :math:`c_s=\{1\text{ if }\text{Con}\leq\text{Con}_{\text{s}}\text{ },\text{ }0
-# \text{ if otherwise }` ,
+# .. math::
+#    :nowrap:
+#
+#    \begin{flalign*}
+#    c_s =
+#    \begin{cases}
+#        1 & \text{if }\text{Con}\leq\text{Con}_{\text{s}} \\
+#        0 & \text{otherwise}
+#    \end{cases} ,
+#    &&
+#    \end{flalign*}
 #
 # where: :math:`p` is our p-value; :math:`s` is a given shuffle iteration of :math:`S`
 # total shuffles; and :math:`c` is a binary indicator of whether the true connectivity,
@@ -203,7 +212,7 @@ beta_con_pretrial_surrogate = pretrial_surrogate_con[:, beta_freqs].mean(axis=1)
 
 # Compute p-value for pre-trial lower beta coupling
 p_val = np.sum(beta_con_pretrial <= beta_con_pretrial_surrogate) / n_shuffles
-print(f"P = {p_val:.2f}")
+print(f"p = {p_val:.2f}")
 
 ########################################################################################
 # Assessing connectivity in evoked data
@@ -297,17 +306,17 @@ beta_con_poststim_surrogate = poststim_surrogate_con[:, beta_freqs].mean(axis=0)
 
 # Compute p-value for post-stimulus lower beta coupling
 p_val = np.sum(beta_con_poststim <= beta_con_poststim_surrogate) / n_shuffles
-print(f"P = {p_val:.2f}")
+print(f"p = {p_val:.2f}")
 
 ########################################################################################
 # .. _inappropriate-surrogate-data:
 #
 # Generating surrogate connectivity from inappropriate data
 # ---------------------------------------------------------
-# We discussed above how using evoked data to generate surrogates from
-# :func:`~mne_connectivity.make_surrogate_resting_data` risks overestimating the degree
-# of baseline connectivity. We demonstrate this below by generating surrogates from the
-# post-stimulus data, using this inappropriate method.
+# We discussed above how using :func:`~mne_connectivity.make_surrogate_resting_data`
+# to estimate a null connectivity distribution for *evoked data* risks overestimating
+# the degree of baseline connectivity. We demonstrate this below by generating
+# surrogates from the post-stimulus data, using this inappropriate method.
 
 # %%
 
@@ -368,7 +377,7 @@ ax.legend()
 # ---------------------------------------
 #
 # While our focus here has been on assessing the significance of connectivity on a
-# single recording-level, we may also want to determine whether group-level connectivity
+# single-recording-level, we may also want to determine whether group-level connectivity
 # estimates are significantly different from baseline. For this, we can generate
 # surrogates and estimate connectivity alongside the original signals for each piece of
 # data.
