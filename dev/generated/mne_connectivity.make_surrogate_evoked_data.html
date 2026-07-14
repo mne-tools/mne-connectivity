@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.check_indices &#8212; MNE-Connectivity 0.9.0.dev37+g64d52ac40 documentation</title>
+    <title>mne_connectivity.make_surrogate_evoked_data &#8212; MNE-Connectivity 0.9.0.dev37+g64d52ac40 documentation</title>
   
   
   
@@ -52,7 +52,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.check_indices';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_connectivity.make_surrogate_evoked_data';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
@@ -63,8 +63,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_connectivity.select_order" href="mne_connectivity.select_order.html" />
-    <link rel="prev" title="mne_connectivity.seed_target_multivariate_indices" href="mne_connectivity.seed_target_multivariate_indices.html" />
+    <link rel="next" title="mne_connectivity.make_surrogate_data" href="mne_connectivity.make_surrogate_data.html" />
+    <link rel="prev" title="mne_connectivity.make_surrogate_resting_data" href="mne_connectivity.make_surrogate_resting_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.9" />
@@ -420,21 +420,21 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.symmetric_orth.html">mne_connectivity.symmetric_orth</a></li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.degree.html">mne_connectivity.degree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.seed_target_indices.html">mne_connectivity.seed_target_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.seed_target_multivariate_indices.html">mne_connectivity.seed_target_multivariate_indices</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_connectivity.check_indices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.check_indices.html">mne_connectivity.check_indices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.select_order.html">mne_connectivity.select_order</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_sensors_connectivity.html">mne_connectivity.viz.plot_sensors_connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.viz.plot_connectivity_circle.html">mne_connectivity.viz.plot_connectivity_circle</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_signals_in_freq_bands.html">mne_connectivity.make_signals_in_freq_bands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_surrogate_resting_data.html">mne_connectivity.make_surrogate_resting_data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_surrogate_evoked_data.html">mne_connectivity.make_surrogate_evoked_data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_connectivity.make_surrogate_evoked_data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_connectivity.make_surrogate_data.html">mne_connectivity.make_surrogate_data</a></li>
 </ul>
 </div>
@@ -479,7 +479,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_connectivity.check_indices</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_connectivity.make_surrogate_evoked_data</span></li>
   </ul>
 </nav>
 </div>
@@ -496,35 +496,86 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mne-connectivity-check-indices">
-<h1>mne_connectivity.check_indices<a class="headerlink" href="#mne-connectivity-check-indices" title="Link to this heading">#</a></h1>
+  <section id="mne-connectivity-make-surrogate-evoked-data">
+<h1>mne_connectivity.make_surrogate_evoked_data<a class="headerlink" href="#mne-connectivity-make-surrogate-evoked-data" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_connectivity.check_indices">
-<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">check_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/utils/utils.html#check_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.check_indices" title="Link to this definition">#</a></dt>
-<dd><p>Check indices parameter for bivariate connectivity.</p>
+<dt class="sig sig-object py" id="mne_connectivity.make_surrogate_evoked_data">
+<span class="sig-prename descclassname"><span class="pre">mne_connectivity.</span></span><span class="sig-name descname"><span class="pre">make_surrogate_evoked_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_shuffles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_generator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_connectivity/datasets/surrogate.html#make_surrogate_evoked_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_connectivity.make_surrogate_evoked_data" title="Link to this definition">#</a></dt>
+<dd><p>Create surrogate evoked data for a null hypothesis of connectivity.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of length 2 of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a>, shape (n_cons,)</span></dt><dd><p>A tuple of 2 arrays containing the seed and target channel indices,
-respectively.</p>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a> | <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The time-series or Fourier coefficients to create the null hypothesis surrogate
+data for. Fourier coefficients can be generated from
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.compute_tfr" title="(in MNE v1.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne.Epochs.compute_tfr()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">output='complex'</span></code>.</p>
+</dd>
+<dt><strong>n_shuffles</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> (default 1000)</span></dt><dd><p>The number of surrogate datasets to create.</p>
+</dd>
+<dt><strong>rng_seed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> (default <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>)</span></dt><dd><p>The seed to use for the random number generator. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no seed is
+specified.</p>
+</dd>
+<dt><strong>return_generator</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> (default <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">True</span></code></a>)</span></dt><dd><p>Whether or not to return the surrogate data as a generator object instead of a
+list. This allows iterating over the surrogates without having to keep them all
+in memory.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of length 2 of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a>, shape (n_cons,)</span></dt><dd><p>The indices to use for connectivity computation.</p>
+<dt><strong>surrogate_data</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsArray</span></code></a> or <a class="reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochsTFR</span></code></a></span></dt><dd><p>The surrogate data for the null hypothesis with <code class="docutils literal notranslate"><span class="pre">n_shuffles</span></code> entries. Returned
+as a generator if <code class="docutils literal notranslate"><span class="pre">return_generator=True</span></code>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Indices for bivariate connectivity should be a tuple of length 2, containing the
-channel indices for the seed and target channel pairs, respectively. Seed and target
-indices should be equal-length array-likes of integers representing the indices of
-the individual channels in the data.</p>
+<div class="admonition-suitable-for-use-with-evoked-or-non-evoked-data admonition">
+<p class="admonition-title">Suitable for use with evoked or non-evoked data</p>
+<p>This approach is suitable for generating surrogate data for a null hypothesis of
+connectivity from evoked data. This approach can also work with non-evoked data,
+however <a class="reference internal" href="mne_connectivity.make_surrogate_resting_data.html#mne_connectivity.make_surrogate_resting_data" title="mne_connectivity.make_surrogate_resting_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_resting_data()</span></code></a> is recommended for
+this.</p>
+</div>
+<p>Surrogate data is generated by cutting the time series at a random point and
+reversing the cut portion, independently for each epoch and channel. This destroys
+the covariance of the data, such that connectivity estimates should reflect the null
+hypothesis of no genuine connectivity between signals (e.g., only interactions due
+to background noise) <a class="footnote-reference brackets" href="#footcite-aruetal2015" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<p>This approach is robust to data containing a temporal structure that is consistent
+across epochs. Examples of this data include evoked potentials, where a stimulus is
+presented or an action performed at a set time during each epoch.</p>
+<p>Finally, it is important to note that <strong>you should always compare true and
+surrogate connectivity estimates from epochs of the same duration</strong>. This will
+ensure that spectral information is captured with the same accuracy in both sets of
+connectivity estimates. Ideally, <strong>you should also compare true and surrogate
+connectivity estimates from the same number of epochs</strong> to avoid biases from noise
+(fewer epochs gives noisier estimates) or finite sample sizes (e.g., in coherency,
+phase-locking value, etc… <a class="footnote-reference brackets" href="#footcite-vincketal2010" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.9.</span></p>
+</div>
+<p class="rubric">References</p>
+<div class="docutils container" id="id3">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-aruetal2015" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Juhan Aru, Jaan Aru, Viola Priesemann, Michael Wibral, Luiz Lana, Gordon Pipa, Wolf Singer, and Raul Vicente. Untangling cross-frequency coupling in neuroscience. <em>Current Opinion in Neurobiology</em>, 31:51–61, 2015. <a class="reference external" href="https://doi.org/10.1016/j.conb.2014.08.002">doi:10.1016/j.conb.2014.08.002</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-vincketal2010" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Martin Vinck, Marijn van Wingerden, Thilo Womelsdorf, Pascal Fries, and Cyriel M.A. Pennartz. The pairwise phase consistency: a bias-free measure of rhythmic neuronal synchronization. <em>NeuroImage</em>, 51(1):112–122, 2010. <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2010.01.073">doi:10.1016/j.neuroimage.2010.01.073</a>.</p>
+</aside>
+</aside>
+</div>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-connectivity-check-indices"></span></section>
+<section id="examples-using-mne-connectivity-make-surrogate-evoked-data">
+<span id="sphx-glr-backreferences-mne-connectivity-make-surrogate-evoked-data"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.make_surrogate_evoked_data</span></code><a class="headerlink" href="#examples-using-mne-connectivity-make-surrogate-evoked-data" title="Link to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how surrogate data can be generated to assess whether connectivity estimates are significantly greater than baseline."><img alt="" src="../_images/sphx_glr_surrogate_connectivity_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/surrogate_connectivity.html"><span class="doc">Determine the significance of connectivity estimates against baseline connectivity</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Determine the significance of connectivity estimates against baseline connectivity</div>
+</div></div></section>
+</section>
 
 
                 </article>
@@ -537,20 +588,20 @@ the individual channels in the data.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_connectivity.seed_target_multivariate_indices.html"
+       href="mne_connectivity.make_surrogate_resting_data.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_connectivity.seed_target_multivariate_indices</p>
+        <p class="prev-next-title">mne_connectivity.make_surrogate_resting_data</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_connectivity.select_order.html"
+       href="mne_connectivity.make_surrogate_data.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_connectivity.select_order</p>
+        <p class="prev-next-title">mne_connectivity.make_surrogate_data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -573,7 +624,8 @@ the individual channels in the data.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.check_indices"><code class="docutils literal notranslate"><span class="pre">check_indices()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.make_surrogate_evoked_data"><code class="docutils literal notranslate"><span class="pre">make_surrogate_evoked_data()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-connectivity-make-surrogate-evoked-data">Examples using <code class="docutils literal notranslate"><span class="pre">mne_connectivity.make_surrogate_evoked_data</span></code></a></li>
 </ul>
   </nav></div>
 
