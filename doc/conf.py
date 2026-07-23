@@ -283,6 +283,8 @@ html_theme_options = {
         "version_match": switcher_version_match,
     },
     "back_to_top_button": False,
+    "announcement": "The next release of MNE-Connectivity will be v1.0, which will include breaking changes. Click <a href='https://mne.tools/mne-connectivity/v0.9/changes/v0.9.html' target='_blank'>here</a> for more information.",
+    "sticky_banners": True,
 }
 intersphinx_mapping = {
     "mne": ("https://mne.tools/dev", None),
