@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.9.0.dev38+gf99e747d6 documentation</title>
+    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.9.0.dev39+ga9e151196 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=02ec7c47" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=31c91a46" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=feab14a2"></script>
+    <script src="../../_static/documentation_options.js?v=99485f5f"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev38+gf99e747d6 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev39+ga9e151196 documentation</p>
   
 </a></div>
     
@@ -698,8 +698,9 @@ the signal-to-noise ratio benefits of the multivariate approach.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,  962.33it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  962.48it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,  902.54it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  907.59it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  900.73it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -870,8 +871,8 @@ filters are fit to a single frequency band and not each frequency bin.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 50 ms
-Time to fit, transform, and compute connectivity (spec_conn function): 161 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 51 ms
+Time to fit, transform, and compute connectivity (spec_conn function): 170 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class offers an efficient way to analyse connectivity
@@ -1116,8 +1117,8 @@ sequentially.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,  920.45it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  946.80it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,  909.77it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  924.47it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -1375,9 +1376,9 @@ to transform each window of data and compute its connectivity.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 40 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 41 ms
 Time to transform data and compute connectivity: 87 ms
-Total time: 127 ms
+Total time: 128 ms
 
 Time to transform data and compute connectivity per epoch (window):  3 ms
 </pre></div>
@@ -1684,9 +1685,9 @@ considerably slower.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 699 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 720 ms
 
-Time to fit, transform, and compute connectivity per epoch (window):  23 ms
+Time to fit, transform, and compute connectivity per epoch (window):  24 ms
 </pre></div>
 </div>
 <p>Furthermore, given the noisy nature of single windows of data, there is a risk of
@@ -1963,7 +1964,7 @@ class approach above.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 148 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 152 ms
 
 Time to compute connectivity per epoch (window):  5 ms
 </pre></div>
@@ -2053,7 +2054,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.270 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.280 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e219ae2adfdff83f86f08b53c680a14c/cohy_decomposition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition.ipynb</span></code></a></p>
@@ -2150,7 +2151,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-07-20.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-07-23.
       <br/>
     
   </p>
