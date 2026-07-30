@@ -44,6 +44,7 @@ on numpy array inputs.
    :toctree: generated/
 
    envelope_correlation
+   learn_graph
    phase_slope_index
    phase_slope_index_time
    vector_auto_regression
