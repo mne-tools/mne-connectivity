@@ -336,6 +336,34 @@ def test_make_surrogate_data_deprecation():
         make_surrogate_data(data, n_shuffles=5)
 
 
+def test_make_surrogate_evoked_data_fourier_magnitude_consistency():
+    """Test evoked surrogates preserve each time series' Fourier magnitudes."""
+    rng = np.random.default_rng(42)
+    data = rng.standard_normal((3, 2, 101))
+    epochs = EpochsArray(
+        data=data,
+        info=create_info(ch_names=2, sfreq=100.0, ch_types="eeg"),
+        verbose=False,
+    )
+
+    surrogates = make_surrogate_evoked_data(
+        epochs,
+        n_shuffles=3,
+        rng_seed=7,
+        return_generator=False,
+    )
+    expected_magnitudes = np.abs(np.fft.rfft(data, axis=-1))
+
+    for surrogate in surrogates:
+        actual_magnitudes = np.abs(np.fft.rfft(surrogate.get_data(), axis=-1))
+        np.testing.assert_allclose(
+            actual_magnitudes,
+            expected_magnitudes,
+            rtol=1e-12,
+            atol=1e-12,
+        )
+
+
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.7, True], [0.2, False]))
 @pytest.mark.parametrize(
     ("use_coeffs", "state", "method"),
