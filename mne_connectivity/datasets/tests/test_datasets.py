@@ -516,33 +516,6 @@ def test_make_surrogate_resting_data_kind_consistency():
             ), "Surrogate data not consistent across epochs and spectral coeffs."
 
 
-@pytest.mark.parametrize(
-    "surrogate_func", [make_surrogate_resting_data, make_surrogate_evoked_data]
-)
-def test_make_surrogate_data_generator(surrogate_func):
-    """Test `return_generator` parameter works in `make_surrogate_xxx_data`."""
-    # Generate random data for packaging into Epochs
-    n_epochs = 5
-    n_chans = 6
-    n_times = 200
-    sfreq = 50
-    rng = np.random.default_rng(44)
-    data = rng.random((n_epochs, n_chans, n_times))
-    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
-    epochs = EpochsArray(data=data, info=info)
-    coeffs = epochs.compute_tfr(
-        method="morlet", freqs=np.arange(5, sfreq // 2), output="complex"
-    )
-
-    # Test generator (not) returned when requested
-    for input_data in (epochs, coeffs):
-        for return_generator, expects in zip([True, False], [Generator, list]):
-            surrogate_data = surrogate_func(
-                data=input_data, n_shuffles=5, return_generator=return_generator
-            )
-            assert isinstance(surrogate_data, expects), type(surrogate_data)
-
-
 def test_make_surrogate_evoked_data_fourier_magnitude_consistency():
     """Test evoked surrogates preserve each time series' Fourier magnitudes."""
     rng = np.random.default_rng(42)
@@ -569,6 +542,33 @@ def test_make_surrogate_evoked_data_fourier_magnitude_consistency():
             rtol=1e-12,
             atol=1e-12,
         )
+
+
+@pytest.mark.parametrize(
+    "surrogate_func", [make_surrogate_resting_data, make_surrogate_evoked_data]
+)
+def test_make_surrogate_data_generator(surrogate_func):
+    """Test `return_generator` parameter works in `make_surrogate_xxx_data`."""
+    # Generate random data for packaging into Epochs
+    n_epochs = 5
+    n_chans = 6
+    n_times = 200
+    sfreq = 50
+    rng = np.random.default_rng(44)
+    data = rng.random((n_epochs, n_chans, n_times))
+    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
+    epochs = EpochsArray(data=data, info=info)
+    coeffs = epochs.compute_tfr(
+        method="morlet", freqs=np.arange(5, sfreq // 2), output="complex"
+    )
+
+    # Test generator (not) returned when requested
+    for input_data in (epochs, coeffs):
+        for return_generator, expects in zip([True, False], [Generator, list]):
+            surrogate_data = surrogate_func(
+                data=input_data, n_shuffles=5, return_generator=return_generator
+            )
+            assert isinstance(surrogate_data, expects), type(surrogate_data)
 
 
 @pytest.mark.parametrize(
