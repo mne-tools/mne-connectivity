@@ -527,20 +527,14 @@ def test_make_surrogate_evoked_data_fourier_magnitude_consistency():
     )
 
     surrogates = make_surrogate_evoked_data(
-        epochs,
-        n_shuffles=3,
-        rng_seed=7,
-        return_generator=False,
+        epochs, n_shuffles=3, rng_seed=7, return_generator=False
     )
     expected_magnitudes = np.abs(np.fft.rfft(data, axis=-1))
 
     for surrogate in surrogates:
         actual_magnitudes = np.abs(np.fft.rfft(surrogate.get_data(), axis=-1))
         np.testing.assert_allclose(
-            actual_magnitudes,
-            expected_magnitudes,
-            rtol=1e-12,
-            atol=1e-12,
+            actual_magnitudes, expected_magnitudes, rtol=1e-12, atol=1e-12
         )
 
 
