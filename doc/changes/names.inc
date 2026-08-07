@@ -11,6 +11,7 @@
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
 .. _Qianliang Li: https://github.com/Avoide
+.. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler
 .. _Salman Qasim: https://github.com/seqasim
