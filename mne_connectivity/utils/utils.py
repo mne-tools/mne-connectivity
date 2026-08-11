@@ -353,7 +353,7 @@ def degree(connectivity, threshold_prop=0.2):
     degree[:: n_nodes + 1] = 0.0
     n_keep = int(round((degree.size - len(connectivity)) * threshold_prop / split))
     degree[np.argsort(degree)[:-n_keep]] = 0
-    degree.shape = connectivity.shape
+    degree = np.reshape(degree, connectivity.shape)
     if split == 2:
         degree += degree.T  # normally unsafe, but we know where our zeros are
     degree = np.sum(degree > 0, axis=0)
