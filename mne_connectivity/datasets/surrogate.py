@@ -373,7 +373,7 @@ def _shuffle_coefficients_within_epochs(
         for epoch_i in range(data_arr.shape[0]):
             for chan_i in range(data_arr.shape[1]):
                 surr = np.array_split(
-                    data_arr[epoch_i, chan_i], cutpoints[epoch_i, chan_i], axis=-1
+                    data_arr[epoch_i, chan_i], [cutpoints[epoch_i, chan_i]], axis=-1
                 )
                 surr.reverse()
                 surrogate_arr[epoch_i, chan_i] = np.concatenate(surr, axis=-1)
