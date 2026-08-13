@@ -103,17 +103,19 @@ If the procedure is followed correctly, there is no need to set any version info
 
     a. Update the version information for the online documentation in `doc/_static/versions.json`.
 
-    b. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
+    b. Copy the `doc/changes/dev.rst.template` file and rename it to `doc/changes/dev.rst`. This file will be used to store the changelog entries for the next release.
+
+    c. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
     
        towncrier build --version X.Y.Z
     
     where `X.Y.Z` is the new major-minor-micro version number (e.g., `0.8.0`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
     
-    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.Y.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
+    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.Y.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, `doc/changes/dev.rst` should be identical to `doc/changes/dev.rst.template`. Delete the `doc/changes/dev.rst` file to prevent it from being included in the documentation for the new version.
 
-    c. Update the `doc/whats_new.rst` file to include the changelog file for the new version.
+    d. Update the contents tree in the `doc/whats_new.rst` file to include the changelog file for the new version (e.g., `/changes/v0.8.rst`).
 
-    d. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
+    e. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
 
 3. With the pull request merged, create a release tag for the new major-minor-micro version number (e.g., `v0.8.0`) on the `main` branch, and publish the release on GitHub.
 
