@@ -126,14 +126,17 @@ def learn_graph(
     n_jobs=1,
     verbose=None,
 ):
-    """Learn a sparse graph from smooth signals.
+    r"""Learn a sparse graph from smooth signals.
 
     Estimates a symmetric, non-negative, zero-diagonal weighted adjacency
     matrix directly from signal smoothness, rather than from pairwise
     similarity/coherence computed independently per edge. All edge weights
-    are learned jointly by solving::
+    are learned jointly by solving
 
-        minimize_{w >= 0}  2 * w^T z - alpha * 1^T log(S w) + beta * ||w||^2
+    .. math::
+
+        \min_{w \geq 0} \; 2 w^\top z - \alpha \mathbf{1}^\top \log(Sw)
+        + \beta \|w\|^2
 
     where ``z`` is the vector of pairwise distances between nodes (rows of
     ``data``) and ``S`` maps an edge-weight vector to the corresponding
@@ -150,13 +153,11 @@ def learn_graph(
     ----------
     data : array_like, shape ([n_epochs,] n_nodes, n_times) | ~mne.Epochs | generator
         The data from which to learn a graph. Can be a single 2D array of
-        shape ``(n_nodes, n_times)`` (in which case a single
-        :class:`~mne_connectivity.Connectivity` is returned), a 3D array of
-        shape ``(n_epochs, n_nodes, n_times)``, a :class:`mne.Epochs` object,
-        or a list/generator of 2D arrays or :class:`mne.SourceEstimate` /
-        :class:`mne.VolSourceEstimate` objects (in which case an
-        :class:`~mne_connectivity.EpochConnectivity` is returned, one graph
-        per epoch).
+        shape ``(n_nodes, n_times)``, a 3D array of shape
+        ``(n_epochs, n_nodes, n_times)``, a :class:`mne.Epochs` object, or a
+        list/generator of 2D arrays or :class:`mne.SourceEstimate` /
+        :class:`mne.VolSourceEstimate` objects. See Returns for how the
+        output depends on the input type.
     %(names)s
         Ignored (and overridden by ``data.ch_names``) if ``data`` is an
         :class:`mne.Epochs` object.
@@ -185,20 +186,18 @@ def learn_graph(
         consistently regardless of the input's physical units or amplitude
         scale. See Notes.
     max_iter : int
-        Maximum number of primal-dual iterations. Default ``1000``, which is
-        ample for the default ``alpha=0.5, beta=0.5`` (typically well under
-        100 iterations). Sparser settings (small ``beta``, in particular
-        ``beta=0``) lack a strongly-convex term and converge markedly more
-        slowly, often requiring several thousand iterations; a
-        :class:`RuntimeWarning` is raised if ``tol`` is not reached within
-        ``max_iter`` iterations.
+        Maximum number of primal-dual iterations. Default ``1000``. Sparser
+        settings (small ``beta``, in particular ``beta=0``) may require more
+        iterations to converge; see Notes.
     tol : float
         Relative convergence tolerance on both the edge-weight and
         node-degree updates. Default ``1e-4``.
     step_size : float | None
-        Advanced: override the closed-form step size
-        ``1 / (1 + 2 * beta + sqrt(2 * (n_nodes - 1)))``. Convergence is only
-        guaranteed for the default. Default ``None``.
+        Override the closed-form step size
+        ``1 / (1 + 2 * beta + sqrt(2 * (n_nodes - 1)))``. Useful for matching
+        the step size used by another implementation (e.g. for validation)
+        or for trading off convergence speed against stability; convergence
+        is only guaranteed for the default. Default ``None``.
     %(n_jobs)s
         Each epoch's graph is learned independently, so this parallelizes
         across epochs; for small numbers of nodes/iterations the joblib

@@ -130,8 +130,7 @@ def test_learn_graph_bare_2d_returns_connectivity():
     assert not isinstance(conn, EpochConnectivity)
 
 
-@pytest.mark.parametrize("n_jobs", [1, 2])
-def test_learn_graph_n_jobs_identical(n_jobs):
+def test_learn_graph_n_jobs_identical():
     """Test that n_jobs=1 and n_jobs=2 give identical results."""
     rng = np.random.default_rng(5)
     n_nodes, n_epochs, n_times_per_epoch = 5, 4, 200
@@ -144,7 +143,7 @@ def test_learn_graph_n_jobs_identical(n_jobs):
     )
 
     conn_serial = learn_graph(X3, n_jobs=1, verbose=False)
-    conn_parallel = learn_graph(X3, n_jobs=n_jobs, verbose=False)
+    conn_parallel = learn_graph(X3, n_jobs=2, verbose=False)
     assert_allclose(conn_serial.get_data(), conn_parallel.get_data())
 
 
