@@ -1,6 +1,22 @@
 Version 0.9.0 (2026-08-13)
 ==========================
 
+Upcoming breaking changes for v1.0
+----------------------------------
+
+The next release of MNE-Connectivity will be v1.0, which will include breaking changes. If you do not want the v1.0 release to break your code, you should pin your MNE-Connectivity version to ``<=0.9`` until v1.0 is released and you can update your code to accommodate any required changes.
+
+The following breaking changes are anticipated:
+
+- Separation of functions accepting MNE data object and array-like inputs
+- Requiring spectral representations of data to be provided for spectral connectivity analysis functions
+- Changes to improve consistency of all-to-all vs. symmetric indexing of connectivity
+- Requiring :class:`mne.Info` objects as input to connectivity containers
+- Isolating ``DynamicMixin`` features to VAR-specific connectivity containers
+- Removing ``EpochMixin`` features from non-epoched connectivity containers
+
+For more details and the most up-to-date information, see the following GitHub issue: `Expected changes for 1.0 #440 <https://github.com/mne-tools/mne-connectivity/issues/440>`_.
+
 Bugfixes
 --------
 
