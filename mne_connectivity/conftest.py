@@ -85,7 +85,7 @@ def close_all():
     plt.close("all")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def matplotlib_config():
     """Configure matplotlib for viz tests."""
     import matplotlib
