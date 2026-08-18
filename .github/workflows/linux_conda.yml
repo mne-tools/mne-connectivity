@@ -51,3 +51,6 @@ jobs:
       - name: Run pytest
         run: python -m pytest . -n "$PYTEST_XDIST_N" --timeout=180 --timeout-method=thread --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v7
+        if: success() || failure()
+        with:
+          token: 6364d4ef-0267-4ae6-b844-ee4333be8701
