@@ -11,7 +11,11 @@ from itertools import permutations
 import numpy as np
 from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
-from mne.fixes import jit
+
+try:  # MNE 1.13+
+    from mne._numba import jit
+except ImportError:
+    from mne.fixes import jit
 from mne.utils import _time_mask, logger, verbose
 from mne.utils.check import _check_option, _validate_type
 from mne.utils.docs import fill_doc
