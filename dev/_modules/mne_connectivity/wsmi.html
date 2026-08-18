@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.9.0.dev46+gcc0f56cb2 documentation</title>
+    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.9.0.dev48+gba67877cb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=c4f23d40"></script>
+    <script src="../../_static/documentation_options.js?v=5e913e4e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev46+gcc0f56cb2 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev48+gba67877cb documentation</p>
   
 </a></div>
     
@@ -443,7 +443,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne._fiff.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.epochs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEpochs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.fixes</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c1"># MNE 1.13+</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne._numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.fixes</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_time_mask</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils.check</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils.docs</span><span class="w"> </span><span class="kn">import</span> <span class="n">fill_doc</span>
@@ -454,12 +458,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_define_symbols</span><span class="p">(</span><span class="n">kernel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Define all possible symbols for a given kernel size (original implementation).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Define all possible symbols for a given kernel size (original implementation)."""</span>
     <span class="n">result_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">total_symbols</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
     <span class="n">cursymbol</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">kernel</span><span class="p">)):</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">perm</span><span class="p">))</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">perm</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result_dict</span><span class="p">:</span>
             <span class="n">result_dict</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">cursymbol</span>
             <span class="n">cursymbol</span> <span class="o">=</span> <span class="n">cursymbol</span> <span class="o">+</span> <span class="mi">1</span>
@@ -473,10 +477,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_symb</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute symbolic transform using original logic but optimized.</span>
+<span class="w">    </span><span class="sd">"""Compute symbolic transform using original logic but optimized.</span>
 
 <span class="sd">    This matches the original _symb_python exactly but with optimizations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">symbols</span> <span class="o">=</span> <span class="n">_define_symbols</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
     <span class="n">dims</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 
@@ -498,7 +502,7 @@
         <span class="c1"># Process each channel and epoch</span>
         <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
-                <span class="n">symbol_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">ind</span><span class="p">[</span><span class="n">ch</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ep</span><span class="p">]))</span>
+                <span class="n">symbol_str</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">ind</span><span class="p">[</span><span class="n">ch</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ep</span><span class="p">]))</span>
                 <span class="n">signal_sym</span><span class="p">[</span><span class="n">ch</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ep</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol_to_idx</span><span class="p">[</span><span class="n">symbol_str</span><span class="p">]</span>
 
     <span class="n">count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">(</span>
@@ -511,7 +515,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_weights_matrix</span><span class="p">(</span><span class="n">nsym</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aux function (original implementation).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Aux function (original implementation)."""</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nsym</span><span class="p">,</span> <span class="n">nsym</span><span class="p">))</span>
     <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">wts</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">wts</span><span class="p">)</span>
@@ -524,7 +528,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_wsmi_jitted</span><span class="p">(</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">data_sym</span><span class="p">,</span> <span class="n">counts</span><span class="p">,</span> <span class="n">wts_matrix</span><span class="p">,</span> <span class="n">weighted</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute raw wSMI or SMI from symbolic data (Numba-jitted, if installed).</span>
+<span class="w">    </span><span class="sd">"""Compute raw wSMI or SMI from symbolic data (Numba-jitted, if installed).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -541,7 +545,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    result : ndarray</span>
 <span class="sd">        Computed connectivity values (either wSMI or SMI).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">nchannels</span><span class="p">,</span> <span class="n">nsamples_after_symb</span><span class="p">,</span> <span class="n">ntrials</span> <span class="o">=</span> <span class="n">data_sym</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">n_unique_symbols</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -596,7 +600,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_apply_anti_aliasing</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">anti_aliasing</span><span class="p">,</span> <span class="n">is_epochs</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply anti-aliasing filtering based on parameters and data type.</span>
+<span class="w">    </span><span class="sd">"""Apply anti-aliasing filtering based on parameters and data type.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -609,7 +613,7 @@
 <span class="sd">    tau : int</span>
 <span class="sd">        Time delay between pattern elements.</span>
 <span class="sd">    anti_aliasing : bool | str</span>
-<span class="sd">        Anti-aliasing mode: True (always), False (never), or &quot;auto&quot; (smart detection).</span>
+<span class="sd">        Anti-aliasing mode: True (always), False (never), or "auto" (smart detection).</span>
 <span class="sd">    is_epochs : bool</span>
 <span class="sd">        Whether the original data was an MNE Epochs object.</span>
 <span class="sd">    info : mne.Info | None</span>
@@ -620,7 +624,7 @@
 <span class="sd">    filtered_data : ndarray</span>
 <span class="sd">        Data array of shape (n_channels, n_times, n_epochs) ready for symbolic</span>
 <span class="sd">        transformation, with anti-aliasing applied if needed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">n_epochs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">anti_alias_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span> <span class="o">/</span> <span class="n">kernel</span> <span class="o">/</span> <span class="n">tau</span>
     <span class="n">nyquist_freq</span> <span class="o">=</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mf">2.0</span>
@@ -633,18 +637,18 @@
         <span class="c1"># Never filter - warn about potential issues</span>
         <span class="n">effective_sfreq</span> <span class="o">=</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="n">tau</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Anti-aliasing disabled. Effective sampling rate for symbolic &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;transformation is </span><span class="si">{</span><span class="n">effective_sfreq</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz (sfreq/tau=</span><span class="si">{</span><span class="n">sfreq</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">). &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Ensure your data is appropriately filtered to prevent aliasing.&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Anti-aliasing disabled. Effective sampling rate for symbolic "</span>
+            <span class="sa">f</span><span class="s2">"transformation is </span><span class="si">{</span><span class="n">effective_sfreq</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz (sfreq/tau=</span><span class="si">{</span><span class="n">sfreq</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">). "</span>
+            <span class="sa">f</span><span class="s2">"Ensure your data is appropriately filtered to prevent aliasing."</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># True or &quot;auto&quot;</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># True or "auto"</span>
         <span class="c1"># Check if anti-aliasing frequency is too close to Nyquist</span>
         <span class="k">if</span> <span class="n">anti_alias_freq</span> <span class="o">&gt;=</span> <span class="n">nyquist_freq</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">:</span>
             <span class="n">skip_reason</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Anti-aliasing frequency (</span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz) too close to &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Nyquist frequency (</span><span class="si">{</span><span class="n">nyquist_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz)&quot;</span>
+                <span class="sa">f</span><span class="s2">"Anti-aliasing frequency (</span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz) too close to "</span>
+                <span class="sa">f</span><span class="s2">"Nyquist frequency (</span><span class="si">{</span><span class="n">nyquist_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz)"</span>
             <span class="p">)</span>
             <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -652,15 +656,15 @@
                 <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># Auto mode: smart detection based on data type and preprocessing</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">is_epochs</span><span class="p">:</span>
-                    <span class="c1"># Array input: always filter since we don&#39;t know preprocessing</span>
+                    <span class="c1"># Array input: always filter since we don't know preprocessing</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;Auto anti-aliasing: Array input detected, applying filter &quot;</span>
-                        <span class="s2">&quot;(preprocessing history unknown).&quot;</span>
+                        <span class="s2">"Auto anti-aliasing: Array input detected, applying filter "</span>
+                        <span class="s2">"(preprocessing history unknown)."</span>
                     <span class="p">)</span>
                     <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># MNE Epochs: check if already appropriately filtered</span>
-                    <span class="n">existing_lowpass</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lowpass&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">existing_lowpass</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"lowpass"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">existing_lowpass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -668,36 +672,36 @@
                     <span class="p">):</span>
                         <span class="c1"># Data already filtered at or below required frequency</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Auto anti-aliasing: Data already low-pass filtered at &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">existing_lowpass</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz (&lt;= </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz). &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;Skipping additional filtering.&quot;</span>
+                            <span class="sa">f</span><span class="s2">"Auto anti-aliasing: Data already low-pass filtered at "</span>
+                            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">existing_lowpass</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz (&lt;= </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz). "</span>
+                            <span class="sa">f</span><span class="s2">"Skipping additional filtering."</span>
                         <span class="p">)</span>
                         <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># Need to apply filtering</span>
                         <span class="k">if</span> <span class="n">existing_lowpass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Auto anti-aliasing: Existing lowpass &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">existing_lowpass</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz) &gt; required &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz). Applying filter.&quot;</span>
+                                <span class="sa">f</span><span class="s2">"Auto anti-aliasing: Existing lowpass "</span>
+                                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">existing_lowpass</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz) &gt; required "</span>
+                                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz). Applying filter."</span>
                             <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Auto anti-aliasing: No lowpass filter info found. &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;Applying filter at </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz.&quot;</span>
+                                <span class="sa">f</span><span class="s2">"Auto anti-aliasing: No lowpass filter info found. "</span>
+                                <span class="sa">f</span><span class="s2">"Applying filter at </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz."</span>
                             <span class="p">)</span>
                         <span class="n">should_filter</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># Apply filtering if needed</span>
     <span class="k">if</span> <span class="n">should_filter</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying anti-aliasing filter at </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Applying anti-aliasing filter at </span><span class="si">{</span><span class="n">anti_alias_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
 
         <span class="c1"># Make a copy to avoid modifying original data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Design and apply low-pass filter</span>
         <span class="n">normalized_freq</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">anti_alias_freq</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>
-        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">normalized_freq</span><span class="p">,</span> <span class="s2">&quot;lowpass&quot;</span><span class="p">)</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">normalized_freq</span><span class="p">,</span> <span class="s2">"lowpass"</span><span class="p">)</span>
 
         <span class="c1"># Concatenate epochs horizontally for filtering</span>
         <span class="n">data_concatenated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -712,7 +716,7 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">skip_reason</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">skip_reason</span><span class="si">}</span><span class="s2">. Skipping anti-aliasing filter.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">skip_reason</span><span class="si">}</span><span class="s2">. Skipping anti-aliasing filter."</span><span class="p">)</span>
         <span class="c1"># Transpose to match expected format: (n_channels, n_times, n_epochs)</span>
         <span class="n">filtered_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -720,7 +724,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_validate_kernel</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate kernel and tau parameters for wSMI computation.</span>
+<span class="w">    </span><span class="sd">"""Validate kernel and tau parameters for wSMI computation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -733,23 +737,23 @@
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If kernel or tau parameters are invalid.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;kernel&quot;</span><span class="p">)</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;tau&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"kernel"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"tau"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">kernel</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kernel (pattern length) must be &gt; 1, got </span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"kernel (pattern length) must be &gt; 1, got </span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">tau</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tau (delay) must be &gt; 0, got </span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"tau (delay) must be &gt; 0, got </span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Warn about potentially large memory requirements for large kernels</span>
     <span class="k">if</span> <span class="n">kernel</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">:</span>  <span class="c1"># Factorial grows extremely fast beyond this</span>
         <span class="n">n_symbols</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
         <span class="n">memory_gb</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_symbols</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 8 bytes per double</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;kernel=</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> will require ~</span><span class="si">{</span><span class="n">memory_gb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> GB of memory &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(factorial(</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols). &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Consider using kernel &lt;= 7 if you encounter memory errors.&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"kernel=</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> will require ~</span><span class="si">{</span><span class="n">memory_gb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> GB of memory "</span>
+            <span class="sa">f</span><span class="s2">"(factorial(</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols). "</span>
+            <span class="sa">f</span><span class="s2">"Consider using kernel &lt;= 7 if you encounter memory errors."</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="p">)</span>
@@ -768,12 +772,12 @@
     <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">anti_aliasing</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">anti_aliasing</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
     <span class="n">weighted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute weighted symbolic mutual information (wSMI).</span>
+<span class="w">    </span><span class="sd">"""Compute weighted symbolic mutual information (wSMI).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -808,12 +812,12 @@
 <span class="sd">        first sample is assumed to be at time 0. For :class:`mne.Epochs`, the time</span>
 <span class="sd">        information contained in the object is used to compute the time indices. If</span>
 <span class="sd">        ``None``, uses the last sample.</span>
-<span class="sd">    anti_aliasing : ``&#39;auto&#39;`` | bool</span>
+<span class="sd">    anti_aliasing : ``'auto'`` | bool</span>
 <span class="sd">        Controls anti-aliasing low-pass filtering before symbolic transformation.</span>
 
-<span class="sd">        - ``&#39;auto&#39;`` (default): Smart detection based on ``data`` type and</span>
+<span class="sd">        - ``'auto'`` (default): Smart detection based on ``data`` type and</span>
 <span class="sd">          preprocessing. For array inputs, always applies filtering. For</span>
-<span class="sd">          :class:`mne.Epochs`, checks ``info[&#39;lowpass&#39;]`` to determine if data is</span>
+<span class="sd">          :class:`mne.Epochs`, checks ``info['lowpass']`` to determine if data is</span>
 <span class="sd">          already appropriately filtered. Only applies filtering if existing lowpass &gt;</span>
 <span class="sd">          required frequency.</span>
 <span class="sd">        - ``True``: Always apply an anti-aliasing filter at ``sfreq / kernel / tau``</span>
@@ -860,11 +864,11 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Input validation and data handling for both Epochs and arrays</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">weighted</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;weighted&quot;</span><span class="p">)</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">average</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;average&quot;</span><span class="p">)</span>
-    <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;anti_aliasing&quot;</span><span class="p">,</span> <span class="n">anti_aliasing</span><span class="p">,</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">))</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">weighted</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">"weighted"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">average</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">"average"</span><span class="p">)</span>
+    <span class="n">_check_option</span><span class="p">(</span><span class="s2">"anti_aliasing"</span><span class="p">,</span> <span class="n">anti_aliasing</span><span class="p">,</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">))</span>
 
     <span class="c1"># Handle both MNE Epochs and array inputs</span>
     <span class="n">picks</span> <span class="o">=</span> <span class="kc">None</span>
@@ -873,7 +877,7 @@
 
     <span class="k">if</span> <span class="n">is_epochs</span><span class="p">:</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">info</span>
-        <span class="n">sfreq</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
         <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
@@ -886,7 +890,7 @@
 
         <span class="c1"># Only exclude bad channels when indices is None</span>
         <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">"bads"</span><span class="p">)</span>
             <span class="c1"># Apply picks to data for computation</span>
             <span class="n">data_for_comp</span> <span class="o">=</span> <span class="n">data_for_comp</span><span class="p">[:,</span> <span class="n">picks</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times_epoch</span> <span class="o">=</span> <span class="n">data_for_comp</span><span class="o">.</span><span class="n">shape</span>
@@ -896,13 +900,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Array-like input</span>
         <span class="k">if</span> <span class="n">sfreq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sampling frequency (sfreq) is required with array input.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Sampling frequency (sfreq) is required with array input."</span><span class="p">)</span>
 
         <span class="n">data_for_comp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data_for_comp</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Array input must be 3D (n_epochs, n_channels, n_times), &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;got shape </span><span class="si">{</span><span class="n">data_for_comp</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Array input must be 3D (n_epochs, n_channels, n_times), "</span>
+                <span class="sa">f</span><span class="s2">"got shape </span><span class="si">{</span><span class="n">data_for_comp</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_times_epoch</span> <span class="o">=</span> <span class="n">data_for_comp</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">n_channels</span>
@@ -917,8 +921,8 @@
         <span class="c1"># Handle names parameter - just validate if provided</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_channels</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Number of names (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match number of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;channels (</span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"Number of names (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match number of "</span>
+                <span class="sa">f</span><span class="s2">"channels (</span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
         <span class="n">ch_names</span> <span class="o">=</span> <span class="n">names</span>
 
@@ -928,18 +932,18 @@
     <span class="c1"># Check for insufficient channels for connectivity computation</span>
     <span class="k">if</span> <span class="n">n_channels</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;At least 2 channels are required for connectivity computation, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but only </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels are available.&quot;</span>
+            <span class="sa">f</span><span class="s2">"At least 2 channels are required for connectivity computation, "</span>
+            <span class="sa">f</span><span class="s2">"but only </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels are available."</span>
         <span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2"> epochs, </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">ch_names</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="n">n_times_epoch</span><span class="si">}</span><span class="s2"> time points per epoch.&quot;</span>
+        <span class="sa">f</span><span class="s2">"Processing </span><span class="si">{</span><span class="n">n_epochs</span><span class="si">}</span><span class="s2"> epochs, </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels "</span>
+        <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">ch_names</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="n">n_times_epoch</span><span class="si">}</span><span class="s2"> time points per epoch."</span>
     <span class="p">)</span>
 
     <span class="c1"># Handle indices parameter</span>
     <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;using all connections for lower-triangular matrix&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"using all connections for lower-triangular matrix"</span><span class="p">)</span>
         <span class="c1"># Compute lower-triangular connections</span>
         <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -948,16 +952,16 @@
 
         <span class="c1"># Check that we have at least one valid connection</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid connections specified in indices parameter.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No valid connections specified in indices parameter."</span><span class="p">)</span>
 
         <span class="c1"># Validate that indices are within the range of channels</span>
         <span class="n">max_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">if</span> <span class="n">max_idx</span> <span class="o">&gt;=</span> <span class="n">n_channels</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Index </span><span class="si">{</span><span class="n">max_idx</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels&quot;</span>
+                <span class="sa">f</span><span class="s2">"Index </span><span class="si">{</span><span class="n">max_idx</span><span class="si">}</span><span class="s2"> is out of range for </span><span class="si">{</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels"</span>
             <span class="p">)</span>
 
-        <span class="c1"># Check that indices don&#39;t refer to the same channel (no self-connectivity)</span>
+        <span class="c1"># Check that indices don't refer to the same channel (no self-connectivity)</span>
         <span class="n">same_channel_mask</span> <span class="o">=</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">same_channel_mask</span><span class="p">):</span>
             <span class="n">invalid_pairs</span> <span class="o">=</span> <span class="p">[</span>
@@ -966,10 +970,10 @@
                 <span class="k">if</span> <span class="n">same_channel_mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="p">]</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Self-connectivity not supported. Found invalid pairs: </span><span class="si">{</span><span class="n">invalid_pairs</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Self-connectivity not supported. Found invalid pairs: </span><span class="si">{</span><span class="n">invalid_pairs</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;computing connectivity for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"computing connectivity for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> connections"</span><span class="p">)</span>
 
     <span class="c1"># unique signals for which we actually need to compute values for</span>
     <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
@@ -991,10 +995,10 @@
     <span class="n">min_samples_needed_for_one_symbol</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="n">kernel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">fdata_masked</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_samples_needed_for_one_symbol</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;After time masking (</span><span class="si">{</span><span class="n">tmin</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">tmax</span><span class="si">}</span><span class="s2">s), data has</span>
+            <span class="sa">f</span><span class="s2">"""After time masking (</span><span class="si">{</span><span class="n">tmin</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">tmax</span><span class="si">}</span><span class="s2">s), data has</span>
 <span class="s2">            </span><span class="si">{</span><span class="n">fdata_masked</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> samples per epoch, but at least</span>
 <span class="s2">            </span><span class="si">{</span><span class="n">min_samples_needed_for_one_symbol</span><span class="si">}</span><span class="s2"> are needed for kernel=</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2">,</span>
-<span class="s2">            tau=</span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">. Adjust tmin/tmax or check epoch length.&quot;&quot;&quot;</span>
+<span class="s2">            tau=</span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">. Adjust tmin/tmax or check epoch length."""</span>
         <span class="p">)</span>
 
     <span class="c1"># Data is all ready for symbolic transformation:</span>
@@ -1002,29 +1006,29 @@
     <span class="n">fdata_for_symb</span> <span class="o">=</span> <span class="n">fdata_masked</span>
 
     <span class="c1"># --- 3. Symbolic Transformation ---</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing symbolic transformation...&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Performing symbolic transformation..."</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sym</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_symb</span><span class="p">(</span><span class="n">fdata_for_symb</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">MemoryError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="n">n_symbols</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
         <span class="n">memory_gb</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_symbols</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">MemoryError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Insufficient memory for kernel=</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> (requires ~</span><span class="si">{</span><span class="n">memory_gb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> GB). &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Try reducing kernel size (e.g., kernel &lt;= 7) or use fewer &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;channels/epochs.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Insufficient memory for kernel=</span><span class="si">{</span><span class="n">kernel</span><span class="si">}</span><span class="s2"> (requires ~</span><span class="si">{</span><span class="n">memory_gb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> GB). "</span>
+            <span class="sa">f</span><span class="s2">"Try reducing kernel size (e.g., kernel &lt;= 7) or use fewer "</span>
+            <span class="sa">f</span><span class="s2">"channels/epochs."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;Error during symbolic transformation. Please contact the &quot;</span>
-            <span class="s2">&quot;MNE-Connectivity developers.&quot;</span>
+            <span class="s2">"Error during symbolic transformation. Please contact the "</span>
+            <span class="s2">"MNE-Connectivity developers."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="n">n_unique_symbols</span> <span class="o">=</span> <span class="n">count</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="n">_get_weights_matrix</span><span class="p">(</span><span class="n">n_unique_symbols</span><span class="p">)</span>
 
     <span class="c1"># --- 4. wSMI/SMI Computation ---</span>
-    <span class="n">method_name</span> <span class="o">=</span> <span class="s2">&quot;wSMI&quot;</span> <span class="k">if</span> <span class="n">weighted</span> <span class="k">else</span> <span class="s2">&quot;SMI&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;Computing </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">n_unique_symbols</span><span class="si">}</span><span class="s2"> unique symbols...&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">method_name</span> <span class="o">=</span> <span class="s2">"wSMI"</span> <span class="k">if</span> <span class="n">weighted</span> <span class="k">else</span> <span class="s2">"SMI"</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""Computing </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">n_unique_symbols</span><span class="si">}</span><span class="s2"> unique symbols..."""</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">_wsmi_jitted</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">wts</span><span class="p">,</span> <span class="n">weighted</span><span class="p">)</span>
     <span class="c1"># Result is (n_channels, n_channels, n_epochs)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># make epochs first dimension</span>
@@ -1062,7 +1066,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">result_connectivity</span> <span class="o">=</span> <span class="n">EpochConnectivity</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">con</span><span class="p">,</span> <span class="o">**</span><span class="n">con_kwargs</span><span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> computation finished.&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> computation finished."</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result_connectivity</span></div>
 
@@ -1107,7 +1111,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-13.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-18.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.9.0.dev46+gcc0f56cb2 documentation</title>
+    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.9.0.dev48+gba67877cb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=c4f23d40"></script>
+    <script src="../../../_static/documentation_options.js?v=5e913e4e"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -129,7 +129,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev46+gcc0f56cb2 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev48+gba67877cb documentation</p>
   
 </a></div>
     
@@ -460,17 +460,17 @@
     <span class="n">lags</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">l2_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;dynamic&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"dynamic"</span><span class="p">,</span>
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute vector auto-regresssive (VAR) model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute vector auto-regresssive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : array_like, shape (n_epochs, n_signals, n_times) | Epochs | generator</span>
 <span class="sd">        The data from which to compute connectivity. The epochs dimension is interpreted</span>
-<span class="sd">        differently, depending on the ``&#39;model&#39;`` argument.</span>
+<span class="sd">        differently, depending on the ``'model'`` argument.</span>
 <span class="sd">    times : array_like | None</span>
 <span class="sd">        The time points used to construct the epoched ``data``. If ``None``, then</span>
 <span class="sd">        ``times_used`` in the returned ``conn`` will not be available.</span>
@@ -482,10 +482,10 @@
 <span class="sd">    compute_fb_operator : bool</span>
 <span class="sd">        Whether to compute the backwards operator and average with the forward operator.</span>
 <span class="sd">        Addresses bias in the least-square estimation :footcite:`Dawson_2016`.</span>
-<span class="sd">    model : ``&#39;dynamic&#39;`` | ``&#39;avg-epochs&#39;``</span>
+<span class="sd">    model : ``'dynamic'`` | ``'avg-epochs'``</span>
 <span class="sd">        Whether to compute one VAR model using all epochs as multiple samples of the</span>
-<span class="sd">        same VAR model (``&#39;avg-epochs&#39;``), or to compute a separate VAR model for each</span>
-<span class="sd">        epoch (``&#39;dynamic&#39;``, default), which results in a time-varying VAR model. See</span>
+<span class="sd">        same VAR model (``'avg-epochs'``), or to compute a separate VAR model for each</span>
+<span class="sd">        epoch (``'dynamic'``, default), which results in a time-varying VAR model. See</span>
 <span class="sd">        Notes.</span>
 <span class="sd">    %(n_jobs)s</span>
 <span class="sd">    %(verbose)s</span>
@@ -563,10 +563,10 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
-    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;avg-epochs&quot;</span><span class="p">,</span> <span class="s2">&quot;dynamic&quot;</span><span class="p">]:</span>
+<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"avg-epochs"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;&quot;model&quot; parameter must be one of (avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="sa">f</span><span class="s1">'"model" parameter must be one of (avg-epochs, dynamic), not </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.'</span>
         <span class="p">)</span>
 
     <span class="n">picks</span> <span class="o">=</span> <span class="kc">None</span>
@@ -574,7 +574,7 @@
     <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
         <span class="c1"># Find good channels</span>
-        <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">"bads"</span><span class="p">)</span>
 
         <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">events</span>
         <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">event_id</span>
@@ -588,17 +588,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">annots_in_metadata</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
                 <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span>
-                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;annot_onset&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_duration&quot;</span><span class="p">,</span> <span class="s2">&quot;annot_description&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"annot_onset"</span><span class="p">,</span> <span class="s2">"annot_duration"</span><span class="p">,</span> <span class="s2">"annot_description"</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"annotations"</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">annots_in_metadata</span><span class="p">:</span>
             <span class="n">data</span><span class="o">.</span><span class="n">add_annotations_to_metadata</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
 
         <span class="c1"># get the actual data in numpy</span>
         <span class="c1"># XXX: remove logic once support for mne&lt;1.6 is dropped</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s2">&quot;copy&quot;</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">)</span><span class="o">.</span><span class="n">kwonlyargs</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;copy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s2">"copy"</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">)</span><span class="o">.</span><span class="n">kwonlyargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">"copy"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
@@ -611,16 +611,16 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">picks</span><span class="p">]</span>
 
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lags&quot;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
-        <span class="s2">&quot;l2_reg&quot;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
+        <span class="s2">"lags"</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
+        <span class="s2">"l2_reg"</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> vector autoregression with parameters: </span><span class="se">\n</span><span class="si">{</span><span class="n">model_params</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Running </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> vector autoregression with parameters: </span><span class="se">\n</span><span class="si">{</span><span class="n">model_params</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;avg-epochs&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"avg-epochs"</span><span class="p">:</span>
         <span class="c1"># compute VAR model where each epoch is a</span>
         <span class="c1"># sample of the multivariate time-series of interest</span>
         <span class="c1"># ordinary least squares or regularized least squares</span>
@@ -651,7 +651,7 @@
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;VAR(p)&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">"VAR(p)"</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                 <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
@@ -664,14 +664,14 @@
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;VAR(1)&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">"VAR(1)"</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                 <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">model_params</span><span class="p">,</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;dynamic&quot;</span>
+        <span class="k">assert</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">"dynamic"</span>
         <span class="c1"># compute time-varying VAR model where each epoch</span>
         <span class="c1"># is one sample of a time-varying multivariate time-series</span>
         <span class="c1"># linear system</span>
@@ -699,7 +699,7 @@
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Time-varying VAR(p)&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">"Time-varying VAR(p)"</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                 <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
@@ -712,7 +712,7 @@
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Time-varying VAR(1)&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">"Time-varying VAR(1)"</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                 <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
@@ -723,7 +723,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_construct_var_eqns</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct VAR equation system (optionally with RLS constraint).</span>
+<span class="w">    </span><span class="sd">"""Construct VAR equation system (optionally with RLS constraint).</span>
 
 <span class="sd">    This function was originally imported from ``scot``.</span>
 
@@ -753,7 +753,7 @@
 <span class="sd">        Y = A X</span>
 
 <span class="sd">    where Y is time-shifted data copy of X and ``A`` defines how X linearly maps to Y.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># n_epochs, n_signals, n_times</span>
     <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
@@ -779,7 +779,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_system_identification</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve system identification using least-squares over all epochs.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Solve system identification using least-squares over all epochs.</span>
 
 <span class="sd">    Treats each epoch as a different window of time to estimate the model:</span>
 
@@ -788,14 +788,14 @@
 
 <span class="sd">    where ``data`` comprises of ``(n_signals, n_times)`` and ``X(t)`` are the data</span>
 <span class="sd">    snapshots.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># 1. determine shape of the window of data</span>
     <span class="n">n_epochs</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;l2_reg&quot;</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
-        <span class="s2">&quot;lags&quot;</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
-        <span class="s2">&quot;compute_fb_operator&quot;</span><span class="p">:</span> <span class="n">compute_fb_operator</span><span class="p">,</span>
+        <span class="s2">"l2_reg"</span><span class="p">:</span> <span class="n">l2_reg</span><span class="p">,</span>
+        <span class="s2">"lags"</span><span class="p">:</span> <span class="n">lags</span><span class="p">,</span>
+        <span class="s2">"compute_fb_operator"</span><span class="p">:</span> <span class="n">compute_fb_operator</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># storage for the A matrices, residuals and sum of squared estimated errors</span>
@@ -844,7 +844,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_lds_func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">l2_reg</span><span class="p">,</span> <span class="n">compute_fb_operator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute linear system using VAR model.</span>
+<span class="w">    </span><span class="sd">"""Compute linear system using VAR model.</span>
 
 <span class="sd">    Allows for parallelization over epochs.</span>
 
@@ -861,7 +861,7 @@
 
 <span class="sd">    Therefore, a transpose is needed. If there are additional lags, then each of these</span>
 <span class="sd">    matrices need to be transposed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># make sure data is T x K (samples, coefficients) to make use of underlying</span>
     <span class="c1"># functions</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span>
@@ -883,7 +883,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_estimate_var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l2_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate a VAR model.</span>
+<span class="w">    </span><span class="sd">"""Estimate a VAR model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -893,7 +893,7 @@
 <span class="sd">        Lags of the endogenous variable.</span>
 <span class="sd">    offset : int</span>
 <span class="sd">        Periods to drop from the beginning of the time-series (default 0). Used for</span>
-<span class="sd">        order selection, so it&#39;s an apples-to-apples comparison</span>
+<span class="sd">        order selection, so it's an apples-to-apples comparison</span>
 <span class="sd">    l2_reg : int</span>
 <span class="sd">        The amount of l2-regularization to use (default 0).</span>
 
@@ -910,7 +910,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    This function was originally copied from statsmodels VAR model computation and</span>
 <span class="sd">    modified for MNE-connectivity usage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># get the number of equations we want</span>
     <span class="n">n_equations</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -1034,7 +1034,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_var_predictor_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">lags</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make predictor matrix for VAR(p) process, Z.</span>
+<span class="w">    </span><span class="sd">"""Make predictor matrix for VAR(p) process, Z.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1054,7 +1054,7 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Ref: Lütkepohl p.70 (transposed)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">nobs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="c1"># Ravel C order, need to put in descending order</span>
     <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">lags</span> <span class="p">:</span> <span class="n">t</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">nobs</span><span class="p">)])</span>
@@ -1101,7 +1101,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-13.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-18.
       <br/>
     
   </p>
