@@ -65,6 +65,24 @@ jobs:
       - name: Install MNE (main)
         if: matrix.mne-version == 'mne-main'
         run: pip install git+https://github.com/mne-tools/mne-python@main
+      - name: 'Clone MNE-Python'
+        uses: actions/checkout@v7
+        with:
+          repository: mne-tools/mne-python
+          path: mne-python
+          fetch-depth: 0
+      - name: 'Match MNE-Python clone to the installed release'
+        if: matrix.mne-version == 'mne-stable'
+        run: git checkout "v$(python -c 'import mne; print(mne.__version__)')"
+        working-directory: mne-python
+      - name: 'Get testing data version'
+        run: ./tools/get_testing_version.sh
+        working-directory: mne-python
+      - name: 'Cache testing data'
+        uses: actions/cache@v6
+        with:
+          key: testing_data-${{ env.TESTING_VERSION }}
+          path: ~/mne_data
       - run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
       - name: Display versions and environment information
         run: |
