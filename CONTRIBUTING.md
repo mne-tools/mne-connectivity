@@ -39,6 +39,13 @@ Now you can finally run the tests by running `pytest` in the
     $ cd mne-connectivity
     $ pytest
 
+Tests can be spread over CPU cores with [pytest-xdist](https://pytest-xdist.readthedocs.io),
+which our CI does. Use `-n 0` to run everything in a single process, which is what you
+want for `--pdb`:
+
+    $ pytest -n auto
+    $ pytest -n 0 --pdb
+
 ## Building the documentation
 
 The documentation can be built using sphinx. For that, please additionally
@@ -50,6 +57,9 @@ To build the documentation locally, one can run:
 
     $ cd doc/
     $ make html
+
+The examples and the HTML pages are built in parallel (`sphinx-build -j auto`, plus
+Sphinx-Gallery workers), so a build can use every core on the machine.
 
 or
 

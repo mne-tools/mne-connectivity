@@ -20,6 +20,9 @@ import mne_connectivity  # noqa: E402
 curpath = Path(__file__).parent.resolve(strict=True)
 sys.path.append(str(curpath / "sphinxext"))
 
+# Tk (pulled in by sphinx-autodoc-typehints) aborts towncrier's fork+exec in -j workers
+sys.modules["tkinter"] = None
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -343,10 +346,12 @@ sphinx_gallery_conf = {
     "gallery_dirs": ["auto_examples"],
     "filename_pattern": "^((?!sgskip).)*$",
     "matplotlib_animations": True,
+    "reset_modules": ("matplotlib", "mne_connectivity_doc_utils.reset_modules"),
     "compress_images": ("images", "thumbnails"),
     "image_scrapers": scrapers,
     "expected_failing_examples": ["../examples/granger_causality.py"],
     "show_signature": False,
+    "parallel": True,  # use sphinx-build's -j value
 }
 
 # sphinxcontrib-bibtex
@@ -398,3 +403,4 @@ def fix_sklearn_inherited_docstrings(app, what, name, obj, options, lines):
 def setup(app):
     """Set up the Sphinx app."""
     app.connect("autodoc-process-docstring", fix_sklearn_inherited_docstrings)
+    return {"parallel_read_safe": True, "parallel_write_safe": True}

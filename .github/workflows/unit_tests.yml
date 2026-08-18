@@ -44,6 +44,9 @@ jobs:
       MNE_LOGGING_LEVEL: "info"
       OPENBLAS_NUM_THREADS: "1"
       PYTHONUNBUFFERED: "1"
+      # explicit worker counts (in the spirit of SciPy's CI) rather than "auto": the
+      # Linux and Windows runners have 4 cores, the macOS ones fewer and less RAM
+      PYTEST_XDIST_N: ${{ startsWith(matrix.os, 'macos') && 2 || 4 }}
     steps:
       - uses: actions/setup-python@v7
         with:
@@ -73,5 +76,5 @@ jobs:
       - run: pip install -e .
       - run: mne sys_info
         timeout-minutes: 3
-      - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
+      - run: python -m pytest . -n "$PYTEST_XDIST_N" --timeout=180 --timeout-method=thread --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v7

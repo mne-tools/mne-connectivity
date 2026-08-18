@@ -24,6 +24,7 @@ jobs:
       MKL_NUM_THREADS: '1'
       PYTHONUNBUFFERED: '1'
       PYTHON_VERSION: '3.13'
+      PYTEST_XDIST_N: '4'  # ubuntu runners have 4 cores
     steps:
       - uses: actions/checkout@v7
       - uses: pyvista/setup-headless-display-action@main
@@ -49,5 +50,5 @@ jobs:
           python -c "import numpy; numpy.show_config()"
         name: 'Show infos'
       - name: Run pytest
-        run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
+        run: python -m pytest . -n "$PYTEST_XDIST_N" --timeout=180 --timeout-method=thread --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v7
