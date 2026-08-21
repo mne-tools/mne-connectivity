@@ -63,9 +63,6 @@ from mne_connectivity import spectral_connectivity_epochs
 #   ragged_indices = (np.array([[0, 1   ], [0, 1, 2, 3]], dtype='object'),
 #                     np.array([[2, 3, 4], [4         ]], dtype='object'))
 #
-# **N.B. Note that since NumPy v1.19.0, dtype='object' must be specified when
-# forming ragged arrays.**
-#
 # Just as for bivariate connectivity, the length of ``indices[0]`` and
 # ``indices[1]`` is equal (i.e. the number of connections), however information
 # about the multiple channel indices for each connection is stored in a nested
