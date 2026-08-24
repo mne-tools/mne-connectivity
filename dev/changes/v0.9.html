@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Version 0.9.0.dev49+gf3747c368 (development) (2026-08-18) &#8212; MNE-Connectivity 0.9.0.dev49+gf3747c368 documentation</title>
+    <title>Version 0.9.0 (2026-08-24) &#8212; MNE-Connectivity 0.9.0.dev50+g3a2bb4608 documentation</title>
   
   
   
@@ -45,14 +45,14 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=1ce3096a"></script>
+    <script src="../_static/documentation_options.js?v=8b95512f"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'changes/dev';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'changes/v0.9';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
@@ -104,10 +104,14 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
   </dialog>
+  <div class="pst-sticky-header">
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">The next release of MNE-Connectivity will be v1.0, which will include breaking changes. Click <a href='https://mne.tools/mne-connectivity/stable/changes/v0.9.html' target='_blank'>here</a> for more information.</div>
+</aside>
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -132,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.9.0.dev49+gf3747c368 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0.dev50+g3a2bb4608 documentation</p>
   
 </a></div>
     
@@ -266,6 +270,7 @@
 
     </header>
   
+  </div>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
@@ -393,7 +398,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Version 0.9.0.dev49+gf3747c368 (development) (2026-08-18)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Version 0.9.0 (2026-08-24)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.8.html">Version 0.8.1 (2026-04-11)</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="v0.7.html">Version 0.7 (2024-06-03)</a></li>
@@ -446,7 +451,7 @@
     
     <li class="breadcrumb-item"><a href="../whats_new.html" class="nav-link">What’s new</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.9.0.dev49+gf3747c368 (development) (2026-08-18)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.9.0 (2026-08-24)</span></li>
   </ul>
 </nav>
 </div>
@@ -463,8 +468,23 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="version-release-development-2026-08-18">
-<span id="current"></span><h1>Version 0.9.0.dev49+gf3747c368 (development) (2026-08-18)<a class="headerlink" href="#version-release-development-2026-08-18" title="Link to this heading">#</a></h1>
+  <section id="version-0-9-0-2026-08-24">
+<h1>Version 0.9.0 (2026-08-24)<a class="headerlink" href="#version-0-9-0-2026-08-24" title="Link to this heading">#</a></h1>
+<section id="upcoming-breaking-changes-for-v1-0">
+<h2>Upcoming breaking changes for v1.0<a class="headerlink" href="#upcoming-breaking-changes-for-v1-0" title="Link to this heading">#</a></h2>
+<p>The next release of MNE-Connectivity will be v1.0, which will include breaking changes. If you do not want the v1.0 release to break your code, you should pin your MNE-Connectivity version to <code class="docutils literal notranslate"><span class="pre">&lt;=0.9</span></code> until v1.0 is released and you can update your code to accommodate any required changes.</p>
+<p>The following breaking changes are anticipated:</p>
+<ul class="simple">
+<li><p>Separation of functions accepting MNE data objects and array-like inputs</p></li>
+<li><p>Requiring spectral representations of data to be provided for spectral connectivity analysis functions</p></li>
+<li><p>Changes to improve consistency of all-to-all vs. symmetric indexing of connectivity</p></li>
+<li><p>Requiring <a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Info</span></code></a> objects as input to connectivity containers</p></li>
+<li><p>Removing VAR-specific methods (<code class="docutils literal notranslate"><span class="pre">eigvals</span></code>, <code class="docutils literal notranslate"><span class="pre">predict</span></code>, <code class="docutils literal notranslate"><span class="pre">simulate</span></code>, etc) from non-VAR connectivity containers</p></li>
+<li><p>Removing epoch-specific methods (<code class="docutils literal notranslate"><span class="pre">append</span></code>, <code class="docutils literal notranslate"><span class="pre">combine</span></code>) from non-epoched connectivity containers</p></li>
+<li><p>Moving spectral Granger causality methods from <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> and <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_time()</span></code></a> to dedicated functions</p></li>
+</ul>
+<p>For more details and the most up-to-date information, see the following GitHub issue: <a class="reference external" href="https://github.com/mne-tools/mne-connectivity/issues/440">Expected changes for 1.0 #440</a>.</p>
+</section>
 <section id="bugfixes">
 <h2>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -490,6 +510,13 @@
 <li><p>Add <a class="reference internal" href="../generated/mne_connectivity.make_surrogate_evoked_data.html#mne_connectivity.make_surrogate_evoked_data" title="mne_connectivity.make_surrogate_evoked_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_evoked_data()</span></code></a> function for generating surrogates from evoked data, and add support for <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> data in <a class="reference internal" href="../generated/mne_connectivity.make_surrogate_resting_data.html#mne_connectivity.make_surrogate_resting_data" title="mne_connectivity.make_surrogate_resting_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_surrogate_resting_data()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/415">#415</a>)</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">connection_time</span></code> parameter to <a class="reference internal" href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_signals_in_freq_bands()</span></code></a>, enabling connectivity to be simulated in a specific time range, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/418">#418</a>)</p></li>
 <li><p>Allow epoched data as input to the <a class="reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.predict" title="mne_connectivity.Connectivity.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a> method of connectivity containers storing a non-dynamic VAR model, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/420">#420</a>)</p></li>
+</ul>
+</section>
+<section id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/RebeccaStevenson">Rebecca Stevenson</a></p></li>
+<li><p><a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a></p></li>
 </ul>
 </section>
 </section>
@@ -541,9 +568,11 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upcoming-breaking-changes-for-v1-0">Upcoming breaking changes for v1.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bugfixes">Bugfixes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-changes-by-deprecation">API changes by deprecation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authors">Authors</a></li>
 </ul>
   </nav></div>
 
@@ -572,7 +601,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-18.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-24.
       <br/>
     
   </p>
