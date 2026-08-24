@@ -8,12 +8,12 @@ The next release of MNE-Connectivity will be v1.0, which will include breaking c
 
 The following breaking changes are anticipated:
 
-- Separation of functions accepting MNE data object and array-like inputs
+- Separation of functions accepting MNE data objects and array-like inputs
 - Requiring spectral representations of data to be provided for spectral connectivity analysis functions
 - Changes to improve consistency of all-to-all vs. symmetric indexing of connectivity
 - Requiring :class:`mne.Info` objects as input to connectivity containers
-- Isolating ``DynamicMixin`` features to VAR-specific connectivity containers
-- Removing ``EpochMixin`` features from non-epoched connectivity containers
+- Removing VAR-specific methods (``eigvals``, ``predict``, ``simulate``, etc) from non-VAR connectivity containers
+- Removing epoch-specific methods (``append``, ``combine``) from non-epoched connectivity containers
 
 For more details and the most up-to-date information, see the following GitHub issue: `Expected changes for 1.0 #440 <https://github.com/mne-tools/mne-connectivity/issues/440>`_.
 
