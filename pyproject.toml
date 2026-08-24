@@ -60,6 +60,7 @@ build = [
 ]
 doc = [
   'intersphinx-registry',
+  'joblib', # for sphinx_gallery_conf["parallel"]
   'memory-profiler',
   'mne-bids',
   'mne-connectivity[gui]',
@@ -77,6 +78,7 @@ doc = [
   'sphinx_autodoc_typehints',
   'sphinxcontrib-bibtex',
   'sphinxcontrib-towncrier',
+  'threadpoolctl',
 ]
 full = [
   'mne-connectivity[all]',
@@ -111,7 +113,9 @@ test = [
   'pymatreader',
   'pytest!=9.1.0,!=9.1.1',
   'pytest-cov',
+  'pytest-xdist',
   'statsmodels',
+  'threadpoolctl',
 ]
 
 [project.urls]

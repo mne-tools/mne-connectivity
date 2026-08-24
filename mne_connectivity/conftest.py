@@ -5,7 +5,7 @@
 import gc
 import os
 import warnings
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 
 import pytest
 from mne.utils import _check_qt_version
@@ -48,6 +48,17 @@ def pytest_configure(config):
     # Fixtures
     for fixture in ("matplotlib_config",):
         config.addinivalue_line("usefixtures", fixture)
+
+    # Cap the number of threads each pytest-xdist worker uses, adapted from SciPy
+    if os.getenv("OMP_NUM_THREADS") is None:
+        from threadpoolctl import threadpool_limits
+
+        xdist_worker_count = int(os.getenv("PYTEST_XDIST_WORKER_COUNT", "1"))
+        max_threads = (os.cpu_count() or 2) // 2  # number of physical cores
+        threads_per_worker = max(max_threads // xdist_worker_count, 1)
+        # suppress e.g. AttributeError raised by older versions of OpenBLAS
+        with suppress(Exception):
+            threadpool_limits(threads_per_worker, user_api="blas")
 
     warning_lines = r"""
     error::

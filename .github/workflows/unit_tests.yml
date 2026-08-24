@@ -42,8 +42,10 @@ jobs:
       FORCE_COLOR: true
       DISPLAY: ":99.0"
       MNE_LOGGING_LEVEL: "info"
-      OPENBLAS_NUM_THREADS: "1"
       PYTHONUNBUFFERED: "1"
+      # explicit worker counts (in the spirit of SciPy's CI) rather than "auto": the
+      # Linux and Windows runners have 4 cores, the macOS ones fewer and less RAM
+      PYTEST_XDIST_N: ${{ startsWith(matrix.os, 'macos') && 2 || 4 }}
     steps:
       - uses: actions/setup-python@v7
         with:
@@ -63,6 +65,24 @@ jobs:
       - name: Install MNE (main)
         if: matrix.mne-version == 'mne-main'
         run: pip install git+https://github.com/mne-tools/mne-python@main
+      - name: 'Clone MNE-Python'
+        uses: actions/checkout@v7
+        with:
+          repository: mne-tools/mne-python
+          path: mne-python
+          fetch-depth: 0
+      - name: 'Match MNE-Python clone to the installed release'
+        if: matrix.mne-version == 'mne-stable'
+        run: git checkout "v$(python -c 'import mne; print(mne.__version__)')"
+        working-directory: mne-python
+      - name: 'Get testing data version'
+        run: ./tools/get_testing_version.sh
+        working-directory: mne-python
+      - name: 'Cache testing data'
+        uses: actions/cache@v6
+        with:
+          key: testing_data-${{ env.TESTING_VERSION }}
+          path: ~/mne_data
       - run: python -c "import mne; print(mne.datasets.testing.data_path(verbose=True))"
       - name: Display versions and environment information
         run: |
@@ -73,5 +93,8 @@ jobs:
       - run: pip install -e .
       - run: mne sys_info
         timeout-minutes: 3
-      - run: python -m pytest . --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
+      - run: python -m pytest . -n "$PYTEST_XDIST_N" --timeout=180 --timeout-method=thread --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v7
+        if: success() || failure()
+        with:
+          token: 6364d4ef-0267-4ae6-b844-ee4333be8701
