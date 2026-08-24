@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MNE-Connectivity &#8212; MNE-Connectivity 0.8.1 documentation</title>
+    <title>MNE-Connectivity &#8212; MNE-Connectivity 0.9.0 documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -36,35 +36,37 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css?v=02ec7c47" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=31c91a46" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="_static/documentation_options.js?v=cc929139"></script>
+    <script src="_static/documentation_options.js?v=ba9b7d67"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.8';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.9';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="What’s new?" href="whats_new.html" />
+    <link rel="next" title="What’s new" href="whats_new.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.8" />
+  <meta name="docsearch:version" content="0.9" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -79,7 +81,9 @@
 
   
   <div id="pst-scroll-pixel-helper"></div>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -99,10 +103,14 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
   </dialog>
+  <div class="pst-sticky-header">
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">The next release of MNE-Connectivity will be v1.0, which will include breaking changes. Click <a href='https://mne.tools/mne-connectivity/stable/changes/v0.9.html' target='_blank'>here</a> for more information.</div>
+</aside>
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -127,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0 documentation</p>
   
 </a></div>
     
@@ -143,7 +151,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -189,11 +197,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -226,8 +241,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -247,10 +261,15 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
   
+  </div>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
@@ -277,7 +296,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -314,11 +333,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -351,8 +377,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -388,16 +413,41 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <p><a class="reference external" href="https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml"><img alt="GH" src="https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg" /></a> <a class="reference external" href="https://circleci.com/gh/mne-tools/mne-connectivity"><img alt="Circle" src="https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield" /></a> <a class="reference external" href="https://dev.azure.com/mne-tools/mne-connectivity/_build/latest?definitionId=1&amp;branchName=main"><img alt="Azure" src="https://dev.azure.com/mne-tools/mne-connectivity/_apis/build/status/mne-tools.mne-connectivity?branchName=main" /></a> <a class="reference external" href="https://codecov.io/gh/mne-tools/mne-connectivity"><img alt="Codecov" src="https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://pypi.org/project/mne-connectivity/"><img alt="PyPI" src="https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads" /></a> <a class="reference external" href="https://pypi.org/project/mne-connectivity/"><img alt="PyPI_Release" src="https://img.shields.io/pypi/v/mne-connectivity.svg" /></a> <a class="reference external" href="https://anaconda.org/conda-forge/mne-connectivity"><img alt="conda-forge" src="https://img.shields.io/conda/dn/conda-forge/mne-connectivity.svg?label=Conda%20downloads" /></a></p>
+  <p><a class="reference external" href="https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml"><img alt="GH" src="https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg" /></a> <a class="reference external" href="https://circleci.com/gh/mne-tools/mne-connectivity"><img alt="Circle" src="https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield" /></a> <a class="reference external" href="https://codecov.io/gh/mne-tools/mne-connectivity"><img alt="Codecov" src="https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://pypi.org/project/mne-connectivity/"><img alt="PyPI" src="https://img.shields.io/pypi/dm/mne-connectivity.svg?label=PyPI%20downloads" /></a> <a class="reference external" href="https://pypi.org/project/mne-connectivity/"><img alt="PyPI_Release" src="https://img.shields.io/pypi/v/mne-connectivity.svg" /></a> <a class="reference external" href="https://anaconda.org/conda-forge/mne-connectivity"><img alt="conda-forge" src="https://img.shields.io/conda/dn/conda-forge/mne-connectivity.svg?label=Conda%20downloads" /></a></p>
 <section id="id1">
 <h1>MNE-Connectivity<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <p><a class="reference external" href="https://mne.tools/mne-connectivity/dev/">MNE-Connectivity</a> is an open-source Python package for connectivity and
 related measures of MEG, EEG, or iEEG data built on top of the
 <a class="reference external" href="https://mne.tools/stable">MNE-Python</a> API. It includes modules for data input/output, visualization,
 common connectivity analysis, and post-hoc statistics and processing.</p>
+<section id="citing-mne-connectivity">
+<h2>Citing MNE-Connectivity<a class="headerlink" href="#citing-mne-connectivity" title="Link to this heading">#</a></h2>
+<p>If you use MNE-Connectivity in your work, please cite the package using either the general project DOI <a class="reference external" href="https://doi.org/10.5281/zenodo.10278399">10.5281/zenodo.10278399</a><a class="footnote-reference brackets" href="#footcite-mne-connectivity" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, or the DOI for specific versions provided by <a class="reference external" href="https://doi.org/10.5281/zenodo.10278399">Zenodo</a>.</p>
+<div class="docutils container" id="id3">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-mne-connectivity" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Thomas S. Binns, Adam Li, Eric Larson, Daniel McCloy, Alex Rockhill, Qianliang Li, Santeri Ruuskanen, Alexander Kroner, Alexandre Gramfort, Giovanni Franco Gabriel Marraffini, Jonathan Shor, Kenji Marshall, Mohammad Orabe, Moritz Gerster, Rebecca F. Stevenson, Richard M. Köhler, Sam Steingold, and Sezan Mert. MNE-Connectivity. 2026. <a class="reference external" href="https://doi.org/10.5281/zenodo.10278399">doi:10.5281/zenodo.10278399</a>.</p>
+</aside>
+</aside>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">BibTeX citation</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<pre class="code bibtex literal-block"><code><span class="name class">&#64;software</span><span class="punctuation">{</span><span class="name label">MNE-Connectivity</span><span class="punctuation">,</span><span class="whitespace">
+ </span><span class="name attribute">author</span><span class="whitespace"> </span><span class="punctuation">=</span><span class="whitespace"> </span><span class="literal string">{Binns, Thomas S. and Li, Adam and Larson, Eric and McCloy, Daniel and Rockhill, Alex and Li, Qianliang and Ruuskanen, Santeri and Kroner, Alexander and Gramfort, Alexandre and Marraffini, Giovanni Franco Gabriel and Shor, Jonathan and Marshall, Kenji and Orabe, Mohammad and Gerster, Moritz and Stevenson, Rebecca F. and Köhler, Richard M. and Steingold, Sam and Mert, Sezan}</span><span class="punctuation">,</span><span class="whitespace">
+ </span><span class="name attribute">doi</span><span class="whitespace"> </span><span class="punctuation">=</span><span class="whitespace"> </span><span class="literal string">{10.5281/zenodo.10278399}</span><span class="punctuation">,</span><span class="whitespace">
+ </span><span class="name attribute">title</span><span class="whitespace"> </span><span class="punctuation">=</span><span class="whitespace"> </span><span class="literal string">{{MNE-Connectivity}}</span><span class="punctuation">,</span><span class="whitespace">
+ </span><span class="name attribute">version</span><span class="whitespace"> </span><span class="punctuation">=</span><span class="whitespace"> </span><span class="literal string">{0.9.0}</span><span class="punctuation">,</span><span class="whitespace">
+ </span><span class="name attribute">year</span><span class="whitespace"> </span><span class="punctuation">=</span><span class="whitespace"> </span><span class="literal string">{2026}</span><span class="whitespace">
+</span><span class="punctuation">}</span></code></pre>
+</div>
+</details><div class="line-block">
+<div class="line"><br /></div>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s new?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s new</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
@@ -405,6 +455,7 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html#dynamic-connectivity-examples">Dynamic Connectivity Examples</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 
@@ -422,7 +473,7 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">What’s new?</p>
+        <p class="prev-next-title">What’s new</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -432,6 +483,24 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citing-mne-connectivity">Citing MNE-Connectivity</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
@@ -444,8 +513,8 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -456,7 +525,7 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-11.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-24.
       <br/>
     
   </p>
@@ -479,7 +548,7 @@ common connectivity analysis, and post-hoc statistics and processing.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -79,6 +79,7 @@ data_10_12 = make_signals_in_freq_bands(
     n_seeds=5,
     n_targets=3,
     freq_band=(10, 12),  # 10-12 Hz interaction
+    duration=2.0,
     rng_seed=42,
 )
 
@@ -86,6 +87,7 @@ data_23_25 = make_signals_in_freq_bands(
     n_seeds=5,
     n_targets=3,
     freq_band=(23, 25),  # 23-25 Hz interaction
+    duration=2.0,
     rng_seed=44,
 )
 

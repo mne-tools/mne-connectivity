@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Computation times &#8212; MNE-Connectivity 0.8.1 documentation</title>
+    <title>Computation times &#8212; MNE-Connectivity 0.9.0 documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -36,25 +36,27 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=02ec7c47" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31c91a46" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=cc929139"></script>
+    <script src="../_static/documentation_options.js?v=ba9b7d67"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/sg_execution_times';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.8';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.9';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -63,7 +65,7 @@
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.8" />
+  <meta name="docsearch:version" content="0.9" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -78,7 +80,9 @@
 
   
   <div id="pst-scroll-pixel-helper"></div>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -98,10 +102,14 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
   </dialog>
+  <div class="pst-sticky-header">
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">The next release of MNE-Connectivity will be v1.0, which will include breaking changes. Click <a href='https://mne.tools/mne-connectivity/stable/changes/v0.9.html' target='_blank'>here</a> for more information.</div>
+</aside>
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -126,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0 documentation</p>
   
 </a></div>
     
@@ -142,7 +150,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -188,11 +196,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -225,8 +240,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -250,6 +264,7 @@
 
     </header>
   
+  </div>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
@@ -276,7 +291,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -313,11 +328,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -350,8 +372,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -413,7 +434,7 @@
                   
   <section id="computation-times">
 <span id="sphx-glr-auto-examples-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>08:14.529</strong> total execution time for 19 files <strong>from auto_examples</strong>:</p>
+<p><strong>16:25.505</strong> total execution time for 19 files <strong>from auto_examples</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -435,79 +456,79 @@ $(document).ready( function () {
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="surrogate_connectivity.html#sphx-glr-auto-examples-surrogate-connectivity-py"><span class="std std-ref">Determine the significance of connectivity estimates against baseline connectivity</span></a> (<code class="docutils literal notranslate"><span class="pre">surrogate_connectivity.py</span></code>)</p></td>
-<td><p>04:30.493</p></td>
+<td><p>10:01.113</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="mne_inverse_envelope_correlation.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-py"><span class="std std-ref">Compute envelope correlations in source space</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_envelope_correlation.py</span></code>)</p></td>
-<td><p>00:56.654</p></td>
+<td><p>01:16.682</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="mne_inverse_envelope_correlation_volume.html#sphx-glr-auto-examples-mne-inverse-envelope-correlation-volume-py"><span class="std std-ref">Compute envelope correlations in volume source space</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_envelope_correlation_volume.py</span></code>)</p></td>
-<td><p>00:20.647</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="granger_causality.html#sphx-glr-auto-examples-granger-causality-py"><span class="std std-ref">Compute directionality of connectivity with multivariate Granger causality</span></a> (<code class="docutils literal notranslate"><span class="pre">granger_causality.py</span></code>)</p></td>
-<td><p>00:19.394</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a> (<code class="docutils literal notranslate"><span class="pre">mic_mim.py</span></code>)</p></td>
-<td><p>00:18.689</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a> (<code class="docutils literal notranslate"><span class="pre">compare_connectivity_over_time_over_trial.py</span></code>)</p></td>
-<td><p>00:16.215</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_psi_visual.py</span></code>)</p></td>
-<td><p>00:14.632</p></td>
+<td><p>00:50.184</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="wsmi.html#sphx-glr-auto-examples-wsmi-py"><span class="std std-ref">Compute connectivity using weighted symbolic mutual information (wSMI)</span></a> (<code class="docutils literal notranslate"><span class="pre">wsmi.py</span></code>)</p></td>
-<td><p>00:13.959</p></td>
+<td><p>00:31.646</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="connectivity_classes.html#sphx-glr-auto-examples-connectivity-classes-py"><span class="std std-ref">Using the connectivity classes</span></a> (<code class="docutils literal notranslate"><span class="pre">connectivity_classes.py</span></code>)</p></td>
-<td><p>00:13.163</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="mne_inverse_psi_visual.html#sphx-glr-auto-examples-mne-inverse-psi-visual-py"><span class="std std-ref">Compute Phase Slope Index (PSI) in source space for a visual stimulus</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_psi_visual.py</span></code>)</p></td>
+<td><p>00:29.530</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_coherence_epochs.py</span></code>)</p></td>
-<td><p>00:12.101</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="mic_mim.html#sphx-glr-auto-examples-mic-mim-py"><span class="std std-ref">Compute multivariate measures of the imaginary part of coherency</span></a> (<code class="docutils literal notranslate"><span class="pre">mic_mim.py</span></code>)</p></td>
+<td><p>00:28.447</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="mne_inverse_coherence_epochs.html#sphx-glr-auto-examples-mne-inverse-coherence-epochs-py"><span class="std std-ref">Compute coherence in source space using a MNE inverse solution</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_coherence_epochs.py</span></code>)</p></td>
+<td><p>00:27.268</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compare_connectivity_over_time_over_trial.html#sphx-glr-auto-examples-compare-connectivity-over-time-over-trial-py"><span class="std std-ref">Comparing spectral connectivity computed over time or over trials</span></a> (<code class="docutils literal notranslate"><span class="pre">compare_connectivity_over_time_over_trial.py</span></code>)</p></td>
+<td><p>00:26.233</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="dpli_wpli_pli.html#sphx-glr-auto-examples-dpli-wpli-pli-py"><span class="std std-ref">Comparing PLI, wPLI, and dPLI</span></a> (<code class="docutils literal notranslate"><span class="pre">dpli_wpli_pli.py</span></code>)</p></td>
-<td><p>00:11.770</p></td>
+<td><p>00:25.408</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="granger_causality.html#sphx-glr-auto-examples-granger-causality-py"><span class="std std-ref">Compute directionality of connectivity with multivariate Granger causality</span></a> (<code class="docutils literal notranslate"><span class="pre">granger_causality.py</span></code>)</p></td>
+<td><p>00:24.554</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="connectivity_classes.html#sphx-glr-auto-examples-connectivity-classes-py"><span class="std std-ref">Using the connectivity classes</span></a> (<code class="docutils literal notranslate"><span class="pre">connectivity_classes.py</span></code>)</p></td>
+<td><p>00:20.242</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="mixed_source_space_connectivity.html#sphx-glr-auto-examples-mixed-source-space-connectivity-py"><span class="std std-ref">Compute mixed source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">mixed_source_space_connectivity.py</span></code>)</p></td>
-<td><p>00:10.298</p></td>
+<td><p>00:12.899</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_label_connectivity.py</span></code>)</p></td>
-<td><p>00:05.186</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="cwt_sensor_connectivity.html#sphx-glr-auto-examples-cwt-sensor-connectivity-py"><span class="std std-ref">Compute seed-based time-frequency connectivity in sensor space</span></a> (<code class="docutils literal notranslate"><span class="pre">cwt_sensor_connectivity.py</span></code>)</p></td>
+<td><p>00:09.064</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="cwt_sensor_connectivity.html#sphx-glr-auto-examples-cwt-sensor-connectivity-py"><span class="std std-ref">Compute seed-based time-frequency connectivity in sensor space</span></a> (<code class="docutils literal notranslate"><span class="pre">cwt_sensor_connectivity.py</span></code>)</p></td>
-<td><p>00:02.986</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a> (<code class="docutils literal notranslate"><span class="pre">compare_coherency_methods.py</span></code>)</p></td>
-<td><p>00:02.219</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_connectivity_spectrum.py</span></code>)</p></td>
-<td><p>00:02.203</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="mne_inverse_label_connectivity.html#sphx-glr-auto-examples-mne-inverse-label-connectivity-py"><span class="std std-ref">Compute source space connectivity and visualize it using a circular graph</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_label_connectivity.py</span></code>)</p></td>
+<td><p>00:08.561</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="sensor_connectivity.html#sphx-glr-auto-examples-sensor-connectivity-py"><span class="std std-ref">Compute all-to-all connectivity in sensor space</span></a> (<code class="docutils literal notranslate"><span class="pre">sensor_connectivity.py</span></code>)</p></td>
-<td><p>00:02.082</p></td>
+<td><p>00:04.217</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="mne_inverse_connectivity_spectrum.html#sphx-glr-auto-examples-mne-inverse-connectivity-spectrum-py"><span class="std std-ref">Compute full spectrum source space connectivity between labels</span></a> (<code class="docutils literal notranslate"><span class="pre">mne_inverse_connectivity_spectrum.py</span></code>)</p></td>
+<td><p>00:03.380</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compare_coherency_methods.html#sphx-glr-auto-examples-compare-coherency-methods-py"><span class="std std-ref">Comparison of coherency-based methods</span></a> (<code class="docutils literal notranslate"><span class="pre">compare_coherency_methods.py</span></code>)</p></td>
+<td><p>00:03.126</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="cacoh.html#sphx-glr-auto-examples-cacoh-py"><span class="std std-ref">Compute multivariate coherency/coherence</span></a> (<code class="docutils literal notranslate"><span class="pre">cacoh.py</span></code>)</p></td>
-<td><p>00:01.825</p></td>
+<td><p>00:02.918</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="handling_ragged_arrays.html#sphx-glr-auto-examples-handling-ragged-arrays-py"><span class="std std-ref">Working with ragged indices for multivariate connectivity</span></a> (<code class="docutils literal notranslate"><span class="pre">handling_ragged_arrays.py</span></code>)</p></td>
-<td><p>00:00.011</p></td>
+<td><p>00:00.032</p></td>
 <td><p>0.0</p></td>
 </tr>
 </tbody>
@@ -544,8 +565,8 @@ $(document).ready( function () {
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -556,7 +577,7 @@ $(document).ready( function () {
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-11.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-24.
       <br/>
     
   </p>
@@ -579,7 +600,7 @@ $(document).ready( function () {
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

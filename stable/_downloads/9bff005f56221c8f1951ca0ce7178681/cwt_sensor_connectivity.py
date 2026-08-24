@@ -70,7 +70,7 @@ indices = seed_target_indices(seed, targets)
 cwt_freqs = np.arange(7, 30, 2)
 cwt_n_cycles = cwt_freqs / 7.0
 
-# Run the connectivity analysis using 2 parallel jobs
+# Run the connectivity analysis
 sfreq = raw.info["sfreq"]  # the sampling frequency
 con = spectral_connectivity_epochs(
     epochs,

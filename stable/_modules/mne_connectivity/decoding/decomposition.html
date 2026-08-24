@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 0.8.1 documentation</title>
+    <title>mne_connectivity.decoding.decomposition &#8212; MNE-Connectivity 0.9.0 documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -35,25 +35,27 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=02ec7c47" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=31c91a46" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=cc929139"></script>
+    <script src="../../../_static/documentation_options.js?v=ba9b7d67"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_connectivity/decoding/decomposition';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.8';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.9';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -62,7 +64,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.8" />
+  <meta name="docsearch:version" content="0.9" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -77,7 +79,9 @@
 
   
   <div id="pst-scroll-pixel-helper"></div>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -97,10 +101,14 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
   </dialog>
+  <div class="pst-sticky-header">
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">The next release of MNE-Connectivity will be v1.0, which will include breaking changes. Click <a href='https://mne.tools/mne-connectivity/stable/changes/v0.9.html' target='_blank'>here</a> for more information.</div>
+</aside>
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -125,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.8.1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.9.0 documentation</p>
   
 </a></div>
     
@@ -141,7 +149,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -187,11 +195,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -224,8 +239,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -249,6 +263,7 @@
 
     </header>
   
+  </div>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
@@ -275,7 +290,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../whats_new.html">
-    What’s new?
+    What’s new
   </a>
 </li>
 
@@ -312,11 +327,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -349,8 +371,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-connectivity" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +465,7 @@
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CoherencyDecomposition</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decompose connectivity sources using multivariate coherency-based methods.</span>
+<span class="w">    </span><span class="sd">"""Decompose connectivity sources using multivariate coherency-based methods.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -484,8 +505,8 @@
 <span class="sd">    :func:`~mne_connectivity.spectral_connectivity_time` functions. These bivariate</span>
 <span class="sd">    methods are:</span>
 
-<span class="sd">    * ``&quot;cohy&quot;`` and ``&quot;coh&quot;`` for CaCoh :footcite:`VidaurreEtAl2019`</span>
-<span class="sd">    * ``&quot;imcoh&quot;`` for MIC :footcite:`EwaldEtAl2012`</span>
+<span class="sd">    * ``"cohy"`` and ``"coh"`` for CaCoh :footcite:`VidaurreEtAl2019`</span>
+<span class="sd">    * ``"imcoh"`` for MIC :footcite:`EwaldEtAl2012`</span>
 
 <span class="sd">    The approach taken here is to optimise the connectivity in a given frequency band.</span>
 <span class="sd">    Frequency bin-wise optimisation is offered in the multivariate coherency-based</span>
@@ -495,7 +516,7 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. footbibliography::</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">filters_</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">patterns_</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -506,32 +527,32 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ``indices`` parameter in the input format.</span>
+<span class="w">        </span><span class="sd">"""Get ``indices`` parameter in the input format.</span>
 
 <span class="sd">        :meta private:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
 
     <span class="nd">@indices</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set ``indices`` parameter using the input format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set ``indices`` parameter using the input format."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span>
-            <span class="p">([</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">]</span>
+            <span class="p">([</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"nchan"</span><span class="p">]</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get ``rank`` parameter in the input format.</span>
+<span class="w">        </span><span class="sd">"""Get ``rank`` parameter in the input format.</span>
 
 <span class="sd">        :meta private:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@rank</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set ``rank`` parameter using the input format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set ``rank`` parameter using the input format."""</span>
         <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -542,7 +563,7 @@
         <span class="n">info</span><span class="p">,</span>
         <span class="n">method</span><span class="p">,</span>
         <span class="n">indices</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">"multitaper"</span><span class="p">,</span>
         <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mt_bandwidth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -555,84 +576,84 @@
         <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise instance.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialise instance."""</span>
         <span class="c1"># Validate inputs</span>
-        <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="s2">&quot;`info`&quot;</span><span class="p">,</span> <span class="s2">&quot;mne.Info&quot;</span><span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="s2">"`info`"</span><span class="p">,</span> <span class="s2">"mne.Info"</span><span class="p">)</span>
 
-        <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;cacoh&quot;</span><span class="p">,</span> <span class="s2">&quot;mic&quot;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;cacoh&quot;</span><span class="p">:</span>
+        <span class="n">_check_option</span><span class="p">(</span><span class="s2">"method"</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="s2">"cacoh"</span><span class="p">,</span> <span class="s2">"mic"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"cacoh"</span><span class="p">:</span>
             <span class="n">_conn_estimator_class</span> <span class="o">=</span> <span class="n">_CaCohEst</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_conn_estimator_class</span> <span class="o">=</span> <span class="n">_MICEst</span>
 
-        <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="s2">&quot;`indices`&quot;</span><span class="p">,</span> <span class="s2">&quot;tuple of array-likes&quot;</span><span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="s2">"`indices`"</span><span class="p">,</span> <span class="s2">"tuple of array-likes"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`indices` must have length 2&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`indices` must have length 2"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">indices_group</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
             <span class="n">_validate_type</span><span class="p">(</span>
-                <span class="n">indices_group</span><span class="p">,</span> <span class="s2">&quot;array-like&quot;</span><span class="p">,</span> <span class="s2">&quot;`indices`&quot;</span><span class="p">,</span> <span class="s2">&quot;tuple of array-likes&quot;</span>
+                <span class="n">indices_group</span><span class="p">,</span> <span class="s2">"array-like"</span><span class="p">,</span> <span class="s2">"`indices`"</span><span class="p">,</span> <span class="s2">"tuple of array-likes"</span>
             <span class="p">)</span>
-        <span class="n">_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">])</span>
+        <span class="n">_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"nchan"</span><span class="p">])</span>
 
-        <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">,</span> <span class="s2">&quot;cwt_morlet&quot;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
+        <span class="n">_check_option</span><span class="p">(</span><span class="s2">"mode"</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="s2">"multitaper"</span><span class="p">,</span> <span class="s2">"fourier"</span><span class="p">,</span> <span class="s2">"cwt_morlet"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"multitaper"</span><span class="p">,</span> <span class="s2">"fourier"</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;`fmin` and `fmax` must not be None if `mode` is &#39;multitaper&#39; or &quot;</span>
-                    <span class="s2">&quot;&#39;fourier&#39;&quot;</span>
+                    <span class="s2">"`fmin` and `fmax` must not be None if `mode` is 'multitaper' or "</span>
+                    <span class="s2">"'fourier'"</span>
                 <span class="p">)</span>
-            <span class="n">_validate_type</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="s2">&quot;`fmin`&quot;</span><span class="p">,</span> <span class="s2">&quot;int or float&quot;</span><span class="p">)</span>
-            <span class="n">_validate_type</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="s2">&quot;`fmax`&quot;</span><span class="p">,</span> <span class="s2">&quot;int or float&quot;</span><span class="p">)</span>
+            <span class="n">_validate_type</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">"numeric"</span><span class="p">,</span> <span class="s2">"`fmin`"</span><span class="p">,</span> <span class="s2">"int or float"</span><span class="p">)</span>
+            <span class="n">_validate_type</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="s2">"numeric"</span><span class="p">,</span> <span class="s2">"`fmax`"</span><span class="p">,</span> <span class="s2">"int or float"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;</span> <span class="n">fmax</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmax` must be larger than `fmin`&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`fmax` must be larger than `fmin`"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fmin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmin` cannot be less than 0&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">fmax</span> <span class="o">&gt;</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`fmax` cannot be larger than the Nyquist frequency&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`fmin` cannot be less than 0"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fmax</span> <span class="o">&gt;</span> <span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`fmax` cannot be larger than the Nyquist frequency"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"multitaper"</span><span class="p">:</span>
                 <span class="n">_validate_type</span><span class="p">(</span>
                     <span class="n">mt_bandwidth</span><span class="p">,</span>
-                    <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                    <span class="s2">&quot;`mt_bandwidth`&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;int, float, or None&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="s2">"`mt_bandwidth`"</span><span class="p">,</span>
+                    <span class="s2">"int, float, or None"</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">_validate_type</span><span class="p">(</span><span class="n">mt_adaptive</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;`mt_adaptive`&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
-                <span class="n">_validate_type</span><span class="p">(</span><span class="n">mt_low_bias</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;`mt_low_bias`&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+                <span class="n">_validate_type</span><span class="p">(</span><span class="n">mt_adaptive</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">"`mt_adaptive`"</span><span class="p">,</span> <span class="s2">"bool"</span><span class="p">)</span>
+                <span class="n">_validate_type</span><span class="p">(</span><span class="n">mt_low_bias</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">"`mt_low_bias`"</span><span class="p">,</span> <span class="s2">"bool"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">cwt_freqs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;`cwt_freqs` must not be None if `mode` is &#39;cwt_morlet&#39;&quot;</span>
+                    <span class="s2">"`cwt_freqs` must not be None if `mode` is 'cwt_morlet'"</span>
                 <span class="p">)</span>
-            <span class="n">_validate_type</span><span class="p">(</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="s2">&quot;array-like&quot;</span><span class="p">,</span> <span class="s2">&quot;`cwt_freqs`&quot;</span><span class="p">,</span> <span class="s2">&quot;array-like&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">cwt_freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">_validate_type</span><span class="p">(</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="s2">"array-like"</span><span class="p">,</span> <span class="s2">"`cwt_freqs`"</span><span class="p">,</span> <span class="s2">"array-like"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cwt_freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;last entry of `cwt_freqs` cannot be larger than the Nyquist &quot;</span>
-                    <span class="s2">&quot;frequency&quot;</span>
+                    <span class="s2">"last entry of `cwt_freqs` cannot be larger than the Nyquist "</span>
+                    <span class="s2">"frequency"</span>
                 <span class="p">)</span>
             <span class="n">_validate_type</span><span class="p">(</span>
                 <span class="n">cwt_n_cycles</span><span class="p">,</span>
-                <span class="p">(</span><span class="s2">&quot;numeric&quot;</span><span class="p">,</span> <span class="s2">&quot;array-like&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;`cwt_n_cycles`&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;int, float, or array-like&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="s2">"array-like"</span><span class="p">),</span>
+                <span class="s2">"`cwt_n_cycles`"</span><span class="p">,</span>
+                <span class="s2">"int, float, or array-like"</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cwt_n_cycles</span><span class="p">,</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
                 <span class="n">cwt_n_cycles</span>
             <span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cwt_freqs</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;`cwt_n_cycles` array-like must have the same length as `cwt_freqs`&quot;</span>
+                    <span class="s2">"`cwt_n_cycles` array-like must have the same length as `cwt_freqs`"</span>
                 <span class="p">)</span>
 
         <span class="n">_validate_type</span><span class="p">(</span>
-            <span class="n">n_components</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;int-like&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">&quot;`n_components`&quot;</span><span class="p">,</span> <span class="s2">&quot;int or None&quot;</span>
+            <span class="n">n_components</span><span class="p">,</span> <span class="p">(</span><span class="s2">"int-like"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"`n_components`"</span><span class="p">,</span> <span class="s2">"int or None"</span>
         <span class="p">)</span>
 
-        <span class="n">_validate_type</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">&quot;`rank`&quot;</span><span class="p">,</span> <span class="s2">&quot;tuple of ints or None&quot;</span><span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"`rank`"</span><span class="p">,</span> <span class="s2">"tuple of ints or None"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`rank` must have length 2&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`rank` must have length 2"</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">rank_group</span> <span class="ow">in</span> <span class="n">rank</span><span class="p">:</span>
                 <span class="n">_validate_type</span><span class="p">(</span>
-                    <span class="n">rank_group</span><span class="p">,</span> <span class="s2">&quot;int-like&quot;</span><span class="p">,</span> <span class="s2">&quot;`rank`&quot;</span><span class="p">,</span> <span class="s2">&quot;tuple of ints or None&quot;</span>
+                    <span class="n">rank_group</span><span class="p">,</span> <span class="s2">"int-like"</span><span class="p">,</span> <span class="s2">"`rank`"</span><span class="p">,</span> <span class="s2">"tuple of ints or None"</span>
                 <span class="p">)</span>
         <span class="n">_rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_rank</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
 
@@ -657,7 +678,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_chans</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that the indices input is valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check that the indices input is valid."""</span>
         <span class="c1"># convert to multivariate format and check validity</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(([</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">n_chans</span><span class="p">)</span>
 
@@ -665,27 +686,27 @@
         <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">max_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n_chans</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;at least one entry in `indices` is greater than the number of &quot;</span>
-                <span class="s2">&quot;channels in `info`&quot;</span>
+                <span class="s2">"at least one entry in `indices` is greater than the number of "</span>
+                <span class="s2">"channels in `info`"</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">indices</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that the rank input is valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check that the rank input is valid."""</span>
         <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># convert to multivariate format</span>
             <span class="n">rank</span> <span class="o">=</span> <span class="p">([</span><span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
             <span class="c1"># make sure ranks are &gt; 0</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;entries of `rank` must be &gt; 0&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"entries of `rank` must be &gt; 0"</span><span class="p">)</span>
 
             <span class="c1"># find whether entries of rank exceed number of channels in indices</span>
             <span class="k">if</span> <span class="n">rank</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="n">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;at least one entry in `rank` is greater than the number of &quot;</span>
-                    <span class="s2">&quot;seed/target channels in `indices`&quot;</span>
+                    <span class="s2">"at least one entry in `rank` is greater than the number of "</span>
+                    <span class="s2">"seed/target channels in `indices`"</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rank</span>
@@ -693,7 +714,7 @@
 <div class="viewcode-block" id="CoherencyDecomposition.fit">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute connectivity decomposition filters for epoched data.</span>
+<span class="w">        </span><span class="sd">"""Compute connectivity decomposition filters for epoched data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -707,7 +728,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        self : instance of CoherencyDecomposition</span>
 <span class="sd">            The modified class instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># validate input data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_X</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_rank_and_ncomps_from_X</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -740,19 +761,19 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_X</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">ndim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that the input data is valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check that the input data is valid."""</span>
         <span class="c1"># check data is a 2/3D array</span>
-        <span class="n">_validate_type</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;`X`&quot;</span><span class="p">,</span> <span class="s2">&quot;NumPy array&quot;</span><span class="p">)</span>
-        <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;`X.ndim`&quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">"`X`"</span><span class="p">,</span> <span class="s2">"NumPy array"</span><span class="p">)</span>
+        <span class="n">_check_option</span><span class="p">(</span><span class="s2">"`X.ndim`"</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
         <span class="n">n_chans</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">n_chans</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">n_chans</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"nchan"</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`X` does not match Info</span><span class="se">\n</span><span class="s2">Expected </span><span class="si">{</span><span class="n">n_chans</span><span class="si">}</span><span class="s2"> channels, got &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;nchan&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`X` does not match Info</span><span class="se">\n</span><span class="s2">Expected </span><span class="si">{</span><span class="n">n_chans</span><span class="si">}</span><span class="s2"> channels, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">'nchan'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_rank_and_ncomps_from_X</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get/validate rank and n_components parameters using the data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get/validate rank and n_components parameters using the data."""</span>
         <span class="c1"># compute rank from data if necessary / check it is valid for the indices</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">_check_rank_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">)</span>
 
@@ -760,34 +781,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">_check_n_components_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_csd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the cross-spectral density of the input data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the cross-spectral density of the input data."""</span>
         <span class="n">csd_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span>
-            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
-            <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="s2">"X"</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span>
+            <span class="s2">"sfreq"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">],</span>
+            <span class="s2">"n_jobs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="s2">"verbose"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;multitaper&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"multitaper"</span><span class="p">:</span>
             <span class="n">csd_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;fmin&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span>
-                    <span class="s2">&quot;fmax&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">,</span>
-                    <span class="s2">&quot;bandwidth&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_bandwidth</span><span class="p">,</span>
-                    <span class="s2">&quot;adaptive&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_adaptive</span><span class="p">,</span>
-                    <span class="s2">&quot;low_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_low_bias</span><span class="p">,</span>
+                    <span class="s2">"fmin"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span>
+                    <span class="s2">"fmax"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">,</span>
+                    <span class="s2">"bandwidth"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_bandwidth</span><span class="p">,</span>
+                    <span class="s2">"adaptive"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_adaptive</span><span class="p">,</span>
+                    <span class="s2">"low_bias"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mt_low_bias</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
             <span class="n">csd</span> <span class="o">=</span> <span class="n">csd_array_multitaper</span><span class="p">(</span><span class="o">**</span><span class="n">csd_kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;fourier&quot;</span><span class="p">:</span>
-            <span class="n">csd_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;fmin&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">&quot;fmax&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">})</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">"fourier"</span><span class="p">:</span>
+            <span class="n">csd_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"fmin"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">"fmax"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">})</span>
             <span class="n">csd</span> <span class="o">=</span> <span class="n">csd_array_fourier</span><span class="p">(</span><span class="o">**</span><span class="n">csd_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">csd_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;frequencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="s2">&quot;n_cycles&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwt_n_cycles</span><span class="p">}</span>
+                <span class="p">{</span><span class="s2">"frequencies"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwt_freqs</span><span class="p">,</span> <span class="s2">"n_cycles"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwt_n_cycles</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="n">csd</span> <span class="o">=</span> <span class="n">csd_array_morlet</span><span class="p">(</span><span class="o">**</span><span class="n">csd_kwargs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;multitaper&quot;</span><span class="p">,</span> <span class="s2">&quot;fourier&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"multitaper"</span><span class="p">,</span> <span class="s2">"fourier"</span><span class="p">]:</span>
             <span class="n">fmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span>
             <span class="n">fmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span>
         <span class="k">else</span><span class="p">:</span>
@@ -799,7 +820,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">csd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_filters_and_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract filters and patterns from the connectivity estimator.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Extract filters and patterns from the connectivity estimator."""</span>
         <span class="c1"># shape=(seeds/targets, n_cons, n_components, n_signals, n_freqs)</span>
         <span class="c1"># i.e. (2, 1, n_components, n_signals, 1)</span>
 
@@ -816,7 +837,7 @@
 <div class="viewcode-block" id="CoherencyDecomposition.transform">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decompose data into connectivity sources using the fitted filters.</span>
+<span class="w">        </span><span class="sd">"""Decompose data into connectivity sources using the fitted filters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -829,11 +850,11 @@
 <span class="sd">            The transformed data. The first ``n_components`` channels are the</span>
 <span class="sd">            transformed seeds, and the last ``n_components`` channels are the</span>
 <span class="sd">            transformed targets.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_X</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;no filters are available, please call the `fit` method first&quot;</span>
+                <span class="s2">"no filters are available, please call the `fit` method first"</span>
             <span class="p">)</span>
 
         <span class="c1"># transform seed and target data</span>
@@ -846,7 +867,7 @@
 <div class="viewcode-block" id="CoherencyDecomposition.fit_transform">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit filters to data, then transform and return it.</span>
+<span class="w">        </span><span class="sd">"""Fit filters to data, then transform and return it.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -865,7 +886,7 @@
 <span class="sd">            The transformed data. The first ``n_components`` channels are the</span>
 <span class="sd">            transformed seeds, and the last ``n_components`` channels are the</span>
 <span class="sd">            transformed targets.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># use parent TransformerMixin method but with custom docstring</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span></div>
 
@@ -873,7 +894,7 @@
 <div class="viewcode-block" id="CoherencyDecomposition.get_transformed_indices">
 <a class="viewcode-back" href="../../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition.get_transformed_indices">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_transformed_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get indices for the transformed data.</span>
+<span class="w">        </span><span class="sd">"""Get indices for the transformed data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -885,7 +906,7 @@
 <span class="sd">            are arranged such that connectivity would be computed between the first seed</span>
 <span class="sd">            component and first target component, second seed component and second</span>
 <span class="sd">            target component, etc...</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
@@ -906,26 +927,26 @@
         <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mask_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">contours</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-        <span class="n">outlines</span><span class="o">=</span><span class="s2">&quot;head&quot;</span><span class="p">,</span>
+        <span class="n">outlines</span><span class="o">=</span><span class="s2">"head"</span><span class="p">,</span>
         <span class="n">sphere</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">image_interp</span><span class="o">=</span><span class="n">_INTERPOLATION_DEFAULT</span><span class="p">,</span>
         <span class="n">extrapolate</span><span class="o">=</span><span class="n">_EXTRAPOLATE_DEFAULT</span><span class="p">,</span>
         <span class="n">border</span><span class="o">=</span><span class="n">_BORDER_DEFAULT</span><span class="p">,</span>
         <span class="n">res</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
         <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu_r"</span><span class="p">,</span>
         <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="n">cnorm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1E</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">"</span><span class="si">%.1E</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"AU"</span><span class="p">,</span>
         <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">name_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">ncols</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot topographic patterns of components.</span>
+<span class="w">        </span><span class="sd">"""Plot topographic patterns of components.</span>
 
 <span class="sd">        The patterns explain how the measured data was generated from the neural sources</span>
 <span class="sd">        (a.k.a. the forward model) :footcite:`HaufeEtAl2014`.</span>
@@ -965,10 +986,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        %(figs_topomap)s</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;no patterns are available, please call the `fit` method first&quot;</span>
+                <span class="s2">"no patterns are available, please call the `fit` method first"</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_filters_patterns</span><span class="p">(</span>
@@ -1017,26 +1038,26 @@
         <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mask_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">contours</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-        <span class="n">outlines</span><span class="o">=</span><span class="s2">&quot;head&quot;</span><span class="p">,</span>
+        <span class="n">outlines</span><span class="o">=</span><span class="s2">"head"</span><span class="p">,</span>
         <span class="n">sphere</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">image_interp</span><span class="o">=</span><span class="n">_INTERPOLATION_DEFAULT</span><span class="p">,</span>
         <span class="n">extrapolate</span><span class="o">=</span><span class="n">_EXTRAPOLATE_DEFAULT</span><span class="p">,</span>
         <span class="n">border</span><span class="o">=</span><span class="n">_BORDER_DEFAULT</span><span class="p">,</span>
         <span class="n">res</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
         <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu_r"</span><span class="p">,</span>
         <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="n">cnorm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.1E</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;AU&quot;</span><span class="p">,</span>
+        <span class="n">cbar_fmt</span><span class="o">=</span><span class="s2">"</span><span class="si">%.1E</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">"AU"</span><span class="p">,</span>
         <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">name_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">ncols</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot topographic filters of components.</span>
+<span class="w">        </span><span class="sd">"""Plot topographic filters of components.</span>
 
 <span class="sd">        The filters are used to extract discriminant neural sources from the measured</span>
 <span class="sd">        data (a.k.a. the backward model) :footcite:`HaufeEtAl2014`.</span>
@@ -1076,10 +1097,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        %(figs_topomap)s</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;no filters are available, please call the `fit` method first&quot;</span>
+                <span class="s2">"no filters are available, please call the `fit` method first"</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_filters_patterns</span><span class="p">(</span>
@@ -1145,28 +1166,28 @@
         <span class="n">ncols</span><span class="p">,</span>
         <span class="n">show</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot filters/targets for components.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Plot filters/targets for components."""</span>
         <span class="c1"># Sort inputs</span>
-        <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="s2">&quot;`info`&quot;</span><span class="p">,</span> <span class="s2">&quot;mne.Info&quot;</span><span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">Info</span><span class="p">,</span> <span class="s2">"`info`"</span><span class="p">,</span> <span class="s2">"mne.Info"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">components</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;axes&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot; length&quot;</span><span class="p">)</span>
+            <span class="n">_check_option</span><span class="p">(</span><span class="s2">"axes"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">" length"</span><span class="p">)</span>
 
         <span class="c1"># plot seeds and targets</span>
         <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">group_idx</span><span class="p">,</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;seeds&quot;</span><span class="p">,</span> <span class="s2">&quot;targets&quot;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">group_idx</span><span class="p">,</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s2">"seeds"</span><span class="p">,</span> <span class="s2">"targets"</span><span class="p">]):</span>
             <span class="c1"># create info for seeds/targets</span>
             <span class="n">group_info</span> <span class="o">=</span> <span class="n">pick_info</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">group_idx</span><span class="p">])</span>
             <span class="k">with</span> <span class="n">group_info</span><span class="o">.</span><span class="n">_unlock</span><span class="p">():</span>
-                <span class="n">group_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># 1 component per time point</span>
+                <span class="n">group_info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># 1 component per time point</span>
             <span class="c1"># create Evoked object</span>
             <span class="n">evoked</span> <span class="o">=</span> <span class="n">EvokedArray</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="n">group_idx</span><span class="p">],</span> <span class="n">group_info</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="c1"># then call plot_topomap</span>
             <span class="k">if</span> <span class="n">name_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">group_name_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">%01d (</span><span class="si">{</span><span class="n">group_name</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="n">group_name_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_conn_estimator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">%01d (</span><span class="si">{</span><span class="n">group_name</span><span class="si">}</span><span class="s2">)"</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">group_name_format</span> <span class="o">=</span> <span class="n">name_format</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">group_name</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="n">group_name_format</span> <span class="o">=</span> <span class="n">name_format</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">" (</span><span class="si">{</span><span class="n">group_name</span><span class="si">}</span><span class="s2">)"</span>
             <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">evoked</span><span class="o">.</span><span class="n">plot_topomap</span><span class="p">(</span>
                     <span class="n">times</span><span class="o">=</span><span class="n">components</span><span class="p">,</span>
@@ -1231,8 +1252,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1243,7 +1264,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-04-11.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-08-24.
       <br/>
     
   </p>
@@ -1266,7 +1287,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
