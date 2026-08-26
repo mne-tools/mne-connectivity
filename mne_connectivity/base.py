@@ -776,8 +776,9 @@ class BaseConnectivity(EpochMixin):
 
         To ensure the mapping from the original multivariate indices to the new dense
         matrix space is traceable, ``multivariate_nodes`` is returned, which contains
-        each node in the position where it exists in the dense matrix space. For the
-        above example, ``multivariate_nodes`` would be ``[[0, 1], [2, 3], [4, 5]]``.
+        the (unmasked form) of each node in the position where it exists in the dense
+        matrix space. For the above example, ``multivariate_nodes`` would be
+        ``[[0, 1], [2, 3], [4, 5]]``.
         """
         _check_option("output", output, ["raveled", "dense", "compact"])
         multivariate_nodes = None
