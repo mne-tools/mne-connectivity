@@ -86,8 +86,88 @@ from mne_connectivity import spectral_connectivity_epochs
 # MNE-Connectivity combine information across the different channels into a
 # single (time-)frequency-resolved connectivity spectrum, regardless of the
 # number of seed and target channels, so ragged arrays are not a concern here.
+
+########################################################################################
+# Extracting data for multivariate connectivity
+# ---------------------------------------------
 #
-# However, the maximised imaginary part of coherency (MIC) method also returns
+# Below, we compute multivariate connectivity using the maximised imaginary part of
+# coherency (MIC; see :doc:`mic_mim` for more information). Just like for bivariate
+# connectivity, we can extract the connectivity in ``'raveled'`` and ``'dense'`` forms.
+
+# %%
+
+# Create random data
+data = np.random.randn(10, 5, 200)  # epochs x channels x times
+sfreq = 50
+ragged_indices = (
+    [[0, 1], [0, 1, 2, 3]],  # seeds
+    [[2, 3, 4], [4]],  # targets
+)
+
+# Compute multivariate connectivity
+con = spectral_connectivity_epochs(
+    data,
+    method="mic",
+    indices=ragged_indices,
+    sfreq=sfreq,
+    fmin=10,
+    fmax=30,
+    verbose=False,
+)
+
+########################################################################################
+# The ``'raveled'`` form directly returns the connectivity data that is stored in the
+# connectivity object. That is, an array of shape ``(n_connections, ...)``, where
+# ``...`` represents the remaining dimensions of the connectivity data (e.g.,
+# frequencies, times).
+
+# %%
+
+raveled_data = con.get_data(output="raveled")
+print(f"Raveled connectivity shape: {raveled_data.shape} (connections x freqs)")
+
+########################################################################################
+# In contrast, the ``'dense'`` form requires a manipulation of the data into a square
+# matrix of shape ``(n_nodes, n_nodes, ...)``. Since in the context of multivariate
+# connectivity, a node can be a set of multiple channels, it is not possible to treat
+# each row/column of the dense matrix as the entry for a single channel (as you would
+# for bivariate connectivity).
+#
+# Because of this, the multivariate indices are mapped into a new dense matrix space,
+# which allows a square matrix to be returned. To ensure the mapping from the original
+# multivariate indices to the new dense matrix space is traceable, a tuple of
+# multivariate nodes in the original indices are returned. This contains the (unmasked
+# form) of each node, in the position where it exists in the dense matrix space.
+
+# %%
+
+dense_data, multivariate_nodes = con.get_data(output="dense")
+print(f"Dense connectivity shape: {dense_data.shape} (nodes x nodes x freqs)")
+
+# This mapping is done by taking the set of channels that define each node and assigning
+# them a new index based on where they appear in the original seed indices, and then
+# target indices.
+print(
+    f"Original ragged indices: seeds {ragged_indices[0]}; targets {ragged_indices[1]}"
+)
+print(
+    f"Multivariate nodes: {tuple(node.tolist() for node in multivariate_nodes)}; "
+    f"{len(multivariate_nodes)} total"
+)
+mapped_indices = (np.array([0, 1]), np.array([2, 3]))
+print(
+    f"Mapped indices in dense matrix space: "
+    f"seeds {[node.tolist() for node in mapped_indices[0]]}; "
+    f"targets {[node.tolist() for node in mapped_indices[1]]}"
+)
+assert np.all(raveled_data == dense_data[mapped_indices[0], mapped_indices[1]])
+
+########################################################################################
+# Working with spatial patterns of connectivity from ragged indices
+# -----------------------------------------------------------------
+#
+# The maximised imaginary part of coherency (MIC) method also returns
 # spatial patterns of connectivity, which show the contribution of each channel
 # to the dimensionality-reduced connectivity estimate (explained in more detail
 # in :doc:`mic_mim`). Because these patterns are returned for each channel,
@@ -101,56 +181,39 @@ from mne_connectivity import spectral_connectivity_epochs
 
 # %%
 
-# create random data
-data = np.random.randn(10, 5, 200)  # epochs x channels x times
-sfreq = 50
-ragged_indices = ([[0, 1], [0, 1, 2, 3]], [[2, 3, 4], [4]])  # seeds  # targets
-
-# compute connectivity
-con = spectral_connectivity_epochs(
-    data,
-    method="mic",
-    indices=ragged_indices,
-    sfreq=sfreq,
-    fmin=10,
-    fmax=30,
-    verbose=False,
-)
 patterns = np.array(con.attrs["patterns"])
 padded_indices = con.indices
 n_freqs = con.get_data().shape[-1]
 n_cons = len(ragged_indices[0])
 max_n_chans = max(len(inds) for inds in ([*ragged_indices[0], *ragged_indices[1]]))
 
-# show that the padded indices entries are masked
+# Show that the padded indices entries are masked
 assert np.sum(padded_indices[0][0].mask) == 2  # 2 padded channels
 assert np.sum(padded_indices[1][0].mask) == 1  # 1 padded channels
 assert np.sum(padded_indices[0][1].mask) == 0  # 0 padded channels
 assert np.sum(padded_indices[1][1].mask) == 3  # 3 padded channels
 
-# patterns have shape [seeds/targets x cons x max channels x freqs (x times)]
+# Patterns have shape [seeds/targets x cons x max channels x freqs (x times)]
 assert patterns.shape == (2, n_cons, max_n_chans, n_freqs)
 
-# show that the padded patterns entries are all np.nan
+# Show that the padded patterns entries are all np.nan
 assert np.all(np.isnan(patterns[0, 0, 2:]))  # 2 padded channels
 assert np.all(np.isnan(patterns[1, 0, 3:]))  # 1 padded channels
 assert not np.any(np.isnan(patterns[0, 1]))  # 0 padded channels
 assert np.all(np.isnan(patterns[1, 1, 1:]))  # 3 padded channels
 
-# extract patterns for first connection using the ragged indices
+# Extract patterns for first connection using the ragged indices
 seed_patterns_con1 = patterns[0, 0, : len(ragged_indices[0][0])]
 target_patterns_con1 = patterns[1, 0, : len(ragged_indices[1][0])]
 
-# extract patterns for second connection using the padded, masked indices
+# Extract patterns for second connection using the padded, masked indices
 seed_patterns_con2 = patterns[0, 1, : padded_indices[0][1].count()]
 target_patterns_con2 = patterns[1, 1, : padded_indices[1][1].count()]
 
-# show that shapes of patterns are correct
+# Show that shapes of patterns are correct
 assert seed_patterns_con1.shape == (2, n_freqs)  # channels (0, 1)
 assert target_patterns_con1.shape == (3, n_freqs)  # channels (2, 3, 4)
 assert seed_patterns_con2.shape == (4, n_freqs)  # channels (0, 1, 2, 3)
 assert target_patterns_con2.shape == (1, n_freqs)  # channels (4)
 
 print("Assertions completed successfully!")
-
-# %%
