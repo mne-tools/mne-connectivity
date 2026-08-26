@@ -18,7 +18,12 @@ from mne.utils import (
     warn,
 )
 
-from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
+from mne_connectivity.utils import (
+    _check_if_multivariate_indices,
+    _get_unique_multivariate_nodes_and_indices,
+    _prepare_xarray_mne_data_structures,
+    fill_doc,
+)
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -733,14 +738,49 @@ class BaseConnectivity(EpochMixin):
             - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` were
               defined as a tuple of arrays, or ``'dense'`` if ``indices='all'``
 
-            Multivariate connectivity data cannot be returned in a dense form.
-
         Returns
         -------
         data : array
             The output connectivity data.
+        multivariate_nodes : tuple of array
+            Returned if the connectivity data is multivariate with ``self.indices``
+            defined as a tuple of arrays, and ``output='dense'``. Used to map from the
+            original set of indices to the dense matrix space. See notes for more
+            information.
+
+        Notes
+        -----
+        Because multivariate connectivity data can involve multiple channels per
+        connection, it is not possible to represent the data in a dense matrix form
+        where each row/column represent a single channel.
+
+        Instead, the multivariate data is mapped into a new space, based on the set of
+        channels that define each node. E.g., the multivariate indices::
+
+            (
+                [[0, 1], [0, 1], [2, 3]],  # seeds
+                [[2, 3], [4, 5], [4, 5]]   # targets
+            )
+
+        contains the following sets of channels: ``[0, 1]`` (node 0); ``[2, 3]``
+        (node 1); and ``[4, 5]`` (node 2). Based on this, the multivariate indices can
+        be mapped to a new space with indices::
+
+            (
+                [0, 0, 1],  # seeds
+                [1, 2, 2]   # targets
+            )
+
+        For a dense connectivity matrix, this would return a ``(3, 3)`` upper-triangular
+        array.
+
+        To ensure the mapping from the original multivariate indices to the new dense
+        matrix space is traceable, ``multivariate_nodes`` is returned, which contains
+        each node in the position where it exists in the dense matrix space. For the
+        above example, ``multivariate_nodes`` would be ``[[0, 1], [2, 3], [4, 5]]``.
         """
         _check_option("output", output, ["raveled", "dense", "compact"])
+        multivariate_nodes = None
 
         if output == "compact":
             if self.indices in ["all", "symmetric"]:
@@ -751,22 +791,18 @@ class BaseConnectivity(EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if (
-                isinstance(self.indices, tuple)
-                and not np.all(
-                    [np.issubdtype(type(ind), int) for ind in self.indices[0]]
+            # Check if indices are for multivariate connectivity
+            if isinstance(self.indices, tuple) and _check_if_multivariate_indices(
+                self.indices
+            ):
+                # Remap multivariate indices from channels to the unique nodes
+                # (nodes here are considered a set of channels)
+                multivariate_nodes, indices = (
+                    _get_unique_multivariate_nodes_and_indices(self.indices)
                 )
-                and not np.all(
-                    [np.issubdtype(type(ind), int) for ind in self.indices[1]]
-                )
-            ):  # i.e. check if multivariate results based on nested indices
-                # multivariate results cannot be returned in a dense form as a single
-                # set of results would correspond to multiple entries in the matrix, and
-                # there could also be cases where multiple results correspond to the
-                # same entries in the matrix.
-                raise ValueError(
-                    "cannot return multivariate connectivity data in a dense form"
-                )
+                n_nodes = len(multivariate_nodes)
+            else:
+                indices, n_nodes = self.indices, self.n_nodes
 
             # get the new shape of the data array
             if self.is_epoched:
@@ -777,7 +813,7 @@ class BaseConnectivity(EpochMixin):
             # handle the case where model order is defined in VAR connectivity
             # and thus appends the connectivity matrices side by side, so the
             # shape is N x N * lags
-            new_shape.extend([self.n_nodes, self.n_nodes])
+            new_shape.extend([n_nodes, n_nodes])
             if "components" in self.dims:
                 new_shape.append(len(self.coords["components"]))
             if "freqs" in self.dims:
@@ -785,23 +821,23 @@ class BaseConnectivity(EpochMixin):
             if "times" in self.dims:
                 new_shape.append(len(self.coords["times"]))
 
-            if isinstance(self.indices, tuple) or self.indices == "symmetric":
+            if isinstance(indices, tuple) or indices == "symmetric":
                 if np.iscomplexobj(self._data):
                     fill_value = np.nan + 1j * np.nan
                 else:
                     fill_value = np.nan
                 data = np.full(new_shape, fill_value=fill_value, dtype=self._data.dtype)
 
-            if isinstance(self.indices, tuple):
+            if isinstance(indices, tuple):
                 # handle things differently if indices is defined
-                row_idx, col_idx = self.indices
+                row_idx, col_idx = indices
                 if self.is_epoched:
                     data[:, row_idx, col_idx, ...] = self._data
                 else:
                     data[row_idx, col_idx, ...] = self._data
-            elif self.indices == "symmetric":
+            elif indices == "symmetric":
                 # get the upper/lower triangular indices
-                row_triu_inds, col_triu_inds = np.triu_indices(self.n_nodes, k=0)
+                row_triu_inds, col_triu_inds = np.triu_indices(n_nodes, k=0)
                 if self.is_epoched:
                     data[:, row_triu_inds, col_triu_inds, ...] = self._data
                     data[:, col_triu_inds, row_triu_inds, ...] = self._data
@@ -811,6 +847,8 @@ class BaseConnectivity(EpochMixin):
             else:
                 data = self._data.reshape(new_shape)
 
+        if multivariate_nodes is not None:
+            return data, multivariate_nodes
         return data
 
     def rename_nodes(self, mapping):

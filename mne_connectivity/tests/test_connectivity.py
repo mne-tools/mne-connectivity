@@ -149,25 +149,11 @@ def test_connectivity_containers(conn_cls, n_components):
     with pytest.raises(ValueError, match="Indices can only be"):
         conn_cls(data=correct_numpy_input, indices="square", n_nodes=2, **extra_kwargs)
 
-    indices = ([0, 1], [1, 0])
     conn = conn_cls(data=correct_numpy_input, n_nodes=3, **extra_kwargs)
 
     # test that get_data works as intended
     with pytest.raises(ValueError, match="Invalid value for the 'output' parameter"):
         conn.get_data(output="blah")
-    with pytest.raises(
-        ValueError, match="cannot return multivariate connectivity data in a dense form"
-    ):
-        multivar_conn = conn_cls(
-            data=correct_numpy_input,
-            n_nodes=n_nodes,
-            indices=(
-                [[ind] for ind in range(n_nodes**2)],
-                [[ind] for ind in range(n_nodes**2)],
-            ),
-            **extra_kwargs,
-        )
-        multivar_conn.get_data(output="dense")
 
     assert conn.shape == tuple(correct_numpy_shape)
     assert conn.get_data(output="raveled").shape == tuple(correct_numpy_shape)
@@ -196,6 +182,7 @@ def test_connectivity_containers(conn_cls, n_components):
     assert_array_equal(orig_names, conn.names)
 
     # test connectivity instantiation with indices
+    indices = ([0, 1], [1, 0])
     indexed_numpy_shape, index_kwargs = _prep_correct_connectivity_input(
         conn_cls, n_nodes=n_nodes, symmetric=False, n_epochs=n_epochs, indices=indices
     )
@@ -244,6 +231,44 @@ def test_connectivity_containers(conn_cls, n_components):
             for idx in range(len(dense_shape))
         ]
     )
+
+
+def test_get_multivariate_data():
+    """Test that get_data works properly with multivariate data."""
+    indices = (
+        np.array([[0, 1], [0, 1], [2, 3]]),
+        np.array([[2, 3], [4, 5], [4, 5]]),
+    )  # should map to upper-triangular elements
+
+    # Find individual channels and nodes (sets of channels) in the data
+    chans, nodes = set(), set()
+    for seed, target in zip(*indices):
+        for ch in seed:
+            chans.add(ch)
+        for ch in target:
+            chans.add(ch)
+        nodes.add(tuple(seed))
+        nodes.add(tuple(target))
+
+    data = np.arange(len(indices[0]), dtype=np.float64)
+    con = Connectivity(data=data, indices=indices, n_nodes=len(chans))
+
+    # Check no manipulation is performed for raveled output
+    matrix = con.get_data(output="raveled")
+    assert isinstance(matrix, np.ndarray)  # just data expected
+    assert_array_equal(data, matrix)
+
+    # Check that output gets mapped to new space for dense output
+    out = con.get_data(output="dense")
+    assert isinstance(out, tuple)  # data and multivariate_nodes expected
+    assert len(out) == 2
+    matrix, multivariate_nodes = out
+    assert isinstance(matrix, np.ndarray)
+    assert isinstance(multivariate_nodes, tuple)
+    assert np.all(isinstance(ind, np.ndarray) for ind in multivariate_nodes)
+    triu_indices = np.triu_indices(len(nodes), k=1)
+    # TODO VERSION: use [*triu_indices] when Py3.10 dropped
+    assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
 
 
 @pytest.mark.parametrize(
