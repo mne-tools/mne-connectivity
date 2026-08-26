@@ -92,8 +92,8 @@ from mne_connectivity import spectral_connectivity_epochs
 # ---------------------------------------------
 #
 # Below, we compute multivariate connectivity using the maximised imaginary part of
-# coherency (MIC) (see :doc:`mic_mim` for more information). Just like for bivariate
-# connectivity, we can extract the connectivity in 'raveled' and 'dense' forms.
+# coherency (MIC; see :doc:`mic_mim` for more information). Just like for bivariate
+# connectivity, we can extract the connectivity in ``'raveled'`` and ``'dense'`` forms.
 
 # %%
 
@@ -117,9 +117,9 @@ con = spectral_connectivity_epochs(
 )
 
 ########################################################################################
-# The 'raveled' form directly returns the connectivity data that is stored in the
-# connectivity object, that is, an array of shape ``(n_connections, ...)``, where
-# ``...`` represents the remaining dimensions of the connectivity data (e.g.
+# The ``'raveled'`` form directly returns the connectivity data that is stored in the
+# connectivity object. That is, an array of shape ``(n_connections, ...)``, where
+# ``...`` represents the remaining dimensions of the connectivity data (e.g.,
 # frequencies, times).
 
 # %%
@@ -128,31 +128,39 @@ raveled_data = con.get_data(output="raveled")
 print(f"Raveled connectivity shape: {raveled_data.shape} (connections x freqs)")
 
 ########################################################################################
-# In contrast, the 'dense' form requires a manipulation of the data into a square matrix
-# of shape ``(n_nodes, n_nodes, ...)``. Since in the context of multivariate
+# In contrast, the ``'dense'`` form requires a manipulation of the data into a square
+# matrix of shape ``(n_nodes, n_nodes, ...)``. Since in the context of multivariate
 # connectivity, a node can be a set of multiple channels, it is not possible to treat
-# each row/column of the dense matrix as the entry for a single channel, as you would
-# for bivariate connectivity.
+# each row/column of the dense matrix as the entry for a single channel (as you would
+# for bivariate connectivity).
 #
-# Because of this, the multivariate indices are mapped into a new 'dense' matrix space,
+# Because of this, the multivariate indices are mapped into a new dense matrix space,
 # which allows a square matrix to be returned. To ensure the mapping from the original
-# multivariate indices to the new dense matrix space is traceable, the tuple of
+# multivariate indices to the new dense matrix space is traceable, a tuple of
 # multivariate nodes in the original indices are returned. This contains the (unmasked
 # form) of each node, in the position where it exists in the dense matrix space.
 
 # %%
 
 dense_data, multivariate_nodes = con.get_data(output="dense")
-print(
-    f"Multivariate nodes: {tuple(node.tolist() for node in multivariate_nodes)}; "
-    f"{len(multivariate_nodes)} total"
-)
 print(f"Dense connectivity shape: {dense_data.shape} (nodes x nodes x freqs)")
 
 # This mapping is done by taking the set of channels that define each node and assigning
 # them a new index based on where they appear in the original seed indices, and then
 # target indices.
+print(
+    f"Original ragged indices: seeds {ragged_indices[0]}; targets {ragged_indices[1]}"
+)
+print(
+    f"Multivariate nodes: {tuple(node.tolist() for node in multivariate_nodes)}; "
+    f"{len(multivariate_nodes)} total"
+)
 mapped_indices = (np.array([0, 1]), np.array([2, 3]))
+print(
+    f"Mapped indices in dense matrix space: "
+    f"seeds {[node.tolist() for node in mapped_indices[0]]}; "
+    f"targets {[node.tolist() for node in mapped_indices[1]]}"
+)
 assert np.all(raveled_data == dense_data[mapped_indices[0], mapped_indices[1]])
 
 ########################################################################################
