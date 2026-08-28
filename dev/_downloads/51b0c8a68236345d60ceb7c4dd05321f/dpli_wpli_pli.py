@@ -20,7 +20,8 @@ import mne
 import numpy as np
 from mne.datasets import sample
 
-from mne_connectivity import spectral_connectivity_epochs
+from mne_connectivity import Connectivity, spectral_connectivity_epochs
+from mne_connectivity.viz import plot_connectivity
 
 ###############################################################################
 # Background
@@ -342,44 +343,28 @@ sfreq = raw.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period
 
 # Compute PLI, wPLI, and dPLI
-con_pli = spectral_connectivity_epochs(
-    epochs,
-    method="pli",
-    mode="multitaper",
-    sfreq=sfreq,
-    fmin=fmin,
-    fmax=fmax,
-    faverage=True,
-    tmin=tmin,
-    mt_adaptive=False,
-    n_jobs=1,
-)
-
-con_wpli = spectral_connectivity_epochs(
-    epochs,
-    method="wpli",
-    mode="multitaper",
-    sfreq=sfreq,
-    fmin=fmin,
-    fmax=fmax,
-    faverage=True,
-    tmin=tmin,
-    mt_adaptive=False,
-    n_jobs=1,
-)
-
-con_dpli = spectral_connectivity_epochs(
-    epochs,
-    method="dpli",
-    mode="multitaper",
-    sfreq=sfreq,
-    fmin=fmin,
-    fmax=fmax,
-    faverage=True,
-    tmin=tmin,
-    mt_adaptive=False,
-    n_jobs=1,
-)
+cons = dict()
+methods = ["pli", "wpli", "dpli"]
+for method in methods:
+    con = spectral_connectivity_epochs(
+        epochs,
+        method=method,
+        mode="multitaper",
+        sfreq=sfreq,
+        fmin=fmin,
+        fmax=fmax,
+        tmin=tmin,
+        mt_adaptive=False,
+        n_jobs=1,
+    )
+    con_data = con.get_data().mean(axis=-1)  # average across frequencies
+    cons[method] = Connectivity(
+        con_data,
+        n_nodes=con.n_nodes,
+        names=con.names,
+        indices=con.indices,
+        method=method,
+    )
 
 ###############################################################################
 # In this example, there is strong connectivity between sensors 190-200 and
@@ -395,22 +380,10 @@ con_dpli = spectral_connectivity_epochs(
 # against volume conduction effects decreasing the detected connectivity
 # strength, as was mentioned earlier.
 
-fig, axs = plt.subplots(1, 3, figsize=(14, 5), sharey=True)
-axs[0].imshow(con_pli.get_data("dense"), vmin=0, vmax=1)
-axs[0].set_title("PLI")
-axs[0].set_ylabel("Sensor 1")
-axs[0].set_xlabel("Sensor 2")
+# sphinx_gallery_multi_image_block = "single"
 
-axs[1].imshow(con_wpli.get_data("dense"), vmin=0, vmax=1)
-axs[1].set_title("wPLI")
-axs[1].set_xlabel("Sensor 2")
-
-im = axs[2].imshow(con_dpli.get_data("dense"), vmin=0, vmax=1)
-axs[2].set_title("dPLI")
-axs[2].set_xlabel("Sensor 2")
-
-fig.colorbar(im, ax=axs.ravel())
-plt.show()
+for con in cons.values():
+    plot_connectivity(con, info=epochs.info, vmin=0, vmax=1)
 
 ###############################################################################
 # Conclusions

@@ -22,7 +22,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mne.datasets.fieldtrip_cmc import data_path
 
-from mne_connectivity import spectral_connectivity_epochs
+from mne_connectivity import SpectralConnectivity, spectral_connectivity_epochs
+from mne_connectivity.viz import plot_spectral_connectivity
 
 ###############################################################################
 # Background
@@ -165,8 +166,8 @@ signals_b = [
     if ch_info["ch_name"][2] == "O"
 ]
 
-indices_ab = (np.array([signals_a]), np.array([signals_b]))  # A => B
-indices_ba = (np.array([signals_b]), np.array([signals_a]))  # B => A
+indices_ab = (np.array([signals_a]), np.array([signals_b]))  # A → B
+indices_ba = (np.array([signals_b]), np.array([signals_a]))  # B → A
 
 # compute Granger causality
 gc_ab = spectral_connectivity_epochs(
@@ -177,7 +178,7 @@ gc_ab = spectral_connectivity_epochs(
     fmax=30,
     rank=(np.array([5]), np.array([5])),
     gc_n_lags=20,
-)  # A => B
+)  # A → B
 gc_ba = spectral_connectivity_epochs(
     epochs,
     method=["gc"],
@@ -186,9 +187,8 @@ gc_ba = spectral_connectivity_epochs(
     fmax=30,
     rank=(np.array([5]), np.array([5])),
     gc_n_lags=20,
-)  # B => A
+)  # B → A
 freqs = gc_ab.freqs
-
 
 ###############################################################################
 # Plotting the results, we see that there is a flow of information from our
@@ -197,12 +197,8 @@ freqs = gc_ab.freqs
 
 # %%
 
-fig, axis = plt.subplots(1, 1)
-axis.plot(freqs, gc_ab.get_data()[0], linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Connectivity (A.U.)")
-fig.suptitle("GC: [A => B]")
-
+fig, axes = plot_spectral_connectivity(gc_ab, info=epochs.info)
+axes[0].set_title("Granger causality: A → B")
 
 ###############################################################################
 # Drivers and receivers: analysing the net direction of information flow
@@ -223,15 +219,19 @@ fig.suptitle("GC: [A => B]")
 
 # %%
 
-net_gc = gc_ab.get_data() - gc_ba.get_data()  # [A => B] - [B => A]
+net_gc_data = gc_ab.get_data() - gc_ba.get_data()  # [A → B] - [B → A]
+net_gc = SpectralConnectivity(
+    data=net_gc_data,
+    freqs=freqs,
+    n_nodes=gc_ba.n_nodes,
+    names=gc_ab.names,
+    indices=indices_ab,
+    method="Net GC",
+)
 
-fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
-axis.plot(freqs, net_gc[0], linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Connectivity (A.U.)")
-fig.suptitle("Net GC: [A => B] - [B => A]")
-
+fig, axes = plot_spectral_connectivity(net_gc, info=epochs.info)
+axes[0].plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
+axes[0].set_title("Net Granger causality: A → B\n[A → B] - [B → A]")
 
 ###############################################################################
 # Improving the robustness of connectivity estimates with time-reversal
@@ -291,7 +291,7 @@ gc_tr_ab = spectral_connectivity_epochs(
     fmax=30,
     rank=(np.array([5]), np.array([5])),
     gc_n_lags=20,
-)  # TR[A => B]
+)  # TR[A → B]
 gc_tr_ba = spectral_connectivity_epochs(
     epochs,
     method=["gc_tr"],
@@ -300,13 +300,21 @@ gc_tr_ba = spectral_connectivity_epochs(
     fmax=30,
     rank=(np.array([5]), np.array([5])),
     gc_n_lags=20,
-)  # TR[B => A]
+)  # TR[B → A]
 
-# compute net GC on time-reversed signals (TR[A => B] - TR[B => A])
-net_gc_tr = gc_tr_ab.get_data() - gc_tr_ba.get_data()
+# compute net GC on time-reversed signals (TR[A → B] - TR[B → A])
+net_gc_tr_data = gc_tr_ab.get_data() - gc_tr_ba.get_data()
 
 # compute TRGC
-trgc = net_gc - net_gc_tr
+trgc_data = net_gc_data - net_gc_tr_data
+trgc = SpectralConnectivity(
+    data=trgc_data,
+    freqs=freqs,
+    n_nodes=gc_ba.n_nodes,
+    names=gc_ab.names,
+    indices=indices_ab,
+    method="TRGC",
+)
 
 ###############################################################################
 # Plotting the TRGC results reveals a very different picture compared to net
@@ -321,13 +329,11 @@ trgc = net_gc - net_gc_tr
 
 # %%
 
-fig, axis = plt.subplots(1, 1)
-axis.plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
-axis.plot(freqs, trgc[0], linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Connectivity (A.U.)")
-fig.suptitle("TRGC: net[A => B] - net time-reversed[A => B]")
-
+fig, axes = plot_spectral_connectivity(trgc, info=epochs.info)
+axes[0].plot((freqs[0], freqs[-1]), (0, 0), linewidth=2, linestyle="--", color="k")
+axes[0].set_title(
+    "Net time-reversed Granger causality: A → B\nnet[A → B] - net time-reversed[A → B]"
+)
 
 ###############################################################################
 # Controlling spectral smoothing with the number of lags
@@ -357,16 +363,15 @@ gc_ab_60 = spectral_connectivity_epochs(
     fmax=30,
     rank=(np.array([5]), np.array([5])),
     gc_n_lags=60,
-)  # A => B
+)  # A → B
 
 fig, axis = plt.subplots(1, 1)
 axis.plot(freqs, gc_ab.get_data()[0], linewidth=2, label="20 lags")
 axis.plot(freqs, gc_ab_60.get_data()[0], linewidth=2, label="60 lags")
 axis.set_xlabel("Frequency (Hz)")
 axis.set_ylabel("Connectivity (A.U.)")
+axis.set_title("Granger causality: A → B")
 axis.legend()
-fig.suptitle("GC: [A => B]")
-
 
 ###############################################################################
 # Handling high-dimensional data
@@ -421,7 +426,7 @@ spectral_connectivity_epochs(
     rank=None,
     gc_n_lags=20,
     verbose=False,
-)  # A => B
+)  # A → B
 
 ###############################################################################
 # Rigorous checks are implemented to identify any such instances which would

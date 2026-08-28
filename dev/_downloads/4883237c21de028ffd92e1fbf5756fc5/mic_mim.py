@@ -26,7 +26,12 @@ from matplotlib import pyplot as plt
 from mne import EvokedArray, make_fixed_length_epochs
 from mne.datasets.fieldtrip_cmc import data_path
 
-from mne_connectivity import seed_target_indices, spectral_connectivity_epochs
+from mne_connectivity import (
+    SpectralConnectivity,
+    seed_target_indices,
+    spectral_connectivity_epochs,
+)
+from mne_connectivity.viz import plot_spectral_connectivity
 
 ###############################################################################
 # Background
@@ -106,11 +111,28 @@ target_names = [epochs.info["ch_names"][idx] for idx in targets]
 (mic, mim) = spectral_connectivity_epochs(
     epochs, method=["mic", "mim"], indices=multivar_indices, fmin=5, fmax=30, rank=None
 )
+mic = SpectralConnectivity(
+    data=np.abs(mic.get_data()),
+    freqs=mic.freqs,
+    n_nodes=mic.n_nodes,
+    names=mic.names,
+    indices=mic.indices,
+    method=mic.method,
+    patterns=mic.attrs["patterns"],
+)
 
 # bivariate imaginary part of coherency (for comparison)
 bivar_indices = seed_target_indices(seeds, targets)
 imcoh = spectral_connectivity_epochs(
     epochs, method="imcoh", indices=bivar_indices, fmin=5, fmax=30
+)
+imcoh = SpectralConnectivity(
+    data=np.abs(imcoh.get_data()),
+    freqs=imcoh.freqs,
+    n_nodes=imcoh.n_nodes,
+    names=imcoh.names,
+    indices=imcoh.indices,
+    method=imcoh.method,
 )
 
 ###############################################################################
@@ -120,12 +142,8 @@ imcoh = spectral_connectivity_epochs(
 # weaker peak around 27 Hz.
 
 # %%
-fig, axis = plt.subplots(1, 1)
-axis.plot(imcoh.freqs, np.mean(np.abs(imcoh.get_data()), axis=0), linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Absolute connectivity (A.U.)")
-fig.suptitle("Imaginary part of coherency")
 
+plot_spectral_connectivity(imcoh, info=epochs.info, combine="mean", ci=95)
 
 ###############################################################################
 # Maximised imaginary part of coherency (MIC)
@@ -163,12 +181,7 @@ fig.suptitle("Imaginary part of coherency")
 
 # %%
 
-fig, axis = plt.subplots(1, 1)
-axis.plot(mic.freqs, np.abs(mic.get_data()[0]), linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Absolute connectivity (A.U.)")
-fig.suptitle("Maximised imaginary part of coherency")
-
+plot_spectral_connectivity(mic, info=epochs.info)
 
 ###############################################################################
 # Furthermore, spatial patterns of connectivity can be constructed from the
@@ -215,24 +228,16 @@ target_pattern = EvokedArray(target_pattern[:, np.newaxis], target_info)
 
 # plot the patterns
 fig, axes = plt.subplots(1, 4)
-seed_pattern.plot_topomap(
+topomap_kwargs = dict(
     times=0,
     sensors="m.",
     units=dict(mag="A.U."),
     cbar_fmt="%.1E",
-    axes=axes[0:2],
     time_format="",
     show=False,
 )
-target_pattern.plot_topomap(
-    times=0,
-    sensors="m.",
-    units=dict(mag="A.U."),
-    cbar_fmt="%.1E",
-    axes=axes[2:],
-    time_format="",
-    show=False,
-)
+seed_pattern.plot_topomap(axes=axes[0:2], **topomap_kwargs)
+target_pattern.plot_topomap(axes=axes[2:], **topomap_kwargs)
 axes[0].set_position((0.1, 0.1, 0.35, 0.7))
 axes[1].set_position((0.4, 0.3, 0.02, 0.3))
 axes[2].set_position((0.5, 0.1, 0.35, 0.7))
@@ -292,11 +297,7 @@ plt.show()
 
 # %%
 
-fig, axis = plt.subplots(1, 1)
-axis.plot(mim.freqs, mim.get_data()[0], linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Absolute connectivity (A.U.)")
-fig.suptitle("Multivariate interaction measure")
+plot_spectral_connectivity(mim, info=epochs.info)
 
 n_channels = len(seeds) + len(targets)
 normalised_mim = mim.get_data()[0] / n_channels
@@ -331,11 +332,7 @@ gim = spectral_connectivity_epochs(
     epochs, method="mim", indices=indices, fmin=5, fmax=30, rank=None, verbose=False
 )
 
-fig, axis = plt.subplots(1, 1)
-axis.plot(gim.freqs, gim.get_data()[0], linewidth=2)
-axis.set_xlabel("Frequency (Hz)")
-axis.set_ylabel("Connectivity (A.U.)")
-fig.suptitle("Global interaction measure")
+plot_spectral_connectivity(gim, info=epochs.info)
 
 n_channels = len(seeds) + len(targets)
 normalised_gim = gim.get_data()[0] / n_channels

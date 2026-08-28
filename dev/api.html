@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API &#8212; MNE-Connectivity 0.10.0.dev3+g0d5fb0d49 documentation</title>
+    <title>API &#8212; MNE-Connectivity 0.10.0.dev4+g90969d020 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="_static/documentation_options.js?v=93c5b17c"></script>
+    <script src="_static/documentation_options.js?v=b33eca65"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev3+g0d5fb0d49 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev4+g90969d020 documentation</p>
   
 </a></div>
     
@@ -433,8 +433,12 @@
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.select_order.html">mne_connectivity.select_order</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_connectivity.html">mne_connectivity.viz.plot_connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_sensors_connectivity.html">mne_connectivity.viz.plot_sensors_connectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_connectivity_circle.html">mne_connectivity.viz.plot_connectivity_circle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_spectral_connectivity.html">mne_connectivity.viz.plot_spectral_connectivity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_temporal_connectivity.html">mne_connectivity.viz.plot_temporal_connectivity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.viz.plot_spectrotemporal_connectivity.html">mne_connectivity.viz.plot_spectrotemporal_connectivity</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.make_signals_in_freq_bands.html">mne_connectivity.make_signals_in_freq_bands</a></li>
@@ -635,11 +639,23 @@ connectivity, amplifying the signal-to-noise ratio of these interactions.</p>
 <h2>Visualization functions<a class="headerlink" href="#visualization-functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity" title="mne_connectivity.viz.plot_sensors_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_sensors_connectivity</span></code></a>(info, con[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.viz.plot_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_connectivity</span></code></a>(con, *[, info, picks, ...])</p></td>
+<td><p>Plot connectivity as a matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_sensors_connectivity.html#mne_connectivity.viz.plot_sensors_connectivity" title="mne_connectivity.viz.plot_sensors_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_sensors_connectivity</span></code></a>(info, con[, ...])</p></td>
 <td><p>Visualize the sensor connectivity in 3D.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_connectivity_circle</span></code></a>(con, node_names[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_connectivity_circle.html#mne_connectivity.viz.plot_connectivity_circle" title="mne_connectivity.viz.plot_connectivity_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_connectivity_circle</span></code></a>(con, node_names[, ...])</p></td>
 <td><p>Visualize connectivity as a circular graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_spectral_connectivity.html#mne_connectivity.viz.plot_spectral_connectivity" title="mne_connectivity.viz.plot_spectral_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_spectral_connectivity</span></code></a>(con, *[, info, ...])</p></td>
+<td><p>Plot spectral connectivity as line plots, with circle plot overviews.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_temporal_connectivity.html#mne_connectivity.viz.plot_temporal_connectivity" title="mne_connectivity.viz.plot_temporal_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_temporal_connectivity</span></code></a>(con, *[, info, ...])</p></td>
+<td><p>Plot temporal connectivity as line plots, with circle plot overviews.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.viz.plot_spectrotemporal_connectivity.html#mne_connectivity.viz.plot_spectrotemporal_connectivity" title="mne_connectivity.viz.plot_spectrotemporal_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_spectrotemporal_connectivity</span></code></a>(con, *[, ...])</p></td>
+<td><p>Plot spectro-temporal connectivity.</p></td>
 </tr>
 </tbody>
 </table>
