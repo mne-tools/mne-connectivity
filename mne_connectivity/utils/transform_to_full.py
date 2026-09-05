@@ -116,5 +116,4 @@ _CAN_FILL_MISSING = {
     "phase-slope-index": _transpose_sign_flip_zero_diag,
     "SMI": _transpose_zero_diag,
     "wSMI": _transpose_zero_diag,
-    "envelope correlation": _transpose_one_diag,
 }
