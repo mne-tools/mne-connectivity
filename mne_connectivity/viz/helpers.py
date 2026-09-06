@@ -23,8 +23,10 @@ def _check_data_is_real(data):
 def _handle_data_and_indices(con, ch_info):
     """Extract data and indices from connectivity object."""
     indices = con.indices
-    is_multivar = False  # Note: multivar connectivity is not supported for str indices
-    is_symmetric_tri = False  # matrix is symmetric and only lower/upper tri is stored
+    is_multivar = False  # note: multivar connectivity is not supported for str indices
+    is_full = False  # whether returned data is a full matrix (w/ or w/out diagonal)
+    is_symmetric = False  # whether returned data is tril/triu symmetric
+    has_diagonal = False  # whether returned data has diagonal entries
 
     # Explicit indices provided
     if isinstance(indices, tuple):
@@ -38,7 +40,7 @@ def _handle_data_and_indices(con, ch_info):
             # need to be arrays themselves so that connections can be picked
             indices = tuple(_ragged_to_array(idcs) for idcs in indices)
 
-        return data, indices, is_multivar, is_symmetric_tri
+        return data, indices, is_multivar, is_full, is_symmetric, has_diagonal
 
     # Lower-tri, upper-tri, or all-to-all
     try:  # Try to get dense data with missing values filled in
@@ -54,11 +56,8 @@ def _handle_data_and_indices(con, ch_info):
             indices = np.tril_indices(con.n_nodes, k=-1)
         else:  # "upper"; can't be "all", since no missing values to (fail to) fill in
             indices = np.triu_indices(con.n_nodes, k=1)
-
     else:
-        # Check whether filled-in values make for symmetric matrix
-        symmetric = np.allclose(data, np.moveaxis(data, 0, 1), equal_nan=True)
-
+        is_full = True
         # Check whether to ignore diagonal (if all values are the same)
         if indices == "all":
             # Check if diagonal is all close (could be all zeros, ones, NaNs)
@@ -66,31 +65,26 @@ def _handle_data_and_indices(con, ch_info):
             ignore_diag = bool(np.allclose(diag[1:], diag[0], equal_nan=True))
         else:
             ignore_diag = True  # diagonal trivial for filled-in lower/upper matrices
-
+        # Check whether the matrix is symmetric
+        is_symmetric = np.allclose(
+            data, data.transpose(1, 0, *range(2, data.ndim)), equal_nan=True
+        )
         # Construct explicit indices
-        if symmetric:  # take only lower-/upper-tri values
-            is_symmetric_tri = True
-            if ignore_diag:
-                offset = 1 if indices == "upper" else -1  # "lower"
+        if is_symmetric:
+            # Only use indices for unique connections
+            if indices in ["lower", "all"]:
+                indices = np.tril_indices(con.n_nodes, k=0)
             else:
-                offset = 0
-
-            if indices in ["lower", "all"]:  # take lower-tri for symmetric all-to-all
-                indices = np.tril_indices(con.n_nodes, k=offset)
-            else:  # "upper"
-                indices = np.triu_indices(con.n_nodes, k=offset)
-
-        else:  # take all values (maybe excluding irrelevant diagonal)
+                indices = np.triu_indices(con.n_nodes, k=0)
+        else:
             indices = np.unravel_index(
                 np.arange(con.n_nodes**2), (con.n_nodes, con.n_nodes)
             )
-            if ignore_diag:
-                diag_indices = np.diag_indices(con.n_nodes)
-                diag_mask = np.ones(con.n_nodes**2, dtype=bool)
-                diag_mask[
-                    np.ravel_multi_index(diag_indices, (con.n_nodes, con.n_nodes))
-                ] = False
-                indices = (indices[0][diag_mask], indices[1][diag_mask])
+        if ignore_diag:
+            diag_mask = indices[0] == indices[1]
+            indices = (indices[0][~diag_mask], indices[1][~diag_mask])
+        else:
+            has_diagonal = True
 
     # Drop entries for bad channels from data and indices
     data = data[indices]
@@ -107,7 +101,7 @@ def _handle_data_and_indices(con, ch_info):
 
     _check_if_nan(data)
 
-    return data, indices, is_multivar, is_symmetric_tri
+    return data, indices, is_multivar, is_full, is_symmetric, has_diagonal
 
 
 def _ragged_to_array(indices):
@@ -175,6 +169,8 @@ def _get_node_names_and_indices(ch_names, node_aliases, indices, is_multivar):
 def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
     """Create info object for connectivity data."""
     con_names = []
+    for node_idx, name in enumerate(node_names):
+        node_names[node_idx] = name.replace("~", "-")  # avoid confusion with con names
     for seed, target in zip(*node_indices):
         con_names.append(f"{node_names[seed]} ~ {node_names[target]}")
 

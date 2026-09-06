@@ -41,21 +41,55 @@ CROP = dict(
     spectral=(dict(fmin=6.0, fmax=8.0), (6.0, 8.0)),
     temporal=(dict(tmin=0.0, tmax=0.1), (0.0, 0.1)),
 )
-N_CONS = N_NODES * (N_NODES - 1) // 2  # all-to-all is lower-triangular
 LINE_KINDS = ("spectral", "temporal")
 
 
-def make_con(kind, *, indices="all", n_comps=None, n_nodes=N_NODES, names=None):
+def make_con(
+    kind,
+    *,
+    indices="lower",
+    symmetric=True,
+    consistent_diag=True,
+    n_comps=None,
+    n_nodes=N_NODES,
+    names=None,
+):
     """Create a connectivity object of the requested kind, with random data."""
     _, klass, args, dims = PLOTTERS[kind]
-    n_cons = n_nodes**2 if isinstance(indices, str) else len(indices[0])
     comps = () if n_comps is None else (n_comps,)
-    data = np.random.default_rng(44).random((n_cons, *comps, *dims))
     kwargs = dict() if n_comps is None else dict(components=np.arange(n_comps))
+
+    # Create random data for full connectivity
+    data = np.random.default_rng(44).random((n_nodes, n_nodes, *comps, *dims))
+    assert symmetric in (True, False, "unknown")
+    if symmetric == "unknown":
+        method = "unknown"
+    elif symmetric:
+        method = "coh"
+        data = (data + data.transpose(1, 0, *range(2, data.ndim))) / 2.0
+    else:
+        method = "imcoh"
+    if consistent_diag:
+        data[np.arange(n_nodes), np.arange(n_nodes)] = 0.0
+
+    # Trim the data to the requested connections
+    if indices == "explicit":  # all-to-all tuple
+        indices = np.unravel_index(np.arange(n_nodes**2), (n_nodes, n_nodes))
+    assert indices in ("all", "lower", "upper") or isinstance(indices, tuple)
+    if isinstance(indices, tuple):
+        data = data[indices]
+    elif indices == "all":
+        data = data.reshape((-1, *data.shape[2:]))
+    elif indices == "lower":
+        data = data[np.tril_indices(n_nodes, -1)]
+    else:  # upper
+        data = data[np.triu_indices(n_nodes, 1)]
+
     if names is None:
         names = [f"ch{ii}" for ii in range(n_nodes)]
+
     return klass(
-        data, *args, n_nodes=n_nodes, names=names, indices=indices, method="coh",
+        data, *args, n_nodes=n_nodes, names=names, indices=indices, method=method,
         **kwargs,
     )  # fmt: skip
 
@@ -181,6 +215,7 @@ def test_plot_line_connectivity(kind):
     """Test plotting connectivity as lines with a circle plot overview."""
     plot_func = PLOTTERS[kind][0]
     con = make_con(kind)
+    n_cons = con.get_data("raveled").shape[0]
     xvar = con.freqs if kind == "spectral" else con.times
     xlabel = "Frequency (Hz)" if kind == "spectral" else "Time (s)"
 
@@ -189,11 +224,8 @@ def test_plot_line_connectivity(kind):
         xlabel,
         "Connectivity (A.U.)",
     )
-    assert line_ax.get_title() == "misc ~ misc | coh"
+    assert line_ax.get_title() == f"misc ~ misc | {con.method}"
     assert circle_ax.get_title() == "Node selection\n(seeds and targets)"
-    # all-to-all data are duplicated so that every node acts as a seed, but the
-    # duplicates start out hidden
-    assert visible(line_ax) == [True] * N_CONS + [False] * N_CONS
     assert line_ax.get_xlim() == (xvar[0], xvar[-1])
 
     # cropping the x axis
@@ -206,11 +238,70 @@ def test_plot_line_connectivity(kind):
         _, (line_ax, _) = plot_func(con, highlight=highlight, show=False)
         assert len(line_ax.collections) == n_extra
 
-    # without interactivity the connections are neither duplicated nor pickable
+    # without interactivity the connections aren't pickable, and all are visible
     _, (line_ax, circle_ax) = plot_func(con, interactive=False, show=False)
     assert circle_ax.get_title() == "Nodes"
-    assert visible(line_ax) == [True] * N_CONS
+    assert visible(line_ax) == [True] * n_cons
     assert not any(line.get_picker() for line in line_ax.lines)
+
+
+@pytest.mark.parametrize("kind", LINE_KINDS)
+@pytest.mark.parametrize("symmetric", (True, False, "unknown"))
+@pytest.mark.parametrize(
+    ["indices", "consistent_diag"],
+    [
+        ("all", True),
+        ("all", False),
+        ("lower", True),
+        ("upper", True),
+        ("explicit", True),
+        ("explicit", False),
+    ],
+)  # lower/upper with indonsistent diag isn't a valid combination
+@pytest.mark.parametrize("selection", ("seeds", "targets", "both"))
+def test_plot_line_connectivity_visible_cons(
+    kind, indices, symmetric, consistent_diag, selection
+):
+    """Test connection visibility in the line plots.
+
+    For connectivity data that is symmetric, it is better to start with only a subset of
+    the connections visible, and alter this as different nodes are selected in the
+    circle plot. For symmetric lower-/upper-triangular data, we also fill in the missing
+    values to improve interactive visualisation. We exlude the diagonal connections from
+    plotting if they are not informative (i.e., if they are all the same value).
+    """
+    plot_func = PLOTTERS[kind][0]
+    con = make_con(
+        kind, indices=indices, symmetric=symmetric, consistent_diag=consistent_diag
+    )
+    n_cons = con.get_data("raveled").shape[0]
+
+    fig, (line_ax, circle_ax) = plot_func(con, selection=selection, show=False)
+
+    # Check line visibility
+    if indices == "explicit":
+        # Show everything for explicit indices, regardless of possible symmetry or
+        # diagonal having no actual info
+        assert visible(line_ax) == [True] * n_cons
+    else:  # lower, upper, or all
+        # Full matrix of connections will be plotted for data when all-to-all
+        # connectivity is present, or full matrix can be inferred from tril/triu portion
+        n_plotted_cons = n_visible_cons = N_NODES**2  # all cons as baseline
+        n_tri_cons = N_NODES * (N_NODES - 1) // 2
+        # Remove a tril/triu portion from plotted & visible when this cannot be inferred
+        if indices != "all" and symmetric == "unknown":
+            n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
+            n_visible_cons -= n_tri_cons
+        # Remove a tril/triu portion from visible when data is symmetric
+        if symmetric is True:
+            n_visible_cons -= n_tri_cons
+        # Remove diagonal from plotted & visible when this is not informative
+        if consistent_diag:
+            n_plotted_cons -= N_NODES
+            n_visible_cons -= N_NODES
+        assert visible(line_ax) == [True] * n_visible_cons + [False] * (
+            n_plotted_cons - n_visible_cons
+        )
 
 
 @pytest.mark.parametrize("kind", LINE_KINDS)
