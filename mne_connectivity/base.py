@@ -1,6 +1,7 @@
 import re
 from copy import copy, deepcopy
 
+import networkx as nx
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -955,6 +956,104 @@ class BaseConnectivity(EpochMixin):
 
         # re-set old attributes
         self.xarray.attrs = old_attrs
+
+    def to_networkx(self, directed=None):
+        """Export the connectivity data to networkx format.
+
+        Parameters
+        ----------
+        directed : bool | None
+            Whether the connectivity matrix is directed or not. ``False`` exports data
+            as an undirected graph. ``True`` exports data as a directed graph. ``None``
+            infers the graph type from the connectivity ``indices``:  ``None``,
+            ``'all'``, or a tuple returns a directed graph; ``'symmetric'`` returns an
+            undirected graph. Default is ``None``.
+
+        Returns
+        -------
+        graphs : networkx.Graph or networkx.DiGraph | array of networkx.Graph or networkx.DiGraph
+            The connectivity data in networkx format. If additional dimensions (e.g.,
+            frequencies, times, etc...) are present, a graph is returned for each of
+            these entries in an array matching the shape of the data.
+        """  # noqa: E501
+        nodelist = self.names
+
+        # check whether the connectivity matrix is directed
+        _validate_type(directed, (bool, None), "directed")
+
+        # infer directionality of the graph from either the is_directed arg
+        # or the indices attribute of the connectivity matrix
+        if directed is None:
+            if self.indices == "symmetric":
+                directed = False
+            else:
+                directed = True
+        if directed:
+            container = nx.DiGraph
+        else:
+            container = nx.Graph
+
+        # check the dimensions of connect_matrix
+        new_shape = []
+        if self.is_epoched:
+            new_shape.append(self.n_epochs)
+        if "components" in self.dims:
+            new_shape.append(len(self.coords["components"]))
+        if "freqs" in self.dims:
+            new_shape.append(len(self.coords["freqs"]))
+        if "times" in self.dims:
+            new_shape.append(len(self.coords["times"]))
+
+        con_matrix = self.get_data(output="dense")  # shape: n_nodes * n_nodes, dims
+        if not new_shape:  # no extra dims
+            con_matrix = con_matrix[..., np.newaxis]  # add a temporary extra dim
+
+        # epochs are the first dim: we put them after the two nodes dimension to ensure
+        # proper array reshaping below
+        if self.is_epoched:
+            con_matrix = con_matrix.transpose((1, 2, 0, *range(con_matrix.ndim)[3:]))
+
+        con_matrix_flat = con_matrix.reshape([self.n_nodes, self.n_nodes, -1])
+
+        if not directed:
+            # Check if a full, symmetric matrix
+            symmetric = np.array_equal(
+                con_matrix_flat, con_matrix_flat.transpose((1, 0, 2)), equal_nan=True
+            )
+
+            # Check if a triu matrix (tril is all NaN or 0)
+            tril_indices = np.tril_indices(self.n_nodes, k=-1)
+            triu = np.all(np.isnan(con_matrix_flat[tril_indices])) or np.all(
+                con_matrix_flat[tril_indices] == 0
+            )
+
+            # Check if a tril matrix (triu is all NaN or 0)
+            triu_indices = np.triu_indices(self.n_nodes, k=1)
+            tril = np.all(np.isnan(con_matrix_flat[triu_indices])) or np.all(
+                con_matrix_flat[triu_indices] == 0
+            )
+
+            if not (symmetric or triu or tril):
+                warn(
+                    "Non-symmetric and non-triangular connectivity data is being "
+                    "passed to a non-directed `Graph` object. Consider passing"
+                    "`is_directed=True` to use a directed `DiGraph` object.",
+                    UserWarning,
+                )
+
+        n_extra_dims = con_matrix_flat.shape[2]
+        graphs = np.empty(n_extra_dims, dtype=object)
+        for idx in range(n_extra_dims):
+            graphs[idx] = nx.from_numpy_array(
+                con_matrix_flat[:, :, idx],
+                create_using=container,
+                edge_attr="weight",
+                nodelist=nodelist,
+            )
+
+        if not new_shape:  # no extra dims
+            return graphs[0]
+        return np.reshape(graphs, new_shape)
 
 
 @fill_doc

@@ -2,8 +2,10 @@
 #
 # License: BSD (3-clause)
 
+import math
 import os
 
+import networkx as nx
 import numpy as np
 import pandas as pd
 import pytest
@@ -28,6 +30,18 @@ from mne_connectivity import (
 from mne_connectivity.effective import phase_slope_index
 from mne_connectivity.io import read_connectivity
 from mne_connectivity.spectral import spectral_connectivity_epochs
+
+# keeping track of which dimension of mock connectivity matrices
+NODE_AXES = dict(
+    Connectivity=0,
+    EpochConnectivity=1,
+    SpectralConnectivity=0,
+    TemporalConnectivity=0,
+    SpectroTemporalConnectivity=0,
+    EpochTemporalConnectivity=1,
+    EpochSpectralConnectivity=1,
+    EpochSpectroTemporalConnectivity=1,
+)
 
 
 def _make_test_epochs():
@@ -470,3 +484,201 @@ def test_get_data_complex(indices):
     for output in ["raveled", "dense"]:
         out_data = conn.get_data(output=output)
         assert np.iscomplexobj(out_data)
+
+
+@pytest.mark.parametrize(
+    "conn_cls",
+    [
+        Connectivity,
+        EpochConnectivity,
+        SpectralConnectivity,
+        TemporalConnectivity,
+        SpectroTemporalConnectivity,
+        EpochTemporalConnectivity,
+        EpochSpectralConnectivity,
+        EpochSpectroTemporalConnectivity,
+    ],
+)
+@pytest.mark.parametrize("n_components", [0, 2])
+@pytest.mark.parametrize("directed", [True, False])
+def test_networkx_export(conn_cls, n_components, directed):
+    """Test that networkx export works properly."""
+    n_epochs = 4
+    n_nodes = 3
+    expected_n_weights = n_nodes**2 if directed else math.factorial(n_nodes)
+    node_axis = NODE_AXES[conn_cls.__name__]
+
+    rng = np.random.default_rng(42)
+
+    # 1. Preparing triangular matrix tests
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls,
+        n_nodes=n_nodes,
+        symmetric=True,
+        n_epochs=n_epochs,
+        n_components=n_components,
+    )
+    correct_numpy_input = rng.random(correct_numpy_shape)
+
+    # Case 1: Lower-triangular, where upper-triangular are all zeros or NaNs
+    indices_l = np.tril_indices(n_nodes)
+    # Case 2: Upper-triangular, where lower-triangular are all zeros or NaNs
+    indices_u = np.triu_indices(n_nodes)
+    # Testing both cases: export to either directed or not directed graphs
+    for indices in [indices_l, indices_u]:
+        conn = conn_cls(
+            data=correct_numpy_input, n_nodes=n_nodes, indices=indices, **extra_kwargs
+        )
+        G = conn.to_networkx(directed=directed)
+
+        expected_shape = correct_numpy_shape.copy()
+        expected_shape.pop(node_axis)
+
+        if len(expected_shape) == 0:
+            assert isinstance(G, nx.DiGraph if directed else nx.Graph)
+        else:
+            assert_array_equal(G.shape, expected_shape)
+            flat_G = G.flatten()
+            assert isinstance(flat_G[0], nx.DiGraph if directed else nx.Graph)
+            assert_array_equal(len(flat_G[0].edges.data("weight")), expected_n_weights)
+
+    # 2. Preparing full matrix tests
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls,
+        n_nodes=n_nodes,
+        symmetric=False,  # the symmetric case is handled manually below
+        n_epochs=n_epochs,
+        n_components=n_components,
+    )
+    non_symmetric_input = rng.random(correct_numpy_shape)
+    # building a symmetric matrix by moving node axes to the back
+    x = np.moveaxis(non_symmetric_input, node_axis, -1)
+    x = x.reshape(*x.shape[:-1], n_nodes, n_nodes)
+    i, j = np.tril_indices(n_nodes, k=-1)  # excluding diagonal
+    x[..., i, j] = x[..., j, i]
+    x = x.reshape(*x.shape[:-2], n_nodes**2)
+    symmetric_input = np.moveaxis(x, -1, node_axis)
+
+    full_indices = np.triu_indices(n_nodes, k=-n_nodes)  # indices of the full matrix
+
+    # the expected shape of the results graph array excludes the graph size
+    expected_shape = correct_numpy_shape.copy()
+    expected_shape.pop(node_axis)
+
+    # Case 3: Full symmetric
+    conn = conn_cls(
+        data=symmetric_input, n_nodes=n_nodes, indices=full_indices, **extra_kwargs
+    )
+    G = conn.to_networkx(directed=directed)
+
+    if len(expected_shape) == 0:
+        assert isinstance(G, nx.DiGraph if directed else nx.Graph)
+    else:
+        assert_array_equal(G.shape, expected_shape)
+        flat_G = G.flatten()
+        assert isinstance(flat_G[0], nx.DiGraph if directed else nx.Graph)
+        assert_array_equal(len(flat_G[0].edges.data("weight")), expected_n_weights)
+
+    # Case 4: Full non-symmetric
+    # It raises a warning only in the case of the casting of non-symmetric matrices
+    # to non-directed graphs
+    non_symmetric_input = rng.random(correct_numpy_shape)
+    conn = conn_cls(
+        data=non_symmetric_input, n_nodes=n_nodes, indices=full_indices, **extra_kwargs
+    )
+    if not directed:
+        with pytest.warns(UserWarning, match="Non-symmetric*"):
+            G = conn.to_networkx(directed=directed)
+    else:
+        G = conn.to_networkx(directed=directed)
+
+    if len(expected_shape) == 0:
+        assert isinstance(G, nx.DiGraph if directed else nx.Graph)
+    else:
+        assert_array_equal(G.shape, expected_shape)
+        flat_G = G.flatten()
+        assert isinstance(flat_G[0], nx.DiGraph if directed else nx.Graph)
+        assert_array_equal(len(flat_G[0].edges.data("weight")), expected_n_weights)
+
+
+@pytest.mark.parametrize(
+    "conn_cls",
+    [
+        Connectivity,
+        EpochConnectivity,
+        SpectralConnectivity,
+        TemporalConnectivity,
+        SpectroTemporalConnectivity,
+        EpochTemporalConnectivity,
+        EpochSpectralConnectivity,
+        EpochSpectroTemporalConnectivity,
+    ],
+)
+@pytest.mark.parametrize("n_components", [0, 2])
+@pytest.mark.parametrize(
+    "indices, directed",
+    [("symmetric", False), ("all", True), (None, True)],
+)
+def test_networkx_str_indices(conn_cls, n_components, indices, directed):
+    """Test that networkx makes the correct inference based on indices string.
+
+    In connectivity containers, the indices can be:
+    - tuple of arrays: tested in test_networkx_export
+    - 'symmetric'
+    - 'all'
+    - None
+    The logic in the to_networkx method only look at whether indices == 'symmetric'.
+    """
+    n_epochs = 4
+    n_nodes = 3
+    node_axis = NODE_AXES[conn_cls.__name__]
+
+    rng = np.random.default_rng(42)
+
+    input_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls,
+        n_nodes=n_nodes,
+        symmetric=indices == "symmetric",
+        n_epochs=n_epochs,
+        n_components=n_components,
+    )
+    numpy_input = rng.random(input_shape)
+
+    conn = conn_cls(
+        data=numpy_input,
+        n_nodes=n_nodes,
+        indices=indices,
+        **extra_kwargs,
+    )
+    # directed was tested in test_networkx_export
+    G = conn.to_networkx(directed=directed)
+
+    # the previous test already ensured the correct class is returned
+    # the objective of this test is to ensure the correct weights are returned
+    if indices == "symmetric":
+        weights_to_check = np.triu_indices(n_nodes)
+    else:
+        weights_to_check = np.triu_indices(n_nodes, k=-n_nodes)
+    if not isinstance(G, np.ndarray):
+        assert_array_equal(nx.to_numpy_array(G)[weights_to_check], numpy_input)
+    else:
+        if conn.is_epoched:
+            numpy_input = numpy_input.transpose((1, 0, *range(numpy_input.ndim)[2:]))
+
+        numpy_input_flat = numpy_input.reshape([input_shape[node_axis], -1])
+        assert_array_equal(
+            np.array([nx.to_numpy_array(gg)[weights_to_check] for gg in G.flatten()]).T,
+            numpy_input_flat,
+        )
+
+    G = conn.to_networkx(directed=None)
+    if conn.indices == "symmetric":
+        if isinstance(G, np.ndarray):
+            assert all(isinstance(gg, nx.Graph) for gg in G.flatten())
+        else:
+            assert isinstance(G, nx.Graph)
+    else:
+        if isinstance(G, np.ndarray):
+            assert all(isinstance(gg, nx.DiGraph) for gg in G.flatten())
+        else:
+            assert isinstance(G, nx.DiGraph)

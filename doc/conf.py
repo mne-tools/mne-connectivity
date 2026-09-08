@@ -297,7 +297,7 @@ intersphinx_mapping.update(
     get_intersphinx_mapping(
         packages=set(
             """
-matplotlib numpy pandas python scipy sklearn joblib nilearn pyqtgraph
+matplotlib numpy pandas python scipy sklearn joblib nilearn pyqtgraph networkx
 """.strip().split()
         ),
     )
