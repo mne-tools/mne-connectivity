@@ -128,8 +128,12 @@ def plot_connectivity(
         type_node_pos = {
             node_idx: pos for pos, node_idx in enumerate(type_node_indices_unique)
         }
-        if data.ndim == 1:
-            data = data[:, np.newaxis]  # give non-multivar data a dummy comps dim
+
+        # Colormap handling
+        vmin, vmax = _setup_vmin_vmax(data=data, vmin=vmin, vmax=vmax)
+        cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
+        if cnorm is None:
+            cnorm = Normalize(vmin=vmin, vmax=vmax)
 
         # Plot data for each component separately
         for comp_idx in range(data.shape[1]):
@@ -146,12 +150,6 @@ def plot_connectivity(
                 square_matrix[np.isnan(stacked_matrix).all(axis=-1)] = np.nan
                 if has_diagonal:
                     square_matrix[np.diag_indices_from(square_matrix)] *= 0.5
-
-            # Colormap handling
-            vmin, vmax = _setup_vmin_vmax(data=square_matrix, vmin=vmin, vmax=vmax)
-            cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
-            if cnorm is None:
-                cnorm = Normalize(vmin=vmin, vmax=vmax)
 
             # Create figure and axis
             fig, ax = plt.subplots(
