@@ -227,9 +227,7 @@ def _plot_line_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar, _, is_symmetric, _ = _handle_data_and_indices(
-        con, ch_info
-    )
+    data, indices, is_multivar, is_symmetric, _ = _handle_data_and_indices(con, ch_info)
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(

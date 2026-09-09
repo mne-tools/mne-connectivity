@@ -24,7 +24,6 @@ def _handle_data_and_indices(con, ch_info):
     """Extract data and indices from connectivity object."""
     indices = con.indices
     is_multivar = False  # note: multivar connectivity is not supported for str indices
-    is_full = False  # whether returned data is a full matrix (w/ or w/out diagonal)
     is_symmetric = False  # whether returned data is tril/triu symmetric
     has_diagonal = False  # whether returned data has diagonal entries
 
@@ -40,7 +39,7 @@ def _handle_data_and_indices(con, ch_info):
             # need to be arrays themselves so that connections can be picked
             indices = tuple(_ragged_to_array(idcs) for idcs in indices)
 
-        return data, indices, is_multivar, is_full, is_symmetric, has_diagonal
+        return data, indices, is_multivar, is_symmetric, has_diagonal
 
     # Lower-tri, upper-tri, or all-to-all
     try:  # Try to get dense data with missing values filled in
@@ -57,7 +56,6 @@ def _handle_data_and_indices(con, ch_info):
         else:  # "upper"; can't be "all", since no missing values to (fail to) fill in
             indices = np.triu_indices(con.n_nodes, k=1)
     else:
-        is_full = True
         # Check whether to ignore diagonal (if all values are the same)
         if indices == "all":
             # Check if diagonal is all close (could be all zeros, ones, NaNs)
@@ -101,7 +99,7 @@ def _handle_data_and_indices(con, ch_info):
 
     _check_if_nan(data)
 
-    return data, indices, is_multivar, is_full, is_symmetric, has_diagonal
+    return data, indices, is_multivar, is_symmetric, has_diagonal
 
 
 def _ragged_to_array(indices):
