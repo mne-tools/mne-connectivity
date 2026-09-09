@@ -165,6 +165,50 @@ def test_plot_matrix_connectivity():
         assert ax.get_ylim() == (max_node + 0.5, min_node - 0.5)
 
 
+@pytest.mark.parametrize("symmetric", (True, False, "unknown"))
+@pytest.mark.parametrize(
+    ["indices", "consistent_diag"],
+    [
+        ("all", True),
+        ("all", False),
+        ("lower", True),
+        ("upper", True),
+        ("explicit", True),
+        ("explicit", False),
+    ],
+)  # lower/upper with indonsistent diag isn't a valid combination
+def test_plot_matrix_connectivity_visible_cons(indices, symmetric, consistent_diag):
+    """Test connection visibility in the matrix plots."""
+    con = make_con(
+        "matrix", indices=indices, symmetric=symmetric, consistent_diag=consistent_diag
+    )
+    n_cons = con.get_data("raveled").shape[0]
+
+    fig = plot_connectivity(con, show=False)
+    fig.canvas.draw()
+    ax = fig.axes[0]
+    # Get image data, removing masked (i.e., NaN) values for missing entries
+    data = ax.images[-1].get_array().compressed()
+
+    # Check cell contents
+    if indices == "explicit":
+        # Show everything for explicit indices, regardless of possible symmetry or
+        # diagonal having no actual info
+        assert data.size == n_cons
+    else:  # lower, upper, or all
+        # Full matrix of connections will be plotted for data when all-to-all
+        # connectivity is present, or full matrix can be inferred from tril/triu portion
+        n_plotted_cons = N_NODES**2  # all cons as baseline
+        n_tri_cons = N_NODES * (N_NODES - 1) // 2
+        # Remove a tril/triu portion from plotted & visible when this cannot be inferred
+        if indices != "all" and symmetric == "unknown":
+            n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
+        # Remove diagonal from plotted & visible when this is not informative
+        if consistent_diag:
+            n_plotted_cons -= N_NODES
+        assert data.size == n_plotted_cons
+
+
 def test_plot_matrix_connectivity_options():
     """Test the colormap, colorbar, and masking options of the matrix plot."""
     con = make_con("matrix")
