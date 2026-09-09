@@ -66,12 +66,12 @@ def plot_spectral_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import SpectralConnectivity
 
@@ -138,12 +138,12 @@ def plot_temporal_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import TemporalConnectivity
 

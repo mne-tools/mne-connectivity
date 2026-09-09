@@ -454,18 +454,38 @@ show : bool
     Whether to show the figure(s). Defaults to ``True``.
 """
 
-docdict["viz_figures"] = """
+viz_figures_base = """
 fig : instance of matplotlib.figure.Figure | list of instance of matplotlib.figure.Figure
-    The figure(s) containing the connectivity plot(s). One figure is returned per
-    channel types in the seeds and targets.
+    The figure(s) containing the connectivity plot(s).{}
 """  # noqa E501
 
-docdict["viz_components_note"] = """
-Plotting for multivariate connectivity is handled by treating each component of the
-multivariate connections as a separate connection. The names of the nodes are
-differentiated by the addition of the component number to the node name, e.g.,
-``'node 0 (0)', 'node 0 (1)', ...``.
+docdict["viz_figure_image"] = viz_figures_base.format(
+    " One figure is returned per connection."
+)
+
+docdict["viz_figures_line"] = viz_figures_base.format(
+    " One figure is returned per channel types in the seeds and targets."
+)
+
+docdict["viz_figures_matrix"] = viz_figures_base.format(
+    " One figure is returned per channel types in the seeds and targets. For "
+    "multivariate connectivity with multiple components, one figure is also returned "
+    "per component."
+)
+
+viz_components_note_base = """
+Plotting for multivariate connectivity with multiple components is handled by treating
+each component of the multivariate connections as a separate connection.{}
 """
+
+docdict["viz_components_extra_con_note"] = viz_components_note_base.format(
+    " The names of the nodes are differentiated by the addition of the component "
+    "number to the node name, e.g., ``'node 0 (0)', 'node 0 (1)', ...``."
+)
+
+docdict["viz_components_extra_fig_note"] = viz_components_note_base.format(
+    " The connections for each component are plotted on a separate figure."
+)
 
 docdict["viz_circle_line_note"] = """
 The circle plot acts as an overview of the channels and their connections in the line

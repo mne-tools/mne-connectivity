@@ -11,7 +11,6 @@ from mne.viz.utils import _plot_masked_image, plt_show
 
 from ..utils import fill_doc
 from .helpers import (
-    _add_comps_as_connections,
     _check_data_is_real,
     _check_info,
     _get_con_info,
@@ -68,11 +67,11 @@ def plot_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_matrix)s
 
     Notes
     -----
-    %(viz_components_note)s
+    %(viz_components_extra_fig_note)s
     """
     from mne_connectivity import Connectivity
 

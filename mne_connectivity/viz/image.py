@@ -76,11 +76,11 @@ def plot_spectrotemporal_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figure_image)s
 
     Notes
     -----
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import SpectroTemporalConnectivity
 
