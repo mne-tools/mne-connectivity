@@ -88,65 +88,6 @@ def plot_spectrotemporal_connectivity(
         con, SpectroTemporalConnectivity, "con", "SpectroTemporalConnectivity"
     )
 
-    return _plot_image_connectivity(
-        con=con,
-        picks=picks,
-        selection=selection,
-        exclude=exclude,
-        info=info,
-        combine=combine,
-        node_aliases=node_aliases,
-        xlim=(tmin, tmax),
-        ylim=(fmin, fmax),
-        xvar=con.times,
-        yvar=con.freqs,
-        xlabel="Time (s)",
-        ylabel="Frequency (Hz)",
-        yscale=yscale,
-        vmin=vmin,
-        vmax=vmax,
-        cnorm=cnorm,
-        cmap=cmap,
-        colorbar=colorbar,
-        mask=mask,
-        mask_style=mask_style,
-        mask_cmap=mask_cmap,
-        mask_alpha=mask_alpha,
-        show=show,
-    )
-
-
-def _plot_image_connectivity(
-    con,
-    picks,
-    selection,
-    exclude,
-    info,
-    combine,
-    node_aliases,
-    xlim,
-    ylim,
-    xvar,
-    xlabel,
-    yvar,
-    ylabel,
-    yscale,
-    vmin,
-    vmax,
-    cnorm,
-    cmap,
-    colorbar,
-    mask,
-    mask_style,
-    mask_cmap,
-    mask_alpha,
-    show,
-):
-    """Plot connectivity as image plots.
-
-    Connectivity has dims [connections, x, y], where x and y are epochs, frequencies, or
-    times.
-    """
     _check_data_is_real(con.get_data())
 
     _check_option("con.shape", len(con.shape), [3, 4], " length")
@@ -160,9 +101,6 @@ def _plot_image_connectivity(
         _check_option("combine", combine, ["mean"], " as a string")
 
     _validate_type(node_aliases, (dict, None), "`node_aliases`", "dict or None")
-
-    _check_option("xlim", len(xlim), [2], " length")
-    _check_option("ylim", len(ylim), [2], " length")
 
     _check_option("yscale", yscale, ["linear", "log", "auto"])
 
@@ -204,16 +142,12 @@ def _plot_image_connectivity(
         )
 
     # Mask data to relevant x and y values
-    xvar, yvar = np.asarray(xvar), np.asarray(yvar)
+    xvar, yvar = np.asarray(con.times), np.asarray(con.freqs)
     xvar_mask = np.nonzero(
-        _time_mask(
-            times=xvar, tmin=xlim[0], tmax=xlim[1], sfreq=None, include_tmax=True
-        )
+        _time_mask(times=xvar, tmin=tmin, tmax=tmax, sfreq=None, include_tmax=True)
     )[0]
     yvar_mask = np.nonzero(
-        _time_mask(
-            times=yvar, tmin=ylim[0], tmax=ylim[1], sfreq=None, include_tmax=True
-        )
+        _time_mask(times=yvar, tmin=fmin, tmax=fmax, sfreq=None, include_tmax=True)
     )[0]
     data = data[..., yvar_mask, :][..., xvar_mask]
     if mask is not None:
@@ -265,8 +199,8 @@ def _plot_image_connectivity(
                 yscale=yscale,
                 cnorm=cnorm,
             )
-            con_ax.set_xlabel(xlabel)
-            con_ax.set_ylabel(ylabel)
+            con_ax.set_xlabel("Time (s)")
+            con_ax.set_ylabel("Frequency (Hz)")
             if colorbar:
                 con_ax.get_figure().colorbar(
                     mappable=img, ax=type_axes[con_idx], label="Connectivity (A.U.)"
