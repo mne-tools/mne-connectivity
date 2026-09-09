@@ -262,7 +262,6 @@ def _plot_line_connectivity(
 
     con_types = con_info["temp"]["con_types"]
     figs = []
-    axes = []
     for con_type in np.unique(con_types):
         # Prepare connectivity info for plotting
         type_mask = con_types == con_type
@@ -421,13 +420,12 @@ def _plot_line_connectivity(
             )
 
         figs.append(fig)
-        axes.append((line_ax, circle_ax))
 
     plt_show(show)
 
     if len(figs) == 1:
-        return figs[0], axes[0]
-    return figs, axes
+        return figs[0]
+    return figs
 
 
 def _get_circle_names_and_indices(node_names, node_indices):

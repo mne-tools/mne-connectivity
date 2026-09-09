@@ -221,7 +221,6 @@ def _plot_image_connectivity(
 
     con_types = con_info["temp"]["con_types"]
     figs = []
-    axes = []
     for con_type in np.unique(con_types):
         # Prepare connectivity info for plotting
         type_mask = con_types == con_type
@@ -275,10 +274,9 @@ def _plot_image_connectivity(
             con_ax.set_title(f"{con_type} | {type_con_names[con_idx]} | {con_method}")
 
         figs.extend(type_figs)
-        axes.extend(type_axes)
 
     plt_show(show)
 
     if len(figs) == 1:
-        return figs[0], axes[0]
-    return figs, axes
+        return figs[0]
+    return figs
