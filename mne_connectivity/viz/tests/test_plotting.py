@@ -8,6 +8,7 @@ import pytest
 from matplotlib.colors import LogNorm
 from mne.viz.utils import _fake_click
 from numpy.testing import assert_allclose
+from matplotlib.figure import Figure
 
 from mne_connectivity import (
     Connectivity,
@@ -186,7 +187,7 @@ def test_plot_matrix_connectivity():
         ("explicit", False, 1),
         ("explicit", False, 2),
     ],
-)  # lower/upper with indonsistent diag isn't a valid combination
+)  # lower/upper with inconsistent diag isn't a valid combination
 def test_plot_matrix_connectivity_visible_cons(
     indices, symmetric, consistent_diag, n_components
 ):
@@ -365,19 +366,20 @@ def test_plot_line_connectivity(kind):
 @pytest.mark.parametrize("kind", LINE_KINDS)
 @pytest.mark.parametrize("symmetric", (True, False, "unknown"))
 @pytest.mark.parametrize(
-    ["indices", "consistent_diag"],
+    ["indices", "consistent_diag", "n_components"],
     [
-        ("all", True),
-        ("all", False),
-        ("lower", True),
-        ("upper", True),
-        ("explicit", True),
-        ("explicit", False),
+        ("all", True, 1),
+        ("all", False, 1),
+        ("lower", True, 1),
+        ("upper", True, 1),
+        ("explicit", True, 1),
+        ("explicit", False, 1),
+        ("explicit", True, 2),
+        ("explicit", False, 2),
     ],
-)  # lower/upper with indonsistent diag isn't a valid combination
-@pytest.mark.parametrize("selection", ("seeds", "targets", "both"))
+)  # lower/upper with inconsistent diag isn't a valid combination
 def test_plot_line_connectivity_visible_cons(
-    kind, indices, symmetric, consistent_diag, selection
+    kind, indices, symmetric, consistent_diag, n_components
 ):
     """Test connection visibility in the line plots.
 
@@ -389,18 +391,22 @@ def test_plot_line_connectivity_visible_cons(
     """
     plot_func = PLOTTERS[kind][0]
     con = make_con(
-        kind, indices=indices, symmetric=symmetric, consistent_diag=consistent_diag
+        kind,
+        indices=indices,
+        symmetric=symmetric,
+        consistent_diag=consistent_diag,
+        n_comps=n_components,
     )
     n_cons = con.get_data("raveled").shape[0]
 
-    fig = plot_func(con, selection=selection, show=False)
-    line_ax, circle_ax = fig.axes
+    fig = plot_func(con, show=False)
+    line_ax, _ = fig.axes
 
     # Check line visibility
     if indices == "explicit":
         # Show everything for explicit indices, regardless of possible symmetry or
         # diagonal having no actual info
-        assert visible(line_ax) == [True] * n_cons
+        assert visible(line_ax) == [True] * n_cons * n_components
     else:  # lower, upper, or all
         # Full matrix of connections will be plotted for data when all-to-all
         # connectivity is present, or full matrix can be inferred from tril/triu portion
@@ -515,17 +521,101 @@ def test_plot_line_connectivity_selection(
 def test_plot_spectrotemporal_connectivity():
     """Test plotting spectro-temporal connectivity as images."""
     con = make_con("spectrotemporal")
-    data = con.get_data("dense")[np.tril_indices(N_NODES, -1)]
+    data = con.get_data("raveled")
+    n_cons = data.shape[0]
 
-    # connections are averaged by default, giving one figure instead of one each
+    # Connections are averaged by default, giving one figure instead of one each
     fig = plot_spectrotemporal_connectivity(con, show=False)
     ax = fig.axes[0]
     assert (ax.get_xlabel(), ax.get_ylabel()) == ("Time (s)", "Frequency (Hz)")
-    assert ax.get_title() == f"misc ~ misc | combined nodes (n={N_CONS}) | coh"
+    assert ax.get_title() == f"misc ~ misc | combined nodes (n={n_cons}) | coh"
     assert_allclose(ax.images[0].get_array(), data.mean(axis=0))
-    figs, axes = plot_spectrotemporal_connectivity(con, combine=None, show=False)
-    assert len(figs) == len(axes) == N_CONS
-    assert axes[0].get_title() == "misc ~ misc | ch1 ~ ch0 | coh"
+
+    # Check without combining connections, which gives one figure per connection
+    figs = plot_spectrotemporal_connectivity(con, combine=None, show=False)
+    assert len(figs) == n_cons
+    indices = np.tril_indices(N_NODES, -1)  # explicit "lower" indices
+    for fig, seed, target in zip(figs, indices[0], indices[1], strict=True):
+        assert fig.axes[0].get_title() == f"misc ~ misc | ch{seed} ~ ch{target} | coh"
+
+
+@pytest.mark.parametrize("symmetric", (True, False, "unknown"))
+@pytest.mark.parametrize(
+    ["indices", "consistent_diag", "n_components"],
+    [
+        ("all", True, 1),
+        ("all", False, 1),
+        ("lower", True, 1),
+        ("upper", True, 1),
+        ("explicit", True, 1),
+        ("explicit", False, 1),
+        ("explicit", True, 2),
+        ("explicit", False, 2),
+    ],
+)  # lower/upper with inconsistent diag isn't a valid combination
+def test_plot_spectrotemporal_connectivity_visible_cons(
+    indices, symmetric, consistent_diag, n_components
+):
+    """Test connection visibility in spectro-temporal plots."""
+    n_nodes = 3  # fewer nodes to reduce number of opened figures
+    con = make_con(
+        "spectrotemporal",
+        indices=indices,
+        symmetric=symmetric,
+        consistent_diag=consistent_diag,
+        n_comps=n_components,
+        n_nodes=n_nodes,
+    )
+    n_cons = con.get_data("raveled").shape[0]
+    components = con.coords["components"].data if n_components > 1 else None
+
+    figs_combined = plot_spectrotemporal_connectivity(con, show=False)
+    figs_all = plot_spectrotemporal_connectivity(con, combine=None, show=False)
+
+    if indices == "explicit":
+        # Show everything for explicit indices, regardless of possible symmetry or
+        # diagonal having no actual info
+        n_plotted_cons = n_cons * n_components
+        n_combined_cons = n_cons
+    else:
+        # Full matrix of connections will be plotted for data when all-to-all
+        # connectivity is present, or full matrix can be inferred from tril/triu portion
+        # and it is asymmetric. If full matrix is inferred from tril/triu portion and it
+        # is symmetric, only the tril/triu portion is plotted.
+        n_plotted_cons = n_combined_cons = n_nodes**2  # all cons as baseline
+        n_tri_cons = n_nodes * (n_nodes - 1) // 2
+        if indices != "all" and symmetric is not False:
+            n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
+            n_combined_cons -= n_tri_cons
+        # Symmetric portions aren't included when combining connections
+        if indices == "all" and symmetric is True:
+            n_combined_cons -= n_tri_cons  # remove a tril/triu portion
+        if consistent_diag:
+            n_plotted_cons -= n_nodes  # remove diagonal
+            n_combined_cons -= n_nodes
+        n_plotted_cons *= n_components  # each component is plotted separately
+
+    if n_components > 1:
+        assert len(figs_combined) == n_components  # one figure per component
+        assert len(figs_all) == n_plotted_cons  # one figure per con * comp
+        for comp_idx, comp in enumerate(components):
+            assert (
+                f"combined nodes ({comp}; n={n_combined_cons})"
+                in figs_combined[comp_idx].axes[0].get_title()
+            )
+            assert "combined nodes" not in figs_all[comp_idx].axes[0].get_title()
+    else:
+        assert isinstance(figs_combined, Figure)  # single figure, returned directly
+        assert len(figs_all) == n_plotted_cons  # one figure per connection
+        assert (
+            f"combined nodes (n={n_combined_cons})" in figs_combined.axes[0].get_title()
+        )
+        assert "combined nodes" not in figs_all[0].axes[0].get_title()
+
+
+def test_plot_spectrotemporal_connectivity_options():
+    """Test the options of the spectro-temporal connectivity plot."""
+    con = make_con("spectrotemporal")
 
     # cropping in time and frequency, masking, and a log-spaced frequency axis
     mask = np.zeros((N_FREQS, N_TIMES), dtype=bool)
@@ -540,6 +630,29 @@ def test_plot_spectrotemporal_connectivity():
     fig = plot_spectrotemporal_connectivity(con, yscale="log", show=False)
     ax = fig.axes[0]
     assert ax.get_yscale() == "log"
+
+
+def test_plot_spectrotemporal_connectivity_combine():
+    """Test aggregating connections in the spectro-temporal plots."""
+    con = make_con("spectrotemporal")
+    data = con.get_data("raveled")
+
+    fig = plot_spectrotemporal_connectivity(con, combine="mean", show=False)
+    assert isinstance(fig, Figure)  # single figure, returned directly
+    ax = fig.axes[0]
+    assert_allclose(ax.images[0].get_array(), data.mean(axis=0))
+    assert (
+        ax.get_title()
+        == f"misc ~ misc | combined nodes (n={data.shape[0]}) | {con.method}"
+    )
+
+    # a callable combine is used as-is
+    fig = plot_spectrotemporal_connectivity(
+        con, combine=lambda x: np.max(x, axis=0), show=False
+    )
+    assert isinstance(fig, Figure)  # single figure, returned directly
+    ax = fig.axes[0]
+    assert_allclose(ax.images[0].get_array(), data.max(axis=0))
 
 
 @pytest.mark.parametrize("kind", list(PLOTTERS))
@@ -635,17 +748,3 @@ def test_plot_connectivity_errors(kind, kwargs, error, match):
         kwargs["info"] = mne.create_info(["other"], 1.0, "misc")
     with pytest.raises(error, match=match):
         plot_func(con, show=False, **kwargs)
-
-
-def test_plot_connectivity_explicit_indices():
-    """Test plotting bivariate connectivity for explicitly indexed connections."""
-    # upper-triangular, i.e. all-to-all but not in the layout the plot expects
-    indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
-    con = make_con("spectral", indices=indices)
-    fig = plot_spectral_connectivity(con, node_aliases={0: "first"}, show=False)
-    line_ax, circle_ax = fig.axes
-    fig.canvas.draw()
-    assert len(line_ax.lines) == 3  # not all-to-all, so no duplicated connections
-    _fake_click(fig, line_ax, line_ax.lines[0].get_xydata()[1], xform="data")
-    assert line_ax.texts[0].get_text() == "first ~ ch1"
-    assert con.names == [f"ch{ii}" for ii in range(N_NODES)]  # not renamed in place
