@@ -207,12 +207,14 @@ def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
     for con_idx, (seed, target) in enumerate(zip(*indices)):
         if not is_multivar:
             seed, target = [seed], [target]
-        if selection == "both" or picks is None:
+        if selection == "both":
             con_nodes = np.concatenate([seed, target])
         elif selection == "seeds":
             con_nodes = seed
         else:  # selection == "targets"
             con_nodes = target
+        if picks is not None:
+            con_nodes = [node for node in con_nodes if node in ch_picks]
         if np.any([ch in ch_picks for ch in con_nodes]):
             con_picks.append(con_idx)
 
