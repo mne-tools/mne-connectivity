@@ -139,8 +139,7 @@ def test_plot_matrix_connectivity():
     """Test plotting connectivity as a matrix."""
     con = make_con("matrix")
 
-    fig = plot_connectivity(con, show=True)
-    fig.canvas.draw()
+    fig = plot_connectivity(con, show=False)
     ax = fig.axes[0]
     assert (ax.get_xlabel(), ax.get_ylabel()) == ("Targets", "Seeds")
     assert ax.get_title() == f"misc ~ misc | {con.method}"
@@ -153,8 +152,7 @@ def test_plot_matrix_connectivity():
     picks = (1,)
     indices = np.tril_indices(N_NODES, k=-1)  # explicit "lower" indices
     for selection in ("seeds", "targets", "both"):
-        fig = plot_connectivity(con, picks=picks, selection=selection, show=True)
-        fig.canvas.draw()
+        fig = plot_connectivity(con, picks=picks, selection=selection, show=False)
         ax = fig.axes[0]
         # Find which connections should be plotted
         eligible_seeds = [idx for idx, seed in enumerate(indices[0]) if seed in picks]
@@ -334,7 +332,8 @@ def test_plot_line_connectivity(kind):
     xvar = con.freqs if kind == "spectral" else con.times
     xlabel = "Frequency (Hz)" if kind == "spectral" else "Time (s)"
 
-    fig, (line_ax, circle_ax) = plot_func(con, show=False)
+    fig = plot_func(con, show=False)
+    line_ax, circle_ax = fig.axes
     assert (line_ax.get_xlabel(), line_ax.get_ylabel()) == (
         xlabel,
         "Connectivity (A.U.)",
@@ -345,16 +344,19 @@ def test_plot_line_connectivity(kind):
 
     # cropping the x axis
     crop_kwargs, xlim = CROP[kind]
-    _, (line_ax, _) = plot_func(con, show=False, **crop_kwargs)
+    fig = plot_func(con, show=False, **crop_kwargs)
+    line_ax, circle_ax = fig.axes
     assert line_ax.get_xlim() == xlim
 
     # highlighting, both as a single (start, stop) pair and as several
     for highlight, n_extra in (((xvar[0], xvar[1]), 1), ([xvar[:2], xvar[-2:]], 2)):
-        _, (line_ax, _) = plot_func(con, highlight=highlight, show=False)
+        fig = plot_func(con, highlight=highlight, show=False)
+        line_ax, circle_ax = fig.axes
         assert len(line_ax.collections) == n_extra
 
     # without interactivity the connections aren't pickable, and all are visible
-    _, (line_ax, circle_ax) = plot_func(con, interactive=False, show=False)
+    fig = plot_func(con, interactive=False, show=False)
+    line_ax, circle_ax = fig.axes
     assert circle_ax.get_title() == "Nodes"
     assert visible(line_ax) == [True] * n_cons
     assert not any(line.get_picker() for line in line_ax.lines)
@@ -391,7 +393,8 @@ def test_plot_line_connectivity_visible_cons(
     )
     n_cons = con.get_data("raveled").shape[0]
 
-    fig, (line_ax, circle_ax) = plot_func(con, selection=selection, show=False)
+    fig = plot_func(con, selection=selection, show=False)
+    line_ax, circle_ax = fig.axes
 
     # Check line visibility
     if indices == "explicit":
@@ -427,23 +430,24 @@ def test_plot_line_connectivity_combine(kind, ci):
     con = make_con(kind)
     data = con.get_data("dense")[np.tril_indices(N_NODES, -1)]
 
-    fig, (line_ax, circle_ax) = plot_func(con, combine="mean", ci=ci, show=False)
-    assert circle_ax is None  # a single (combined) connection needs no circle plot
+    fig = plot_func(con, combine="mean", ci=ci, show=False)
+    line_ax = fig.axes[0]
+    assert len(fig.axes) == 1  # a single (combined) connection needs no circle plot
     assert len(line_ax.lines) == 1
     assert_allclose(line_ax.lines[0].get_ydata(), data.mean(axis=0))
     assert len(line_ax.collections) == (0 if ci is None else 1)
 
     # a callable combine is used as-is
-    _, (line_ax, _) = plot_func(
-        con, combine=lambda x: np.max(x, axis=0), ci=None, show=False
-    )
+    fig = plot_func(con, combine=lambda x: np.max(x, axis=0), ci=None, show=False)
+    line_ax = fig.axes[0]
     assert_allclose(line_ax.lines[0].get_ydata(), data.max(axis=0))
 
 
 def test_plot_line_connectivity_interactive():
     """Test selecting nodes in the circle plot and connections in the line plot."""
     con = make_con("spectral")
-    fig, (line_ax, circle_ax) = plot_spectral_connectivity(con, show=False)
+    fig = plot_spectral_connectivity(con, show=False)
+    line_ax, circle_ax = fig.axes
     fig.canvas.draw()
     seeds, targets = np.tril_indices(N_NODES, -1)
     # connections are duplicated with the seeds and targets swapped, so that every
@@ -485,10 +489,11 @@ def test_plot_line_connectivity_selection(
 ):
     """Test restricting the plotted (and selectable) connections to picked channels."""
     con = make_con("spectral")
-    fig, (line_ax, circle_ax) = plot_spectral_connectivity(
+    fig = plot_spectral_connectivity(
         con, picks=["ch1", "ch2"], selection=selection, colors=colors,
         cmap="viridis", show=False,
     )  # fmt: skip
+    line_ax, circle_ax = fig.axes
     fig.canvas.draw()
     assert len(line_ax.lines) == 3  # connections are duplicated only for "both"
     node_names = [text.get_text() for text in circle_ax.texts]
@@ -513,7 +518,8 @@ def test_plot_spectrotemporal_connectivity():
     data = con.get_data("dense")[np.tril_indices(N_NODES, -1)]
 
     # connections are averaged by default, giving one figure instead of one each
-    fig, ax = plot_spectrotemporal_connectivity(con, show=False)
+    fig = plot_spectrotemporal_connectivity(con, show=False)
+    ax = fig.axes[0]
     assert (ax.get_xlabel(), ax.get_ylabel()) == ("Time (s)", "Frequency (Hz)")
     assert ax.get_title() == f"misc ~ misc | combined nodes (n={N_CONS}) | coh"
     assert_allclose(ax.images[0].get_array(), data.mean(axis=0))
@@ -524,13 +530,15 @@ def test_plot_spectrotemporal_connectivity():
     # cropping in time and frequency, masking, and a log-spaced frequency axis
     mask = np.zeros((N_FREQS, N_TIMES), dtype=bool)
     mask[1:, 1:] = True
-    _, ax = plot_spectrotemporal_connectivity(
+    fig = plot_spectrotemporal_connectivity(
         con, fmin=6.0, fmax=8.0, tmin=0.0, tmax=0.1, mask=mask, mask_style="mask",
         mask_cmap=None, colorbar=False, show=False,
     )  # fmt: skip
+    ax = fig.axes[0]
     assert ax.images[0].get_array().shape == (3, 2)  # cropped
     assert len(ax.images) == 2 and len(ax.get_figure().axes) == 1  # masked, no cbar
-    _, ax = plot_spectrotemporal_connectivity(con, yscale="log", show=False)
+    fig = plot_spectrotemporal_connectivity(con, yscale="log", show=False)
+    ax = fig.axes[0]
     assert ax.get_yscale() == "log"
 
 
@@ -541,13 +549,15 @@ def test_plot_connectivity_channel_types(kind, info):
     con = make_con(kind, names=info["ch_names"])
 
     types = ["EEG ~ EEG", "Gradiometers ~ EEG", "Gradiometers ~ Gradiometers"]
-    figs, axes = unpack(plot_func(con, info=info, show=False), kind)
+    figs = unpack(plot_func(con, info=info, show=False), kind)
+    axes = [fig.axes[0] for fig in figs]
     assert len(figs) == len(axes) == 3
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types
 
     # dropping a bad EEG channel leaves only one EEG node, so no EEG ~ EEG figure
     info["bads"] = ["e1"]
-    figs, axes = unpack(plot_func(con, info=info, show=False), kind)
+    figs = unpack(plot_func(con, info=info, show=False), kind)
+    axes = [fig.axes[0] for fig in figs]
     assert len(figs) == len(axes) == 2
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types[1:]
 
@@ -573,7 +583,8 @@ def test_plot_connectivity_multivariate(kind, form):
     n_cons = len(indices[0])
     con = make_con(kind, indices=indices, n_comps=2, n_nodes=5)
 
-    figs, axes = unpack(plot_func(con, node_aliases=aliases, show=False), kind)
+    figs = unpack(plot_func(con, node_aliases=aliases, show=False), kind)
+    axes = [fig.axes[0] for fig in figs]
     if kind == "spectrotemporal":  # connections are combined per component
         assert len(figs) == 2
         title = f"misc ~ misc | combined nodes (0; n={n_cons}) | coh"
@@ -631,9 +642,8 @@ def test_plot_connectivity_explicit_indices():
     # upper-triangular, i.e. all-to-all but not in the layout the plot expects
     indices = (np.array([0, 0, 1]), np.array([1, 2, 2]))
     con = make_con("spectral", indices=indices)
-    fig, (line_ax, _) = plot_spectral_connectivity(
-        con, node_aliases={0: "first"}, show=True
-    )
+    fig = plot_spectral_connectivity(con, node_aliases={0: "first"}, show=False)
+    line_ax, circle_ax = fig.axes
     fig.canvas.draw()
     assert len(line_ax.lines) == 3  # not all-to-all, so no duplicated connections
     _fake_click(fig, line_ax, line_ax.lines[0].get_xydata()[1], xform="data")
