@@ -6,9 +6,9 @@ import mne
 import numpy as np
 import pytest
 from matplotlib.colors import LogNorm
+from matplotlib.figure import Figure
 from mne.viz.utils import _fake_click
 from numpy.testing import assert_allclose
-from matplotlib.figure import Figure
 
 from mne_connectivity import (
     Connectivity,
