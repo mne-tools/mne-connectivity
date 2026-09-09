@@ -166,47 +166,73 @@ def test_plot_matrix_connectivity():
 
 
 @pytest.mark.parametrize("symmetric", (True, False, "unknown"))
+# Lower/upper with indonsistent diag isn't a valid combination
+# Multivariate (n_comps > 1) is only supported for explicit indices
 @pytest.mark.parametrize(
-    ["indices", "consistent_diag"],
+    ["indices", "consistent_diag", "n_components"],
     [
-        ("all", True),
-        ("all", False),
-        ("lower", True),
-        ("upper", True),
-        ("explicit", True),
-        ("explicit", False),
+        ("all", True, 1),
+        ("all", False, 1),
+        ("lower", True, 1),
+        ("upper", True, 1),
+        ("explicit", True, 1),
+        ("explicit", True, 2),
+        ("explicit", False, 1),
+        ("explicit", False, 2),
     ],
 )  # lower/upper with indonsistent diag isn't a valid combination
-def test_plot_matrix_connectivity_visible_cons(indices, symmetric, consistent_diag):
-    """Test connection visibility in the matrix plots."""
+def test_plot_matrix_connectivity_visible_cons(
+    indices, symmetric, consistent_diag, n_components
+):
+    """Test connection visibility in the matrix plots.
+
+    Multiple components are shown as separate figures.
+    """
     con = make_con(
-        "matrix", indices=indices, symmetric=symmetric, consistent_diag=consistent_diag
+        "matrix",
+        indices=indices,
+        symmetric=symmetric,
+        consistent_diag=consistent_diag,
+        n_comps=n_components,
     )
     n_cons = con.get_data("raveled").shape[0]
+    if n_components > 1:
+        components = con.coords["components"].data
 
-    fig = plot_connectivity(con, show=False)
-    fig.canvas.draw()
-    ax = fig.axes[0]
-    # Get image data, removing masked (i.e., NaN) values for missing entries
-    data = ax.images[-1].get_array().compressed()
+    figs = plot_connectivity(con, show=False)
+    if not isinstance(figs, list):
+        figs = [figs]
+    # One figure per component
+    assert len(figs) == n_components
+    for comp_idx, fig in enumerate(figs):
+        ax = fig.axes[0]
+        title = f"misc ~ misc | {con.method}"
+        if n_components > 1:
+            title += f" | Component {components[comp_idx]}"
+        assert ax.get_title() == title
 
-    # Check cell contents
-    if indices == "explicit":
-        # Show everything for explicit indices, regardless of possible symmetry or
-        # diagonal having no actual info
-        assert data.size == n_cons
-    else:  # lower, upper, or all
-        # Full matrix of connections will be plotted for data when all-to-all
-        # connectivity is present, or full matrix can be inferred from tril/triu portion
-        n_plotted_cons = N_NODES**2  # all cons as baseline
-        n_tri_cons = N_NODES * (N_NODES - 1) // 2
-        # Remove a tril/triu portion from plotted & visible when this cannot be inferred
-        if indices != "all" and symmetric == "unknown":
-            n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
-        # Remove diagonal from plotted & visible when this is not informative
-        if consistent_diag:
-            n_plotted_cons -= N_NODES
-        assert data.size == n_plotted_cons
+        # Get image data, removing masked (i.e., NaN) values for missing entries
+        data = ax.images[-1].get_array().compressed()
+
+        # Check cell contents
+        if indices == "explicit":
+            # Show everything for explicit indices, regardless of possible symmetry or
+            # diagonal having no actual info
+            assert data.size == n_cons
+        else:  # lower, upper, or all
+            # Full matrix of connections will be plotted for data when all-to-all
+            # connectivity is present, or full matrix can be inferred from tril/triu
+            # portion
+            n_plotted_cons = N_NODES**2  # all cons as baseline
+            n_tri_cons = N_NODES * (N_NODES - 1) // 2
+            # Remove a tril/triu portion from plotted & visible when this cannot be
+            # inferred
+            if indices != "all" and symmetric == "unknown":
+                n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
+            # Remove diagonal from plotted & visible when this is not informative
+            if consistent_diag:
+                n_plotted_cons -= N_NODES
+            assert data.size == n_plotted_cons
 
 
 def test_plot_matrix_connectivity_options():
