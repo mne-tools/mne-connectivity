@@ -1,3 +1,5 @@
+from functools import partial
+
 import numpy as np
 
 
@@ -76,44 +78,19 @@ def _make_full(data, indices, diag, transpose_extra=None):
     return data
 
 
-def _transpose_zero_diag(data, indices):
-    """Fill missing values by transposing, with zeros on the diagonal."""
-    return _make_full(data, indices, diag=0.0)
-
-
-def _transpose_one_diag(data, indices):
-    """Fill missing values by transposing, with ones on the diagonal."""
-    return _make_full(data, indices, diag=1.0)
-
-
-def _transpose_conj_one_diag(data, indices):
-    """Fill missing values by transposing, with ones on the diagonal and conjugate."""
-    return _make_full(data, indices, diag=1.0 + 0.0j, transpose_extra=np.conj)
-
-
-def _transpose_sign_flip_zero_diag(data, indices):
-    """Fill missing values by transposing with sign flip, and zeros on the diagonal."""
-    return _make_full(data, indices, diag=0.0, transpose_extra=lambda x: -x)
-
-
-def _fill_dpli(data, indices):
-    """Fill missing directed phase lag index values."""
-    return _make_full(data, indices, diag=0.5, transpose_extra=lambda x: 1.0 - x)
-
-
 _CAN_FILL_MISSING = {
-    "coh": _transpose_one_diag,
-    "cohy": _transpose_conj_one_diag,
-    "imcoh": _transpose_sign_flip_zero_diag,
-    "plv": _transpose_one_diag,
-    "ciplv": _transpose_zero_diag,
-    "ppc": _transpose_one_diag,
-    "pli": _transpose_zero_diag,
-    "pli2_unbiased": _transpose_zero_diag,
-    "dpli": _fill_dpli,
-    "wpli": _transpose_zero_diag,
-    "wpli2_debiased": _transpose_zero_diag,
-    "phase-slope-index": _transpose_sign_flip_zero_diag,
-    "SMI": _transpose_zero_diag,
-    "wSMI": _transpose_zero_diag,
+    "coh": partial(_make_full, diag=1.0),
+    "cohy": partial(_make_full, diag=1.0 + 0.0j, transpose_extra=np.conj),
+    "imcoh": partial(_make_full, diag=0.0, transpose_extra=lambda x: -x),
+    "plv": partial(_make_full, diag=1.0),
+    "ciplv": partial(_make_full, diag=0.0),
+    "ppc": partial(_make_full, diag=1.0),
+    "pli": partial(_make_full, diag=0.0),
+    "pli2_unbiased": partial(_make_full, diag=0.0),
+    "dpli": partial(_make_full, diag=0.5, transpose_extra=lambda x: 1.0 - x),
+    "wpli": partial(_make_full, diag=0.0),
+    "wpli2_debiased": partial(_make_full, diag=0.0),
+    "phase-slope-index": partial(_make_full, diag=0.0, transpose_extra=lambda x: -x),
+    "SMI": partial(_make_full, diag=0.0),
+    "wSMI": partial(_make_full, diag=0.0),
 }
