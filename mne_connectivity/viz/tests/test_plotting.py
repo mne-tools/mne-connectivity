@@ -127,7 +127,45 @@ def info():
     )
 
 
-def test_plot_connectivity_matrix_options():
+def test_plot_matrix_connectivity():
+    """Test plotting connectivity as a matrix."""
+    con = make_con("matrix")
+
+    fig = plot_connectivity(con, show=True)
+    fig.canvas.draw()
+    ax = fig.axes[0]
+    assert (ax.get_xlabel(), ax.get_ylabel()) == ("Targets", "Seeds")
+    assert ax.get_title() == f"misc ~ misc | {con.method}"
+    assert ax.images[-1].colorbar.ax.get_ylabel() == "Connectivity (A.U.)"
+    # Should be a square matrix spanning min-max nodes
+    assert ax.get_xlim() == (-0.5, N_NODES - 0.5)
+    assert ax.get_ylim() == (N_NODES - 0.5, -0.5)
+
+    # Check square matrix also plotted when picking subset of nodes
+    picks = (1,)
+    indices = np.tril_indices(N_NODES, k=-1)  # explicit "lower" indices
+    for selection in ("seeds", "targets", "both"):
+        fig = plot_connectivity(con, picks=picks, selection=selection, show=True)
+        fig.canvas.draw()
+        ax = fig.axes[0]
+        # Find which connections should be plotted
+        eligible_seeds = [idx for idx, seed in enumerate(indices[0]) if seed in picks]
+        eligible_targets = [
+            idx for idx, target in enumerate(indices[1]) if target in picks
+        ]
+        if selection == "both":
+            eligible_cons = sorted(set(eligible_seeds) | set(eligible_targets))
+        elif selection == "seeds":
+            eligible_cons = eligible_seeds
+        else:  # selection == "targets"
+            eligible_cons = eligible_targets
+        min_node = np.min([indices[0][eligible_cons], indices[1][eligible_cons]])
+        max_node = np.max([indices[0][eligible_cons], indices[1][eligible_cons]])
+        assert ax.get_xlim() == (min_node - 0.5, max_node + 0.5)
+        assert ax.get_ylim() == (max_node + 0.5, min_node - 0.5)
+
+
+def test_plot_matrix_connectivity_options():
     """Test the colormap, colorbar, and masking options of the matrix plot."""
     con = make_con("matrix")
     # only the lower triangle of the all-to-all data is plotted
@@ -136,8 +174,16 @@ def test_plot_connectivity_matrix_options():
     mixed = np.abs(data - 0.5).max()
     raveled = con.get_data("raveled")
 
-    def remake(values):  # a copy of `con` with different data
-        return Connectivity(values, n_nodes=N_NODES, names=con.names, method="coh")
+    plot_connectivity(con)
+
+    def remake(con, values):  # a copy of `con` with different data
+        return Connectivity(
+            values,
+            n_nodes=con.n_nodes,
+            indices=con.indices,
+            names=con.names,
+            method=con.method,
+        )
 
     for this_con, kwargs, clim, cmap in (
         (con, dict(), (lo, hi), "Reds"),  # all-positive data spans its own limits
@@ -145,20 +191,11 @@ def test_plot_connectivity_matrix_options():
         (con, dict(vmin=np.min, vmax=np.max), (lo, hi), "Reds"),  # callable bounds
         (con, dict(vmin=0.2), (0.2, hi), "Reds"),  # a missing bound falls back
         (con, dict(vmax=0.8), (lo, 0.8), "Reds"),
-        (remake(-raveled), dict(), (-hi, -lo), "Blues_r"),  # all-negative data
-        (remake(raveled - 0.5), dict(), (-mixed, mixed), "RdBu_r"),  # symmetric
+        (remake(con, -raveled), dict(), (-hi, -lo), "Blues_r"),  # all-negative data
+        (remake(con, raveled - 0.5), dict(), (-mixed, mixed), "RdBu_r"),  # symmetric
     ):
         img = plot_connectivity(this_con, show=False, **kwargs).axes[0].images[0]
         assert (img.get_clim(), img.cmap.name) == (clim, cmap), kwargs
-
-    fig = plot_connectivity(con, show=False)
-    fig.canvas.draw()
-    ax = fig.axes[0]
-    assert ax.get_title() == "misc ~ misc | coh"
-    assert (ax.get_xlabel(), ax.get_ylabel()) == ("Targets", "Seeds")
-    # only the lower triangle is filled, so the empty row/column is cropped away
-    assert ax.get_xlim() == (-0.5, N_NODES - 1.5)
-    assert ax.get_ylim() == (N_NODES - 0.5, 0.5)
 
     # nodes are labelled by name, by tick index, or not at all
     for node_labels, expected in (("names", con.names), ("ticks", ["0"]), (None, [])):
@@ -182,7 +219,7 @@ def test_plot_connectivity_matrix_options():
     assert len(ax.collections) > 0  # contour around the mask
 
 
-def test_plot_connectivity_matrix_click():
+def test_plot_matrix_connectivity_click():
     """Test clicking cells of the matrix plot to annotate them."""
     con = make_con("matrix")
     fig = plot_connectivity(con, show=False)

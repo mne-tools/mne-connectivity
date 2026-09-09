@@ -78,7 +78,7 @@ def plot_connectivity(
 
     _validate_type(con, Connectivity, "con", "Connectivity")
 
-    _check_data_is_real(con.get_data())
+    _check_data_is_real(con.get_data("raveled"))
 
     _check_option("con.shape", len(con.shape), [1, 2], " length")
 
@@ -91,7 +91,9 @@ def plot_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar = _handle_data_and_indices(con, ch_info)
+    data, indices, is_multivar, is_symmetric, has_diagonal = _handle_data_and_indices(
+        con, ch_info
+    )
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(
@@ -127,11 +129,18 @@ def plot_connectivity(
         }
 
         # Make data square for plotting
-        square_matrix = np.full((type_n_nodes, type_n_nodes), fill_value=np.nan)
+        square_matrix = np.full((type_n_nodes, type_n_nodes), np.nan)
         for idx, (seed_idx, target_idx) in enumerate(zip(*type_node_indices)):
             square_matrix[type_node_pos[seed_idx], type_node_pos[target_idx]] = data[
                 idx
             ]
+        if is_symmetric:
+            stacked_matrix = np.dstack((square_matrix, square_matrix.T))
+            square_matrix = np.nansum(stacked_matrix, axis=-1)
+            # namsum sets nan + nan = 0, so we set those cases back to nan
+            square_matrix[np.isnan(stacked_matrix).all(axis=-1)] = np.nan
+            if has_diagonal:
+                square_matrix[np.diag_indices_from(square_matrix)] *= 0.5
 
         # Colormap handling
         vmin, vmax = _setup_vmin_vmax(data=square_matrix, vmin=vmin, vmax=vmax)
@@ -144,11 +153,13 @@ def plot_connectivity(
             1, 1, figsize=(6, 6), facecolor="w", layout="constrained"
         )
 
+        min_node_idx = min(type_node_indices[0].min(), type_node_indices[1].min())
+        max_node_idx = max(type_node_indices[0].max(), type_node_indices[1].max())
         img, _ = _plot_masked_image(
             ax=ax,
             data=square_matrix,
-            times=np.arange(square_matrix.shape[1]),
-            yvals=np.arange(square_matrix.shape[0]),
+            times=np.arange(min_node_idx, max_node_idx + 1),
+            yvals=np.arange(min_node_idx, max_node_idx + 1),
             cmap=cmap,
             vmin=vmin,
             vmax=vmax,
@@ -178,9 +189,8 @@ def plot_connectivity(
         else:  # node_labels == "ticks"
             ax.xaxis.set_major_locator(MaxNLocator(integer=True))
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        ax.set_xlim(type_node_indices[1].min() - 0.5, type_node_indices[1].max() + 0.5)
-        ax.set_ylim(type_node_indices[0].max() + 0.5, type_node_indices[0].min() - 0.5)
+        ax.set_xlim(min_node_idx - 0.5, max_node_idx + 0.5)
+        ax.set_ylim(max_node_idx + 0.5, min_node_idx - 0.5)
 
         def callback(event, ax=ax, fig=fig, node_names=type_node_names):
             _plot_connectivity_matrix_onclick(event, ax, fig, node_names)
