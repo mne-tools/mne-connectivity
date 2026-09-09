@@ -50,14 +50,14 @@ def make_con(
     indices="lower",
     symmetric=True,
     consistent_diag=True,
-    n_comps=None,
+    n_comps=1,
     n_nodes=N_NODES,
     names=None,
 ):
     """Create a connectivity object of the requested kind, with random data."""
     _, klass, args, dims = PLOTTERS[kind]
-    comps = () if n_comps is None else (n_comps,)
-    kwargs = dict() if n_comps is None else dict(components=np.arange(n_comps))
+    comps = () if n_comps == 1 else (n_comps,)
+    kwargs = dict() if n_comps == 1 else dict(components=np.arange(n_comps))
 
     # Create random data for full connectivity
     data = np.random.default_rng(44).random((n_nodes, n_nodes, *comps, *dims))
@@ -84,6 +84,14 @@ def make_con(
         data = data[np.tril_indices(n_nodes, -1)]
     else:  # upper
         data = data[np.triu_indices(n_nodes, 1)]
+
+    # Make indices multivariate
+    if n_comps > 1:
+        assert isinstance(indices, tuple)
+        indices = (
+            np.array([[ind] for ind in indices[0]]),
+            np.array([[ind] for ind in indices[1]]),
+        )
 
     if names is None:
         names = [f"ch{ii}" for ii in range(n_nodes)]
