@@ -78,6 +78,7 @@ def _make_full(data, indices, diag, transpose_extra=None):
     return data
 
 
+# TODO Env corr diagonal should be 0 when orthogonalized
 _CAN_FILL_MISSING = {
     "coh": partial(_make_full, diag=1.0),
     "cohy": partial(_make_full, diag=1.0 + 0.0j, transpose_extra=np.conj),
@@ -91,6 +92,7 @@ _CAN_FILL_MISSING = {
     "wpli": partial(_make_full, diag=0.0),
     "wpli2_debiased": partial(_make_full, diag=0.0),
     "phase-slope-index": partial(_make_full, diag=0.0, transpose_extra=lambda x: -x),
+    "envelope correlation": partial(_make_full, diag=1.0),
     "SMI": partial(_make_full, diag=0.0),
     "wSMI": partial(_make_full, diag=0.0),
 }

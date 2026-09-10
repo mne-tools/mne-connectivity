@@ -50,9 +50,8 @@ def envelope_correlation(
     Returns
     -------
     corr : instance of EpochTemporalConnectivity
-        The pairwise orthogonal envelope correlations. This matrix is symmetric. The
-        array will have three dimensions, the first of which is ``n_epochs``. The data
-        shape is ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
+        The pairwise orthogonal envelope correlations. The lower-triangular part of the
+        full matrix is returned.
 
     See Also
     --------
