@@ -112,8 +112,7 @@ def _prep_correct_connectivity_input(
         EpochSpectroTemporalConnectivity,
     ],
 )
-@pytest.mark.parametrize("n_components", [0, 2])
-def test_connectivity_containers(conn_cls, n_components):
+def test_connectivity_containers(conn_cls):
     """Test connectivity classes."""
     n_epochs = 4
     n_nodes = 3
@@ -129,11 +128,7 @@ def test_connectivity_containers(conn_cls, n_components):
         bad_numpy_input = np.zeros((3, 3, 3, 4, 5, 6))
 
     correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
-        conn_cls,
-        n_nodes=n_nodes,
-        tril=False,
-        n_epochs=n_epochs,
-        n_components=n_components,
+        conn_cls, n_nodes=n_nodes, tril=False, n_epochs=n_epochs
     )
 
     correct_numpy_input = np.ones(correct_numpy_shape)
@@ -257,8 +252,21 @@ def test_connectivity_containers(conn_cls, n_components):
     )
 
 
-def test_get_multivariate_data():
-    """Test that get_data() works properly with multivariate data."""
+@pytest.mark.parametrize(
+    "conn_cls",
+    [
+        Connectivity,
+        EpochConnectivity,
+        SpectralConnectivity,
+        TemporalConnectivity,
+        SpectroTemporalConnectivity,
+        EpochTemporalConnectivity,
+        EpochSpectralConnectivity,
+        EpochSpectroTemporalConnectivity,
+    ],
+)
+def test_connectivity_containers_multivariate(conn_cls):
+    """Test that connectivity containers work properly with multivariate data."""
     indices = (
         np.array([[0, 1], [0, 1], [2, 3]]),
         np.array([[2, 3], [4, 5], [4, 5]]),
@@ -274,8 +282,12 @@ def test_get_multivariate_data():
         nodes.add(tuple(seed))
         nodes.add(tuple(target))
 
-    data = np.arange(len(indices[0]), dtype=np.float64)
-    con = Connectivity(data=data, indices=indices, n_nodes=len(chans))
+    # Create connectivity container
+    correct_numpy_shape, index_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=len(chans), indices=indices, n_components=2
+    )
+    data = np.ones(correct_numpy_shape, dtype=np.float64)
+    con = conn_cls(data=data, indices=indices, n_nodes=len(chans), **index_kwargs)
 
     # Check no manipulation is performed for raveled output
     matrix = con.get_data(output="raveled")
@@ -293,7 +305,10 @@ def test_get_multivariate_data():
     assert set(tuple(ind) for ind in multivariate_nodes) == nodes
     triu_indices = np.triu_indices(len(nodes), k=1)
     # TODO VERSION: use [*triu_indices] when Py3.10 dropped
-    assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
+    if conn_cls.is_epoched:
+        assert_array_equal(matrix[:, triu_indices[0], triu_indices[1]], data)
+    else:
+        assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
 
 
 def test_get_data_error_catch():
