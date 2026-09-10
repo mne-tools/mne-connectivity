@@ -10,6 +10,7 @@
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
+.. _Payam S. Shabestari: https://github.com/payamsash
 .. _Qianliang Li: https://github.com/Avoide
 .. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger
