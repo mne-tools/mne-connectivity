@@ -1576,91 +1576,30 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
 
 @pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
-def test_spectral_connectivity_time_resolved(method, mode):
-    """Test time-resolved spectral connectivity."""
-    sfreq = 50.0
-    n_signals = 3
-    n_epochs = 2
-    n_times = 1000
-    trans_bandwidth = 2.0
-    tmin = 0.0
-    tmax = (n_times - 1) / sfreq
-    # 5Hz..15Hz
-    fstart, fend = 5.0, 15.0
-    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
-    data, _ = create_test_dataset(
-        sfreq,
-        n_signals=n_signals,
-        n_epochs=n_epochs,
-        n_times=n_times,
-        tmin=tmin,
-        tmax=tmax,
-        fstart=fstart,
-        fend=fend,
-        trans_bandwidth=trans_bandwidth,
-    )
-    ch_names = np.arange(n_signals).astype(str).tolist()
-    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types="eeg")
-    data = EpochsArray(data, info)
-
-    # define some frequencies for tfr
-    freqs = np.arange(3, 20.5, 1)
-
-    # run connectivity estimation
-    con = spectral_connectivity_time(
-        data, freqs, sfreq=sfreq, method=method, indices="lower", mode=mode, n_cycles=5
-    )
-    assert con.shape == (n_epochs, n_signals * (n_signals - 1) // 2, len(con.freqs))
-
-    # test the simulated signal
-    triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
-
-    # average over frequencies
-    conn_data = con.get_data(output="dense")
-    if method in ["imcoh", "cohy"]:
-        # for imcoh: positive/negative real → positive real
-        # for cohy: complex-valued → positive real
-        conn_data = np.abs(conn_data)
-    conn_data = conn_data.mean(axis=-1)
-
-    # the indices at which there is a correlation should be greater
-    # then the rest of the components
-    for epoch_idx in range(n_epochs):
-        high_conn_val = conn_data[epoch_idx, 0, 1]
-        assert all(
-            high_conn_val >= conn_data[epoch_idx, idx, jdx] for idx, jdx in triu_inds
-        )
-
-
-@pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
-@pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 @pytest.mark.parametrize("padding", [0, 1, 5])
 def test_spectral_connectivity_time_padding(method, mode, padding):
     """Test time-resolved spectral connectivity with padding."""
-    sfreq = 50.0
-    n_signals = 3
     n_epochs = 2
-    n_times = 300
-    trans_bandwidth = 2.0
-    tmin = 0.0
-    tmax = (n_times - 1) / sfreq
-    # 5Hz..15Hz
-    fstart, fend = 5.0, 15.0
-    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
-    data, _ = create_test_dataset(
-        sfreq,
-        n_signals=n_signals,
+    data = make_signals_in_freq_bands(
+        n_seeds=1,
+        n_targets=1,
+        freq_band=(5.0, 15.0),
         n_epochs=n_epochs,
-        n_times=n_times,
-        tmin=tmin,
-        tmax=tmax,
-        fstart=fstart,
-        fend=fend,
-        trans_bandwidth=trans_bandwidth,
+        duration=6.0,
+        sfreq=50.0,
+        trans_bandwidth=2.0,
+        snr=0.7,
+        connection_delay=0.05,
+        rng_seed=44,
     )
-    ch_names = np.arange(n_signals).astype(str).tolist()
-    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types="eeg")
-    data = EpochsArray(data, info)
+    rng = np.random.default_rng(42)
+    noise_data = rng.standard_normal((n_epochs, 1, data.get_data().shape[-1]))
+    noise_info = create_info(
+        ch_names=["noise"], sfreq=data.info["sfreq"], ch_types="eeg"
+    )
+    noise = EpochsArray(noise_data, noise_info)
+    data.add_channels([noise])
+    n_signals = data.info["nchan"]
 
     # define some frequencies for tfr
     freqs = np.arange(3, 20.5, 1)
@@ -1671,19 +1610,12 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
             ValueError, match="Padding cannot be larger than half of data length"
         ):
             con = spectral_connectivity_time(
-                data,
-                freqs,
-                sfreq=sfreq,
-                method=method,
-                mode=mode,
-                n_cycles=5,
-                padding=padding,
+                data, freqs, method=method, mode=mode, n_cycles=5, padding=padding
             )
         return
     con = spectral_connectivity_time(
         data,
         freqs,
-        sfreq=sfreq,
         method=method,
         indices="lower",
         mode=mode,
@@ -1699,9 +1631,6 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
         len(con.freqs),
     )
 
-    # test the simulated signal
-    triu_inds = np.vstack(np.triu_indices(n_signals, k=1)).T
-
     # average over frequencies
     conn_data = con.get_data(output="dense")
     if method in ["imcoh", "cohy"]:
@@ -1712,10 +1641,11 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
 
     # the indices at which there is a correlation should be greater
     # then the rest of the components
+    noise_cons = ([0, 2], [1, 2])
     for epoch_idx in range(n_epochs):
         high_conn_val = conn_data[epoch_idx, 0, 1]
         assert all(
-            high_conn_val >= conn_data[epoch_idx, idx, jdx] for idx, jdx in triu_inds
+            high_conn_val >= conn_data[epoch_idx, idx, jdx] for idx, jdx in noise_cons
         )
 
 
