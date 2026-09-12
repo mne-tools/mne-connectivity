@@ -90,7 +90,7 @@ def plot_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar, is_symmetric, has_diagonal = _handle_data_and_indices(
+    data, indices, is_multivar, _, duplicate_cons_mask = _handle_data_and_indices(
         con, ch_info
     )
 
@@ -113,6 +113,7 @@ def plot_connectivity(
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
 
@@ -129,6 +130,10 @@ def plot_connectivity(
             node_idx: pos for pos, node_idx in enumerate(type_node_indices_unique)
         }
 
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
+
         # Colormap handling
         vmin, vmax = _setup_vmin_vmax(data=data, vmin=vmin, vmax=vmax)
         cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
@@ -143,13 +148,6 @@ def plot_connectivity(
                 square_matrix[type_node_pos[seed_idx], type_node_pos[target_idx]] = (
                     data[con_idx, comp_idx]
                 )
-            if is_symmetric:
-                stacked_matrix = np.dstack((square_matrix, square_matrix.T))
-                square_matrix = np.nansum(stacked_matrix, axis=-1)
-                # namsum sets nan + nan = 0, so we set those cases back to nan
-                square_matrix[np.isnan(stacked_matrix).all(axis=-1)] = np.nan
-                if has_diagonal:
-                    square_matrix[np.diag_indices_from(square_matrix)] *= 0.5
 
             # Create figure and axis
             fig, ax = plt.subplots(

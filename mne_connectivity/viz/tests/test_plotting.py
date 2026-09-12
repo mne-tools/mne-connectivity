@@ -153,7 +153,7 @@ def test_plot_matrix_connectivity():
 
     # Check square matrix also plotted when picking subset of nodes
     picks = (1,)
-    indices = np.tril_indices(N_NODES, k=-1)  # explicit "lower" indices
+    indices = np.unravel_index(np.arange(N_NODES**2), (N_NODES, N_NODES))
     for selection in ("seeds", "targets", "both"):
         fig = plot_connectivity(con, picks=picks, selection=selection, show=False)
         ax = fig.axes[0]
@@ -412,22 +412,38 @@ def test_plot_line_connectivity_visible_cons(
     else:  # lower, upper, or all
         # Full matrix of connections will be plotted for data when all-to-all
         # connectivity is present, or full matrix can be inferred from tril/triu portion
-        n_plotted_cons = n_visible_cons = N_NODES**2  # all cons as baseline
-        n_tri_cons = N_NODES * (N_NODES - 1) // 2
-        # Remove a tril/triu portion from plotted & visible when this cannot be inferred
+        plot_indices = np.unravel_index(np.arange(N_NODES**2), (N_NODES, N_NODES))
+        # Remove a tril/triu portion from plotted when this cannot be inferred
         if indices != "all" and symmetric == "unknown":
-            n_plotted_cons -= n_tri_cons  # remove a tril/triu portion
-            n_visible_cons -= n_tri_cons
+            if indices == "lower":
+                drop_indices = np.triu_indices(N_NODES, k=1)
+            else:
+                drop_indices = np.tril_indices(N_NODES, k=-1)
+            drop_indices = list(zip(*drop_indices))
+            cons_mask = np.array(
+                [ind not in drop_indices for ind in list(zip(*plot_indices))]
+            )
+            plot_indices = (plot_indices[0][cons_mask], plot_indices[1][cons_mask])
+        # Remove diagonal from plotted when this is not informative
+        if consistent_diag:
+            drop_indices = list(zip(*np.diag_indices(N_NODES)))
+            cons_mask = np.array(
+                [ind not in drop_indices for ind in list(zip(*plot_indices))]
+            )
+            plot_indices = (plot_indices[0][cons_mask], plot_indices[1][cons_mask])
+        visible_cons = np.ones(len(plot_indices[0]), dtype=bool)
         # Remove a tril/triu portion from visible when data is symmetric
         if symmetric is True:
-            n_visible_cons -= n_tri_cons
-        # Remove diagonal from plotted & visible when this is not informative
-        if consistent_diag:
-            n_plotted_cons -= N_NODES
-            n_visible_cons -= N_NODES
-        assert visible(line_ax) == [True] * n_visible_cons + [False] * (
-            n_plotted_cons - n_visible_cons
-        )
+            if indices == "upper":
+                drop_indices = np.tril_indices(N_NODES, k=-1)
+            else:  # "lower" or "all"
+                drop_indices = np.triu_indices(N_NODES, k=1)
+            drop_indices = list(zip(*drop_indices))
+            cons_mask = np.array(
+                [ind not in drop_indices for ind in list(zip(*plot_indices))]
+            )
+            visible_cons[~cons_mask] = False
+        assert visible(line_ax) == visible_cons.tolist()
 
 
 @pytest.mark.parametrize("kind", LINE_KINDS)
@@ -457,15 +473,14 @@ def test_plot_line_connectivity_interactive():
     fig = plot_spectral_connectivity(con, show=False)
     line_ax, circle_ax = fig.axes
     fig.canvas.draw()
-    seeds, targets = np.tril_indices(N_NODES, -1)
-    # connections are duplicated with the seeds and targets swapped, so that every
-    # node can be selected as a seed
-    dup_seeds = np.concatenate([seeds, targets])
+    indices = np.unravel_index(np.arange(N_NODES**2), (N_NODES, N_NODES))
+    diag_mask = indices[0] == indices[1]
+    indices = (indices[0][~diag_mask], indices[1][~diag_mask])  # remove diagonal
     start = visible(line_ax)
 
     for node in range(N_NODES):
         click_node(fig, circle_ax, node, N_NODES)
-        assert visible(line_ax) == list(dup_seeds == node), f"node {node}"
+        assert visible(line_ax) == list(indices[0] == node), f"node {node}"
         # the connection labels are hidden again on selection
         assert all(text.get_alpha() == 0 for text in line_ax.texts)
     click_node(fig, circle_ax, 0, N_NODES, button=3)  # right click resets
@@ -487,37 +502,42 @@ def test_plot_line_connectivity_interactive():
     assert text.get_alpha() == 0.0
 
 
-@pytest.mark.parametrize(
-    "selection, unselectable, selected, n_selected",
-    [("seeds", "ch0", "ch2", 2), ("targets", "ch3", "ch2", 1)],
-)
+@pytest.mark.parametrize("selection, selected", [("seeds", "ch2"), ("targets", "ch2")])
 @pytest.mark.parametrize("colors", ("auto", "global", "relative"))
-def test_plot_line_connectivity_selection(
-    selection, unselectable, selected, n_selected, colors
-):
+@pytest.mark.parametrize("symmetric", (True, False))
+def test_plot_line_connectivity_selection(selection, selected, colors, symmetric):
     """Test restricting the plotted (and selectable) connections to picked channels."""
-    con = make_con("spectral")
+    # Note: using 'lower' indices, so 'upper' portion will be inferred in plots
+    con = make_con("spectral", symmetric=symmetric)
+    picks = ["ch1", "ch2"]
+    unselectable = ["ch0", "ch3"]
     fig = plot_spectral_connectivity(
-        con, picks=["ch1", "ch2"], selection=selection, colors=colors,
-        cmap="viridis", show=False,
+        con, picks=picks, selection=selection, colors=colors, cmap="viridis",
+        show=False,
     )  # fmt: skip
     line_ax, circle_ax = fig.axes
     fig.canvas.draw()
-    assert len(line_ax.lines) == 3  # connections are duplicated only for "both"
+    # For tril indices, ch1 appears 1x in seeds, 2x in targets; ch2 appears 2x in seeds,
+    # 1x in targets. Because we fill missing 'upper' values to get full matrix, ch1 &
+    # ch2 both end up appearing 3x in seeds, 3x in targets (so 6 connections total)
+    n_picked_cons = 6
+    assert len(line_ax.lines) == n_picked_cons
+    # Afterinferring missing portions, the picked connections exist between all 4 chans
     node_names = [text.get_text() for text in circle_ax.texts]
-    assert len(node_names) == 3
+    assert len(node_names) == 4
 
     # nodes that cannot act as the selected role are drawn faded out
     alphas = [node.get_alpha() for node in circle_ax.containers[0]]
-    assert [name for name, alpha in zip(node_names, alphas) if alpha is not None] == [
-        unselectable
-    ]
+    assert [
+        name for name, alpha in zip(node_names, alphas) if alpha is not None
+    ] == unselectable
 
     # clicking a faded node does nothing; a selectable one isolates its connections
-    click_node(fig, circle_ax, node_names.index(unselectable), len(node_names))
-    assert visible(line_ax) == [True] * 3
+    visible_before = visible(line_ax)
+    click_node(fig, circle_ax, node_names.index(unselectable[0]), len(node_names))
+    assert visible(line_ax) == visible_before
     click_node(fig, circle_ax, node_names.index(selected), len(node_names))
-    assert sum(visible(line_ax)) == n_selected
+    assert sum(visible(line_ax)) == 3  # 3 cons per channel (as seed or target)
 
 
 def test_plot_spectrotemporal_connectivity():
@@ -665,14 +685,14 @@ def test_plot_connectivity_channel_types(kind, info):
     types = ["EEG ~ EEG", "Gradiometers ~ EEG", "Gradiometers ~ Gradiometers"]
     figs = plot_func(con, info=info, show=False)
     axes = [fig.axes[0] for fig in figs]
-    assert len(figs) == len(axes) == 3
+    assert len(figs) == len(axes) == len(types)
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types
 
     # dropping a bad EEG channel leaves only one EEG node, so no EEG ~ EEG figure
     info["bads"] = ["e1"]
     figs = plot_func(con, info=info, show=False)
     axes = [fig.axes[0] for fig in figs]
-    assert len(figs) == len(axes) == 2
+    assert len(figs) == len(axes) == len(types) - 1
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types[1:]
 
 

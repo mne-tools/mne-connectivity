@@ -113,7 +113,9 @@ def plot_spectrotemporal_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar, is_symmetric, _ = _handle_data_and_indices(con, ch_info)
+    data, indices, is_multivar, is_symmetric, duplicate_cons_mask = (
+        _handle_data_and_indices(con, ch_info)
+    )
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(
@@ -126,6 +128,7 @@ def plot_spectrotemporal_connectivity(
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
 
@@ -135,6 +138,7 @@ def plot_spectrotemporal_connectivity(
         data, con_info, node_indices, n_comps = _add_comps_as_connections(
             data, con_info, node_indices, comps_axis=1
         )
+        duplicate_cons_mask = np.tile(duplicate_cons_mask, n_comps)
 
     if mask is not None and mask.shape != data.shape[1:]:
         raise ValueError(
@@ -161,6 +165,10 @@ def plot_spectrotemporal_connectivity(
         type_data = data[type_mask]
         type_con_names = np.array(con_info["ch_names"])[type_mask]
         type_node_indices = tuple(idcs[type_mask] for idcs in node_indices)
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
 
         # Combine connectivity across connections
         if combine is not None:
@@ -171,25 +179,23 @@ def plot_spectrotemporal_connectivity(
                 _,
                 _,
             ) = _combine_connections(
-                data=type_data, combine=combine, ci=None, n_comps=n_comps
+                data=type_data[~type_duplicate_cons_mask],
+                combine=combine,
+                ci=None,
+                n_comps=n_comps,
             )
 
         # Colormap handling
         vmin, vmax = _setup_vmin_vmax(data=type_data, vmin=vmin, vmax=vmax)
         cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
 
-        # Duplicate symmetric all-to-all connectivity
-        if is_symmetric and con.indices == "all" and combine is None:
-            # Find self-connections (do not duplicate)
-            diag_mask = type_node_indices[0] == type_node_indices[1]
-            # Duplicate connection data
-            type_data = np.concatenate([type_data, type_data[~diag_mask]], axis=0)
-            # Duplicate and flip seeds and targets in connections names
-            reverse_con_names = [
-                " ~ ".join(name.split(" ~ ")[::-1])
-                for name in type_con_names[~diag_mask]
-            ]
-            type_con_names = np.concatenate([type_con_names, reverse_con_names], axis=0)
+        # Remove duplicate connections in symmetric data
+        if is_symmetric and con.indices in ("lower", "upper") and combine is None:
+            type_data = type_data[~type_duplicate_cons_mask]
+            type_con_names = type_con_names[~type_duplicate_cons_mask]
+            type_node_indices = tuple(
+                idcs[~type_duplicate_cons_mask] for idcs in type_node_indices
+            )
 
         # Plot connectivity as image
         type_figs = [

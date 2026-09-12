@@ -25,7 +25,7 @@ def _handle_data_and_indices(con, ch_info):
     indices = con.indices
     is_multivar = False  # note: multivar connectivity is not supported for str indices
     is_symmetric = False  # whether returned data is tril/triu symmetric
-    has_diagonal = False  # whether returned data has diagonal entries
+    duplicate_cons_mask = None  # mask for duplicate connections in symmetric data
 
     # Explicit indices provided
     if isinstance(indices, tuple):
@@ -38,8 +38,9 @@ def _handle_data_and_indices(con, ch_info):
             # Ragged multivariate indices can be stored as lists of arrays, but they
             # need to be arrays themselves so that connections can be picked
             indices = tuple(_ragged_to_array(idcs) for idcs in indices)
+        duplicate_cons_mask = np.full(len(indices[0]), False, dtype=bool)
 
-        return data, indices, is_multivar, is_symmetric, has_diagonal
+        return data, indices, is_multivar, is_symmetric, duplicate_cons_mask
 
     # Lower-tri, upper-tri, or all-to-all
     try:  # Try to get dense data with missing values filled in
@@ -70,21 +71,22 @@ def _handle_data_and_indices(con, ch_info):
             data, data.transpose(1, 0, *range(2, data.ndim)), equal_nan=True
         )
         # Construct explicit indices
-        if is_symmetric:
-            # Only use indices for unique connections
-            if indices in ["lower", "all"]:
-                indices = np.tril_indices(con.n_nodes, k=0)
-            else:
-                indices = np.triu_indices(con.n_nodes, k=0)
-        else:
-            indices = np.unravel_index(
-                np.arange(con.n_nodes**2), (con.n_nodes, con.n_nodes)
-            )
+        indices = np.unravel_index(
+            np.arange(con.n_nodes**2), (con.n_nodes, con.n_nodes)
+        )
         if ignore_diag:
             diag_mask = indices[0] == indices[1]
             indices = (indices[0][~diag_mask], indices[1][~diag_mask])
-        else:
-            has_diagonal = True
+        if is_symmetric:
+            if con.indices in ["lower", "all"]:
+                keep_indices = np.tril_indices(con.n_nodes, k=0)
+            else:
+                keep_indices = np.triu_indices(con.n_nodes, k=0)
+            duplicate_cons_mask = np.array(
+                [ind not in list(zip(*keep_indices)) for ind in list(zip(*indices))]
+            )
+    if duplicate_cons_mask is None:
+        duplicate_cons_mask = np.full(len(indices[0]), False, dtype=bool)
 
     # Drop entries for bad channels from data and indices
     data = data[indices]
@@ -98,10 +100,11 @@ def _handle_data_and_indices(con, ch_info):
                 good_con_mask[con_idx] = False
         data = data[good_con_mask]
         indices = (indices[0][good_con_mask], indices[1][good_con_mask])
+        duplicate_cons_mask = duplicate_cons_mask[good_con_mask]
 
     _check_if_nan(data)
 
-    return data, indices, is_multivar, is_symmetric, has_diagonal
+    return data, indices, is_multivar, is_symmetric, duplicate_cons_mask
 
 
 def _ragged_to_array(indices):
