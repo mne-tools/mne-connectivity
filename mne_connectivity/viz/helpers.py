@@ -57,7 +57,9 @@ def _handle_data_and_indices(con, ch_info):
             indices = np.triu_indices(con.n_nodes, k=1)
     else:
         # Check whether to ignore diagonal (if all values are the same)
-        if indices == "all":
+        if con.n_nodes == 1:
+            ignore_diag = False  # excluding diagonal would remove the only connection
+        elif indices == "all":
             # Check if diagonal is all close (could be all zeros, ones, NaNs)
             diag = np.diagonal(data).ravel()
             ignore_diag = bool(np.allclose(diag[1:], diag[0], equal_nan=True))

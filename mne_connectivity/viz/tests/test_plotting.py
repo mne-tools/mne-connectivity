@@ -21,6 +21,10 @@ from mne_connectivity import (
     plot_temporal_connectivity,
     seed_target_multivariate_indices,
 )
+from mne_connectivity.utils import (
+    _check_if_multivariate_indices,
+    _get_unique_multivariate_nodes_and_indices,
+)
 
 N_NODES, N_FREQS, N_TIMES = 4, 5, 3
 FREQS = np.arange(5.0, 5.0 + N_FREQS)
@@ -60,6 +64,16 @@ def make_con(
     comps = () if n_comps == 1 else (n_comps,)
     kwargs = dict() if n_comps == 1 else dict(components=np.arange(n_comps))
 
+    # Handle multivariate indices
+    original_n_nodes, original_indices = None, None
+    if isinstance(indices, tuple) and _check_if_multivariate_indices(indices):
+        # Convert multivariate indices into bivariate (unnested) format in terms of
+        # the unique channel sets. Save the original indices and n_nodes to restore
+        # later when constructing the connectivity object.
+        original_n_nodes, original_indices = n_nodes, indices
+        nodes, indices = _get_unique_multivariate_nodes_and_indices(indices)
+        n_nodes = len(nodes)
+
     # Create random data for full connectivity
     data = np.random.default_rng(44).random((n_nodes, n_nodes, *comps, *dims))
     assert symmetric in (True, False, "unknown")
@@ -70,7 +84,7 @@ def make_con(
         data = (data + data.transpose(1, 0, *range(2, data.ndim))) / 2.0
     else:
         method = "imcoh"
-    if consistent_diag:
+    if consistent_diag and n_nodes > 1:
         data[np.arange(n_nodes), np.arange(n_nodes)] = 0.0
 
     # Trim the data to the requested connections
@@ -86,13 +100,13 @@ def make_con(
     else:  # upper
         data = data[np.triu_indices(n_nodes, 1)]
 
-    # Make indices multivariate
-    if n_comps > 1:
-        assert isinstance(indices, tuple)
-        indices = (
-            np.array([[ind] for ind in indices[0]]),
-            np.array([[ind] for ind in indices[1]]),
-        )
+    # Handle multivariate connectivity
+    if original_indices is not None:
+        # Restore the original indices and n_nodes if indices was a multivariate tuple
+        n_nodes, indices = original_n_nodes, original_indices
+    elif n_comps > 1:
+        # Convert indices to multivariate form (may have been 'explicit')
+        indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
 
     if names is None:
         names = [f"ch{ii}" for ii in range(n_nodes)]
@@ -109,18 +123,6 @@ def click_node(fig, circle_ax, node, n_nodes, button=1):
     # lands exactly on the seam of the polar axes patch (where it is not contained)
     angle = 2 * np.pi * node / n_nodes + 0.05
     _fake_click(fig, circle_ax, (angle, 9.5), xform="data", button=button)
-
-
-def unpack(out, kind):
-    """Return the figures and the (line/image) axes of a plotting call as lists."""
-    figs, axes = (out, None) if kind == "matrix" else out
-    if not isinstance(figs, list):
-        figs, axes = [figs], [axes]
-    if kind == "matrix":
-        axes = [fig.axes[0] for fig in figs]
-    elif kind in LINE_KINDS:
-        axes = [line_ax for line_ax, _ in axes]
-    return figs, axes
 
 
 def visible(ax):
@@ -386,8 +388,8 @@ def test_plot_line_connectivity_visible_cons(
     For connectivity data that is symmetric, it is better to start with only a subset of
     the connections visible, and alter this as different nodes are selected in the
     circle plot. For symmetric lower-/upper-triangular data, we also fill in the missing
-    values to improve interactive visualisation. We exlude the diagonal connections from
-    plotting if they are not informative (i.e., if they are all the same value).
+    values to improve interactive visualisation. We exclude the diagonal connections
+    from plotting if they are not informative (i.e., if they are all the same value).
     """
     plot_func = PLOTTERS[kind][0]
     con = make_con(
@@ -641,10 +643,8 @@ def test_plot_spectrotemporal_connectivity_combine():
     assert isinstance(fig, Figure)  # single figure, returned directly
     ax = fig.axes[0]
     assert_allclose(ax.images[0].get_array(), data.mean(axis=0))
-    assert (
-        ax.get_title()
-        == f"misc ~ misc | combined nodes (n={data.shape[0]}) | {con.method}"
-    )
+    expected_title = f"misc ~ misc | combined nodes (n={data.shape[0]}) | {con.method}"
+    assert ax.get_title() == expected_title
 
     # a callable combine is used as-is
     fig = plot_spectrotemporal_connectivity(
@@ -653,6 +653,7 @@ def test_plot_spectrotemporal_connectivity_combine():
     assert isinstance(fig, Figure)  # single figure, returned directly
     ax = fig.axes[0]
     assert_allclose(ax.images[0].get_array(), data.max(axis=0))
+    assert ax.get_title() == expected_title
 
 
 @pytest.mark.parametrize("kind", list(PLOTTERS))
@@ -662,14 +663,14 @@ def test_plot_connectivity_channel_types(kind, info):
     con = make_con(kind, names=info["ch_names"])
 
     types = ["EEG ~ EEG", "Gradiometers ~ EEG", "Gradiometers ~ Gradiometers"]
-    figs = unpack(plot_func(con, info=info, show=False), kind)
+    figs = plot_func(con, info=info, show=False)
     axes = [fig.axes[0] for fig in figs]
     assert len(figs) == len(axes) == 3
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types
 
     # dropping a bad EEG channel leaves only one EEG node, so no EEG ~ EEG figure
     info["bads"] = ["e1"]
-    figs = unpack(plot_func(con, info=info, show=False), kind)
+    figs = plot_func(con, info=info, show=False)
     axes = [fig.axes[0] for fig in figs]
     assert len(figs) == len(axes) == 2
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types[1:]
@@ -694,22 +695,33 @@ def test_plot_connectivity_multivariate(kind, form):
             for idcs in ([[0, 1, -1], [2, 3, 4]], [[2, 3, 4], [0, 1, -1]])
         )
     n_cons = len(indices[0])
-    con = make_con(kind, indices=indices, n_comps=2, n_nodes=5)
+    n_components = 2
+    con = make_con(
+        kind, indices=indices, n_comps=n_components, n_nodes=5, symmetric=False
+    )  # do not use symmetric, otherwise lines overlap when picking
+    components = con.coords["components"].data
 
-    figs = unpack(plot_func(con, node_aliases=aliases, show=False), kind)
-    axes = [fig.axes[0] for fig in figs]
-    if kind == "spectrotemporal":  # connections are combined per component
-        assert len(figs) == 2
-        title = f"misc ~ misc | combined nodes (0; n={n_cons}) | coh"
-        assert axes[0].get_title() == title
-        return
-    assert len(figs) == len(axes) == 1
-    if kind in LINE_KINDS:
-        # each component of each connection is drawn as its own line
-        assert len(axes[0].lines) == n_cons * 2
-        figs[0].canvas.draw()
-        _fake_click(figs[0], axes[0], axes[0].lines[0].get_xydata()[1], xform="data")
-        assert axes[0].texts[0].get_text() == "left ~ right (0)"
+    figs = plot_func(con, node_aliases=aliases, show=False)
+    if kind in ["matrix", "spectrotemporal"]:  # one fig per component
+        axes = [fig.axes[0] for fig in figs]
+        assert len(figs) == n_components
+        for ax, comp in zip(axes, components, strict=True):
+            if kind == "matrix":
+                title = f"misc ~ misc | {con.method} | Component {comp}"
+            else:
+                title = (
+                    f"misc ~ misc | combined nodes ({comp}; n={n_cons}) | {con.method}"
+                )
+            assert ax.get_title() == title
+    else:  # line plots allow multiple components per fig
+        assert isinstance(figs, Figure)  # single figure, returned directly
+        axes = figs.axes
+        if kind in LINE_KINDS:
+            # each component of each connection is drawn as its own line
+            assert len(axes[0].lines) == n_cons * 2
+            figs.canvas.draw()
+            _fake_click(figs, axes[0], axes[0].lines[0].get_xydata()[1], xform="data")
+            assert axes[0].texts[0].get_text() == "left ~ right (0)"
 
 
 @pytest.mark.parametrize(
@@ -742,7 +754,11 @@ def test_plot_connectivity_errors(kind, kwargs, error, match):
         con = make_con(kind)
         if kwargs.pop("complex", False):
             con = klass(
-                con.get_data("raveled") * 1j, *args, n_nodes=N_NODES, names=con.names
+                con.get_data("raveled") * 1j,
+                *args,
+                n_nodes=N_NODES,
+                indices=con.indices,
+                names=con.names,
             )
     if kwargs.pop("bad_info", False):
         kwargs["info"] = mne.create_info(["other"], 1.0, "misc")
