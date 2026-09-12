@@ -76,11 +76,11 @@ def plot_spectrotemporal_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figure_image)s
 
     Notes
     -----
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import SpectroTemporalConnectivity
 
@@ -88,66 +88,7 @@ def plot_spectrotemporal_connectivity(
         con, SpectroTemporalConnectivity, "con", "SpectroTemporalConnectivity"
     )
 
-    return _plot_image_connectivity(
-        con=con,
-        picks=picks,
-        selection=selection,
-        exclude=exclude,
-        info=info,
-        combine=combine,
-        node_aliases=node_aliases,
-        xlim=(tmin, tmax),
-        ylim=(fmin, fmax),
-        xvar=con.times,
-        yvar=con.freqs,
-        xlabel="Time (s)",
-        ylabel="Frequency (Hz)",
-        yscale=yscale,
-        vmin=vmin,
-        vmax=vmax,
-        cnorm=cnorm,
-        cmap=cmap,
-        colorbar=colorbar,
-        mask=mask,
-        mask_style=mask_style,
-        mask_cmap=mask_cmap,
-        mask_alpha=mask_alpha,
-        show=show,
-    )
-
-
-def _plot_image_connectivity(
-    con,
-    picks,
-    selection,
-    exclude,
-    info,
-    combine,
-    node_aliases,
-    xlim,
-    ylim,
-    xvar,
-    xlabel,
-    yvar,
-    ylabel,
-    yscale,
-    vmin,
-    vmax,
-    cnorm,
-    cmap,
-    colorbar,
-    mask,
-    mask_style,
-    mask_cmap,
-    mask_alpha,
-    show,
-):
-    """Plot connectivity as image plots.
-
-    Connectivity has dims [connections, x, y], where x and y are epochs, frequencies, or
-    times.
-    """
-    _check_data_is_real(con.get_data())
+    _check_data_is_real(con.get_data("raveled"))
 
     _check_option("con.shape", len(con.shape), [3, 4], " length")
 
@@ -161,9 +102,6 @@ def _plot_image_connectivity(
 
     _validate_type(node_aliases, (dict, None), "`node_aliases`", "dict or None")
 
-    _check_option("xlim", len(xlim), [2], " length")
-    _check_option("ylim", len(ylim), [2], " length")
-
     _check_option("yscale", yscale, ["linear", "log", "auto"])
 
     _validate_type(mask, (np.ndarray, None), "`mask`", "numpy.ndarray or None")
@@ -175,7 +113,9 @@ def _plot_image_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar = _handle_data_and_indices(con, ch_info)
+    data, indices, is_multivar, is_symmetric, duplicate_cons_mask = (
+        _handle_data_and_indices(con, ch_info)
+    )
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(
@@ -188,6 +128,7 @@ def _plot_image_connectivity(
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
 
@@ -197,6 +138,7 @@ def _plot_image_connectivity(
         data, con_info, node_indices, n_comps = _add_comps_as_connections(
             data, con_info, node_indices, comps_axis=1
         )
+        duplicate_cons_mask = np.tile(duplicate_cons_mask, n_comps)
 
     if mask is not None and mask.shape != data.shape[1:]:
         raise ValueError(
@@ -204,16 +146,12 @@ def _plot_image_connectivity(
         )
 
     # Mask data to relevant x and y values
-    xvar, yvar = np.asarray(xvar), np.asarray(yvar)
+    xvar, yvar = np.asarray(con.times), np.asarray(con.freqs)
     xvar_mask = np.nonzero(
-        _time_mask(
-            times=xvar, tmin=xlim[0], tmax=xlim[1], sfreq=None, include_tmax=True
-        )
+        _time_mask(times=xvar, tmin=tmin, tmax=tmax, sfreq=None, include_tmax=True)
     )[0]
     yvar_mask = np.nonzero(
-        _time_mask(
-            times=yvar, tmin=ylim[0], tmax=ylim[1], sfreq=None, include_tmax=True
-        )
+        _time_mask(times=yvar, tmin=fmin, tmax=fmax, sfreq=None, include_tmax=True)
     )[0]
     data = data[..., yvar_mask, :][..., xvar_mask]
     if mask is not None:
@@ -221,12 +159,16 @@ def _plot_image_connectivity(
 
     con_types = con_info["temp"]["con_types"]
     figs = []
-    axes = []
     for con_type in np.unique(con_types):
         # Prepare connectivity info for plotting
         type_mask = con_types == con_type
         type_data = data[type_mask]
         type_con_names = np.array(con_info["ch_names"])[type_mask]
+        type_node_indices = tuple(idcs[type_mask] for idcs in node_indices)
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
 
         # Combine connectivity across connections
         if combine is not None:
@@ -237,12 +179,23 @@ def _plot_image_connectivity(
                 _,
                 _,
             ) = _combine_connections(
-                data=type_data, combine=combine, ci=None, n_comps=n_comps
+                data=type_data[~type_duplicate_cons_mask],
+                combine=combine,
+                ci=None,
+                n_comps=n_comps,
             )
 
         # Colormap handling
         vmin, vmax = _setup_vmin_vmax(data=type_data, vmin=vmin, vmax=vmax)
         cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
+
+        # Remove duplicate connections in symmetric data
+        if is_symmetric and con.indices in ("lower", "upper") and combine is None:
+            type_data = type_data[~type_duplicate_cons_mask]
+            type_con_names = type_con_names[~type_duplicate_cons_mask]
+            type_node_indices = tuple(
+                idcs[~type_duplicate_cons_mask] for idcs in type_node_indices
+            )
 
         # Plot connectivity as image
         type_figs = [
@@ -266,8 +219,8 @@ def _plot_image_connectivity(
                 yscale=yscale,
                 cnorm=cnorm,
             )
-            con_ax.set_xlabel(xlabel)
-            con_ax.set_ylabel(ylabel)
+            con_ax.set_xlabel("Time (s)")
+            con_ax.set_ylabel("Frequency (Hz)")
             if colorbar:
                 con_ax.get_figure().colorbar(
                     mappable=img, ax=type_axes[con_idx], label="Connectivity (A.U.)"
@@ -275,10 +228,9 @@ def _plot_image_connectivity(
             con_ax.set_title(f"{con_type} | {type_con_names[con_idx]} | {con_method}")
 
         figs.extend(type_figs)
-        axes.extend(type_axes)
 
     plt_show(show)
 
     if len(figs) == 1:
-        return figs[0], axes[0]
-    return figs, axes
+        return figs[0]
+    return figs

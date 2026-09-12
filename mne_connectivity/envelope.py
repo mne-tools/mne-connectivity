@@ -50,9 +50,8 @@ def envelope_correlation(
     Returns
     -------
     corr : instance of EpochTemporalConnectivity
-        The pairwise orthogonal envelope correlations. This matrix is symmetric. The
-        array will have three dimensions, the first of which is ``n_epochs``. The data
-        shape is ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
+        The pairwise orthogonal envelope correlations. The lower-triangular part of the
+        full matrix is returned.
 
     See Also
     --------
@@ -206,17 +205,17 @@ def envelope_correlation(
     # create time axis
     corr = corr[..., np.newaxis]
 
-    # only get the upper-triu indices
-    triu_inds = np.triu_indices(n_nodes, k=0)
-    raveled_triu_inds = np.ravel_multi_index(triu_inds, dims=(n_nodes, n_nodes))
-    corr = corr[:, raveled_triu_inds, ...]
+    # only get the lower-triangular indices
+    tril_inds = np.tril_indices(n_nodes, k=-1)
+    raveled_tril_inds = np.ravel_multi_index(tril_inds, dims=(n_nodes, n_nodes))
+    corr = corr[:, raveled_tril_inds, ...]
 
     conn = EpochTemporalConnectivity(
         data=corr,
         names=names,
         times=times,
         method="envelope correlation",
-        indices="symmetric",
+        indices="lower",
         n_epochs_used=n_epochs,
         n_nodes=n_nodes,
         events=events,

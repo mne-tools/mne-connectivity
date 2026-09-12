@@ -66,12 +66,12 @@ def plot_spectral_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import SpectralConnectivity
 
@@ -138,12 +138,12 @@ def plot_temporal_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import TemporalConnectivity
 
@@ -191,7 +191,7 @@ def _plot_line_connectivity(
 
     Connectivity has dims [connections, frequencies | times].
     """
-    _check_data_is_real(con.get_data())
+    _check_data_is_real(con.get_data("raveled"))
 
     _check_option("con.shape", len(con.shape), [2, 3], " length")
 
@@ -227,7 +227,9 @@ def _plot_line_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar = _handle_data_and_indices(con, ch_info)
+    data, indices, is_multivar, is_symmetric, duplicate_cons_mask = (
+        _handle_data_and_indices(con, ch_info)
+    )
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(
@@ -240,6 +242,7 @@ def _plot_line_connectivity(
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
 
@@ -249,6 +252,7 @@ def _plot_line_connectivity(
         data, con_info, node_indices, n_comps = _add_comps_as_connections(
             data, con_info, node_indices, comps_axis=1
         )
+        duplicate_cons_mask = np.tile(duplicate_cons_mask, n_comps)
 
     # Mask data to relevant x values
     xvar = np.asarray(xvar)
@@ -262,7 +266,6 @@ def _plot_line_connectivity(
 
     con_types = con_info["temp"]["con_types"]
     figs = []
-    axes = []
     for con_type in np.unique(con_types):
         # Prepare connectivity info for plotting
         type_mask = con_types == con_type
@@ -270,6 +273,10 @@ def _plot_line_connectivity(
         type_con_names = np.array(con_info["ch_names"])[type_mask]
         type_node_names = node_names.copy()
         type_node_indices = tuple(idcs[type_mask] for idcs in node_indices)
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
 
         # Combine connectivity across connections
         type_ci = None
@@ -280,7 +287,9 @@ def _plot_line_connectivity(
                 type_con_names,
                 type_node_names,
                 type_node_indices,
-            ) = _combine_connections(type_data, combine, ci, n_comps)
+            ) = _combine_connections(
+                type_data[~type_duplicate_cons_mask], combine, ci, n_comps
+            )
 
         # Create figure and axes
         fig = plt.figure(figsize=(15, 5), facecolor="w", layout="constrained")
@@ -292,35 +301,45 @@ def _plot_line_connectivity(
         line_ax = fig.add_subplot(1, 3, line_subplot_idx)
         circle_ax = None
         if plot_circle:
+            # If data is symmetric and the plot is not interactive, we should remove
+            # those duplicate connections, or we will have overlapping connections in
+            # the line plot (will mess up line colours and alphas).
+            # If the plot is interactive, we keep the duplicate connections, but just
+            # hide them initially until the user selects a node.
+            if is_symmetric and not interactive:
+                type_data = type_data[~type_duplicate_cons_mask]
+                type_con_names = type_con_names[~type_duplicate_cons_mask]
+                type_node_indices = tuple(
+                    idcs[~type_duplicate_cons_mask] for idcs in type_node_indices
+                )
+                type_duplicate_cons_mask = np.full(
+                    type_data.shape[0], False, dtype=bool
+                )
+
             # Prepare circle plot values
-            circle_names, circle_indices, is_all_to_all = _get_circle_names_and_indices(
+            circle_names, circle_indices = _get_circle_names_and_indices(
                 type_node_names, type_node_indices
             )
             n_circle_nodes = len(circle_names)
             node_is_selectable = _get_node_selectability(circle_indices, selection)
-            # If:
-            # - plot is interactive
-            # - connectivity data is (lower/upper-triangular) all-to-all
-            # - nodes as both seeds and targets in connections can be selected
-            # then colouring works best if connections are duplicated such that all
-            # nodes are seeds and targets
-            duplicate_cons = is_all_to_all and interactive and selection == "both"
-            if duplicate_cons:
-                circle_indices = (
-                    np.concatenate([circle_indices[0], circle_indices[1]]),
-                    np.concatenate([circle_indices[1], circle_indices[0]]),
-                )
             if colors == "auto":
+                # If connections span full matrix (diagonal optional) and plot is
+                # interactive, use 'relative' colouring, such that the connection
+                # colours span the colourmap space for each node. This makes interactive
+                # visualisation for large numbers of nodes much better.
+                # Otherwise, have the connection colours span the colourmap space for
+                # all connections, which is better for non-interactive plots and
+                # non-full connectivity data.
                 type_connection_colors = (
-                    "relative" if is_all_to_all and interactive else "global"
+                    "relative" if is_symmetric and interactive else "global"
                 )
             else:
                 type_connection_colors = colors
             circle_con, circle_con_order = _get_circle_con(
                 circle_indices, n_circle_nodes, type_connection_colors, selection
             )
-            # avoid a zero colour range (e.g. for a single pair of nodes), which
-            # would make MNE's circle plot divide by zero
+            # Avoid a zero colour range (e.g. for a single pair of nodes), which would
+            # make MNE's circle plot divide by zero
             circle_vmin, circle_vmax = circle_con.min(), circle_con.max()
             if circle_vmin == circle_vmax:
                 circle_vmax = circle_vmin + 1
@@ -360,7 +379,6 @@ def _plot_line_connectivity(
             con_colors = _get_con_colors(circle_ax, circle_con_order)
         else:
             con_colors = "k"
-            duplicate_cons = False
 
         # Plot connectivity as lines
         fig, line_ax = _plot_connectivity_lines(
@@ -368,7 +386,6 @@ def _plot_line_connectivity(
             ci=type_ci,
             con_colors=con_colors,
             con_names=type_con_names,
-            duplicate_cons=duplicate_cons,
             fig=fig,
             ax=line_ax,
             xvar=xvar,
@@ -390,7 +407,7 @@ def _plot_line_connectivity(
                 line_ax=line_ax,
                 indices=circle_indices,
                 node_angles=np.linspace(0, 2 * np.pi, n_circle_nodes, endpoint=False),
-                duplicate_cons=duplicate_cons,
+                duplicate_cons_mask=type_duplicate_cons_mask,
                 circle_con_order=circle_con_order,
                 selection=selection,
                 node_selectability=node_is_selectable,
@@ -398,25 +415,24 @@ def _plot_line_connectivity(
             )
             fig.canvas.mpl_connect("button_press_event", callback)
 
-        # Hide duplicate connections initially
-        if plot_circle and duplicate_cons:
+        # Hide duplicate symmetric connections initially
+        if plot_circle and interactive:
             _hide_duplicate_cons(
-                fig,
-                circle_ax,
-                line_ax,
-                len(type_data),
-                circle_con_order,
+                fig=fig,
+                circle_ax=circle_ax,
+                line_ax=line_ax,
+                duplicate_cons_mask=type_duplicate_cons_mask,
+                circle_con_order=circle_con_order,
                 has_ci=type_ci is not None,
             )
 
         figs.append(fig)
-        axes.append((line_ax, circle_ax))
 
     plt_show(show)
 
     if len(figs) == 1:
-        return figs[0], axes[0]
-    return figs, axes
+        return figs[0]
+    return figs
 
 
 def _get_circle_names_and_indices(node_names, node_indices):
@@ -426,20 +442,7 @@ def _get_circle_names_and_indices(node_names, node_indices):
 
     circle_indices = [np.searchsorted(unique_nodes, ind) for ind in node_indices]
 
-    is_all_to_all = []  # check if all-to-all connectivity
-    for ind, all_to_all_ind in zip(
-        circle_indices, np.tril_indices(len(circle_names), -1)
-    ):
-        if len(ind) != len(all_to_all_ind):
-            is_all_to_all.append(False)
-            break
-        if not (np.all(ind == all_to_all_ind) or np.all(ind == all_to_all_ind.T)):
-            is_all_to_all.append(False)
-            break
-        is_all_to_all.append(True)
-    is_all_to_all = all(is_all_to_all)
-
-    return circle_names, circle_indices, is_all_to_all
+    return circle_names, circle_indices
 
 
 def _get_node_selectability(circle_indices, selection):
@@ -479,7 +482,7 @@ def _get_circle_con(circle_indices, n_nodes, connection_colors, selection):
                     if circle_con[node_mask].size > 1:  # avoid division by zero
                         circle_con[node_mask] /= circle_con[node_mask].max()
     else:  # values span colourbar over all connections
-        circle_con = circle_indices[0] + circle_indices[1]
+        circle_con = np.arange(len(circle_indices[0]))
 
     # mne.viz.circle._plot_connectivity_circle default behaviour is to sort connections
     # by strength (valid as of MNE v1.11)
@@ -513,7 +516,7 @@ def _plot_connectivity_circle_onpick(
     line_ax,
     indices,
     node_angles,
-    duplicate_cons,
+    duplicate_cons_mask,
     circle_con_order,
     selection,
     node_selectability,
@@ -549,7 +552,13 @@ def _plot_connectivity_circle_onpick(
         for circle_idx, line_idx in enumerate(circle_con_order):
             seed, target = indices[0][line_idx], indices[1][line_idx]
             if selection == "both":
-                viable_nodes = [seed, target] if not duplicate_cons else [seed]
+                # For symmetric data with duplicate connections, selecting a node for
+                # both seed and target cons would show duplicate values. Instead, only
+                # show the seed connections for symmetric data (which implicitly
+                # includes the target connections).
+                viable_nodes = (
+                    [seed, target] if not any(duplicate_cons_mask) else [seed]
+                )
             elif selection == "seeds":
                 viable_nodes = [seed]
             else:  # selection == "targets"
@@ -563,29 +572,25 @@ def _plot_connectivity_circle_onpick(
         fig.canvas.draw()
 
     elif event.button == 3:  # right click
-        n_cons = len(indices[0]) if not duplicate_cons else len(indices[0]) // 2
-        for circle_idx, line_idx in enumerate(circle_con_order):
-            # Make original connections visible and hide duplicated connections
-            visible = line_idx < n_cons
-            patches[circle_idx].set_visible(visible)
-            lines[line_idx].set_visible(visible)
-            lines[line_idx].set_picker(0 if not visible else True)
-            if has_ci:
-                collections[line_idx].set_visible(visible)
+        # Make original connections visible and hide duplicate connections
+        _hide_duplicate_cons(
+            fig, circle_ax, line_ax, duplicate_cons_mask, circle_con_order, has_ci
+        )
         for text in line_ax.texts:
             text.set_alpha(0)  # hide any connection labels
-        fig.canvas.draw()
 
 
-def _hide_duplicate_cons(fig, circle_ax, line_ax, n_cons, circle_con_order, has_ci):
+def _hide_duplicate_cons(
+    fig, circle_ax, line_ax, duplicate_cons_mask, circle_con_order, has_ci
+):
     """Hide duplicated connections in circle and line plots."""
     for circle_idx, line_idx in enumerate(circle_con_order):
-        if line_idx >= n_cons:
-            circle_ax.patches[circle_idx].set_visible(False)
-            line_ax.lines[line_idx].set_visible(False)
-            line_ax.lines[line_idx].set_picker(False)
-            if has_ci:
-                line_ax.collections[line_idx].set_visible(False)
+        visible = ~duplicate_cons_mask[line_idx]
+        circle_ax.patches[circle_idx].set_visible(visible)
+        line_ax.lines[line_idx].set_visible(visible)
+        line_ax.lines[line_idx].set_picker(0 if not visible else True)
+        if has_ci:
+            line_ax.collections[line_idx].set_visible(visible)
     fig.canvas.draw()
 
 
@@ -594,7 +599,6 @@ def _plot_connectivity_lines(
     ci,
     con_colors,
     con_names,
-    duplicate_cons,
     fig,
     ax,
     xvar,
@@ -610,14 +614,10 @@ def _plot_connectivity_lines(
     texts = list()
     n_cons = data.shape[0]
     idxs = np.arange(n_cons)
-    if duplicate_cons:
-        idxs = np.concatenate([idxs, idxs + n_cons])
     lines = list()
 
     if interactive:
         # Parameters for butterfly interactive plots
-        if duplicate_cons:
-            con_names = np.concatenate([con_names, con_names])
         params = dict(
             axes=[ax],
             texts=texts,
@@ -635,7 +635,7 @@ def _plot_connectivity_lines(
     # Map cons with least activity behind the more active ones
     z_ord = data.std(axis=1).argsort()[::-1]
 
-    # plot connections
+    # Plot connections
     for con_idx, z in enumerate(z_ord):
         if ci is not None:
             ax.fill_between(
@@ -659,28 +659,6 @@ def _plot_connectivity_lines(
             )[0]
         )
         lines[-1].set_pickradius(3.0)
-    if duplicate_cons:
-        for con_idx, z in enumerate(z_ord):
-            if ci is not None:
-                ax.fill_between(
-                    xvar,
-                    ci[con_idx],
-                    zorder=z + 1,
-                    color=con_colors[con_idx],
-                    alpha=ci_alpha,
-                )
-            lines.append(
-                ax.plot(
-                    xvar,
-                    data[con_idx],
-                    picker=interactive,
-                    zorder=z + 1,
-                    color=con_colors[con_idx + n_cons],
-                    alpha=line_alpha,
-                    linewidth=linewidth,
-                )[0]
-            )
-            lines[-1].set_pickradius(3.0)
 
     ax.set_xlim(xvar[0], xvar[-1])
 

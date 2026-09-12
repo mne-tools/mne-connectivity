@@ -11,7 +11,6 @@ from mne.viz.utils import _plot_masked_image, plt_show
 
 from ..utils import fill_doc
 from .helpers import (
-    _add_comps_as_connections,
     _check_data_is_real,
     _check_info,
     _get_con_info,
@@ -68,17 +67,17 @@ def plot_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_matrix)s
 
     Notes
     -----
-    %(viz_components_note)s
+    %(viz_components_extra_fig_note)s
     """
     from mne_connectivity import Connectivity
 
     _validate_type(con, Connectivity, "con", "Connectivity")
 
-    _check_data_is_real(con.get_data())
+    _check_data_is_real(con.get_data("raveled"))
 
     _check_option("con.shape", len(con.shape), [1, 2], " length")
 
@@ -91,7 +90,17 @@ def plot_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar = _handle_data_and_indices(con, ch_info)
+    data, indices, is_multivar, _, duplicate_cons_mask = _handle_data_and_indices(
+        con, ch_info
+    )
+
+    # Handle instances of multiple components in multivariate data
+    if data.ndim == 1:
+        n_comps = components = None
+        data = data[:, np.newaxis]  # give a dummy components dimension
+    else:
+        n_comps = data.shape[1]
+        components = con.coords["components"].data
 
     # Get info about nodes and connections
     node_names, node_indices = _get_node_names_and_indices(
@@ -104,14 +113,9 @@ def plot_connectivity(
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
-
-    # Add multivariate components as additional connections
-    if is_multivar:
-        data, con_info, node_indices, _ = _add_comps_as_connections(
-            data, con_info, node_indices, comps_axis=1
-        )
 
     con_types = con_info["temp"]["con_types"]
     figs = []
@@ -126,68 +130,78 @@ def plot_connectivity(
             node_idx: pos for pos, node_idx in enumerate(type_node_indices_unique)
         }
 
-        # Make data square for plotting
-        square_matrix = np.full((type_n_nodes, type_n_nodes), fill_value=np.nan)
-        for idx, (seed_idx, target_idx) in enumerate(zip(*type_node_indices)):
-            square_matrix[type_node_pos[seed_idx], type_node_pos[target_idx]] = data[
-                idx
-            ]
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
 
         # Colormap handling
-        vmin, vmax = _setup_vmin_vmax(data=square_matrix, vmin=vmin, vmax=vmax)
+        vmin, vmax = _setup_vmin_vmax(data=data, vmin=vmin, vmax=vmax)
         cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
         if cnorm is None:
             cnorm = Normalize(vmin=vmin, vmax=vmax)
 
-        # Create figure and axis
-        fig, ax = plt.subplots(
-            1, 1, figsize=(6, 6), facecolor="w", layout="constrained"
-        )
+        # Plot data for each component separately
+        for comp_idx in range(data.shape[1]):
+            # Make data square for plotting
+            square_matrix = np.full((type_n_nodes, type_n_nodes), np.nan)
+            for con_idx, (seed_idx, target_idx) in enumerate(zip(*type_node_indices)):
+                square_matrix[type_node_pos[seed_idx], type_node_pos[target_idx]] = (
+                    data[con_idx, comp_idx]
+                )
 
-        img, _ = _plot_masked_image(
-            ax=ax,
-            data=square_matrix,
-            times=np.arange(square_matrix.shape[1]),
-            yvals=np.arange(square_matrix.shape[0]),
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            mask=mask,
-            mask_style=mask_style,
-            mask_alpha=mask_alpha,
-            mask_cmap=mask_cmap,
-            yscale="linear",
-            cnorm=cnorm,
-        )
-        ax.set_box_aspect(1)
-        if colorbar:
-            cbar = fig.colorbar(img, ax=ax, shrink=0.6, label="Connectivity (A.U.)")
-            cbar.ax.set_zorder(ax.get_zorder() - 1)
+            # Create figure and axis
+            fig, ax = plt.subplots(
+                1, 1, figsize=(6, 6), facecolor="w", layout="constrained"
+            )
 
-        ax.set_title(f"{con_type} | {con_method}")
-        ax.set_xlabel("Targets")
-        ax.set_ylabel("Seeds")
-        if node_labels == "names":
-            ax.set_xticks(np.arange(type_n_nodes))
-            ax.set_yticks(np.arange(type_n_nodes))
-            ax.set_xticklabels(type_node_names, rotation=45)
-            ax.set_yticklabels(type_node_names)
-        if node_labels is None:
-            ax.set_xticks([])
-            ax.set_yticks([])
-        else:  # node_labels == "ticks"
-            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-            ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+            min_node_idx = min(type_node_indices[0].min(), type_node_indices[1].min())
+            max_node_idx = max(type_node_indices[0].max(), type_node_indices[1].max())
+            img, _ = _plot_masked_image(
+                ax=ax,
+                data=square_matrix,
+                times=np.arange(min_node_idx, max_node_idx + 1),
+                yvals=np.arange(min_node_idx, max_node_idx + 1),
+                cmap=cmap,
+                vmin=vmin,
+                vmax=vmax,
+                mask=mask,
+                mask_style=mask_style,
+                mask_alpha=mask_alpha,
+                mask_cmap=mask_cmap,
+                yscale="linear",
+                cnorm=cnorm,
+            )
+            ax.set_box_aspect(1)
+            if colorbar:
+                cbar = fig.colorbar(img, ax=ax, shrink=0.6, label="Connectivity (A.U.)")
+                cbar.ax.set_zorder(ax.get_zorder() - 1)
 
-        ax.set_xlim(type_node_indices[1].min() - 0.5, type_node_indices[1].max() + 0.5)
-        ax.set_ylim(type_node_indices[0].max() + 0.5, type_node_indices[0].min() - 0.5)
+            title = f"{con_type} | {con_method}"
+            if n_comps is not None:
+                title += f" | Component {components[comp_idx]}"
+            ax.set_title(title)
+            ax.set_xlabel("Targets")
+            ax.set_ylabel("Seeds")
+            if node_labels == "names":
+                ax.set_xticks(np.arange(type_n_nodes))
+                ax.set_yticks(np.arange(type_n_nodes))
+                ax.set_xticklabels(type_node_names, rotation=45)
+                ax.set_yticklabels(type_node_names)
+            if node_labels is None:
+                ax.set_xticks([])
+                ax.set_yticks([])
+            else:  # node_labels == "ticks"
+                ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+                ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+            ax.set_xlim(min_node_idx - 0.5, max_node_idx + 0.5)
+            ax.set_ylim(max_node_idx + 0.5, min_node_idx - 0.5)
 
-        def callback(event, ax=ax, fig=fig, node_names=type_node_names):
-            _plot_connectivity_matrix_onclick(event, ax, fig, node_names)
+            def callback(event, ax=ax, fig=fig, node_names=type_node_names):
+                _plot_connectivity_matrix_onclick(event, ax, fig, node_names)
 
-        fig.canvas.mpl_connect("button_press_event", callback)
+            fig.canvas.mpl_connect("button_press_event", callback)
 
-        figs.append(fig)
+            figs.append(fig)
 
     plt_show(show)
 

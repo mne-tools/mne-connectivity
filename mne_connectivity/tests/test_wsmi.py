@@ -55,9 +55,6 @@ def test_wsmi_input_output_validation():
     with pytest.raises(ValueError, match="Index.*is out of range"):
         wsmi(epochs, kernel=3, tau=1, indices=(np.array([0]), np.array([5])))
 
-    with pytest.raises(ValueError, match="Self-connectivity not supported"):
-        wsmi(epochs, kernel=3, tau=1, indices=(np.array([0]), np.array([0])))
-
     # Test with different channel types
     with pytest.warns(RuntimeWarning, match="The unit for channel"):
         epochs.set_channel_types({"0": "eeg", "1": "mag", "2": "grad"})
@@ -684,8 +681,8 @@ def test_wsmi_bad_channels(picks):
             indices = (np.array([2]), np.array([0]))
         n_cons = len(indices[0])
     else:
-        indices = None  # implicit bad exclusion
-        n_cons = n_channels**2
+        indices = "lower"  # implicit bad exclusion
+        n_cons = n_channels * (n_channels - 1) // 2
 
     # Compute connectivity
     con = wsmi(data, kernel=3, tau=1, indices=indices, average=True)
@@ -695,17 +692,18 @@ def test_wsmi_bad_channels(picks):
     assert con.names == data.ch_names
 
     # Check dense shape same regardless of indices
-    assert con.get_data("dense").shape == (n_channels, n_channels)
+    missing = np.nan if indices != "lower" else "raise"
+    assert con.get_data("dense", missing=missing).shape == (n_channels, n_channels)
 
     # Check raveled shape and contents depends on indices
     raveled_data = con.get_data("raveled")
     assert raveled_data.shape == (n_cons,)  # n_cons depends on picks
     if picks is not None:
-        # with "all" channels used, bads entries are present and are non-zero
+        # with "all" channels used, bads entries are present and are not NaN
         # with "goods" channels used, bads entries are non-existent
-        # in both cases, all entries are non-zero
-        assert_array_less(0, raveled_data)
-    else:  # indices=None → all-to-all connectivity
-        # bads entries present, but filled with zeros
-        assert_array_equal(raveled_data[[3, 7]], 0)  # bads indices
+        # in both cases, all entries are not NaN
+        assert not np.any(np.isnan(raveled_data))
+    else:  # indices="lower"
+        # bads entries present, but filled with NaNs
+        assert_array_equal(raveled_data[[0, 2]], np.nan)  # bads indices
         # (use np.ravel_multi_index to find dense array indices in raveled array)

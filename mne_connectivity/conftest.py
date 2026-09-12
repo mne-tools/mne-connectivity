@@ -7,8 +7,22 @@ import os
 import warnings
 from contextlib import contextmanager, suppress
 
+import numpy as np
 import pytest
+from mne import EpochsArray, create_info
 from mne.utils import _check_qt_version
+
+
+@pytest.fixture()
+def data_make_full():
+    """Create random data for _make_<method>_full tests."""
+    # Simulate random data
+    rng = np.random.default_rng(42)
+    n_epochs, n_channels, n_times = 4, 3, 50
+    sfreq = 100.0
+    data = rng.standard_normal((n_epochs, n_channels, n_times))
+    info = create_info(ch_names=n_channels, sfreq=sfreq, ch_types="eeg")
+    return EpochsArray(data, info=info)
 
 
 def has_pyvista():

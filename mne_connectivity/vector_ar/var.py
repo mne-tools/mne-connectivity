@@ -215,6 +215,7 @@ def vector_auto_regression(
                 times=list(range(lags)),
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
                 method="VAR(p)",
@@ -228,6 +229,7 @@ def vector_auto_regression(
                 data=coef[:, 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
                 method="VAR(1)",
@@ -263,6 +265,7 @@ def vector_auto_regression(
                 times=list(range(lags)),
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
                 method="Time-varying VAR(p)",
@@ -276,6 +279,7 @@ def vector_auto_regression(
                 data=A_mats[..., 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
                 method="Time-varying VAR(1)",

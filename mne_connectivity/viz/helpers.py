@@ -23,52 +23,88 @@ def _check_data_is_real(data):
 def _handle_data_and_indices(con, ch_info):
     """Extract data and indices from connectivity object."""
     indices = con.indices
-    is_multivar = False
+    is_multivar = False  # note: multivar connectivity is not supported for str indices
+    is_symmetric = False  # whether returned data is tril/triu symmetric
+    duplicate_cons_mask = None  # mask for duplicate connections in symmetric data
 
-    data = con.get_data("raveled")
-    if isinstance(indices, tuple):  # Explicit indices provided
+    # Explicit indices provided
+    if isinstance(indices, tuple):
+        data = con.get_data("raveled")
+        _check_if_nan(data)
         is_multivar = _check_if_multivariate_indices(indices)
         if not is_multivar:
             indices = (np.array(indices[0]), np.array(indices[1]))
         else:
-            # ragged multivariate indices can be stored as lists of arrays, but they
+            # Ragged multivariate indices can be stored as lists of arrays, but they
             # need to be arrays themselves so that connections can be picked
             indices = tuple(_ragged_to_array(idcs) for idcs in indices)
+        duplicate_cons_mask = np.full(len(indices[0]), False, dtype=bool)
 
-    elif indices is None or indices == "all":  # All-to-all connectivity
-        # Construct explicit indices
-        # NOTE Cannot distinguish between bivariate and multivariate connectivity when
-        # indices is None or "all". Assume bivariate connectivity for now.
-        indices = np.tril_indices(con.n_nodes, -1)
-        square_shape = (con.n_nodes, con.n_nodes)
-        if data.ndim > 1:
-            square_shape += data.shape[1:]
-        data = data.reshape(*square_shape)[indices]
+        return data, indices, is_multivar, is_symmetric, duplicate_cons_mask
 
-        # Drop entries for bad channels from all-to-all data/indices
-        bad_idcs = []
-        if ch_info is not None:
-            bad_idcs = [con.names.index(bad) for bad in ch_info["bads"]]
-        if len(bad_idcs) > 0 and not is_multivar:
-            good_con_mask = np.ones(data.shape[0], dtype=bool)
-            for con_idx, (seed, target) in enumerate(zip(*indices)):
-                if seed in bad_idcs or target in bad_idcs:
-                    good_con_mask[con_idx] = False
-            data = data[good_con_mask]
-            indices = (indices[0][good_con_mask], indices[1][good_con_mask])
-        elif len(bad_idcs) > 0 and is_multivar:
-            indices = (
-                np.delete(indices[0][0], bad_idcs),
-                np.delete(indices[1][0], bad_idcs),
-            )
+    # Lower-tri, upper-tri, or all-to-all
+    try:  # Try to get dense data with missing values filled in
+        data = con.get_data("dense", missing="raise")
+        missing_filled = True
+    except ValueError:  # Fall back if missing can't be filled (for lower/upper)
+        data = con.get_data("dense", missing=np.nan)
+        missing_filled = False
 
+    if not missing_filled:
+        # Only take existing data if missing values can't be filled in
+        if indices == "lower":
+            indices = np.tril_indices(con.n_nodes, k=-1)
+        else:  # "upper"; can't be "all", since no missing values to (fail to) fill in
+            indices = np.triu_indices(con.n_nodes, k=1)
     else:
-        assert indices == "symmetric"
-        raise NotImplementedError("check how to handle symm indices")
+        # Check whether to ignore diagonal (if all values are the same)
+        if con.n_nodes == 1:
+            ignore_diag = False  # excluding diagonal would remove the only connection
+        elif indices == "all":
+            # Check if diagonal is all close (could be all zeros, ones, NaNs)
+            diag = np.diagonal(data).ravel()
+            ignore_diag = bool(np.allclose(diag[1:], diag[0], equal_nan=True))
+        else:
+            ignore_diag = True  # diagonal trivial for filled-in lower/upper matrices
+        # Check whether the matrix is symmetric
+        is_symmetric = np.allclose(
+            data, data.transpose(1, 0, *range(2, data.ndim)), equal_nan=True
+        )
+        # Construct explicit indices
+        indices = np.unravel_index(
+            np.arange(con.n_nodes**2), (con.n_nodes, con.n_nodes)
+        )
+        if ignore_diag:
+            diag_mask = indices[0] == indices[1]
+            indices = (indices[0][~diag_mask], indices[1][~diag_mask])
+        if is_symmetric:
+            if con.indices in ["lower", "all"]:
+                keep_indices = np.tril_indices(con.n_nodes, k=0)
+            else:
+                keep_indices = np.triu_indices(con.n_nodes, k=0)
+            duplicate_cons_mask = np.array(
+                [ind not in list(zip(*keep_indices)) for ind in list(zip(*indices))]
+            )
+    if duplicate_cons_mask is None:
+        duplicate_cons_mask = np.full(len(indices[0]), False, dtype=bool)
+
+    # Drop entries for bad channels from data and indices
+    data = data[indices]
+    bad_idcs = []
+    if ch_info is not None:
+        bad_idcs = [con.names.index(bad) for bad in ch_info["bads"]]
+    if len(bad_idcs) > 0:
+        good_con_mask = np.ones(data.shape[0], dtype=bool)
+        for con_idx, (seed, target) in enumerate(zip(*indices)):
+            if seed in bad_idcs or target in bad_idcs:
+                good_con_mask[con_idx] = False
+        data = data[good_con_mask]
+        indices = (indices[0][good_con_mask], indices[1][good_con_mask])
+        duplicate_cons_mask = duplicate_cons_mask[good_con_mask]
 
     _check_if_nan(data)
 
-    return data, indices, is_multivar
+    return data, indices, is_multivar, is_symmetric, duplicate_cons_mask
 
 
 def _ragged_to_array(indices):
@@ -136,6 +172,8 @@ def _get_node_names_and_indices(ch_names, node_aliases, indices, is_multivar):
 def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
     """Create info object for connectivity data."""
     con_names = []
+    for node_idx, name in enumerate(node_names):
+        node_names[node_idx] = name.replace("~", "-")  # avoid confusion with con names
     for seed, target in zip(*node_indices):
         con_names.append(f"{node_names[seed]} ~ {node_names[target]}")
 
@@ -174,12 +212,14 @@ def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
     for con_idx, (seed, target) in enumerate(zip(*indices)):
         if not is_multivar:
             seed, target = [seed], [target]
-        if selection == "both" or picks is None:
+        if selection == "both":
             con_nodes = np.concatenate([seed, target])
         elif selection == "seeds":
             con_nodes = seed
         else:  # selection == "targets"
             con_nodes = target
+        if picks is not None:
+            con_nodes = [node for node in con_nodes if node in ch_picks]
         if np.any([ch in ch_picks for ch in con_nodes]):
             con_picks.append(con_idx)
 
