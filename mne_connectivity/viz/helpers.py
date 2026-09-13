@@ -71,9 +71,8 @@ def _handle_data_and_indices(con, ch_info):
             data, data.transpose(1, 0, *range(2, data.ndim)), equal_nan=True
         )
         # Construct explicit indices
-        indices = np.unravel_index(
-            np.arange(con.n_nodes**2), (con.n_nodes, con.n_nodes)
-        )
+        square_shape = (con.n_nodes, con.n_nodes)
+        indices = np.unravel_index(np.arange(con.n_nodes**2), square_shape)
         if ignore_diag:
             diag_mask = indices[0] == indices[1]
             indices = (indices[0][~diag_mask], indices[1][~diag_mask])
@@ -82,9 +81,9 @@ def _handle_data_and_indices(con, ch_info):
                 keep_indices = np.tril_indices(con.n_nodes, k=0)
             else:
                 keep_indices = np.triu_indices(con.n_nodes, k=0)
-            duplicate_cons_mask = np.array(
-                [ind not in list(zip(*keep_indices)) for ind in list(zip(*indices))]
-            )
+            indices_flat = np.ravel_multi_index(indices, square_shape)
+            keep_indices_flat = np.ravel_multi_index(keep_indices, square_shape)
+            duplicate_cons_mask = ~np.isin(indices_flat, keep_indices_flat)
     if duplicate_cons_mask is None:
         duplicate_cons_mask = np.full(len(indices[0]), False, dtype=bool)
 
