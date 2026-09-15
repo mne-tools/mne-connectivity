@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</title>
+    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=d4b200ce"></script>
+    <script src="../_static/documentation_options.js?v=0858d448"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
   
 </a></div>
     
@@ -514,42 +514,42 @@
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be an <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a>, shape (n_epochs, n_signals, n_times) | <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Epochs</span></code></a></span></dt><dd><p>The data from which to compute connectivity. Can be an <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
 object or array-like data.</p>
 </dd>
-<dt><strong>kernel</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Pattern length (symbol dimension) for symbolic analysis.
+<dt><strong>kernel</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Pattern length (symbol dimension) for symbolic analysis.
 Must be &gt; 1. Values &gt; 7 may require significant memory.</p>
 </dd>
-<dt><strong>tau</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Time delay (lag; in samples) between consecutive pattern elements.
+<dt><strong>tau</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Time delay (lag; in samples) between consecutive pattern elements.
 Must be &gt; 0.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with indices of connections for which to compute connectivity.
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Two array-likes with indices of connections for which to compute connectivity.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all connections are computed (lower triangular matrix).
 For example, to compute connectivity between channels 0 and 2, and between
 channels 1 and 3, use <code class="docutils literal notranslate"><span class="pre">indices</span> <span class="pre">=</span> <span class="pre">(np.array([0,</span> <span class="pre">1]),</span> <span class="pre">np.array([2,</span> <span class="pre">3]))</span></code>.</p>
 </dd>
-<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The sampling frequency. Required if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like.</p>
+<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The sampling frequency. Required if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like.</p>
 </dd>
-<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A list of names associated with the signals in <code class="docutils literal notranslate"><span class="pre">data</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and
-<code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object, the names in <code class="docutils literal notranslate"><span class="pre">data</span></code> will be used.
+<dt><strong>names</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A list of names associated with the signals in <code class="docutils literal notranslate"><span class="pre">data</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and
+<code class="docutils literal notranslate"><span class="pre">data</span></code> is an <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object, the names in <code class="docutils literal notranslate"><span class="pre">data</span></code> will be used.
 If <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like, the names will be a list of indices of the number
 of nodes.</p>
 </dd>
-<dt><strong>tmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to start connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like, the
-first sample is assumed to be at time 0. For <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, the time
+<dt><strong>tmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to start connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like, the
+first sample is assumed to be at time 0. For <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, the time
 information contained in the object is used to compute the time indices. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses the first sample.</p>
 </dd>
-<dt><strong>tmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to end connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like, the
-first sample is assumed to be at time 0. For <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, the time
+<dt><strong>tmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Time to end connectivity estimation. Note: when <code class="docutils literal notranslate"><span class="pre">data</span></code> is an array-like, the
+first sample is assumed to be at time 0. For <a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, the time
 information contained in the object is used to compute the time indices. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses the last sample.</p>
 </dd>
-<dt><strong>anti_aliasing</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'auto'</span></code> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Controls anti-aliasing low-pass filtering before symbolic transformation.</p>
+<dt><strong>anti_aliasing</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'auto'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Controls anti-aliasing low-pass filtering before symbolic transformation.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'auto'</span></code> (default): Smart detection based on <code class="docutils literal notranslate"><span class="pre">data</span></code> type and
 preprocessing. For array inputs, always applies filtering. For
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, checks <code class="docutils literal notranslate"><span class="pre">info['lowpass']</span></code> to determine if data is
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, checks <code class="docutils literal notranslate"><span class="pre">info['lowpass']</span></code> to determine if data is
 already appropriately filtered. Only applies filtering if existing lowpass &gt;
 required frequency.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: Always apply an anti-aliasing filter at <code class="docutils literal notranslate"><span class="pre">sfreq</span> <span class="pre">/</span> <span class="pre">kernel</span> <span class="pre">/</span> <span class="pre">tau</span></code>
@@ -564,17 +564,17 @@ sampling rate (<code class="docutils literal notranslate"><span class="pre">sfre
 spectral content of your data.</p>
 </div>
 </dd>
-<dt><strong>weighted</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to compute weighted SMI (wSMI) or standard SMI.
+<dt><strong>weighted</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to compute weighted SMI (wSMI) or standard SMI.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), computes wSMI with distance-based weights.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, computes standard SMI without weights.</p>
 </dd>
-<dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to average connectivity across epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns
+<dt><strong>average</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to average connectivity across epochs. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns
 connectivity averaged over epochs. If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), returns
 connectivity for each epoch separately.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
 </dl>
@@ -698,7 +698,7 @@ based on symbolic dynamics <a class="footnote-reference brackets" href="#footcit
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-08.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
       <br/>
     
   </p>

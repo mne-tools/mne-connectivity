@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sklearn.utils._set_output &#8212; MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</title>
+    <title>sklearn.utils._set_output &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
   
   
   
@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=d4b200ce"></script>
+    <script src="../../../_static/documentation_options.js?v=0858d448"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
   
 </a></div>
     
@@ -447,6 +447,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn._config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils._available_if</span><span class="w"> </span><span class="kn">import</span> <span class="n">available_if</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.fixes</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_version</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">check_library_installed</span><span class="p">(</span><span class="n">library</span><span class="p">):</span>
@@ -509,8 +510,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        Xs: container</span>
-<span class="sd">            Containers to be checked.</span>
+<span class="sd">        X : container</span>
+<span class="sd">            Container to be checked.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -620,7 +621,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">hstack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Xs</span><span class="p">):</span>
         <span class="n">pl</span> <span class="o">=</span> <span class="n">check_library_installed</span><span class="p">(</span><span class="s2">"polars"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pl</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"horizontal"</span><span class="p">)</span>
+
+        <span class="c1"># "horizontal" is deprecated in favor of "horizontal_extend" ahead of</span>
+        <span class="c1"># polars 2.0, see https://github.com/pola-rs/polars/issues/27927</span>
+        <span class="n">how</span> <span class="o">=</span> <span class="s2">"horizontal"</span>
+        <span class="k">if</span> <span class="n">parse_version</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">parse_version</span><span class="p">(</span><span class="s2">"1.42.1"</span><span class="p">):</span>
+            <span class="n">how</span> <span class="o">=</span> <span class="s2">"horizontal_extend"</span>
+
+        <span class="k">return</span> <span class="n">pl</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ContainerAdaptersManager</span><span class="p">:</span>
@@ -940,7 +948,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-08.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
       <br/>
     
   </p>

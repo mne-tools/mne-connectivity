@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</title>
+    <title>Compute vector autoregressive model (linear system) &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=d4b200ce"></script>
+    <script src="../../_static/documentation_options.js?v=0858d448"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
   
 </a></div>
     
@@ -536,8 +536,8 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </span><span class="c1"># versions &lt;= 0.6</span><span class="w">
 </span><span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="n">line_freq</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">line_freq</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
-</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Data has a power line frequency at </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="n">line_freq</span></a><span class="si">}</span><span class="s2">.</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">line_freq</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">line_freq</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Data has a power line frequency at </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">line_freq</span></a><span class="si">}</span><span class="s2">.</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Pick only the ECoG channels, removing the ECG channels</span><span class="w">
 </span><span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
@@ -546,7 +546,7 @@ epilepsy. To facilitate loading the data, we use <a class="reference external" h
 </span><span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Then we remove line frequency interference</span><span class="w">
-</span><span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="n">line_freq</span></a><span class="p">)</span><span class="w">
+</span><span class="n">raw</span><span class="o">.</span><span class="n">notch_filter</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">line_freq</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># drop bad channels</span><span class="w">
 </span><span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">bads</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="w">
@@ -733,9 +733,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-2f9a5621-d790-40d7-bb7f-d542c1740cfc"
+<tr class="mne-repr-section-header general-27e19467-1f8b-4069-a811-733fd14aae9b"
      title="Hide section"
-    onclick="toggleVisibility('general-2f9a5621-d790-40d7-bb7f-d542c1740cfc')">
+    onclick="toggleVisibility('general-27e19467-1f8b-4069-a811-733fd14aae9b')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -747,7 +747,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-2f9a5621-d790-40d7-bb7f-d542c1740cfc ">
+<tr class="repr-element general-27e19467-1f8b-4069-a811-733fd14aae9b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -758,19 +758,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-2f9a5621-d790-40d7-bb7f-d542c1740cfc ">
+<tr class="repr-element general-27e19467-1f8b-4069-a811-733fd14aae9b ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawBrainVision</td>
 </tr>
-<tr class="repr-element general-2f9a5621-d790-40d7-bb7f-d542c1740cfc ">
+<tr class="repr-element general-27e19467-1f8b-4069-a811-733fd14aae9b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>1920-07-24 at 19:35:19 UTC</td>
 
 </tr>
-<tr class="repr-element general-2f9a5621-d790-40d7-bb7f-d542c1740cfc ">
+<tr class="repr-element general-27e19467-1f8b-4069-a811-733fd14aae9b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -779,7 +779,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-2f9a5621-d790-40d7-bb7f-d542c1740cfc ">
+<tr class="repr-element general-27e19467-1f8b-4069-a811-733fd14aae9b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -794,9 +794,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-b5bf7080-649e-4d83-85fd-531b4e217438"
+<tr class="mne-repr-section-header acquisition-6cf0570a-11ca-4cea-850f-7fbe2a6339d1"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-b5bf7080-649e-4d83-85fd-531b4e217438')">
+    onclick="toggleVisibility('acquisition-6cf0570a-11ca-4cea-850f-7fbe2a6339d1')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -808,7 +808,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-b5bf7080-649e-4d83-85fd-531b4e217438 ">
+<tr class="repr-element acquisition-6cf0570a-11ca-4cea-850f-7fbe2a6339d1 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:04:30 (HH:MM:SS)</td>
@@ -821,14 +821,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-b5bf7080-649e-4d83-85fd-531b4e217438 ">
+<tr class="repr-element acquisition-6cf0570a-11ca-4cea-850f-7fbe2a6339d1 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-b5bf7080-649e-4d83-85fd-531b4e217438 ">
+<tr class="repr-element acquisition-6cf0570a-11ca-4cea-850f-7fbe2a6339d1 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>269,080</td>
@@ -843,9 +843,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-45672344-cc6f-4d40-ae38-ec1666dfb1c1"
+<tr class="mne-repr-section-header channels-6cadce04-c850-43e3-9028-27c198e817b7"
      title="Hide section"
-    onclick="toggleVisibility('channels-45672344-cc6f-4d40-ae38-ec1666dfb1c1')">
+    onclick="toggleVisibility('channels-6cadce04-c850-43e3-9028-27c198e817b7')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -858,7 +858,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-45672344-cc6f-4d40-ae38-ec1666dfb1c1 ">
+<tr class="repr-element channels-6cadce04-c850-43e3-9028-27c198e817b7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>ECoG</td>
     <td>
@@ -871,7 +871,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-45672344-cc6f-4d40-ae38-ec1666dfb1c1 ">
+<tr class="repr-element channels-6cadce04-c850-43e3-9028-27c198e817b7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -886,9 +886,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-11402e39-26ed-4c43-a26d-69055e05574c"
+<tr class="mne-repr-section-header filters-f4455395-848c-4486-9f63-306b0ac772fa"
      title="Hide section"
-    onclick="toggleVisibility('filters-11402e39-26ed-4c43-a26d-69055e05574c')">
+    onclick="toggleVisibility('filters-f4455395-848c-4486-9f63-306b0ac772fa')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -900,14 +900,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-11402e39-26ed-4c43-a26d-69055e05574c ">
+<tr class="repr-element filters-f4455395-848c-4486-9f63-306b0ac772fa ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-11402e39-26ed-4c43-a26d-69055e05574c ">
+<tr class="repr-element filters-f4455395-848c-4486-9f63-306b0ac772fa ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -926,11 +926,11 @@ In this example, we are only interested in analyzing the interictal
 <p>One might be interested in analyzing the seizure period also, which we
 leave as an exercise for our readers!</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Find the annotated events</span><span class="w">
-</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="dict"><span class="n">event_id</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">event_id</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># get sample at which seizure starts</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">onset_id</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="dict"><span class="n">event_id</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">onset</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
-</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">onset_idx</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argwhere.html#numpy.argwhere" title="numpy.argwhere"><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">onset_id</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">onset_id</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">event_id</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">onset</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">onset_idx</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argwhere.html#numpy.argwhere" title="numpy.argwhere"><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">onset_id</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">onset_sample</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">onset_idx</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">onset_sec</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">onset_sample</span></a> <span class="o">/</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">sfreq</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
 </span><span class="w">
@@ -946,15 +946,15 @@ leave as an exercise for our readers!</p>
 <p>We have a continuous iEEG snapshot that is about 60 seconds long
 (after cropping). We would like to estimate a VAR model over a sliding window
 of 500 milliseconds with a 250 millisecond step size.</p>
-<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
+<p>We can use <a class="reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="(in MNE v1.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.make_fixed_length_epochs</span></code></a> to create an Epochs data structure
 representing this sliding window.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs"><span class="n">epochs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.make_fixed_length_epochs.html#mne.make_fixed_length_epochs" title="mne.make_fixed_length_epochs"><span class="n">make_fixed_length_epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">ch_names</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.ch_names" title="mne.Epochs.ch_names"><span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span></a><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ch_names</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.ch_names" title="mne.Epochs.ch_names"><span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span></a><span class="w">
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs"><span class="n">epochs</span></a><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span><span class="w">
-</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="dict"><span class="n">epochs</span><span class="o">.</span><span class="n">event_id</span></a><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">epochs</span><span class="o">.</span><span class="n">event_id</span></a><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">epochs</span><span class="o">.</span><span class="n">events</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Not setting metadata
@@ -1317,7 +1317,7 @@ No baseline correction applied
 each Epoch and return an EpochConnectivity data structure. Each Epoch here
 represents a separate VAR model. Taken together, these represent a
 time-varying linear system.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><span class="n">vector_auto_regression</span></a><span class="p">(</span><span class="n">data</span><span class="o">=</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">ch_names</span></a><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><span class="n">vector_auto_regression</span></a><span class="p">(</span><span class="n">data</span><span class="o">=</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ch_names</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># this returns a connectivity structure over time</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn</span></a><span class="p">)</span><span class="w">
@@ -1326,20 +1326,18 @@ time-varying linear system.</p>
 0 bad epochs dropped
 
   0%|          | 0/302 [00:00&lt;?, ?it/s]
-  7%|▋         | 22/302 [00:00&lt;00:01, 215.83it/s]
- 15%|█▍        | 44/302 [00:00&lt;00:01, 215.21it/s]
- 22%|██▏       | 66/302 [00:00&lt;00:01, 217.18it/s]
- 29%|██▉       | 88/302 [00:00&lt;00:00, 215.77it/s]
- 37%|███▋      | 111/302 [00:00&lt;00:00, 219.26it/s]
- 44%|████▍     | 133/302 [00:00&lt;00:00, 219.17it/s]
- 51%|█████▏    | 155/302 [00:00&lt;00:00, 218.91it/s]
- 59%|█████▉    | 178/302 [00:00&lt;00:00, 219.50it/s]
- 66%|██████▌   | 200/302 [00:00&lt;00:00, 217.62it/s]
- 74%|███████▍  | 223/302 [00:01&lt;00:00, 219.81it/s]
- 81%|████████  | 245/302 [00:01&lt;00:00, 218.17it/s]
- 89%|████████▊ | 268/302 [00:01&lt;00:00, 219.46it/s]
- 96%|█████████▋| 291/302 [00:01&lt;00:00, 219.98it/s]
-100%|██████████| 302/302 [00:01&lt;00:00, 218.44it/s]
+  8%|▊         | 25/302 [00:00&lt;00:01, 247.05it/s]
+ 17%|█▋        | 51/302 [00:00&lt;00:01, 249.04it/s]
+ 25%|██▌       | 77/302 [00:00&lt;00:00, 249.78it/s]
+ 34%|███▍      | 102/302 [00:00&lt;00:00, 249.67it/s]
+ 42%|████▏     | 127/302 [00:00&lt;00:00, 249.61it/s]
+ 51%|█████     | 153/302 [00:00&lt;00:00, 249.81it/s]
+ 59%|█████▉    | 179/302 [00:00&lt;00:00, 250.17it/s]
+ 68%|██████▊   | 205/302 [00:00&lt;00:00, 249.94it/s]
+ 76%|███████▋  | 231/302 [00:00&lt;00:00, 250.16it/s]
+ 85%|████████▌ | 257/302 [00:01&lt;00:00, 249.95it/s]
+ 93%|█████████▎| 282/302 [00:01&lt;00:00, 249.96it/s]
+100%|██████████| 302/302 [00:01&lt;00:00, 249.70it/s]
 &lt;EpochConnectivity | n_epochs : 302, , nave : 302, nodes, n_estimated : 84, 7056, ~16.3 MiB&gt;
 </pre></div>
 </div>
@@ -1362,9 +1360,9 @@ of data.</p>
 </span><span class="w">
 </span><span class="c1"># compute the covariance of the residuals</span><span class="w">
 </span><span class="n">model_order</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.attrs" title="mne_connectivity.Connectivity.attrs"><span class="n">conn</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">model_order</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">t</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><span class="n">residuals</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">t</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">residuals</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">sampled_residuals</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.split.html#numpy.split" title="numpy.split"><span class="n">np</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">residuals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="n">model_order</span><span class="p">:</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">t</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.split.html#numpy.split" title="numpy.split"><span class="n">np</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">residuals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="n">model_order</span><span class="p">:</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">t</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">rescov</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="numpy.cov"><span class="n">np</span><span class="o">.</span><span class="n">cov</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">sampled_residuals</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
@@ -1384,7 +1382,7 @@ of data.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7dd3c312b8c0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7eacb87c6a50&gt;
 </pre></div>
 </div>
 </section>
@@ -1395,7 +1393,7 @@ the same VAR model and thus we only estimate one VAR model. One might do this
 when one suspects the data is stationary and one VAR model represents all
 epochs.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../../generated/mne_connectivity.vector_auto_regression.html#mne_connectivity.vector_auto_regression" title="mne_connectivity.vector_auto_regression"><span class="n">vector_auto_regression</span></a><span class="p">(</span><span class="w">
-</span>    <span class="n">data</span><span class="o">=</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">ch_names</span></a><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">avg-epochs</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="n">data</span><span class="o">=</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-method reference external" href="https://mne.tools/dev/generated/mne.Epochs.html#mne.Epochs.get_data" title="mne.Epochs.get_data"><span class="n">epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">times</span></a><span class="p">,</span> <span class="n">names</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">ch_names</span></a><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">avg-epochs</span><span class="s2">&quot;</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># this returns a connectivity structure over time</span><span class="w">
@@ -1424,9 +1422,9 @@ model to all the epochs.</p>
 </span><span class="w">
 </span><span class="c1"># compute the covariance of the residuals</span><span class="w">
 </span><span class="n">model_order</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.attrs" title="mne_connectivity.Connectivity.attrs"><span class="n">conn</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">model_order</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">t</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><span class="n">residuals</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">t</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">residuals</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">sampled_residuals</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.split.html#numpy.split" title="numpy.split"><span class="n">np</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">residuals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="n">model_order</span><span class="p">:</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/functions.html#int" title="int"><span class="n">t</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.split.html#numpy.split" title="numpy.split"><span class="n">np</span><span class="o">.</span><span class="n">split</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">residuals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><span class="p">,</span> <span class="n">model_order</span><span class="p">:</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">t</span></a><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="w">
 </span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">rescov</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="numpy.cov"><span class="n">np</span><span class="o">.</span><span class="n">cov</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">sampled_residuals</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
@@ -1445,10 +1443,10 @@ model to all the epochs.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using data from preloaded Raw for 302 events and 500 original time points ...
 Using data from preloaded Raw for 302 events and 500 original time points ...
 
-&lt;matplotlib.colorbar.Colorbar object at 0x7dd3c3ca1be0&gt;
+&lt;matplotlib.colorbar.Colorbar object at 0x7eacb49d2a50&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.502 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.930 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dynamic-mne-var-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/42721ed4a42770a074be546dbbd7c6b1/mne_var_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mne_var_connectivity.ipynb</span></code></a></p>
@@ -1536,7 +1534,7 @@ Using data from preloaded Raw for 302 events and 500 original time points ...
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-08.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
       <br/>
     
   </p>

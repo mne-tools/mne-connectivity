@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</title>
+    <title>Visualising spatial contributions to multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=d4b200ce"></script>
+    <script src="../../_static/documentation_options.js?v=0858d448"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
   
 </a></div>
     
@@ -621,15 +621,15 @@ as the targets. Since this is sensor-space data, we will use the MIC method to a
 connectivity, given its resilience to zero time-lag interactions (see
 <a class="reference internal" href="../compare_coherency_methods.html"><span class="doc">Comparison of coherency-based methods</span></a> for more information).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Left hemisphere sensors</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">seeds</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">chs</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span> <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">loc</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">seeds</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">chs</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span> <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">loc</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Right hemisphere sensors</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">targets</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">targets</span></a> <span class="o">=</span> <span class="p">[</span><span class="w">
 </span>    <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">chs</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span> <span class="k">if</span> <span class="n">ch_info</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">loc</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Define indices</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a> <span class="o">=</span> <span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">seeds</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><span class="n">targets</span></a><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a> <span class="o">=</span> <span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">seeds</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">targets</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>To fit the filters (and in turn compute the corresponding patterns), we instantiate
 the <a class="reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.decoding.CoherencyDecomposition"><code class="xref py py-class docutils literal notranslate"><span class="pre">CoherencyDecomposition</span></code></a> object and call the
@@ -640,7 +640,7 @@ our connectivity frequency band of interest to be 20-30 Hz. See
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.CoherencyDecomposition"><span class="n">mic</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../../generated/mne_connectivity.decoding.CoherencyDecomposition.html#mne_connectivity.decoding.CoherencyDecomposition" title="mne_connectivity.CoherencyDecomposition"><span class="n">CoherencyDecomposition</span></a><span class="p">(</span><span class="w">
 </span>    <span class="n">info</span><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">mic</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a><span class="p">,</span><span class="w">
 </span>    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">multitaper</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">fmin</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="w">
 </span>    <span class="n">fmax</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="w">
@@ -654,37 +654,37 @@ our connectivity frequency band of interest to be 20-30 Hz. See
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
-  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:01,   17.07it/s]
-  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:01,   17.61it/s]
- 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:01,   18.94it/s]
- 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:01,   19.72it/s]
- 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:01,   20.20it/s]
- 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:01,   20.54it/s]
- 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:01,   20.80it/s]
- 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:01,   21.00it/s]
- 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,   21.16it/s]
- 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:00,   21.24it/s]
- 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,   21.34it/s]
- 40%|████      | CSD epoch blocks : 12/30 [00:00&lt;00:00,   21.40it/s]
- 43%|████▎     | CSD epoch blocks : 13/30 [00:00&lt;00:00,   21.45it/s]
- 47%|████▋     | CSD epoch blocks : 14/30 [00:00&lt;00:00,   21.49it/s]
- 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,   21.54it/s]
- 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,   21.56it/s]
- 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,   21.56it/s]
- 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,   21.57it/s]
- 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,   21.59it/s]
- 67%|██████▋   | CSD epoch blocks : 20/30 [00:00&lt;00:00,   21.63it/s]
- 70%|███████   | CSD epoch blocks : 21/30 [00:00&lt;00:00,   21.65it/s]
- 73%|███████▎  | CSD epoch blocks : 22/30 [00:01&lt;00:00,   21.67it/s]
- 77%|███████▋  | CSD epoch blocks : 23/30 [00:01&lt;00:00,   21.70it/s]
- 80%|████████  | CSD epoch blocks : 24/30 [00:01&lt;00:00,   21.73it/s]
- 83%|████████▎ | CSD epoch blocks : 25/30 [00:01&lt;00:00,   21.76it/s]
- 87%|████████▋ | CSD epoch blocks : 26/30 [00:01&lt;00:00,   21.78it/s]
- 90%|█████████ | CSD epoch blocks : 27/30 [00:01&lt;00:00,   21.80it/s]
- 93%|█████████▎| CSD epoch blocks : 28/30 [00:01&lt;00:00,   21.81it/s]
- 97%|█████████▋| CSD epoch blocks : 29/30 [00:01&lt;00:00,   21.83it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   21.86it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   21.65it/s]
+  3%|▎         | CSD epoch blocks : 1/30 [00:00&lt;00:01,   17.53it/s]
+  7%|▋         | CSD epoch blocks : 2/30 [00:00&lt;00:01,   18.31it/s]
+ 10%|█         | CSD epoch blocks : 3/30 [00:00&lt;00:01,   19.79it/s]
+ 13%|█▎        | CSD epoch blocks : 4/30 [00:00&lt;00:01,   20.54it/s]
+ 17%|█▋        | CSD epoch blocks : 5/30 [00:00&lt;00:01,   21.10it/s]
+ 20%|██        | CSD epoch blocks : 6/30 [00:00&lt;00:01,   21.46it/s]
+ 23%|██▎       | CSD epoch blocks : 7/30 [00:00&lt;00:01,   21.73it/s]
+ 27%|██▋       | CSD epoch blocks : 8/30 [00:00&lt;00:01,   21.89it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,   22.05it/s]
+ 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:00,   22.17it/s]
+ 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,   22.30it/s]
+ 40%|████      | CSD epoch blocks : 12/30 [00:00&lt;00:00,   22.37it/s]
+ 43%|████▎     | CSD epoch blocks : 13/30 [00:00&lt;00:00,   22.45it/s]
+ 47%|████▋     | CSD epoch blocks : 14/30 [00:00&lt;00:00,   22.48it/s]
+ 50%|█████     | CSD epoch blocks : 15/30 [00:00&lt;00:00,   22.55it/s]
+ 53%|█████▎    | CSD epoch blocks : 16/30 [00:00&lt;00:00,   22.58it/s]
+ 57%|█████▋    | CSD epoch blocks : 17/30 [00:00&lt;00:00,   22.64it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,   22.67it/s]
+ 63%|██████▎   | CSD epoch blocks : 19/30 [00:00&lt;00:00,   22.66it/s]
+ 67%|██████▋   | CSD epoch blocks : 20/30 [00:00&lt;00:00,   22.63it/s]
+ 70%|███████   | CSD epoch blocks : 21/30 [00:00&lt;00:00,   22.67it/s]
+ 73%|███████▎  | CSD epoch blocks : 22/30 [00:00&lt;00:00,   22.69it/s]
+ 77%|███████▋  | CSD epoch blocks : 23/30 [00:01&lt;00:00,   22.73it/s]
+ 80%|████████  | CSD epoch blocks : 24/30 [00:01&lt;00:00,   22.75it/s]
+ 83%|████████▎ | CSD epoch blocks : 25/30 [00:01&lt;00:00,   22.78it/s]
+ 87%|████████▋ | CSD epoch blocks : 26/30 [00:01&lt;00:00,   22.79it/s]
+ 90%|█████████ | CSD epoch blocks : 27/30 [00:01&lt;00:00,   22.82it/s]
+ 93%|█████████▎| CSD epoch blocks : 28/30 [00:01&lt;00:00,   22.83it/s]
+ 97%|█████████▋| CSD epoch blocks : 29/30 [00:01&lt;00:00,   22.86it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   22.87it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:01&lt;00:00,   22.65it/s]
 [done]
 Computing MIC for connection 1 of 1
 </pre></div>
@@ -1266,6 +1266,14 @@ a.param-doc-link::before {
     width: 14px;
     height: 14px;
     cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.copy-paste-icon:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
 }
 
 .features {
@@ -1324,7 +1332,6 @@ a.param-doc-link::before {
 }
 
 .features .features-container {
-  max-width: 15em;
   max-height: 10em;
   overflow: auto;
   scrollbar-width: thin;
@@ -1418,10 +1425,11 @@ a.param-doc-link::before {
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy info to clipboard"
                  onclick="copyToClipboard('info',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">info</td>
             <td class="value">&lt;Info | 14 no...299153182_0&gt;
 &gt;</td>
@@ -1429,140 +1437,154 @@ a.param-doc-link::before {
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy method to clipboard"
                  onclick="copyToClipboard('method',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">method</td>
             <td class="value">&#x27;mic&#x27;</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy indices to clipboard"
                  onclick="copyToClipboard('indices',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">indices</td>
             <td class="value">(array([  0,  ..., dtype=int32), ...)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy fmin to clipboard"
                  onclick="copyToClipboard('fmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">fmin</td>
             <td class="value">20</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy fmax to clipboard"
                  onclick="copyToClipboard('fmax',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">fmax</td>
             <td class="value">30</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy n_components to clipboard"
                  onclick="copyToClipboard('n_components',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">n_components</td>
             <td class="value">np.int64(3)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy rank to clipboard"
                  onclick="copyToClipboard('rank',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">rank</td>
             <td class="value">(3, ...)</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy mode to clipboard"
                  onclick="copyToClipboard('mode',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">mode</td>
             <td class="value">&#x27;multitaper&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy mt_bandwidth to clipboard"
                  onclick="copyToClipboard('mt_bandwidth',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">mt_bandwidth</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy mt_adaptive to clipboard"
                  onclick="copyToClipboard('mt_adaptive',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">mt_adaptive</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy mt_low_bias to clipboard"
                  onclick="copyToClipboard('mt_low_bias',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">mt_low_bias</td>
             <td class="value">True</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy cwt_freqs to clipboard"
                  onclick="copyToClipboard('cwt_freqs',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">cwt_freqs</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy cwt_n_cycles to clipboard"
                  onclick="copyToClipboard('cwt_n_cycles',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">cwt_n_cycles</td>
             <td class="value">7.0</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy n_jobs to clipboard"
                  onclick="copyToClipboard('n_jobs',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">n_jobs</td>
             <td class="value">1</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">None</td>
         </tr>
@@ -1842,7 +1864,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.699 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.326 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-plotting-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/819c147b4978939946b15bdfb484fb24/cohy_decomposition_plotting.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition_plotting.ipynb</span></code></a></p>
@@ -1937,7 +1959,7 @@ lead to very incorrect interpretations of the data <a class="footnote-reference 
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-08.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sklearn.utils._metadata_requests &#8212; MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</title>
+    <title>sklearn.utils._metadata_requests &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
   
   
   
@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=d4b200ce"></script>
+    <script src="../../../_static/documentation_options.js?v=0858d448"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev6+g7e620d979 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
   
 </a></div>
     
@@ -1526,7 +1526,13 @@
 
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">route_mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_route_mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">caller</span><span class="p">,</span> <span class="n">callee</span> <span class="ow">in</span> <span class="n">route_mapping</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
+                <span class="c1"># A composite method (e.g. ``fit_transform``) routes metadata for</span>
+                <span class="c1"># each of its component methods (``fit`` and ``transform``), but a</span>
+                <span class="c1"># route mapping may also be declared directly on the composite</span>
+                <span class="c1"># method itself (e.g. ``TargetEncoder`` maps ``fit_transform`` to</span>
+                <span class="c1"># its splitter's ``split``). We therefore match the composite</span>
+                <span class="c1"># method as well as its components.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">caller</span> <span class="o">==</span> <span class="n">method</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">caller</span> <span class="ow">in</span> <span class="n">COMPOSITE_METHODS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="p">())):</span>
                     <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
                         <span class="n">route_mapping</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">_get_param_names</span><span class="p">(</span>
                             <span class="n">method</span><span class="o">=</span><span class="n">callee</span><span class="p">,</span> <span class="n">return_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_self_request</span><span class="o">=</span><span class="kc">False</span>
@@ -2096,7 +2102,7 @@
         <span class="n">ignore_params</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="k">if</span> <span class="n">ignore_params</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">ignore_params</span><span class="p">)</span>
         <span class="n">ignore_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"X"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"Xt"</span><span class="p">,</span> <span class="s2">"yt"</span><span class="p">})</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="n">param_name</span><span class="p">:</span> <span class="kc">None</span>
@@ -2219,7 +2225,11 @@
 
 <span class="sd">    The output of this function is a :class:`~sklearn.utils.Bunch` that has a key for</span>
 <span class="sd">    each consuming object and those hold keys for their consuming methods, which then</span>
-<span class="sd">    contain keys for the metadata which should be routed to them.</span>
+<span class="sd">    contain keys for the metadata which should be routed to them. Consumers should</span>
+<span class="sd">    use item access (``routed_params[child][method]``) rather than attribute access,</span>
+<span class="sd">    so that the structure remains usable after crossing process boundaries (e.g.</span>
+<span class="sd">    :class:`joblib.Parallel` with the dask backend), where serializers may downgrade</span>
+<span class="sd">    :class:`~sklearn.utils.Bunch` to plain :class:`dict`.</span>
 
 <span class="sd">    Read more on developing custom estimators that can route metadata in the</span>
 <span class="sd">    :ref:`Metadata Routing Developing Guide</span>
@@ -2296,6 +2306,45 @@
     <span class="n">routed_params</span> <span class="o">=</span> <span class="n">request_routing</span><span class="o">.</span><span class="n">route_params</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">_method</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">routed_params</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_manual_routing</span><span class="p">(</span><span class="n">routing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Manually build a routed_params Bunch outside the ``process_routing`` path.</span>
+
+<span class="sd">    Use in meta-estimators that need to construct routing by hand — typically in</span>
+<span class="sd">    the ``else`` branch of ``if _routing_enabled()``, where pre-SLEP6 forwarding</span>
+<span class="sd">    behaviour is preserved. Returns the same nested ``Bunch`` shape that</span>
+<span class="sd">    :func:`process_routing` produces, so consumer code doesn't need to branch</span>
+<span class="sd">    on which path produced ``routed_params``.</span>
+
+<span class="sd">    Every child in ``routing`` is populated with a :class:`~sklearn.utils.Bunch`</span>
+<span class="sd">    containing every name in ``METHODS``. Methods listed in the per-child</span>
+<span class="sd">    sub-mapping carry the provided kwargs; methods not listed default to ``{}``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    routing : dict[str, dict[str, dict] | None]</span>
+<span class="sd">        Mapping ``child_name -&gt; (method_name -&gt; kwargs)``. Pass ``{}`` (or</span>
+<span class="sd">        ``None``) for a child with no methods to forward to; every method in</span>
+<span class="sd">        the returned Bunch will be an empty dict.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    routed_params : Bunch</span>
+<span class="sd">        A :class:`~sklearn.utils.Bunch` of the form</span>
+<span class="sd">        ``{"child_name": {"method_name": {metadata: value}}}``. Consumers must</span>
+<span class="sd">        use item access (``result[child][method]``); attribute access is not</span>
+<span class="sd">        guaranteed to survive cross-process serialization (e.g. the joblib</span>
+<span class="sd">        dask backend downgrades :class:`Bunch` to plain :class:`dict`).</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Bunch</span><span class="p">(</span>
+        <span class="o">**</span><span class="p">{</span>
+            <span class="n">child</span><span class="p">:</span> <span class="n">Bunch</span><span class="p">(</span>
+                <span class="o">**</span><span class="p">{</span><span class="n">method</span><span class="p">:</span> <span class="nb">dict</span><span class="p">((</span><span class="n">methods</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="p">{}))</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">METHODS</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">child</span><span class="p">,</span> <span class="n">methods</span> <span class="ow">in</span> <span class="n">routing</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
 </pre></div>
 
                 </article>
@@ -2337,7 +2386,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-08.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
       <br/>
     
   </p>
