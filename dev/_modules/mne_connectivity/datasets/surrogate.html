@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.datasets.surrogate &#8212; MNE-Connectivity 0.10.0.dev11+gdf0174658 documentation</title>
+    <title>mne_connectivity.datasets.surrogate &#8212; MNE-Connectivity 0.10.0.dev12+g559b2061c documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=aec801b6"></script>
+    <script src="../../../_static/documentation_options.js?v=8a428dee"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev11+gdf0174658 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev12+g559b2061c documentation</p>
   
 </a></div>
     
@@ -442,59 +442,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEpochs</span><span class="p">,</span> <span class="n">EpochsArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.time_frequency</span><span class="w"> </span><span class="kn">import</span> <span class="n">EpochsSpectrum</span><span class="p">,</span> <span class="n">EpochsTFR</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">warn</span>
-
-
-<div class="viewcode-block" id="make_surrogate_data">
-<a class="viewcode-back" href="../../../generated/mne_connectivity.make_surrogate_data.html#mne_connectivity.make_surrogate_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">make_surrogate_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n_shuffles</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Create surrogate data for a null hypothesis of connectivity.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data : ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR</span>
-<span class="sd">        The Fourier coefficients to create the null hypothesis surrogate data for. Can</span>
-<span class="sd">        be generated from :meth:`mne.Epochs.compute_psd` or</span>
-<span class="sd">        :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            Storing Fourier coefficients in :class:`mne.time_frequency.EpochsSpectrum`</span>
-<span class="sd">            objects requires ``mne &gt;= 1.8``.</span>
-<span class="sd">    n_shuffles : int (default 1000)</span>
-<span class="sd">        The number of surrogate datasets to create.</span>
-<span class="sd">    rng_seed : int | None (default None)</span>
-<span class="sd">        The seed to use for the random number generator. If ``None``, no seed is</span>
-<span class="sd">        specified.</span>
-<span class="sd">    return_generator : bool (default True)</span>
-<span class="sd">        Whether or not to return the surrogate data as a generator object instead of a</span>
-<span class="sd">        list. This allows iterating over the surrogates without having to keep them all</span>
-<span class="sd">        in memory.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    surrogate_data : list of ~mne.time_frequency.EpochsSpectrum or ~mne.time_frequency.EpochsTFR</span>
-<span class="sd">        The surrogate data for the null hypothesis with ``n_shuffles`` entries. Returned</span>
-<span class="sd">        as a generator if ``return_generator=True``.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    .. version-deprecated:: 0.9</span>
-<span class="sd">        This function was renamed to</span>
-<span class="sd">        :func:`~mne_connectivity.make_surrogate_resting_data`.</span>
-<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="s2">"`make_surrogate_data` is deprecated and will be removed in 1.0. Use "</span>
-        <span class="s2">"`make_surrogate_resting_data` instead."</span><span class="p">,</span>
-        <span class="ne">FutureWarning</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">make_surrogate_resting_data</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-        <span class="n">n_shuffles</span><span class="o">=</span><span class="n">n_shuffles</span><span class="p">,</span>
-        <span class="n">rng_seed</span><span class="o">=</span><span class="n">rng_seed</span><span class="p">,</span>
-        <span class="n">return_generator</span><span class="o">=</span><span class="n">return_generator</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span>
 
 
 <div class="viewcode-block" id="make_surrogate_resting_data">
