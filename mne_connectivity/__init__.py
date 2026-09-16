@@ -25,7 +25,6 @@ from .base import (
 )
 from .datasets import (
     make_signals_in_freq_bands,
-    make_surrogate_data,
     make_surrogate_evoked_data,
     make_surrogate_resting_data,
 )

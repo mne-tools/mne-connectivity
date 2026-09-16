@@ -5,56 +5,7 @@
 import numpy as np
 from mne import BaseEpochs, EpochsArray
 from mne.time_frequency import EpochsSpectrum, EpochsTFR
-from mne.utils import _validate_type, warn
-
-
-def make_surrogate_data(data, n_shuffles=1000, rng_seed=None, return_generator=True):
-    """Create surrogate data for a null hypothesis of connectivity.
-
-    Parameters
-    ----------
-    data : ~mne.time_frequency.EpochsSpectrum | ~mne.time_frequency.EpochsTFR
-        The Fourier coefficients to create the null hypothesis surrogate data for. Can
-        be generated from :meth:`mne.Epochs.compute_psd` or
-        :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.
-
-        .. note::
-            Storing Fourier coefficients in :class:`mne.time_frequency.EpochsSpectrum`
-            objects requires ``mne >= 1.8``.
-    n_shuffles : int (default 1000)
-        The number of surrogate datasets to create.
-    rng_seed : int | None (default None)
-        The seed to use for the random number generator. If ``None``, no seed is
-        specified.
-    return_generator : bool (default True)
-        Whether or not to return the surrogate data as a generator object instead of a
-        list. This allows iterating over the surrogates without having to keep them all
-        in memory.
-
-    Returns
-    -------
-    surrogate_data : list of ~mne.time_frequency.EpochsSpectrum or ~mne.time_frequency.EpochsTFR
-        The surrogate data for the null hypothesis with ``n_shuffles`` entries. Returned
-        as a generator if ``return_generator=True``.
-
-    Notes
-    -----
-    .. version-deprecated:: 0.9
-        This function was renamed to
-        :func:`~mne_connectivity.make_surrogate_resting_data`.
-    """  # noqa: E501
-    warn(
-        "`make_surrogate_data` is deprecated and will be removed in 1.0. Use "
-        "`make_surrogate_resting_data` instead.",
-        FutureWarning,
-    )
-
-    return make_surrogate_resting_data(
-        data=data,
-        n_shuffles=n_shuffles,
-        rng_seed=rng_seed,
-        return_generator=return_generator,
-    )
+from mne.utils import _validate_type
 
 
 def make_surrogate_resting_data(
