@@ -9,6 +9,8 @@
 #
 # License: Simplified BSD
 
+import inspect
+
 import numpy as np
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
@@ -140,10 +142,15 @@ def plot_sensors_connectivity(
     # Add the sensor names for the connections shown
     nodes_shown = list(set([n[0] for n in con_nodes] + [n[1] for n in con_nodes]))
 
+    kwargs = dict()
+    if "font_size" in inspect.getfullargspec(renderer.text3d).args:  # mne >= 1.13.0
+        kwargs["font_size"] = 12
+    else:
+        kwargs["scale"] = 0.005
     for node in nodes_shown:
         x, y, z = sens_loc[node]
         renderer.text3d(
-            x, y, z, text=info["ch_names"][picks[node]], scale=0.005, color=(0, 0, 0)
+            x, y, z, text=info["ch_names"][picks[node]], color=(0, 0, 0), **kwargs
         )
 
     renderer.set_camera(
