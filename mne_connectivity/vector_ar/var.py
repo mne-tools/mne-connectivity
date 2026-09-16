@@ -30,7 +30,7 @@ def vector_auto_regression(
     n_jobs=1,
     verbose=None,
 ):
-    r"""Compute vector auto-regresssive (VAR) model.
+    r"""Compute vector auto-regressive (VAR) model.
 
     Parameters
     ----------

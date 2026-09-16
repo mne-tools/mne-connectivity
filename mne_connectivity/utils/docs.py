@@ -34,14 +34,14 @@ indices : tuple of array_like{other_types}
     The indices of channels to compute connectivity between. If a tuple, then must
     contain two array-likes, where the first array represents the channel indices of the
     seeds, and the second array represents the channel indices of the targets.
-    {multivar_indices}
-    See the notes section for more information.
+    {multivar_indices}See the notes section for more information.
     {other_types_description}
     {default}
 """
 multivar_indices_extra = (
     "For multivariate methods, the seed and target indices should consist of nested "
-    "arrays containing the channel indices for each multivariate connection."
+    "arrays containing the channel indices for each multivariate connection. "
+    # Final space is important for formatting!
 )
 indices_with_str = partial(
     indices_base.format,

@@ -154,6 +154,8 @@ def phase_slope_index(
         - ``(n_cons, n_bands)`` for ``'multitaper'`` or ``'fourier'`` modes
         - ``(n_cons, n_bands, n_times)`` for ``'cwt_morlet'`` mode
         - ``n_cons = n_signals ** 2`` when ``indices='all'``
+        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``
+          or ``'upper'``
         - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays
         - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``
 
@@ -400,6 +402,8 @@ def phase_slope_index_time(
         - The epoch dimension is present when ``average=False``, and absent when
           ``average=True``.
         - ``n_cons = n_signals ** 2`` when ``indices='all'``
+        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``
+          or ``'upper'``
         - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays
         - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``
 

@@ -21,7 +21,7 @@ from .base import EpochTemporalConnectivity
 def envelope_correlation(
     data, names=None, orthogonalize="pairwise", log=False, absolute=True, verbose=None
 ):
-    """Compute the envelope correlation.
+    """Compute the envelope correlation between all signals.
 
     Parameters
     ----------

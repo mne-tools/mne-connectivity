@@ -211,10 +211,10 @@ def spectral_connectivity_time(
         ``([n_epochs,] n_cons, [n_comps,] n_freqs)``:
 
         - ``n_comps`` is present for valid multivariate methods if ``n_components > 1``
-        - When ``indices`` is ``None`` and a bivariate method is called, ``n_cons =
-          n_signals ** 2``, or if a multivariate method is called ``n_cons = 1``
-        - When ``indices`` is specified, ``n_con = len(indices[0])`` for bivariate and
-          multivariate methods.
+        - When ``indices`` is ``'all'``, ``n_cons = n_signals ** 2``
+        - When ``indices`` is ``'lower'`` or ``'upper'``, ``n_cons = n_signals *
+          (n_signals - 1) / 2``
+        - When ``indices`` is a tuple of array-likes, ``n_cons = len(indices[0])``
 
     See Also
     --------

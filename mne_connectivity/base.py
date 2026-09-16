@@ -761,8 +761,8 @@ class BaseConnectivity(EpochMixin):
             - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,
               n_nodes_out, ...)`` array.
             - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is
-              a tuple of arrays, or ``'dense'`` if ``indices is ``'all'``, ``'lower'``,
-              or ``'upper'``.
+              a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,
+              ``'lower'``, or ``'upper'``.
         missing : ``'raise'`` | float
             How to handle missing values in the dense connectivity matrix when these
             cannot be filled in (see notes for more information). If ``'raise'``, an
@@ -786,15 +786,9 @@ class BaseConnectivity(EpochMixin):
         If ``indices`` is not ``'all'`` and ``output='dense'``, there may be missing
         values from the full connectivity matrix that need to be filled in:
 
-        1. When ``indices`` is ``'lower'`` or ``'upper'``, there will be missing values:
-
-           a. If ``missing`` is not a float (default) and ``method`` is a connectivity
-              method where the missing values can be inferred based on the existing
-              ones, the missing values are filled in automatically.
-           b. If ``missing`` is not a float (default) and ``method`` is not a
-              connectivity method where the missing values can be inferred based on the
-              existing ones, an error is raised.
-           c. If ``missing`` is a float, the missing values are filled in using this.
+        1. When ``indices`` is ``'lower'`` or ``'upper'``, the missing values will try
+           to be inferred based on the existing ones, falling back to the behaviour
+           determined by the ``missing`` parameter if they cannot be inferred.
 
         2. When ``indices`` is a tuple and ``indices`` represents a subset of the full
            connectivity matrix, the missing values will not be inferred, and the
