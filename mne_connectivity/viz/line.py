@@ -75,7 +75,7 @@ def plot_spectral_connectivity(
     """
     from mne_connectivity import SpectralConnectivity
 
-    _validate_type(con, SpectralConnectivity, "con", "SpectralConnectivity")
+    _validate_type(con, SpectralConnectivity, "`con`", "SpectralConnectivity")
 
     return _plot_line_connectivity(
         con=con,
@@ -147,7 +147,7 @@ def plot_temporal_connectivity(
     """
     from mne_connectivity import TemporalConnectivity
 
-    _validate_type(con, TemporalConnectivity, "con", "TemporalConnectivity")
+    _validate_type(con, TemporalConnectivity, "`con`", "TemporalConnectivity")
 
     return _plot_line_connectivity(
         con=con,

@@ -459,7 +459,7 @@ fig : instance of matplotlib.figure.Figure | list of instance of matplotlib.figu
     The figure(s) containing the connectivity plot(s).{}
 """  # noqa E501
 
-docdict["viz_figure_image"] = viz_figures_base.format(
+docdict["viz_figures_image"] = viz_figures_base.format(
     " One figure is returned per connection."
 )
 
@@ -480,7 +480,7 @@ each component of the multivariate connections as a separate connection.{}
 
 docdict["viz_components_extra_con_note"] = viz_components_note_base.format(
     " The names of the nodes are differentiated by the addition of the component "
-    "number to the node name, e.g., ``'node 0 (0)', 'node 0 (1)', ...``."
+    "number to the node name, e.g., ``'node 0 (0)', 'node 0 (1)', ..., 'node n (m)'``."
 )
 
 docdict["viz_components_extra_fig_note"] = viz_components_note_base.format(

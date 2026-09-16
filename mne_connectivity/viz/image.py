@@ -76,7 +76,7 @@ def plot_spectrotemporal_connectivity(
 
     Returns
     -------
-    %(viz_figure_image)s
+    %(viz_figures_image)s
 
     Notes
     -----
@@ -85,7 +85,7 @@ def plot_spectrotemporal_connectivity(
     from mne_connectivity import SpectroTemporalConnectivity
 
     _validate_type(
-        con, SpectroTemporalConnectivity, "con", "SpectroTemporalConnectivity"
+        con, SpectroTemporalConnectivity, "`con`", "SpectroTemporalConnectivity"
     )
 
     _check_data_is_real(con.get_data("raveled"))

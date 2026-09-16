@@ -75,7 +75,7 @@ def plot_connectivity(
     """
     from mne_connectivity import Connectivity
 
-    _validate_type(con, Connectivity, "con", "Connectivity")
+    _validate_type(con, Connectivity, "`con`", "Connectivity")
 
     _check_data_is_real(con.get_data("raveled"))
 
