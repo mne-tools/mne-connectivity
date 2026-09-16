@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.viz.line &#8212; MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</title>
+    <title>mne_connectivity.viz.line &#8212; MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=b4d310f4"></script>
+    <script src="../../../_static/documentation_options.js?v=d499ca3f"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</p>
   
 </a></div>
     
@@ -505,16 +505,16 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(viz_figures)s</span>
+<span class="sd">    %(viz_figures_line)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    %(viz_circle_line_note)s</span>
-<span class="sd">    %(viz_components_note)s</span>
+<span class="sd">    %(viz_components_extra_con_note)s</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralConnectivity</span>
 
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="s2">"con"</span><span class="p">,</span> <span class="s2">"SpectralConnectivity"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"SpectralConnectivity"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_plot_line_connectivity</span><span class="p">(</span>
         <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span>
@@ -580,16 +580,16 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(viz_figures)s</span>
+<span class="sd">    %(viz_figures_line)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    %(viz_circle_line_note)s</span>
-<span class="sd">    %(viz_components_note)s</span>
+<span class="sd">    %(viz_components_extra_con_note)s</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporalConnectivity</span>
 
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">TemporalConnectivity</span><span class="p">,</span> <span class="s2">"con"</span><span class="p">,</span> <span class="s2">"TemporalConnectivity"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">TemporalConnectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"TemporalConnectivity"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_plot_line_connectivity</span><span class="p">(</span>
         <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span>
@@ -705,7 +705,6 @@
 
     <span class="n">con_types</span> <span class="o">=</span> <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">]</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">axes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">con_type</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">con_types</span><span class="p">):</span>
         <span class="c1"># Prepare connectivity info for plotting</span>
         <span class="n">type_mask</span> <span class="o">=</span> <span class="n">con_types</span> <span class="o">==</span> <span class="n">con_type</span>
@@ -762,8 +761,8 @@
             <span class="n">circle_con</span><span class="p">,</span> <span class="n">circle_con_order</span> <span class="o">=</span> <span class="n">_get_circle_con</span><span class="p">(</span>
                 <span class="n">circle_indices</span><span class="p">,</span> <span class="n">n_circle_nodes</span><span class="p">,</span> <span class="n">type_connection_colors</span><span class="p">,</span> <span class="n">selection</span>
             <span class="p">)</span>
-            <span class="c1"># avoid a zero colour range (e.g. for a single pair of nodes), which</span>
-            <span class="c1"># would make MNE's circle plot divide by zero</span>
+            <span class="c1"># Avoid a zero colour range (e.g. for a single pair of nodes), which would</span>
+            <span class="c1"># make MNE's circle plot divide by zero</span>
             <span class="n">circle_vmin</span><span class="p">,</span> <span class="n">circle_vmax</span> <span class="o">=</span> <span class="n">circle_con</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">circle_con</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">circle_vmin</span> <span class="o">==</span> <span class="n">circle_vmax</span><span class="p">:</span>
                 <span class="n">circle_vmax</span> <span class="o">=</span> <span class="n">circle_vmin</span> <span class="o">+</span> <span class="mi">1</span>
@@ -853,13 +852,12 @@
             <span class="p">)</span>
 
         <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-        <span class="n">axes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">line_ax</span><span class="p">,</span> <span class="n">circle_ax</span><span class="p">))</span>
 
     <span class="n">plt_show</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">figs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">figs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">figs</span><span class="p">,</span> <span class="n">axes</span>
+        <span class="k">return</span> <span class="n">figs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">figs</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_circle_names_and_indices</span><span class="p">(</span><span class="n">node_names</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">):</span>

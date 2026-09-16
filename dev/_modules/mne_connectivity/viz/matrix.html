@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.viz.matrix &#8212; MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</title>
+    <title>mne_connectivity.viz.matrix &#8212; MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=b4d310f4"></script>
+    <script src="../../../_static/documentation_options.js?v=d499ca3f"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</p>
   
 </a></div>
     
@@ -448,7 +448,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fill_doc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_add_comps_as_connections</span><span class="p">,</span>
     <span class="n">_check_data_is_real</span><span class="p">,</span>
     <span class="n">_check_info</span><span class="p">,</span>
     <span class="n">_get_con_info</span><span class="p">,</span>
@@ -507,15 +506,15 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(viz_figures)s</span>
+<span class="sd">    %(viz_figures_matrix)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(viz_components_note)s</span>
+<span class="sd">    %(viz_components_extra_fig_note)s</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connectivity</span>
 
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="s2">"con"</span><span class="p">,</span> <span class="s2">"Connectivity"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"Connectivity"</span><span class="p">)</span>
 
     <span class="n">_check_data_is_real</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 
@@ -538,6 +537,14 @@
     <span class="p">)</span>
     <span class="n">con_info</span> <span class="o">=</span> <span class="n">_get_con_info</span><span class="p">(</span><span class="n">ch_info</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">)</span>
 
+    <span class="c1"># Handle instances of multiple components in multivariate data</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_comps</span> <span class="o">=</span> <span class="n">components</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>  <span class="c1"># give a dummy components dimension</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_comps</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"components"</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
     <span class="c1"># Get requested connections</span>
     <span class="n">picks</span> <span class="o">=</span> <span class="n">_handle_picks</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="n">exclude</span><span class="p">,</span> <span class="n">ch_info</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">,</span> <span class="n">selection</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">picks</span><span class="p">]</span>
@@ -545,12 +552,6 @@
     <span class="n">node_indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">picks</span><span class="p">],</span> <span class="n">node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">picks</span><span class="p">])</span>
     <span class="n">con_info</span> <span class="o">=</span> <span class="n">pick_info</span><span class="p">(</span><span class="n">con_info</span><span class="p">,</span> <span class="n">picks</span><span class="p">)</span>
     <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">]</span> <span class="o">=</span> <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">][</span><span class="n">picks</span><span class="p">]</span>
-
-    <span class="c1"># Add multivariate components as additional connections</span>
-    <span class="k">if</span> <span class="n">is_multivar</span><span class="p">:</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">con_info</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_add_comps_as_connections</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span> <span class="n">con_info</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">,</span> <span class="n">comps_axis</span><span class="o">=</span><span class="mi">1</span>
-        <span class="p">)</span>
 
     <span class="n">con_types</span> <span class="o">=</span> <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">]</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -565,68 +566,74 @@
             <span class="n">node_idx</span><span class="p">:</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">type_node_indices_unique</span><span class="p">)</span>
         <span class="p">}</span>
 
-        <span class="c1"># Make data square for plotting</span>
-        <span class="n">square_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">type_n_nodes</span><span class="p">,</span> <span class="n">type_n_nodes</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">seed_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">type_node_indices</span><span class="p">)):</span>
-            <span class="n">square_matrix</span><span class="p">[</span><span class="n">type_node_pos</span><span class="p">[</span><span class="n">seed_idx</span><span class="p">],</span> <span class="n">type_node_pos</span><span class="p">[</span><span class="n">target_idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span>
-                <span class="n">idx</span>
-            <span class="p">]</span>
-
         <span class="c1"># Colormap handling</span>
-        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">_setup_vmin_vmax</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">square_matrix</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">_setup_vmin_vmax</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">type_mask</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">_setup_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cnorm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cnorm</span> <span class="o">=</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
 
-        <span class="c1"># Create figure and axis</span>
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
-            <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span>
-        <span class="p">)</span>
+        <span class="c1"># Plot data for each component separately</span>
+        <span class="k">for</span> <span class="n">comp_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># Make data square for plotting</span>
+            <span class="n">square_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">type_n_nodes</span><span class="p">,</span> <span class="n">type_n_nodes</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">con_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">seed_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">type_node_indices</span><span class="p">)):</span>
+                <span class="n">square_matrix</span><span class="p">[</span><span class="n">type_node_pos</span><span class="p">[</span><span class="n">seed_idx</span><span class="p">],</span> <span class="n">type_node_pos</span><span class="p">[</span><span class="n">target_idx</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">con_idx</span><span class="p">,</span> <span class="n">comp_idx</span><span class="p">]</span>
+                <span class="p">)</span>
 
-        <span class="n">img</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_plot_masked_image</span><span class="p">(</span>
-            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">square_matrix</span><span class="p">,</span>
-            <span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">square_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-            <span class="n">yvals</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">square_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
-            <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
-            <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
-            <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
-            <span class="n">mask_style</span><span class="o">=</span><span class="n">mask_style</span><span class="p">,</span>
-            <span class="n">mask_alpha</span><span class="o">=</span><span class="n">mask_alpha</span><span class="p">,</span>
-            <span class="n">mask_cmap</span><span class="o">=</span><span class="n">mask_cmap</span><span class="p">,</span>
-            <span class="n">yscale</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
-            <span class="n">cnorm</span><span class="o">=</span><span class="n">cnorm</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
-            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Connectivity (A.U.)"</span><span class="p">)</span>
-            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_zorder</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Create figure and axis</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">"constrained"</span>
+            <span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">con_type</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">con_method</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Targets"</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Seeds"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">node_labels</span> <span class="o">==</span> <span class="s2">"names"</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">type_n_nodes</span><span class="p">))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">type_n_nodes</span><span class="p">))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">type_node_names</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">type_node_names</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">node_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># node_labels == "ticks"</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">min_node_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">type_node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">type_node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+            <span class="n">max_node_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">type_node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">type_node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+            <span class="n">img</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_plot_masked_image</span><span class="p">(</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">square_matrix</span><span class="p">,</span>
+                <span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_node_idx</span><span class="p">,</span> <span class="n">max_node_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">yvals</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_node_idx</span><span class="p">,</span> <span class="n">max_node_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+                <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+                <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                <span class="n">mask_style</span><span class="o">=</span><span class="n">mask_style</span><span class="p">,</span>
+                <span class="n">mask_alpha</span><span class="o">=</span><span class="n">mask_alpha</span><span class="p">,</span>
+                <span class="n">mask_cmap</span><span class="o">=</span><span class="n">mask_cmap</span><span class="p">,</span>
+                <span class="n">yscale</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span>
+                <span class="n">cnorm</span><span class="o">=</span><span class="n">cnorm</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
+                <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Connectivity (A.U.)"</span><span class="p">)</span>
+                <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_zorder</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">type_node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">type_node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">type_node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">type_node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">con_type</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">con_method</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">if</span> <span class="n">n_comps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" | Component </span><span class="si">{</span><span class="n">components</span><span class="p">[</span><span class="n">comp_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Targets"</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Seeds"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_labels</span> <span class="o">==</span> <span class="s2">"names"</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">type_n_nodes</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">type_n_nodes</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">type_node_names</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">type_node_names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># node_labels == "ticks"</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">min_node_idx</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">max_node_idx</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">max_node_idx</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">min_node_idx</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">node_names</span><span class="o">=</span><span class="n">type_node_names</span><span class="p">):</span>
-            <span class="n">_plot_connectivity_matrix_onclick</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">node_names</span><span class="p">)</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">node_names</span><span class="o">=</span><span class="n">type_node_names</span><span class="p">):</span>
+                <span class="n">_plot_connectivity_matrix_onclick</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">node_names</span><span class="p">)</span>
 
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">"button_press_event"</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">"button_press_event"</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
 
-        <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">figs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 
     <span class="n">plt_show</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
 

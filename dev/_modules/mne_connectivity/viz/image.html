@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.viz.image &#8212; MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</title>
+    <title>mne_connectivity.viz.image &#8212; MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../../_static/documentation_options.js?v=b4d310f4"></script>
+    <script src="../../../_static/documentation_options.js?v=d499ca3f"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev9+g2a0188055 documentation</p>
   
 </a></div>
     
@@ -515,78 +515,18 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(viz_figures)s</span>
+<span class="sd">    %(viz_figures_image)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(viz_components_note)s</span>
+<span class="sd">    %(viz_components_extra_con_note)s</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectroTemporalConnectivity</span>
 
     <span class="n">_validate_type</span><span class="p">(</span>
-        <span class="n">con</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">,</span> <span class="s2">"con"</span><span class="p">,</span> <span class="s2">"SpectroTemporalConnectivity"</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"SpectroTemporalConnectivity"</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">_plot_image_connectivity</span><span class="p">(</span>
-        <span class="n">con</span><span class="o">=</span><span class="n">con</span><span class="p">,</span>
-        <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span>
-        <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
-        <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
-        <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
-        <span class="n">combine</span><span class="o">=</span><span class="n">combine</span><span class="p">,</span>
-        <span class="n">node_aliases</span><span class="o">=</span><span class="n">node_aliases</span><span class="p">,</span>
-        <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">),</span>
-        <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">),</span>
-        <span class="n">xvar</span><span class="o">=</span><span class="n">con</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
-        <span class="n">yvar</span><span class="o">=</span><span class="n">con</span><span class="o">.</span><span class="n">freqs</span><span class="p">,</span>
-        <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Time (s)"</span><span class="p">,</span>
-        <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Frequency (Hz)"</span><span class="p">,</span>
-        <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
-        <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
-        <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
-        <span class="n">cnorm</span><span class="o">=</span><span class="n">cnorm</span><span class="p">,</span>
-        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
-        <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
-        <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
-        <span class="n">mask_style</span><span class="o">=</span><span class="n">mask_style</span><span class="p">,</span>
-        <span class="n">mask_cmap</span><span class="o">=</span><span class="n">mask_cmap</span><span class="p">,</span>
-        <span class="n">mask_alpha</span><span class="o">=</span><span class="n">mask_alpha</span><span class="p">,</span>
-        <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_plot_image_connectivity</span><span class="p">(</span>
-    <span class="n">con</span><span class="p">,</span>
-    <span class="n">picks</span><span class="p">,</span>
-    <span class="n">selection</span><span class="p">,</span>
-    <span class="n">exclude</span><span class="p">,</span>
-    <span class="n">info</span><span class="p">,</span>
-    <span class="n">combine</span><span class="p">,</span>
-    <span class="n">node_aliases</span><span class="p">,</span>
-    <span class="n">xlim</span><span class="p">,</span>
-    <span class="n">ylim</span><span class="p">,</span>
-    <span class="n">xvar</span><span class="p">,</span>
-    <span class="n">xlabel</span><span class="p">,</span>
-    <span class="n">yvar</span><span class="p">,</span>
-    <span class="n">ylabel</span><span class="p">,</span>
-    <span class="n">yscale</span><span class="p">,</span>
-    <span class="n">vmin</span><span class="p">,</span>
-    <span class="n">vmax</span><span class="p">,</span>
-    <span class="n">cnorm</span><span class="p">,</span>
-    <span class="n">cmap</span><span class="p">,</span>
-    <span class="n">colorbar</span><span class="p">,</span>
-    <span class="n">mask</span><span class="p">,</span>
-    <span class="n">mask_style</span><span class="p">,</span>
-    <span class="n">mask_cmap</span><span class="p">,</span>
-    <span class="n">mask_alpha</span><span class="p">,</span>
-    <span class="n">show</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Plot connectivity as image plots.</span>
-
-<span class="sd">    Connectivity has dims [connections, x, y], where x and y are epochs, frequencies, or</span>
-<span class="sd">    times.</span>
-<span class="sd">    """</span>
     <span class="n">_check_data_is_real</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">"con.shape"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s2">" length"</span><span class="p">)</span>
@@ -600,9 +540,6 @@
         <span class="n">_check_option</span><span class="p">(</span><span class="s2">"combine"</span><span class="p">,</span> <span class="n">combine</span><span class="p">,</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">],</span> <span class="s2">" as a string"</span><span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">node_aliases</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"`node_aliases`"</span><span class="p">,</span> <span class="s2">"dict or None"</span><span class="p">)</span>
-
-    <span class="n">_check_option</span><span class="p">(</span><span class="s2">"xlim"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xlim</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">" length"</span><span class="p">)</span>
-    <span class="n">_check_option</span><span class="p">(</span><span class="s2">"ylim"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ylim</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">" length"</span><span class="p">)</span>
 
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">"yscale"</span><span class="p">,</span> <span class="n">yscale</span><span class="p">,</span> <span class="p">[</span><span class="s2">"linear"</span><span class="p">,</span> <span class="s2">"log"</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">])</span>
 
@@ -644,16 +581,12 @@
         <span class="p">)</span>
 
     <span class="c1"># Mask data to relevant x and y values</span>
-    <span class="n">xvar</span><span class="p">,</span> <span class="n">yvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xvar</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">yvar</span><span class="p">)</span>
+    <span class="n">xvar</span><span class="p">,</span> <span class="n">yvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">times</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
     <span class="n">xvar_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span>
-        <span class="n">_time_mask</span><span class="p">(</span>
-            <span class="n">times</span><span class="o">=</span><span class="n">xvar</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmax</span><span class="o">=</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="n">_time_mask</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">xvar</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">yvar_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span>
-        <span class="n">_time_mask</span><span class="p">(</span>
-            <span class="n">times</span><span class="o">=</span><span class="n">yvar</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tmax</span><span class="o">=</span><span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="n">_time_mask</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">yvar</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_tmax</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">yvar_mask</span><span class="p">,</span> <span class="p">:][</span><span class="o">...</span><span class="p">,</span> <span class="n">xvar_mask</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -661,7 +594,6 @@
 
     <span class="n">con_types</span> <span class="o">=</span> <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">]</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">axes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">con_type</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">con_types</span><span class="p">):</span>
         <span class="c1"># Prepare connectivity info for plotting</span>
         <span class="n">type_mask</span> <span class="o">=</span> <span class="n">con_types</span> <span class="o">==</span> <span class="n">con_type</span>
@@ -706,8 +638,8 @@
                 <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
                 <span class="n">cnorm</span><span class="o">=</span><span class="n">cnorm</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">con_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-            <span class="n">con_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+            <span class="n">con_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Time (s)"</span><span class="p">)</span>
+            <span class="n">con_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Frequency (Hz)"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
                 <span class="n">con_ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
                     <span class="n">mappable</span><span class="o">=</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">type_axes</span><span class="p">[</span><span class="n">con_idx</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Connectivity (A.U.)"</span>
@@ -715,13 +647,13 @@
             <span class="n">con_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">con_type</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">type_con_names</span><span class="p">[</span><span class="n">con_idx</span><span class="p">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">con_method</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">figs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">type_figs</span><span class="p">)</span>
-        <span class="n">axes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">type_axes</span><span class="p">)</span>
 
     <span class="n">plt_show</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">figs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">figs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">figs</span><span class="p">,</span> <span class="n">axes</span>
+        <span class="k">return</span> <span class="n">figs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">figs</span></div>
+
 </pre></div>
 
                 </article>
