@@ -8,6 +8,7 @@ Changes for each version of MNE-Connectivity are listed below.
 .. toctree::
    :maxdepth: 1
 
+   /changes/dev.rst
    /changes/v0.9.rst
    /changes/v0.8.rst
    /changes/v0.7.rst
