@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</title>
+    <title>Multivariate decomposition for efficient connectivity analysis &#8212; MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</title>
   
   
   
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=0858d448"></script>
+    <script src="../../_static/documentation_options.js?v=b4d310f4"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev7+g3481b3bcc documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev8+ga5b059d6d documentation</p>
   
 </a></div>
     
@@ -698,10 +698,10 @@ the signal-to-noise ratio benefits of the multivariate approach.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 33%|███▎      | CSD epoch blocks : 10/30 [00:00&lt;00:00,  563.69it/s]
- 67%|██████▋   | CSD epoch blocks : 20/30 [00:00&lt;00:00,  569.84it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  573.17it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  570.53it/s]
+ 30%|███       | CSD epoch blocks : 9/30 [00:00&lt;00:00,  558.03it/s]
+ 60%|██████    | CSD epoch blocks : 18/30 [00:00&lt;00:00,  556.07it/s]
+ 93%|█████████▎| CSD epoch blocks : 28/30 [00:00&lt;00:00,  566.42it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  558.09it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -870,8 +870,8 @@ filters are fit to a single frequency band and not each frequency bin.</p>
 </span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">func_duration</span></a><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms</span><span class="s2">&quot;</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 82 ms
-Time to fit, transform, and compute connectivity (spec_conn function): 214 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity (decomposition class): 83 ms
+Time to fit, transform, and compute connectivity (spec_conn function): 250 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class offers an efficient way to analyse connectivity
@@ -1112,9 +1112,9 @@ sequentially.</p>
 Computing cross-spectral density from epochs...
 
   0%|          | CSD epoch blocks : 0/30 [00:00&lt;?,       ?it/s]
- 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,  655.51it/s]
- 73%|███████▎  | CSD epoch blocks : 22/30 [00:00&lt;00:00,  661.04it/s]
-100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  660.10it/s]
+ 37%|███▋      | CSD epoch blocks : 11/30 [00:00&lt;00:00,  654.37it/s]
+ 73%|███████▎  | CSD epoch blocks : 22/30 [00:00&lt;00:00,  662.26it/s]
+100%|██████████| CSD epoch blocks : 30/30 [00:00&lt;00:00,  662.75it/s]
 [done]
 Computing CaCoh for connection 1 of 1
 Connectivity computation...
@@ -1373,7 +1373,7 @@ to transform each window of data and compute its connectivity.</p>
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit filters: 56 ms
 Time to transform data and compute connectivity: 117 ms
-Total time: 173 ms
+Total time: 172 ms
 
 Time to transform data and compute connectivity per epoch (window):  4 ms
 </pre></div>
@@ -1678,9 +1678,9 @@ considerably slower.</p>
 </span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">fit_transform_duration</span></a><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">N_EPOCHS</span></a><span class="w"> </span><span class="o">/</span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 1166 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to fit, transform, and compute connectivity: 1204 ms
 
-Time to fit, transform, and compute connectivity per epoch (window):  39 ms
+Time to fit, transform, and compute connectivity per epoch (window):  40 ms
 </pre></div>
 </div>
 <p>Furthermore, given the noisy nature of single windows of data, there is a risk of
@@ -1955,9 +1955,9 @@ class approach above.</p>
 </span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">duration</span></a><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">N_EPOCHS</span></a><span class="w"> </span><span class="o">/</span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 204 ms
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Time to compute connectivity: 225 ms
 
-Time to compute connectivity per epoch (window):  7 ms
+Time to compute connectivity per epoch (window):  8 ms
 </pre></div>
 </div>
 <p>Altogether, the decomposition class also offers an efficient way to analyse
@@ -2045,7 +2045,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.255 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.397 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-decoding-cohy-decomposition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e219ae2adfdff83f86f08b53c680a14c/cohy_decomposition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cohy_decomposition.ipynb</span></code></a></p>
@@ -2142,7 +2142,7 @@ detail in <a class="reference internal" href="cohy_decomposition_plotting.html">
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-15.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-16.
       <br/>
     
   </p>
