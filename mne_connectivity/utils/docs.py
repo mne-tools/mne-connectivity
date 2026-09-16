@@ -385,8 +385,6 @@ show : bool
 
 viz_figures_base = """
 fig : instance of matplotlib.figure.Figure | list of instance of matplotlib.figure.Figure
-    The figure(s) containing the connectivity plot(s). One figure is returned per
-    channel types in the seeds and targets.
     The figure(s) containing the connectivity plot(s).{}
 """  # noqa E501
 
