@@ -310,6 +310,27 @@ def test_connectivity_containers_multivariate(conn_cls):
     else:
         assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
 
+    # Check that indices need to be specified for multivariate data
+    error_msg = (
+        "`components` are present in `kwargs`, which is a term reserved for "
+        "multivariate connectivity methods."
+    )
+    with pytest.raises(
+        ValueError,
+        match=error_msg,
+    ):
+        conn_cls(data=data, n_nodes=len(chans), indicess="all", **index_kwargs)
+    with pytest.raises(
+        ValueError,
+        match=error_msg,
+    ):
+        conn_cls(
+            data=data,
+            n_nodes=len(chans),
+            indicess=(np.arange(3), np.arange(3)),
+            **index_kwargs,
+        )
+
 
 def test_get_data_error_catch():
     """Test that bad calls are caught for get_data()."""
