@@ -421,9 +421,6 @@ def test_spectral_decomposition(method, mode):
     assert_array_equal(conn_scores, np.flip(np.sort(conn_scores)))
 
 
-@pytest.mark.filterwarnings(
-    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
-)  # TODO: Remove when `n_times` deprecation warning removed
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_spectral_decomposition_parallel(method, mode):
@@ -456,9 +453,6 @@ def test_spectral_decomposition_parallel(method, mode):
     decomp_class.fit_transform(X=epochs.get_data())
 
 
-@pytest.mark.filterwarnings(
-    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
-)  # TODO: Remove when `n_times` deprecation warning removed
 @pytest.mark.parametrize("method", ["cacoh", "mic"])
 @pytest.mark.parametrize("mode", ["multitaper", "fourier", "cwt_morlet"])
 def test_spectral_decomposition_error_catch(method, mode):
