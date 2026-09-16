@@ -136,6 +136,8 @@ def _get_node_names_and_indices(ch_names, node_aliases, indices, is_multivar):
 def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
     """Create info object for connectivity data."""
     con_names = []
+    for node_idx, name in enumerate(node_names):
+        node_names[node_idx] = name.replace("~", "-")  # avoid confusion with con names
     for seed, target in zip(*node_indices):
         con_names.append(f"{node_names[seed]} ~ {node_names[target]}")
 
@@ -174,12 +176,14 @@ def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
     for con_idx, (seed, target) in enumerate(zip(*indices)):
         if not is_multivar:
             seed, target = [seed], [target]
-        if selection == "both" or picks is None:
+        if selection == "both":
             con_nodes = np.concatenate([seed, target])
         elif selection == "seeds":
             con_nodes = seed
         else:  # selection == "targets"
             con_nodes = target
+        if picks is not None:
+            con_nodes = [node for node in con_nodes if node in ch_picks]
         if np.any([ch in ch_picks for ch in con_nodes]):
             con_picks.append(con_idx)
 

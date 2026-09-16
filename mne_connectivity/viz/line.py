@@ -66,16 +66,16 @@ def plot_spectral_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import SpectralConnectivity
 
-    _validate_type(con, SpectralConnectivity, "con", "SpectralConnectivity")
+    _validate_type(con, SpectralConnectivity, "`con`", "SpectralConnectivity")
 
     return _plot_line_connectivity(
         con=con,
@@ -138,16 +138,16 @@ def plot_temporal_connectivity(
 
     Returns
     -------
-    %(viz_figures)s
+    %(viz_figures_line)s
 
     Notes
     -----
     %(viz_circle_line_note)s
-    %(viz_components_note)s
+    %(viz_components_extra_con_note)s
     """
     from mne_connectivity import TemporalConnectivity
 
-    _validate_type(con, TemporalConnectivity, "con", "TemporalConnectivity")
+    _validate_type(con, TemporalConnectivity, "`con`", "TemporalConnectivity")
 
     return _plot_line_connectivity(
         con=con,
@@ -262,7 +262,6 @@ def _plot_line_connectivity(
 
     con_types = con_info["temp"]["con_types"]
     figs = []
-    axes = []
     for con_type in np.unique(con_types):
         # Prepare connectivity info for plotting
         type_mask = con_types == con_type
@@ -319,8 +318,8 @@ def _plot_line_connectivity(
             circle_con, circle_con_order = _get_circle_con(
                 circle_indices, n_circle_nodes, type_connection_colors, selection
             )
-            # avoid a zero colour range (e.g. for a single pair of nodes), which
-            # would make MNE's circle plot divide by zero
+            # Avoid a zero colour range (e.g. for a single pair of nodes), which would
+            # make MNE's circle plot divide by zero
             circle_vmin, circle_vmax = circle_con.min(), circle_con.max()
             if circle_vmin == circle_vmax:
                 circle_vmax = circle_vmin + 1
@@ -410,13 +409,12 @@ def _plot_line_connectivity(
             )
 
         figs.append(fig)
-        axes.append((line_ax, circle_ax))
 
     plt_show(show)
 
     if len(figs) == 1:
-        return figs[0], axes[0]
-    return figs, axes
+        return figs[0]
+    return figs
 
 
 def _get_circle_names_and_indices(node_names, node_indices):
