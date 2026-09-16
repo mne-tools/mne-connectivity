@@ -159,9 +159,6 @@ def test_make_signals_in_freq_bands(
         )
 
 
-@pytest.mark.filterwarnings(
-    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
-)  # TODO: Remove when `n_times` deprecation warning removed
 def test_make_signals_in_freq_bands_error_catch():
     """Test error catching for `make_signals_in_freq_bands`."""
     freq_band = (5, 10)
@@ -284,33 +281,6 @@ def test_make_signals_in_freq_bands_error_catch():
     with pytest.raises(ValueError, match="`window_alpha` must be between 0 and 1"):
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, window_alpha=-0.5
-        )
-
-
-def test_make_signals_in_freq_bands_n_times_depr():
-    """Test `n_times` deprecation warning in `make_signals_in_freq_bands`."""
-    with pytest.warns(
-        FutureWarning,
-        match="The `n_times` parameter as a way to specify epoch length is deprecated",
-    ):
-        make_signals_in_freq_bands(
-            n_seeds=1, n_targets=1, freq_band=(5, 10), n_times=200
-        )
-    with pytest.warns(
-        FutureWarning,
-        match="The `n_times` parameter as a way to specify epoch length is deprecated",
-    ):
-        make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=(5, 10))
-
-    with pytest.raises(
-        ValueError, match="Only one of `n_times` and `duration` can be specified"
-    ):
-        make_signals_in_freq_bands(
-            n_seeds=1,
-            n_targets=1,
-            freq_band=(5, 10),
-            n_times=200,
-            duration=2.0,
         )
 
 
