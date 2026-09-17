@@ -86,7 +86,7 @@ Dependencies
 
 The minimum required dependencies to run MNE-Connectivity are:
 
-.. ↓↓↓ BEGIN CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↓↓↓
+#.. ↓↓↓ BEGIN CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↓↓↓
 .. ↑↑↑ END CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↑↑↑
 
 
