@@ -81,6 +81,15 @@ Alternatively, you can also download a
 `zip file of the latest development version <https://github.com/mne-tools/mne-connectivity/archive/main.zip>`__.
 
 
+Dependencies
+^^^^^^^^^^^^
+
+The minimum required dependencies to run MNE-Connectivity are:
+
+.. ↓↓↓ BEGIN CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↓↓↓
+.. ↑↑↑ END CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↑↑↑
+
+
 Citing MNE-Connectivity
 ^^^^^^^^^^^^^^^^^^^^^^^
 
