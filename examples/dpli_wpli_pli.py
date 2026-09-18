@@ -15,6 +15,8 @@ the phase lag index (PLI) :footcite:`StamEtAl2007`, weighted phase lag index
 #
 # License: BSD (3-clause)
 
+# %%
+
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
@@ -87,6 +89,7 @@ from mne_connectivity.viz import plot_connectivity
 # signal. A negative difference means that the reference signal is lagging the
 # other signal.
 
+# %%
 
 fs = 250  # sampling rate (Hz)
 n_e = 300  # number of epochs
@@ -115,6 +118,7 @@ data = np.swapaxes(np.array(data), 0, 1)  # make epochs the first dimension
 # reference signal.
 
 # %%
+
 fig, ax = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 ax[0].plot(t[:fs], data[0, 0, :fs], label="Reference")
 ax[0].plot(t[:fs], data[0, 2, :fs])
@@ -135,6 +139,7 @@ plt.show()
 # We will now compute PLI, wPLI, and dPLI for each phase relationship.
 
 # %%
+
 conn = []
 indices = ([0, 0, 0, 0, 0], [1, 2, 3, 4, 5])
 for method in ["pli", "wpli", "dpli"]:
@@ -171,6 +176,7 @@ conn = np.array(conn)
 #   other signal (lagging if :math:`0 <= dPlI < 0.5`, leading if
 #   :math:`0.5 < dPLI <= 1.0`)
 
+# %%
 
 x = np.arange(5)
 
@@ -222,6 +228,7 @@ plt.show()
 # applying uniform noise to this phase difference.
 
 # %%
+
 n_noise = 41  # amount of noise amplitude samples in [0, 4]
 data = [[]]
 
@@ -263,6 +270,8 @@ plt.show()
 
 ###############################################################################
 # We can now compute PLI and wPLI
+
+# %%
 
 conn = []
 indices = ([0] * n_noise, np.arange(1, n_noise + 1))
@@ -312,12 +321,13 @@ plt.show()
 # To finish this example, we also quickly demonstrate these methods on some
 # sample MEG data recorded during visual stimulation.
 
+# %%
+
 data_path = sample.data_path()
 raw_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
 event_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw-eve.fif"
 raw = mne.io.read_raw_fif(raw_fname)
 events = mne.read_events(event_fname)
-
 
 # Select gradiometers
 picks = mne.pick_types(
@@ -357,7 +367,7 @@ for method in methods:
         mt_adaptive=False,
         n_jobs=1,
     )
-    con_data = con.get_data().mean(axis=-1)  # average across frequencies
+    con_data = con.get_data("raveled").mean(axis=-1)  # average across frequencies
     cons[method] = Connectivity(
         con_data,
         n_nodes=con.n_nodes,
@@ -368,12 +378,12 @@ for method in methods:
 
 ###############################################################################
 # In this example, there is strong connectivity between sensors 190-200 and
-# sensors 110-160.
+# sensors 110-165.
 #
 # Moreover, after observing the presence of connectivity, dPLI can be used to
 # ascertain the direction of the phase relationship. Here, it appears that the
 # dPLI connectivity in this area is less than :math:`0.5`, and thus sensors
-# 190-200 are lagging sensors 110-160.
+# 190-200 are lagging sensors 110-165.
 #
 # In keeping with the previous simulation, we can see that wPLI identifies
 # stronger connectivity relationships than PLI. This is due to its robustness
@@ -382,8 +392,23 @@ for method in methods:
 
 # sphinx_gallery_multi_image_block = "single"
 
+# %%
+
+n_nodes = cons["pli"].n_nodes
+con_mask = np.zeros((n_nodes, n_nodes))
+con_mask[185:202, 105:170] = 1
+con_mask += con_mask.T
+con_mask = con_mask.astype(bool)
 for con in cons.values():
-    plot_connectivity(con, info=epochs.info, vmin=0, vmax=1)
+    plot_connectivity(
+        con,
+        info=epochs.info,
+        vmin=0,
+        vmax=1,
+        cmap="Reds" if con.method != "dpli" else "RdBu_r",
+        mask=con_mask,  # highlight the connections of interest
+        mask_style="contour",
+    )
 
 ###############################################################################
 # Conclusions

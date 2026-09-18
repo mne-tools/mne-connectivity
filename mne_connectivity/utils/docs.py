@@ -4,6 +4,8 @@
 #
 # License: BSD (3-clause)
 
+from functools import partial
+
 from mne.utils.docs import _indentcount_lines
 
 ##############################################################################
@@ -27,14 +29,34 @@ names : array_like | None
     of names, then it must be equal in length to ``n_nodes``.
 """
 
-docdict["indices"] = """
-indices : tuple of array_like | ``'all'`` | ``'symmetric'`` | None
-    The indices of relevant connectivity data. If ``'all'`` (default), then data is
-    connectivity between all nodes. If ``'symmetric'``, then data is symmetric
-    connectivity between all nodes. If a tuple, then contains two array-likes where the
-    first array represents the "in nodes" (seeds), and the second array represents the
-    "out nodes" (targets).
+indices_base = """
+indices : tuple of array_like{other_types}
+    The indices of channels to compute connectivity between. If a tuple, then must
+    contain two array-likes, where the first array represents the channel indices of the
+    seeds, and the second array represents the channel indices of the targets.
+    {multivar_indices}See the notes section for more information.
+    {other_types_description}
+    {default}
 """
+multivar_indices_extra = (
+    "For multivariate methods, the seed and target indices should consist of nested "
+    "arrays containing the channel indices for each multivariate connection. "
+    # Final space is important for formatting!
+)
+indices_with_str = partial(
+    indices_base.format,
+    other_types=" | ``'lower'`` | ``'upper'`` | ``'all'``",
+    other_types_description=(
+        "If ``'lower'``, compute the lower-triangular part of the connectivity matrix. "
+        "If ``'upper'``, compute the upper-triangular part of the connectivity matrix. "
+        "If ``'all'``, compute all connections."
+    ),
+    default="Default is ``'lower'``.",
+)
+docdict["indices_with_str_only_bivar"] = indices_with_str(multivar_indices="")
+docdict["indices_with_str_with_multivar"] = indices_with_str(
+    multivar_indices=multivar_indices_extra
+)
 
 docdict["n_nodes"] = """
 n_nodes : int
@@ -103,7 +125,56 @@ docdict["wpli2_debiased"] = "'wpli2_debiased' : Debiased estimator of squared WP
 docdict["gc"] = "'gc' : State-space Granger Causality (GC)"
 docdict["gc_tr"] = "'gc_tr' : State-space GC on time-reversed signals"
 
+docdict["tri_indices_efficiency_note"] = """
+If connectivity for all possible connections is desired, we can save time and memory by
+only computing and storing the lower- (or upper-) triangular part of the connectivity
+matrix. When the full set of connectivity values is needed, the missing values can be
+inferred based on what has been computed. See the notes section of the
+:meth:`~Connectivity.get_data` method in the connectivity containers for more
+information.
+"""
+
+docdict["tuple_bivar_indices_note"] = """
+If one is only interested in the connectivity between some signals, the ``indices``
+parameter can be specified as a tuple of array-likes. For example, to compute the
+connectivity between the signal with index 0 and the signals with indices 2, 3, and 4 (a
+total of 3 connections) one can use the following::
+
+    indices = (np.array([0, 0, 0]),  # seed indices
+               np.array([2, 3, 4]))  # target indices
+"""
+
+docdict["tuple_multivar_indices_note"] = """
+For multivariate methods, ``indices`` must be specified as a tuple, where the seed and
+target indices for each connection are nested array-likes. For example, to compute the
+connectivity between signals (0, 1) → (2, 3) and (0, 1) → (4, 5), ``indices`` should be
+specified as::
+
+    indices = (np.array([[0, 1], [0, 1]]),  # seeds
+               np.array([[2, 3], [4, 5]]))  # targets
+
+More information on working with multivariate indices and handling connections where the
+number of seeds and targets are not equal can be found in the
+:doc:`../auto_examples/handling_ragged_arrays` example.
+"""
+
 # Downstream container variables
+docdict["indices"] = """
+indices : tuple of array_like | ``'lower'`` | ``'upper'`` | ``'all'``
+    The indices of channels connectivity was computed between.
+    If a tuple, then contains two array-likes, where the first array represents the
+    channel indices of the seeds, and the second array represents the channel indices of
+    the targets.
+    For multivariate methods, the seed and target indices should consist of nested
+    arrays containing the channel indices for each multivariate connection.
+    If ``'lower'``, connectivity represents the lower-triangular part of the
+    connectivity matrix.
+    If ``'upper'``, connectivity represents the upper-triangular part of the
+    connectivity matrix.
+    If ``'all'``, connectivity represents all connections.
+    Indices for multivarate methods should only be specified as a tuple of arrays.
+"""
+
 docdict["freqs"] = """
 freqs : list | array
     The frequencies at which the connectivity data is computed over. If the frequencies
