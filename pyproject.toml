@@ -4,124 +4,111 @@ requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "wheel"]
 
 [project]
 classifiers = [
-  'Intended Audience :: Developers',
-  'Intended Audience :: Science/Research',
-  'License :: OSI Approved :: BSD License',
-  'Natural Language :: English',
-  'Operating System :: MacOS',
-  'Operating System :: Microsoft :: Windows',
-  'Operating System :: Unix',
-  'Programming Language :: Python :: 3 :: Only',
-  'Programming Language :: Python :: 3.10',
-  'Programming Language :: Python :: 3.11',
-  'Programming Language :: Python :: 3.12',
-  'Topic :: Scientific/Engineering',
-  'Topic :: Software Development',
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Unix",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development",
 ]
 dependencies = [
-  'mne >= 1.6',
-  'netCDF4 >= 1.6.5',
-  'numpy >= 1.21',
-  'pandas >= 1.3.2',
-  'scikit-learn >= 1.2',
-  'scipy >= 1.4.0',
-  'tqdm',
-  'xarray >= 2023.11.0',
+  "mne >= 1.6",
+  "netCDF4 >= 1.6.5",
+  "numpy >= 1.21",
+  "pandas >= 1.3.2",
+  "scikit-learn >= 1.2",
+  "scipy >= 1.4.0",
+  "tqdm",
+  "xarray >= 2023.11.0",
 ]
-description = 'mne-connectivity: A module for connectivity data analysis with MNE.'
+description = "mne-connectivity: A module for connectivity data analysis with MNE."
 dynamic = ["version"]
-keywords = [
-  'connectivity',
-  'eeg',
-  'ieeg',
-  'meg',
-  'neuroscience',
-]
-license = { file = 'LICENSE' }
-maintainers = [
-  { email = 'adam.li@columbia.edu', name = 'Adam Li' },
-]
-name = 'mne-connectivity'
-readme = { content-type = "text/x-rst", file = 'README.rst' }
-requires-python = '>=3.10'
+keywords = ["connectivity", "eeg", "ieeg", "meg", "neuroscience"]
+license = { file = "LICENSE" }
+maintainers = [{ email = "adam.li@columbia.edu", name = "Adam Li" }]
+name = "mne-connectivity"
+readme = { content-type = "text/x-rst", file = "README.rst" }
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 all = [
-  'mne-connectivity[build]',
-  'mne-connectivity[doc]',
-  'mne-connectivity[gui]',
-  'mne-connectivity[style]',
-  'mne-connectivity[test]',
-  'PyQt6',
+  "mne-connectivity[build]",
+  "mne-connectivity[doc]",
+  "mne-connectivity[gui]",
+  "mne-connectivity[style]",
+  "mne-connectivity[test]",
+  "PyQt6",
 ]
-build = [
-  'build',
-  'twine',
-]
+build = ["build", "twine"]
 doc = [
-  'intersphinx-registry',
-  'joblib', # for sphinx_gallery_conf["parallel"]
-  'memory-profiler',
-  'mne-bids',
-  'mne-connectivity[gui]',
-  'nibabel',
-  'nilearn',
-  'numpydoc',
-  'pooch',
-  'pydata-sphinx-theme>=0.14.1',
-  'PyQt6',
-  'sphinx!=8.1.0',
-  'sphinx-copybutton',
-  'sphinx-design',
-  'sphinx-gallery>=0.18.0',
-  'sphinx-issues',
-  'sphinx_autodoc_typehints',
-  'sphinxcontrib-bibtex',
-  'sphinxcontrib-towncrier',
-  'threadpoolctl',
+  "intersphinx-registry",
+  "joblib", # for sphinx_gallery_conf["parallel"]
+  "memory-profiler",
+  "mne-bids",
+  "mne-connectivity[gui]",
+  "nibabel",
+  "nilearn",
+  "numpydoc",
+  "pooch",
+  "pydata-sphinx-theme>=0.14.1",
+  "PyQt6",
+  "sphinx!=8.1.0",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "sphinx-gallery>=0.18.0",
+  "sphinx-issues",
+  "sphinx_autodoc_typehints",
+  "sphinxcontrib-bibtex",
+  "sphinxcontrib-towncrier",
+  "threadpoolctl",
 ]
-full = [
-  'mne-connectivity[all]',
-]
+full = ["mne-connectivity[all]"]
 gui = [
-  'h5netcdf',
-  'matplotlib',
-  'mne-qt-browser>=0.6.0',
-  'pyvista',
-  'pyvistaqt',
-  'qtpy',
-  'sip',
-  'vtk',
+  "h5netcdf",
+  "matplotlib",
+  "mne-qt-browser>=0.6.0",
+  "pyvista",
+  "pyvistaqt",
+  "qtpy",
+  "sip",
+  "vtk",
 ]
 style = [
-  'codespell',
-  'isort',
+  "codespell",
+  "isort",
   "pre-commit",
-  'pydocstyle',
-  'pydocstyle[toml]',
-  'rstcheck',
-  'ruff',
-  'toml-sort',
-  'yamllint',
+  "pydocstyle",
+  "pydocstyle[toml]",
+  "rstcheck",
+  "ruff",
+  "toml-sort",
+  "yamllint",
 ]
 test = [
-  'joblib',
-  'mne-bids',
-  'mne-connectivity[gui]',
-  'pandas',
-  'pymatreader',
-  'pytest!=9.1.0,!=9.1.1',
-  'pytest-cov',
+  "joblib",
+  "mne-bids",
+  "mne-connectivity[gui]",
+  "pandas",
+  "pymatreader",
+  "pytest!=9.1.0,!=9.1.1",
+  "pytest-cov",
   "pytest-timeout",
-  'pytest-xdist',
-  'statsmodels',
-  'threadpoolctl',
+  "pytest-xdist",
+  "statsmodels",
+  "threadpoolctl",
 ]
 
 [project.urls]
-documentation = 'https://mne.tools/mne-connectivity'
-source = 'https://github.com/mne-tools/mne-connectivity'
-tracker = 'https://github.com/mne-tools/mne-connectivity/issues'
+documentation = "https://mne.tools/mne-connectivity"
+source = "https://github.com/mne-tools/mne-connectivity"
+tracker = "https://github.com/mne-tools/mne-connectivity/issues"
 
 [tool.changelog-bot]
 
@@ -137,27 +124,19 @@ skip = "doc/references.bib"
 
 [tool.coverage.report]
 exclude_lines = [
-  'if __name__ == .__main__.:',
-  'if TYPE_CHECKING:',
-  'pragma: no cover',
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "pragma: no cover",
 ]
 precision = 2
 
 [tool.coverage.run]
 branch = true
 cover_pylib = false
-omit = [
-  '**/__init__.py',
-  '**/mne_connectivity/conftest.py',
-  '**/tests/**',
-]
+omit = ["**/__init__.py", "**/mne_connectivity/conftest.py", "**/tests/**"]
 
 [tool.isort]
-extend_skip_glob = [
-  'doc/*',
-  'examples/*',
-  'setup.py',
-]
+extend_skip_glob = ["doc/*", "examples/*", "setup.py"]
 line_length = 88
 multi_line_output = 3
 py_version = 39
@@ -167,16 +146,16 @@ ignore_missing_imports = true
 no_site_packages = true
 
 [tool.pydocstyle]
-add_ignore = 'D100,D104,D107'
-convention = 'numpy'
-ignore-decorators = '(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)'
+add_ignore = "D100,D104,D107"
+convention = "numpy"
+ignore-decorators = "(copy_doc|property|.*setter|.*getter|pyqtSlot|Slot)"
 match = '^(?!setup|__init__|test_).*\.py'
-match-dir = '^mne_connectivity.*'
+match-dir = "^mne_connectivity.*"
 
 [tool.pytest.ini_options]
-addopts = '--durations 20 --junit-xml=junit-results.xml -v -rfEXs --tb=short --color=yes'
-junit_family = 'xunit2'
-minversion = '6.0'
+addopts = "--durations 20 --junit-xml=junit-results.xml -v -rfEXs --tb=short --color=yes"
+junit_family = "xunit2"
+minversion = "6.0"
 
 [tool.rstcheck]
 ignore_directives = [
@@ -225,11 +204,7 @@ ignore_roles = [
 report_level = "WARNING"
 
 [tool.ruff]
-extend-exclude = [
-  'benchmarks',
-  'doc',
-  'setup.py',
-]
+extend-exclude = ["benchmarks", "doc", "setup.py"]
 line-length = 88
 
 [tool.ruff.lint]
@@ -244,9 +219,9 @@ ignore = [
 select = ["A", "B006", "D", "E", "F", "I", "UP", "W"]
 
 [tool.ruff.lint.per-file-ignores]
-'__init__.py' = ['F401']
-'examples/*.py' = ["D205"]
-'mne_connectivity/base.py' = ["D101", "D102", "D105"]
+"__init__.py" = ["F401"]
+"examples/*.py" = ["D205"]
+"mne_connectivity/base.py" = ["D101", "D102", "D105"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
@@ -262,8 +237,8 @@ ignore-decorators = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
-exclude = ['mne_connectivity*tests']
-include = ['mne_connectivity*']
+exclude = ["mne_connectivity*tests"]
+include = ["mne_connectivity*"]
 
 [tool.setuptools_scm]
 version_scheme = "release-branch-semver"

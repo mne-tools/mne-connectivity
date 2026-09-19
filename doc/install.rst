@@ -3,7 +3,7 @@
 Installation
 ============
 
-We require that you use Python 3.10 or higher.
+We require that you use Python 3.11 or higher.
 
 You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_,
 or conda.
@@ -16,7 +16,6 @@ simply run the following at the root of the repository:
 
 .. code-block:: bash
 
-   # with python>=3.10 at least
    conda create -n mne
    conda activate mne
    conda install -c conda-forge mne-connectivity
