@@ -267,8 +267,7 @@ def test_get_multivariate_data():
     assert isinstance(multivariate_nodes, tuple)
     assert np.all(isinstance(ind, np.ndarray) for ind in multivariate_nodes)
     triu_indices = np.triu_indices(len(nodes), k=1)
-    # TODO VERSION: use [*triu_indices] when Py3.10 dropped
-    assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
+    assert_array_equal(matrix[*triu_indices], data)
 
 
 @pytest.mark.parametrize(
