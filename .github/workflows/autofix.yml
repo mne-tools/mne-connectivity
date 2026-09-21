@@ -8,6 +8,19 @@ permissions:
   contents: read
 
 jobs:
+  autofix-changelog:
+    name: Rename towncrier files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Rename towncrier files
+        uses: tsbinns/mne-tools/actions/rename-towncrier@towncrier
+        with:
+          project-root: ${{ github.workspace }}
+      - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a
+        if: success() || failure()
   changed-files:
     name: Check for dependency-relevant changes
     runs-on: ubuntu-latest
