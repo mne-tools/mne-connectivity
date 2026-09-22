@@ -26,7 +26,7 @@ jobs:
           - id: spec_zero
             name: Update dependency specifiers
             title: 'MAINT: Update dependency specifiers'
-            body: '*The changelog entry needs to be renamed to include the PR number, and any updated versions should be reflected in `environment.yml`.\nAdjustments may need to be made to shims in the codebase.*'
+            body: '*Any updated versions should be manually updated in `environment.yml`.\nAdjustments may need to be made to shims in the codebase.*'
     env:
       GH_TOKEN: ${{ secrets.MNE_BOT_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.MNE_BOT_TOKEN }}
@@ -54,7 +54,7 @@ jobs:
           detached: true
       - name: Update tracked dependencies
         if: matrix.id == 'spec_zero'
-        uses: tsbinns/mne-tools/actions/spec-zero-update-versions@spec-zero
+        uses: mne-tools/mne-tools/actions/spec-zero-update-versions@main
         with:
           project-root: ${{ github.workspace }}
           changelog-path: 'doc/changes/dev/dependency.rst'
