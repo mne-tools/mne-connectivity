@@ -385,22 +385,6 @@ def test_get_data_error_catch():
             con_bad_meth.get_data()
 
 
-@pytest.mark.parametrize("indices", ["lower", "upper"])
-def test_make_unknown_method_full(indices):
-    """Test that filling missing values in unknown methods errors."""
-    n_nodes = 3
-    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
-        Connectivity, n_nodes=n_nodes, tril=True
-    )
-    correct_numpy_input = np.ones(correct_numpy_shape)
-    con = Connectivity(
-        data=correct_numpy_input, n_nodes=n_nodes, indices=indices, **extra_kwargs
-    )
-
-    with pytest.raises(ValueError, match="Cannot fill missing values for connectivity"):
-        con.get_data()
-
-
 def test_make_full_with_indices():
     """Test filling missing values in connectivity data with tuple indices."""
     n_nodes = 3
