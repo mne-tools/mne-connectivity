@@ -417,8 +417,15 @@ def test_dynamic_mixin_errors():
     # Check components in the connectivity data get caught
     n_comps = 2
     mv_var_data = rng.standard_normal(size=(n_signals**2, n_comps))
+    indices = np.unravel_index(np.arange(n_signals**2), (n_signals, n_signals))
+    indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
     mv_var = Connectivity(
-        mv_var_data, n_nodes=n_signals, method="VAR(p)", lags=1, components=n_comps
+        mv_var_data,
+        n_nodes=n_signals,
+        method="VAR(p)",
+        indices=indices,
+        lags=1,
+        components=n_comps,
     )
     with pytest.raises(
         NotImplementedError,
