@@ -3,11 +3,9 @@ from collections.abc import Generator
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
-from mne.time_frequency import EpochsSpectrumArray
 
 from mne_connectivity import (
     make_signals_in_freq_bands,
-    make_surrogate_data,
     make_surrogate_evoked_data,
     make_surrogate_resting_data,
     seed_target_indices,
@@ -161,9 +159,6 @@ def test_make_signals_in_freq_bands(
         )
 
 
-@pytest.mark.filterwarnings(
-    "ignore:The `n_times` parameter as a way to specify epoch length is deprecated"
-)  # TODO: Remove when `n_times` deprecation warning removed
 def test_make_signals_in_freq_bands_error_catch():
     """Test error catching for `make_signals_in_freq_bands`."""
     freq_band = (5, 10)
@@ -287,53 +282,6 @@ def test_make_signals_in_freq_bands_error_catch():
         make_signals_in_freq_bands(
             n_seeds=1, n_targets=1, freq_band=freq_band, window_alpha=-0.5
         )
-
-
-def test_make_signals_in_freq_bands_n_times_depr():
-    """Test `n_times` deprecation warning in `make_signals_in_freq_bands`."""
-    with pytest.warns(
-        FutureWarning,
-        match="The `n_times` parameter as a way to specify epoch length is deprecated",
-    ):
-        make_signals_in_freq_bands(
-            n_seeds=1, n_targets=1, freq_band=(5, 10), n_times=200
-        )
-    with pytest.warns(
-        FutureWarning,
-        match="The `n_times` parameter as a way to specify epoch length is deprecated",
-    ):
-        make_signals_in_freq_bands(n_seeds=1, n_targets=1, freq_band=(5, 10))
-
-    with pytest.raises(
-        ValueError, match="Only one of `n_times` and `duration` can be specified"
-    ):
-        make_signals_in_freq_bands(
-            n_seeds=1,
-            n_targets=1,
-            freq_band=(5, 10),
-            n_times=200,
-            duration=2.0,
-        )
-
-
-# TODO Version: remove in 1.0
-def test_make_surrogate_data_deprecation():
-    """Test `make_surrogate_data` warning about deprecation."""
-    n_epochs = 5
-    n_chans = 6
-    n_freqs = 50
-    sfreq = n_freqs * 2
-    rng = np.random.default_rng(44)
-    data = rng.random((n_epochs, n_chans, n_freqs)).astype(np.complex128)
-    data += data * 1j  # complex dtypes not supported for simulation, so make complex
-    info = create_info(ch_names=n_chans, sfreq=sfreq, ch_types="eeg")
-    data = EpochsSpectrumArray(data=data, info=info, freqs=np.arange(n_freqs))
-
-    with pytest.warns(
-        FutureWarning,
-        match="`make_surrogate_data` is deprecated and will be removed in 1.0.",
-    ):
-        make_surrogate_data(data, n_shuffles=5)
 
 
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.7, True], [0.2, False]))
