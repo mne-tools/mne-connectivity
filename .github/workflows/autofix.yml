@@ -69,7 +69,7 @@ jobs:
           project-root: ${{ github.workspace }}
           extras: gui
           # hdf5<2.2 due to incompatibility with h5py 3.16.0 (gh-449)
-          additional-dependencies: pip,joblib,statsmodels,h5io,pillow,hdf5<2.2.0
-          requirements-overrides: mne->mne-base,PySide6==6.11.1,vtk==9.6.2
+          additional-dependencies: pip,joblib,statsmodels,h5io,pillow,hdf5<2.2.0,PySide6==6.11.1
+          requirements-overrides: mne->mne-base,vtk==9.6.2
       - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a
         if: success() || failure()
