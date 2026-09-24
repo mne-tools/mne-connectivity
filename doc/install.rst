@@ -3,7 +3,7 @@
 Installation
 ============
 
-We require that you use Python 3.11 or higher.
+We require that you use Python ≥ 3.11 and MNE ≥ 1.8.
 
 You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_,
 or conda.

@@ -1,4 +1,3 @@
-import inspect
 import os
 import platform
 
@@ -977,11 +976,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         )
 
     # check rank-deficient data caught
-    # XXX: remove logic once support for mne<1.6 is dropped
-    kwargs = dict()
-    if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-        kwargs["copy"] = False
-    bad_data = data.get_data(**kwargs)
+    bad_data = data.get_data()
     bad_data[:, 1] = bad_data[:, 0]
     bad_data[:, 3] = bad_data[:, 2]
     assert np.all(np.linalg.matrix_rank(bad_data[:, (0, 1), :]) == 1)

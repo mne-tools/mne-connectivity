@@ -93,7 +93,6 @@ title = "WPLI2 - Visual - Seed %s" % seed_ch
 
 layout = mne.find_layout(epochs.info, "meg")  # use full layout
 
-# Note that users of mne < 1.7 should use the `AverageTFR` class
 tfr = AverageTFRArray(epochs.info, con.get_data(), times, freqs, nave=len(epochs))
 tfr.plot_topo(fig_facecolor="w", font_color="k", border="k")
 
