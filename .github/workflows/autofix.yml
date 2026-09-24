@@ -51,7 +51,7 @@ jobs:
             echo "dependencies=false" | tee -a "$GITHUB_OUTPUT"
           fi
   autofix-dependencies:
-    name: Autoupdate README dependencies
+    name: Autoupdate dependencies in README and environmment file
     runs-on: ubuntu-latest
     needs: changed-files
     if: needs.changed-files.outputs.dependencies == 'true'
@@ -64,7 +64,7 @@ jobs:
         with:
           project-root: ${{ github.workspace }}
       - name: Sync dependencies to environment.yml
-        uses: tsbinns/mne-tools/actions/sync-dependencies-to-environment-file@fix-env-sync
+        uses: mne-tools/mne-tools/actions/sync-dependencies-to-environment-file@main
         with:
           project-root: ${{ github.workspace }}
           extras: gui
