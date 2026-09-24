@@ -1,0 +1,1 @@
+Update minimum MNE version to 1.8, by `Thomas Binns`_.

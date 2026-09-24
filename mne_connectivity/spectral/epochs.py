@@ -824,10 +824,8 @@ def spectral_connectivity_epochs(
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
            or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
-           data. Storing Fourier coefficients in
-           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
-           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
-           requires ``mne >= 1.10``.
+           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`
+           objects requires ``mne >= 1.10``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
@@ -1249,7 +1247,8 @@ def spectral_connectivity_epochs(
             if not hasattr(data, "weights") or (
                 data.weights is None and mode == "multitaper"
             ):
-                # XXX: Remove logic when support for mne<1.10 is dropped
+                # TODO Version: Only mention re-computing saved objects when mne<1.10 is
+                # dropped
                 raise AttributeError(
                     "weights are required for multitaper coefficients stored in "
                     "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "
