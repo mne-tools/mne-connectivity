@@ -4,7 +4,6 @@
 #
 # License: BSD (3-clause)
 
-import inspect
 
 import numpy as np
 import xarray as xr
@@ -441,11 +440,7 @@ def spectral_connectivity_time(
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
         if isinstance(data, BaseEpochs):
-            # XXX: remove logic once support for mne<1.6 is dropped
-            kwargs = dict()
-            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-                kwargs["copy"] = False
-            data = data.get_data(**kwargs)
+            data = data.get_data()
             n_epochs, n_signals, n_times = data.shape
         else:
             freqs = data.freqs  # use freqs from EpochsTFR object

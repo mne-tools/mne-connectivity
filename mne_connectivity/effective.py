@@ -80,10 +80,8 @@ def phase_slope_index(
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
            or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
-           data. Storing Fourier coefficients in
-           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
-           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
-           requires ``mne >= 1.10``.
+           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`
+           objects requires ``mne >= 1.10``.
     %(names)s
     indices : tuple of array_like | None
         Two array-likes with indices of connections for which to compute connectivity.

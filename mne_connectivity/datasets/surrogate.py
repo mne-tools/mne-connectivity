@@ -23,10 +23,6 @@ def make_surrogate_resting_data(
 
         .. version-changed:: 0.9
             Added support for :class:`mne.Epochs` objects.
-
-        .. note::
-            Storing Fourier coefficients in :class:`mne.time_frequency.EpochsSpectrum`
-            objects requires ``mne >= 1.8``.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
     rng_seed : int | None (default None)

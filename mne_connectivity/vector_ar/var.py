@@ -1,4 +1,3 @@
-import inspect
 
 import numpy as np
 import scipy
@@ -161,11 +160,7 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        # XXX: remove logic once support for mne<1.6 is dropped
-        kwargs = dict()
-        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-            kwargs["copy"] = False
-        data = data.get_data(**kwargs)
+        data = data.get_data()
     else:
         metadata = None
 
