@@ -1581,6 +1581,22 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
     assert np.allclose(con_matrix, np.tril(np.ones(con_matrix.shape), k=-1), atol=0.01)
 
 
+def test_spectral_connectivity_time_faverage():
+    """Test faverage in spectral_connectivity_time averages over the requested band."""
+    data = np.random.default_rng(0).standard_normal((3, 3, 1000))
+    freqs = np.arange(5.0, 41.0)
+    fmin, fmax = (20.0, 30.0), (30.0, 40.0)
+    kwargs = dict(method="coh", sfreq=250, fmin=fmin, fmax=fmax, sm_times=0)
+    con_all = spectral_connectivity_time(data, freqs, faverage=False, **kwargs)
+    con_avg = spectral_connectivity_time(data, freqs, faverage=True, **kwargs)
+
+    con_freqs = np.array(con_all.freqs)
+    for band, (f_lower, f_upper) in enumerate(zip(fmin, fmax)):
+        in_band = (con_freqs >= f_lower) & (con_freqs < f_upper)
+        expected = con_all.get_data()[..., in_band].mean(axis=-1)
+        assert_allclose(con_avg.get_data()[..., band], expected)
+
+
 @pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
 def test_spectral_connectivity_time_resolved(method, mode):
