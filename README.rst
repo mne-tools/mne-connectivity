@@ -91,10 +91,10 @@ The minimum required dependencies to run MNE-Connectivity are:
 - `Python <https://www.python.org>`__ ≥ 3.11
 - `MNE <https://mne.tools/>`__ ≥ 1.8
 - `netcdf4 <https://unidata.github.io/netcdf4-python/>`__ ≥ 1.6.5
-- `NumPy <https://numpy.org>`__ ≥ 1.21
-- `pandas <https://pandas.pydata.org>`__ ≥ 1.3.2
-- `scikit-learn <https://scikit-learn.org>`__ ≥ 1.2
-- `SciPy <https://scipy.org/>`__ ≥ 1.4.0
+- `NumPy <https://numpy.org>`__ ≥ 2.1
+- `pandas <https://pandas.pydata.org>`__ ≥ 2.2
+- `scikit-learn <https://scikit-learn.org>`__ ≥ 1.5
+- `SciPy <https://scipy.org/>`__ ≥ 1.14
 - `tqdm <https://tqdm.github.io>`__
 - `xarray <https://xarray.dev/>`__ ≥ 2023.11.0
 
