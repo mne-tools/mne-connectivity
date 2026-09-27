@@ -1592,7 +1592,7 @@ def test_spectral_connectivity_time_faverage():
 
     con_freqs = np.array(con_all.freqs)
     for band, (f_lower, f_upper) in enumerate(zip(fmin, fmax)):
-        in_band = (con_freqs >= f_lower) & (con_freqs < f_upper)
+        in_band = (con_freqs >= f_lower) & (con_freqs <= f_upper)
         expected = con_all.get_data()[..., in_band].mean(axis=-1)
         assert_allclose(con_avg.get_data()[..., band], expected)
 
