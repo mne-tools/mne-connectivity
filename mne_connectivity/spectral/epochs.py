@@ -235,9 +235,9 @@ def _prepare_connectivity(
     for i, n_f_band in enumerate([len(f) for f in freqs_bands]):
         if n_f_band == 0:
             raise ValueError(
-                f"There are no frequency points between {fmin[i]:.1f}Hz and "
-                f"{fmax[i]:.1f}Hz. Change the band specification (fmin, fmax) or the "
-                "frequency resolution."
+                f"There are no frequency bins between {fmin[i]} Hz and {fmax[i]} Hz. "
+                "Change the band specification (fmin, fmax) or increase frequency "
+                "resolution."
             )
     if n_bands == 1:
         logger.info(

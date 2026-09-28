@@ -664,9 +664,9 @@ def spectral_connectivity_time(
     for i, freq_idx in enumerate(freq_idx_bands):
         if len(freq_idx) == 0:
             raise ValueError(
-                f"There are no frequency points between {fmin[i]:.1f}Hz and "
-                f"{fmax[i]:.1f}Hz. Change the band specification (fmin, fmax) or the "
-                "frequency resolution."
+                f"There are no frequency bins between {fmin[i]} Hz and {fmax[i]} Hz. "
+                "Change the band specification (fmin, fmax) or increase frequency "
+                "resolution."
             )
     f_vec = np.array([freqs[freq_idx].mean() for freq_idx in freq_idx_bands])
 
