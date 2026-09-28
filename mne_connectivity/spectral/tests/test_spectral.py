@@ -1596,6 +1596,14 @@ def test_spectral_connectivity_time_faverage():
         expected = con_all.get_data()[..., in_band].mean(axis=-1)
         assert_allclose(con_avg.get_data()[..., band], expected)
 
+    with pytest.raises(
+        ValueError,
+        match="There are no frequency bins between 20.25 Hz and 20.75 Hz.",
+    ):
+        spectral_connectivity_time(
+            data, freqs, faverage=True, method="coh", sfreq=250, fmin=20.25, fmax=20.75
+        )
+
 
 @pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])
 @pytest.mark.parametrize("mode", ["cwt_morlet", "multitaper"])
