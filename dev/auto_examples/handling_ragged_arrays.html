@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -608,7 +608,7 @@ which allows a square matrix to be returned. To ensure the mapping from the orig
 multivariate indices to the new dense matrix space is traceable, a tuple of
 multivariate nodes in the original indices are returned. This contains the (unmasked
 form) of each node, in the position where it exists in the dense matrix space.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">dense_data</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">multivariate_nodes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">dense</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">dense_data</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">multivariate_nodes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">dense</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">np</span><span class="o">.</span><span class="n">nan</span></a><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Dense connectivity shape: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">dense_data</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2"> (nodes x nodes x freqs)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># This mapping is done by taking the set of channels that define each node and assigning</span><span class="w">
@@ -688,7 +688,7 @@ trivial, as shown below:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assertions completed successfully!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.027 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.032 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-handling-ragged-arrays-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/627c6a640d649eb934528032e8142ffb/handling_ragged_arrays.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">handling_ragged_arrays.ipynb</span></code></a></p>

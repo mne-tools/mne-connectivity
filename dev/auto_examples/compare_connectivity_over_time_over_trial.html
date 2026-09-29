@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -503,8 +503,8 @@ followed by examples on simulated data and real EEG data.</p>
 </span><span class="c1"># License: BSD (3-clause)</span><span class="w">
 </span><span class="c1">#</span><span class="w">
 </span><span class="c1"># sphinx_gallery_thumbnail_number = 12</span><span class="w">
-</span><span class="w">
-</span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample</span><span class="w">
 </span><span class="w">
@@ -599,7 +599,7 @@ No baseline correction applied
 0 projection items activated
 Using qt as 2D backend.
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x73fbc1cf0e10&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7b89b3ef4eb0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -629,7 +629,7 @@ Using qt as 2D backend.
 </span>    <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1213: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1189: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
  '1': 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -639,7 +639,7 @@ Connectivity computation...
      band 2: 8.0Hz..13.0Hz (21 points)
      band 3: 13.0Hz..30.0Hz (69 points)
     connectivity scores will be averaged for each band
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 3 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
@@ -648,7 +648,6 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 3
     computing cross-spectral density for epoch 4
     computing cross-spectral density for epoch 5
-    assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -665,7 +664,7 @@ single timepoint resolution.</p>
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">Freq_Bands</span></a><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">alpha</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># frequency of interest</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># average over timepoints</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
@@ -695,10 +694,10 @@ between the three electrodes over trials are exactly 1.</p>
 </span>    <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># average over epochs</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:439: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:445: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
  '1': 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
 Connectivity computation...
    Processing epoch 1 / 5 ...
    Processing epoch 2 / 5 ...
@@ -712,7 +711,8 @@ Connectivity computation...
 for each epoch, but to visualise the results we want to average over epochs, which we
 do in the function by setting <code class="docutils literal notranslate"><span class="pre">average=True</span></code>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">con_time</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.n_nodes" title="mne_connectivity.SpectralConnectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.names" title="mne_connectivity.SpectralConnectivity.names"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.indices" title="mne_connectivity.SpectralConnectivity.indices"><span class="n">con</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.method" title="mne_connectivity.SpectralConnectivity.method"><span class="n">con</span><span class="o">.</span><span class="n">method</span></a><span class="w">
 </span>    <span class="p">)</span><span class="w">
@@ -755,7 +755,7 @@ over trials.</p>
 No baseline correction applied
 0 projection items activated
 
-&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x73fbc1b08a50&gt;
+&lt;mne_qt_browser._pg_figure.MNEQtBrowser object at 0x7b89b3d4caf0&gt;
 </pre></div>
 </div>
 <p>First we compute connectivity over trials.</p>
@@ -771,7 +771,7 @@ No baseline correction applied
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># average over timepoints</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
@@ -785,7 +785,7 @@ No baseline correction applied
 <li><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_007.png" alt="EEG ~ EEG | coh" class = "sphx-glr-multi-img"/></li>
 <li><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_008.png" alt="EEG ~ EEG | plv" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1213: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1189: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
  '1': 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -795,7 +795,7 @@ Connectivity computation...
      band 2: 8.0Hz..13.0Hz (21 points)
      band 3: 13.0Hz..30.0Hz (69 points)
     connectivity scores will be averaged for each band
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 3 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: Coherence, PLV
@@ -804,7 +804,6 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 3
     computing cross-spectral density for epoch 4
     computing cross-spectral density for epoch 5
-    assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -823,7 +822,8 @@ between two channels are not the same over trials.</p>
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">con_time</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.n_nodes" title="mne_connectivity.SpectralConnectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.names" title="mne_connectivity.SpectralConnectivity.names"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.indices" title="mne_connectivity.SpectralConnectivity.indices"><span class="n">con</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.method" title="mne_connectivity.SpectralConnectivity.method"><span class="n">con</span><span class="o">.</span><span class="n">method</span></a><span class="w">
 </span>    <span class="p">)</span><span class="w">
@@ -835,10 +835,10 @@ between two channels are not the same over trials.</p>
 <li><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_009.png" alt="EEG ~ EEG | coh" class = "sphx-glr-multi-img"/></li>
 <li><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_010.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_010.png" alt="EEG ~ EEG | plv" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:439: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/time.py:445: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 5 events (all good), 0 – 2.99 s (baseline off), ~42 KiB, data loaded,
  '1': 5&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
 Connectivity computation...
    Processing epoch 1 / 5 ...
    Processing epoch 2 / 5 ...
@@ -1036,9 +1036,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e"
+<tr class="mne-repr-section-header general-c2120690-b5f7-459f-8e9c-624338fae991"
      title="Hide section"
-    onclick="toggleVisibility('general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e')">
+    onclick="toggleVisibility('general-c2120690-b5f7-459f-8e9c-624338fae991')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1050,26 +1050,26 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e ">
+<tr class="repr-element general-c2120690-b5f7-459f-8e9c-624338fae991 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e ">
+<tr class="repr-element general-c2120690-b5f7-459f-8e9c-624338fae991 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e ">
+<tr class="repr-element general-c2120690-b5f7-459f-8e9c-624338fae991 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-30ffdfea-7ba2-4885-bafe-69f8dd3ece8e ">
+<tr class="repr-element general-c2120690-b5f7-459f-8e9c-624338fae991 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1084,9 +1084,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-9076af18-20f7-467b-8820-320d9db66cda"
+<tr class="mne-repr-section-header acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-9076af18-20f7-467b-8820-320d9db66cda')">
+    onclick="toggleVisibility('acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1101,14 +1101,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -1122,35 +1122,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-9076af18-20f7-467b-8820-320d9db66cda ">
+<tr class="repr-element acquisition-74b915c4-9ad8-4a10-9a46-a0ae38d3ee47 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1164,9 +1164,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-1d20bfd2-0e55-48fe-9e2b-ef7b7780c55d"
+<tr class="mne-repr-section-header channels-15bf19ab-6d7b-4b4d-aa6c-820d4edac1bb"
      title="Hide section"
-    onclick="toggleVisibility('channels-1d20bfd2-0e55-48fe-9e2b-ef7b7780c55d')">
+    onclick="toggleVisibility('channels-15bf19ab-6d7b-4b4d-aa6c-820d4edac1bb')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1179,7 +1179,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-1d20bfd2-0e55-48fe-9e2b-ef7b7780c55d ">
+<tr class="repr-element channels-15bf19ab-6d7b-4b4d-aa6c-820d4edac1bb ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1192,7 +1192,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-1d20bfd2-0e55-48fe-9e2b-ef7b7780c55d ">
+<tr class="repr-element channels-15bf19ab-6d7b-4b4d-aa6c-820d4edac1bb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1207,9 +1207,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-ad1d7222-2760-43c9-8c36-76210c505060"
+<tr class="mne-repr-section-header filters-7e2086af-b617-4273-93ee-df6cf23ba2e9"
      title="Hide section"
-    onclick="toggleVisibility('filters-ad1d7222-2760-43c9-8c36-76210c505060')">
+    onclick="toggleVisibility('filters-7e2086af-b617-4273-93ee-df6cf23ba2e9')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1221,21 +1221,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-ad1d7222-2760-43c9-8c36-76210c505060 ">
+<tr class="repr-element filters-7e2086af-b617-4273-93ee-df6cf23ba2e9 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-ad1d7222-2760-43c9-8c36-76210c505060 ">
+<tr class="repr-element filters-7e2086af-b617-4273-93ee-df6cf23ba2e9 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-ad1d7222-2760-43c9-8c36-76210c505060 ">
+<tr class="repr-element filters-7e2086af-b617-4273-93ee-df6cf23ba2e9 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1290,7 +1290,7 @@ Connectivity computation...
     using t=0.000s..1.598s for estimation (241 points)
     frequencies: 4.0Hz..8.0Hz (17 points)
     connectivity scores will be averaged for each band
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 1711 connections
     using CWT with Morlet wavelets to estimate spectra
     the following metrics will be computed: WPLI
@@ -1367,7 +1367,6 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 71
     computing cross-spectral density for epoch 72
     computing cross-spectral density for epoch 73
-    assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1376,7 +1375,7 @@ epochs and are looking at theta activity. This might make the connectivity
 measurements more sensitive to noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Convert to TemporalConnectivity object for plotting over time</span><span class="w">
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">TemporalConnectivity</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="p">]</span><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.times" title="mne_connectivity.TemporalConnectivity.times"><span class="n">con_epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.n_nodes" title="mne_connectivity.TemporalConnectivity.n_nodes"><span class="n">con_epochs</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.names" title="mne_connectivity.TemporalConnectivity.names"><span class="n">con_epochs</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span><span class="w">
@@ -1384,16 +1383,25 @@ measurements more sensitive to noise.</p>
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.method" title="mne_connectivity.TemporalConnectivity.method"><span class="n">con_epochs</span><span class="o">.</span><span class="n">method</span></a><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="c1"># Plot global connectivity by averaging results</span><span class="w">
-</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_temporal_connectivity.html#mne_connectivity.viz.plot_temporal_connectivity" title="mne_connectivity.plot_temporal_connectivity"><span class="n">plot_temporal_connectivity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">info</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">mean</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">sd</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span><span class="w">
 </span><span class="c1"># Get the timepoint with highest global connectivity right after stimulus</span><span class="w">
-</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">t_con_max</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argmax.html#numpy.argmax" title="numpy.argmax"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.times" title="mne_connectivity.TemporalConnectivity.times"><span class="n">con_epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span> <span class="o">&lt;</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">max_con_idx</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argmax.html#numpy.argmax" title="numpy.argmax"><span class="n">np</span><span class="o">.</span><span class="n">argmax</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.times" title="mne_connectivity.TemporalConnectivity.times"><span class="n">con_epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span> <span class="o">&lt;</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">]</span><span class="w">
 </span><span class="p">)</span><span class="w">
-</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Global theta wPLI peaks </span><span class="si">{</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.times" title="mne_connectivity.TemporalConnectivity.times"><span class="n">con_epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">t_con_max</span></a><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s after stimulus</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">max_con_time</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.times" title="mne_connectivity.TemporalConnectivity.times"><span class="n">con_epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">max_con_idx</span></a><span class="p">]</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Global theta wPLI peaks </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">max_con_time</span></a><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s after stimulus</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot global connectivity by averaging results</span><span class="w">
+</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_temporal_connectivity.html#mne_connectivity.viz.plot_temporal_connectivity" title="mne_connectivity.plot_temporal_connectivity"><span class="n">plot_temporal_connectivity</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">info</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">highlight</span><span class="o">=</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">max_con_time</span></a> <span class="o">-</span> <span class="mf">0.03</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">max_con_time</span></a> <span class="o">+</span> <span class="mf">0.03</span><span class="p">)</span><span class="p">,</span>  <span class="c1"># highlight around peak</span><span class="w">
+</span>    <span class="n">combine</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">mean</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">ci</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_011.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_011.png" alt="EEG ~ EEG | wpli" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Global theta wPLI peaks 0.080s after stimulus
+
+&lt;Figure size 1500x500 with 1 Axes&gt;
 </pre></div>
 </div>
 <p>We see that around the timing of the P1 evoked response, there is high theta
@@ -1403,7 +1411,7 @@ timepoint with most global theta connectivity after stimulus presentation
 and plot the sensor connectivity of the 20 highest connections</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Plot the connectivity matrix at the timepoint with highest global wPLI</span><span class="w">
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">max_con</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">t_con_max</span></a><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><span class="n">con_epochs</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int64" title="numpy.int64"><span class="n">max_con_idx</span></a><span class="p">]</span><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.n_nodes" title="mne_connectivity.TemporalConnectivity.n_nodes"><span class="n">con_epochs</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.names" title="mne_connectivity.TemporalConnectivity.names"><span class="n">con_epochs</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity.indices" title="mne_connectivity.TemporalConnectivity.indices"><span class="n">con_epochs</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span><span class="w">
@@ -1416,7 +1424,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </span></pre></div></div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_012.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_012.png" alt="EEG ~ EEG | wpli" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_013.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_013.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x73fbb22b2660&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7b89b055a510&gt;
 </pre></div>
 </div>
 </section>
@@ -1447,7 +1455,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.540 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.662 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>

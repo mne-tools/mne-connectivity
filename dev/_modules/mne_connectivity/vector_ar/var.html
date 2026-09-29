@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.vector_ar.var &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../../../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -467,7 +467,7 @@
     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute vector auto-regresssive (VAR) model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute vector auto-regressive (VAR) model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -648,6 +648,7 @@
                 <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
                 <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">"VAR(p)"</span><span class="p">,</span>
@@ -661,6 +662,7 @@
                 <span class="n">data</span><span class="o">=</span><span class="n">coef</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># take first and only lag</span>
                 <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">"VAR(1)"</span><span class="p">,</span>
@@ -696,6 +698,7 @@
                 <span class="n">times</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)),</span>
                 <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">"Time-varying VAR(p)"</span><span class="p">,</span>
@@ -709,6 +712,7 @@
                 <span class="n">data</span><span class="o">=</span><span class="n">A_mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># take first and only lag</span>
                 <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
                 <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
                 <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
                 <span class="n">times_used</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="s2">"Time-varying VAR(1)"</span><span class="p">,</span>

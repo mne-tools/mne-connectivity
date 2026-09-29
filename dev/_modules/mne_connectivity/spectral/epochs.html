@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../../../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -474,7 +474,13 @@
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralConnectivity</span><span class="p">,</span> <span class="n">SpectroTemporalConnectivity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_multivariate_indices</span><span class="p">,</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_CAN_FILL_MISSING</span><span class="p">,</span>
+    <span class="n">_check_multivariate_indices</span><span class="p">,</span>
+    <span class="n">_make_square</span><span class="p">,</span>
+    <span class="n">check_indices</span><span class="p">,</span>
+    <span class="n">fill_doc</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.epochs_bivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CON_METHOD_MAP_BIVARIATE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.epochs_multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_CON_METHOD_MAP_MULTIVARIATE</span><span class="p">,</span>
@@ -691,28 +697,21 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"    connectivity scores will be averaged for each band"</span><span class="p">)</span>
 
     <span class="c1"># Sort indices</span>
-    <span class="n">multivariate_con</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">"indices must be specified when computing Granger causality, as "</span>
-                    <span class="s2">"all-to-all connectivity is not supported"</span>
-                <span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"using all indices for multivariate connectivity"</span><span class="p">)</span>
-            <span class="c1"># indices expected to be a masked array, even if not ragged</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">picks</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="c1"># Can only be bivariate connectivity</span>
+        <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Computing all connections for full connectivity matrix"</span><span class="p">)</span>
+            <span class="c1"># Only compute tril, then transform to full matrix later</span>
+            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_good_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"only using indices for lower-triangular matrix"</span><span class="p">)</span>
-            <span class="c1"># only compute r for lower-triangular region</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_good_signals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">indices_use</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Computing connections for </span><span class="si">{</span><span class="n">indices</span><span class="si">}</span><span class="s2">-triangular matrix"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"upper"</span><span class="p">:</span>
+                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">n_good_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># "lower"</span>
+                <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_good_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">indices_use</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">picks</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices_use</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_multivariate_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
             <span class="c1"># pad ragged indices and mask the invalid entries</span>
             <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">this_method</span> <span class="ow">in</span> <span class="n">_gc_methods</span> <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">method</span><span class="p">):</span>
@@ -1210,7 +1209,7 @@
     <span class="n">data</span><span class="p">,</span>
     <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">"coh"</span><span class="p">,</span>
-    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">"multitaper"</span><span class="p">,</span>
@@ -1290,14 +1289,7 @@
 
 <span class="sd">        Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``) cannot be</span>
 <span class="sd">        called with the other methods.</span>
-<span class="sd">    indices : tuple of array_like | None</span>
-<span class="sd">        Two array-likes with indices of connections for which to compute connectivity.</span>
-<span class="sd">        If a bivariate method is called, each array for the seeds and targets should</span>
-<span class="sd">        contain the channel indices for each bivariate connection. If a multivariate</span>
-<span class="sd">        method is called, each array for the seeds and targets should consist of nested</span>
-<span class="sd">        arrays containing the channel indices for each multivariate connection. If</span>
-<span class="sd">        ``None``, connections between all channels are computed, unless a Granger</span>
-<span class="sd">        causality method is called, in which case an error is raised.</span>
+<span class="sd">    %(indices_with_str_with_multivar)s</span>
 <span class="sd">    sfreq : float | None</span>
 <span class="sd">        The sampling frequency. Required if ``data`` is an array-like.</span>
 <span class="sd">    mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``</span>
@@ -1395,10 +1387,10 @@
 <span class="sd">        - ``(n_cons, n_freqs, n_times)`` for ``'cwt_morlet'`` mode</span>
 <span class="sd">        - ``(n_cons, n_comps, n_freqs[, n_times])`` for valid multivariate methods if</span>
 <span class="sd">          ``n_components &gt; 1``</span>
-<span class="sd">        - ``n_cons = n_signals ** 2`` for bivariate methods with ``indices=None``</span>
-<span class="sd">        - ``n_cons = 1`` for multivariate methods with ``indices=None``</span>
-<span class="sd">        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods when</span>
-<span class="sd">          ``indices`` is supplied</span>
+<span class="sd">        - ``n_cons = n_signals ** 2`` for methods with ``indices='all'``</span>
+<span class="sd">        - ``n_cons = n_signals * (n_signals - 1) / 2`` for methods with</span>
+<span class="sd">          ``indices='lower'`` or ``indices='upper'``</span>
+<span class="sd">        - ``n_cons = len(indices[0])`` when ``indices`` is a tuple of array-likes</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1428,35 +1420,9 @@
 <span class="sd">    multitaper, or Morlet coefficients can also be passed in as data in the form of</span>
 <span class="sd">    :class:`mne.time_frequency.EpochsSpectrum` or :class:`mne.time_frequency.EpochsTFR`</span>
 <span class="sd">    objects.</span>
-
-<span class="sd">    By default, the connectivity between all signals is computed (only connections</span>
-<span class="sd">    corresponding to the lower-triangular part of the connectivity matrix). If one is</span>
-<span class="sd">    only interested in the connectivity between some signals, the ``indices`` parameter</span>
-<span class="sd">    can be used. For example, to compute the connectivity between the signal with index</span>
-<span class="sd">    0 and signals "2, 3, 4" (a total of 3 connections) one can use the following::</span>
-
-<span class="sd">        indices = (np.array([0, 0, 0]),    # row indices</span>
-<span class="sd">                   np.array([2, 3, 4]))    # col indices</span>
-
-<span class="sd">        con = spectral_connectivity_epochs(data, method='coh',</span>
-<span class="sd">                                           indices=indices, ...)</span>
-
-<span class="sd">    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity scores are in</span>
-<span class="sd">    the same order as defined indices.</span>
-
-<span class="sd">    For multivariate methods, this is handled differently. If ``indices`` is ``None``,</span>
-<span class="sd">    connectivity between all signals will be computed and a single connectivity spectrum</span>
-<span class="sd">    will be returned (this is not possible if a Granger causality method is called). If</span>
-<span class="sd">    ``indices`` is specified, seed and target indices for each connection should be</span>
-<span class="sd">    specified as nested array-likes. For example, to compute the connectivity between</span>
-<span class="sd">    signals (0, 1) -&gt; (2, 3) and (0, 1) -&gt; (4, 5), indices should be specified as::</span>
-
-<span class="sd">        indices = (np.array([[0, 1], [0, 1]]),  # seeds</span>
-<span class="sd">                   np.array([[2, 3], [4, 5]]))  # targets</span>
-
-<span class="sd">    More information on working with multivariate indices and handling connections where</span>
-<span class="sd">    the number of seeds and targets are not equal can be found in the</span>
-<span class="sd">    :doc:`../auto_examples/handling_ragged_arrays` example.</span>
+<span class="sd">    %(tri_indices_efficiency_note)s</span>
+<span class="sd">    %(tuple_bivar_indices_note)s</span>
+<span class="sd">    %(tuple_multivar_indices_note)s</span>
 
 <span class="sd">    **Supported Connectivity Measures**</span>
 
@@ -1614,6 +1580,16 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">multivariate_con</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="c1"># Check indices</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">"`indices`"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">_check_option</span><span class="p">(</span><span class="s2">"indices"</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">(</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">),</span> <span class="s2">"as a string"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">multivariate_con</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"`indices` must be a tuple of array-likes for multivariate connectivity "</span>
+            <span class="sa">f</span><span class="s2">"methods, got </span><span class="si">{</span><span class="n">indices</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+
     <span class="c1"># handle connectivity estimators</span>
     <span class="p">(</span><span class="n">con_method_types</span><span class="p">,</span> <span class="n">n_methods</span><span class="p">,</span> <span class="n">accumulate_psd</span><span class="p">)</span> <span class="o">=</span> <span class="n">_check_estimators</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 
@@ -1628,7 +1604,7 @@
     <span class="n">is_tfr_con</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BaseEpochs</span> <span class="o">|</span> <span class="n">EpochsSpectrum</span> <span class="o">|</span> <span class="n">EpochsTFR</span><span class="p">):</span>
         <span class="c1"># Find good channels</span>
-        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">"bads"</span><span class="p">)</span>
 
         <span class="n">names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ch_names</span>
@@ -1761,7 +1737,7 @@
                 <span class="n">gc_n_lags</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="c1"># make sure padded indices are stored in the connectivity object</span>
-            <span class="k">if</span> <span class="n">multivariate_con</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">multivariate_con</span><span class="p">:</span>
                 <span class="c1"># create a copy so that `indices_use` can be modified</span>
                 <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">indices_use</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
 
@@ -1990,36 +1966,43 @@
         <span class="n">freqs_used</span> <span class="o">=</span> <span class="n">freqs_bands</span>
         <span class="n">freqs_used</span> <span class="o">=</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">band</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">band</span><span class="p">)]</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">freqs_used</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">multivariate_con</span><span class="p">:</span>
-            <span class="c1"># return all-to-all connectivity matrices raveled into a 1D array</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"    assembling connectivity matrix"</span><span class="p">)</span>
-            <span class="n">con_flat</span> <span class="o">=</span> <span class="n">con</span>
-            <span class="n">con</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">this_con_flat</span> <span class="ow">in</span> <span class="n">con_flat</span><span class="p">:</span>
-                <span class="n">this_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span> <span class="o">+</span> <span class="n">this_con_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">this_con_flat</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">this_con</span><span class="p">[</span><span class="n">indices_use</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_con_flat</span>
+    <span class="c1"># Make full connectivity matrix from lower-triangular part</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">method_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_methods</span><span class="p">):</span>
+            <span class="n">this_con</span> <span class="o">=</span> <span class="n">_make_square</span><span class="p">(</span><span class="n">con</span><span class="p">[</span><span class="n">method_idx</span><span class="p">],</span> <span class="s2">"lower"</span><span class="p">,</span> <span class="n">n_good_signals</span><span class="p">)</span>
+            <span class="n">this_con</span> <span class="o">=</span> <span class="n">_CAN_FILL_MISSING</span><span class="p">[</span><span class="n">method</span><span class="p">[</span><span class="n">method_idx</span><span class="p">]](</span><span class="n">this_con</span><span class="p">,</span> <span class="s2">"lower"</span><span class="p">)</span>
+            <span class="n">con</span><span class="p">[</span><span class="n">method_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_con</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">this_con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
 
-                <span class="c1"># ravel 2D connectivity into a 1D array</span>
-                <span class="c1"># while keeping other dimensions</span>
-                <span class="n">this_con</span> <span class="o">=</span> <span class="n">this_con</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_signals</span><span class="o">**</span><span class="mi">2</span><span class="p">,)</span> <span class="o">+</span> <span class="n">this_con_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-                <span class="n">con</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_con</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">n_signals</span> <span class="o">!=</span> <span class="n">n_good_signals</span><span class="p">:</span>
-            <span class="c1"># add missing bads to the multivariate patterns</span>
-            <span class="n">patterns_full</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">this_patterns</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">this_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">this_patterns_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_cons</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span> <span class="o">+</span> <span class="n">this_patterns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
-                    <span class="p">)</span>
-                    <span class="n">this_patterns_full</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">sig_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_patterns</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">this_patterns_full</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">patterns_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_patterns_full</span><span class="p">)</span>
-            <span class="n">patterns</span> <span class="o">=</span> <span class="n">patterns_full</span>
+    <span class="c1"># Fill entries for bad channels</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n_signals</span> <span class="o">!=</span> <span class="n">n_good_signals</span><span class="p">:</span>
+        <span class="c1"># Bad channels were excluded, need to create full (n_nodes x n_nodes) matrix and</span>
+        <span class="c1"># fill only the good channel entries</span>
+        <span class="n">con_flat</span> <span class="o">=</span> <span class="n">con</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">this_con_flat</span> <span class="ow">in</span> <span class="n">con_flat</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
+                <span class="n">out_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_signals</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"lower"</span><span class="p">:</span>
+                <span class="n">out_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># "upper"</span>
+                <span class="n">out_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">out_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">(</span><span class="n">out_indices</span><span class="p">,</span> <span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">))</span>
+            <span class="n">good_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel_multi_index</span><span class="p">(</span><span class="n">indices_use</span><span class="p">,</span> <span class="p">(</span><span class="n">n_signals</span><span class="p">,</span> <span class="n">n_signals</span><span class="p">))</span>
+            <span class="n">insert_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">out_indices</span><span class="p">,</span> <span class="n">good_indices</span><span class="p">)</span>
+
+            <span class="n">fill</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">this_con_flat</span><span class="p">):</span>
+                <span class="n">fill</span> <span class="o">=</span> <span class="n">fill</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">fill</span>
+            <span class="n">this_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">out_indices</span><span class="p">),)</span> <span class="o">+</span> <span class="n">this_con_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                <span class="n">fill</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">this_con_flat</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">this_con</span><span class="p">[</span><span class="n">insert_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_con_flat</span>
+            <span class="n">con</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_con</span><span class="p">)</span>
 
     <span class="c1"># number of nodes in the original data</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">n_signals</span>

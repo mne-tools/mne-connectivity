@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing PLI, wPLI, and dPLI &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>Comparing PLI, wPLI, and dPLI &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -504,8 +504,8 @@ the phase lag index (PLI) <a class="footnote-reference brackets" href="#footcite
 </span><span class="c1">#          Stefanie Blain-Moraes &lt;stefanie.blain-moraes&#64;mcgill.ca&gt;</span><span class="w">
 </span><span class="c1">#</span><span class="w">
 </span><span class="c1"># License: BSD (3-clause)</span><span class="w">
-</span><span class="w">
-</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample</span><span class="w">
@@ -2318,7 +2318,6 @@ sample MEG data recorded during visual stimulation.</p>
 </span><a class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw"><span class="n">raw</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath"><span class="n">raw_fname</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">events</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.read_events.html#mne.read_events" title="mne.read_events"><span class="n">mne</span><span class="o">.</span><span class="n">read_events</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath"><span class="n">event_fname</span></a><span class="p">)</span><span class="w">
 </span><span class="w">
-</span><span class="w">
 </span><span class="c1"># Select gradiometers</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">picks</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="mne.pick_types"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">grad</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bads</span><span class="s2">&quot;</span><span class="w">
@@ -2357,10 +2356,10 @@ sample MEG data recorded during visual stimulation.</p>
 </span>        <span class="n">mt_adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
 </span>        <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_data</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># average across frequencies</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_data</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># average across frequencies</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cons</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">method</span></a><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_data</span></a><span class="p">,</span><span class="w">
-</span>        <span class="n">n_nodes</span><span class="o">=</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.n_nodes" title="mne_connectivity.Connectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_nodes</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.n_nodes" title="mne_connectivity.Connectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span><span class="w">
 </span>        <span class="n">names</span><span class="o">=</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.names" title="mne_connectivity.Connectivity.names"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">indices</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.indices" title="mne_connectivity.Connectivity.indices"><span class="n">con</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">method</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">method</span></a><span class="p">,</span><span class="w">
@@ -2410,7 +2409,7 @@ Adding metadata with 3 columns
 Connectivity computation...
     using t=0.000s..1.498s for estimation (226 points)
     frequencies: 4.7Hz..8.6Hz (7 points)
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 20503 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: PLI
@@ -2463,13 +2462,12 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 47
     computing cross-spectral density for epoch 48
     computing cross-spectral density for epoch 49
-    assembling connectivity matrix
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
     using t=0.000s..1.498s for estimation (226 points)
     frequencies: 4.7Hz..8.6Hz (7 points)
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 20503 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: WPLI
@@ -2522,13 +2520,12 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 47
     computing cross-spectral density for epoch 48
     computing cross-spectral density for epoch 49
-    assembling connectivity matrix
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
     using t=0.000s..1.498s for estimation (226 points)
     frequencies: 4.7Hz..8.6Hz (7 points)
-only using indices for lower-triangular matrix
+Computing connections for lower-triangular matrix
     computing connectivity for 20503 connections
     Using multitaper spectrum estimation with 7 DPSS windows
     the following metrics will be computed: DPLI
@@ -2581,29 +2578,41 @@ only using indices for lower-triangular matrix
     computing cross-spectral density for epoch 47
     computing cross-spectral density for epoch 48
     computing cross-spectral density for epoch 49
-    assembling connectivity matrix
 [Connectivity computation done]
 </pre></div>
 </div>
 <p>In this example, there is strong connectivity between sensors 190-200 and
-sensors 110-160.</p>
+sensors 110-165.</p>
 <p>Moreover, after observing the presence of connectivity, dPLI can be used to
 ascertain the direction of the phase relationship. Here, it appears that the
 dPLI connectivity in this area is less than <span class="math notranslate nohighlight">\(0.5\)</span>, and thus sensors
-190-200 are lagging sensors 110-160.</p>
+190-200 are lagging sensors 110-165.</p>
 <p>In keeping with the previous simulation, we can see that wPLI identifies
 stronger connectivity relationships than PLI. This is due to its robustness
 against volume conduction effects decreasing the detected connectivity
 strength, as was mentioned earlier.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># sphinx_gallery_multi_image_block = &quot;single&quot;</span><span class="w">
-</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_nodes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cons</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">pli</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">n_nodes</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_nodes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_nodes</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a><span class="p">[</span><span class="mi">185</span><span class="p">:</span><span class="mi">202</span><span class="p">,</span> <span class="mi">105</span><span class="p">:</span><span class="mi">170</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a> <span class="o">+</span><span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span><span class="o">.</span><span class="n">T</span></a><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cons</span></a><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.plot_connectivity"><span class="n">plot_connectivity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con</span></a><span class="p">,</span> <span class="n">info</span><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.plot_connectivity"><span class="n">plot_connectivity</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">info</span><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span>        <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Reds</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.method" title="mne_connectivity.Connectivity.method"><span class="n">con</span><span class="o">.</span><span class="n">method</span></a> <span class="o">!=</span> <span class="s2">&quot;</span><span class="s2">dpli</span><span class="s2">&quot;</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">RdBu_r</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">mask</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_mask</span></a><span class="p">,</span>  <span class="c1"># highlight the connections of interest</span><span class="w">
+</span>        <span class="n">mask_style</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">contour</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
 </span></pre></div></div>
 <ul class="sphx-glr-horizontal">
-<li><img src="../_images/sphx_glr_dpli_wpli_pli_005.png" srcset="../_images/sphx_glr_dpli_wpli_pli_005.png" alt="Gradiometers ~ Gradiometers | pli" class = "sphx-glr-single-img"/></li>
-<li><img src="../_images/sphx_glr_dpli_wpli_pli_006.png" srcset="../_images/sphx_glr_dpli_wpli_pli_006.png" alt="Gradiometers ~ Gradiometers | wpli" class = "sphx-glr-single-img"/></li>
-<li><img src="../_images/sphx_glr_dpli_wpli_pli_007.png" srcset="../_images/sphx_glr_dpli_wpli_pli_007.png" alt="Gradiometers ~ Gradiometers | dpli" class = "sphx-glr-single-img"/></li>
+<li><img src="../_images/sphx_glr_dpli_wpli_pli_005.png" srcset="../_images/sphx_glr_dpli_wpli_pli_005.png" alt="Gradiometers ~ Gradiometers | pli" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_dpli_wpli_pli_006.png" srcset="../_images/sphx_glr_dpli_wpli_pli_006.png" alt="Gradiometers ~ Gradiometers | wpli" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_dpli_wpli_pli_007.png" srcset="../_images/sphx_glr_dpli_wpli_pli_007.png" alt="Gradiometers ~ Gradiometers | dpli" class = "sphx-glr-multi-img"/></li>
 </ul>
 </section>
 <section id="conclusions">
@@ -2641,7 +2650,7 @@ estimate of phase-based connectivity.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.508 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.032 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-dpli-wpli-pli-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c0e8d2c9253a079b7687e8664830e542/dpli_wpli_pli.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">dpli_wpli_pli.ipynb</span></code></a></p>

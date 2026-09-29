@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Version 0.10.0.dev24+g1290da09e (development) (2026-09-29) &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>Version 0.10.0.dev25+g09fb52a65 (development) (2026-09-29) &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -397,7 +397,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Version 0.10.0.dev24+g1290da09e (development) (2026-09-29)</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Version 0.10.0.dev25+g09fb52a65 (development) (2026-09-29)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.9.html">Version 0.9.0 (2026-08-24)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.8.html">Version 0.8.1 (2026-04-11)</a></li>
 
@@ -451,7 +451,7 @@
     
     <li class="breadcrumb-item"><a href="../whats_new.html" class="nav-link">What’s new</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.10.0.dev24+g1290da09e (development) (2026-09-29)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.10.0.dev25+g09fb52a65 (development) (2026-09-29)</span></li>
   </ul>
 </nav>
 </div>
@@ -469,7 +469,7 @@
                 <article class="bd-article">
                   
   <section id="version-release-development-2026-09-29">
-<span id="current"></span><h1>Version 0.10.0.dev24+g1290da09e (development) (2026-09-29)<a class="headerlink" href="#version-release-development-2026-09-29" title="Link to this heading">#</a></h1>
+<span id="current"></span><h1>Version 0.10.0.dev25+g09fb52a65 (development) (2026-09-29)<a class="headerlink" href="#version-release-development-2026-09-29" title="Link to this heading">#</a></h1>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
 <ul>
@@ -502,6 +502,11 @@
 <section id="api-changes-by-deprecation">
 <h2>API changes by deprecation<a class="headerlink" href="#api-changes-by-deprecation" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>Return lower-triangular connectivity data by default from <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_time()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.envelope_correlation.html#mne_connectivity.envelope_correlation" title="mne_connectivity.envelope_correlation"><code class="xref py py-func docutils literal notranslate"><span class="pre">envelope_correlation()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.phase_slope_index.html#mne_connectivity.phase_slope_index" title="mne_connectivity.phase_slope_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">phase_slope_index()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.phase_slope_index_time.html#mne_connectivity.phase_slope_index_time" title="mne_connectivity.phase_slope_index_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">phase_slope_index_time()</span></code></a>, and <a class="reference internal" href="../generated/mne_connectivity.wsmi.html#mne_connectivity.wsmi" title="mne_connectivity.wsmi"><code class="xref py py-func docutils literal notranslate"><span class="pre">wsmi()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">indices=None</span></code> with <code class="docutils literal notranslate"><span class="pre">indices='all'</span></code> as an alias for all-to-all connectivity in connectivity containers and all connectivity-computing functions with an <code class="docutils literal notranslate"><span class="pre">indices</span></code> parameter, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> as an option for <code class="docutils literal notranslate"><span class="pre">indices</span></code> in connectivity containers, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Require <code class="docutils literal notranslate"><span class="pre">indices</span></code> to be specified as tuples of array-likes for all multivariate methods in <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> and <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time" title="mne_connectivity.spectral_connectivity_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_time()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Require <code class="docutils literal notranslate"><span class="pre">indices</span></code> to be specified as tuples of array-likes in connectivity container when <code class="docutils literal notranslate"><span class="pre">n_components</span></code> is provided, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
 <li><p>Remove deprecated <code class="docutils literal notranslate"><span class="pre">n_times</span></code> parameter from <a class="reference internal" href="../generated/mne_connectivity.make_signals_in_freq_bands.html#mne_connectivity.make_signals_in_freq_bands" title="mne_connectivity.make_signals_in_freq_bands"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_signals_in_freq_bands()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/469">#469</a>)</p></li>
 <li><p>Remove deprecated <code class="docutils literal notranslate"><span class="pre">make_surrogate_data</span></code> function, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/470">#470</a>)</p></li>
 </ul>
@@ -510,6 +515,9 @@
 <h2>New features<a class="headerlink" href="#new-features" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add <a class="reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.viz.plot_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_connectivity()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.viz.plot_spectral_connectivity.html#mne_connectivity.viz.plot_spectral_connectivity" title="mne_connectivity.viz.plot_spectral_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_spectral_connectivity()</span></code></a>, <a class="reference internal" href="../generated/mne_connectivity.viz.plot_temporal_connectivity.html#mne_connectivity.viz.plot_temporal_connectivity" title="mne_connectivity.viz.plot_temporal_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_temporal_connectivity()</span></code></a>, and <a class="reference internal" href="../generated/mne_connectivity.viz.plot_spectrotemporal_connectivity.html#mne_connectivity.viz.plot_spectrotemporal_connectivity" title="mne_connectivity.viz.plot_spectrotemporal_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_spectrotemporal_connectivity()</span></code></a> for visualising connectivity results, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/460">#460</a>)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">missing</span></code> parameter to control the filling of missing values in dense connectivity matrices in the <a class="reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> method of connectivity containers, for connectivity methods where these values cannot be determined from the lower-/upper-triangular elements, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">'lower'</span></code>, <code class="docutils literal notranslate"><span class="pre">'upper'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'all'</span></code> as options for <code class="docutils literal notranslate"><span class="pre">indices</span></code> in connectivity containers and all connectivity-computing functions with an <code class="docutils literal notranslate"><span class="pre">indices</span></code> parameter, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
+<li><p>Add automatic filling of missing values in dense connectivity matrices from existing lower-/upper-triangular elements in the <a class="reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> method of connectivity containers, for eligible connectivity methods, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
 <li><p>Plot multivariate components as separate figures in <a class="reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.viz.plot_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_connectivity()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/467">#467</a>)</p></li>
 <li><p>Speed up <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> for Morlet wavelet (<code class="docutils literal notranslate"><span class="pre">cwt_morlet</span></code>) spectra by conjugating each signal once rather than for every connection, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/487">#487</a>)</p></li>
 </ul>

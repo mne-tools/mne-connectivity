@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.Connectivity &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.Connectivity &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -528,11 +528,18 @@ equal to the number of signals in the original dataset.</p>
 (default), then names will be a list of integers from 0 to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>. If a list
 of names, then it must be equal in length to <code class="docutils literal notranslate"><span class="pre">n_nodes</span></code>.</p>
 </dd>
-<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <code class="docutils literal notranslate"><span class="pre">'all'</span></code> | <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The indices of relevant connectivity data. If <code class="docutils literal notranslate"><span class="pre">'all'</span></code> (default), then data is
-connectivity between all nodes. If <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code>, then data is symmetric
-connectivity between all nodes. If a tuple, then contains two array-likes where the
-first array represents the “in nodes” (seeds), and the second array represents the
-“out nodes” (targets).</p>
+<dt><strong>indices</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span>array_like</span></a> | <code class="docutils literal notranslate"><span class="pre">'lower'</span></code> | <code class="docutils literal notranslate"><span class="pre">'upper'</span></code> | <code class="docutils literal notranslate"><span class="pre">'all'</span></code></span></dt><dd><p>The indices of channels connectivity was computed between.
+If a tuple, then contains two array-likes, where the first array represents the
+channel indices of the seeds, and the second array represents the channel indices of
+the targets.
+For multivariate methods, the seed and target indices should consist of nested
+arrays containing the channel indices for each multivariate connection.
+If <code class="docutils literal notranslate"><span class="pre">'lower'</span></code>, connectivity represents the lower-triangular part of the
+connectivity matrix.
+If <code class="docutils literal notranslate"><span class="pre">'upper'</span></code>, connectivity represents the upper-triangular part of the
+connectivity matrix.
+If <code class="docutils literal notranslate"><span class="pre">'all'</span></code>, connectivity represents all connections.
+Indices for multivarate methods should only be specified as a tuple of arrays.</p>
 </dd>
 <dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The method name used to compute connectivity (default <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd>
@@ -583,7 +590,7 @@ these may include extra parameters that are stored as xarray <code class="docuti
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.Connectivity.combine" title="mne_connectivity.Connectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
 <td><p>Combine connectivity data over epochs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output, missing])</p></td>
 <td><p>Get connectivity data as a numpy array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.Connectivity.plot_circle" title="mne_connectivity.Connectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
@@ -700,7 +707,7 @@ input instance, without the epoch dimension.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mne_connectivity.Connectivity.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'compact'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.Connectivity.get_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'compact'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.Connectivity.get_data" title="Link to this definition">#</a></dt>
 <dd><p>Get connectivity data as a numpy array.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -708,12 +715,18 @@ input instance, without the epoch dimension.</p>
 <dt><strong>output</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'compact'</span></code> | <code class="docutils literal notranslate"><span class="pre">'raveled'</span></code> | <code class="docutils literal notranslate"><span class="pre">'dense'</span></code></span></dt><dd><p>How to format the output:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'raveled'</span></code> will represent each connectivity matrix as a
-<code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out,</span> <span class="pre">...)</span></code> array</p></li>
+<code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_nodes_in</span> <span class="pre">*</span> <span class="pre">n_nodes_out,</span> <span class="pre">...)</span></code> array.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'dense'</span></code> will return each connectivity matrix as a <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_nodes_in,</span>
-<span class="pre">n_nodes_out,</span> <span class="pre">...)</span></code> array</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'compact'</span></code> (default) will return <code class="docutils literal notranslate"><span class="pre">'raveled'</span></code> if <code class="docutils literal notranslate"><span class="pre">indices</span></code> were
-defined as a tuple of arrays, or <code class="docutils literal notranslate"><span class="pre">'dense'</span></code> if <code class="docutils literal notranslate"><span class="pre">indices='all'</span></code></p></li>
+<span class="pre">n_nodes_out,</span> <span class="pre">...)</span></code> array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'compact'</span></code> (default) will return <code class="docutils literal notranslate"><span class="pre">'raveled'</span></code> if <code class="docutils literal notranslate"><span class="pre">indices</span></code> is
+a tuple of arrays, or <code class="docutils literal notranslate"><span class="pre">'dense'</span></code> if <code class="docutils literal notranslate"><span class="pre">indices</span></code> is <code class="docutils literal notranslate"><span class="pre">'all'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'lower'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'upper'</span></code>.</p></li>
 </ul>
+</dd>
+<dt><strong>missing</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'raise'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>How to handle missing values in the dense connectivity matrix when these
+cannot be filled in (see notes for more information). If <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, an
+error is raised. If a float, the missing values are filled with that float.
+Ignored if <code class="docutils literal notranslate"><span class="pre">output='raveled'</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -730,6 +743,20 @@ information.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p><strong>Handling missing values for dense outputs</strong></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">indices</span></code> is not <code class="docutils literal notranslate"><span class="pre">'all'</span></code> and <code class="docutils literal notranslate"><span class="pre">output='dense'</span></code>, there may be missing
+values from the full connectivity matrix that need to be filled in:</p>
+<ol class="arabic simple">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">indices</span></code> is <code class="docutils literal notranslate"><span class="pre">'lower'</span></code> or <code class="docutils literal notranslate"><span class="pre">'upper'</span></code>, the missing values will try
+to be inferred based on the existing ones, falling back to the behaviour
+determined by the <code class="docutils literal notranslate"><span class="pre">missing</span></code> parameter if they cannot be inferred.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">indices</span></code> is a tuple and <code class="docutils literal notranslate"><span class="pre">indices</span></code> represents a subset of the full
+connectivity matrix, the missing values will not be inferred, and the
+behaviour is determined by the <code class="docutils literal notranslate"><span class="pre">missing</span></code> parameter.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">indices</span></code> is a tuple and <code class="docutils literal notranslate"><span class="pre">indices</span></code> represents the full connectivity
+matrix, there are no missing values to fill in.</p></li>
+</ol>
+<p><strong>Handling dense outputs for multivariate connectivity</strong></p>
 <p>Because multivariate connectivity data can involve multiple channels per
 connection, it is not possible to represent the data in a dense matrix form
 where each row/column represent a single channel.</p>
@@ -766,9 +793,10 @@ matrix space. For the above example, <code class="docutils literal notranslate">
 <dl class="field-list">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>indices</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'all'</span></code> | <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Either <code class="docutils literal notranslate"><span class="pre">'all'</span></code> for all-to-all connectivity, <code class="docutils literal notranslate"><span class="pre">'symmetric'</span></code> for symmetric
-connectivity, or a tuple of lists representing the node-to-nodes that
-connectivity was computed for.</p>
+<dt><strong>indices</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'all'</span></code> | <code class="docutils literal notranslate"><span class="pre">'lower'</span></code> | <code class="docutils literal notranslate"><span class="pre">'upper'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Either <code class="docutils literal notranslate"><span class="pre">'all'</span></code> for all-to-all connectivity, <code class="docutils literal notranslate"><span class="pre">'lower'</span></code> for
+lower-triangular connectivity, <code class="docutils literal notranslate"><span class="pre">'upper'</span></code> for upper-triangular
+connectivity, or a tuple of lists representing the seed and target nodes
+that connectivity was computed between.</p>
 </dd>
 </dl>
 </dd>

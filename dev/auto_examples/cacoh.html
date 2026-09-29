@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute multivariate coherency/coherence &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>Compute multivariate coherency/coherence &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -647,7 +647,7 @@ interaction regardless of phase angle.</p>
 </span><span class="c1"># Get absolute CaCoh</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">cacoh_abs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">cacoh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1213: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1189: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
  '1': 10&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -725,7 +725,7 @@ which we do below.</p>
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">coh_mean</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">coh</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">axis</span></a><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Averaged results shape: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">coh_mean</span><span class="o">.</span><span class="n">shape</span></a><span class="si">}</span><span class="s2"> (connections x frequencies)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1213: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1189: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
  '1': 10&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -909,7 +909,7 @@ the products of the singular value decomposition (Eqs. 46 &amp; 47 of
 </span><span class="k">assert</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">patterns</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span><span class="k">assert</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">patterns</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.attrs" title="mne_connectivity.SpectralConnectivity.attrs"><span class="n">cacoh_red</span><span class="o">.</span><span class="n">attrs</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">patterns</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_cacoh_005.png" srcset="../_images/sphx_glr_cacoh_005.png" alt="CaCoh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1213: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
+<img src="../_images/sphx_glr_cacoh_005.png" srcset="../_images/sphx_glr_cacoh_005.png" alt="CaCoh" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_connectivity/spectral/epochs.py:1189: RuntimeWarning: There were no Annotations stored in &lt;EpochsArray | 10 events (all good), 0 – 1.99 s (baseline off), ~266 KiB, data loaded,
  '1': 10&gt;, so metadata was not modified.
   data.add_annotations_to_metadata(overwrite=True)
 Connectivity computation...
@@ -994,7 +994,7 @@ interactions with particular phase lags like MIC/MIM.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.093 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.685 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-cacoh-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4c001e012a0d3de05adb67e035906af3/cacoh.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cacoh.ipynb</span></code></a></p>

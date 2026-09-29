@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.viz.matrix &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.viz.matrix &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../../../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -515,7 +515,7 @@
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"Connectivity"</span><span class="p">)</span>
 
-    <span class="n">_check_data_is_real</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+    <span class="n">_check_data_is_real</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">"raveled"</span><span class="p">))</span>
 
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">"con.shape"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s2">" length"</span><span class="p">)</span>
 
@@ -528,13 +528,9 @@
     <span class="n">ch_names</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">names</span>
     <span class="n">con_method</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">method</span> <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"connectivity"</span>
     <span class="n">ch_info</span> <span class="o">=</span> <span class="n">_check_info</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">)</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span> <span class="o">=</span> <span class="n">_handle_data_and_indices</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">ch_info</span><span class="p">)</span>
-
-    <span class="c1"># Get info about nodes and connections</span>
-    <span class="n">node_names</span><span class="p">,</span> <span class="n">node_indices</span> <span class="o">=</span> <span class="n">_get_node_names_and_indices</span><span class="p">(</span>
-        <span class="n">ch_names</span><span class="p">,</span> <span class="n">node_aliases</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">duplicate_cons_mask</span> <span class="o">=</span> <span class="n">_handle_data_and_indices</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">ch_info</span>
     <span class="p">)</span>
-    <span class="n">con_info</span> <span class="o">=</span> <span class="n">_get_con_info</span><span class="p">(</span><span class="n">ch_info</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">)</span>
 
     <span class="c1"># Handle instances of multiple components in multivariate data</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -544,11 +540,18 @@
         <span class="n">n_comps</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">components</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"components"</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 
+    <span class="c1"># Get info about nodes and connections</span>
+    <span class="n">node_names</span><span class="p">,</span> <span class="n">node_indices</span> <span class="o">=</span> <span class="n">_get_node_names_and_indices</span><span class="p">(</span>
+        <span class="n">ch_names</span><span class="p">,</span> <span class="n">node_aliases</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span>
+    <span class="p">)</span>
+    <span class="n">con_info</span> <span class="o">=</span> <span class="n">_get_con_info</span><span class="p">(</span><span class="n">ch_info</span><span class="p">,</span> <span class="n">node_names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">node_indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">)</span>
+
     <span class="c1"># Get requested connections</span>
     <span class="n">picks</span> <span class="o">=</span> <span class="n">_handle_picks</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="n">exclude</span><span class="p">,</span> <span class="n">ch_info</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">,</span> <span class="n">selection</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">picks</span><span class="p">]</span>
     <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">picks</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">picks</span><span class="p">])</span>
     <span class="n">node_indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">picks</span><span class="p">],</span> <span class="n">node_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">picks</span><span class="p">])</span>
+    <span class="n">duplicate_cons_mask</span> <span class="o">=</span> <span class="n">duplicate_cons_mask</span><span class="p">[</span><span class="n">picks</span><span class="p">]</span>
     <span class="n">con_info</span> <span class="o">=</span> <span class="n">pick_info</span><span class="p">(</span><span class="n">con_info</span><span class="p">,</span> <span class="n">picks</span><span class="p">)</span>
     <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">]</span> <span class="o">=</span> <span class="n">con_info</span><span class="p">[</span><span class="s2">"temp"</span><span class="p">][</span><span class="s2">"con_types"</span><span class="p">][</span><span class="n">picks</span><span class="p">]</span>
 
@@ -565,8 +568,12 @@
             <span class="n">node_idx</span><span class="p">:</span> <span class="n">pos</span> <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">type_node_indices_unique</span><span class="p">)</span>
         <span class="p">}</span>
 
+        <span class="n">type_duplicate_cons_mask</span> <span class="o">=</span> <span class="n">duplicate_cons_mask</span><span class="p">[</span><span class="n">type_mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">type_duplicate_cons_mask</span><span class="p">):</span>
+            <span class="k">continue</span>  <span class="c1"># skip if all connections for this type are duplicates</span>
+
         <span class="c1"># Colormap handling</span>
-        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">_setup_vmin_vmax</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">type_mask</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">_setup_vmin_vmax</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">_setup_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cnorm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cnorm</span> <span class="o">=</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
@@ -574,7 +581,7 @@
         <span class="c1"># Plot data for each component separately</span>
         <span class="k">for</span> <span class="n">comp_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="c1"># Make data square for plotting</span>
-            <span class="n">square_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">type_n_nodes</span><span class="p">,</span> <span class="n">type_n_nodes</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="n">square_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">type_n_nodes</span><span class="p">,</span> <span class="n">type_n_nodes</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">con_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">seed_idx</span><span class="p">,</span> <span class="n">target_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">type_node_indices</span><span class="p">)):</span>
                 <span class="n">square_matrix</span><span class="p">[</span><span class="n">type_node_pos</span><span class="p">[</span><span class="n">seed_idx</span><span class="p">],</span> <span class="n">type_node_pos</span><span class="p">[</span><span class="n">target_idx</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">data</span><span class="p">[</span><span class="n">con_idx</span><span class="p">,</span> <span class="n">comp_idx</span><span class="p">]</span>

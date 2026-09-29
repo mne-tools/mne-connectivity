@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -456,6 +456,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_check_if_multivariate_indices</span><span class="p">,</span>
+    <span class="n">_get_full_connectivity</span><span class="p">,</span>
     <span class="n">_get_unique_multivariate_nodes_and_indices</span><span class="p">,</span>
     <span class="n">_prepare_xarray_mne_data_structures</span><span class="p">,</span>
     <span class="n">fill_doc</span><span class="p">,</span>
@@ -837,8 +838,10 @@
 <span class="sd">    connectivity computing functions.</span>
 
 <span class="sd">    Connectivity data is anything that represents "connections" between nodes as a</span>
-<span class="sd">    ``(N, N)`` array. It can be symmetric, or asymmetric (if it is symmetric, storage</span>
-<span class="sd">    optimization will occur).</span>
+<span class="sd">    ``(N, N)`` array. It can be symmetric, or asymmetric. If it is symmetric (or</span>
+<span class="sd">    asymmetric, but the missing (e.g., upper-triangular) elements can be determined</span>
+<span class="sd">    based on the existing (e.g., lower-triangular) elements), we can optimise memory</span>
+<span class="sd">    demand for storage.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -857,23 +860,26 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Connectivity data can be generally represented as a square matrix with values</span>
-<span class="sd">    intending the connectivity function value between two nodes. We optimize storage of</span>
-<span class="sd">    symmetric connectivity data and allow support for computing connectivity data on a</span>
-<span class="sd">    subset of nodes. We store connectivity data as a raveled ``(n_estimated_nodes,</span>
-<span class="sd">    ...)`` where ``n_estimated_nodes`` can be ``n_nodes_in * n_nodes_out`` if a full</span>
-<span class="sd">    connectivity structure is computed, or a subset of the nodes (equal to the length of</span>
-<span class="sd">    the indices passed in).</span>
+<span class="sd">    intending the connectivity function value between two nodes. We store connectivity</span>
+<span class="sd">    data as a raveled ``(n_estimated_nodes, ...)`` array, where ``n_estimated_nodes``</span>
+<span class="sd">    can be ``n_nodes_in * n_nodes_out`` if a full connectivity structure is computed, or</span>
+<span class="sd">    a subset of the nodes (equal to the length of the indices passed in).</span>
 
 <span class="sd">    Since we store connectivity data as a raveled array, one can easily optimize the</span>
-<span class="sd">    storage of "symmetric" connectivity data. One can use numpy to convert a full</span>
-<span class="sd">    all-to-all connectivity into an upper triangular portion, and set</span>
-<span class="sd">    ``indices='symmetric'``. This would reduce the RAM needed in half.</span>
+<span class="sd">    storage of "symmetric" connectivity data by storing only the lower-triangular (or</span>
+<span class="sd">    upper-triangular) elements, and filling these in when the user requests the full</span>
+<span class="sd">    connectivity matrix. How to fill in the missing values is determined based on the</span>
+<span class="sd">    ``method`` parameter.</span>
 
 <span class="sd">    The underlying data structure is an :class:`xarray.DataArray`, with a similar API to</span>
 <span class="sd">    ``xarray``. We provide support for storing connectivity data in a subset of nodes.</span>
 <span class="sd">    Thus the underlying data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D</span>
 <span class="sd">    array would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This allows us to</span>
-<span class="sd">    optimize storage also for symmetric connectivity.</span>
+<span class="sd">    optimize storage also for "symmetric" connectivity.</span>
+
+<span class="sd">    Storage optimisation will not occur for multivariate connectivity, as computing</span>
+<span class="sd">    connectivity in the same lower-/upper-triangular manner for "symmetric" methods does</span>
+<span class="sd">    not transfer.</span>
 <span class="sd">    """</span>
 
     <span class="c1"># whether or not the connectivity occurs over epochs</span>
@@ -891,11 +897,9 @@
         <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"symmetric"</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">'Indices can only be "all", "symmetric", or a list of tuples. '</span>
-                <span class="sa">f</span><span class="s2">"It cannot be </span><span class="si">{</span><span class="n">indices</span><span class="si">}</span><span class="s2">."</span>
-            <span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span> <span class="s2">"`indices`"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_check_option</span><span class="p">(</span><span class="s2">"indices"</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">[</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">],</span> <span class="s2">"as a string"</span><span class="p">)</span>
 
         <span class="c1"># prepare metadata pandas dataframe and ensure metadata is a Pandas</span>
         <span class="c1"># DataFrame object</span>
@@ -904,6 +908,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
 
         <span class="c1"># check the incoming data structure</span>
+        <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">bad_indices</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">bad_indices</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">indices</span><span class="si">}</span><span class="s2">'"</span>  <span class="c1"># must be a str</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">_check_if_multivariate_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+                <span class="n">bad_indices</span> <span class="o">=</span> <span class="s2">"a tuple of non-nested arrays"</span>  <span class="c1"># must be non-nested</span>
+            <span class="k">if</span> <span class="n">bad_indices</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"`components` are present in `kwargs`, which is a term reserved "</span>
+                    <span class="s2">"for multivariate connectivity methods. However, `indices` does "</span>
+                    <span class="s2">"not match the format for multivariate methods. Expected a tuple "</span>
+                    <span class="sa">f</span><span class="s2">"of nested arrays, got </span><span class="si">{</span><span class="n">bad_indices</span><span class="si">}</span><span class="s2">."</span>
+                <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_consistency</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_xarray</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span>
@@ -1030,10 +1047,6 @@
 
         <span class="c1"># get the number of estimated nodes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_num_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="n">data_len</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_len</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="c1"># check that the indices passed in are of the same length</span>
@@ -1043,20 +1056,31 @@
                     <span class="sa">f</span><span class="s2">"are right now </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="c1"># indices length should match the data length</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">data_len</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"The number of indices, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> should match the "</span>
-                    <span class="sa">f</span><span class="s2">"raveled data length passed in of </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2">."</span>
+                    <span class="sa">f</span><span class="s2">"raveled data length passed in of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"symmetric"</span><span class="p">:</span>
-            <span class="n">expected_len</span> <span class="o">=</span> <span class="p">((</span><span class="n">n_nodes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_nodes</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-            <span class="k">if</span> <span class="n">data_len</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">indices</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">]:</span>
+            <span class="n">expected_len</span> <span class="o">=</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">'If "indices" is "symmetric", then '</span>
-                    <span class="sa">f</span><span class="s2">"connectivity data should be the upper-triangular part of the "</span>
-                    <span class="sa">f</span><span class="s2">"matrix. There are </span><span class="si">{</span><span class="n">data_len</span><span class="si">}</span><span class="s2"> estimated connections. But there "</span>
-                    <span class="sa">f</span><span class="s2">"should be </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> estimated connections."</span>
+                    <span class="s2">"If `indices` is 'lower' or 'upper', then connectivity data should "</span>
+                    <span class="s2">"be the lower- or upper-triangular part of the connectivity "</span>
+                    <span class="sa">f</span><span class="s2">"matrix, respectively. Expected </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> connections from "</span>
+                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"connections."</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># indices = "all"</span>
+            <span class="n">expected_len</span> <span class="o">=</span> <span class="n">n_nodes</span><span class="o">**</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"If `indices` is 'all', then connectivity data should be the full "</span>
+                    <span class="sa">f</span><span class="s2">"connectivity matrix. Expected </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> connections from "</span>
+                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"connections."</span>
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1122,10 +1146,11 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        indices : ``'all'`` | ``'symmetric'`` | tuple of list</span>
-<span class="sd">            Either ``'all'`` for all-to-all connectivity, ``'symmetric'`` for symmetric</span>
-<span class="sd">            connectivity, or a tuple of lists representing the node-to-nodes that</span>
-<span class="sd">            connectivity was computed for.</span>
+<span class="sd">        indices : ``'all'`` | ``'lower'`` | ``'upper'`` | tuple of list</span>
+<span class="sd">            Either ``'all'`` for all-to-all connectivity, ``'lower'`` for</span>
+<span class="sd">            lower-triangular connectivity, ``'upper'`` for upper-triangular</span>
+<span class="sd">            connectivity, or a tuple of lists representing the seed and target nodes</span>
+<span class="sd">            that connectivity was computed between.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"indices"</span><span class="p">]</span>
 
@@ -1159,7 +1184,7 @@
         <span class="c1">#     size += self.metadata.memory_usage(index=True).sum()</span>
         <span class="k">return</span> <span class="n">size</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">"compact"</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">"compact"</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Get connectivity data as a numpy array.</span>
 
 <span class="sd">        Parameters</span>
@@ -1168,11 +1193,17 @@
 <span class="sd">            How to format the output:</span>
 
 <span class="sd">            - ``'raveled'`` will represent each connectivity matrix as a</span>
-<span class="sd">              ``(..., n_nodes_in * n_nodes_out, ...)`` array</span>
+<span class="sd">              ``(..., n_nodes_in * n_nodes_out, ...)`` array.</span>
 <span class="sd">            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,</span>
-<span class="sd">              n_nodes_out, ...)`` array</span>
-<span class="sd">            - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` were</span>
-<span class="sd">              defined as a tuple of arrays, or ``'dense'`` if ``indices='all'``</span>
+<span class="sd">              n_nodes_out, ...)`` array.</span>
+<span class="sd">            - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is</span>
+<span class="sd">              a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,</span>
+<span class="sd">              ``'lower'``, or ``'upper'``.</span>
+<span class="sd">        missing : ``'raise'`` | float</span>
+<span class="sd">            How to handle missing values in the dense connectivity matrix when these</span>
+<span class="sd">            cannot be filled in (see notes for more information). If ``'raise'``, an</span>
+<span class="sd">            error is raised. If a float, the missing values are filled with that float.</span>
+<span class="sd">            Ignored if ``output='raveled'``. Default is ``'raise'``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1186,6 +1217,24 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
+<span class="sd">        **Handling missing values for dense outputs**</span>
+
+<span class="sd">        If ``indices`` is not ``'all'`` and ``output='dense'``, there may be missing</span>
+<span class="sd">        values from the full connectivity matrix that need to be filled in:</span>
+
+<span class="sd">        1. When ``indices`` is ``'lower'`` or ``'upper'``, the missing values will try</span>
+<span class="sd">           to be inferred based on the existing ones, falling back to the behaviour</span>
+<span class="sd">           determined by the ``missing`` parameter if they cannot be inferred.</span>
+
+<span class="sd">        2. When ``indices`` is a tuple and ``indices`` represents a subset of the full</span>
+<span class="sd">           connectivity matrix, the missing values will not be inferred, and the</span>
+<span class="sd">           behaviour is determined by the ``missing`` parameter.</span>
+
+<span class="sd">        3. When ``indices`` is a tuple and ``indices`` represents the full connectivity</span>
+<span class="sd">           matrix, there are no missing values to fill in.</span>
+
+<span class="sd">        **Handling dense outputs for multivariate connectivity**</span>
+
 <span class="sd">        Because multivariate connectivity data can involve multiple channels per</span>
 <span class="sd">        connection, it is not possible to represent the data in a dense matrix form</span>
 <span class="sd">        where each row/column represent a single channel.</span>
@@ -1217,10 +1266,16 @@
 <span class="sd">        ``[[0, 1], [2, 3], [4, 5]]``.</span>
 <span class="sd">        """</span>
         <span class="n">_check_option</span><span class="p">(</span><span class="s2">"output"</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[</span><span class="s2">"raveled"</span><span class="p">,</span> <span class="s2">"dense"</span><span class="p">,</span> <span class="s2">"compact"</span><span class="p">])</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">missing</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="s2">"numeric"</span><span class="p">),</span> <span class="s2">"`missing`"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">missing</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_check_option</span><span class="p">(</span><span class="s2">"missing"</span><span class="p">,</span> <span class="n">missing</span><span class="p">,</span> <span class="p">[</span><span class="s2">"raise"</span><span class="p">],</span> <span class="s2">"as a string"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+
         <span class="n">multivariate_nodes</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">"compact"</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"symmetric"</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">]:</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="s2">"dense"</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="s2">"raveled"</span>
@@ -1241,48 +1296,19 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span>
 
-            <span class="c1"># get the new shape of the data array</span>
+            <span class="c1"># Move epochs from first dimension temporarily for easier reshaping</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-                <span class="n">new_shape</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_shape</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-            <span class="c1"># handle the case where model order is defined in VAR connectivity</span>
-            <span class="c1"># and thus appends the connectivity matrices side by side, so the</span>
-            <span class="c1"># shape is N x N * lags</span>
-            <span class="n">new_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">])</span>
-            <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-                <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"components"</span><span class="p">]))</span>
-            <span class="k">if</span> <span class="s2">"freqs"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-                <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"freqs"</span><span class="p">]))</span>
-            <span class="k">if</span> <span class="s2">"times"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-                <span class="n">new_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]))</span>
+            <span class="c1"># Get connectivity as a square matrix, with missing values filled</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">_get_full_connectivity</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="n">missing</span>
+            <span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"symmetric"</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">):</span>
-                    <span class="n">fill_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">fill_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">new_shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="c1"># handle things differently if indices is defined</span>
-                <span class="n">row_idx</span><span class="p">,</span> <span class="n">col_idx</span> <span class="o">=</span> <span class="n">indices</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[:,</span> <span class="n">row_idx</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="n">row_idx</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-            <span class="k">elif</span> <span class="n">indices</span> <span class="o">==</span> <span class="s2">"symmetric"</span><span class="p">:</span>
-                <span class="c1"># get the upper/lower triangular indices</span>
-                <span class="n">row_triu_inds</span><span class="p">,</span> <span class="n">col_triu_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[:,</span> <span class="n">row_triu_inds</span><span class="p">,</span> <span class="n">col_triu_inds</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-                    <span class="n">data</span><span class="p">[:,</span> <span class="n">col_triu_inds</span><span class="p">,</span> <span class="n">row_triu_inds</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="n">row_triu_inds</span><span class="p">,</span> <span class="n">col_triu_inds</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-                    <span class="n">data</span><span class="p">[</span><span class="n">col_triu_inds</span><span class="p">,</span> <span class="n">row_triu_inds</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
+            <span class="c1"># Move epochs back to first dimension if needed</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">multivariate_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">multivariate_nodes</span>

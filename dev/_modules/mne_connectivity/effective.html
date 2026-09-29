@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
+    <title>mne_connectivity.effective &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=18b24772"></script>
+    <script src="../../_static/documentation_options.js?v=b3837f24"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
   
 </a></div>
     
@@ -459,7 +459,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">phase_slope_index</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">"multitaper"</span><span class="p">,</span>
@@ -481,7 +481,7 @@
 
 <span class="sd">    The PSI is an effective connectivity measure, i.e., a measure which can give an</span>
 <span class="sd">    indication of the direction of the information flow (causality). For two time</span>
-<span class="sd">    series, and one computes the PSI between the first and the second time series as</span>
+<span class="sd">    series, one computes the PSI between the first and the second time series as</span>
 <span class="sd">    follows::</span>
 
 <span class="sd">        indices = (np.array([0]), np.array([1]))</span>
@@ -521,14 +521,11 @@
 <span class="sd">           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`</span>
 <span class="sd">           objects requires ``mne &gt;= 1.10``.</span>
 <span class="sd">    %(names)s</span>
-<span class="sd">    indices : tuple of array_like | None</span>
-<span class="sd">        Two array-likes with indices of connections for which to compute connectivity.</span>
-<span class="sd">        If ``None``, all connections are computed. See Notes of</span>
-<span class="sd">        :func:`~mne_connectivity.spectral_connectivity_epochs` for details.</span>
+<span class="sd">    %(indices_with_str_only_bivar)s</span>
 <span class="sd">    sfreq : float | None</span>
 <span class="sd">        The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs`,</span>
-<span class="sd">            :class:`mne.time_frequency.EpochsSpectrum`, or</span>
-<span class="sd">            :class:`mne.time_frequency.EpochsTFR` object.</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsSpectrum`, or</span>
+<span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
 <span class="sd">    mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``</span>
 <span class="sd">        Spectrum estimation mode. Ignored if ``data`` is an</span>
 <span class="sd">        :class:`mne.time_frequency.EpochsSpectrum` or</span>
@@ -592,8 +589,10 @@
 
 <span class="sd">        - ``(n_cons, n_bands)`` for ``'multitaper'`` or ``'fourier'`` modes</span>
 <span class="sd">        - ``(n_cons, n_bands, n_times)`` for ``'cwt_morlet'`` mode</span>
-<span class="sd">        - ``n_cons = n_signals ** 2`` when ``indices=None``</span>
-<span class="sd">        - ``n_cons = len(indices[0])`` when ``indices`` is supplied</span>
+<span class="sd">        - ``n_cons = n_signals ** 2`` when ``indices='all'``</span>
+<span class="sd">        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``</span>
+<span class="sd">          or ``'upper'``</span>
+<span class="sd">        - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays</span>
 <span class="sd">        - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``</span>
 
 <span class="sd">    See Also</span>
@@ -602,6 +601,11 @@
 <span class="sd">    mne_connectivity.phase_slope_index_time</span>
 <span class="sd">    mne_connectivity.SpectralConnectivity</span>
 <span class="sd">    mne_connectivity.SpectroTemporalConnectivity</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    %(tri_indices_efficiency_note)s</span>
+<span class="sd">    %(tuple_bivar_indices_note)s</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -704,10 +708,11 @@
 <div class="viewcode-block" id="phase_slope_index_time">
 <a class="viewcode-back" href="../../generated/mne_connectivity.phase_slope_index_time.html#mne_connectivity.phase_slope_index_time">[docs]</a>
 <span class="nd">@verbose</span>
+<span class="nd">@fill_doc</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">phase_slope_index_time</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
     <span class="n">sfreq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">"cwt_morlet"</span><span class="p">,</span>
@@ -765,9 +770,7 @@
 <span class="sd">        ``data`` is an array-like or :class:`mne.Epochs` object, the frequencies must</span>
 <span class="sd">        be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,</span>
 <span class="sd">        ``data.freqs`` is used and this parameter is ignored.</span>
-<span class="sd">    indices : tuple of array_like | None</span>
-<span class="sd">        Two array-likes with indices of connections for which to compute connectivity.</span>
-<span class="sd">        If ``None`` (default), all connections are computed.</span>
+<span class="sd">    %(indices_with_str_only_bivar)s</span>
 <span class="sd">    sfreq : float | None</span>
 <span class="sd">        The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs` or</span>
 <span class="sd">        :class:`mne.time_frequency.EpochsTFR` object.</span>
@@ -837,8 +840,10 @@
 
 <span class="sd">        - The epoch dimension is present when ``average=False``, and absent when</span>
 <span class="sd">          ``average=True``.</span>
-<span class="sd">        - When ``indices`` is ``None``, ``n_cons = n_signals ** 2``</span>
-<span class="sd">        - When ``indices`` is specified, ``n_con = len(indices[0])``</span>
+<span class="sd">        - ``n_cons = n_signals ** 2`` when ``indices='all'``</span>
+<span class="sd">        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``</span>
+<span class="sd">          or ``'upper'``</span>
+<span class="sd">        - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays</span>
 <span class="sd">        - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``</span>
 
 <span class="sd">    See Also</span>
@@ -850,6 +855,9 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    %(tri_indices_efficiency_note)s</span>
+<span class="sd">    %(tuple_bivar_indices_note)s</span>
+
 <span class="sd">    .. versionadded:: 0.8</span>
 
 <span class="sd">    References</span>
@@ -935,7 +943,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_psi</span><span class="p">(</span><span class="n">cohy</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">freq_dim</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Compute Phase Slope Index (PSI) from coherency data."""</span>
     <span class="c1"># Allocate space for output</span>
-    <span class="n">out_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">"raveled"</span><span class="p">)</span>
+    <span class="n">out_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">out_shape</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
     <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
@@ -958,9 +967,7 @@
         <span class="k">for</span> <span class="n">fi</span><span class="p">,</span> <span class="n">fj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freq_idx</span><span class="p">,</span> <span class="n">freq_idx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="n">idx_fi</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">fi</span>
             <span class="n">idx_fj</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">fj</span>
-            <span class="n">acc</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)])</span> <span class="o">*</span> <span class="n">cohy</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fj</span><span class="p">)]</span>
-            <span class="p">)</span>
+            <span class="n">acc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)])</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fj</span><span class="p">)]</span>
 
         <span class="n">idx_fi</span><span class="p">[</span><span class="n">freq_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">band_idx</span>
         <span class="n">psi</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx_fi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
