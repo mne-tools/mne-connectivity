@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Determine the significance of connectivity estimates against baseline connectivity &#8212; MNE-Connectivity 0.10.0.dev22+gdfa74edf8 documentation</title>
+    <title>Determine the significance of connectivity estimates against baseline connectivity &#8212; MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=18709bf4"></script>
+    <script src="../_static/documentation_options.js?v=18b24772"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev22+gdfa74edf8 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev24+g1290da09e documentation</p>
   
 </a></div>
     
@@ -661,7 +661,7 @@ connectivity, we perform this shuffling procedure <code class="docutils literal 
 <code class="docutils literal notranslate"><span class="pre">n_shuffle</span></code> surrogate datasets. We can then iterate over these shuffles and compute
 the connectivity for each one.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Generate pre-trial surrogate data</span><span class="w">
-</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_shuffles</span></a> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># recommended is ≥ 1,000; limited here to reduce compute time</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_shuffles</span></a> <span class="o">=</span> <span class="mi">25</span>  <span class="c1"># very few shuffles for speed; recommended is ≥ 1,000</span><span class="w">
 </span><span class="n">pretrial_surrogates</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.make_surrogate_resting_data.html#mne_connectivity.make_surrogate_resting_data" title="mne_connectivity.make_surrogate_resting_data"><span class="n">make_surrogate_resting_data</span></a><span class="p">(</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne-time_frequency sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.time_frequency.EpochsTFR.html#mne.time_frequency.EpochsTFR" title="mne.time_frequency.EpochsTFR"><span class="n">pretrial_coeffs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_shuffles</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_shuffles</span></a><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span><span class="w">
 </span><span class="p">)</span><span class="w">
@@ -678,106 +678,31 @@ the connectivity for each one.</p>
 </span>    <span class="p">)</span>  <span class="c1"># average connections and timepoints</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">pretrial_surrogate_con</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">pretrial_surrogate_con</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 100
-Computing connectivity for shuffle 2 of 100
-Computing connectivity for shuffle 3 of 100
-Computing connectivity for shuffle 4 of 100
-Computing connectivity for shuffle 5 of 100
-Computing connectivity for shuffle 6 of 100
-Computing connectivity for shuffle 7 of 100
-Computing connectivity for shuffle 8 of 100
-Computing connectivity for shuffle 9 of 100
-Computing connectivity for shuffle 10 of 100
-Computing connectivity for shuffle 11 of 100
-Computing connectivity for shuffle 12 of 100
-Computing connectivity for shuffle 13 of 100
-Computing connectivity for shuffle 14 of 100
-Computing connectivity for shuffle 15 of 100
-Computing connectivity for shuffle 16 of 100
-Computing connectivity for shuffle 17 of 100
-Computing connectivity for shuffle 18 of 100
-Computing connectivity for shuffle 19 of 100
-Computing connectivity for shuffle 20 of 100
-Computing connectivity for shuffle 21 of 100
-Computing connectivity for shuffle 22 of 100
-Computing connectivity for shuffle 23 of 100
-Computing connectivity for shuffle 24 of 100
-Computing connectivity for shuffle 25 of 100
-Computing connectivity for shuffle 26 of 100
-Computing connectivity for shuffle 27 of 100
-Computing connectivity for shuffle 28 of 100
-Computing connectivity for shuffle 29 of 100
-Computing connectivity for shuffle 30 of 100
-Computing connectivity for shuffle 31 of 100
-Computing connectivity for shuffle 32 of 100
-Computing connectivity for shuffle 33 of 100
-Computing connectivity for shuffle 34 of 100
-Computing connectivity for shuffle 35 of 100
-Computing connectivity for shuffle 36 of 100
-Computing connectivity for shuffle 37 of 100
-Computing connectivity for shuffle 38 of 100
-Computing connectivity for shuffle 39 of 100
-Computing connectivity for shuffle 40 of 100
-Computing connectivity for shuffle 41 of 100
-Computing connectivity for shuffle 42 of 100
-Computing connectivity for shuffle 43 of 100
-Computing connectivity for shuffle 44 of 100
-Computing connectivity for shuffle 45 of 100
-Computing connectivity for shuffle 46 of 100
-Computing connectivity for shuffle 47 of 100
-Computing connectivity for shuffle 48 of 100
-Computing connectivity for shuffle 49 of 100
-Computing connectivity for shuffle 50 of 100
-Computing connectivity for shuffle 51 of 100
-Computing connectivity for shuffle 52 of 100
-Computing connectivity for shuffle 53 of 100
-Computing connectivity for shuffle 54 of 100
-Computing connectivity for shuffle 55 of 100
-Computing connectivity for shuffle 56 of 100
-Computing connectivity for shuffle 57 of 100
-Computing connectivity for shuffle 58 of 100
-Computing connectivity for shuffle 59 of 100
-Computing connectivity for shuffle 60 of 100
-Computing connectivity for shuffle 61 of 100
-Computing connectivity for shuffle 62 of 100
-Computing connectivity for shuffle 63 of 100
-Computing connectivity for shuffle 64 of 100
-Computing connectivity for shuffle 65 of 100
-Computing connectivity for shuffle 66 of 100
-Computing connectivity for shuffle 67 of 100
-Computing connectivity for shuffle 68 of 100
-Computing connectivity for shuffle 69 of 100
-Computing connectivity for shuffle 70 of 100
-Computing connectivity for shuffle 71 of 100
-Computing connectivity for shuffle 72 of 100
-Computing connectivity for shuffle 73 of 100
-Computing connectivity for shuffle 74 of 100
-Computing connectivity for shuffle 75 of 100
-Computing connectivity for shuffle 76 of 100
-Computing connectivity for shuffle 77 of 100
-Computing connectivity for shuffle 78 of 100
-Computing connectivity for shuffle 79 of 100
-Computing connectivity for shuffle 80 of 100
-Computing connectivity for shuffle 81 of 100
-Computing connectivity for shuffle 82 of 100
-Computing connectivity for shuffle 83 of 100
-Computing connectivity for shuffle 84 of 100
-Computing connectivity for shuffle 85 of 100
-Computing connectivity for shuffle 86 of 100
-Computing connectivity for shuffle 87 of 100
-Computing connectivity for shuffle 88 of 100
-Computing connectivity for shuffle 89 of 100
-Computing connectivity for shuffle 90 of 100
-Computing connectivity for shuffle 91 of 100
-Computing connectivity for shuffle 92 of 100
-Computing connectivity for shuffle 93 of 100
-Computing connectivity for shuffle 94 of 100
-Computing connectivity for shuffle 95 of 100
-Computing connectivity for shuffle 96 of 100
-Computing connectivity for shuffle 97 of 100
-Computing connectivity for shuffle 98 of 100
-Computing connectivity for shuffle 99 of 100
-Computing connectivity for shuffle 100 of 100
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 25
+Computing connectivity for shuffle 2 of 25
+Computing connectivity for shuffle 3 of 25
+Computing connectivity for shuffle 4 of 25
+Computing connectivity for shuffle 5 of 25
+Computing connectivity for shuffle 6 of 25
+Computing connectivity for shuffle 7 of 25
+Computing connectivity for shuffle 8 of 25
+Computing connectivity for shuffle 9 of 25
+Computing connectivity for shuffle 10 of 25
+Computing connectivity for shuffle 11 of 25
+Computing connectivity for shuffle 12 of 25
+Computing connectivity for shuffle 13 of 25
+Computing connectivity for shuffle 14 of 25
+Computing connectivity for shuffle 15 of 25
+Computing connectivity for shuffle 16 of 25
+Computing connectivity for shuffle 17 of 25
+Computing connectivity for shuffle 18 of 25
+Computing connectivity for shuffle 19 of 25
+Computing connectivity for shuffle 20 of 25
+Computing connectivity for shuffle 21 of 25
+Computing connectivity for shuffle 22 of 25
+Computing connectivity for shuffle 23 of 25
+Computing connectivity for shuffle 24 of 25
+Computing connectivity for shuffle 25 of 25
 </pre></div>
 </div>
 <p>We can plot the connectivity of the pre-trial data against the surrogate data,
@@ -795,7 +720,7 @@ to confirm this statistically.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">All-to-all connectivity | Pre-trial </span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_surrogate_connectivity_001.png" srcset="../_images/sphx_glr_surrogate_connectivity_001.png" alt="All-to-all connectivity | Pre-trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7458cf547cb0&gt;
+<img src="../_images/sphx_glr_surrogate_connectivity_001.png" srcset="../_images/sphx_glr_surrogate_connectivity_001.png" alt="All-to-all connectivity | Pre-trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7557afef4ec0&gt;
 </pre></div>
 </div>
 <p>Assessing the statistical significance of our connectivity estimates can be done with
@@ -912,108 +837,33 @@ connectivity.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">All-to-all connectivity | Post-stimulus</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_surrogate_connectivity_002.png" srcset="../_images/sphx_glr_surrogate_connectivity_002.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 100
-Computing connectivity for shuffle 2 of 100
-Computing connectivity for shuffle 3 of 100
-Computing connectivity for shuffle 4 of 100
-Computing connectivity for shuffle 5 of 100
-Computing connectivity for shuffle 6 of 100
-Computing connectivity for shuffle 7 of 100
-Computing connectivity for shuffle 8 of 100
-Computing connectivity for shuffle 9 of 100
-Computing connectivity for shuffle 10 of 100
-Computing connectivity for shuffle 11 of 100
-Computing connectivity for shuffle 12 of 100
-Computing connectivity for shuffle 13 of 100
-Computing connectivity for shuffle 14 of 100
-Computing connectivity for shuffle 15 of 100
-Computing connectivity for shuffle 16 of 100
-Computing connectivity for shuffle 17 of 100
-Computing connectivity for shuffle 18 of 100
-Computing connectivity for shuffle 19 of 100
-Computing connectivity for shuffle 20 of 100
-Computing connectivity for shuffle 21 of 100
-Computing connectivity for shuffle 22 of 100
-Computing connectivity for shuffle 23 of 100
-Computing connectivity for shuffle 24 of 100
-Computing connectivity for shuffle 25 of 100
-Computing connectivity for shuffle 26 of 100
-Computing connectivity for shuffle 27 of 100
-Computing connectivity for shuffle 28 of 100
-Computing connectivity for shuffle 29 of 100
-Computing connectivity for shuffle 30 of 100
-Computing connectivity for shuffle 31 of 100
-Computing connectivity for shuffle 32 of 100
-Computing connectivity for shuffle 33 of 100
-Computing connectivity for shuffle 34 of 100
-Computing connectivity for shuffle 35 of 100
-Computing connectivity for shuffle 36 of 100
-Computing connectivity for shuffle 37 of 100
-Computing connectivity for shuffle 38 of 100
-Computing connectivity for shuffle 39 of 100
-Computing connectivity for shuffle 40 of 100
-Computing connectivity for shuffle 41 of 100
-Computing connectivity for shuffle 42 of 100
-Computing connectivity for shuffle 43 of 100
-Computing connectivity for shuffle 44 of 100
-Computing connectivity for shuffle 45 of 100
-Computing connectivity for shuffle 46 of 100
-Computing connectivity for shuffle 47 of 100
-Computing connectivity for shuffle 48 of 100
-Computing connectivity for shuffle 49 of 100
-Computing connectivity for shuffle 50 of 100
-Computing connectivity for shuffle 51 of 100
-Computing connectivity for shuffle 52 of 100
-Computing connectivity for shuffle 53 of 100
-Computing connectivity for shuffle 54 of 100
-Computing connectivity for shuffle 55 of 100
-Computing connectivity for shuffle 56 of 100
-Computing connectivity for shuffle 57 of 100
-Computing connectivity for shuffle 58 of 100
-Computing connectivity for shuffle 59 of 100
-Computing connectivity for shuffle 60 of 100
-Computing connectivity for shuffle 61 of 100
-Computing connectivity for shuffle 62 of 100
-Computing connectivity for shuffle 63 of 100
-Computing connectivity for shuffle 64 of 100
-Computing connectivity for shuffle 65 of 100
-Computing connectivity for shuffle 66 of 100
-Computing connectivity for shuffle 67 of 100
-Computing connectivity for shuffle 68 of 100
-Computing connectivity for shuffle 69 of 100
-Computing connectivity for shuffle 70 of 100
-Computing connectivity for shuffle 71 of 100
-Computing connectivity for shuffle 72 of 100
-Computing connectivity for shuffle 73 of 100
-Computing connectivity for shuffle 74 of 100
-Computing connectivity for shuffle 75 of 100
-Computing connectivity for shuffle 76 of 100
-Computing connectivity for shuffle 77 of 100
-Computing connectivity for shuffle 78 of 100
-Computing connectivity for shuffle 79 of 100
-Computing connectivity for shuffle 80 of 100
-Computing connectivity for shuffle 81 of 100
-Computing connectivity for shuffle 82 of 100
-Computing connectivity for shuffle 83 of 100
-Computing connectivity for shuffle 84 of 100
-Computing connectivity for shuffle 85 of 100
-Computing connectivity for shuffle 86 of 100
-Computing connectivity for shuffle 87 of 100
-Computing connectivity for shuffle 88 of 100
-Computing connectivity for shuffle 89 of 100
-Computing connectivity for shuffle 90 of 100
-Computing connectivity for shuffle 91 of 100
-Computing connectivity for shuffle 92 of 100
-Computing connectivity for shuffle 93 of 100
-Computing connectivity for shuffle 94 of 100
-Computing connectivity for shuffle 95 of 100
-Computing connectivity for shuffle 96 of 100
-Computing connectivity for shuffle 97 of 100
-Computing connectivity for shuffle 98 of 100
-Computing connectivity for shuffle 99 of 100
-Computing connectivity for shuffle 100 of 100
+<img src="../_images/sphx_glr_surrogate_connectivity_002.png" srcset="../_images/sphx_glr_surrogate_connectivity_002.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 25
+Computing connectivity for shuffle 2 of 25
+Computing connectivity for shuffle 3 of 25
+Computing connectivity for shuffle 4 of 25
+Computing connectivity for shuffle 5 of 25
+Computing connectivity for shuffle 6 of 25
+Computing connectivity for shuffle 7 of 25
+Computing connectivity for shuffle 8 of 25
+Computing connectivity for shuffle 9 of 25
+Computing connectivity for shuffle 10 of 25
+Computing connectivity for shuffle 11 of 25
+Computing connectivity for shuffle 12 of 25
+Computing connectivity for shuffle 13 of 25
+Computing connectivity for shuffle 14 of 25
+Computing connectivity for shuffle 15 of 25
+Computing connectivity for shuffle 16 of 25
+Computing connectivity for shuffle 17 of 25
+Computing connectivity for shuffle 18 of 25
+Computing connectivity for shuffle 19 of 25
+Computing connectivity for shuffle 20 of 25
+Computing connectivity for shuffle 21 of 25
+Computing connectivity for shuffle 22 of 25
+Computing connectivity for shuffle 23 of 25
+Computing connectivity for shuffle 24 of 25
+Computing connectivity for shuffle 25 of 25
 
-&lt;matplotlib.legend.Legend object at 0x7458ccbc70e0&gt;
+&lt;matplotlib.legend.Legend object at 0x7557b0853770&gt;
 </pre></div>
 </div>
 <p>This is also confirmed by statistical testing, with connectivity in the lower beta
@@ -1022,7 +872,7 @@ band being significantly above the baseline level of connectivity.</p>
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">beta_con_poststim</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">poststim_con</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_freqs</span></a><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Compute lower beta connectivity for surrogate data</span><span class="w">
-</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_con_poststim_surrogate</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">poststim_surrogate_con</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_freqs</span></a><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_con_poststim_surrogate</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">poststim_surrogate_con</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_freqs</span></a><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="c1"># Compute p-value for post-stimulus lower beta coupling</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">p_val</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum" title="numpy.sum"><span class="n">np</span><span class="o">.</span><span class="n">sum</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64"><span class="n">beta_con_poststim</span></a> <span class="o">&lt;</span><span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">beta_con_poststim_surrogate</span></a><span class="p">)</span> <span class="o">/</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_shuffles</span></a><span class="w">
@@ -1055,106 +905,31 @@ surrogates from the post-stimulus data, using this inappropriate method.</p>
 </span>    <span class="p">)</span>  <span class="c1"># average connections and timepoints</span><span class="w">
 </span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bad_surrogate_con</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">bad_surrogate_con</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 100
-Computing connectivity for shuffle 2 of 100
-Computing connectivity for shuffle 3 of 100
-Computing connectivity for shuffle 4 of 100
-Computing connectivity for shuffle 5 of 100
-Computing connectivity for shuffle 6 of 100
-Computing connectivity for shuffle 7 of 100
-Computing connectivity for shuffle 8 of 100
-Computing connectivity for shuffle 9 of 100
-Computing connectivity for shuffle 10 of 100
-Computing connectivity for shuffle 11 of 100
-Computing connectivity for shuffle 12 of 100
-Computing connectivity for shuffle 13 of 100
-Computing connectivity for shuffle 14 of 100
-Computing connectivity for shuffle 15 of 100
-Computing connectivity for shuffle 16 of 100
-Computing connectivity for shuffle 17 of 100
-Computing connectivity for shuffle 18 of 100
-Computing connectivity for shuffle 19 of 100
-Computing connectivity for shuffle 20 of 100
-Computing connectivity for shuffle 21 of 100
-Computing connectivity for shuffle 22 of 100
-Computing connectivity for shuffle 23 of 100
-Computing connectivity for shuffle 24 of 100
-Computing connectivity for shuffle 25 of 100
-Computing connectivity for shuffle 26 of 100
-Computing connectivity for shuffle 27 of 100
-Computing connectivity for shuffle 28 of 100
-Computing connectivity for shuffle 29 of 100
-Computing connectivity for shuffle 30 of 100
-Computing connectivity for shuffle 31 of 100
-Computing connectivity for shuffle 32 of 100
-Computing connectivity for shuffle 33 of 100
-Computing connectivity for shuffle 34 of 100
-Computing connectivity for shuffle 35 of 100
-Computing connectivity for shuffle 36 of 100
-Computing connectivity for shuffle 37 of 100
-Computing connectivity for shuffle 38 of 100
-Computing connectivity for shuffle 39 of 100
-Computing connectivity for shuffle 40 of 100
-Computing connectivity for shuffle 41 of 100
-Computing connectivity for shuffle 42 of 100
-Computing connectivity for shuffle 43 of 100
-Computing connectivity for shuffle 44 of 100
-Computing connectivity for shuffle 45 of 100
-Computing connectivity for shuffle 46 of 100
-Computing connectivity for shuffle 47 of 100
-Computing connectivity for shuffle 48 of 100
-Computing connectivity for shuffle 49 of 100
-Computing connectivity for shuffle 50 of 100
-Computing connectivity for shuffle 51 of 100
-Computing connectivity for shuffle 52 of 100
-Computing connectivity for shuffle 53 of 100
-Computing connectivity for shuffle 54 of 100
-Computing connectivity for shuffle 55 of 100
-Computing connectivity for shuffle 56 of 100
-Computing connectivity for shuffle 57 of 100
-Computing connectivity for shuffle 58 of 100
-Computing connectivity for shuffle 59 of 100
-Computing connectivity for shuffle 60 of 100
-Computing connectivity for shuffle 61 of 100
-Computing connectivity for shuffle 62 of 100
-Computing connectivity for shuffle 63 of 100
-Computing connectivity for shuffle 64 of 100
-Computing connectivity for shuffle 65 of 100
-Computing connectivity for shuffle 66 of 100
-Computing connectivity for shuffle 67 of 100
-Computing connectivity for shuffle 68 of 100
-Computing connectivity for shuffle 69 of 100
-Computing connectivity for shuffle 70 of 100
-Computing connectivity for shuffle 71 of 100
-Computing connectivity for shuffle 72 of 100
-Computing connectivity for shuffle 73 of 100
-Computing connectivity for shuffle 74 of 100
-Computing connectivity for shuffle 75 of 100
-Computing connectivity for shuffle 76 of 100
-Computing connectivity for shuffle 77 of 100
-Computing connectivity for shuffle 78 of 100
-Computing connectivity for shuffle 79 of 100
-Computing connectivity for shuffle 80 of 100
-Computing connectivity for shuffle 81 of 100
-Computing connectivity for shuffle 82 of 100
-Computing connectivity for shuffle 83 of 100
-Computing connectivity for shuffle 84 of 100
-Computing connectivity for shuffle 85 of 100
-Computing connectivity for shuffle 86 of 100
-Computing connectivity for shuffle 87 of 100
-Computing connectivity for shuffle 88 of 100
-Computing connectivity for shuffle 89 of 100
-Computing connectivity for shuffle 90 of 100
-Computing connectivity for shuffle 91 of 100
-Computing connectivity for shuffle 92 of 100
-Computing connectivity for shuffle 93 of 100
-Computing connectivity for shuffle 94 of 100
-Computing connectivity for shuffle 95 of 100
-Computing connectivity for shuffle 96 of 100
-Computing connectivity for shuffle 97 of 100
-Computing connectivity for shuffle 98 of 100
-Computing connectivity for shuffle 99 of 100
-Computing connectivity for shuffle 100 of 100
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing connectivity for shuffle 1 of 25
+Computing connectivity for shuffle 2 of 25
+Computing connectivity for shuffle 3 of 25
+Computing connectivity for shuffle 4 of 25
+Computing connectivity for shuffle 5 of 25
+Computing connectivity for shuffle 6 of 25
+Computing connectivity for shuffle 7 of 25
+Computing connectivity for shuffle 8 of 25
+Computing connectivity for shuffle 9 of 25
+Computing connectivity for shuffle 10 of 25
+Computing connectivity for shuffle 11 of 25
+Computing connectivity for shuffle 12 of 25
+Computing connectivity for shuffle 13 of 25
+Computing connectivity for shuffle 14 of 25
+Computing connectivity for shuffle 15 of 25
+Computing connectivity for shuffle 16 of 25
+Computing connectivity for shuffle 17 of 25
+Computing connectivity for shuffle 18 of 25
+Computing connectivity for shuffle 19 of 25
+Computing connectivity for shuffle 20 of 25
+Computing connectivity for shuffle 21 of 25
+Computing connectivity for shuffle 22 of 25
+Computing connectivity for shuffle 23 of 25
+Computing connectivity for shuffle 24 of 25
+Computing connectivity for shuffle 25 of 25
 </pre></div>
 </div>
 <p>Plotting the post-stimulus connectivity against the estimates from both sets of
@@ -1187,7 +962,7 @@ generated using the <a class="reference internal" href="../generated/mne_connect
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">All-to-all connectivity | Post-stimulus</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_surrogate_connectivity_003.png" srcset="../_images/sphx_glr_surrogate_connectivity_003.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7458c8f13230&gt;
+<img src="../_images/sphx_glr_surrogate_connectivity_003.png" srcset="../_images/sphx_glr_surrogate_connectivity_003.png" alt="All-to-all connectivity | Post-stimulus" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7557afa4aa50&gt;
 </pre></div>
 </div>
 </section>
@@ -1233,7 +1008,7 @@ significance of connectivity estimates, both on a single recording- and group-le
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (8 minutes 41.921 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 8.535 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-surrogate-connectivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/7ec8e983400b5cb9d1a8f9b7626d69bd/surrogate_connectivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">surrogate_connectivity.ipynb</span></code></a></p>
@@ -1330,7 +1105,7 @@ significance of connectivity estimates, both on a single recording- and group-le
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-28.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-09-29.
       <br/>
     
   </p>
