@@ -17,6 +17,8 @@ followed by examples on simulated data and real EEG data.
 #
 # sphinx_gallery_thumbnail_number = 12
 
+# %%
+
 import mne
 import numpy as np
 from mne.datasets import sample
@@ -106,6 +108,8 @@ rng = np.random.default_rng(1234)  # set seed for reproducibility
 # when data is collected over an event of interest where we **assume** the
 # connectivity structure is the same over each event.
 
+# %%
+
 n_epochs = 5  # number of simulated epochs
 n_channels = 3  # number of channels
 n_times = 300  # number of sample points
@@ -124,6 +128,8 @@ data_epoch.plot(n_epochs=2, scalings=0.6)  # Visualize the data
 
 ###############################################################################
 # First we compute connectivity over trials.
+
+# %%
 
 # Freq bands of interest
 Freq_Bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
@@ -162,11 +168,13 @@ con_epochs = spectral_connectivity_epochs(
 # :class:`mne_connectivity.SpectralConnectivity`, which does not have
 # single timepoint resolution.
 
+# %%
+
 # In this example, we will just show alpha
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 for con in con_epochs:
-    con_array = con.get_data()
+    con_array = con.get_data("raveled")
     con_array = np.mean(con_array, axis=2)  # average over timepoints
     con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
@@ -181,6 +189,8 @@ for con in con_epochs:
 # between the three electrodes over trials are exactly 1.
 #
 # We will now compute connectivity over time.
+
+# %%
 
 # Compute connectivity over time
 con_time = spectral_connectivity_time(
@@ -200,8 +210,11 @@ con_time = spectral_connectivity_time(
 # for each epoch, but to visualise the results we want to average over epochs, which we
 # do in the function by setting ``average=True``.
 
+# %%
+
 for con in con_time:
-    con_array = con.get_data()[..., foi]  # select frequency band of interest
+    con_array = con.get_data("raveled")
+    con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
         con_array, con.n_nodes, con.names, con.indices, con.method
     )
@@ -221,6 +234,8 @@ for con in con_time:
 # for each epoch and each channel. In this case we would expect the
 # connectivity over time between channels to be 1, but not the connectivity
 # over trials.
+
+# %%
 
 for i in range(n_epochs):  # ensure each epoch are different
     for c in range(n_channels):  # and each channel are also different
@@ -243,6 +258,8 @@ data_epoch.plot(scalings=1, n_epochs=1)
 ###############################################################################
 # First we compute connectivity over trials.
 
+# %%
+
 con_epochs = spectral_connectivity_epochs(
     data_epoch,
     method=connectivity_methods,
@@ -255,7 +272,7 @@ con_epochs = spectral_connectivity_epochs(
 )
 
 for con in con_epochs:
-    con_array = con.get_data()
+    con_array = con.get_data("raveled")
     con_array = np.mean(con_array, axis=2)  # average over timepoints
     con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
@@ -271,6 +288,8 @@ for con in con_epochs:
 #
 # We will now compute connectivity over time.
 
+# %%
+
 con_time = spectral_connectivity_time(
     data_epoch,
     freqs,
@@ -283,7 +302,8 @@ con_time = spectral_connectivity_time(
 )
 
 for con in con_time:
-    con_array = con.get_data()[..., foi]  # select frequency band of interest
+    con_array = con.get_data("raveled")
+    con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
         con_array, con.n_nodes, con.names, con.indices, con.method
     )
@@ -299,6 +319,8 @@ for con in con_time:
 # Real data demonstration
 # -----------------------
 # To finish this example, we will compute connectivity for a sample EEG data.
+
+# %%
 
 data_path = sample.data_path()
 raw_fname = data_path / "MEG/sample/sample_audvis_filt-0-40_raw.fif"
@@ -327,6 +349,8 @@ epochs.load_data()  # load the data
 # have also been observed during the time window of P1 and
 # N1 :footcite:`KlimeschEtAl2004`. Here, we will therefore analyze phase
 # connectivity in the theta band around P1
+
+# %%
 
 sfreq = epochs.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period for connectivity estimation
@@ -360,9 +384,11 @@ con_epochs = spectral_connectivity_epochs(
 # epochs and are looking at theta activity. This might make the connectivity
 # measurements more sensitive to noise.
 
+# %%
+
 # Convert to TemporalConnectivity object for plotting over time
 con_epochs = TemporalConnectivity(
-    con_epochs.get_data()[:, 0, :],
+    con_epochs.get_data("raveled")[:, 0, :],
     con_epochs.times,
     con_epochs.n_nodes,
     con_epochs.names,
@@ -370,14 +396,21 @@ con_epochs = TemporalConnectivity(
     con_epochs.method,
 )
 
-# Plot global connectivity by averaging results
-plot_temporal_connectivity(con_epochs, info=epochs.info, combine="mean", ci="sd")
-
 # Get the timepoint with highest global connectivity right after stimulus
-t_con_max = np.argmax(
-    np.mean(con_epochs.get_data(), axis=0)[np.array(con_epochs.times) <= 0.5]
+max_con_idx = np.argmax(
+    np.mean(con_epochs.get_data("raveled"), axis=0)[np.array(con_epochs.times) <= 0.5]
 )
-print(f"Global theta wPLI peaks {con_epochs.times[t_con_max]:.3f}s after stimulus")
+max_con_time = con_epochs.times[max_con_idx]
+print(f"Global theta wPLI peaks {max_con_time:.3f}s after stimulus")
+
+# Plot global connectivity by averaging results
+plot_temporal_connectivity(
+    con_epochs,
+    info=epochs.info,
+    highlight=(max_con_time - 0.03, max_con_time + 0.03),  # highlight around peak
+    combine="mean",
+    ci=95,
+)
 
 ###############################################################################
 # We see that around the timing of the P1 evoked response, there is high theta
@@ -386,9 +419,11 @@ print(f"Global theta wPLI peaks {con_epochs.times[t_con_max]:.3f}s after stimulu
 # timepoint with most global theta connectivity after stimulus presentation
 # and plot the sensor connectivity of the 20 highest connections
 
+# %%
+
 # Plot the connectivity matrix at the timepoint with highest global wPLI
 max_con = Connectivity(
-    con_epochs.get_data()[:, t_con_max],
+    con_epochs.get_data("raveled")[:, max_con_idx],
     con_epochs.n_nodes,
     con_epochs.names,
     con_epochs.indices,

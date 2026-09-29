@@ -142,7 +142,7 @@ print(f"Raveled connectivity shape: {raveled_data.shape} (connections x freqs)")
 
 # %%
 
-dense_data, multivariate_nodes = con.get_data(output="dense")
+dense_data, multivariate_nodes = con.get_data(output="dense", missing=np.nan)
 print(f"Dense connectivity shape: {dense_data.shape} (nodes x nodes x freqs)")
 
 # This mapping is done by taking the set of channels that define each node and assigning

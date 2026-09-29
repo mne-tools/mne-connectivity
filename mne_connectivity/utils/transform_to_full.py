@@ -1,0 +1,98 @@
+from functools import partial
+
+import numpy as np
+
+
+def _get_full_connectivity(data, indices, n_nodes, method, missing):
+    """Get full connectivity matrix from raveled data.
+
+    Attempts to fill missing values in the connectivity data where needed, if the
+    method is known and the logic to do so is possible from what data is available.
+    """
+    # Fill with specified missing value if requested
+    if missing != "raise":
+        return _make_square(data, indices, n_nodes, fill=missing)
+
+    # Check if data is already full (no need to fill missing values)
+    if indices == "all":
+        return _make_square(data, indices, n_nodes)
+    if isinstance(indices, tuple):
+        indices = tuple(np.asarray(ind) for ind in indices)
+        full_indices = np.unravel_index(np.arange(n_nodes**2), (n_nodes, n_nodes))
+        if not np.array_equal(indices, full_indices):
+            raise ValueError(
+                "Cannot fill missing values for connectivity data when indices are "
+                "specified as a tuple that does not represent the full connectivity "
+                "matrix."
+            )
+        return _make_square(data, indices, n_nodes)
+
+    # Check if we can infer missing entries in the data for the method
+    if method not in _CAN_FILL_MISSING:
+        raise ValueError(
+            f"Cannot fill missing values for connectivity data for the method {method}."
+        )
+    data = _make_square(data, indices, n_nodes)
+    return _CAN_FILL_MISSING[method](data, indices)
+
+
+def _make_square(data, indices, n_nodes, fill=0.0):
+    """Make raveled connectivity data square [n_nodes, n_nodes(, ...)]."""
+    if np.iscomplexobj(data):
+        fill = fill + 1j * fill
+    square_matrix = np.full(
+        (n_nodes, n_nodes, *data.shape[1:]), fill_value=fill, dtype=data.dtype
+    )
+
+    if indices == "all":
+        indices = np.unravel_index(np.arange(n_nodes**2), (n_nodes, n_nodes))
+    elif indices == "lower":
+        indices = np.tril_indices(n_nodes, k=-1)
+    elif indices == "upper":
+        indices = np.triu_indices(n_nodes, k=1)
+    # else indices is a tuple of arrays and can be used directly
+
+    square_matrix[indices] = data
+
+    return square_matrix
+
+
+def _make_full(data, indices, diag, transpose_extra=None):
+    """Fill missing values in the connectivity data."""
+    assert indices in ("lower", "upper"), (
+        "Expected indices to be 'lower' or 'upper' for symmetrisation, got "
+        f"{indices}. Please contact the MNE-Connectivity developers."
+    )
+    # Always transpose
+    data = data + data.transpose(1, 0, *range(2, data.ndim))
+    # Perform something on top of the transpose if needed
+    if transpose_extra is not None:
+        if indices == "lower":
+            triu = np.triu_indices(data.shape[0], k=1)
+            data[triu] = transpose_extra(data[triu])
+        else:  # "upper"
+            tril = np.tril_indices(data.shape[0], k=-1)
+            data[tril] = transpose_extra(data[tril])
+    # Set the diagonal
+    data[np.diag_indices(data.shape[0])] = diag
+    return data
+
+
+# TODO Env corr diagonal should be 0 when orthogonalized
+_CAN_FILL_MISSING = {
+    "coh": partial(_make_full, diag=1.0),
+    "cohy": partial(_make_full, diag=1.0 + 0.0j, transpose_extra=np.conj),
+    "imcoh": partial(_make_full, diag=0.0, transpose_extra=lambda x: -x),
+    "plv": partial(_make_full, diag=1.0),
+    "ciplv": partial(_make_full, diag=0.0),
+    "ppc": partial(_make_full, diag=1.0),
+    "pli": partial(_make_full, diag=0.0),
+    "pli2_unbiased": partial(_make_full, diag=0.0),
+    "dpli": partial(_make_full, diag=0.5, transpose_extra=lambda x: 1.0 - x),
+    "wpli": partial(_make_full, diag=0.0),
+    "wpli2_debiased": partial(_make_full, diag=0.0),
+    "phase-slope-index": partial(_make_full, diag=0.0, transpose_extra=lambda x: -x),
+    "envelope correlation": partial(_make_full, diag=1.0),
+    "SMI": partial(_make_full, diag=0.0),
+    "wSMI": partial(_make_full, diag=0.0),
+}
