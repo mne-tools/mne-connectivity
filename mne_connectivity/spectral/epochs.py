@@ -645,11 +645,12 @@ def _epoch_spectral_connectivity(
             for this_method in con_methods:
                 this_method.accumulate(con_idx, csd)
     else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
+        # conjugate per signal once rather than per (much larger) gathered block
+        x_t_conj = x_t.conjugate()
         for i in range(0, n_con_signals, block_size):
             n_extra = max(0, i + block_size - n_con_signals)
             con_idx = slice(i, i + block_size - n_extra)
-            # this codes can be very slow
-            csd = x_t[idx_map[0][con_idx]] * x_t[idx_map[1][con_idx]].conjugate()
+            csd = x_t[idx_map[0][con_idx]] * x_t_conj[idx_map[1][con_idx]]
 
             for this_method in con_methods:
                 this_method.accumulate(con_idx, csd)
