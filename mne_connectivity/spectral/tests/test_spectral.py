@@ -1,4 +1,3 @@
-import inspect
 import os
 import platform
 
@@ -972,11 +971,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         )
 
     # check rank-deficient data caught
-    # XXX: remove logic once support for mne<1.6 is dropped
-    kwargs = dict()
-    if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-        kwargs["copy"] = False
-    bad_data = data.get_data(**kwargs)
+    bad_data = data.get_data()
     bad_data[:, 1] = bad_data[:, 0]
     bad_data[:, 3] = bad_data[:, 2]
     assert np.all(np.linalg.matrix_rank(bad_data[:, (0, 1), :]) == 1)
@@ -1572,6 +1567,30 @@ def test_spectral_connectivity_time_freqs(method, freqs, mode):
 
     # signals are perfectly phase-locked, connectivity matrix should be all ones
     assert np.allclose(con_matrix, 1.0, atol=0.01)
+
+
+def test_spectral_connectivity_time_faverage():
+    """Test faverage in spectral_connectivity_time averages over the requested band."""
+    data = np.random.default_rng(0).standard_normal((3, 3, 1000))
+    freqs = np.arange(5.0, 41.0)
+    fmin, fmax = (20.0, 30.0), (30.0, 40.0)
+    kwargs = dict(method="coh", sfreq=250, fmin=fmin, fmax=fmax, sm_times=0)
+    con_all = spectral_connectivity_time(data, freqs, faverage=False, **kwargs)
+    con_avg = spectral_connectivity_time(data, freqs, faverage=True, **kwargs)
+
+    con_freqs = np.array(con_all.freqs)
+    for band, (f_lower, f_upper) in enumerate(zip(fmin, fmax)):
+        in_band = (con_freqs >= f_lower) & (con_freqs <= f_upper)
+        expected = con_all.get_data()[..., in_band].mean(axis=-1)
+        assert_allclose(con_avg.get_data()[..., band], expected)
+
+    with pytest.raises(
+        ValueError,
+        match="There are no frequency bins between 20.25 Hz and 20.75 Hz.",
+    ):
+        spectral_connectivity_time(
+            data, freqs, faverage=True, method="coh", sfreq=250, fmin=20.25, fmax=20.75
+        )
 
 
 @pytest.mark.parametrize("method", ["coh", "imcoh", "cohy", "plv", "pli", "wpli"])

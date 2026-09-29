@@ -304,11 +304,10 @@ def test_connectivity_containers_multivariate(conn_cls):
     assert np.all(isinstance(ind, np.ndarray) for ind in multivariate_nodes)
     assert set(tuple(ind) for ind in multivariate_nodes) == nodes
     triu_indices = np.triu_indices(len(nodes), k=1)
-    # TODO VERSION: use [*triu_indices] when Py3.10 dropped
     if conn_cls.is_epoched:
-        assert_array_equal(matrix[:, triu_indices[0], triu_indices[1]], data)
+        assert_array_equal(matrix[:, *triu_indices], data)
     else:
-        assert_array_equal(matrix[triu_indices[0], triu_indices[1]], data)
+        assert_array_equal(matrix[*triu_indices], data)
 
     # Check that indices need to be specified for multivariate data
     error_msg = (

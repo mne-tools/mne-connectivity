@@ -4,10 +4,8 @@
 #
 # License: BSD (3-clause)
 
-import inspect
 
 import numpy as np
-import xarray as xr
 from mne._fiff.pick import _picks_to_idx
 from mne.epochs import BaseEpochs
 from mne.parallel import parallel_func
@@ -447,11 +445,7 @@ def spectral_connectivity_time(
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
         if isinstance(data, BaseEpochs):
-            # XXX: remove logic once support for mne<1.6 is dropped
-            kwargs = dict()
-            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-                kwargs["copy"] = False
-            data = data.get_data(**kwargs)
+            data = data.get_data()
             n_epochs, n_signals, n_times = data.shape
         else:
             freqs = data.freqs  # use freqs from EpochsTFR object
@@ -646,12 +640,18 @@ def spectral_connectivity_time(
     freqs = freqs[freq_mask]
     n_cycles = n_cycles[freq_mask]
 
-    # compute central frequencies
-    _f = xr.DataArray(np.arange(len(freqs)), dims=("freqs",), coords=(freqs,))
-    foi_s = _f.sel(freqs=fmin, method="nearest").data
-    foi_e = _f.sel(freqs=fmax, method="nearest").data
-    foi_idx = np.c_[foi_s, foi_e]
-    f_vec = freqs[foi_idx].mean(1)
+    # get the freq. indices and central frequencies for each band
+    freq_idx_bands = [
+        np.where((freqs >= fl) & (freqs <= fu))[0] for fl, fu in zip(fmin, fmax)
+    ]
+    for i, freq_idx in enumerate(freq_idx_bands):
+        if len(freq_idx) == 0:
+            raise ValueError(
+                f"There are no frequency bins between {fmin[i]} Hz and {fmax[i]} Hz. "
+                "Change the band specification (fmin, fmax) or increase frequency "
+                "resolution."
+            )
+    f_vec = np.array([freqs[freq_idx].mean() for freq_idx in freq_idx_bands])
 
     if faverage:
         n_freqs = len(fmin)
@@ -689,7 +689,7 @@ def spectral_connectivity_time(
     call_params = dict(
         method=method,
         kernel=kernel,
-        foi_idx=foi_idx,
+        foi_idx=freq_idx_bands,
         source_idx=source_idx,
         target_idx=target_idx,
         signals_use=signals_use,
@@ -843,8 +843,8 @@ def _spectral_connectivity(
         List of connectivity metrics to compute.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
         Smoothing kernel.
-    foi_idx : array_like, shape (n_foi, 2)
-        Upper and lower bound indices of frequency bands.
+    foi_idx : list of array
+        Indices of the frequency bins in each frequency band.
     source_idx : array_like, shape (n_cons,) or (n_cons, n_channels)
         Defines the signal pairs of interest together with ``target_idx``.
     target_idx : array_like, shape (n_cons,) or (n_cons, n_channels)
@@ -1036,8 +1036,8 @@ def _parallel_con(
         List of connectivity metrics to compute.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
         Smoothing kernel.
-    foi_idx : array_like, shape (n_foi, 2)
-        Upper and lower bound indices of frequency bands.
+    foi_idx : list of array
+        Indices of the frequency bins in each frequency band.
     source_idx : array_like, shape (n_cons,) or (n_cons, n_channels)
         Defines the signal pairs of interest together with ``target_idx``.
     target_idx : array_like, shape (n_cons,) or (n_cons, n_channels)
@@ -1141,8 +1141,8 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         Connectivity method.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
         Smoothing kernel.
-    foi_idx : array_like, shape (n_foi, 2)
-        Upper and lower bound indices of frequency bands.
+    foi_idx : list of array
+        Indices of the frequency bins in each frequency band.
     faverage : bool
         Average over frequency bands.
     weights : array_like, shape (n_tapers, n_freqs, n_times) | None
@@ -1174,7 +1174,7 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
 
     for i, _ in enumerate(out):
         # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
+        if faverage:
             out[i] = _foi_average(out[i], foi_idx)
         # squeeze time dimension
         out[i] = out[i].squeeze(axis=-1)
@@ -1215,8 +1215,8 @@ def _multivariate_con(
         Connectivity method.
     kernel : array_like, shape (n_sm_fres, n_sm_times)
         Smoothing kernel.
-    foi_idx : array_like, shape (n_foi, 2)
-        Upper and lower bound indices of frequency bands.
+    foi_idx : list of array
+        Indices of the frequency bins in each frequency band.
     faverage : bool
         Average over frequency bands.
     weights : array_like, shape (n_tapers, n_freqs, n_times) | None
@@ -1292,7 +1292,7 @@ def _multivariate_con(
 
     for i, _ in enumerate(scores):
         # mean inside frequency sliding window (if needed)
-        if isinstance(foi_idx, np.ndarray) and faverage:
+        if faverage:
             scores[i] = _foi_average(scores[i], foi_idx)
             if patterns[i] is not None:
                 patterns[i] = _foi_average(patterns[i], foi_idx)
@@ -1496,8 +1496,8 @@ def _foi_average(conn, foi_idx):
     ----------
     conn : array, shape (..., n_freqs, n_times)
         Connectivity estimate array.
-    foi_idx : array, shape (n_foi, 2)
-        Upper and lower frequency bounds of each frequency band.
+    foi_idx : list of array
+        Indices of the frequency bins in each frequency band.
 
     Returns
     -------
@@ -1505,7 +1505,7 @@ def _foi_average(conn, foi_idx):
         Connectivity estimate array, averaged within frequency bands.
     """
     # get the number of foi
-    n_foi = foi_idx.shape[0]
+    n_foi = len(foi_idx)
 
     # get input shape and replace n_freqs with the number of foi
     sh = list(conn.shape)
@@ -1513,7 +1513,6 @@ def _foi_average(conn, foi_idx):
 
     # compute average
     conn_f = np.zeros(sh, dtype=conn.dtype)
-    for n_f, (f_s, f_e) in enumerate(foi_idx):
-        f_e += 1 if f_s == f_e else f_e
-        conn_f[..., n_f, :] = conn[..., f_s:f_e, :].mean(-2)
+    for n_f, freq_idx in enumerate(foi_idx):
+        conn_f[..., n_f, :] = conn[..., freq_idx, :].mean(-2)
     return conn_f

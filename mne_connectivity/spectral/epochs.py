@@ -241,9 +241,9 @@ def _prepare_connectivity(
     for i, n_f_band in enumerate([len(f) for f in freqs_bands]):
         if n_f_band == 0:
             raise ValueError(
-                f"There are no frequency points between {fmin[i]:.1f}Hz and "
-                f"{fmax[i]:.1f}Hz. Change the band specification (fmin, fmax) or the "
-                "frequency resolution."
+                f"There are no frequency bins between {fmin[i]} Hz and {fmax[i]} Hz. "
+                "Change the band specification (fmin, fmax) or increase frequency "
+                "resolution."
             )
     if n_bands == 1:
         logger.info(
@@ -644,11 +644,12 @@ def _epoch_spectral_connectivity(
             for this_method in con_methods:
                 this_method.accumulate(con_idx, csd)
     else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
+        # conjugate per signal once rather than per (much larger) gathered block
+        x_t_conj = x_t.conjugate()
         for i in range(0, n_con_signals, block_size):
             n_extra = max(0, i + block_size - n_con_signals)
             con_idx = slice(i, i + block_size - n_extra)
-            # this codes can be very slow
-            csd = x_t[idx_map[0][con_idx]] * x_t[idx_map[1][con_idx]].conjugate()
+            csd = x_t[idx_map[0][con_idx]] * x_t_conj[idx_map[1][con_idx]]
 
             for this_method in con_methods:
                 this_method.accumulate(con_idx, csd)
@@ -823,10 +824,8 @@ def spectral_connectivity_epochs(
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
            or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
-           data. Storing Fourier coefficients in
-           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
-           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
-           requires ``mne >= 1.10``.
+           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`
+           objects requires ``mne >= 1.10``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
@@ -1225,7 +1224,8 @@ def spectral_connectivity_epochs(
             if not hasattr(data, "weights") or (
                 data.weights is None and mode == "multitaper"
             ):
-                # XXX: Remove logic when support for mne<1.10 is dropped
+                # TODO Version: Only mention re-computing saved objects when mne<1.10 is
+                # dropped
                 raise AttributeError(
                     "weights are required for multitaper coefficients stored in "
                     "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "

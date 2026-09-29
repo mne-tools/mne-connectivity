@@ -10,7 +10,6 @@
 # License: BSD (3-clause)
 
 import copy
-import inspect
 
 import numpy as np
 from mne.epochs import BaseEpochs
@@ -27,11 +26,7 @@ def _check_rank_input(rank, data, indices):
         rank = np.zeros((2, len(indices[0])), dtype=int)
 
         if isinstance(data, BaseEpochs):
-            # XXX: remove logic once support for mne<1.6 is dropped
-            kwargs = dict()
-            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-                kwargs["copy"] = False
-            data_arr = data.get_data(**kwargs)
+            data_arr = data.get_data()
         elif isinstance(data, EpochsSpectrum):
             # Spectrum objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
