@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</title>
+    <title>mne_connectivity.spectral.epochs &#8212; MNE-Connectivity 0.10.0.dev26+g1c3cbe4f5 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../../_static/documentation_options.js?v=b3837f24"></script>
+    <script src="../../../_static/documentation_options.js?v=44a6c899"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev25+g09fb52a65 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev26+g1c3cbe4f5 documentation</p>
   
 </a></div>
     
@@ -457,7 +457,6 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.time_frequency.multitaper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_compute_mt_params</span><span class="p">,</span>
-    <span class="n">_csd_from_mt</span><span class="p">,</span>
     <span class="n">_mt_spectra</span><span class="p">,</span>
     <span class="n">_psd_from_mt</span><span class="p">,</span>
     <span class="n">_psd_from_mt_adaptive</span><span class="p">,</span>
@@ -898,37 +897,6 @@
     <span class="k">return</span> <span class="n">x_t</span><span class="p">,</span> <span class="n">this_psd</span><span class="p">,</span> <span class="n">weights</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_tfr_csd_from_mt</span><span class="p">(</span><span class="n">x_mt</span><span class="p">,</span> <span class="n">y_mt</span><span class="p">,</span> <span class="n">weights_x</span><span class="p">,</span> <span class="n">weights_y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Compute time-frequency CSD from tapered spectra.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x_mt : array, shape (..., n_tapers, n_freqs, n_times)</span>
-<span class="sd">        The tapered time-frequency spectra for signals x.</span>
-<span class="sd">    y_mt : array, shape (..., n_tapers, n_freqs, n_times)</span>
-<span class="sd">        The tapered time-frequency spectra for signals y.</span>
-<span class="sd">    weights_x : array, shape (n_tapers, n_freqs)</span>
-<span class="sd">        Weights to use for combining the tapered spectra of x_mt.</span>
-<span class="sd">    weights_y : array, shape (n_tapers, n_freqs)</span>
-<span class="sd">        Weights to use for combining the tapered spectra of y_mt.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    csd : array, shape (..., n_freqs, n_times)</span>
-<span class="sd">        The CSD between x and y.</span>
-<span class="sd">    """</span>
-    <span class="c1"># expand weights dims to match x_mt and y_mt</span>
-    <span class="n">weights_x</span> <span class="o">=</span> <span class="n">weights_x</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-    <span class="n">weights_y</span> <span class="o">=</span> <span class="n">weights_y</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-    <span class="c1"># compute CSD</span>
-    <span class="n">csd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights_x</span> <span class="o">*</span> <span class="n">x_mt</span> <span class="o">*</span> <span class="p">(</span><span class="n">weights_y</span> <span class="o">*</span> <span class="n">y_mt</span><span class="p">)</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">weights_x</span> <span class="o">*</span> <span class="n">weights_x</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">weights_y</span> <span class="o">*</span> <span class="n">weights_y</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">csd</span> <span class="o">*=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">denom</span>
-    <span class="k">return</span> <span class="n">csd</span>
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">_epoch_spectral_connectivity</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">sig_idx</span><span class="p">,</span>
@@ -1060,36 +1028,26 @@
         <span class="n">this_method</span><span class="o">.</span><span class="n">start_epoch</span><span class="p">()</span>
 
     <span class="c1"># accumulate connectivity scores</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"multitaper"</span><span class="p">,</span> <span class="s2">"fourier"</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_con_signals</span><span class="p">,</span> <span class="n">block_size</span><span class="p">):</span>
-            <span class="n">n_extra</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_con_signals</span><span class="p">)</span>
-            <span class="n">con_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_extra</span><span class="p">)</span>
-            <span class="n">compute_csd</span> <span class="o">=</span> <span class="n">_csd_from_mt</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tfr_con</span> <span class="k">else</span> <span class="n">_tfr_csd_from_mt</span>
-            <span class="k">if</span> <span class="n">mt_adaptive</span><span class="p">:</span>
-                <span class="n">csd</span> <span class="o">=</span> <span class="n">compute_csd</span><span class="p">(</span>
-                    <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span>
-                    <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">csd</span> <span class="o">=</span> <span class="n">compute_csd</span><span class="p">(</span>
-                    <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span> <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]],</span> <span class="n">weights</span><span class="p">,</span> <span class="n">weights</span>
-                <span class="p">)</span>
+    <span class="n">use_tapers</span> <span class="o">=</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"multitaper"</span><span class="p">,</span> <span class="s2">"fourier"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">use_tapers</span><span class="p">:</span>
+        <span class="c1"># the per-pair taper weighting and normalization (as in MNE's _csd_from_mt)</span>
+        <span class="c1"># factor into per-signal scaling; sqrt(2) gives the one-sided factor of 2</span>
+        <span class="n">taper_axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span> <span class="k">if</span> <span class="n">is_tfr_con</span> <span class="k">else</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">is_tfr_con</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">weights_sq</span> <span class="o">=</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">weights</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">x_t</span> <span class="o">=</span> <span class="n">x_t</span> <span class="o">*</span> <span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">weights_sq</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">taper_axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+    <span class="c1"># conjugate per signal once rather than per (much larger) gathered block</span>
+    <span class="n">x_t_conj</span> <span class="o">=</span> <span class="n">x_t</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_con_signals</span><span class="p">,</span> <span class="n">block_size</span><span class="p">):</span>
+        <span class="n">n_extra</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_con_signals</span><span class="p">)</span>
+        <span class="n">con_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_extra</span><span class="p">)</span>
+        <span class="n">csd</span> <span class="o">=</span> <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]]</span> <span class="o">*</span> <span class="n">x_t_conj</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">use_tapers</span><span class="p">:</span>
+            <span class="n">csd</span> <span class="o">=</span> <span class="n">csd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">taper_axis</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">con_methods</span><span class="p">:</span>
-                <span class="n">this_method</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">con_idx</span><span class="p">,</span> <span class="n">csd</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># mode == 'cwt_morlet'  # reminder to add alternative TFR methods</span>
-        <span class="c1"># conjugate per signal once rather than per (much larger) gathered block</span>
-        <span class="n">x_t_conj</span> <span class="o">=</span> <span class="n">x_t</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_con_signals</span><span class="p">,</span> <span class="n">block_size</span><span class="p">):</span>
-            <span class="n">n_extra</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_con_signals</span><span class="p">)</span>
-            <span class="n">con_idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span> <span class="o">-</span> <span class="n">n_extra</span><span class="p">)</span>
-            <span class="n">csd</span> <span class="o">=</span> <span class="n">x_t</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]]</span> <span class="o">*</span> <span class="n">x_t_conj</span><span class="p">[</span><span class="n">idx_map</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">con_idx</span><span class="p">]]</span>
-
-            <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">con_methods</span><span class="p">:</span>
-                <span class="n">this_method</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">con_idx</span><span class="p">,</span> <span class="n">csd</span><span class="p">)</span>
-    <span class="c1"># future estimator types need to be explicitly handled here</span>
+        <span class="k">for</span> <span class="n">this_method</span> <span class="ow">in</span> <span class="n">con_methods</span><span class="p">:</span>
+            <span class="n">this_method</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">con_idx</span><span class="p">,</span> <span class="n">csd</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">con_methods</span><span class="p">,</span> <span class="n">psd</span>
 
