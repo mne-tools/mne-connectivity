@@ -21,7 +21,6 @@ from mne.time_frequency import (
 )
 from mne.time_frequency.multitaper import (
     _compute_mt_params,
-    _csd_from_mt,
     _mt_spectra,
     _psd_from_mt,
     _psd_from_mt_adaptive,
@@ -462,37 +461,6 @@ def _compute_spectra(
     return x_t, this_psd, weights
 
 
-def _tfr_csd_from_mt(x_mt, y_mt, weights_x, weights_y):
-    """Compute time-frequency CSD from tapered spectra.
-
-    Parameters
-    ----------
-    x_mt : array, shape (..., n_tapers, n_freqs, n_times)
-        The tapered time-frequency spectra for signals x.
-    y_mt : array, shape (..., n_tapers, n_freqs, n_times)
-        The tapered time-frequency spectra for signals y.
-    weights_x : array, shape (n_tapers, n_freqs)
-        Weights to use for combining the tapered spectra of x_mt.
-    weights_y : array, shape (n_tapers, n_freqs)
-        Weights to use for combining the tapered spectra of y_mt.
-
-    Returns
-    -------
-    csd : array, shape (..., n_freqs, n_times)
-        The CSD between x and y.
-    """
-    # expand weights dims to match x_mt and y_mt
-    weights_x = weights_x[..., np.newaxis]
-    weights_y = weights_y[..., np.newaxis]
-    # compute CSD
-    csd = np.sum(weights_x * x_mt * (weights_y * y_mt).conj(), axis=-3)
-    denom = np.sqrt((weights_x * weights_x.conj()).real.sum(axis=-3)) * np.sqrt(
-        (weights_y * weights_y.conj()).real.sum(axis=-3)
-    )
-    csd *= 2 / denom
-    return csd
-
-
 def _epoch_spectral_connectivity(
     data,
     sig_idx,
@@ -624,36 +592,26 @@ def _epoch_spectral_connectivity(
         this_method.start_epoch()
 
     # accumulate connectivity scores
-    if mode in ["multitaper", "fourier"]:
-        for i in range(0, n_con_signals, block_size):
-            n_extra = max(0, i + block_size - n_con_signals)
-            con_idx = slice(i, i + block_size - n_extra)
-            compute_csd = _csd_from_mt if not is_tfr_con else _tfr_csd_from_mt
-            if mt_adaptive:
-                csd = compute_csd(
-                    x_t[idx_map[0][con_idx]],
-                    x_t[idx_map[1][con_idx]],
-                    weights[idx_map[0][con_idx]],
-                    weights[idx_map[1][con_idx]],
-                )
-            else:
-                csd = compute_csd(
-                    x_t[idx_map[0][con_idx]], x_t[idx_map[1][con_idx]], weights, weights
-                )
+    use_tapers = mode in ["multitaper", "fourier"]
+    if use_tapers:
+        # the per-pair taper weighting and normalization (as in MNE's _csd_from_mt)
+        # factor into per-signal scaling; sqrt(2) gives the one-sided factor of 2
+        taper_axis = -3 if is_tfr_con else -2
+        if is_tfr_con:
+            weights = weights[..., np.newaxis]
+        weights_sq = (weights * weights.conj()).real
+        x_t = x_t * (weights * np.sqrt(2 / weights_sq.sum(taper_axis, keepdims=True)))
+    # conjugate per signal once rather than per (much larger) gathered block
+    x_t_conj = x_t.conjugate()
+    for i in range(0, n_con_signals, block_size):
+        n_extra = max(0, i + block_size - n_con_signals)
+        con_idx = slice(i, i + block_size - n_extra)
+        csd = x_t[idx_map[0][con_idx]] * x_t_conj[idx_map[1][con_idx]]
+        if use_tapers:
+            csd = csd.sum(taper_axis)
 
-            for this_method in con_methods:
-                this_method.accumulate(con_idx, csd)
-    else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
-        # conjugate per signal once rather than per (much larger) gathered block
-        x_t_conj = x_t.conjugate()
-        for i in range(0, n_con_signals, block_size):
-            n_extra = max(0, i + block_size - n_con_signals)
-            con_idx = slice(i, i + block_size - n_extra)
-            csd = x_t[idx_map[0][con_idx]] * x_t_conj[idx_map[1][con_idx]]
-
-            for this_method in con_methods:
-                this_method.accumulate(con_idx, csd)
-    # future estimator types need to be explicitly handled here
+        for this_method in con_methods:
+            this_method.accumulate(con_idx, csd)
 
     return con_methods, psd
 

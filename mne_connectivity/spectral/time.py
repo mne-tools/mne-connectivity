@@ -1072,18 +1072,14 @@ def _parallel_con(
         output is a tuple of lists containing arrays for the connectivity scores and
         patterns, respectively.
     """
-    if any(m in ["coh", "cohy", "imcoh"] for m in method):
-        # psd
-        if weights is not None:
-            psd = weights * w
-            psd = psd * np.conj(psd)
-            psd = psd.real.sum(axis=1)
-            psd = psd * 2 / (weights * weights.conj()).real.sum(axis=0)
-        else:
-            psd = w.real**2 + w.imag**2
-            psd = np.squeeze(psd, axis=1)
+    if weights is not None:
+        # weight and normalize each signal once rather than per connection;
+        # sqrt(2) gives the one-sided spectrum's factor of 2 in each product
+        weights_sq = (weights * weights.conj()).real
+        w = w * (weights * np.sqrt(2 / weights_sq.sum(axis=0)))
 
-        # smooth
+    if any(m in ["coh", "cohy", "imcoh"] for m in method):
+        psd = (w.real**2 + w.imag**2).sum(axis=1)
         psd = _smooth_spectra(psd, kernel)
     else:
         psd = None
@@ -1100,9 +1096,7 @@ def _parallel_con(
 
         return tuple(
             parallel(
-                my_pairwise_con(
-                    w, psd, s, t, method, kernel, foi_idx, faverage, weights
-                )
+                my_pairwise_con(w, psd, s, t, method, kernel, foi_idx, faverage)
                 for s, t in zip(source_idx, target_idx)
             )
         )
@@ -1116,7 +1110,6 @@ def _parallel_con(
         kernel,
         foi_idx,
         faverage,
-        weights,
         gc_n_lags,
         rank,
         n_components,
@@ -1124,13 +1117,13 @@ def _parallel_con(
     )
 
 
-def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
+def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage):
     """Compute spectral connectivity metrics between two signals.
 
     Parameters
     ----------
     w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
-        Time-frequency data.
+        Time-frequency data, already scaled by any taper weights.
     psd : array_like, shape (n_chans, n_freqs, n_times)
         Power spectrum between signals ``x`` and ``y``.
     x : int
@@ -1145,8 +1138,6 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         Indices of the frequency bins in each frequency band.
     faverage : bool
         Average over frequency bands.
-    weights : array_like, shape (n_tapers, n_freqs, n_times) | None
-        Multitaper weights.
 
     Returns
     -------
@@ -1155,14 +1146,7 @@ def _pairwise_con(w, psd, x, y, method, kernel, foi_idx, faverage, weights):
         the methods in ``method``. Each element is an array with shape ``(n_freqs,)`` or
         ``(n_fbands)`` depending on ``faverage``.
     """
-    w_x, w_y = w[x], w[y]
-    if weights is not None:
-        s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
-        s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
-    else:
-        s_xy = w_x * np.conj(w_y)
-        s_xy = np.squeeze(s_xy, axis=0)
-    s_xy = _smooth_spectra(s_xy, kernel)
+    s_xy = _smooth_spectra((w[x] * w[y].conj()).sum(axis=0), kernel)
     out = []
     for m in method:
         if m in ["coh", "cohy", "imcoh"]:
@@ -1191,7 +1175,6 @@ def _multivariate_con(
     kernel,
     foi_idx,
     faverage,
-    weights,
     gc_n_lags,
     rank,
     n_components,
@@ -1202,7 +1185,7 @@ def _multivariate_con(
     Parameters
     ----------
     w : array_like, shape (n_chans, n_tapers, n_freqs, n_times)
-        Time-frequency data.
+        Time-frequency data, already scaled by any taper weights.
     seeds : array, shape of (n_cons, n_channels)
         Seed channel indices. ``n_channels`` is the largest number of channels across
         all connections, with missing entries padded with ``-1``.
@@ -1219,8 +1202,6 @@ def _multivariate_con(
         Indices of the frequency bins in each frequency band.
     faverage : bool
         Average over frequency bands.
-    weights : array_like, shape (n_tapers, n_freqs, n_times) | None
-        Multitaper weights.
     gc_n_lags : int
         Number of lags to use for the vector autoregressive model when computing Granger
         causality.
@@ -1251,13 +1232,7 @@ def _multivariate_con(
     csd = []
     for x in signals_use:
         for y in signals_use:
-            w_x, w_y = w[x], w[y]
-            if weights is not None:
-                s_xy = np.sum(weights * w_x * np.conj(weights * w_y), axis=0)
-                s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=0)
-            else:
-                s_xy = w_x * np.conj(w_y)
-                s_xy = np.squeeze(s_xy, axis=0)
+            s_xy = (w[x] * w[y].conj()).sum(axis=0)
             csd.append(_smooth_spectra(s_xy, kernel).mean(axis=-1))
     csd = np.array(csd)
 
@@ -1474,17 +1449,6 @@ _CON_METHOD_MAP_TIME = {
     **_CON_METHOD_MAP_BIVARIATE_TIME,
     **_CON_METHOD_MAP_MULTIVARIATE,
 }
-
-
-def _compute_csd(x, y, weights):
-    """Compute cross spectral density between signals x and y."""
-    if weights is not None:
-        s_xy = np.sum(weights * x * np.conj(weights * y), axis=-3)
-        s_xy = s_xy * 2 / (weights * np.conj(weights)).real.sum(axis=-3)
-    else:
-        s_xy = x * np.conj(y)
-        s_xy = np.squeeze(s_xy, axis=-3)
-    return s_xy
 
 
 def _foi_average(conn, foi_idx):
