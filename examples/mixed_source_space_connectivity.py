@@ -196,7 +196,7 @@ plot_connectivity_circle(
     n_lines=300,
     node_angles=node_angles,
     node_colors=node_colors,
-    title="All-to-All Connectivity left-Auditory " "Condition (PLI)",
+    title="All-to-All Connectivity left-Auditory Condition (PLI)",
     ax=ax,
 )
 fig.tight_layout()
