@@ -124,7 +124,7 @@ pretrial_con = np.abs(pretrial_con.get_data()).mean(
 # %%
 
 # Generate pre-trial surrogate data
-n_shuffles = 100  # recommended is ≥ 1,000; limited here to reduce compute time
+n_shuffles = 25  # very few shuffles for speed; recommended is ≥ 1,000
 pretrial_surrogates = make_surrogate_resting_data(
     pretrial_coeffs, n_shuffles=n_shuffles, rng_seed=42
 )
@@ -302,7 +302,7 @@ ax.legend()
 beta_con_poststim = poststim_con[beta_freqs].mean()
 
 # Compute lower beta connectivity for surrogate data
-beta_con_poststim_surrogate = poststim_surrogate_con[:, beta_freqs].mean(axis=0)
+beta_con_poststim_surrogate = poststim_surrogate_con[:, beta_freqs].mean(axis=1)
 
 # Compute p-value for post-stimulus lower beta coupling
 p_val = np.sum(beta_con_poststim <= beta_con_poststim_surrogate) / n_shuffles

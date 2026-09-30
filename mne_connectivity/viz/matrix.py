@@ -77,7 +77,7 @@ def plot_connectivity(
 
     _validate_type(con, Connectivity, "`con`", "Connectivity")
 
-    _check_data_is_real(con.get_data())
+    _check_data_is_real(con.get_data("raveled"))
 
     _check_option("con.shape", len(con.shape), [1, 2], " length")
 
@@ -90,13 +90,9 @@ def plot_connectivity(
     ch_names = con.names
     con_method = con.method if con.method is not None else "connectivity"
     ch_info = _check_info(info, ch_names)
-    data, indices, is_multivar = _handle_data_and_indices(con, ch_info)
-
-    # Get info about nodes and connections
-    node_names, node_indices = _get_node_names_and_indices(
-        ch_names, node_aliases, indices, is_multivar
+    data, indices, is_multivar, _, duplicate_cons_mask = _handle_data_and_indices(
+        con, ch_info
     )
-    con_info = _get_con_info(ch_info, node_names, indices, node_indices, is_multivar)
 
     # Handle instances of multiple components in multivariate data
     if data.ndim == 1:
@@ -106,11 +102,18 @@ def plot_connectivity(
         n_comps = data.shape[1]
         components = con.coords["components"].data
 
+    # Get info about nodes and connections
+    node_names, node_indices = _get_node_names_and_indices(
+        ch_names, node_aliases, indices, is_multivar
+    )
+    con_info = _get_con_info(ch_info, node_names, indices, node_indices, is_multivar)
+
     # Get requested connections
     picks = _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection)
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
+    duplicate_cons_mask = duplicate_cons_mask[picks]
     con_info = pick_info(con_info, picks)
     con_info["temp"]["con_types"] = con_info["temp"]["con_types"][picks]
 
@@ -127,8 +130,12 @@ def plot_connectivity(
             node_idx: pos for pos, node_idx in enumerate(type_node_indices_unique)
         }
 
+        type_duplicate_cons_mask = duplicate_cons_mask[type_mask]
+        if all(type_duplicate_cons_mask):
+            continue  # skip if all connections for this type are duplicates
+
         # Colormap handling
-        vmin, vmax = _setup_vmin_vmax(data=data[type_mask], vmin=vmin, vmax=vmax)
+        vmin, vmax = _setup_vmin_vmax(data=data, vmin=vmin, vmax=vmax)
         cmap = _setup_cmap(cmap=cmap, vmin=vmin, vmax=vmax)
         if cnorm is None:
             cnorm = Normalize(vmin=vmin, vmax=vmax)
@@ -136,7 +143,7 @@ def plot_connectivity(
         # Plot data for each component separately
         for comp_idx in range(data.shape[1]):
             # Make data square for plotting
-            square_matrix = np.full((type_n_nodes, type_n_nodes), fill_value=np.nan)
+            square_matrix = np.full((type_n_nodes, type_n_nodes), np.nan)
             for con_idx, (seed_idx, target_idx) in enumerate(zip(*type_node_indices)):
                 square_matrix[type_node_pos[seed_idx], type_node_pos[target_idx]] = (
                     data[con_idx, comp_idx]

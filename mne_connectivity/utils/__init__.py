@@ -1,4 +1,5 @@
 from .docs import fill_doc
+from .transform_to_full import _CAN_FILL_MISSING, _get_full_connectivity, _make_square
 from .utils import (
     _check_if_multivariate_indices,
     _check_multivariate_indices,

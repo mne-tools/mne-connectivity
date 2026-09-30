@@ -35,7 +35,7 @@ def _compute_corrs_orig(data):
                 # Estimate correlation
                 corr[ii, jj] += np.abs(np.corrcoef(x_mag, y_orth_x_mag)[0, 1])
     corr = (corr + corr.T) / (2.0 * n_epochs)
-    corr.flat[:: n_labels + 1] = 0.0
+    corr.flat[:: n_labels + 1] = 1.0
     return corr
 
 
@@ -72,18 +72,18 @@ def test_envelope_correlation():
     data_hilbert = hilbert(data, axis=-1)
     corr_orig = _compute_corrs_orig(data_hilbert)
     assert (0 <= corr_orig).all()
-    assert (corr_orig < 1).all()
+    assert (corr_orig <= 1).all()
 
-    # upper triangular indices to access the "corr_orig"
-    triu_inds = np.triu_indices(n_signals, k=0)
-    raveled_triu_inds = np.ravel_multi_index(triu_inds, dims=(n_signals, n_signals))
-    condensed_n_estimates = len(raveled_triu_inds)
+    # lower triangular indices to access the "corr_orig"
+    tril_inds = np.tril_indices(n_signals, k=-1)
+    raveled_tril_inds = np.ravel_multi_index(tril_inds, dims=(n_signals, n_signals))
+    condensed_n_estimates = len(raveled_tril_inds)
 
     # using complex data
     corr = envelope_correlation(data_hilbert)
     assert_allclose(
         np.mean(corr.get_data(output="raveled"), axis=0).squeeze(),
-        corr_orig.flatten()[raveled_triu_inds],
+        corr_orig.flatten()[raveled_tril_inds],
     )
 
     # do Hilbert internally, and don't combine
@@ -149,7 +149,7 @@ def test_envelope_correlation():
         ],
         float,
     )
-    ft_vals[np.isnan(ft_vals)] = 0
+    ft_vals[np.isnan(ft_vals)] = 1.0
     corr_log = envelope_correlation(data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output="dense").squeeze(), ft_vals)
 
