@@ -70,9 +70,9 @@ jobs:
           extras: full,full-no-qt
           # manually specify extras groups to sync, as logic for recursion into other groups isn't implemented in the action yet (see mne-tools#40)
           # e.g., `full` includes `mne-connectivity[full-no-qt]`, but the action won't recognise this, so we need to specify `full-no-qt` explicitly
-          additional-dependencies: pip
-          requirements-overrides: mne->mne-base,vtk==9.6.2,PySide6==6.11.1,hdf5<2.2.0
+          additional-dependencies: pip,hdf5<2.2.0
           # hdf5<2.2 due to incompatibility with h5py 3.16.0 (gh-449)
-          # pin vtk and pyside6 to speed up env resolution
+          requirements-overrides: mne->mne-base,vtk==9.6.2,PySide6==6.11.1
+          # install lighter mne-base; pin vtk and pyside6 to speed up env resolution
       - uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a
         if: success() || failure()
