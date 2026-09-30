@@ -1,0 +1,1 @@
+Add matplotlib as a core dependency, by `Thomas Binns`_.

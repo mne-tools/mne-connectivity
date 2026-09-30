@@ -2,6 +2,66 @@
 build-backend = "setuptools.build_meta"
 requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "wheel"]
 
+[dependency-groups]
+# Dependencies for building the package
+build = ["build", "twine"]
+dev = [
+  "pyside6 >= 6.11.1",
+  { include-group = "build" },
+  { include-group = "doc" },
+  { include-group = "style" },
+  { include-group = "test" },
+]
+# Dependencies for building the documentation
+doc = [
+  "intersphinx-registry",
+  "joblib",  # for sphinx_gallery_conf["parallel"]
+  "memory-profiler",
+  "mne-bids",
+  "nibabel >= 5.2",  # released 2023-12-11, will become 5.3 on 2026-10-08
+  "nilearn >= 0.10",  # released 2023-01-06, will become 0.11 on 2026-12-02
+  "numpydoc",
+  "pooch",
+  "pydata-sphinx-theme >= 0.14.1",
+  "PyQt6",
+  "sphinx != 8.1.0",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "sphinx-gallery >= 0.18.0",
+  "sphinx-issues",
+  "sphinx_autodoc_typehints",
+  "sphinxcontrib-bibtex",
+  "sphinxcontrib-towncrier",
+  "threadpoolctl",
+]
+# Dependencies for code style checks and formatting
+style = [
+  "codespell",
+  "isort",
+  "pre-commit",
+  "pydocstyle",
+  "pydocstyle[toml]",
+  "rstcheck",
+  "ruff",
+  "toml-sort",
+  "yamllint",
+]
+# Dependencies for running tests
+test = [
+  "h5netcdf",
+  "joblib",
+  "mne-bids",
+  "pymatreader",
+  "pytest != 9.1.0, != 9.1.1",
+  "pytest-cov",
+  "pytest-timeout",
+  "pytest-xdist",
+  "pyvista",
+  "pyvistaqt",
+  "statsmodels",
+  "threadpoolctl",
+]
+
 [project]
 classifiers = [
   "Intended Audience :: Developers",
@@ -19,6 +79,7 @@ classifiers = [
   "Topic :: Software Development",
 ]
 dependencies = [
+  "matplotlib >= 3.9",  # released 2024-05-15, will become 3.10 on 2026-12-14
   "mne >= 1.8",
   "netCDF4 >= 1.6.5",
   "numpy >= 2.1",  # released 2024-08-18, will become 2.2 on 2026-12-08
@@ -38,71 +99,33 @@ readme = { content-type = "text/x-rst", file = "README.rst" }
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-all = [
-  "mne-connectivity[build]",
-  "mne-connectivity[doc]",
-  "mne-connectivity[gui]",
-  "mne-connectivity[style]",
-  "mne-connectivity[test]",
-  "PyQt6",
+full = [
+  "mne-connectivity[full-no-qt]",
+  "PySide6 != 6.7.0, != 6.8.0, != 6.8.0.1, != 6.9.1",
 ]
-build = ["build", "twine"]
-doc = [
-  "intersphinx-registry",
-  "joblib",  # for sphinx_gallery_conf["parallel"]
-  "memory-profiler",
-  "mne-bids",
-  "mne-connectivity[gui]",
-  "nibabel >= 5.2",  # released 2023-12-11, will become 5.3 on 2026-10-08
-  "nilearn >= 0.10",  # released 2023-01-06, will become 0.11 on 2026-12-02
-  "numpydoc",
-  "pooch",
-  "pydata-sphinx-theme >= 0.14.1",
-  "PyQt6",
-  "sphinx != 8.1.0",
-  "sphinx-copybutton",
-  "sphinx-design",
-  "sphinx-gallery >= 0.18.0",
-  "sphinx-issues",
-  "sphinx_autodoc_typehints",
-  "sphinxcontrib-bibtex",
-  "sphinxcontrib-towncrier",
-  "threadpoolctl",
-]
-full = ["mne-connectivity[all]"]
-gui = [
+# Dependencies for full MNE-Connectivity functionality
+# We first define a variant without any Qt bindings. The "complete" variant,
+# mne-connectivity[full], makes an opinionated choice and installs PySide6.
+# We also offer mne-connectivity[full-pyqt6], which will install PyQt6 instead of
+# PySide6.
+full-no-qt = [
+  "h5io >= 0.2.4",
   "h5netcdf",
-  "matplotlib >= 3.9",  # released 2024-05-15, will become 3.10 on 2026-12-14
+  "joblib",
   "mne-qt-browser >= 0.6",  # released 2023-10-11, will become 0.7 on 2027-04-08
+  "numba",
   "pyvista >= 0.44",  # released 2024-07-07, will become 0.45 on 2027-04-19
   "pyvistaqt >= 0.11",  # released 2023-06-30, will become 0.12 on 2028-07-01
   "qtpy",
   "sip",
   "vtk",
 ]
-style = [
-  "codespell",
-  "isort",
-  "pre-commit",
-  "pydocstyle",
-  "pydocstyle[toml]",
-  "rstcheck",
-  "ruff",
-  "toml-sort",
-  "yamllint",
+full-pyqt6 = [
+  "mne-connectivity[full-no-qt]",
+  "PyQt6 != 6.6.0",
+  "PyQt6-Qt6 != 6.6.0, != 6.7.0",
 ]
-test = [
-  "joblib",
-  "mne-bids",
-  "mne-connectivity[gui]",
-  "pymatreader",
-  "pytest != 9.1.0, != 9.1.1",
-  "pytest-cov",
-  "pytest-timeout",
-  "pytest-xdist",
-  "statsmodels",
-  "threadpoolctl",
-]
+full-pyside6 = ["mne-connectivity[full]"]
 
 [project.urls]
 documentation = "https://mne.tools/mne-connectivity"

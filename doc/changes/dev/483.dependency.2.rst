@@ -1,0 +1,1 @@
+Consolidate the optional dependencies into new ``full`` (alias for ``full-pyside6``) and ``full-pyqt6`` groups, installing the dependencies for full MNE-Connectivity functionality, alongside PySide6 or PyQt6, respectively, by `Thomas Binns`_.
