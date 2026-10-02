@@ -247,14 +247,14 @@ def _handle_picks(
             if len(con_idx) == 0:
                 if seed == target:
                     append_msg = (
-                        " (note that self-connections may be dropped if they are "
-                        "uninformative)"
+                        " (note that self-connections may be dropped from the dense "
+                        "matrix representation if they are uninformative)"
                     )
                 else:
                     append_msg = ""
                 raise ValueError(
                     "The following connection indices in `picks` was not found in "
-                    f"`con.indices`{append_msg}:\n"
+                    f"the indices of the connectivity object{append_msg}:\n"
                     f"({picks[0][pick_idx]}, {picks[1][pick_idx]})"
                 )
             con_picks.append(con_idx[0])
