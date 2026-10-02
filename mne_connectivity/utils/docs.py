@@ -332,8 +332,8 @@ colors : ``'auto'`` | ``'global'`` | ``'relative'``
     a full or symmetric matrix. If ``'relative'``, the connections for each channel
     span the full colormap. This is recommended if the connectivity indices correspond
     to a full or symmetric matrix. If ``'auto'`` (default), the coloring is set to
-    ``'relative'`` if the connectivity indices correspond to a lower-triangular matrix
-    and ``interactive`` is ``True``, or ``'global'`` otherwise.
+    ``'relative'`` if the connectivity data is a symmetric matrix, ``picks`` is
+    ``None``, and ``interactive`` is ``True``. Otherwise, it is set to ``'global'``.
 """
 
 docdict["viz_cmap_line"] = """

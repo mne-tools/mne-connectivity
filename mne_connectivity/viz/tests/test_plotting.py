@@ -132,15 +132,20 @@ def visible(ax):
 
 
 def plotted_values(figs, kind):
-    """Return every connectivity value plotted in the figure(s), then close them."""
+    """Return every connectivity value shown in the figure(s), then close them."""
     figs = figs if isinstance(figs, list) else [figs]
     if kind in LINE_KINDS:
-        values = [line.get_ydata() for fig in figs for line in fig.axes[0].lines]
+        values = [
+            line.get_ydata()
+            for fig in figs
+            for line in fig.axes[0].lines
+            if line.get_visible()
+        ]
     else:  # images, in which matrix entries without a connection are masked
         values = [np.ma.compressed(fig.axes[0].images[0].get_array()) for fig in figs]
     for fig in figs:
         plt.close(fig)
-    return np.sort(np.concatenate(values, axis=None))
+    return np.sort(np.concatenate([[], *values], axis=None))  # empty if no figures
 
 
 @pytest.fixture
@@ -553,6 +558,29 @@ def test_plot_line_connectivity_selection(selection, selected, colors, symmetric
     assert sum(visible(line_ax)) == 3  # 3 cons per channel (as seed or target)
 
 
+def test_plot_line_connectivity_colors():
+    """Test which coloring of the connections ``colors='auto'`` uses."""
+
+    def line_colors(con, colors, **kwargs):
+        fig = plot_spectral_connectivity(con, colors=colors, show=False, **kwargs)
+        line_colors = [line.get_color() for line in fig.axes[0].lines]
+        plt.close(fig)
+        return line_colors
+
+    symmetric = make_con("spectral")  # lower-triangular, filled in to a full matrix
+    for con, kwargs, expected in (
+        (symmetric, dict(), "relative"),  # full matrix, explored interactively
+        (symmetric, dict(picks=["ch1", "ch2"]), "global"),
+        (symmetric, dict(picks=([1, 2, 3], [0, 0, 1])), "global"),
+        (symmetric, dict(interactive=False), "global"),
+        (make_con("spectral", indices="explicit"), dict(), "global"),
+    ):
+        other = "global" if expected == "relative" else "relative"
+        auto = line_colors(con, "auto", **kwargs)
+        assert auto == line_colors(con, expected, **kwargs), kwargs
+        assert auto != line_colors(con, other, **kwargs), kwargs  # schemes differ
+
+
 def test_plot_spectrotemporal_connectivity():
     """Test plotting spectro-temporal connectivity as images."""
     con = make_con("spectrotemporal")
@@ -826,6 +854,28 @@ def test_plot_connectivity_picks_indices(kind, form):
         plot_func(con, picks=wrong_picks, **kwargs)
     with pytest.raises(ValueError, match="not found in `con.indices`"):
         plot_func(con, picks=missing, **kwargs)
+
+
+@pytest.mark.parametrize("kind", list(PLOTTERS))
+@pytest.mark.parametrize("indices", ("lower", "all"))
+def test_plot_connectivity_picks_indices_symmetric(kind, indices):
+    """Test picking connections that duplicate others in symmetric connectivity."""
+    plot_func = PLOTTERS[kind][0]
+    con = make_con(kind, indices=indices)  # symmetric
+    dense = con.get_data("dense")  # upper triangle is filled in for "lower"
+    kwargs = dict(show=False)
+    if kind == "spectrotemporal":
+        kwargs["combine"] = None  # plot connections individually, not their average
+
+    # (0, 1) duplicates (1, 0), so is hidden or skipped when plotting all connections,
+    # but is plotted when requested, alone or alongside the connection it duplicates
+    for picks in (([0], [1]), ([1, 0], [0, 1])):
+        figs = plot_func(con, picks=picks, **kwargs)
+        assert_allclose(plotted_values(figs, kind), np.sort(dense[picks], axis=None))
+
+    # the diagonal is dropped as uninformative (it is all zeros), so cannot be picked
+    with pytest.raises(ValueError, match="self-connections may be dropped"):
+        plot_func(con, picks=([0], [0]), **kwargs)
 
 
 @pytest.mark.parametrize(

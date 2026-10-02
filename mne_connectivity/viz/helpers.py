@@ -205,8 +205,14 @@ def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
     return con_info
 
 
-def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
-    """Handle picks for connectivity data."""
+def _handle_picks(
+    picks, exclude, ch_info, indices, is_multivar, selection, duplicate_cons_mask
+):
+    """Handle picks for connectivity data.
+
+    Also returns the duplicate connections mask, with explicitly picked connections
+    not marked as duplicates, so that they are always plotted.
+    """
     # Check if picks are connection indices or channel names/types/indices
     if (
         isinstance(picks, tuple)
@@ -239,11 +245,21 @@ def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
         for pick_idx, (seed, target) in enumerate(zip(*pick_indices)):
             con_idx = np.where((indices[0] == seed) & (indices[1] == target))[0]
             if len(con_idx) == 0:
+                if seed == target:
+                    append_msg = (
+                        " (note that self-connections may be dropped if they are "
+                        "uninformative)"
+                    )
+                else:
+                    append_msg = ""
                 raise ValueError(
                     "The following connection indices in `picks` was not found in "
-                    f"`con.indices`:\n({picks[0][pick_idx]}, {picks[1][pick_idx]})"
+                    f"`con.indices`{append_msg}:\n"
+                    f"({picks[0][pick_idx]}, {picks[1][pick_idx]})"
                 )
             con_picks.append(con_idx[0])
+        duplicate_cons_mask = duplicate_cons_mask.copy()  # don't modify caller's mask
+        duplicate_cons_mask[con_picks] = False
     else:  # assume picks are channel names/types/indices
         ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
         con_picks = []
@@ -261,7 +277,7 @@ def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
             if np.any([ch in ch_picks for ch in con_nodes]):
                 con_picks.append(con_idx)
 
-    return con_picks
+    return con_picks, duplicate_cons_mask
 
 
 def _add_comps_as_connections(data, con_info, node_indices, comps_axis):
