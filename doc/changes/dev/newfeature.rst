@@ -1,0 +1,1 @@
+Allow passing connection indices to ``picks`` in :func:`~mne_connectivity.viz.plot_connectivity`, :func:`~mne_connectivity.viz.plot_spectral_connectivity_circle`, :func:`~mne_connectivity.viz.plot_temporal_connectivity`, and :func:`~mne_connectivity.viz.plot_spectrotemporal_connectivity`, by `Thomas Binns`_.
