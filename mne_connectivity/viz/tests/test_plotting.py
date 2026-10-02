@@ -852,7 +852,9 @@ def test_plot_connectivity_picks_indices(kind, form):
         match = "data is bivariate, but got multivariate picks"
     with pytest.raises(ValueError, match=match):
         plot_func(con, picks=wrong_picks, **kwargs)
-    with pytest.raises(ValueError, match="not found in `con.indices`"):
+    with pytest.raises(
+        ValueError, match="not found in the indices of the connectivity object"
+    ):
         plot_func(con, picks=missing, **kwargs)
 
 
