@@ -3,6 +3,7 @@ import numpy as np
 from mne._fiff.pick import _picks_to_idx
 from mne.defaults import DEFAULTS
 from mne.stats.permutations import bootstrap_confidence_interval
+from mne.utils import warn
 from mne.utils.check import _check_if_nan
 
 from ..utils import (
@@ -206,21 +207,59 @@ def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
 
 def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
     """Handle picks for connectivity data."""
-    ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
-    con_picks = []
-    for con_idx, (seed, target) in enumerate(zip(*indices)):
-        if not is_multivar:
-            seed, target = [seed], [target]
-        if selection == "both":
-            con_nodes = np.concatenate([seed, target])
-        elif selection == "seeds":
-            con_nodes = seed
-        else:  # selection == "targets"
-            con_nodes = target
-        if picks is not None:
-            con_nodes = [node for node in con_nodes if node in ch_picks]
-        if np.any([ch in ch_picks for ch in con_nodes]):
-            con_picks.append(con_idx)
+    # Check if picks are connection indices or channel names/types/indices
+    if (
+        isinstance(picks, tuple)
+        and len(picks) == 2
+        and all(isinstance(p, (list, tuple, np.ndarray)) for p in picks)
+        and len(picks[0]) == len(picks[1])
+    ):  # picks are connection indices
+        picks_is_multivar = _check_if_multivariate_indices(picks)
+        if is_multivar != picks_is_multivar:
+            raise ValueError(
+                "Inconsistent `picks` indices format for the connectivity data. "
+                "Connectivity data is "
+                f"{'multivariate' if is_multivar else 'bivariate'}, but got "
+                f"{'multivariate' if picks_is_multivar else 'bivariate'} picks."
+            )
+        if exclude != "bads":
+            warn("`exclude` parameter is ignored when `picks` are connection indices.")
+        if is_multivar:
+            # Remap multivariate indices and picks from channels to the same unique
+            # nodes (sets of channels), so they can be compared like bivariate indices
+            n_cons = len(indices[0])
+            _, node_indices = _get_unique_multivariate_nodes_and_indices(
+                ([*indices[0], *picks[0]], [*indices[1], *picks[1]])
+            )
+            indices = tuple(idcs[:n_cons] for idcs in node_indices)
+            pick_indices = tuple(idcs[n_cons:] for idcs in node_indices)
+        else:
+            pick_indices = picks
+        con_picks = []
+        for pick_idx, (seed, target) in enumerate(zip(*pick_indices)):
+            con_idx = np.where((indices[0] == seed) & (indices[1] == target))[0]
+            if len(con_idx) == 0:
+                raise ValueError(
+                    "The following connection indices in `picks` was not found in "
+                    f"`con.indices`:\n({picks[0][pick_idx]}, {picks[1][pick_idx]})"
+                )
+            con_picks.append(con_idx[0])
+    else:  # assume picks are channel names/types/indices
+        ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
+        con_picks = []
+        for con_idx, (seed, target) in enumerate(zip(*indices)):
+            if not is_multivar:
+                seed, target = [seed], [target]
+            if selection == "both":
+                con_nodes = np.concatenate([seed, target])
+            elif selection == "seeds":
+                con_nodes = seed
+            else:  # selection == "targets"
+                con_nodes = target
+            if picks is not None:
+                con_nodes = [node for node in con_nodes if node in ch_picks]
+            if np.any([ch in ch_picks for ch in con_nodes]):
+                con_picks.append(con_idx)
 
     return con_picks
 

@@ -2,6 +2,7 @@
 #
 # License: BSD-3-Clause
 
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
 import pytest
@@ -128,6 +129,18 @@ def click_node(fig, circle_ax, node, n_nodes, button=1):
 def visible(ax):
     """Return the visibility of every line in an axes."""
     return [line.get_visible() for line in ax.lines]
+
+
+def plotted_values(figs, kind):
+    """Return every connectivity value plotted in the figure(s), then close them."""
+    figs = figs if isinstance(figs, list) else [figs]
+    if kind in LINE_KINDS:
+        values = [line.get_ydata() for fig in figs for line in fig.axes[0].lines]
+    else:  # images, in which matrix entries without a connection are masked
+        values = [np.ma.compressed(fig.axes[0].images[0].get_array()) for fig in figs]
+    for fig in figs:
+        plt.close(fig)
+    return np.sort(np.concatenate(values, axis=None))
 
 
 @pytest.fixture
@@ -742,6 +755,77 @@ def test_plot_connectivity_multivariate(kind, form):
             figs.canvas.draw()
             _fake_click(figs, axes[0], axes[0].lines[0].get_xydata()[1], xform="data")
             assert axes[0].texts[0].get_text() == "left ~ right (0)"
+
+
+@pytest.mark.parametrize("kind", list(PLOTTERS))
+@pytest.mark.parametrize("form", ("bivariate", "dense", "ragged", "masked"))
+def test_plot_connectivity_picks_indices(kind, form):
+    """Test picking the connections to plot by their seed and target indices."""
+    plot_func = PLOTTERS[kind][0]
+    # picks (not in the stored order), the connections they refer to, and a connection
+    # that is not stored but resembles one that is
+    if form == "bivariate":  # both directions are stored between ch0 and ch1
+        indices = (np.array([0, 1, 1, 2]), np.array([1, 0, 3, 3]))
+        picks, picked = ([2, 1], [3, 0]), [3, 1]
+        missing = ([3], [2])  # the reverse of a stored connection
+    elif form == "dense":
+        indices = (np.array([[0, 1], [2, 3]]), np.array([[2, 3], [0, 1]]))
+        picks, picked = ([[2, 3]], [[0, 1]]), [1]
+        missing = ([[0, 3]], [[2, 1]])  # shares channels with a stored connection
+    elif form == "ragged":  # nodes of unequal size, giving 2 x 2 = 4 connections
+        indices = seed_target_multivariate_indices(
+            [[0, 1], [2, 3, 4]], [[2, 3, 4], [0, 1]]
+        )
+        picks, picked = ([[2, 3, 4], [0, 1]], [[0, 1], [2, 3, 4]]), [3, 0]
+        missing = ([[0, 1]], [[2, 3]])  # the target is a subset of a stored node
+    else:  # the same nodes, padded out into a rectangular masked array
+        indices = tuple(
+            np.ma.masked_values(idcs, -1)
+            for idcs in ([[0, 1, -1], [2, 3, 4]], [[2, 3, 4], [0, 1, -1]])
+        )
+        picks, picked = ([[2, 3, 4]], [[0, 1]]), [1]
+        missing = ([[0, 1]], [[2, 3]])  # the target is a subset of a stored node
+    is_multivar = form != "bivariate"
+    con = make_con(
+        kind, indices=indices, n_comps=2 if is_multivar else 1, n_nodes=5,
+        symmetric=False,
+    )  # fmt: skip
+    expected = np.sort(con.get_data("raveled")[picked], axis=None)
+    kwargs = dict(show=False)
+    if kind == "spectrotemporal":
+        kwargs["combine"] = None  # plot connections individually, not their average
+
+    # exactly the picked connections are plotted, whether the picks are given as lists,
+    # tuples, or entries of `con.indices`
+    tuple_picks = tuple(
+        tuple(tuple(node) if is_multivar else node for node in idcs) for idcs in picks
+    )
+    con_picks = tuple([idcs[idx] for idx in picked] for idcs in con.indices)
+    for these_picks in (picks, tuple_picks, con_picks):
+        figs = plot_func(con, picks=these_picks, **kwargs)
+        assert_allclose(plotted_values(figs, kind), expected)
+
+    # `selection` and `exclude` apply to channels, so do not change which connections
+    # are plotted; only `exclude` warns, as `selection` still controls which nodes can
+    # be selected in the circle plot of line plots
+    for selection in ("seeds", "targets"):
+        figs = plot_func(con, picks=picks, selection=selection, **kwargs)
+        assert_allclose(plotted_values(figs, kind), expected)
+    with pytest.warns(RuntimeWarning, match="`exclude` parameter is ignored"):
+        figs = plot_func(con, picks=picks, exclude=["ch2"], **kwargs)  # ch2 is picked
+    assert_allclose(plotted_values(figs, kind), expected)
+
+    # picks must match the format of the connectivity data
+    if is_multivar:  # the first channel of each node
+        wrong_picks = tuple([node[0] for node in idcs] for idcs in picks)
+        match = "data is multivariate, but got bivariate picks"
+    else:  # single-channel nodes
+        wrong_picks = tuple([[node] for node in idcs] for idcs in picks)
+        match = "data is bivariate, but got multivariate picks"
+    with pytest.raises(ValueError, match=match):
+        plot_func(con, picks=wrong_picks, **kwargs)
+    with pytest.raises(ValueError, match="not found in `con.indices`"):
+        plot_func(con, picks=missing, **kwargs)
 
 
 @pytest.mark.parametrize(
