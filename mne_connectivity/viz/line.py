@@ -240,7 +240,14 @@ def _plot_line_connectivity(
     # Get requested connections
     picks_was_none = picks is None
     picks, duplicate_cons_mask = _handle_picks(
-        picks, exclude, ch_info, indices, is_multivar, selection, duplicate_cons_mask
+        picks,
+        exclude,
+        ch_info,
+        indices,
+        is_multivar,
+        selection,
+        duplicate_cons_mask,
+        warn_selection_with_picks_indices=False,  # selection still affects circle plot
     )
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])

@@ -207,7 +207,14 @@ def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
 
 
 def _handle_picks(
-    picks, exclude, ch_info, indices, is_multivar, selection, duplicate_cons_mask
+    picks,
+    exclude,
+    ch_info,
+    indices,
+    is_multivar,
+    selection,
+    duplicate_cons_mask,
+    warn_selection_with_picks_indices=True,
 ):
     """Handle picks for connectivity data.
 
@@ -230,7 +237,15 @@ def _handle_picks(
                 f"{'multivariate' if picks_is_multivar else 'bivariate'} picks."
             )
         if exclude != "bads":
-            warn("`exclude` parameter is ignored when `picks` are connection indices.")
+            warn(
+                "The `exclude` parameter is ignored when `picks` are connection "
+                "indices."
+            )
+        if selection != "both" and warn_selection_with_picks_indices:
+            warn(
+                "The `selection` parameter is ignored when `picks` are connection "
+                "indices."
+            )
         if is_multivar:
             # Remap multivariate indices and picks from channels to the same unique
             # nodes (sets of channels), so they can be compared like bivariate indices
