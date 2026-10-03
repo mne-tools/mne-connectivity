@@ -8,6 +8,7 @@ from mne.utils.check import _check_if_nan
 
 from ..utils import (
     _check_if_multivariate_indices,
+    _check_if_tuple_indices,
     _get_unique_multivariate_nodes_and_indices,
 )
 
@@ -214,12 +215,12 @@ def _handle_picks(
     not marked as duplicates, so that they are always plotted.
     """
     # Check if picks are connection indices or channel names/types/indices
-    if (
-        isinstance(picks, tuple)
-        and len(picks) == 2
-        and all(isinstance(p, (list, tuple, np.ndarray)) for p in picks)
-        and len(picks[0]) == len(picks[1])
-    ):  # picks are connection indices
+    if _check_if_tuple_indices(picks):  # picks are connection indices
+        if len(picks[0]) != len(picks[1]):
+            raise ValueError(
+                "When `picks` is a tuple of connection indices, the two arrays must "
+                f"have the same length, got {len(picks[0])} and {len(picks[1])}."
+            )
         picks_is_multivar = _check_if_multivariate_indices(picks)
         if is_multivar != picks_is_multivar:
             raise ValueError(
