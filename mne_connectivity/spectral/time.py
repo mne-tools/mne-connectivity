@@ -21,9 +21,9 @@ from mne.utils import _check_option, _validate_type, logger, verbose
 from ..base import EpochSpectralConnectivity, SpectralConnectivity
 from ..utils import (
     _CAN_FILL_MISSING,
+    _check_indices,
     _check_multivariate_indices,
     _make_square,
-    check_indices,
     fill_doc,
 )
 from .epochs import _compute_freq_mask
@@ -564,7 +564,7 @@ def spectral_connectivity_time(
             # create a copy so that `indices_use` can be modified
             indices = (indices_use[0].copy(), indices_use[1].copy())
         else:
-            indices_use = check_indices(indices)
+            indices_use = _check_indices(indices)
     n_cons = len(indices_use[0])
 
     # unique signals for which we actually need to compute the CSD of
