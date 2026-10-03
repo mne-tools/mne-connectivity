@@ -834,12 +834,20 @@ def test_plot_connectivity_picks_indices(kind, form):
         assert_allclose(plotted_values(figs, kind), expected)
 
     # `selection` and `exclude` apply to channels, so do not change which connections
-    # are plotted; only `exclude` warns, as `selection` still controls which nodes can
-    # be selected in the circle plot of line plots
+    # are plotted; non-default `exclude` always warns, but non-default `selection`
+    # doesn't warn for line plots, as it still controls which nodes can be selected in
+    # the circle plot of line plots
     for selection in ("seeds", "targets"):
-        figs = plot_func(con, picks=picks, selection=selection, **kwargs)
-        assert_allclose(plotted_values(figs, kind), expected)
-    with pytest.warns(RuntimeWarning, match="`exclude` parameter is ignored"):
+        if kind in ("matrix", "spectrotemporal"):
+            with pytest.warns(
+                RuntimeWarning, match="The `selection` parameter is ignored"
+            ):
+                figs = plot_func(con, picks=picks, selection=selection, **kwargs)
+                assert_allclose(plotted_values(figs, kind), expected)
+        else:
+            figs = plot_func(con, picks=picks, selection=selection, **kwargs)
+            assert_allclose(plotted_values(figs, kind), expected)
+    with pytest.warns(RuntimeWarning, match="The `exclude` parameter is ignored"):
         figs = plot_func(con, picks=picks, exclude=["ch2"], **kwargs)  # ch2 is picked
     assert_allclose(plotted_values(figs, kind), expected)
 
@@ -856,6 +864,10 @@ def test_plot_connectivity_picks_indices(kind, form):
         ValueError, match="not found in the indices of the connectivity object"
     ):
         plot_func(con, picks=missing, **kwargs)
+
+    # Length of array-likes in picks must match
+    with pytest.raises(ValueError, match="the two arrays must have the same length"):
+        plot_func(con, picks=([0, 1], [0]), **kwargs)
 
 
 @pytest.mark.parametrize("kind", list(PLOTTERS))
