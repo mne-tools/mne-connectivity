@@ -238,7 +238,17 @@ def _plot_line_connectivity(
     con_info = _get_con_info(ch_info, node_names, indices, node_indices, is_multivar)
 
     # Get requested connections
-    picks = _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection)
+    picks_was_none = picks is None
+    picks, duplicate_cons_mask = _handle_picks(
+        picks,
+        exclude,
+        ch_info,
+        indices,
+        is_multivar,
+        selection,
+        duplicate_cons_mask,
+        warn_selection_with_picks_indices=False,  # selection still affects circle plot
+    )
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])
@@ -323,15 +333,17 @@ def _plot_line_connectivity(
             n_circle_nodes = len(circle_names)
             node_is_selectable = _get_node_selectability(circle_indices, selection)
             if colors == "auto":
-                # If connections span full matrix (diagonal optional) and plot is
-                # interactive, use 'relative' colouring, such that the connection
-                # colours span the colourmap space for each node. This makes interactive
-                # visualisation for large numbers of nodes much better.
-                # Otherwise, have the connection colours span the colourmap space for
-                # all connections, which is better for non-interactive plots and
-                # non-full connectivity data.
+                # If connections span full matrix (diagonal optional), and plot is
+                # interactive, and no specific picks are provided, use 'relative'
+                # colouring, such that the connection colours span the colourmap space
+                # for each node. This makes interactive visualisation for large numbers
+                # of nodes much better. Otherwise, have the connection colours span the
+                # colourmap space for all connections, which is better for
+                # non-interactive plots and non-full connectivity data.
                 type_connection_colors = (
-                    "relative" if is_symmetric and interactive else "global"
+                    "relative"
+                    if is_symmetric and interactive and picks_was_none
+                    else "global"
                 )
             else:
                 type_connection_colors = colors
