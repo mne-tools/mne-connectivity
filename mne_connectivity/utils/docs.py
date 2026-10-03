@@ -248,11 +248,12 @@ info : mne.Info | None
 
 docdict["viz_picks"] = """
 picks : str | array_like | slice | tuple of array_like | None
-    Data to include in the plot. Can correspond to channel characteristics, e.g.:
-    channel types as a string or array-like of strings; channel names as a string or
-    array-like of strings; or channel indices as an array-like of integers or a slice.
-    None (default) will pick any good channels. See this
-    :meth:`mne.io.Raw.pick <picks parameter documentation>` for more information.
+    Data to include in the plot. Can correspond to channel characteristics, or
+    connection indices. For channel characteristics, these can be: channel types as a
+    string or array-like of strings; channel names as a string or array-like of strings;
+    or channel indices as an array-like of integers or a slice. ``None`` (default) will
+    pick any good channels. See this
+    :meth:`picks parameter documentation <mne.io.Raw.pick>` for more information.
     Connections involving these channels will be included, based on ``selection``. Can
     also be a tuple of two array-likes, corresponding to entries of ``con.indices``, in
     which case those exact connections will be plotted.
@@ -266,10 +267,12 @@ selection : ``'seeds'`` | ``'targets'`` | ``'both'``
     target channels matching ``picks`` will be included. If ``'both'``, connections will
     be included if either the seed or target channels match ``picks``.{}
 """
-docdict["viz_selection"] = viz_selection_template.format("")
+docdict["viz_selection"] = viz_selection_template.format(
+    " Ignored if ``picks`` corresponds to connection indices."
+)
 docdict["viz_selection_line"] = viz_selection_template.format(
     " This also controls the channels which can be selected in the interactive circle "
-    "plot."
+    "plot, even if ``picks`` corresponds to connection indices."
 )
 
 docdict["viz_exclude"] = """
