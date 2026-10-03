@@ -3,7 +3,7 @@ import numpy as np
 from mne._fiff.pick import _picks_to_idx
 from mne.defaults import DEFAULTS
 from mne.stats.permutations import bootstrap_confidence_interval
-from mne.utils import warn
+from mne.utils import logger, warn
 from mne.utils.check import _check_if_nan
 
 from ..utils import (
@@ -223,6 +223,7 @@ def _handle_picks(
     """
     # Check if picks are connection indices or channel names/types/indices
     if _check_if_tuple_indices(picks):  # picks are connection indices
+        logger.info("Treating `picks` as connection indices.")
         if len(picks[0]) != len(picks[1]):
             raise ValueError(
                 "When `picks` is a tuple of connection indices, the two arrays must "
@@ -277,6 +278,7 @@ def _handle_picks(
         duplicate_cons_mask = duplicate_cons_mask.copy()  # don't modify caller's mask
         duplicate_cons_mask[con_picks] = False
     else:  # assume picks are channel names/types/indices
+        logger.info("Treating `picks` as channel characteristics.")
         ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
         con_picks = []
         for con_idx, (seed, target) in enumerate(zip(*indices)):
