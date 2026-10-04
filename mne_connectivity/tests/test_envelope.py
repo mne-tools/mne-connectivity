@@ -35,7 +35,7 @@ def _compute_corrs_orig(data):
                 # Estimate correlation
                 corr[ii, jj] += np.abs(np.corrcoef(x_mag, y_orth_x_mag)[0, 1])
     corr = (corr + corr.T) / (2.0 * n_epochs)
-    corr.flat[:: n_labels + 1] = 1.0
+    corr.flat[:: n_labels + 1] = 0.0
     return corr
 
 
@@ -88,6 +88,7 @@ def test_envelope_correlation():
 
     # do Hilbert internally, and don't combine
     corr = envelope_correlation(data)
+    assert corr.method == "env_corr_orth"
     assert corr.shape == (data.shape[0],) + (condensed_n_estimates,) + (1,)
     corr = np.mean(corr.get_data(output="dense"), axis=0)
     assert_allclose(corr.squeeze(), corr_orig)
@@ -104,6 +105,7 @@ def test_envelope_correlation():
 
     # test non-orthogonal computation
     corr_plain = envelope_correlation(data, orthogonalize=False)
+    assert corr_plain.method == "env_corr"
     assert corr_plain.shape == (data.shape[0],) + (condensed_n_estimates,) + (1,)
     assert corr_plain.get_data(output="dense").shape == (data.shape[0],) + (
         corr_orig.shape[0],
@@ -149,7 +151,7 @@ def test_envelope_correlation():
         ],
         float,
     )
-    ft_vals[np.isnan(ft_vals)] = 1.0
+    ft_vals[np.isnan(ft_vals)] = 0.0
     corr_log = envelope_correlation(data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output="dense").squeeze(), ft_vals)
 

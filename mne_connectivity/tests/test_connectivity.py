@@ -537,6 +537,40 @@ def test_io(conn_cls, tmpdir):
 
 
 @pytest.mark.parametrize(
+    "method_old_new",
+    [
+        ("envelope correlation", "env_corr_orth"),
+        ("phase-slope-index", "psi"),
+        ("SMI", "smi"),
+        ("wSMI", "wsmi"),
+        ("VAR(1)", "var"),
+        ("VAR(p)", "var"),
+        ("Time-varying VAR(1)", "var_dynamic"),
+        ("Time-varying VAR(p)", "var_dynamic"),
+    ],
+)
+def test_deprecated_method_renaming_io(method_old_new, tmpdir):
+    """Test that deprecated methods are renamed when reading in connectivity data."""
+    method_old, method_new = method_old_new
+
+    # Save connectivity container with deprecated method name
+    n_nodes = 3
+    data = np.ones((n_nodes**2,))
+    conn = Connectivity(data=data, n_nodes=n_nodes, method=method_old)
+    conn.save(os.path.join(tmpdir, "connectivity.nc"))
+
+    # Read the connectivity container back in
+    method_old_escaped = method_old.replace("(", r"\(").replace(")", r"\)")
+    with pytest.warns(
+        RuntimeWarning, match=f"The '{method_old_escaped}' method name was deprecated"
+    ):
+        new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
+
+    # Assert that the method has been renamed
+    assert new_conn.method == method_new
+
+
+@pytest.mark.parametrize(
     "conn_cls",
     [
         EpochConnectivity,

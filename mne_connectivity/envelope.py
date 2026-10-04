@@ -209,7 +209,7 @@ def envelope_correlation(
         data=corr,
         names=names,
         times=times,
-        method="envelope correlation",
+        method="env_corr_orth" if orthogonalize else "env_corr",
         indices="lower",
         n_epochs_used=n_epochs,
         n_nodes=n_nodes,
