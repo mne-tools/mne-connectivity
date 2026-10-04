@@ -82,15 +82,15 @@ def test_envelope_correlation():
     # using complex data
     corr = envelope_correlation(data_hilbert)
     assert_allclose(
-        np.mean(corr.get_data(output="raveled"), axis=0).squeeze(),
+        np.mean(corr.get_data(output="raveled"), axis=0),
         corr_orig.flatten()[raveled_tril_inds],
     )
 
     # do Hilbert internally, and don't combine
     corr = envelope_correlation(data)
-    assert corr.shape == (data.shape[0],) + (condensed_n_estimates,) + (1,)
+    assert corr.shape == (data.shape[0], condensed_n_estimates)
     corr = np.mean(corr.get_data(output="dense"), axis=0)
-    assert_allclose(corr.squeeze(), corr_orig)
+    assert_allclose(corr, corr_orig)
 
     # degenerate
     with pytest.raises(ValueError, match="dtype must be float or complex"):
@@ -104,22 +104,23 @@ def test_envelope_correlation():
 
     # test non-orthogonal computation
     corr_plain = envelope_correlation(data, orthogonalize=False)
-    assert corr_plain.shape == (data.shape[0],) + (condensed_n_estimates,) + (1,)
-    assert corr_plain.get_data(output="dense").shape == (data.shape[0],) + (
+    assert corr_plain.shape == (data.shape[0], condensed_n_estimates)
+    assert corr_plain.get_data(output="dense").shape == (
+        data.shape[0],
         corr_orig.shape[0],
         corr_orig.shape[1],
-    ) + (1,)
+    )
     assert np.min(corr_plain.get_data()) < 0
     corr_plain_mean = np.mean(corr_plain.get_data(output="dense"), axis=0)
-    assert_allclose(np.diag(corr_plain_mean.squeeze()), 1)
+    assert_allclose(np.diag(corr_plain_mean), 1)
     np_corr = np.array([np.corrcoef(np.abs(x)) for x in data_hilbert])
-    assert_allclose(corr_plain.get_data(output="dense").squeeze(), np_corr)
+    assert_allclose(corr_plain.get_data(output="dense"), np_corr)
 
     # test resulting Epoch -> non-Epoch data structure
     # using callable
     corr = envelope_correlation(data_hilbert)
     corr_combine = corr.combine(combine=lambda data: np.mean(data, axis=0))
-    assert_allclose(corr_combine.get_data(output="dense").squeeze(), corr_orig)
+    assert_allclose(corr_combine.get_data(output="dense"), corr_orig)
     with pytest.raises(ValueError, match="Combine option"):
         corr.combine(combine=1.0)
     with pytest.raises(ValueError, match="Combine option"):
@@ -151,7 +152,7 @@ def test_envelope_correlation():
     )
     ft_vals[np.isnan(ft_vals)] = 1.0
     corr_log = envelope_correlation(data, log=True, absolute=False)
-    assert_allclose(corr_log.get_data(output="dense").squeeze(), ft_vals)
+    assert_allclose(corr_log.get_data(output="dense"), ft_vals)
 
 
 def test_envelope_correlation_bad_channels():
@@ -166,7 +167,7 @@ def test_envelope_correlation_bad_channels():
 
     assert corr.n_nodes == n_signals
     assert corr.names == data.ch_names
-    assert_array_equal(corr.get_data()[:, [0, 1, 1, 2], [1, 0, 2, 1], :], 0)  # bads
+    assert_array_equal(corr.get_data()[:, [0, 1, 1, 2], [1, 0, 2, 1]], 0)  # bads
     assert corr.get_data().shape[1:3] == (n_signals, n_signals)
 
 
