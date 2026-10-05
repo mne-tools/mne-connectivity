@@ -378,8 +378,22 @@ def _prepare_xarray_mne_data_structures(conn_obj):
     return conn_obj
 
 
+def _check_if_tuple_indices(indices):
+    """Check if indices match the expected tuple of 2 array-likes format."""
+    if (
+        isinstance(indices, tuple)
+        and len(indices) == 2
+        and all(isinstance(ind, (np.ndarray, list, tuple)) for ind in indices)
+    ):
+        return True
+    return False
+
+
 def _check_if_multivariate_indices(indices):
-    """Check if indices are for multivariate connectivity."""
+    """Check if indices are for multivariate connectivity.
+
+    Assumes that the indices have already been validated to be a tuple of 2 array-likes.
+    """
     return not np.all(
         [np.issubdtype(type(ind), int) for ind in indices[0]]
     ) and not np.all([np.issubdtype(type(ind), int) for ind in indices[1]])

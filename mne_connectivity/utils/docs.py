@@ -247,36 +247,39 @@ info : mne.Info | None
 """
 
 docdict["viz_picks"] = """
-picks : str | array_like | slice | None
-    Channels to include in the plot. Connections involving these channels will be
-    included, based on ``selection``. Slices and lists of integers will be interpreted
-    as channel indices. In lists, channel type strings (e.g., ``['meg', 'eeg']``) will
-    pick channels of those types, channel name strings (e.g.,
-    ``['MEG0111', 'MEG2623']``) will pick the given channels. Can also be the string
-    values ``'all'`` to pick all channels, or ``'data'`` to pick data channels. None
-    (default) will pick any good channels. Note that channels in ``info['bads']`` will
-    be included if their names or indices are explicitly provided.
+picks : str | array_like | slice | tuple of array_like | None
+    Data to include in the plot. Can correspond to channel characteristics, or
+    connection indices. For channel characteristics, these can be: channel types as a
+    string or array-like of strings; channel names as a string or array-like of strings;
+    or channel indices as an array-like of integers or a slice. ``None`` (default) will
+    pick any good channels. See this
+    :meth:`picks parameter documentation <mne.io.Raw.pick>` for more information.
+    Connections involving these channels will be included, based on ``selection``. Can
+    also be a tuple of two array-likes, corresponding to entries of ``con.indices``, in
+    which case those exact connections will be plotted.
 """
 
 viz_selection_template = """
 selection : ``'seeds'`` | ``'targets'`` | ``'both'``
-    What the ``picks`` parameter will be applied to. If ``'seeds'``, only connections
-    within the seed channels matchinng ``picks`` will be included. If ``'targets'``,
-    only connections within the target channels matching ``picks`` will be included. If
-    ``'both'``, connections will be included if either the seed or target channels match
-    ``picks``. Ignored if ``picks`` is ``None``.{}
+    What the ``picks`` parameter will be applied to, if ``picks`` does not correspond to
+    connection indices. If ``'seeds'``, only connections within the seed channels
+    matching ``picks`` will be included. If ``'targets'``, only connections within the
+    target channels matching ``picks`` will be included. If ``'both'``, connections will
+    be included if either the seed or target channels match ``picks``.{}
 """
-docdict["viz_selection"] = viz_selection_template.format("")
-docdict["viz_selection_line"] = docdict["viz_selection"].format(
+docdict["viz_selection"] = viz_selection_template.format(
+    " Ignored if ``picks`` corresponds to connection indices."
+)
+docdict["viz_selection_line"] = viz_selection_template.format(
     " This also controls the channels which can be selected in the interactive circle "
-    "plot."
+    "plot, even if ``picks`` corresponds to connection indices."
 )
 
 docdict["viz_exclude"] = """
 exclude : list of str | ``'bads'``
     Channel names to exclude from plotting. All connections involving these channels
     will be excluded. If ``'bads'`` (default), channels in ``info['bads']`` are
-    excluded.
+    excluded. Ignored if ``picks`` corresponds to connection indices.
 """
 
 viz_combine_template = """
@@ -332,8 +335,8 @@ colors : ``'auto'`` | ``'global'`` | ``'relative'``
     a full or symmetric matrix. If ``'relative'``, the connections for each channel
     span the full colormap. This is recommended if the connectivity indices correspond
     to a full or symmetric matrix. If ``'auto'`` (default), the coloring is set to
-    ``'relative'`` if the connectivity indices correspond to a lower-triangular matrix
-    and ``interactive`` is ``True``, or ``'global'`` otherwise.
+    ``'relative'`` if the connectivity data is a symmetric matrix, ``picks`` is
+    ``None``, and ``interactive`` is ``True``. Otherwise, it is set to ``'global'``.
 """
 
 docdict["viz_cmap_line"] = """
