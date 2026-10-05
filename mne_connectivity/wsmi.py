@@ -591,7 +591,7 @@ def wsmi(
     wts = _get_weights_matrix(n_unique_symbols)
 
     # --- 4. wSMI/SMI Computation ---
-    method_name = "wSMI" if weighted else "SMI"
+    method_name = "wsmi" if weighted else "smi"
     logger.info(f"""Computing {method_name} for {n_unique_symbols} unique symbols...""")
     result = _wsmi_jitted(sym, count, wts, weighted)
     # Result is (n_channels, n_channels, n_epochs)

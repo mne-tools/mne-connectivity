@@ -190,7 +190,7 @@ class EpochMixin:
 
 class DynamicMixin:
     def _check_is_var(self):
-        if not re.match(r"(Time-varying\s+)?VAR\([1p]\)", self.method):
+        if not re.match(r"^var(?:_dynamic)?$", self.method):
             warn(
                 f"The connectivity data comes from a method ({self.method}) that is "
                 "not a recognised vector autoregressive (VAR) model. The output of "

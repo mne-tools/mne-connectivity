@@ -257,8 +257,8 @@ def test_wsmi_weighted_vs_unweighted():
     conn_smi = wsmi(
         epochs, kernel=3, tau=1, weighted=False, average=True, indices=indices
     )
-    assert conn_wsmi.method == "wSMI"
-    assert conn_smi.method == "SMI"
+    assert conn_wsmi.method == "wsmi"
+    assert conn_smi.method == "smi"
 
     wsmi_data = conn_wsmi.get_data()
     smi_data = conn_smi.get_data()

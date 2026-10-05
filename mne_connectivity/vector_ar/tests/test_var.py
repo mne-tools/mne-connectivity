@@ -422,7 +422,7 @@ def test_dynamic_mixin_errors():
     mv_var = Connectivity(
         mv_var_data,
         n_nodes=n_signals,
-        method="VAR(p)",
+        method="var",
         indices=indices,
         lags=1,
         components=n_comps,
