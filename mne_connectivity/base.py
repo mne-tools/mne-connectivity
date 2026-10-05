@@ -499,19 +499,26 @@ class BaseConnectivity(EpochMixin):
 
     def __repr__(self) -> str:
         r = f"<{self.__class__.__name__} | "
+        r += f"{self.method if self.method is not None else 'Unknown method'} | "
 
-        if self.n_epochs is not None:
-            r += f"n_epochs : {self.n_epochs}, "
-        if "freqs" in self.dims:
-            r += f"freq : [{self.freqs[0]}, {self.freqs[-1]}], "  # type: ignore
-        if "times" in self.dims:
-            r += f"time : [{self.times[0]}, {self.times[-1]}], "  # type: ignore
-        r += f", nave : {self.n_epochs_used}"
-        r += f", nodes, n_estimated : {self.n_nodes}, {self.n_estimated_nodes}"
-        if "components" in self.dims:
-            r += f", n_components : {len(self.coords['components'])}, "
-        r += f", ~{sizeof_fmt(self._size)}"
-        r += ">"
+        dim_info = []
+        for dim in ("epochs", "connections", "components", "freqs", "times"):
+            if dim == "connections":
+                dim_info.append(f"{self.n_estimated_nodes} connections")
+            elif dim == "freqs" and dim in self.dims:
+                dim_info.append(f"{self.freqs[0]}-{self.freqs[-1]} Hz")
+            elif dim == "times" and dim in self.dims:
+                dim_info.append(f"{self.times[0]}-{self.times[-1]} s")
+            elif dim in self.dims:  # epochs or components
+                dim_info.append(f"{len(self.coords[dim])} {dim}")
+        dim_info = ", ".join(dim_info) + " | "
+        r += dim_info
+
+        if self.n_epochs_used is not None and not self.is_epoched:
+            r += f"nave: {self.n_epochs_used} | "
+
+        r += f"~{sizeof_fmt(self._size)}>"
+
         return r
 
     def _get_num_connections(self, data):

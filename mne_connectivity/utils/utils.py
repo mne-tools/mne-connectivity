@@ -45,7 +45,7 @@ def parallel_loop(func, n_jobs=1, verbose=1):
     return par, func
 
 
-def check_indices(indices):
+def _check_indices(indices):
     """Check indices parameter for bivariate connectivity.
 
     Parameters
