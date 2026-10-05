@@ -34,7 +34,6 @@ from .envelope import envelope_correlation, symmetric_orth
 from .io import read_connectivity
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import (
-    check_indices,
     degree,
     seed_target_indices,
     seed_target_multivariate_indices,

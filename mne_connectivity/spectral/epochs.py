@@ -39,9 +39,9 @@ from mne.utils import (
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
 from ..utils import (
     _CAN_FILL_MISSING,
+    _check_indices,
     _check_multivariate_indices,
     _make_square,
-    check_indices,
     fill_doc,
 )
 from .epochs_bivariate import _CON_METHOD_MAP_BIVARIATE
@@ -288,7 +288,7 @@ def _prepare_connectivity(
                             "Granger causality"
                         )
         else:
-            indices_use = check_indices(indices)
+            indices_use = _check_indices(indices)
 
     # number of connections to compute
     n_cons = len(indices_use[0])

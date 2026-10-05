@@ -4,8 +4,8 @@ from numpy.testing import assert_array_equal
 
 from mne_connectivity import Connectivity
 from mne_connectivity.utils import (
+    _check_indices,
     _check_multivariate_indices,
-    check_indices,
     degree,
     seed_target_indices,
     seed_target_multivariate_indices,
@@ -70,21 +70,21 @@ def test_seed_target_indices():
 
 
 def test_check_indices():
-    """Test check_indices function."""
+    """Test _check_indices function."""
     # bivariate indices
     # test error catching
     with pytest.raises(ValueError, match="indices must be a tuple of length 2"):
         non_tuple_indices = [[0], [1]]
-        check_indices(non_tuple_indices)
+        _check_indices(non_tuple_indices)
     with pytest.raises(ValueError, match="indices must be a tuple of length 2"):
         non_len2_indices = ([0], [1], [2])
-        check_indices(non_len2_indices)
+        _check_indices(non_len2_indices)
     with pytest.raises(ValueError, match="Index arrays indices"):
         non_equal_len_indices = ([0], [1, 2])
-        check_indices(non_equal_len_indices)
+        _check_indices(non_equal_len_indices)
     with pytest.raises(TypeError, match="Channel indices must be integers, not array"):
         nested_indices = ([[0]], [[1]])
-        check_indices(nested_indices)
+        _check_indices(nested_indices)
 
 
 def test_check_multivariate_indices():
